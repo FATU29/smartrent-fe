@@ -47,6 +47,7 @@ function FormField({
               : undefined
         }
         className={cn(
+          'h-12',
           error && 'border-destructive focus-visible:border-destructive',
           className,
         )}
