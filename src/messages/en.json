@@ -1,0 +1,71 @@
+{
+  "homePage": {
+    "auth": {
+      "login": {
+        "title": "Sign In",
+        "description": "Welcome back! Please sign in to your account.",
+        "submitButton": "Sign In",
+        "submittingButton": "Signing in...",
+        "googleButton": "Sign in with Google",
+        "forgotPassword": "Forgot password?",
+        "switchToRegister": "Don't have an account? <u>Sign up</u>"
+      },
+      "register": {
+        "title": "Sign Up",
+        "description": "Create a new account to get started with our services.",
+        "submitButton": "Sign Up",
+        "submittingButton": "Signing up...",
+        "googleButton": "Sign up with Google",
+        "switchToLogin": "Already have an account? <u>Sign in</u>"
+      },
+      "forgotPassword": {
+        "title": "Reset Password",
+        "description": "Enter your email or phone number to receive a verification code for password recovery.",
+        "submitButton": "Send Code",
+        "submittingButton": "Sending...",
+        "switchToLogin": "Remember your password? <u>Sign in</u>"
+      },
+      "common": {
+        "password": "Password",
+        "hidePassword": "Hide Password",
+        "showPassword": "Show Password",
+        "email": "Email",
+        "emailPlaceholder": "Enter email address",
+        "passwordPlaceholder": "Enter password",
+        "phoneNumber": "Phone Number",
+        "phoneNumberPlaceholder": "Enter phone number",
+        "emailOrPhone": "Email or Phone Number",
+        "emailOrPhonePlaceholder": "Enter email or phone number"
+      },
+      "validation": {
+        "passwordRequired": "Password is required",
+        "passwordMinLength": "Password must be at least 8 characters long",
+        "passwordPattern": "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Invalid email address",
+        "phoneNumberRequired": "Phone number is required",
+        "phoneNumberInvalid": "Invalid phone number",
+        "emailOrPhoneRequired": "Email or phone number is required",
+        "emailOrPhoneInvalid": "Invalid email or phone number"
+      }
+    },
+    "buttons": {
+      "openAuth": "Open Auth"
+    },
+    "settings": {
+      "language": {
+        "switch": "Switch Language",
+        "vietnamese": "Tiếng Việt",
+        "english": "English"
+      },
+      "theme": {
+        "switch": "Switch Theme",
+        "light": "Light",
+        "dark": "Dark"
+      }
+    },
+    "language": {
+      "switch": "Switch Language"
+    }
+  }
+}

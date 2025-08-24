@@ -15,7 +15,6 @@ const eslintConfig = [
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       'no-unused-vars': 'off',
-      'no-console': 'warn', // warning if console.log
       '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/no-explicit-any': 'warn', // warning if using any
       eqeqeq: ['error', 'always'], // always use ===
