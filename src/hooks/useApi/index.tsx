@@ -10,7 +10,7 @@ export type FetchOptions = CustomAxiosRequestConfig & {
   body?: any
 }
 
-function useAxios<T>(fetchOptions: FetchOptions) {
+function useApi<T>(fetchOptions: FetchOptions) {
   const {
     url,
     method = 'GET',
@@ -73,4 +73,4 @@ function useAxios<T>(fetchOptions: FetchOptions) {
   }
 }
 
-export default useAxios
+export { useApi }

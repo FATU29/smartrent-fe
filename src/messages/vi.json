@@ -1,0 +1,71 @@
+{
+  "homePage": {
+    "auth": {
+      "login": {
+        "title": "Đăng nhập",
+        "description": "Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.",
+        "submitButton": "Đăng nhập",
+        "submittingButton": "Đang đăng nhập...",
+        "googleButton": "Đăng nhập với Google",
+        "forgotPassword": "Quên mật khẩu?",
+        "switchToRegister": "Chưa có tài khoản? <u>Đăng ký ngay</u>"
+      },
+      "register": {
+        "title": "Đăng ký",
+        "description": "Tạo tài khoản mới để bắt đầu sử dụng dịch vụ của chúng tôi.",
+        "submitButton": "Đăng ký",
+        "submittingButton": "Đang đăng ký...",
+        "googleButton": "Đăng ký với Google",
+        "switchToLogin": "Đã có tài khoản? <u>Đăng nhập</u>"
+      },
+      "forgotPassword": {
+        "title": "Khôi phục mật khẩu",
+        "description": "Nhập email hoặc số điện thoại để nhận mã xác thực khôi phục mật khẩu.",
+        "submitButton": "Gửi mã",
+        "submittingButton": "Đang gửi...",
+        "switchToLogin": "Nhớ lại mật khẩu? <u>Đăng nhập</u>"
+      },
+      "common": {
+        "password": "Mật khẩu",
+        "hidePassword": "Ẩn mật khẩu",
+        "showPassword": "Hiển thị mật khẩu",
+        "email": "Email",
+        "emailPlaceholder": "Nhập địa chỉ email",
+        "passwordPlaceholder": "Nhập mật khẩu",
+        "phoneNumber": "Số điện thoại",
+        "phoneNumberPlaceholder": "Nhập số điện thoại",
+        "emailOrPhone": "Email hoặc Số điện thoại",
+        "emailOrPhonePlaceholder": "Nhập email hoặc số điện thoại"
+      },
+      "validation": {
+        "passwordRequired": "Mật khẩu là bắt buộc",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+        "passwordPattern": "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường và một số",
+        "emailRequired": "Email là bắt buộc",
+        "emailInvalid": "Địa chỉ email không hợp lệ",
+        "phoneNumberRequired": "Số điện thoại là bắt buộc",
+        "phoneNumberInvalid": "Số điện thoại không hợp lệ",
+        "emailOrPhoneRequired": "Email hoặc số điện thoại là bắt buộc",
+        "emailOrPhoneInvalid": "Email hoặc số điện thoại không hợp lệ"
+      }
+    },
+    "buttons": {
+      "openAuth": "Mở xác thực"
+    },
+    "settings": {
+      "language": {
+        "switch": "Chuyển ngôn ngữ",
+        "vietnamese": "Tiếng Việt",
+        "english": "English"
+      },
+      "theme": {
+        "switch": "Chuyển giao diện",
+        "light": "Sáng",
+        "dark": "Tối"
+      }
+    },
+    "language": {
+      "switch": "Chuyển ngôn ngữ"
+    }
+  }
+}

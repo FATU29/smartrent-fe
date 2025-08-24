@@ -1,5 +1,6 @@
 'use client'
 import setGlobalColorTheme, { ThemeMode } from '@/theme/index.colors'
+import { LocalStorage } from '@/utils/localstorage'
 import { useTheme } from 'next-themes'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
@@ -24,14 +25,14 @@ export default function ThemeDataProvider({ children }: ThemeProviderProps) {
   const setThemeMode = (mode: ThemeMode) => {
     setThemeModeState(mode)
     if (typeof window !== 'undefined') {
-      localStorage.setItem('themeMode', mode)
+      LocalStorage.set('themeMode', mode)
     }
   }
 
-  // Initialize theme from localStorage after mount
+  // Initialize theme from LocalStorage after mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('themeMode') as ThemeMode
+      const savedTheme = LocalStorage.get('themeMode') as ThemeMode
       if (savedTheme) {
         setThemeModeState(savedTheme)
       }
@@ -42,9 +43,9 @@ export default function ThemeDataProvider({ children }: ThemeProviderProps) {
     // Use theme from next-themes if available, otherwise use our state
     const currentTheme = (theme as ThemeMode) || themeMode
 
-    // Save theme mode to localStorage
+    // Save theme mode to LocalStorage
     if (typeof window !== 'undefined') {
-      localStorage.setItem('themeMode', currentTheme)
+      LocalStorage.set('themeMode', currentTheme)
     }
 
     // Apply the global theme
