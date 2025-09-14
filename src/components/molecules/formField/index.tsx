@@ -2,77 +2,97 @@ import * as React from 'react'
 import { Input } from '@/components/atoms/input'
 import { Label } from '@/components/atoms/label'
 import { cn } from '@/lib/utils'
+import { useController, Control } from 'react-hook-form'
 
-interface FormFieldProps extends React.ComponentProps<'input'> {
+interface FormFieldProps {
   label?: string
   error?: string
   required?: boolean
   description?: string
+  name: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: Control<any>
+  placeholder?: string
+  className?: string
+  id?: string
 }
 
 function FormField({
-  label,
-  error,
-  required,
-  description,
-  className,
-  id,
-  ...props
-}: FormFieldProps) {
-  const fieldId = id || label?.toLowerCase().replace(/\s+/g, '-')
+  function FormField({
+    label,
+    error,
+    required,
+    description,
+    name,
+    control,
+    placeholder,
+    className,
+    id,
+  }: FormFieldProps) {
+    const fieldId = id || `form-field-${name}`
 
-  return (
-    <div className='space-y-2'>
-      {label && (
-        <Label
-          htmlFor={fieldId}
-          className={
-            required
-              ? 'after:content-["*"] after:ml-1 after:text-destructive'
-              : ''
-          }
-        >
-          {label}
-        </Label>
-      )}
+    const {
+      field,
+      fieldState: { error: fieldError },
+    } = useController({
+      name,
+      control,
+    })
 
-      <Input
-        id={fieldId}
-        aria-invalid={error ? 'true' : 'false'}
-        aria-describedby={
-          error
-            ? `${fieldId}-error`
-            : description
-              ? `${fieldId}-description`
-              : undefined
-        }
-        className={cn(
-          'h-12',
-          error && 'border-destructive focus-visible:border-destructive',
-          className,
+    const displayError = fieldError?.message || error
+    return (
+      <div className='space-y-2'>
+        {label && (
+          <Label htmlFor={fieldId} required={required}>
+            {label}
+          </Label>
         )}
-        {...props}
-      />
-
-      {description && !error && (
-        <p
-          id={`${fieldId}-description`}
-          className='text-sm text-muted-foreground'
-        >
-          {description}
-        </p>
+        <Input
+          {...field}
+          id={fieldId}
+          placeholder={placeholder}
+          aria-invalid={displayError ? 'true' : 'false'}
+          aria-describedby={
+            displayError
+              ? `${fieldId}-error`
+              : description
+                ? `${fieldId}-description`
+                : undefined
+          }
+          className={cn(
+            'h-12',
+            displayError && 'border-destructive focus-visible:border-destructive',
+            className,
+          )}
+        />
+        {description && !displayError && (
+          <p
+            id={`${fieldId}-description`}
+            className='text-sm text-muted-foreground'
+          >
+            {description}
+          </p>
+        )}
+        {displayError && (
+          <p
+            id={`${fieldId}-error`}
+            className='text-sm text-destructive'
+            role='alert'
+          >
+            {displayError}
+          </p>
+        )}
+      </div>
+    )
+  }
+id = {`${fieldId}-error`}
+className = 'text-sm text-destructive'
+role = 'alert'
+  >
+  { error }
+        </p >
       )}
-
-      {error && (
-        <p
-          id={`${fieldId}-error`}
-          className='text-sm text-destructive'
-          role='alert'
-        >
-          {error}
-        </p>
-      )}
-    </div>
+    </div >
   )
 }
 

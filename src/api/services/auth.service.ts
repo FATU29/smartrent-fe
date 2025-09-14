@@ -4,6 +4,7 @@ import {
   LoginRequest,
   AdminLoginRequest,
   RegisterRequest,
+  ChangePasswordRequest,
   AuthResponse,
   LogoutResponse,
   UserResponse,
@@ -80,16 +81,16 @@ export class AuthService {
 
   static async register(userData: RegisterRequest): Promise<
     | {
-        userId: string
-        phoneCode: string
-        phoneNumber: string
-        email: string
-        password: string
-        firstName: string
-        lastName: string
-        idDocument: string
-        taxNumber: string
-      }
+      userId: string
+      phoneCode: string
+      phoneNumber: string
+      email: string
+      password: string
+      firstName: string
+      lastName: string
+      idDocument: string
+      taxNumber: string
+    }
     | undefined
   > {
     const response = await apiRequest<UserResponse>({
@@ -106,6 +107,26 @@ export class AuthService {
 
     return response?.data
   }
+
+  static async changePassword(
+    passwordData: ChangePasswordRequest,
+  ): Promise<boolean> {
+    const response = await apiRequest<{ code: string }>({
+      method: 'POST',
+      url: ENV.API.USER.CHANGE_PASSWORD,
+      data: passwordData,
+    })
+
+    return response?.code === API_ERROR_CODES.SUCCESS
+  }
 }
 
 export const { login, adminLogin, logout, refreshToken, register } = AuthService
+export const {
+  login,
+  adminLogin,
+  logout,
+  refreshToken,
+  register,
+  changePassword,
+} = AuthService

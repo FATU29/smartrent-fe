@@ -1,0 +1,1610 @@
+From ed75f23f9dada565524adfdfacc5dae9028fccf8 Mon Sep 17 00:00:00 2001
+From: "Nguyen Vu" <vuhuydiettatca@gmail.com>
+Date: Sat, 13 Sep 2025 15:53:02 +0700
+Subject: [PATCH] add user profile settings page, including 2 tabs
+
+
+---
+package-lock.json                             |  31 ++
+package.json                                  |   1 +
+src/api/paths.ts                              |   1 +
+src/api/services/auth.service.ts              |  22 +-
+src/api/types/auth.type.ts                    |   5 +
+src/components/atoms/tabs.tsx                 |  66 ++++
+.../molecules/avatarUpload/index.tsx          | 109 +++++++
+src/components/molecules/formField/index.tsx  |  40 ++-
+.../molecules/passwordChangeForm/index.tsx    | 297 ++++++++++++++++++
+.../molecules/personalInfoForm/index.tsx      | 228 ++++++++++++++
+src/components/molecules/userMenu/index.tsx   |   9 +-
+.../organisms/accountManagement/index.tsx     | 167 ++++++++++
+.../accountManagementTemplate/index.tsx       |  49 +++
+src/hooks/useAuth/index.tsx                   |  36 +++
+src/messages/en.json                          |  67 +++-
+src/messages/vi.json                          |  71 ++++-
+src/pages/account/manage.tsx                  | 122 +++++++
+17 files changed, 1303 insertions(+), 18 deletions(-)
+create mode 100644 src/components/atoms/tabs.tsx
+create mode 100644 src/components/molecules/avatarUpload/index.tsx
+create mode 100644 src/components/molecules/passwordChangeForm/index.tsx
+create mode 100644 src/components/molecules/personalInfoForm/index.tsx
+create mode 100644 src/components/organisms/accountManagement/index.tsx
+create mode 100644 src/components/templates/accountManagementTemplate/index.tsx
+create mode 100644 src/pages/account/manage.tsx
+
+
+diff --git a/package-lock.json b/package-lock.json
+index 05f64a2..c88fafc 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -18,6 +18,7 @@
+        "@radix-ui/react-separator": "^1.1.7",
+        "@radix-ui/react-slider": "^1.3.6",
+        "@radix-ui/react-slot": "^1.2.3",
++        "@radix-ui/react-tabs": "^1.1.13",
+        "@radix-ui/react-tooltip": "^1.2.8",
+        "axios": "^1.11.0",
+        "class-variance-authority": "^0.7.1",
+@@ -2104,6 +2105,36 @@
+        }
+      }
+    },
++    "node_modules/@radix-ui/react-tabs": {
++      "version": "1.1.13",
++      "resolved": "https://registry.npmjs.org/@radix-ui/react-tabs/-/react-tabs-1.1.13.tgz",
++      "integrity": "sha512-7xdcatg7/U+7+Udyoj2zodtI9H/IIopqo+YOIcZOq1nJwXWBZ9p8xiu5llXlekDbZkca79a/fozEYQXIA4sW6A==",
++      "license": "MIT",
++      "dependencies": {
++        "@radix-ui/primitive": "1.1.3",
++        "@radix-ui/react-context": "1.1.2",
++        "@radix-ui/react-direction": "1.1.1",
++        "@radix-ui/react-id": "1.1.1",
++        "@radix-ui/react-presence": "1.1.5",
++        "@radix-ui/react-primitive": "2.1.3",
++        "@radix-ui/react-roving-focus": "1.1.11",
++        "@radix-ui/react-use-controllable-state": "1.2.2"
++      },
++      "peerDependencies": {
++        "@types/react": "*",
++        "@types/react-dom": "*",
++        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
++        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
++      },
++      "peerDependenciesMeta": {
++        "@types/react": {
++          "optional": true
++        },
++        "@types/react-dom": {
++          "optional": true
++        }
++      }
++    },
+    "node_modules/@radix-ui/react-tooltip": {
+      "version": "1.2.8",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-tooltip/-/react-tooltip-1.2.8.tgz",
+diff --git a/package.json b/package.json
+index 6342fd4..ab244ff 100644
+--- a/package.json
++++ b/package.json
+@@ -26,6 +26,7 @@
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slider": "^1.3.6",
+    "@radix-ui/react-slot": "^1.2.3",
++    "@radix-ui/react-tabs": "^1.1.13",
+    "@radix-ui/react-tooltip": "^1.2.8",
+    "axios": "^1.11.0",
+    "class-variance-authority": "^0.7.1",
+diff --git a/src/api/paths.ts b/src/api/paths.ts
+index 1e7f52c..b144612 100644
+--- a/src/api/paths.ts
++++ b/src/api/paths.ts
+@@ -12,6 +12,7 @@ export const PATHS = {
+    CREATE: '/v1/users',
+    PROFILE: '/v1/users/profile',
+    UPDATE: '/v1/users/update',
++    CHANGE_PASSWORD: '/v1/users/change-password',
+  },
+  // Property endpoints
+diff --git a/src/api/services/auth.service.ts b/src/api/services/auth.service.ts
+index d4d3986..05d2d9d 100644
+--- a/src/api/services/auth.service.ts
++++ b/src/api/services/auth.service.ts
+@@ -4,6 +4,7 @@ import {
+  LoginRequest,
+  AdminLoginRequest,
+  RegisterRequest,
++  ChangePasswordRequest,
+  AuthResponse,
+  LogoutResponse,
+  UserResponse,
+@@ -106,6 +107,25 @@ export class AuthService {
+    return response?.data
+  }
++
++  static async changePassword(
++    passwordData: ChangePasswordRequest,
++  ): Promise<boolean> {
++    const response = await apiRequest<{ code: string }>({
++      method: 'POST',
++      url: ENV.API.USER.CHANGE_PASSWORD,
++      data: passwordData,
++    })
++
++    return response?.code === API_ERROR_CODES.SUCCESS
++  }
+}
+-export const { login, adminLogin, logout, refreshToken, register } = AuthService
++export const {
++  login,
++  adminLogin,
++  logout,
++  refreshToken,
++  register,
++  changePassword,
++} = AuthService
+diff --git a/src/api/types/auth.type.ts b/src/api/types/auth.type.ts
+index 286c3ed..bc42708 100644
+--- a/src/api/types/auth.type.ts
++++ b/src/api/types/auth.type.ts
+@@ -28,6 +28,11 @@ export interface RegisterRequest {
+  taxNumber: string
+}
++export interface ChangePasswordRequest {
++  currentPassword: string
++  newPassword: string
++}
++
+// Auth API Response Types
+export interface AuthTokens {
+  accessToken: string
+diff --git a/src/components/atoms/tabs.tsx b/src/components/atoms/tabs.tsx
+new file mode 100644
+index 0000000..494157d
+--- /dev/null
++++ b/src/components/atoms/tabs.tsx
+@@ -0,0 +1,66 @@
++import * as React from 'react'
++import * as TabsPrimitive from '@radix-ui/react-tabs'
++import { cn } from '@/lib/utils'
++
++function Tabs({
++  className,
++  ...props
++}: React.ComponentProps<typeof TabsPrimitive.Root>) {
++  return (
++    <TabsPrimitive.Root
++      data-slot='tabs'
++      className={cn('w-full', className)}
++      {...props}
++    />
++  )
++}
++
++function TabsList({
++  className,
++  ...props
++}: React.ComponentProps<typeof TabsPrimitive.List>) {
++  return (
++    <TabsPrimitive.List
++      data-slot='tabs-list'
++      className={cn(
++        'inline-flex h-10 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground',
++        className,
++      )}
++      {...props}
++    />
++  )
++}
++
++function TabsTrigger({
++  className,
++  ...props
++}: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
++  return (
++    <TabsPrimitive.Trigger
++      data-slot='tabs-trigger'
++      className={cn(
++        'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
++        className,
++      )}
++      {...props}
++    />
++  )
++}
++
++function TabsContent({
++  className,
++  ...props
++}: React.ComponentProps<typeof TabsPrimitive.Content>) {
++  return (
++    <TabsPrimitive.Content
++      data-slot='tabs-content'
++      className={cn(
++        'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
++        className,
++      )}
++      {...props}
++    />
++  )
++}
++
++export { Tabs, TabsList, TabsTrigger, TabsContent }
+diff --git a/src/components/molecules/avatarUpload/index.tsx b/src/components/molecules/avatarUpload/index.tsx
+new file mode 100644
+index 0000000..9ae82fd
+--- /dev/null
++++ b/src/components/molecules/avatarUpload/index.tsx
+@@ -0,0 +1,109 @@
++import * as React from 'react'
++import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
++import { Button } from '@/components/atoms/button'
++import { Camera, Upload } from 'lucide-react'
++import { cn } from '@/lib/utils'
++import { useTranslations } from 'next-intl'
++
++interface AvatarUploadProps {
++  currentImage?: string
++  name?: string
++  onImageChange?: (file: File | null) => void
++  className?: string
++  size?: 'sm' | 'md' | 'lg'
++}
++
++const AvatarUpload: React.FC<AvatarUploadProps> = ({
++  currentImage,
++  name = '',
++  onImageChange,
++  className,
++  size = 'lg',
++}) => {
++  const t = useTranslations()
++  const [preview, setPreview] = React.useState<string | null>(
++    currentImage || null,
++  )
++  const fileInputRef = React.useRef<HTMLInputElement>(null)
++
++  const sizeClasses = {
++    sm: 'size-16',
++    md: 'size-24',
++    lg: 'size-32',
++  }
++
++  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
++    const file = event.target.files?.[0]
++    if (file) {
++      // Create preview
++      const reader = new FileReader()
++      reader.onloadend = () => {
++        setPreview(reader.result as string)
++      }
++      reader.readAsDataURL(file)
++
++      // Notify parent component
++      onImageChange?.(file)
++    }
++  }
++
++  const handleUploadClick = () => {
++    fileInputRef.current?.click()
++  }
++
++  const getInitials = (fullName: string) => {
++    return fullName
++      .split(' ')
++      .map((n) => n[0])
++      .join('')
++      .toUpperCase()
++      .slice(0, 2)
++  }
++
++  return (
++    <div className={cn('flex flex-col items-center gap-4', className)}>
++      <div className='relative group'>
++        <Avatar className={cn(sizeClasses[size])}>
++          <AvatarImage src={preview || currentImage} alt={name} />
++          <AvatarFallback className='text-lg font-semibold'>
++            {getInitials(name)}
++          </AvatarFallback>
++        </Avatar>
++
++        {/* Overlay button on hover */}
++        <div className='absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center'>
++          <Button
++            type='button'
++            variant='ghost'
++            size='icon'
++            className='text-white hover:text-white hover:bg-white/20'
++            onClick={handleUploadClick}
++          >
++            <Camera className='h-6 w-6' />
++          </Button>
++        </div>
++      </div>
++
++      <Button
++        type='button'
++        variant='outline'
++        size='sm'
++        onClick={handleUploadClick}
++        className='gap-2'
++      >
++        <Upload className='h-4 w-4' />
++        {t('homePage.auth.accountManagement.personalInfo.avatarUpload')}
++      </Button>
++
++      <input
++        ref={fileInputRef}
++        type='file'
++        accept='image/*'
++        onChange={handleFileChange}
++        className='hidden'
++      />
++    </div>
++  )
++}
++
++export { AvatarUpload }
+diff --git a/src/components/molecules/formField/index.tsx b/src/components/molecules/formField/index.tsx
+index 616dc86..6be8e66 100644
+--- a/src/components/molecules/formField/index.tsx
++++ b/src/components/molecules/formField/index.tsx
+@@ -2,12 +2,19 @@ import * as React from 'react'
+import { Input } from '@/components/atoms/input'
+import { Label } from '@/components/atoms/label'
+import { cn } from '@/lib/utils'
++import { useController, Control } from 'react-hook-form'
+-interface FormFieldProps extends React.ComponentProps<'input'> {
++interface FormFieldProps {
+  label?: string
+  error?: string
+  required?: boolean
+  description?: string
++  name: string
++  // eslint-disable-next-line @typescript-eslint/no-explicit-any
++  control: Control<any>
++  placeholder?: string
++  className?: string
++  id?: string
+}
+function FormField({
+@@ -15,11 +22,23 @@ function FormField({
+  error,
+  required,
+  description,
++  name,
++  control,
++  placeholder,
+  className,
+  id,
+-  ...props
+}: FormFieldProps) {
+-  const fieldId = id || label?.toLowerCase().replace(/\s+/g, '-')
++  const fieldId = id || `form-field-${name}`
++
++  const {
++    field,
++    fieldState: { error: fieldError },
++  } = useController({
++    name,
++    control,
++  })
++
++  const displayError = fieldError?.message || error
+  return (
+    <div className='space-y-2'>
+@@ -37,10 +56,12 @@ function FormField({
+      )}
+      <Input
++        {...field}
+        id={fieldId}
+-        aria-invalid={error ? 'true' : 'false'}
++        placeholder={placeholder}
++        aria-invalid={displayError ? 'true' : 'false'}
+        aria-describedby={
+-          error
++          displayError
+            ? `${fieldId}-error`
+            : description
+              ? `${fieldId}-description`
+@@ -48,13 +69,12 @@ function FormField({
+        }
+        className={cn(
+          'h-12',
+-          error && 'border-destructive focus-visible:border-destructive',
++          displayError && 'border-destructive focus-visible:border-destructive',
+          className,
+        )}
+-        {...props}
+      />
+-      {description && !error && (
++      {description && !displayError && (
+        <p
+          id={`${fieldId}-description`}
+          className='text-sm text-muted-foreground'
+@@ -63,13 +83,13 @@ function FormField({
+        </p>
+      )}
+-      {error && (
++      {displayError && (
+        <p
+          id={`${fieldId}-error`}
+          className='text-sm text-destructive'
+          role='alert'
+        >
+-          {error}
++          {displayError}
+        </p>
+      )}
+    </div>
+diff --git a/src/components/molecules/passwordChangeForm/index.tsx b/src/components/molecules/passwordChangeForm/index.tsx
+new file mode 100644
+index 0000000..88d8637
+--- /dev/null
++++ b/src/components/molecules/passwordChangeForm/index.tsx
+@@ -0,0 +1,297 @@
++import * as React from 'react'
++import { useForm } from 'react-hook-form'
++import { yupResolver } from '@hookform/resolvers/yup'
++import * as yup from 'yup'
++import { useTranslations } from 'next-intl'
++import { Button } from '@/components/atoms/button'
++import { Card } from '@/components/atoms/card'
++import { Typography } from '@/components/atoms/typography'
++import { PasswordField } from '../passwordField'
++import { Lock, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
++import { cn } from '@/lib/utils'
++import { Separator } from '@/components/atoms/separator'
++import { VALIDATION_PATTERNS } from '@/api/types/auth.type'
++
++type PasswordChangeFormData = {
++  currentPassword: string
++  newPassword: string
++  confirmPassword: string
++}
++
++type PasswordChangeFormProps = {
++  onSubmit?: (data: PasswordChangeFormData) => void
++  loading?: boolean
++  className?: string
++}
++
++const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({
++  onSubmit,
++  loading = false,
++  className,
++}) => {
++  const t = useTranslations()
++  const [showRequirements, setShowRequirements] = React.useState(false)
++  const [showAccountActions, setShowAccountActions] = React.useState(false)
++
++  const validationSchema = yup.object({
++    currentPassword: yup
++      .string()
++      .required(t('homePage.auth.validation.currentPasswordRequired')),
++    newPassword: yup
++      .string()
++      .required(t('homePage.auth.validation.newPasswordRequired'))
++      .min(8, t('homePage.auth.validation.newPasswordMinLength'))
++      .matches(
++        VALIDATION_PATTERNS.PASSWORD,
++        t('homePage.auth.validation.passwordPattern'),
++      ),
++    confirmPassword: yup
++      .string()
++      .required(t('homePage.auth.validation.confirmPasswordRequired'))
++      .oneOf(
++        [yup.ref('newPassword')],
++        t('homePage.auth.validation.confirmPasswordMatch'),
++      ),
++  })
++
++  const {
++    control,
++    handleSubmit,
++    watch,
++    formState: { errors, isValid },
++  } = useForm<PasswordChangeFormData>({
++    resolver: yupResolver(validationSchema),
++    defaultValues: {
++      currentPassword: '',
++      newPassword: '',
++      confirmPassword: '',
++    },
++    mode: 'onChange',
++  })
++
++  const newPassword = watch('newPassword')
++
++  const handleFormSubmit = (data: PasswordChangeFormData) => {
++    onSubmit?.(data)
++  }
++
++  const getPasswordStrength = (password: string) => {
++    const requirements = [
++      {
++        text: t(
++          'homePage.auth.accountManagement.passwordChange.requirements.minLength',
++        ),
++        met: password.length >= 8,
++      },
++      {
++        text: t(
++          'homePage.auth.accountManagement.passwordChange.requirements.lowercase',
++        ),
++        met: /[a-z]/.test(password),
++      },
++      {
++        text: t(
++          'homePage.auth.accountManagement.passwordChange.requirements.number',
++        ),
++        met: /[0-9]/.test(password),
++      },
++    ]
++    return requirements
++  }
++
++  const requirements = getPasswordStrength(newPassword || '')
++
++  return (
++    <Card className={cn('p-6', className)}>
++      <div className='space-y-6'>
++        {/* Header */}
++        <div className='flex items-center gap-3'>
++          <Lock className='h-5 w-5 text-primary' />
++          <Typography variant='h3' className='text-lg font-semibold'>
++            {t('homePage.auth.accountManagement.passwordChange.title')}
++          </Typography>
++        </div>
++
++        <form onSubmit={handleSubmit(handleFormSubmit)} className='space-y-4'>
++          <PasswordField
++            name='currentPassword'
++            control={control}
++            label={t(
++              'homePage.auth.accountManagement.passwordChange.currentPassword',
++            )}
++            placeholder={t('homePage.auth.common.passwordPlaceholder')}
++            error={errors.currentPassword?.message}
++          />
++
++          <PasswordField
++            name='newPassword'
++            control={control}
++            label={t(
++              'homePage.auth.accountManagement.passwordChange.newPassword',
++            )}
++            placeholder={t('homePage.auth.common.passwordPlaceholder')}
++            error={errors.newPassword?.message}
++          />
++
++          <PasswordField
++            name='confirmPassword'
++            control={control}
++            label={t(
++              'homePage.auth.accountManagement.passwordChange.confirmPassword',
++            )}
++            placeholder={t('homePage.auth.register.confirmPasswordPlaceholder')}
++            error={errors.confirmPassword?.message}
++          />
++
++          <div className='flex justify-end pt-2'>
++            <Button
++              type='submit'
++              disabled={!isValid || loading}
++              className='min-w-[120px]'
++            >
++              {loading
++                ? t('homePage.auth.accountManagement.passwordChange.saving')
++                : t(
++                    'homePage.auth.accountManagement.passwordChange.saveChanges',
++                  )}
++            </Button>
++          </div>
++        </form>
++
++        <Separator />
++
++        {/* Password Requirements */}
++        <div className='space-y-3'>
++          <button
++            type='button'
++            onClick={() => setShowRequirements(!showRequirements)}
++            className='flex items-center justify-between w-full text-left'
++          >
++            <Typography variant='h4' className='font-medium text-foreground'>
++              {t(
++                'homePage.auth.accountManagement.passwordChange.passwordRequirements',
++              )}
++            </Typography>
++            {showRequirements ? (
++              <ChevronUp className='h-4 w-4' />
++            ) : (
++              <ChevronDown className='h-4 w-4' />
++            )}
++          </button>
++
++          {showRequirements && (
++            <div className='space-y-2 pl-4'>
++              {requirements.map((req, index) => (
++                <div key={index} className='flex items-center gap-2'>
++                  <div
++                    className={cn(
++                      'h-2 w-2 rounded-full',
++                      req.met ? 'bg-green-500' : 'bg-gray-300',
++                    )}
++                  />
++                  <Typography
++                    variant='small'
++                    className={cn(
++                      req.met ? 'text-green-600' : 'text-muted-foreground',
++                    )}
++                  >
++                    {req.text}
++                  </Typography>
++                </div>
++              ))}
++            </div>
++          )}
++        </div>
++
++        <Separator />
++
++        {/* Account Actions */}
++        <div className='space-y-3'>
++          <button
++            type='button'
++            onClick={() => setShowAccountActions(!showAccountActions)}
++            className='flex items-center justify-between w-full text-left'
++          >
++            <Typography variant='h4' className='font-medium text-foreground'>
++              {t(
++                'homePage.auth.accountManagement.passwordChange.accountActions',
++              )}
++            </Typography>
++            {showAccountActions ? (
++              <ChevronUp className='h-4 w-4' />
++            ) : (
++              <ChevronDown className='h-4 w-4' />
++            )}
++          </button>
++
++          {showAccountActions && (
++            <div className='space-y-4 pl-4'>
++              <div className='flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800'>
++                <AlertTriangle className='h-5 w-5 text-amber-600 mt-0.5' />
++                <div className='space-y-2'>
++                  <Typography
++                    variant='small'
++                    className='text-amber-800 dark:text-amber-200'
++                  >
++                    <strong>
++                      {t(
++                        'homePage.auth.accountManagement.passwordChange.warningTitle',
++                      )}
++                    </strong>
++                  </Typography>
++                  <ul className='space-y-1 text-sm text-amber-700 dark:text-amber-300'>
++                    <li>
++                      •{' '}
++                      {t(
++                        'homePage.auth.accountManagement.passwordChange.warnings.invoice',
++                      )}
++                    </li>
++                    <li>
++                      •{' '}
++                      {t(
++                        'homePage.auth.accountManagement.passwordChange.warnings.accuracy',
++                      )}
++                    </li>
++                    <li>
++                      •{' '}
++                      {t(
++                        'homePage.auth.accountManagement.passwordChange.warnings.timing',
++                      )}
++                    </li>
++                    <li>
++                      •{' '}
++                      {t(
++                        'homePage.auth.accountManagement.passwordChange.warnings.service',
++                      )}
++                    </li>
++                    <li>
++                      •{' '}
++                      {t(
++                        'homePage.auth.accountManagement.passwordChange.warnings.support',
++                      )}
++                    </li>
++                  </ul>
++                </div>
++              </div>
++
++              <div className='flex gap-3'>
++                <Button variant='outline' className='flex-1'>
++                  {t(
++                    'homePage.auth.accountManagement.passwordChange.lockAccount',
++                  )}
++                </Button>
++                <Button variant='destructive' className='flex-1'>
++                  {t(
++                    'homePage.auth.accountManagement.passwordChange.deleteAccount',
++                  )}
++                </Button>
++              </div>
++            </div>
++          )}
++        </div>
++      </div>
++    </Card>
++  )
++}
++
++export { PasswordChangeForm }
+diff --git a/src/components/molecules/personalInfoForm/index.tsx b/src/components/molecules/personalInfoForm/index.tsx
+new file mode 100644
+index 0000000..eb2b32f
+--- /dev/null
++++ b/src/components/molecules/personalInfoForm/index.tsx
+@@ -0,0 +1,228 @@
++import * as React from 'react'
++import { useForm } from 'react-hook-form'
++import { yupResolver } from '@hookform/resolvers/yup'
++import * as yup from 'yup'
++import { useTranslations } from 'next-intl'
++import { Button } from '@/components/atoms/button'
++import { Card } from '@/components/atoms/card'
++import { Typography } from '@/components/atoms/typography'
++import { EmailField } from '../emailField'
++import { PhoneField } from '../phoneField'
++import { FormField } from '../formField'
++import { AvatarUpload } from '../avatarUpload'
++import { User } from 'lucide-react'
++import { cn } from '@/lib/utils'
++import { VALIDATION_PATTERNS } from '@/api/types/auth.type'
++
++type PersonalInfoFormData = {
++  firstName: string
++  lastName: string
++  email: string
++  phoneNumber: string
++  idDocument: string
++  taxNumber?: string
++  avatar?: File
++}
++
++type PersonalInfoFormProps = {
++  initialData?: Partial<PersonalInfoFormData>
++  onSubmit?: (data: PersonalInfoFormData) => void
++  loading?: boolean
++  className?: string
++}
++
++const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
++  initialData,
++  onSubmit,
++  loading = false,
++  className,
++}) => {
++  const t = useTranslations()
++
++  const validationSchema = yup.object().shape({
++    firstName: yup
++      .string()
++      .required(t('homePage.auth.validation.firstNameRequired'))
++      .min(2, t('homePage.auth.validation.firstNameMinLength')),
++    lastName: yup
++      .string()
++      .required(t('homePage.auth.validation.lastNameRequired'))
++      .min(2, t('homePage.auth.validation.lastNameMinLength')),
++    email: yup
++      .string()
++      .required(t('homePage.auth.validation.emailRequired'))
++      .matches(
++        VALIDATION_PATTERNS.EMAIL,
++        t('homePage.auth.validation.emailInvalid'),
++      ),
++    phoneNumber: yup
++      .string()
++      .required(t('homePage.auth.validation.phoneNumberRequired'))
++      .matches(/^[0-9+\-\s()]+$/, t('homePage.auth.validation.phoneInvalid')),
++    idDocument: yup
++      .string()
++      .required(t('homePage.auth.validation.idDocumentRequired'))
++      .min(9, t('homePage.auth.validation.idDocumentMinLength')),
++    taxNumber: yup
++      .string()
++      .optional()
++      .matches(/^[0-9\-]*$/, t('homePage.auth.validation.taxNumberInvalid')),
++    avatar: yup.mixed().optional(),
++  })
++
++  const {
++    control,
++    handleSubmit,
++    setValue,
++    watch,
++    formState: { errors, isValid },
++  } = useForm<PersonalInfoFormData>({
++    resolver: yupResolver(validationSchema) as any,
++    defaultValues: {
++      firstName: initialData?.firstName || '',
++      lastName: initialData?.lastName || '',
++      email: initialData?.email || '',
++      phoneNumber: initialData?.phoneNumber || '',
++      idDocument: initialData?.idDocument || '',
++      taxNumber: initialData?.taxNumber || '',
++    },
++    mode: 'onChange',
++  })
++
++  const watchedValues = watch()
++  const fullName = `${watchedValues.firstName} ${watchedValues.lastName}`.trim()
++
++  const handleAvatarChange = (file: File | null) => {
++    setValue('avatar', file || undefined)
++  }
++
++  const handleFormSubmit = (data: PersonalInfoFormData) => {
++    onSubmit?.(data)
++  }
++
++  return (
++    <Card className={cn('p-6', className)}>
++      <div className='space-y-6'>
++        {/* Header */}
++        <div className='flex items-center gap-3'>
++          <User className='h-5 w-5 text-primary' />
++          <Typography variant='h3' className='text-lg font-semibold'>
++            {t('homePage.auth.accountManagement.personalInfo.title')}
++          </Typography>
++        </div>
++
++        <form
++          onSubmit={handleSubmit(handleFormSubmit as any)}
++          className='space-y-6'
++        >
++          {/* Avatar Upload */}
++          <div className='flex justify-center'>
++            <AvatarUpload
++              name={fullName}
++              onImageChange={handleAvatarChange}
++              size='lg'
++            />
++          </div>
++
++          {/* Name Fields */}
++          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
++            <FormField
++              name='firstName'
++              control={control}
++              label={t(
++                'homePage.auth.accountManagement.personalInfo.firstName',
++              )}
++              placeholder={t('homePage.auth.register.firstNamePlaceholder')}
++              error={errors.firstName?.message}
++            />
++            <FormField
++              name='lastName'
++              control={control}
++              label={t('homePage.auth.accountManagement.personalInfo.lastName')}
++              placeholder={t('homePage.auth.register.lastNamePlaceholder')}
++              error={errors.lastName?.message}
++              className='md:mt-6'
++            />
++          </div>
++
++          {/* Contact Information */}
++          <div className='space-y-4'>
++            <Typography variant='h4' className='font-medium text-foreground'>
++              {t('homePage.auth.accountManagement.personalInfo.contactInfo')}
++            </Typography>
++
++            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
++              <PhoneField
++                name='phoneNumber'
++                control={control}
++                label={t(
++                  'homePage.auth.accountManagement.personalInfo.phoneNumber',
++                )}
++                placeholder={t('homePage.auth.common.phoneNumberPlaceholder')}
++                error={errors.phoneNumber?.message}
++              />
++              <EmailField
++                name='email'
++                control={control}
++                label={t('homePage.auth.accountManagement.personalInfo.email')}
++                placeholder={t('homePage.auth.common.emailPlaceholder')}
++                error={errors.email?.message}
++              />
++            </div>
++          </div>
++
++          {/* Business Information */}
++          <div className='space-y-4'>
++            <Typography variant='h4' className='font-medium text-foreground'>
++              {t('homePage.auth.accountManagement.personalInfo.businessInfo')}
++            </Typography>
++
++            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
++              <FormField
++                name='idDocument'
++                control={control}
++                label={t(
++                  'homePage.auth.accountManagement.personalInfo.idDocument',
++                )}
++                placeholder={t('homePage.auth.register.idDocumentPlaceholder')}
++                error={errors.idDocument?.message}
++              />
++              <FormField
++                name='taxNumber'
++                control={control}
++                label={t(
++                  'homePage.auth.accountManagement.personalInfo.taxNumber',
++                )}
++                placeholder={t('homePage.auth.register.taxNumberPlaceholder')}
++                error={errors.taxNumber?.message}
++              />
++            </div>
++
++            <FormField
++              name='address'
++              control={control}
++              label={t('homePage.auth.accountManagement.personalInfo.address')}
++              placeholder='Việt Nam'
++              className='md:col-span-2'
++            />
++          </div>
++
++          {/* Submit Button */}
++          <div className='flex justify-end pt-4'>
++            <Button
++              type='submit'
++              disabled={!isValid || loading}
++              className='min-w-[120px]'
++            >
++              {loading
++                ? t('homePage.auth.accountManagement.personalInfo.saving')
++                : t('homePage.auth.accountManagement.personalInfo.saveChanges')}
++            </Button>
++          </div>
++        </form>
++      </div>
++    </Card>
++  )
++}
++
++export { PersonalInfoForm }
+diff --git a/src/components/molecules/userMenu/index.tsx b/src/components/molecules/userMenu/index.tsx
+index 190f80c..d18f12c 100644
+--- a/src/components/molecules/userMenu/index.tsx
++++ b/src/components/molecules/userMenu/index.tsx
+@@ -1,4 +1,5 @@
+import { NextPage } from 'next'
++import Link from 'next/link'
+import { Button } from '@/components/atoms/button'
+import { Typography } from '@/components/atoms/typography'
+import { Avatar } from '@/components/atoms/avatar'
+@@ -60,9 +61,11 @@ const UserMenu: NextPage = () => {
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+-        <DropdownMenuItem>
+-          <User className='mr-2 h-4 w-4' />
+-          <span>{t('homePage.auth.profile')}</span>
++        <DropdownMenuItem asChild>
++          <Link href='/account/manage'>
++            <User className='mr-2 h-4 w-4' />
++            <span>{t('navigation.accountManagement')}</span>
++          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Settings className='mr-2 h-4 w-4' />
+diff --git a/src/components/organisms/accountManagement/index.tsx b/src/components/organisms/accountManagement/index.tsx
+new file mode 100644
+index 0000000..96cbfb8
+--- /dev/null
++++ b/src/components/organisms/accountManagement/index.tsx
+@@ -0,0 +1,167 @@
++import * as React from 'react'
++import { NextPage } from 'next'
++import {
++  Tabs,
++  TabsContent,
++  TabsList,
++  TabsTrigger,
++} from '@/components/atoms/tabs'
++import { PersonalInfoForm } from '@/components/molecules/personalInfoForm'
++import { PasswordChangeForm } from '@/components/molecules/passwordChangeForm'
++import { Card } from '@/components/atoms/card'
++import { Typography } from '@/components/atoms/typography'
++import { User, Lock, Settings } from 'lucide-react'
++import { cn } from '@/lib/utils'
++import { useTranslations } from 'next-intl'
++import { toast } from 'sonner'
++
++type PersonalInfoData = {
++  firstName: string
++  lastName: string
++  email: string
++  phoneNumber: string
++  idDocument: string
++  taxNumber?: string
++  avatar?: File
++}
++
++type PasswordChangeData = {
++  currentPassword: string
++  newPassword: string
++  confirmPassword: string
++}
++
++type AccountManagementProps = {
++  initialUserData?: Partial<PersonalInfoData>
++  onPersonalInfoUpdate?: (data: PersonalInfoData) => Promise<boolean>
++  onPasswordChange?: (data: PasswordChangeData) => Promise<boolean>
++  className?: string
++}
++
++const AccountManagement: NextPage<AccountManagementProps> = ({
++  initialUserData,
++  onPersonalInfoUpdate,
++  onPasswordChange,
++  className,
++}) => {
++  const t = useTranslations()
++  const [activeTab, setActiveTab] = React.useState('personal-info')
++  const [isUpdatingPersonalInfo, setIsUpdatingPersonalInfo] =
++    React.useState(false)
++  const [isChangingPassword, setIsChangingPassword] = React.useState(false)
++
++  const handlePersonalInfoSubmit = async (data: PersonalInfoData) => {
++    if (!onPersonalInfoUpdate) {
++      toast.error(
++        t('homePage.auth.accountManagement.personalInfo.updateNotImplemented'),
++      )
++      return
++    }
++
++    try {
++      setIsUpdatingPersonalInfo(true)
++      const success = await onPersonalInfoUpdate(data)
++
++      if (success) {
++        toast.success(
++          t('homePage.auth.accountManagement.personalInfo.updateSuccess'),
++        )
++      } else {
++        toast.error(
++          t('homePage.auth.accountManagement.personalInfo.updateError'),
++        )
++      }
++    } catch (error) {
++      console.error('Personal info update error:', error)
++      toast.error(
++        t('homePage.auth.accountManagement.personalInfo.updateErrorGeneral'),
++      )
++    } finally {
++      setIsUpdatingPersonalInfo(false)
++    }
++  }
++
++  const handlePasswordChangeSubmit = async (data: PasswordChangeData) => {
++    if (!onPasswordChange) {
++      toast.error(
++        t(
++          'homePage.auth.accountManagement.passwordChange.changeNotImplemented',
++        ),
++      )
++      return
++    }
++
++    try {
++      setIsChangingPassword(true)
++      const success = await onPasswordChange(data)
++
++      if (success) {
++        toast.success(
++          t('homePage.auth.accountManagement.passwordChange.changeSuccess'),
++        )
++      } else {
++        toast.error(
++          t('homePage.auth.accountManagement.passwordChange.changeError'),
++        )
++      }
++    } catch (error) {
++      console.error('Password change error:', error)
++      toast.error(
++        t('homePage.auth.accountManagement.passwordChange.changeErrorGeneral'),
++      )
++    } finally {
++      setIsChangingPassword(false)
++    }
++  }
++
++  return (
++    <div className={cn('w-full max-w-4xl mx-auto', className)}>
++      {/* Header */}
++      <Card className='p-6 mb-6'>
++        <div className='flex items-center gap-3'>
++          <Settings className='h-6 w-6 text-primary' />
++          <Typography variant='h2' className='text-xl font-bold'>
++            {t('homePage.auth.accountManagement.title')}
++          </Typography>
++        </div>
++      </Card>
++
++      {/* Tabs */}
++      <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
++        <TabsList className='grid w-full grid-cols-2 mb-6'>
++          <TabsTrigger
++            value='personal-info'
++            className='flex items-center gap-2'
++          >
++            <User className='h-4 w-4' />
++            {t('homePage.auth.accountManagement.personalInfoTab')}
++          </TabsTrigger>
++          <TabsTrigger
++            value='account-settings'
++            className='flex items-center gap-2'
++          >
++            <Lock className='h-4 w-4' />
++            {t('homePage.auth.accountManagement.accountSettingsTab')}
++          </TabsTrigger>
++        </TabsList>
++
++        <TabsContent value='personal-info' className='space-y-6'>
++          <PersonalInfoForm
++            initialData={initialUserData}
++            onSubmit={handlePersonalInfoSubmit}
++            loading={isUpdatingPersonalInfo}
++          />
++        </TabsContent>
++
++        <TabsContent value='account-settings' className='space-y-6'>
++          <PasswordChangeForm
++            onSubmit={handlePasswordChangeSubmit}
++            loading={isChangingPassword}
++          />
++        </TabsContent>
++      </Tabs>
++    </div>
++  )
++}
++
++export default AccountManagement
+diff --git a/src/components/templates/accountManagementTemplate/index.tsx b/src/components/templates/accountManagementTemplate/index.tsx
+new file mode 100644
+index 0000000..e5ce7c7
+--- /dev/null
++++ b/src/components/templates/accountManagementTemplate/index.tsx
+@@ -0,0 +1,49 @@
++import * as React from 'react'
++import { NextPage } from 'next'
++import AccountManagement from '@/components/organisms/accountManagement'
++import { cn } from '@/lib/utils'
++
++type PersonalInfoData = {
++  firstName: string
++  lastName: string
++  email: string
++  phoneNumber: string
++  idDocument: string
++  taxNumber?: string
++  avatar?: File
++}
++
++type PasswordChangeData = {
++  currentPassword: string
++  newPassword: string
++  confirmPassword: string
++}
++
++type AccountManagementTemplateProps = {
++  initialUserData?: Partial<PersonalInfoData>
++  onPersonalInfoUpdate?: (data: PersonalInfoData) => Promise<boolean>
++  onPasswordChange?: (data: PasswordChangeData) => Promise<boolean>
++  className?: string
++}
++
++const AccountManagementTemplate: NextPage<AccountManagementTemplateProps> = ({
++  initialUserData,
++  onPersonalInfoUpdate,
++  onPasswordChange,
++  className,
++}) => {
++  return (
++    <div className={cn('min-h-screen bg-background', className)}>
++      {/* Main Content */}
++      <main className='container mx-auto px-4 py-8'>
++        <AccountManagement
++          initialUserData={initialUserData}
++          onPersonalInfoUpdate={onPersonalInfoUpdate}
++          onPasswordChange={onPasswordChange}
++        />
++      </main>
++    </div>
++  )
++}
++
++export default AccountManagementTemplate
+diff --git a/src/hooks/useAuth/index.tsx b/src/hooks/useAuth/index.tsx
+index d541864..464ed9e 100644
+--- a/src/hooks/useAuth/index.tsx
++++ b/src/hooks/useAuth/index.tsx
+@@ -253,3 +253,39 @@ export const useTokenRefresh = () => {
+  return { refreshAuthTokens }
+}
++
++export const useChangePassword = () => {
++  const { setLoading, setError } = useAuthStore()
++
++  const changePassword = useCallback(
++    async (currentPassword: string, newPassword: string) => {
++      try {
++        setLoading(true)
++        setError(null)
++
++        const success = await AuthService.changePassword({
++          currentPassword,
++          newPassword,
++        })
++
++        if (success) {
++          return { success: true }
++        } else {
++          return { success: false, error: 'Password change failed' }
++        }
++      } catch (error: any) {
++        const errorMessage =
++          error.response?.data?.message ||
++          error.message ||
++          'Password change failed'
++        setError(errorMessage)
++        return { success: false, error: errorMessage }
++      } finally {
++        setLoading(false)
++      }
++    },
++    [setLoading, setError],
++  )
++
++  return { changePassword }
++}
+diff --git a/src/messages/en.json b/src/messages/en.json
+index 21ee416..a4b871d 100644
+--- a/src/messages/en.json
++++ b/src/messages/en.json
+@@ -129,7 +129,12 @@
+        "phoneRequired": "Phone number is required",
+        "phoneInvalid": "Please enter a valid phone number",
+        "emailOrPhoneRequired": "Email or phone number is required",
+-        "emailOrPhoneInvalid": "Please enter a valid email or phone number"
++        "emailOrPhoneInvalid": "Please enter a valid email or phone number",
++        "currentPasswordRequired": "Current password is required",
++        "newPasswordRequired": "New password is required",
++        "newPasswordMinLength": "New password must be at least 8 characters",
++        "newPasswordLowercase": "Password must have at least 1 lowercase letter",
++        "newPasswordNumber": "Password must have at least 1 number"
+      },
+      "logout": "Log Out",
+      "profile": "Profile",
+@@ -142,6 +147,63 @@
+          "landlord": "Landlord",
+          "tenant": "Tenant"
+        }
++      },
++      "accountManagement": {
++        "title": "Account Management",
++        "personalInfoTab": "Edit Information",
++        "accountSettingsTab": "Account Settings",
++        "personalInfo": {
++          "title": "Personal Information",
++          "contactInfo": "Contact Information",
++          "businessInfo": "Business Information",
++          "firstName": "First Name",
++          "lastName": "Last Name",
++          "phoneNumber": "Phone Number",
++          "email": "Email",
++          "idDocument": "ID Number",
++          "taxNumber": "Tax Number",
++          "address": "Address",
++          "avatarUpload": "Upload Photo",
++          "saveChanges": "Save Changes",
++          "saving": "Saving...",
++          "updateSuccess": "Personal information updated successfully!",
++          "updateError": "Failed to update information. Please try again.",
++          "updateErrorGeneral": "An error occurred while updating information",
++          "updateNotImplemented": "Update information feature is not implemented yet"
++        },
++        "passwordChange": {
++          "title": "Change Password",
++          "currentPassword": "Current Password",
++          "newPassword": "New Password",
++          "confirmPassword": "Confirm New Password",
++          "passwordRequirements": "Account Requirements",
++          "accountActions": "Account Deletion Request",
++          "saveChanges": "Save Changes",
++          "saving": "Saving...",
++          "changeSuccess": "Password changed successfully!",
++          "changeError": "Failed to change password. Please check your current password.",
++          "changeErrorGeneral": "An error occurred while changing password",
++          "changeNotImplemented": "Change password feature is not implemented yet",
++          "lockAccount": "Lock Account Temporarily",
++          "deleteAccount": "Delete Account Permanently",
++          "requirements": {
++            "minLength": "Password minimum 8 characters",
++            "lowercase": "Must have at least 1 lowercase letter",
++            "number": "Must have at least 1 number"
++          },
++          "warningTitle": "Important Notice:",
++          "warnings": {
++            "invoice": "Batdongsan.com.vn will automatically issue electronic invoices based on customer information and send them to the invoice email.",
++            "accuracy": "Please enter complete, accurate information and take responsibility for the information provided.",
++            "timing": "VAT invoices will be issued on the same day for all payment transactions.",
++            "service": "The service content displayed on the invoice is advertising service fees on the website batdongsan.com.vn.",
++            "support": "For any issues requiring support regarding invoices for payment transactions during the day, please contact hotline 1900 1881 before 6 PM."
++          }
++        },
++        "loginRequired": {
++          "title": "Please log in",
++          "description": "You need to log in to access the account management page."
++        }
+      }
+    },
+    "filters": {
+@@ -243,6 +305,7 @@
+    "login": "Log In",
+    "register": "Register",
+    "account": "Account",
++    "accountManagement": "Account Management",
+    "residential": "Residential",
+    "commercial": "Commercial",
+    "vacation": "Vacation Rentals",
+@@ -260,4 +323,4 @@
+    "occupancy": "Occupancy Rate",
+    "performance": "Property Performance"
+  }
+-}
++}
+\ No newline at end of file
+diff --git a/src/messages/vi.json b/src/messages/vi.json
+index 7561fd7..e65d66b 100644
+--- a/src/messages/vi.json
++++ b/src/messages/vi.json
+@@ -116,7 +116,9 @@
+        "phoneNumberRequired": "Số điện thoại là bắt buộc",
+        "phoneNumberInvalid": "Số điện thoại phải có 5-20 ký tự",
+        "firstNameRequired": "Tên là bắt buộc",
++        "firstNameMinLength": "Tên phải có ít nhất 2 ký tự",
+        "lastNameRequired": "Họ là bắt buộc",
++        "lastNameMinLength": "Họ phải có ít nhất 2 ký tự",
+        "passwordRequired": "Mật khẩu là bắt buộc",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+        "passwordPattern": "Mật khẩu phải chứa ít nhất 8 ký tự, một chữ hoa, một chữ thường, một số và một ký tự đặc biệt",
+@@ -125,11 +127,18 @@
+        "confirmPasswordRequired": "Xác nhận mật khẩu là bắt buộc",
+        "confirmPasswordMatch": "Mật khẩu xác nhận không khớp",
+        "idDocumentRequired": "Số CMND/CCCD là bắt buộc",
++        "idDocumentMinLength": "Số CMND/CCCD phải có ít nhất 9 ký tự",
+        "taxNumberRequired": "Mã số thuế là bắt buộc",
++        "taxNumberInvalid": "Mã số thuế không hợp lệ",
+        "phoneRequired": "Số điện thoại là bắt buộc",
+        "phoneInvalid": "Vui lòng nhập số điện thoại hợp lệ",
+        "emailOrPhoneRequired": "Email hoặc số điện thoại là bắt buộc",
+-        "emailOrPhoneInvalid": "Vui lòng nhập địa chỉ email hoặc số điện thoại hợp lệ"
++        "emailOrPhoneInvalid": "Vui lòng nhập địa chỉ email hoặc số điện thoại hợp lệ",
++        "currentPasswordRequired": "Mật khẩu hiện tại là bắt buộc",
++        "newPasswordRequired": "Mật khẩu mới là bắt buộc",
++        "newPasswordMinLength": "Mật khẩu mới phải có ít nhất 8 ký tự",
++        "newPasswordLowercase": "Mật khẩu cần có ít nhất 1 ký tự viết thường",
++        "newPasswordNumber": "Mật khẩu cần có ít nhất 1 ký tự số"
+      },
+      "logout": "Đăng xuất",
+      "profile": "Hồ sơ",
+@@ -142,6 +151,63 @@
+          "landlord": "Chủ nhà",
+          "tenant": "Người thuê"
+        }
++      },
++      "accountManagement": {
++        "title": "Quản lý tài khoản",
++        "personalInfoTab": "Chỉnh sửa thông tin",
++        "accountSettingsTab": "Cài đặt tài khoản",
++        "personalInfo": {
++          "title": "Thông tin cá nhân",
++          "contactInfo": "Thông tin liên hệ",
++          "businessInfo": "Thông tin xuất hóa đơn",
++          "firstName": "Họ và tên người mua hàng",
++          "lastName": "Tên",
++          "phoneNumber": "Số điện thoại chính",
++          "email": "Email",
++          "idDocument": "Mã số thuế",
++          "taxNumber": "Mã số ĐVQHNS",
++          "address": "Địa chỉ",
++          "avatarUpload": "Tải ảnh",
++          "saveChanges": "Lưu thay đổi",
++          "saving": "Đang lưu...",
++          "updateSuccess": "Cập nhật thông tin cá nhân thành công!",
++          "updateError": "Cập nhật thông tin thất bại. Vui lòng thử lại.",
++          "updateErrorGeneral": "Có lỗi xảy ra khi cập nhật thông tin",
++          "updateNotImplemented": "Chức năng cập nhật thông tin chưa được cài đặt"
++        },
++        "passwordChange": {
++          "title": "Đổi mật khẩu",
++          "currentPassword": "Mật khẩu hiện tại",
++          "newPassword": "Mật khẩu mới",
++          "confirmPassword": "Nhập lại mật khẩu mới",
++          "passwordRequirements": "Yêu cầu khóa tài khoản",
++          "accountActions": "Yêu cầu xóa tài khoản",
++          "saveChanges": "Lưu thay đổi",
++          "saving": "Đang lưu...",
++          "changeSuccess": "Đổi mật khẩu thành công!",
++          "changeError": "Đổi mật khẩu thất bại. Vui lòng kiểm tra lại mật khẩu hiện tại.",
++          "changeErrorGeneral": "Có lỗi xảy ra khi đổi mật khẩu",
++          "changeNotImplemented": "Chức năng đổi mật khẩu chưa được cài đặt",
++          "lockAccount": "Khóa tài khoản tạm thời",
++          "deleteAccount": "Xóa tài khoản vĩnh viễn",
++          "requirements": {
++            "minLength": "Mật khẩu tối thiểu 8 ký tự",
++            "lowercase": "Chưa có ít nhất 1 ký tự viết thường",
++            "number": "Chưa có ít nhất 1 ký tự số"
++          },
++          "warningTitle": "Lưu ý quan trọng:",
++          "warnings": {
++            "invoice": "Batdongsan.com.vn sẽ xuất Hóa đơn điện tử tự động theo thông tin khách hàng cung cấp và gửi về Email nhận hóa đơn.",
++            "accuracy": "Quý khách vui lòng nhập đầy đủ, chính xác và chịu trách nhiệm về những thông tin đã cung cấp.",
++            "timing": "Hóa đơn GTGT sẽ được xuất trong ngày và cho tất cả các giao dịch nộp tiền.",
++            "service": "Nội dung dịch vụ được thể hiện trên hóa đơn là Phí dịch vụ quảng cáo trên website batdongsan.com.vn.",
++            "support": "Mọi vấn đề cần hỗ trợ về hóa đơn của giao dịch nộp tiền trong ngày, vui lòng liên hệ hotline 1900 1881 trước 18h."
++          }
++        },
++        "loginRequired": {
++          "title": "Vui lòng đăng nhập",
++          "description": "Bạn cần đăng nhập để truy cập trang quản lý tài khoản."
++        }
+      }
+    },
+    "filters": {
+@@ -243,6 +309,7 @@
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "account": "Tài khoản",
++    "accountManagement": "Quản lý tài khoản",
+    "residential": "Nhà ở",
+    "commercial": "Thương mại",
+    "vacation": "Cho thuê nghỉ dưỡng",
+@@ -260,4 +327,4 @@
+    "occupancy": "Tỷ lệ lấp đầy",
+    "performance": "Hiệu suất bất động sản"
+  }
+-}
++}
+\ No newline at end of file
+diff --git a/src/pages/account/manage.tsx b/src/pages/account/manage.tsx
+new file mode 100644
+index 0000000..38e4755
+--- /dev/null
++++ b/src/pages/account/manage.tsx
+@@ -0,0 +1,122 @@
++import * as React from 'react'
++import { NextPage } from 'next'
++import { useTranslations } from 'next-intl'
++import AccountManagementTemplate from '@/components/templates/accountManagementTemplate'
++import { useAuth, useUpdateProfile, useChangePassword } from '@/hooks/useAuth'
++
++type PersonalInfoData = {
++  firstName: string
++  lastName: string
++  email: string
++  phoneNumber: string
++  idDocument: string
++  taxNumber?: string
++  avatar?: File
++}
++
++type PasswordChangeData = {
++  currentPassword: string
++  newPassword: string
++  confirmPassword: string
++}
++
++const AccountManagePage: NextPage = () => {
++  const t = useTranslations()
++  const { user, updateUser, isAuthenticated } = useAuth()
++  const { updateUserProfile } = useUpdateProfile()
++  const { changePassword } = useChangePassword()
++
++  // Redirect to login if not authenticated
++  if (!isAuthenticated || !user) {
++    return (
++      <div className='min-h-screen bg-background flex items-center justify-center'>
++        <div className='text-center space-y-4'>
++          <h1 className='text-2xl font-bold'>
++            {t('homePage.auth.accountManagement.loginRequired.title')}
++          </h1>
++          <p className='text-muted-foreground'>
++            {t('homePage.auth.accountManagement.loginRequired.description')}
++          </p>
++        </div>
++      </div>
++    )
++  }
++
++  // Get initial user data from auth state
++  const initialUserData = {
++    firstName: user.firstName,
++    lastName: user.lastName,
++    email: user.email,
++    phoneNumber: user.phoneNumber,
++    idDocument: user.idDocument,
++    taxNumber: user.taxNumber,
++  }
++
++  const handlePersonalInfoUpdate = async (
++    data: PersonalInfoData,
++  ): Promise<boolean> => {
++    try {
++      // Update user profile using the auth hook
++      const result = await updateUserProfile({
++        firstName: data.firstName,
++        lastName: data.lastName,
++        email: data.email,
++        phoneNumber: data.phoneNumber,
++        idDocument: data.idDocument,
++        taxNumber: data.taxNumber,
++      })
++
++      if (result.success) {
++        // Update local auth state immediately for better UX
++        updateUser({
++          firstName: data.firstName,
++          lastName: data.lastName,
++          email: data.email,
++          phoneNumber: data.phoneNumber,
++          idDocument: data.idDocument,
++          taxNumber: data.taxNumber,
++        })
++
++        // Handle avatar upload if provided
++        if (data.avatar) {
++          // In a real app, you'd upload the avatar file to a storage service
++          console.log('Avatar file to upload:', data.avatar)
++          // await uploadAvatar(data.avatar)
++        }
++        return true
++      }
++
++      return false
++    } catch (error) {
++      console.error('Failed to update personal info:', error)
++      return false
++    }
++  }
++
++  const handlePasswordChange = async (
++    data: PasswordChangeData,
++  ): Promise<boolean> => {
++    try {
++      // Use the password change hook
++      const result = await changePassword(
++        data.currentPassword,
++        data.newPassword,
++      )
++
++      return result.success
++    } catch (error) {
++      console.error('Failed to change password:', error)
++      return false
++    }
++  }
++
++  return (
++    <AccountManagementTemplate
++      initialUserData={initialUserData}
++      onPersonalInfoUpdate={handlePersonalInfoUpdate}
++      onPasswordChange={handlePasswordChange}
++    />
++  )
++}
++
++export default AccountManagePage
+--
+2.39.5 (Apple Git-154)

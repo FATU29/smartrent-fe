@@ -1,3 +1,7 @@
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+}
 // Auth API Request Types
 export interface LoginRequest {
   email: string

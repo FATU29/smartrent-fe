@@ -12,6 +12,7 @@ export const PATHS = {
     CREATE: '/v1/users',
     PROFILE: '/v1/users/profile',
     UPDATE: '/v1/users/update',
+    CHANGE_PASSWORD: '/v1/users/change-password',
   },
 
   // Property endpoints
