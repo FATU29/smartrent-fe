@@ -8,7 +8,6 @@ interface NavigationProps {
   items: NavigationItemData[]
   className?: string
   onItemClick?: (item: NavigationItemData) => void
-  defaultExpanded?: string[]
   logo?: React.ReactNode
   rightContent?: React.ReactNode
 }
@@ -17,7 +16,6 @@ const Navigation: React.FC<NavigationProps> = ({
   items,
   className,
   onItemClick,
-  defaultExpanded = [],
   logo,
   rightContent,
 }) => {
@@ -40,7 +38,7 @@ const Navigation: React.FC<NavigationProps> = ({
             <div className='flex items-center flex-shrink-0'>{logo}</div>
           )}
 
-          <div className='hidden lg:block flex-1'>
+          <div className='hidden lg:block flex-1 ml-3 sm:ml-4 md:ml-6'>
             <DesktopNavigation items={items} onItemClick={handleItemClick} />
           </div>
 
@@ -53,7 +51,6 @@ const Navigation: React.FC<NavigationProps> = ({
               <MobileNavigationDrawer
                 items={items}
                 onItemClick={handleItemClick}
-                defaultExpanded={defaultExpanded}
                 rightContent={rightContent}
               />
             </div>

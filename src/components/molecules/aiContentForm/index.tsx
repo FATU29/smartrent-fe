@@ -1,12 +1,7 @@
 import React from 'react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/atoms/card'
+import { Card, CardContent } from '@/components/atoms/card'
 import { Button } from '@/components/atoms/button'
-import { FileText, Zap } from 'lucide-react'
+import { Zap } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 interface AIContentFormProps {
@@ -21,12 +16,6 @@ const AIContentForm: React.FC<AIContentFormProps> = ({ className }) => {
     <div className={className}>
       {/* AI Generated Content Card - Mobile First */}
       <Card className='mb-4 sm:mb-6'>
-        <CardHeader className='pb-4 sm:pb-6'>
-          <CardTitle className='flex items-center gap-2 text-base sm:text-lg'>
-            <FileText className='w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground' />
-            {t('title')}
-          </CardTitle>
-        </CardHeader>
         <CardContent className='space-y-4 sm:space-y-6'>
           {/* Listing Title - Mobile First */}
           <div className='space-y-2'>

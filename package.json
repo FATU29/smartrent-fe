@@ -7,13 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "i18n:check": "node scripts/check-i18n-keys.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky",
-    "test": "echo \"No tests specified\" && exit 0",
-    "mock-server": "cd mock-server && npm start",
-    "mock-server:dev": "cd mock-server && npm run dev",
-    "mock-server:install": "cd mock-server && npm install"
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/atoms/button'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
-import { ImagePlus, Upload, Images, Star } from 'lucide-react'
+import { ImagePlus, Upload, Images } from 'lucide-react'
 
 const MAX_IMAGES = 24
 
@@ -34,14 +34,7 @@ const UploadImages: React.FC = () => {
     updatePropertyInfo({ images: [...current, ...newItems] })
   }
 
-  const setCover = (id: string) => {
-    updatePropertyInfo({
-      images: propertyInfo.images.map((img) => ({
-        ...img,
-        isCover: img.id === id,
-      })),
-    })
-  }
+  // Removed inline setCover; cover is chosen in dedicated section
 
   const removeImage = (id: string) => {
     updatePropertyInfo({
@@ -54,13 +47,6 @@ const UploadImages: React.FC = () => {
       <CardHeader className='pb-3'>
         <CardTitle className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
           <span className='text-lg sm:text-xl'>{t('title')}</span>
-          <Button
-            variant='outline'
-            size='sm'
-            className='rounded-lg w-full sm:w-auto'
-          >
-            {t('downloadSample')}
-          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent className='space-y-6'>
@@ -113,48 +99,40 @@ const UploadImages: React.FC = () => {
               {propertyInfo.images.length}/{MAX_IMAGES}
             </span>
           </div>
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5'>
             {propertyInfo.images.map((img) => (
               <div
                 key={img.id}
-                className={`relative rounded-xl overflow-hidden border ${
+                className={`group relative rounded-xl border bg-white dark:bg-gray-900 overflow-hidden ${
                   img.isCover
                     ? 'border-yellow-400'
                     : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
-                <Image
-                  src={img.url}
-                  alt={img.caption}
-                  width={600}
-                  height={400}
-                  className='w-full h-44 sm:h-40 md:h-44 object-cover'
-                />
-                <div className='p-3 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800'>
-                  <p className='text-sm truncate'>{img.caption}</p>
-                </div>
-                <div className='absolute top-2 left-2 flex gap-2'>
+                {/* Image area with fixed aspect ratio */}
+                <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-800'>
+                  {/* Cover badge */}
                   {img.isCover && (
-                    <span className='px-2 py-0.5 rounded-md text-xs bg-yellow-400 text-gray-900 font-medium'>
+                    <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-yellow-400 text-gray-900 font-medium shadow-sm'>
                       {t('uploaded.cover')}
                     </span>
                   )}
+                  <Image
+                    src={img.url}
+                    alt={img.caption}
+                    fill
+                    sizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
+                    className='object-cover'
+                  />
                 </div>
-                <div className='px-3 pb-3 md:px-0 md:pb-0'>
-                  <div className='grid grid-cols-2 gap-2 md:absolute md:bottom-2 md:left-2 md:right-2 md:flex md:justify-between'>
-                    <Button
-                      size='sm'
-                      variant='outline'
-                      className='h-9 md:h-8 px-2 rounded-md w-full md:w-auto text-sm'
-                      onClick={() => setCover(img.id)}
-                    >
-                      <Star className='w-3 h-3 mr-1' />
-                      {t('uploaded.setCover')}
-                    </Button>
+                {/* Caption + actions */}
+                <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
+                  <p className='text-sm truncate mb-3'>{img.caption}</p>
+                  <div className='grid grid-cols-1 gap-2'>
                     <Button
                       size='sm'
                       variant='destructive'
-                      className='h-9 md:h-8 px-2 rounded-md w-full md:w-auto text-sm'
+                      className='h-8 px-2 rounded-md w-full text-sm'
                       onClick={() => removeImage(img.id)}
                     >
                       {t('uploaded.remove')}

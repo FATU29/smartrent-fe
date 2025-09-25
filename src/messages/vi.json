@@ -379,6 +379,8 @@
     "description": "Làm theo các bước dưới đây để tạo tin đăng bất động sản",
     "back": "Quay lại",
     "next": "Tiếp theo",
+    "generateAutomatically": "Tạo tự động",
+    "continueToUpload": "Tiếp tục tải lên",
     "steps": {
       "propertyInfo": {
         "generateAutomatically": "Tạo tự động",
@@ -465,6 +467,13 @@
             "filenameHints": "Thêm \"360\", \"panorama\" hoặc \"pano\" trong tên tệp",
             "aspectRatio": "Ưu tiên tỷ lệ 2:1 hoặc rộng hơn"
           }
+        },
+        "cover": {
+          "title": "Ảnh bìa",
+          "description": "Tải ảnh bìa sẽ hiển thị đầu tiên trong bộ sưu tập",
+          "uploadCta": "Tải ảnh bìa",
+          "replaceCta": "Thay ảnh bìa",
+          "badge": "Ảnh bìa"
         }
       },
       "propertyInfo": {
@@ -645,12 +654,19 @@
           "district": "Quận",
           "hcmc": "TP.HCM",
           "title": "Thông tin Bất động sản",
+          "subtitle": "Cập nhật thông tin bất động sản để AI đánh giá chính xác nhất",
           "address": "Địa chỉ",
+          "addressMode": "Chế độ nhập địa chỉ",
+          "addressModes": {
+            "structured": "Tỉnh/Quận/Phường",
+            "freeText": "Nhập tự do"
+          },
           "addressPlaceholder": "Nhập địa chỉ bất động sản...",
           "area": "Diện tích (m²)",
           "type": "Loại",
           "districtLabel": "Quận/Huyện",
           "ward": "Phường/Xã",
+          "province": "Tỉnh",
           "bedrooms": "Số phòng ngủ",
           "bathrooms": "Số phòng tắm",
           "amenities": "Tiện nghi",
@@ -668,7 +684,45 @@
               "downloadSample": "Tải Mẫu",
               "titleWithCount": "{count} / 24 ảnh",
               "dropzone": {
+                "hint": "Kéo tối đa 24 ảnh hoặc...",
+                "uploadFromDevice": "Tải từ Thiết bị",
+                "chooseFromLibrary": "Chọn từ Thư viện",
                 "note": "Tối thiểu 3 ảnh · Tối đa 24 · Kích thước tối thiểu 100x100px · Tối đa 15MB mỗi ảnh"
+              },
+              "uploaded": {
+                "title": "Ảnh đã tải lên",
+                "cover": "Ảnh bìa",
+                "setCover": "Đặt làm bìa",
+                "remove": "Xóa"
+              },
+              "video": {
+                "title": "Video (Tùy chọn)",
+                "placeholder": "URL YouTube hoặc TikTok...",
+                "help": "Hỗ trợ YouTube và TikTok để trình bày bất động sản sinh động hơn"
+              },
+              "guidelines": {
+                "title": "Hướng dẫn Chụp ảnh",
+                "collapse": "Thu gọn",
+                "expand": "Mở rộng",
+                "normalTitle": "Ảnh thường (Khuyến nghị)",
+                "normalCount": "12-24 ảnh",
+                "do": {
+                  "naturalLight": "Chụp bằng ánh sáng tự nhiên",
+                  "tidyRoom": "Dọn dẹp phòng trước khi chụp",
+                  "variousAngles": "Chụp nhiều góc khác nhau",
+                  "includeAmenities": "Bao gồm cả nội thất và ngoại thất",
+                  "nightShots": "Bao gồm ảnh ban đêm nếu có thể"
+                },
+                "dont": {
+                  "lowLight": "Tránh điều kiện ánh sáng yếu",
+                  "showPersonal": "Tránh hiển thị dữ liệu cá nhân",
+                  "repetitiveAngles": "Tránh lặp lại góc chụp",
+                  "overEdit": "Tránh chỉnh sửa quá mức",
+                  "tooDarkOrBright": "Tránh quá tối hoặc quá sáng"
+                },
+                "panoramaTitle": "Ảnh 360° (Tùy chọn)",
+                "panoramaCount": "1-4 ảnh",
+                "panoramaDesc": "Hệ thống tự phát hiện ảnh 360° theo tỷ lệ khung hình và tên tệp. Dùng máy ảnh 360 hoặc chế độ panorama điện thoại; ưu tiên tỷ lệ 2:1."
               }
             },
             "quan2": "Quận 2",
@@ -692,6 +746,11 @@
             "cogiang": "Phường Cô Giang",
             "nguyenthaihoc": "Phường Nguyễn Thái Học"
           },
+          "provinces": {
+            "hcmc": "TP. Hồ Chí Minh",
+            "hn": "Hà Nội",
+            "dn": "Đà Nẵng"
+          },
           "amenitiesList": {
             "furnished": "Đầy đủ nội thất",
             "aircon": "Điều hòa",
@@ -705,6 +764,7 @@
         },
         "results": {
           "title": "Kết quả Đánh giá AI",
+          "subtitle": "Kết quả đánh giá AI dựa trên thông tin bất động sản",
           "suggestedPrice": "Khoảng giá đề xuất",
           "priceRange": "2.8M - 3.2M/tháng",
           "reliability": "Độ tin cậy",
@@ -793,6 +853,53 @@
     "analytics": "Phân tích",
     "financial": "Báo cáo Tài chính",
     "occupancy": "Tỷ lệ Lấp đầy",
-    "performance": "Hiệu suất Bất động sản"
+    "performance": "Hiệu suất Bất động sản",
+    "seller": {
+      "overview": "Tổng quan",
+      "listings": "Tin đăng",
+      "create": "Đăng tin",
+      "customers": "Khách hàng",
+      "membership": "Gói Hội viên",
+      "account": "Tài khoản",
+      "comingSoon": "Sắp ra mắt",
+      "deposit": "Nạp tiền",
+      "notifications": "Thông báo",
+      "balanceTitle": "Số dư tài khoản",
+      "postAccount": "TK tin đăng",
+      "promoAccount": "TK khuyến mãi"
+    },
+    "sellernet": {
+      "overview": "Tổng quan",
+      "postManagement": "Quản lý tin đăng",
+      "create": "Đăng mới",
+      "list": "Danh sách tin",
+      "drafts": "Tin nháp",
+      "sponsored": "Danh sách tin tài trợ",
+      "customers": "Quản lý khách hàng",
+      "membership": "Gói Hội viên",
+      "membershipRegister": "Đăng ký mua",
+      "packages": "Gói Tin Sài Gòn 1k/ngày",
+      "packagesNew": "Mới",
+      "proAccount": "Tài khoản Pro",
+      "finance": "Quản lý tài chính",
+      "balanceInfo": "Thông tin số dư",
+      "transactions": "Lịch sử giao dịch",
+      "myPromos": "Khuyến mãi của tôi",
+      "topup": "Nạp tiền vào tài khoản",
+      "personalAccount": "Quản lý TK Cá nhân",
+      "editPersonal": "Chỉnh sửa thông tin cá nhân",
+      "accountSettings": "Cài đặt tài khoản",
+      "proBroker": "Môi giới chuyên nghiệp",
+      "businessAccount": "Quản lý TK Doanh nghiệp",
+      "businessRegister": "Đăng ký tài khoản Doanh nghiệp",
+      "pricingGuide": "Báo giá & Hướng dẫn",
+      "pricing": "Báo giá",
+      "paymentGuide": "Hướng dẫn thanh toán",
+      "usageGuide": "Hướng dẫn sử dụng",
+      "utilities": "Tiện ích",
+      "notifications": "Thông báo",
+      "emailSubscriptions": "Quản lý đăng kí nhận email",
+      "lockRequest": "Yêu cầu khóa tài khoản"
+    }
   }
 }

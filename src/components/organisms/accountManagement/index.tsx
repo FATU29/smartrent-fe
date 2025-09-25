@@ -8,9 +8,7 @@ import {
 } from '@/components/atoms/tabs'
 import { PersonalInfoForm } from '@/components/molecules/personalInfoForm'
 import { PasswordChangeForm } from '@/components/molecules/passwordChangeForm'
-import { Card } from '@/components/atoms/card'
-import { Typography } from '@/components/atoms/typography'
-import { User, Lock, Settings } from 'lucide-react'
+import { User, Lock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -116,16 +114,6 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
 
   return (
     <div className={cn('w-full max-w-4xl mx-auto', className)}>
-      {/* Header */}
-      <Card className='p-6 mb-6'>
-        <div className='flex items-center gap-3'>
-          <Settings className='h-6 w-6 text-primary' />
-          <Typography variant='h2' className='text-xl font-bold'>
-            {t('homePage.auth.accountManagement.title')}
-          </Typography>
-        </div>
-      </Card>
-
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
         <TabsList className='grid w-full grid-cols-2 mb-6'>

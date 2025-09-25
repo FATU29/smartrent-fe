@@ -104,7 +104,7 @@ const CreatePostTemplate: React.FC<CreatePostTemplateProps> = ({
     switch (currentStep) {
       case 0:
         return (
-          <div className='max-w-6xl mx-auto'>
+          <div className='w-full mx-auto md:max-w-6xl'>
             <div className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
               <div className='mb-6 sm:mb-8'>
                 <h2 className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'>
@@ -120,7 +120,7 @@ const CreatePostTemplate: React.FC<CreatePostTemplateProps> = ({
         )
       case 1:
         return (
-          <div className='max-w-7xl mx-auto'>
+          <div className='w-full mx-auto md:max-w-7xl'>
             <div className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
               <div className='mb-6 sm:mb-8'>
                 <h2 className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'>
@@ -136,7 +136,7 @@ const CreatePostTemplate: React.FC<CreatePostTemplateProps> = ({
         )
       case 2:
         return (
-          <div className='max-w-7xl mx-auto'>
+          <div className='w-full mx-auto md:max-w-7xl'>
             <div className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
               <MediaSection className='w-full' />
             </div>
@@ -144,7 +144,7 @@ const CreatePostTemplate: React.FC<CreatePostTemplateProps> = ({
         )
       default:
         return (
-          <div className='max-w-6xl mx-auto'>
+          <div className='w-full mx-auto md:max-w-6xl'>
             <div className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
               <div className='text-center py-12'>
                 <h2 className='text-2xl font-bold mb-4'>
@@ -166,8 +166,8 @@ const CreatePostTemplate: React.FC<CreatePostTemplateProps> = ({
   return (
     <CreatePostProvider>
       <div className={`min-h-screen bg-background ${className || ''}`}>
-        {/* Container - Optimized for better UX */}
-        <div className='container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4 sm:py-6 lg:py-8'>
+        {/* Container - full width on mobile, constrained from md+ */}
+        <div className='w-full mx-auto  md:container md:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4 sm:py-6 lg:py-8'>
           {/* Header Module */}
           <HeaderModule />
 
@@ -185,8 +185,8 @@ const CreatePostTemplate: React.FC<CreatePostTemplateProps> = ({
           {renderCurrentSection()}
 
           {/* Navigation Buttons */}
-          <div className='max-w-6xl mx-auto mt-8 sm:mt-12'>
-            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 justify-between items-center'>
+          <div className='w-full mx-auto md:max-w-6xl mt-8 sm:mt-12'>
+            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 justify-between items-center flex-wrap'>
               {/* Back Button */}
               {currentStep > 0 && (
                 <Button

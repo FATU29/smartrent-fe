@@ -151,12 +151,12 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           </div>
 
           {/* Contact Information */}
-          <div className='space-y-4'>
+          <div>
             <Typography variant='h4' className='font-medium text-foreground'>
               {t('homePage.auth.accountManagement.personalInfo.contactInfo')}
             </Typography>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div className='mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-2 gap-4'>
               <PhoneField
                 name='phoneNumber'
                 control={control}
@@ -177,12 +177,12 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           </div>
 
           {/* Business Information */}
-          <div className='space-y-4'>
+          <div>
             <Typography variant='h4' className='font-medium text-foreground'>
               {t('homePage.auth.accountManagement.personalInfo.businessInfo')}
             </Typography>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div className='mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-2 gap-4'>
               <FormField
                 label={t(
                   'homePage.auth.accountManagement.personalInfo.idDocument',
@@ -204,7 +204,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <FormField
               label={t('homePage.auth.accountManagement.personalInfo.address')}
               placeholder='Việt Nam'
-              className='md:col-span-2'
+              className='mt-4 md:col-span-2'
               {...addressController.field}
             />
           </div>
