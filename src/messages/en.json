@@ -183,6 +183,7 @@
       "validation": {
         "firstNameMinLength": "First name must be at least 2 characters",
         "lastNameMinLength": "Last name must be at least 2 characters",
+        "idDocumentMinLength": "ID number must be at least 9 characters",
         "phoneCodeRequired": "Phone code is required",
         "phoneCodeInvalid": "Phone code must be 1–5 characters",
         "phoneNumberRequired": "Phone number is required",
@@ -197,6 +198,7 @@
         "confirmPasswordRequired": "Confirm password is required",
         "confirmPasswordMatch": "Passwords do not match",
         "idDocumentRequired": "ID number is required",
+        "taxNumberInvalid": "Tax number is invalid",
         "taxNumberRequired": "Tax number is required",
         "phoneRequired": "Phone number is required",
         "phoneInvalid": "Please enter a valid phone number",
@@ -376,6 +378,8 @@
     "description": "Follow the steps below to create your real estate listing",
     "back": "Back",
     "next": "Next",
+    "generateAutomatically": "Generate Automatically",
+    "continueToUpload": "Continue to upload",
     "steps": {
       "propertyInfo": {
         "generateAutomatically": "Generate Automatically",
@@ -462,6 +466,13 @@
             "filenameHints": "Include \"360\", \"panorama\", or \"pano\" in filenames",
             "aspectRatio": "Prefer 2:1 aspect ratio or wider"
           }
+        },
+        "cover": {
+          "title": "Cover Image",
+          "description": "Upload a cover image that will be shown first in your gallery",
+          "uploadCta": "Upload Cover",
+          "replaceCta": "Replace Cover",
+          "badge": "Cover"
         }
       },
       "propertyInfo": {
@@ -642,12 +653,19 @@
           "district": "District",
           "hcmc": "HCMC",
           "title": "Property Information",
+          "subtitle": "Update property details for the most accurate AI evaluation",
           "address": "Address",
+          "addressMode": "Address Mode",
+          "addressModes": {
+            "structured": "Province/District/Ward",
+            "freeText": "Free text"
+          },
           "addressPlaceholder": "Enter property address...",
           "area": "Area (m²)",
           "type": "Type",
           "districtLabel": "District/County",
           "ward": "Ward/Commune",
+          "province": "Province/City",
           "bedrooms": "Number of bedrooms",
           "bathrooms": "Number of bathrooms",
           "amenities": "Amenities",
@@ -727,6 +745,11 @@
             "cogiang": "Co Giang Ward",
             "nguyenthaihoc": "Nguyen Thai Hoc Ward"
           },
+          "provinces": {
+            "hcmc": "Ho Chi Minh City",
+            "hn": "Ha Noi",
+            "dn": "Da Nang"
+          },
           "amenitiesList": {
             "furnished": "Fully furnished",
             "aircon": "Air conditioning",
@@ -740,6 +763,7 @@
         },
         "results": {
           "title": "AI Evaluation Results",
+          "subtitle": "AI evaluation results based on the property information provided",
           "suggestedPrice": "Suggested Price Range",
           "priceRange": "2.8M - 3.2M/month",
           "reliability": "Reliability",
@@ -828,6 +852,53 @@
     "analytics": "Analytics",
     "financial": "Financial Reports",
     "occupancy": "Occupancy Rate",
-    "performance": "Property Performance"
+    "performance": "Property Performance",
+    "seller": {
+      "overview": "Overview",
+      "listings": "Listings",
+      "create": "Create",
+      "customers": "Customers",
+      "membership": "Membership",
+      "account": "Account",
+      "comingSoon": "Coming soon",
+      "deposit": "Top up",
+      "notifications": "Notifications",
+      "balanceTitle": "Account balance",
+      "postAccount": "Listing account",
+      "promoAccount": "Promo account"
+    },
+    "sellernet": {
+      "overview": "Overview",
+      "postManagement": "Post Management",
+      "create": "Create Post",
+      "list": "All Posts",
+      "drafts": "Drafts",
+      "sponsored": "Sponsored Posts",
+      "customers": "Customer Management",
+      "membership": "Membership",
+      "membershipRegister": "Register to buy",
+      "packages": "1k/day Package",
+      "packagesNew": "New",
+      "proAccount": "Pro Account",
+      "finance": "Finance Management",
+      "balanceInfo": "Balance info",
+      "transactions": "Transaction history",
+      "myPromos": "My promotions",
+      "topup": "Top up account",
+      "personalAccount": "Personal Account",
+      "editPersonal": "Edit personal info",
+      "accountSettings": "Account settings",
+      "proBroker": "Professional broker",
+      "businessAccount": "Business Account",
+      "businessRegister": "Register business account",
+      "pricingGuide": "Pricing & Guides",
+      "pricing": "Pricing",
+      "paymentGuide": "Payment guide",
+      "usageGuide": "Usage guide",
+      "utilities": "Utilities",
+      "notifications": "Notifications",
+      "emailSubscriptions": "Email subscriptions",
+      "lockRequest": "Account lock request"
+    }
   }
 }

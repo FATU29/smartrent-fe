@@ -59,8 +59,12 @@ export interface PropertyInfo {
   amenities: string[]
 
   // District and Ward
+  province?: string
   district: string
   ward: string
+
+  // Address input mode
+  addressMode?: 'structured' | 'freeText'
 
   // Media
   images: MediaItem[]
@@ -133,8 +137,12 @@ const defaultPropertyInfo: PropertyInfo = {
   ],
 
   // District and Ward
+  province: 'hcmc',
   district: 'quan1',
   ward: 'bennghe',
+
+  // Address input mode
+  addressMode: 'structured',
 
   // Media
   images: [

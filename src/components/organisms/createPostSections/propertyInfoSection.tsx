@@ -40,6 +40,11 @@ import {
   getDirectionOptions,
   getAmenityItems,
 } from './index.helper'
+import {
+  getProvinceOptions,
+  getDistrictOptions,
+  getWardOptions,
+} from './index.helper'
 
 interface PropertyInfoSectionProps {
   className?: string
@@ -84,24 +89,79 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             options={getListingTypeOptions(t)}
           />
 
-          {/* Property Address */}
+          {/* Property Address with mode toggle */}
           <div className='space-y-3'>
             <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
               <MapPin className='w-4 h-4 text-blue-500' />
               {t('propertyAddress')}
             </label>
-            <div className='relative group'>
-              <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
-              <input
-                type='text'
-                className='w-full h-12 pl-12 pr-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'
-                placeholder={t('addressPlaceholder')}
-                value={propertyInfo.propertyAddress}
-                onChange={(e) =>
-                  updatePropertyInfo({ propertyAddress: e.target.value })
-                }
-              />
+            <div className='flex items-center justify-between'>
+              <span className='text-xs text-muted-foreground'>
+                {tValuation('propertyInfo.addressMode')}
+              </span>
+              <div className='flex items-center gap-2 text-xs'>
+                <button
+                  className={`px-2 py-1 rounded border ${propertyInfo.addressMode !== 'freeText' ? 'bg-accent text-accent-foreground' : 'bg-muted text-foreground/80'}`}
+                  onClick={() =>
+                    updatePropertyInfo({ addressMode: 'structured' })
+                  }
+                  type='button'
+                >
+                  {tValuation('propertyInfo.addressModes.structured')}
+                </button>
+                <button
+                  className={`px-2 py-1 rounded border ${propertyInfo.addressMode === 'freeText' ? 'bg-accent text-accent-foreground' : 'bg-muted text-foreground/80'}`}
+                  onClick={() =>
+                    updatePropertyInfo({ addressMode: 'freeText' })
+                  }
+                  type='button'
+                >
+                  {tValuation('propertyInfo.addressModes.freeText')}
+                </button>
+              </div>
             </div>
+            {propertyInfo.addressMode === 'freeText' ? (
+              <div className='relative group'>
+                <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
+                <input
+                  type='text'
+                  className='w-full h-12 pl-12 pr-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'
+                  placeholder={t('addressPlaceholder')}
+                  value={propertyInfo.propertyAddress}
+                  onChange={(e) =>
+                    updatePropertyInfo({ propertyAddress: e.target.value })
+                  }
+                />
+              </div>
+            ) : (
+              <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
+                <SelectDropdown
+                  label={tValuation('propertyInfo.province')}
+                  value={propertyInfo.province || 'hcmc'}
+                  onValueChange={(value) =>
+                    updatePropertyInfo({ province: value })
+                  }
+                  options={getProvinceOptions(tValuation)}
+                  className='space-y-2'
+                />
+                <SelectDropdown
+                  label={tValuation('propertyInfo.districtLabel')}
+                  value={propertyInfo.district}
+                  onValueChange={(value) =>
+                    updatePropertyInfo({ district: value })
+                  }
+                  options={getDistrictOptions(tValuation)}
+                  className='space-y-2'
+                />
+                <SelectDropdown
+                  label={tValuation('propertyInfo.ward')}
+                  value={propertyInfo.ward}
+                  onValueChange={(value) => updatePropertyInfo({ ward: value })}
+                  options={getWardOptions(tValuation)}
+                  className='space-y-2'
+                />
+              </div>
+            )}
             <p className='text-xs text-gray-500 dark:text-gray-400'>
               {t('addressHint')}
             </p>
@@ -123,15 +183,16 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
           {/* Map Preview */}
           <div className='space-y-4'>
-            <div className='flex items-center justify-between'>
-              <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+            {/* Make header responsive: stack on mobile, inline on sm+ */}
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
+              <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-normal break-words leading-snug'>
                 {t('mapPreview')}
               </h3>
-              <div className='flex gap-2'>
+              <div className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto'>
                 <Button
                   variant='outline'
                   size='sm'
-                  className='border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg'
+                  className='border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg w-full sm:w-auto'
                 >
                   <Send className='w-4 h-4 mr-1' />
                   {t('useMyLocation')}
@@ -139,7 +200,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <Button
                   variant='outline'
                   size='sm'
-                  className='border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg'
+                  className='border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg w-full sm:w-auto'
                 >
                   <RotateCcw className='w-4 h-4 mr-1' />
                   {t('reset')}
@@ -157,22 +218,22 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <p className='text-xs text-gray-500 dark:text-gray-500 mt-1'>
                   {t('district')} 5, HCMC
                 </p>
-                <div className='absolute bottom-2 left-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded-lg text-xs shadow-sm'>
+                <div className='absolute bottom-2 left-2 bg-card border px-2 py-1 rounded-lg text-xs shadow-sm'>
                   <div className='flex items-center gap-1'>
                     <div className='w-2 h-2 bg-green-500 rounded-full'></div>
                     {t('selectedLocation')}
                   </div>
                 </div>
-                <div className='absolute bottom-2 right-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded-lg text-xs shadow-sm'>
+                <div className='absolute bottom-2 right-2 bg-card border px-2 py-1 rounded-lg text-xs shadow-sm'>
                   {t('zoom')}: 15
                 </div>
-                <div className='absolute top-2 left-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded-lg text-xs shadow-sm'>
+                <div className='absolute top-2 left-2 bg-card border px-2 py-1 rounded-lg text-xs shadow-sm'>
                   {t('district')} 5, HCMC
                 </div>
                 <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
                   <div className='w-4 h-4 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800'></div>
                 </div>
-                <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-1 rounded shadow-sm'>
+                <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-2 text-xs bg-card border px-1 rounded shadow-sm'>
                   {t('coordinates')}: {propertyInfo.coordinates.lat},{' '}
                   {propertyInfo.coordinates.lng}
                 </div>
@@ -663,14 +724,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         <CardContent className='space-y-6'>
           {/* Listing Title */}
           <div className='space-y-3'>
-            <div className='flex items-center justify-between'>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
               <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
                 {tAI('listingTitle')}
               </label>
               <Button
                 variant='outline'
                 size='sm'
-                className='border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg'
+                className='border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg w-full sm:w-auto'
               >
                 <Zap className='w-4 h-4 mr-1' />
                 {t('generateAutomatically')}
@@ -692,14 +753,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
           {/* Property Description */}
           <div className='space-y-3'>
-            <div className='flex items-center justify-between'>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
               <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
                 {tAI('propertyDescription')}
               </label>
               <Button
                 variant='outline'
                 size='sm'
-                className='border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg'
+                className='border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg w-full sm:w-auto'
               >
                 <Zap className='w-4 h-4 mr-1' />
                 {t('generateAutomatically')}

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { UploadImages } from '@/components/molecules/createPostMedia/uploadImages'
+import { CoverUpload } from '@/components/molecules/createPostMedia/coverUpload'
 import { VideoUrl } from '@/components/molecules/createPostMedia/videoUrl'
 import { PhotoGuidelines } from '@/components/molecules/createPostMedia/photoGuidelines'
 
@@ -21,6 +22,7 @@ const MediaSection: React.FC<MediaSectionProps> = ({ className }) => {
           {t('description')}
         </p>
       </div>
+      <CoverUpload />
       <UploadImages />
       <VideoUrl />
       <PhotoGuidelines />

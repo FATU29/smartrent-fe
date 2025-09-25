@@ -9,6 +9,7 @@ import {
   mockApartmentDetail,
   mockSimilarProperties,
 } from '@/types/apartmentDetail.types'
+import SeoHead from '@/components/atoms/seo/SeoHead'
 
 // Auth dialog handled globally by AuthDialogProvider
 
@@ -54,20 +55,30 @@ const ApartmentDetailPage: NextPageWithLayout<ApartmentDetailPageProps> = ({
   }
 
   return (
-    <DetailPostTemplate
-      apartment={apartment}
-      similarProperties={similarProperties}
-      onBack={handleBack}
-      onSave={onSave}
-      onCompare={onCompare}
-      onShare={onShare}
-      onExport={onExport}
-      onCall={onCall}
-      onMessage={onMessage}
-      onPlayVideo={onPlayVideo}
-      onAIPriceEvaluation={onAIPriceEvaluation}
-      onSimilarPropertyClick={handleSimilarPropertyClick}
-    />
+    <>
+      <SeoHead
+        title={`${apartment.title} – SmartRent`}
+        description={apartment.description || 'Chi tiết căn hộ trên SmartRent'}
+        openGraph={{
+          type: 'article',
+          images: (apartment.images || []).slice(0, 1).map((url) => ({ url })),
+        }}
+      />
+      <DetailPostTemplate
+        apartment={apartment}
+        similarProperties={similarProperties}
+        onBack={handleBack}
+        onSave={onSave}
+        onCompare={onCompare}
+        onShare={onShare}
+        onExport={onExport}
+        onCall={onCall}
+        onMessage={onMessage}
+        onPlayVideo={onPlayVideo}
+        onAIPriceEvaluation={onAIPriceEvaluation}
+        onSimilarPropertyClick={handleSimilarPropertyClick}
+      />
+    </>
   )
 }
 

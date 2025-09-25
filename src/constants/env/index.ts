@@ -6,6 +6,9 @@ export const ENV = {
   URL_API_AI: process.env.NEXT_PUBLIC_URL_API_AI || 'http://localhost:8000/',
   URL_API_BASE:
     process.env.NEXT_PUBLIC_URL_API_BASE || 'http://localhost:8080/',
+  // Site metadata
+  SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+  SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'SmartRent',
 
   // API endpoints
   API: PATHS,

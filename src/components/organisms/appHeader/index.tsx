@@ -16,7 +16,6 @@ import { useRouter } from 'next/router'
 
 export interface AppHeaderProps {
   activeItem?: string
-  defaultExpanded?: string[]
   onItemClick?: (item: NavigationItemData) => void
   logo?: React.ReactNode
   rightContent?: React.ReactNode
@@ -35,7 +34,7 @@ const DefaultLogo: React.FC = () => (
 
 const AppHeader: React.FC<AppHeaderProps> = ({
   activeItem = 'home',
-  defaultExpanded = ['properties'],
+
   onItemClick,
   logo,
   rightContent,
@@ -73,7 +72,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           size='sm'
           className='text-xs sm:text-sm'
         >
-          {t('homePage.buttons.openAuth')}
+          {t('homePage.auth.login.loginButton')}
         </Button>
       )}
     </div>
@@ -87,7 +86,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({
       onItemClick={handleNavClick}
       logo={logo ?? <DefaultLogo />}
       rightContent={rightContent ?? defaultRightContent}
-      defaultExpanded={defaultExpanded}
     />
   )
 }

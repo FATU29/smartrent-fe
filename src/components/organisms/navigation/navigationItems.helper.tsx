@@ -1,12 +1,5 @@
 import { NavigationItemData } from '@/components/atoms/navigation-item'
-import {
-  Home as HomeIcon,
-  Building2,
-  Users,
-  FileText,
-  Calendar,
-  BarChart3,
-} from 'lucide-react'
+import { Home as HomeIcon, Building2, Users } from 'lucide-react'
 
 export const getNavigationItems = (
   activeItem: string,
@@ -74,66 +67,6 @@ export const getNavigationItems = (
         },
       ],
     },
-    {
-      id: 'documents',
-      label: t('navigation.documents'),
-      href: '/documents',
-      icon: <FileText className='h-4 w-4' />,
-      isActive: activeItem === 'documents',
-      children: [
-        {
-          id: 'contracts',
-          label: t('navigation.contracts'),
-          href: '/documents/contracts',
-          isActive: activeItem === 'contracts',
-        },
-        {
-          id: 'invoices',
-          label: t('navigation.invoices'),
-          href: '/documents/invoices',
-          isActive: activeItem === 'invoices',
-        },
-        {
-          id: 'reports',
-          label: t('navigation.reports'),
-          href: '/documents/reports',
-          isActive: activeItem === 'reports',
-        },
-      ],
-    },
-    {
-      id: 'calendar',
-      label: t('navigation.calendar'),
-      href: '/calendar',
-      icon: <Calendar className='h-4 w-4' />,
-      isActive: activeItem === 'calendar',
-    },
-    {
-      id: 'analytics',
-      label: t('navigation.analytics'),
-      href: '/analytics',
-      icon: <BarChart3 className='h-4 w-4' />,
-      isActive: activeItem === 'analytics',
-      children: [
-        {
-          id: 'financial',
-          label: t('navigation.financial'),
-          href: '/analytics/financial',
-          isActive: activeItem === 'financial',
-        },
-        {
-          id: 'occupancy',
-          label: t('navigation.occupancy'),
-          href: '/analytics/occupancy',
-          isActive: activeItem === 'occupancy',
-        },
-        {
-          id: 'performance',
-          label: t('navigation.performance'),
-          href: '/analytics/performance',
-          isActive: activeItem === 'performance',
-        },
-      ],
-    },
+    // Removed documents, calendar, analytics from navigation per request
   ]
 }

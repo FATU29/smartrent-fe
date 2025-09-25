@@ -14,6 +14,7 @@ import en from '@/messages/en.json'
 import { Toaster } from '@/components/atoms/sonner'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { AuthDialogProvider } from '@/contexts/authDialog'
+// import { useRouter } from 'next/router'
 
 const messages = {
   vi,
@@ -22,7 +23,8 @@ const messages = {
 
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const { language } = useSwitchLanguage()
-  const getLayout = Component.getLayout ?? ((page: React.ReactNode) => page)
+  const getLayout = Component.getLayout ?? ((page) => page)
+  // const router = useRouter()
 
   return (
     <NextIntlClientProvider

@@ -35,7 +35,7 @@ const AccountManagementTemplate: NextPage<AccountManagementTemplateProps> = ({
   return (
     <div className={cn('min-h-screen bg-background', className)}>
       {/* Main Content */}
-      <main className='container mx-auto px-4 py-8'>
+      <main className='container mx-auto  md:py-8 md:px-4'>
         <AccountManagement
           initialUserData={initialUserData}
           onPersonalInfoUpdate={onPersonalInfoUpdate}

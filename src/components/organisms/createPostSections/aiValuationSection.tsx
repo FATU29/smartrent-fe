@@ -29,6 +29,7 @@ import {
   getWardOptions,
   getAiPropertyTypeOptions,
   getDistrictOptions,
+  getProvinceOptions,
   getResultsComparisonItems,
   getAmenityItems,
 } from './index.helper'
@@ -56,28 +57,85 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
               {t('propertyInfo.title')}
             </CardTitle>
             <p className='text-sm text-gray-600 dark:text-gray-400 mt-2'>
-              Cập nhật thông tin bất động sản để AI đánh giá chính xác nhất
+              {t('propertyInfo.subtitle')}
             </p>
           </CardHeader>
           <CardContent className='space-y-6'>
-            {/* Address */}
+            {/* Address with mode toggle */}
             <div className='space-y-3'>
               <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
                 <MapPin className='w-4 h-4 text-blue-500' />
                 {t('propertyInfo.address')}
               </label>
-              <div className='relative group'>
-                <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
-                <input
-                  type='text'
-                  className='w-full h-12 pl-12 pr-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'
-                  placeholder={t('propertyInfo.addressPlaceholder')}
-                  value={propertyInfo.propertyAddress}
-                  onChange={(e) =>
-                    updatePropertyInfo({ propertyAddress: e.target.value })
-                  }
-                />
+              <div className='flex items-center justify-between'>
+                <span className='text-xs text-muted-foreground'>
+                  {t('propertyInfo.addressMode')}
+                </span>
+                <div className='flex items-center gap-2 text-xs'>
+                  <button
+                    className={`px-2 py-1 rounded border ${propertyInfo.addressMode !== 'freeText' ? 'bg-accent text-accent-foreground' : 'bg-muted text-foreground/80'}`}
+                    onClick={() =>
+                      updatePropertyInfo({ addressMode: 'structured' })
+                    }
+                    type='button'
+                  >
+                    {t('propertyInfo.addressModes.structured')}
+                  </button>
+                  <button
+                    className={`px-2 py-1 rounded border ${propertyInfo.addressMode === 'freeText' ? 'bg-accent text-accent-foreground' : 'bg-muted text-foreground/80'}`}
+                    onClick={() =>
+                      updatePropertyInfo({ addressMode: 'freeText' })
+                    }
+                    type='button'
+                  >
+                    {t('propertyInfo.addressModes.freeText')}
+                  </button>
+                </div>
               </div>
+              {propertyInfo.addressMode === 'freeText' ? (
+                <div className='relative group'>
+                  <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
+                  <input
+                    type='text'
+                    className='w-full h-12 pl-12 pr-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'
+                    placeholder={t('propertyInfo.addressPlaceholder')}
+                    value={propertyInfo.propertyAddress}
+                    onChange={(e) =>
+                      updatePropertyInfo({ propertyAddress: e.target.value })
+                    }
+                  />
+                </div>
+              ) : (
+                <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
+                  <SelectDropdown
+                    label={t('propertyInfo.province')}
+                    value={propertyInfo.province || 'hcmc'}
+                    onValueChange={(value) =>
+                      updatePropertyInfo({ province: value })
+                    }
+                    options={getProvinceOptions(t)}
+                    className='space-y-2'
+                  />
+                  <SelectDropdown
+                    label={t('propertyInfo.districtLabel')}
+                    value={propertyInfo.district}
+                    onValueChange={(value) =>
+                      updatePropertyInfo({ district: value })
+                    }
+                    options={getDistrictOptions(t)}
+                    className='space-y-2'
+                  />
+                  <SelectDropdown
+                    label={t('propertyInfo.ward')}
+                    value={propertyInfo.ward}
+                    onValueChange={(value) =>
+                      updatePropertyInfo({ ward: value })
+                    }
+                    options={getWardOptions(t)}
+                    className='space-y-2'
+                  />
+                </div>
+              )}
             </div>
 
             {/* Main Layout: Dropdowns on Left, Inputs on Right */}
@@ -100,94 +158,6 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                   options={getAiPropertyTypeOptions(t)}
                   className='space-y-2'
                 />
-
-                {/* District Dropdown */}
-                <SelectDropdown
-                  label={t('propertyInfo.district')}
-                  value={propertyInfo.district}
-                  onValueChange={(value) =>
-                    updatePropertyInfo({ district: value })
-                  }
-                  options={getDistrictOptions(t)}
-                  className='space-y-2'
-                />
-
-                {/* Ward Dropdown */}
-                <SelectDropdown
-                  label={t('propertyInfo.ward')}
-                  value={propertyInfo.ward}
-                  onValueChange={(value) => updatePropertyInfo({ ward: value })}
-                  options={getWardOptions(t)}
-                  className='space-y-2'
-                />
-
-                {/* Amenities */}
-                <div className='space-y-4'>
-                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
-                    <CheckCircle className='w-4 h-4 text-green-500' />
-                    {t('propertyInfo.amenities')}
-                  </label>
-                  <div className='grid grid-cols-2 gap-3'>
-                    {getAmenityItems(t).map((amenity) => (
-                      <label
-                        key={amenity.key}
-                        className={`flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 ${
-                          propertyInfo.amenities.includes(amenity.key)
-                            ? amenity.color
-                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        {/* map icon by key */}
-                        {amenity.key === 'furnished' && (
-                          <Home className='w-4 h-4' />
-                        )}
-                        {amenity.key === 'aircon' && (
-                          <Building className='w-4 h-4' />
-                        )}
-                        {amenity.key === 'toilet' && (
-                          <Users className='w-4 h-4' />
-                        )}
-                        {amenity.key === 'wifi' && <Wifi className='w-4 h-4' />}
-                        {amenity.key === 'parking' && (
-                          <Car className='w-4 h-4' />
-                        )}
-                        {amenity.key === 'elevator' && (
-                          <Building className='w-4 h-4' />
-                        )}
-                        {amenity.key === 'balcony' && (
-                          <Ruler className='w-4 h-4' />
-                        )}
-                        {amenity.key === 'kitchen' && (
-                          <ChefHat className='w-4 h-4' />
-                        )}
-                        <input
-                          type='checkbox'
-                          className='w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2'
-                          checked={propertyInfo.amenities.includes(amenity.key)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              updatePropertyInfo({
-                                amenities: [
-                                  ...propertyInfo.amenities,
-                                  amenity.key,
-                                ],
-                              })
-                            } else {
-                              updatePropertyInfo({
-                                amenities: propertyInfo.amenities.filter(
-                                  (a) => a !== amenity.key,
-                                ),
-                              })
-                            }
-                          }}
-                        />
-                        <span className='text-sm font-medium'>
-                          {amenity.label}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
               </div>
 
               {/* Right Column - Numeric Inputs */}
@@ -250,6 +220,72 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
               </div>
             </div>
 
+            {/* Amenities - Full width below grid */}
+            <div className='space-y-4'>
+              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                <CheckCircle className='w-4 h-4 text-green-500' />
+                {t('propertyInfo.amenities')}
+              </label>
+              <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3'>
+                {getAmenityItems(t).map((amenity) => (
+                  <label
+                    key={amenity.key}
+                    className={`grid grid-cols-[auto,auto,1fr] items-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-colors duration-200 w-full min-w-0 min-h-12 ${
+                      propertyInfo.amenities.includes(amenity.key)
+                        ? amenity.color
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    {amenity.key === 'furnished' && (
+                      <Home className='w-4 h-4 shrink-0' />
+                    )}
+                    {amenity.key === 'aircon' && (
+                      <Building className='w-4 h-4 shrink-0' />
+                    )}
+                    {amenity.key === 'toilet' && (
+                      <Users className='w-4 h-4 shrink-0' />
+                    )}
+                    {amenity.key === 'wifi' && (
+                      <Wifi className='w-4 h-4 shrink-0' />
+                    )}
+                    {amenity.key === 'parking' && (
+                      <Car className='w-4 h-4 shrink-0' />
+                    )}
+                    {amenity.key === 'elevator' && (
+                      <Building className='w-4 h-4 shrink-0' />
+                    )}
+                    {amenity.key === 'balcony' && (
+                      <Ruler className='w-4 h-4 shrink-0' />
+                    )}
+                    {amenity.key === 'kitchen' && (
+                      <ChefHat className='w-4 h-4 shrink-0' />
+                    )}
+                    <input
+                      type='checkbox'
+                      className='w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 shrink-0'
+                      checked={propertyInfo.amenities.includes(amenity.key)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          updatePropertyInfo({
+                            amenities: [...propertyInfo.amenities, amenity.key],
+                          })
+                        } else {
+                          updatePropertyInfo({
+                            amenities: propertyInfo.amenities.filter(
+                              (a) => a !== amenity.key,
+                            ),
+                          })
+                        }
+                      }}
+                    />
+                    <span className='text-sm font-medium whitespace-normal break-words leading-snug min-w-0'>
+                      {amenity.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* Re-evaluate Button */}
             <Button className='w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105'>
               <RefreshCw className='w-5 h-5 mr-2' />
@@ -260,7 +296,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
 
         {/* Right Section - AI Valuation Results */}
         <Card className='shadow-lg border-0 bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-blue-900/20'>
-          <CardHeader className='pb-4'>
+          <CardHeader className='pb-3'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
               <div className='p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg'>
                 <BarChart3 className='w-6 h-6 text-white' />
@@ -268,22 +304,22 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
               {t('results.title')}
             </CardTitle>
             <p className='text-sm text-gray-600 dark:text-gray-400 mt-2'>
-              Kết quả đánh giá AI dựa trên thông tin bất động sản
+              {t('results.subtitle')}
             </p>
           </CardHeader>
-          <CardContent className='space-y-6'>
+          <CardContent className='space-y-5'>
             {/* Suggested Price Range */}
-            <div className='space-y-4'>
-              <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+            <div className='mt-3 sm:mt-4 space-y-2 sm:space-y-3'>
+              <h3 className='text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-300'>
                 {t('results.suggestedPrice')}
               </h3>
-              <div className='bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg'>
-                <div className='text-3xl font-bold mb-2'>
+              <div className='bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-4 sm:p-6 text-white shadow-lg mb-2 sm:mb-3'>
+                <div className='text-2xl sm:text-3xl font-extrabold leading-tight tracking-tight mb-1 sm:mb-2'>
                   {t('results.priceRange')}
                 </div>
-                <div className='flex items-center gap-2'>
-                  <div className='w-3 h-3 bg-green-400 rounded-full animate-pulse'></div>
-                  <span className='text-sm opacity-90'>
+                <div className='flex items-center gap-2 sm:gap-2.5'>
+                  <div className='w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse'></div>
+                  <span className='text-xs sm:text-sm opacity-90'>
                     {t('results.reliability')}: 85%
                   </span>
                 </div>
@@ -363,17 +399,17 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             </div>
 
             {/* Action Buttons */}
-            <div className='flex gap-3'>
+            <div className='flex flex-col sm:flex-row gap-2 sm:gap-3 w-full'>
               <Button
                 variant='outline'
-                className='flex-1 h-12 border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl font-semibold transition-all duration-200'
+                className='w-full sm:w-auto flex-1 h-12 border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl font-semibold transition-all duration-200'
               >
                 <Save className='w-4 h-4 mr-2' />
                 {t('results.actions.save')}
               </Button>
               <Button
                 variant='outline'
-                className='flex-1 h-12 border-2 border-blue-200 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl font-semibold transition-all duration-200'
+                className='w-full sm:w-auto flex-1 h-12 border-2 border-blue-200 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl font-semibold transition-all duration-200'
               >
                 <Share2 className='w-4 h-4 mr-2' />
                 {t('results.actions.share')}
