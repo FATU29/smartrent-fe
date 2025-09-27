@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react'
+import { createContext, useState, useEffect, useMemo } from 'react'
 import {
   DEFAULT_PAGE,
   DEFAULT_PER_PAGE,
@@ -57,9 +57,17 @@ export const ListProvider = <T,>({
     }
   }, [])
 
+  interface PaginationMeta {
+    total: number
+    page: number
+    totalPages: number
+    hasNext: boolean
+    hasPrevious: boolean
+  }
+
   const executeApiCall = async (
     operation: () => Promise<ListFetcherResponse<T>>,
-    onSuccess: (data: T[], paginationData: any) => void,
+    onSuccess: (data: T[], paginationData: PaginationMeta) => void,
     errorMessage: string,
   ) => {
     try {
@@ -155,6 +163,14 @@ export const ListProvider = <T,>({
     handleLoadNewPage,
     itemsData,
     isLoading,
+    activeCount: useMemo(() => {
+      return Object.entries(filters).filter(([k, v]) => {
+        if (['search', 'page', 'perPage'].includes(k)) return false
+        if (Array.isArray(v)) return v.length > 0
+        if (typeof v === 'boolean') return v
+        return v !== undefined && v !== '' && v !== null
+      }).length
+    }, [filters]),
   }
 
   return <ListContext.Provider value={value}>{children}</ListContext.Provider>

@@ -1,6 +1,9 @@
 {
   "common": {
-    "or": "Or"
+    "or": "Or",
+    "loading": "Loading...",
+    "loadingMore": "Loading more...",
+    "endOfResults": "End of results"
   },
   "pagination": {
     "showing": "Showing",
@@ -302,7 +305,7 @@
     },
     "filters": {
       "title": "Filter Properties",
-      "anyAmenities": "Any Amenities",
+      "anyAmenities": "All Amenities",
       "oneAmenity": "1 Amenity",
       "amenitiesCount": "Amenities",
       "propertyType": {
@@ -321,11 +324,11 @@
         "minPrice": "Min Price",
         "maxPrice": "Max Price",
         "currency": "VND",
-        "any": "Any Price"
+        "any": "All prices"
       },
       "bedrooms": {
         "title": "Bedrooms",
-        "any": "Any",
+        "any": "All",
         "studio": "Studio",
         "one": "1+",
         "two": "2+",
@@ -335,7 +338,7 @@
       },
       "bathrooms": {
         "title": "Bathrooms",
-        "any": "Any",
+        "any": "All",
         "one": "1+",
         "two": "2+",
         "three": "3+",
@@ -360,11 +363,11 @@
         "title": "Location",
         "city": "City",
         "district": "District",
-        "any": "Any Location"
+        "any": "All locations"
       },
       "furnishing": {
         "title": "Furnishing",
-        "any": "Any",
+        "any": "All",
         "furnished": "Furnished",
         "semiFurnished": "Semi-Furnished",
         "unfurnished": "Unfurnished"
@@ -826,7 +829,8 @@
     "newsletter": "Newsletter",
     "newsletterDescription": "Subscribe to receive the latest real estate news",
     "subscribe": "Subscribe",
-    "emailPlaceholder": "Enter your email"
+    "emailPlaceholder": "Enter your email",
+    "disclaimer": "This platform is developed solely for the Capstone Graduation Project of the University of Science. It is an academic prototype and not an operational commercial service."
   },
   "navigation": {
     "home": "Home",
@@ -899,6 +903,137 @@
       "notifications": "Notifications",
       "emailSubscriptions": "Email subscriptions",
       "lockRequest": "Account lock request"
+    }
+  },
+  "residentialFilter": {
+    "searchPlaceholder": "Search residential properties...",
+    "actions": {
+      "search": "Search",
+      "viewMap": "View map",
+      "filter": "Filter",
+      "clear": "Clear",
+      "apply": "Apply",
+      "reset": "Reset",
+      "back": "Back"
+    },
+    "toggles": {
+      "verified": "Verified",
+      "professionalBroker": "Professional broker",
+      "video": "Has video",
+      "has360": "Has 3D/360°"
+    },
+    "dropdowns": {
+      "propertyType": "Property Type",
+      "priceRange": "Price Range",
+      "areaRange": "Area",
+      "frontage": "Frontage",
+      "orientation": "Orientation",
+      "moveInTime": "Move-in Time",
+      "electricityPrice": "Electricity Price",
+      "waterPrice": "Water Price",
+      "internetPrice": "Internet Price",
+      "amenities": "Amenities",
+      "media": "Media",
+      "areaProject": "Area & Project"
+    },
+    "area": {
+      "any": "All",
+      "min": "Min area",
+      "max": "Max area",
+      "unit": "m²",
+      "title": "Area Range"
+    },
+    "price": {
+      "any": "All prices",
+      "title": "Price Range",
+      "min": "Min price",
+      "max": "Max price",
+      "unit": "VND"
+    },
+    "frontage": {
+      "title": "Frontage Width",
+      "any": "All",
+      "min": "Min frontage",
+      "max": "Max frontage",
+      "unit": "m"
+    },
+    "orientation": {
+      "title": "House Direction",
+      "any": "All",
+      "north": "North",
+      "south": "South",
+      "east": "East",
+      "west": "West",
+      "northeast": "Northeast",
+      "northwest": "Northwest",
+      "southeast": "Southeast",
+      "southwest": "Southwest"
+    },
+    "moveInTime": {
+      "title": "Move-in Time",
+      "any": "All",
+      "immediate": "Immediate",
+      "oneToTwoWeeks": "1 - 2 weeks",
+      "oneMonth": "1 month",
+      "negotiable": "Negotiable"
+    },
+    "utilitiesPrice": {
+      "electricity": {
+        "title": "Electricity Price",
+        "any": "All",
+        "negotiable": "Negotiable",
+        "owner": "Set by owner",
+        "provider": "Provider rate"
+      },
+      "water": {
+        "title": "Water Price",
+        "any": "All",
+        "negotiable": "Negotiable",
+        "owner": "Set by owner",
+        "provider": "Provider rate"
+      },
+      "internet": {
+        "title": "Internet Price",
+        "any": "All",
+        "negotiable": "Negotiable",
+        "owner": "Set by owner"
+      }
+    },
+    "amenities": {
+      "title": "Amenities",
+      "securityService": "Security service",
+      "camera": "Camera",
+      "fireSafety": "Fire safety",
+      "parking": "Parking",
+      "balcony": "Balcony",
+      "garden": "Garden"
+    },
+    "media": {
+      "title": "Media",
+      "video": "Video",
+      "threeSixty": "3D & 360°"
+    },
+    "summary": {
+      "selected": "selected",
+      "all": "All"
+    },
+    "areaProject": {
+      "title": "Area & Project",
+      "province": "Province/City",
+      "district": "District",
+      "ward": "Ward",
+      "street": "Street",
+      "project": "Project",
+      "chooseProvince": "Choose Province/City",
+      "chooseDistrict": "Choose District",
+      "chooseWard": "Choose Ward",
+      "chooseStreet": "Choose Street",
+      "chooseProject": "Choose Project",
+      "any": "Any",
+      "clear": "Clear",
+      "apply": "Apply",
+      "add": "+ Add",
+      "added": "Selected"
     }
   }
 }

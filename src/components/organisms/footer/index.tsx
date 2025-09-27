@@ -17,11 +17,12 @@ const Footer: React.FC = () => {
 
   return (
     <footer className='bg-muted/50 border-t border-border'>
-      <div className='w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='py-8 sm:py-12'>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8'>
+      <div className='w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10'>
+        {/* Slightly reduced mobile vertical padding, increased large screen breathing space */}
+        <div className='py-6 sm:py-10 lg:py-14'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12'>
             {/* Company Info */}
-            <div className='space-y-4'>
+            <div className='space-y-3'>
               <div className='flex items-center gap-2'>
                 <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
                   <Building2 className='h-5 w-5 text-primary-foreground' />
@@ -30,10 +31,10 @@ const Footer: React.FC = () => {
                   SmartRent
                 </Typography>
               </div>
-              <Typography variant='muted' className='text-sm'>
+              <Typography variant='muted' className='text-sm leading-relaxed'>
                 {t('footer.description')}
               </Typography>
-              <div className='flex space-x-4'>
+              <div className='flex space-x-4 mt-5 sm:mt-6'>
                 <a
                   href='#'
                   className='text-muted-foreground hover:text-primary transition-colors'
@@ -214,8 +215,8 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Bottom Bar */}
-          <div className='mt-8 pt-6 border-t border-border'>
-            <div className='flex flex-col sm:flex-row justify-between items-center gap-4'>
+          <div className='mt-10 lg:mt-12 pt-6 lg:pt-8 border-t border-border'>
+            <div className='flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4'>
               <Typography
                 variant='small'
                 className='text-muted-foreground text-center sm:text-left'
@@ -246,6 +247,14 @@ const Footer: React.FC = () => {
                   </Typography>
                 </a>
               </div>
+            </div>
+            <div className='mt-5 sm:mt-6 lg:mt-7'>
+              <Typography
+                variant='small'
+                className='text-[11px] sm:text-xs leading-relaxed text-muted-foreground text-center max-w-3xl sm:max-w-4xl mx-auto px-2'
+              >
+                {t('footer.disclaimer')}
+              </Typography>
             </div>
           </div>
         </div>

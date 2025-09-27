@@ -31,6 +31,8 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "cookies": "^0.9.1",
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.539.0",
