@@ -1,6 +1,9 @@
 {
   "common": {
-    "or": "Hoặc"
+    "or": "Hoặc",
+    "loading": "Đang tải...",
+    "loadingMore": "Đang tải thêm...",
+    "endOfResults": "Hết kết quả"
   },
   "pagination": {
     "showing": "Hiển thị",
@@ -303,7 +306,7 @@
     },
     "filters": {
       "title": "Lọc Bất động sản",
-      "anyAmenities": "Bất kỳ Tiện nghi nào",
+      "anyAmenities": "Tất cả Tiện nghi",
       "oneAmenity": "1 Tiện nghi",
       "amenitiesCount": "Tiện nghi",
       "propertyType": {
@@ -322,11 +325,11 @@
         "minPrice": "Giá Tối thiểu",
         "maxPrice": "Giá Tối đa",
         "currency": "VND",
-        "any": "Bất kỳ Giá nào"
+        "any": "Tất cả Giá"
       },
       "bedrooms": {
         "title": "Phòng ngủ",
-        "any": "Bất kỳ",
+        "any": "Tất cả",
         "studio": "Studio",
         "one": "1+",
         "two": "2+",
@@ -336,7 +339,7 @@
       },
       "bathrooms": {
         "title": "Phòng tắm",
-        "any": "Bất kỳ",
+        "any": "Tất cả",
         "one": "1+",
         "two": "2+",
         "three": "3+",
@@ -361,11 +364,11 @@
         "title": "Vị trí",
         "city": "Thành phố",
         "district": "Quận/Huyện",
-        "any": "Bất kỳ Vị trí nào"
+        "any": "Tất cả Vị trí"
       },
       "furnishing": {
         "title": "Nội thất",
-        "any": "Bất kỳ",
+        "any": "Tất cả",
         "furnished": "Có nội thất",
         "semiFurnished": "Bán nội thất",
         "unfurnished": "Không nội thất"
@@ -827,7 +830,8 @@
     "newsletter": "Bản tin",
     "newsletterDescription": "Đăng ký để nhận tin tức bất động sản mới nhất",
     "subscribe": "Đăng ký",
-    "emailPlaceholder": "Nhập email của bạn"
+    "emailPlaceholder": "Nhập email của bạn",
+    "disclaimer": "Nền tảng này được phát triển phục vụ duy nhất cho Đồ án Tốt nghiệp của Trường Đại học Khoa học Tự nhiên. Đây là sản phẩm học thuật thử nghiệm, không phải dịch vụ thương mại."
   },
   "navigation": {
     "home": "Trang chủ",
@@ -900,6 +904,118 @@
       "notifications": "Thông báo",
       "emailSubscriptions": "Quản lý đăng kí nhận email",
       "lockRequest": "Yêu cầu khóa tài khoản"
+    }
+  },
+  "residentialFilter": {
+    "searchPlaceholder": "Tìm kiếm bất động sản nhà ở...",
+    "actions": {
+      "search": "Tìm kiếm",
+      "viewMap": "Xem bản đồ",
+      "filter": "Lọc",
+      "clear": "Xóa",
+      "apply": "Áp dụng",
+      "reset": "Đặt lại",
+      "back": "Quay lại"
+    },
+    "toggles": {
+      "verified": "Tin xác thực",
+      "professionalBroker": "Môi giới chuyên nghiệp",
+      "video": "Có video",
+      "has360": "Có 3D/360°"
+    },
+    "dropdowns": {
+      "propertyType": "Loại nhà đất",
+      "priceRange": "Khoảng giá",
+      "areaRange": "Diện tích",
+      "frontage": "Mặt tiền",
+      "orientation": "Hướng nhà",
+      "moveInTime": "Thời gian vào ở",
+      "electricityPrice": "Giá điện",
+      "waterPrice": "Giá nước",
+      "internetPrice": "Giá internet",
+      "amenities": "Tiện ích",
+      "media": "Phương tiện"
+    },
+    "area": {
+      "any": "Tất cả",
+      "min": "Diện tích tối thiểu",
+      "max": "Diện tích tối đa",
+      "unit": "m²",
+      "title": "Khoảng diện tích"
+    },
+    "price": {
+      "any": "Tất cả giá",
+      "title": "Khoảng giá",
+      "min": "Giá thấp nhất",
+      "max": "Giá cao nhất",
+      "unit": "VND"
+    },
+    "frontage": {
+      "title": "Chiều rộng mặt tiền",
+      "any": "Tất cả",
+      "min": "Mặt tiền tối thiểu",
+      "max": "Mặt tiền tối đa",
+      "unit": "m"
+    },
+    "orientation": {
+      "title": "Hướng nhà",
+      "any": "Tất cả",
+      "north": "Bắc",
+      "south": "Nam",
+      "east": "Đông",
+      "west": "Tây",
+      "northeast": "Đông Bắc",
+      "northwest": "Tây Bắc",
+      "southeast": "Đông Nam",
+      "southwest": "Tây Nam"
+    },
+    "moveInTime": {
+      "title": "Thời gian dự kiến vào ở",
+      "any": "Tất cả",
+      "immediate": "Ở ngay",
+      "oneToTwoWeeks": "1 - 2 tuần",
+      "oneMonth": "1 tháng",
+      "negotiable": "Thỏa thuận"
+    },
+    "utilitiesPrice": {
+      "electricity": {
+        "title": "Giá điện",
+        "any": "Tất cả",
+        "negotiable": "Thỏa thuận",
+        "owner": "Do chủ nhà quy định",
+        "provider": "Theo nhà cung cấp"
+      },
+      "water": {
+        "title": "Giá nước",
+        "any": "Tất cả",
+        "negotiable": "Thỏa thuận",
+        "owner": "Do chủ nhà quy định",
+        "provider": "Theo nhà cung cấp"
+      },
+      "internet": {
+        "title": "Giá internet",
+        "any": "Tất cả",
+        "negotiable": "Thỏa thuận",
+        "owner": "Do chủ nhà quy định"
+      }
+    },
+    "amenities": {
+      "title": "Tiện ích",
+      "securityService": "Có dịch vụ bảo vệ",
+      "camera": "Có camera",
+      "fireSafety": "Có PCCC",
+      "parking": "Chỗ để xe",
+      "balcony": "Ban công",
+      "garden": "Vườn"
+    },
+    "media": {
+      "title": "Phương tiện",
+      "video": "Video",
+      "threeSixty": "Hình 3D & 360°"
+    },
+    "summary": {
+      "selected": "đã chọn",
+      "all": "Tất cả"
     }
   }
 }

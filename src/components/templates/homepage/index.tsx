@@ -1,20 +1,38 @@
 import { Typography } from '@/components/atoms/typography'
 import PropertyList from '@/components/organisms/propertyList'
 import { PropertyCard } from '@/api/types/property.type'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
+import { useListContext } from '@/contexts/list/useListContext'
+import ListPagination from '@/contexts/list/index.pagination'
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 
 interface HomepageTemplateProps {
   onPropertyClick?: (property: PropertyCard) => void
-  initialProperties?: PropertyCard[]
+  filterSlot?: React.ReactNode
+  carouselSlot?: React.ReactNode
 }
 
 const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   onPropertyClick,
-  initialProperties = [],
+  filterSlot,
+  carouselSlot,
 }) => {
   const [mounted, setMounted] = useState(false)
   const t = useTranslations()
+  const { handleLoadMore, pagination, isLoading } = useListContext()
+
+  // Mobile infinite scroll sentinel
+  const onIntersect = useCallback(() => {
+    if (!isLoading && pagination.hasNext) {
+      handleLoadMore()
+    }
+  }, [isLoading, pagination.hasNext, handleLoadMore])
+
+  const { ref: sentinelRef } = useIntersectionObserver({
+    onIntersect,
+    options: { rootMargin: '200px 0px 0px 0px', threshold: 0.1 },
+  })
 
   const handlePropertyClick = (property: PropertyCard) => {
     console.log('Property clicked:', property)
@@ -68,11 +86,29 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                 </Typography>
               </div>
             </div>
+            {carouselSlot && <div className='mb-6 sm:mb-8'>{carouselSlot}</div>}
+            {filterSlot && <div className='mb-8 sm:mb-10'>{filterSlot}</div>}
 
-            <PropertyList
-              onPropertyClick={handlePropertyClick}
-              initialData={initialProperties}
-            />
+            <PropertyList onPropertyClick={handlePropertyClick} />
+            {/* Desktop pagination (hidden on small screens) */}
+            <div className='hidden md:block mt-8'>
+              <ListPagination />
+            </div>
+            {/* Mobile infinite scroll sentinel */}
+            <div
+              ref={sentinelRef as React.RefObject<HTMLDivElement>}
+              className='md:hidden h-12 mt-6 flex items-center justify-center'
+            >
+              {pagination.hasNext ? (
+                <span className='text-xs text-muted-foreground'>
+                  {isLoading ? t('common.loading') : t('common.loadingMore')}
+                </span>
+              ) : (
+                <span className='text-xs text-muted-foreground'>
+                  {t('common.endOfResults')}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
