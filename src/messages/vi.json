@@ -3,7 +3,10 @@
     "or": "Hoặc",
     "loading": "Đang tải...",
     "loadingMore": "Đang tải thêm...",
-    "endOfResults": "Hết kết quả"
+    "loadMore": "Mở rộng",
+    "endOfResults": "Hết kết quả",
+    "new": "Mới",
+    "learnMore": "Tìm hiểu thêm"
   },
   "pagination": {
     "showing": "Hiển thị",
@@ -57,7 +60,7 @@
       "more": "thêm",
       "noProperties": "Không tìm thấy bất động sản",
       "noPropertiesDescription": "Hãy thử điều chỉnh tiêu chí tìm kiếm của bạn hoặc kiểm tra lại sau để có danh sách mới.",
-      "listings": "Danh sách Bất động sản",
+      "listings": "Bất động sản dành cho bạn",
       "favorites": "Yêu thích",
       "additionalAmenities": "Tiện nghi Bổ sung",
       "views": "lượt xem",
@@ -304,6 +307,38 @@
         }
       }
     },
+    "locations": {
+      "title": "Bất động sản theo địa điểm",
+      "listingsSuffix": "tin đăng",
+      "popularProjects": "Dự án nổi bật"
+    },
+    "features": {
+      "title": "Tại sao nên chọn chúng tôi",
+      "buyOrRent": {
+        "title": "Tìm & đăng tin dễ dàng",
+        "desc": "Đăng hoặc tìm tin nhanh chóng với quy trình đơn giản, hỗ trợ đầy đủ cho cả mua bán và thuê trọ."
+      },
+      "rentals": {
+        "title": "Nguồn phòng trọ phong phú",
+        "desc": "Cập nhật liên tục phòng trọ, căn hộ dịch vụ, nhà nguyên căn cho thuê với thông tin rõ ràng, minh bạch."
+      },
+      "projectReview": {
+        "title": "Đánh giá dự án khách quan",
+        "desc": "Tổng hợp nhận định chuyên sâu giúp bạn hiểu rõ tiện ích, tiềm năng và giá trị từng khu vực."
+      },
+      "knowledge": {
+        "title": "Trợ lý AI bất động sản",
+        "desc": "AI tư vấn mẹo thuê trọ an toàn, tối ưu chi phí, phân tích hợp đồng, gợi ý phong thủy & cập nhật xu hướng thị trường."
+      }
+    },
+    "topInterest": {
+      "title": "Dẫn đầu",
+      "viewAll": "Xem tất cả"
+    },
+    "searchIntro": {
+      "title": "Tìm căn phù hợp nhanh chóng",
+      "description": "Nhập từ khóa hoặc dùng bộ lọc chi tiết để thu hẹp theo vị trí, giá, loại hình và tiện nghi bạn cần."
+    },
     "filters": {
       "title": "Lọc Bất động sản",
       "anyAmenities": "Tất cả Tiện nghi",
@@ -375,7 +410,38 @@
       },
       "clearAll": "Xóa Tất cả",
       "applyFilters": "Áp dụng Bộ lọc"
+    },
+    "heroSlides": {
+      "rentSecure": {
+        "heading": "Thuê trọ an tâm, giao dịch minh bạch",
+        "sub": "Nguồn phòng đã kiểm duyệt, bảo vệ thông tin và hỗ trợ xử lý khi có tranh chấp.",
+        "cta": "Khám phá ngay"
+      },
+      "smartSearch": {
+        "heading": "Tìm kiếm thông minh theo nhu cầu",
+        "sub": "Bộ lọc chi tiết, gợi ý phù hợp vị trí, ngân sách và tiện ích bạn mong muốn.",
+        "cta": "Bắt đầu lọc"
+      },
+      "aiAssist": {
+        "heading": "AI đồng hành tư vấn thuê & giá",
+        "sub": "Hỏi đáp tức thì về giá trị thị trường, pháp lý hợp đồng và tối ưu chi phí.",
+        "cta": "Hỏi AI"
+      }
     }
+  },
+  "userMenu": {
+    "overview": "Tổng quan",
+    "listings": "Quản lý tin đăng",
+    "membership": "Gói thành viên",
+    "customers": "Khách hàng tiềm năng",
+    "sponsored": "Tin tài trợ",
+    "profile": "Cập nhật hồ sơ",
+    "password": "Đổi mật khẩu",
+    "proBroker": "Môi giới chuyên nghiệp",
+    "topup": "Nạp tiền / Ký quỹ",
+    "membershipPackage": "Nâng cấp & tiết kiệm hơn",
+    "membershipBenefit": "Mở khóa hiển thị cao hơn, AI nâng cao và insight khách hàng với các gói premium.",
+    "savePercent": "Tiết kiệm {percent}"
   },
   "createPost": {
     "title": "Tạo Tin Đăng Bất động sản",
