@@ -13,7 +13,6 @@ interface PropertyListProps {
 const PropertyList: React.FC<PropertyListProps> = ({ onPropertyClick }) => {
   const t = useTranslations()
   const { itemsData } = useListContext<PropertyCardType>()
-  // external filter bar controls context; no local filter UI here
 
   const handleFavorite = () => {}
 

@@ -162,8 +162,12 @@
   --color-sidebar-accent-foreground: var(--sidebarAccentForeground);
   --color-sidebar-border: var(--sidebarBorder);
   --color-sidebar-ring: var(--sidebarRing);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans, system-ui, Arial, sans-serif);
+  --font-mono: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+  --font-heading: var(
+    --font-heading,
+    var(--font-sans, system-ui, Arial, sans-serif)
+  );
 }
 
 /* Base styles */
@@ -174,7 +178,17 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+    font-feature-settings:
+      'liga' 1,
+      'kern' 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-heading {
+    font-family: var(--font-heading), var(--font-sans), sans-serif;
   }
 
   html {
@@ -202,7 +216,6 @@
     overflow-x: hidden;
   }
 
-  /* Custom shimmer animation for intersection observer demo */
   @keyframes shimmer {
     0% {
       transform: translateX(-100%) rotate(45deg);
@@ -213,5 +226,13 @@
     100% {
       transform: translateX(100%) rotate(45deg);
     }
+  }
+
+  button {
+    cursor: pointer;
+  }
+  button:disabled,
+  button[aria-disabled='true'] {
+    cursor: not-allowed;
   }
 }

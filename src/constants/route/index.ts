@@ -54,3 +54,21 @@ export const SELLERNET_ROUTES = {
 } as const
 
 export type SellernetRouteKey = keyof typeof SELLERNET_ROUTES
+
+// Public site routes (homepage, property browsing, etc.)
+export const PUBLIC_ROUTES = {
+  HOME: '/',
+  RESIDENTIAL_LIST: '/properties/residential',
+  PROPERTIES_PREFIX: '/properties',
+  APARTMENT_DETAIL_PREFIX: '/apartment-detail', // dynamic [...slug]
+} as const
+
+export type PublicRouteKey = keyof typeof PUBLIC_ROUTES
+
+// Helper builders for dynamic routes
+export const buildApartmentDetailRoute = (slugParts: string | string[]) => {
+  const parts = Array.isArray(slugParts) ? slugParts : [slugParts]
+  return `${PUBLIC_ROUTES.APARTMENT_DETAIL_PREFIX}/${parts
+    .map(encodeURIComponent)
+    .join('/')}`
+}

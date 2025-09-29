@@ -4,7 +4,7 @@ import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
 import LanguageSwitch from '@/components/molecules/languageSwitch'
 import ThemeSwitch from '@/components/molecules/themeSwitch'
-import UserMenu from '@/components/molecules/userMenu'
+import UserDropdown from '@/components/molecules/userDropdown'
 import { NavigationItemData } from '@/components/atoms/navigation-item'
 import { getNavigationItems } from '@/components/organisms/navigation/navigationItems.helper'
 import { Building2 } from 'lucide-react'
@@ -65,7 +65,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
       <LanguageSwitch />
       <ThemeSwitch />
       {isAuthenticated ? (
-        <UserMenu />
+        <UserDropdown />
       ) : (
         <Button
           onClick={() => openAuth('login')}

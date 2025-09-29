@@ -3,7 +3,10 @@
     "or": "Or",
     "loading": "Loading...",
     "loadingMore": "Loading more...",
-    "endOfResults": "End of results"
+    "loadMore": "Load more",
+    "endOfResults": "End of results",
+    "new": "New",
+    "learnMore": "Learn more"
   },
   "pagination": {
     "showing": "Showing",
@@ -57,7 +60,7 @@
       "more": "more",
       "noProperties": "No properties found",
       "noPropertiesDescription": "Try adjusting your search criteria or check back later for new listings.",
-      "listings": "Property Listings",
+      "listings": "Property Listings For You",
       "favorites": "Favorites",
       "additionalAmenities": "Additional Amenities",
       "views": "views",
@@ -303,6 +306,38 @@
         }
       }
     },
+    "locations": {
+      "title": "Properties by location",
+      "listingsSuffix": "listings",
+      "popularProjects": "Featured projects"
+    },
+    "features": {
+      "title": "Why Choose Us",
+      "buyOrRent": {
+        "title": "List & search easily",
+        "desc": "Publish or find listings quickly with a streamlined workflow for both buying and renting."
+      },
+      "rentals": {
+        "title": "Rich rental inventory",
+        "desc": "Continuously updated rooms, serviced apartments and whole homes with transparent details."
+      },
+      "projectReview": {
+        "title": "Objective project reviews",
+        "desc": "Expert insights help you evaluate amenities, growth potential and location value."
+      },
+      "knowledge": {
+        "title": "AI Real Estate Assistant",
+        "desc": "AI delivers tips on safe renting, cost optimization, contract insights, feng shui guidance and fresh market trends."
+      }
+    },
+    "topInterest": {
+      "title": "Top Interested",
+      "viewAll": "View all"
+    },
+    "searchIntro": {
+      "title": "Find your ideal place faster",
+      "description": "Type a keyword or refine with filters for location, price, property type and amenities."
+    },
     "filters": {
       "title": "Filter Properties",
       "anyAmenities": "All Amenities",
@@ -374,7 +409,38 @@
       },
       "clearAll": "Clear All",
       "applyFilters": "Apply Filters"
+    },
+    "heroSlides": {
+      "rentSecure": {
+        "heading": "Rent with confidence & transparency",
+        "sub": "Verified listings, protected data and support if disputes arise.",
+        "cta": "Explore now"
+      },
+      "smartSearch": {
+        "heading": "Smart search that fits you",
+        "sub": "Granular filters and location-aware suggestions match budget & amenities.",
+        "cta": "Start filtering"
+      },
+      "aiAssist": {
+        "heading": "AI assistant for pricing & renting",
+        "sub": "Instant answers on market value, contract clarity and cost optimization.",
+        "cta": "Ask AI"
+      }
     }
+  },
+  "userMenu": {
+    "overview": "Overview dashboard",
+    "listings": "Manage listings",
+    "membership": "Membership package",
+    "customers": "Customer leads",
+    "sponsored": "Sponsored listings",
+    "profile": "Update profile",
+    "password": "Change password",
+    "proBroker": "Professional broker",
+    "topup": "Deposit / Top-up",
+    "membershipPackage": "Upgrade & save more",
+    "membershipBenefit": "Unlock higher visibility, AI enhancements and lead insights with premium tiers.",
+    "savePercent": "Save {percent}"
   },
   "createPost": {
     "title": "Create Real Estate Listing",

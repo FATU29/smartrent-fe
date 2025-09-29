@@ -6,9 +6,7 @@ import {
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { PropertyCard } from '@/api/types/property.type'
-import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
 import { ListProvider } from '@/contexts/list/index.context'
-import FeaturedCarousel from '@/components/molecules/featuredCarousel'
 import MainLayout from '@/components/layouts/MainLayout'
 import React from 'react'
 import type { NextPageWithLayout } from '@/types/next-page'
@@ -33,34 +31,7 @@ const Home: NextPageWithLayout<{
       />
       <ListProvider fetcher={propertyFetcher} initialData={initialProperties}>
         <div className='container mx-auto space-y-6'>
-          <HomepageTemplate
-            onPropertyClick={handlePropertyClick}
-            filterSlot={<ResidentialFilterResponsive />}
-            carouselSlot={
-              <FeaturedCarousel
-                items={[
-                  {
-                    id: 'c1',
-                    title: 'Căn hộ trung tâm Quận 1',
-                    subtitle: 'View thành phố • 75m²',
-                    image: '/images/example.png',
-                  },
-                  {
-                    id: 'c2',
-                    title: 'Studio tiện nghi gần Metro',
-                    subtitle: 'Full nội thất • 40m²',
-                    image: '/images/default-image.jpg',
-                  },
-                  {
-                    id: 'c3',
-                    title: 'Penthouse sang trọng',
-                    subtitle: 'Hồ bơi riêng • 180m²',
-                    image: '/images/rental-auth-bg.jpg',
-                  },
-                ]}
-              />
-            }
-          />
+          <HomepageTemplate onPropertyClick={handlePropertyClick} />
         </div>
       </ListProvider>
     </>

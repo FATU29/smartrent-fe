@@ -69,17 +69,17 @@ function getDefaultComponent(variant: TypographyProps['variant']) {
 function getVariantClasses(variant: TypographyProps['variant']) {
   switch (variant) {
     case 'h1':
-      return 'scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl'
+      return 'scroll-m-20 text-4xl font-extrabold lg:text-5xl'
     case 'h2':
-      return 'scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0'
+      return 'scroll-m-20 text-3xl font-semibold'
     case 'h3':
-      return 'scroll-m-20 text-2xl font-semibold tracking-tight'
+      return 'scroll-m-20 text-2xl font-semibold'
     case 'h4':
-      return 'scroll-m-20 text-xl font-semibold tracking-tight'
+      return 'scroll-m-20 text-xl font-semibold'
     case 'h5':
-      return 'scroll-m-20 text-lg font-semibold tracking-tight'
+      return 'scroll-m-20 text-lg font-semibold'
     case 'h6':
-      return 'scroll-m-20 text-base font-semibold tracking-tight'
+      return 'scroll-m-20 text-base font-semibold'
     case 'blockquote':
       return 'mt-6 border-l-2 pl-6 italic'
     case 'list':
