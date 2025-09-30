@@ -26,8 +26,6 @@ export const SELLERNET_ROUTES = {
   // Membership
   MEMBERSHIP: '/sellernet/membership',
   MEMBERSHIP_REGISTER: '/sellernet/membership/register',
-  // Packages
-  PACKAGES: '/sellernet/packages',
   // Pro account
   PRO_REGISTER: '/sellernet/pro/register',
   // Finance

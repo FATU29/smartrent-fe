@@ -3,14 +3,14 @@
     "or": "Hoặc",
     "loading": "Đang tải...",
     "loadingMore": "Đang tải thêm...",
-    "loadMore": "Mở rộng",
+    "loadMore": "Tải thêm",
     "endOfResults": "Hết kết quả",
     "new": "Mới",
     "learnMore": "Tìm hiểu thêm"
   },
   "pagination": {
     "showing": "Hiển thị",
-    "of": "trong tổng số",
+    "of": "trong",
     "results": "kết quả",
     "show": "Hiển thị",
     "perPage": "mỗi trang",
@@ -20,6 +20,25 @@
     "next": "Tiếp"
   },
   "homePage": {
+    "authMeta": {
+      "otp": {
+        "title": "Nhập Mã Xác Minh",
+        "description": "Chúng tôi đã gửi mã xác minh 6 số tới {contact}",
+        "digitLabel": "Số {position}",
+        "verifyButton": "Xác Minh Mã",
+        "verifyingButton": "Đang xác minh...",
+        "didntReceive": "Không nhận được mã?",
+        "resendButton": "Gửi Lại Mã",
+        "resendCountdown": "Gửi lại sau {seconds} giây",
+        "backToRegister": "Quay Lại Đăng Ký",
+        "verificationSuccess": "Xác minh thành công!",
+        "verificationError": "Xác minh thất bại. Vui lòng thử lại.",
+        "resendSuccess": "Đã gửi lại mã thành công!",
+        "resendError": "Không thể gửi lại mã. Vui lòng thử lại.",
+        "resendingButton": "Đang gửi lại...",
+        "back": "Quay Lại"
+      }
+    },
     "title": "Tìm Ngôi Nhà Mơ Ước",
     "subtitle": "Khám phá bất động sản cao cấp với tiện nghi hiện đại, danh sách đã xác minh và giá cả minh bạch.",
     "description": "Khám phá ngôi nhà hoàn hảo của bạn",
@@ -235,6 +254,54 @@
       "otp": {
         "title": "Nhập Mã Xác Minh",
         "description": "Chúng tôi đã gửi mã xác minh 6 số tới {contact}",
+        "membershipPage": {
+          "title": "Gói dịch vụ",
+          "subtitle": "So sánh gói Hội viên và gói voucher Đẩy tin để chọn giải pháp tối ưu cho nhu cầu bán hàng.",
+          "tabs": {
+            "membership": "Gói Hội viên",
+            "voucher": "Gói voucher Đẩy tin"
+          },
+          "aria": {
+            "register": "Đăng ký gói dịch vụ",
+            "membershipTab": "Tab gói hội viên",
+            "voucherTab": "Tab gói voucher đẩy tin"
+          }
+        },
+        "membershipPlans": {
+          "savingSuffix": "mỗi tháng",
+          "basic": {
+            "name": "Hội viên Cơ bản",
+            "description": "Phù hợp với môi giới mới hoặc gói hàng nhỏ"
+          },
+          "standard": {
+            "name": "Hội viên Tiêu chuẩn",
+            "description": "Phù hợp với môi giới chuyên nghiệp có gói hàng từ 10 BDS"
+          },
+          "premium": {
+            "name": "Hội viên Cao cấp",
+            "description": "Phù hợp với môi giới có gói hàng và ngân sách quảng cáo lớn"
+          },
+          "groups": {
+            "monthlyPackage": "Gói tin hằng tháng",
+            "utilities": "Tiện ích"
+          },
+          "features": {
+            "vipGold7": "Tin VIP Vàng (hiển thị 7 ngày)",
+            "vipSilver7": "Tin VIP Bạc (hiển thị 7 ngày)",
+            "1vipGold7": "1 Tin VIP Vàng (hiển thị 7 ngày)",
+            "1vipSilver7": "1 Tin VIP Bạc (hiển thị 7 ngày)",
+            "2vipSilver7": "2 Tin VIP Bạc (hiển thị 7 ngày)",
+            "15standard10": "15 Tin Thường (hiển thị 10 ngày)",
+            "30standard10": "30 Tin Thường (hiển thị 10 ngày)",
+            "50standard10": "50 Tin Thường (hiển thị 10 ngày)",
+            "15pushStandard": "15 lượt đẩy cho Tin Thường",
+            "30pushStandard": "30 lượt đẩy cho Tin Thường",
+            "50pushStandard": "50 lượt đẩy cho Tin Thường",
+            "imageCopyright": "Bản quyền ảnh",
+            "scheduledPosting": "Hẹn giờ đăng tin",
+            "performanceReport": "Báo cáo hiệu suất"
+          }
+        },
         "digitLabel": "Số {position}",
         "verifyButton": "Xác Minh Mã",
         "verifyingButton": "Đang xác minh...",
@@ -448,6 +515,7 @@
     "description": "Làm theo các bước dưới đây để tạo tin đăng bất động sản",
     "back": "Quay lại",
     "next": "Tiếp theo",
+    "completeCurrentStep": "Vui lòng hoàn thành bước này trước khi tiếp tục",
     "generateAutomatically": "Tạo tự động",
     "continueToUpload": "Tiếp tục tải lên",
     "steps": {
@@ -482,6 +550,10 @@
       }
     },
     "sections": {
+      "packageConfig": {
+        "title": "Gói & Cấu hình",
+        "description": "Chọn gói hội viên hoặc gói đẩy tin phù hợp để tối ưu hiển thị"
+      },
       "media": {
         "title": "Hình ảnh & Video",
         "description": "Tải lên hình ảnh chất lượng cao và video tùy chọn để trình bày bất động sản của bạn",
@@ -948,8 +1020,6 @@
       "customers": "Quản lý khách hàng",
       "membership": "Gói Hội viên",
       "membershipRegister": "Đăng ký mua",
-      "packages": "Gói Tin Sài Gòn 1k/ngày",
-      "packagesNew": "Mới",
       "proAccount": "Tài khoản Pro",
       "finance": "Quản lý tài chính",
       "balanceInfo": "Thông tin số dư",
@@ -973,6 +1043,10 @@
     }
   },
   "residentialFilter": {
+    "currency": {
+      "vnd": "đ",
+      "usd": "Đô"
+    },
     "searchPlaceholder": "Tìm kiếm bất động sản nhà ở...",
     "actions": {
       "search": "Tìm kiếm",
@@ -1101,6 +1175,72 @@
       "apply": "Áp dụng",
       "add": "+ Thêm",
       "added": "Đã chọn"
+    }
+  },
+  "pricing": {
+    "bestSeller": "Bán chạy nhất",
+    "buyNow": "Mua ngay",
+    "saveUpTo": "Tiết kiệm đến",
+    "perMonthSuffix": "₫/tháng"
+  },
+  "voucher": {
+    "bestSeller": "Bán chạy nhất",
+    "buyNow": "Mua ngay",
+    "save": "Tiết kiệm",
+    "daySuffix": "ngày",
+    "voucherUnit": "voucher",
+    "voucherPlural": "voucher",
+    "pushDescription": "{count} voucher giảm {amount} VND mỗi lần đẩy Tin Thường.",
+    "savingPrefix": "Tiết kiệm",
+    "perPeriod": "/",
+    "currencySymbol": "₫"
+  },
+  "membershipPage": {
+    "title": "Gói dịch vụ",
+    "subtitle": "So sánh gói Hội viên và gói voucher Đẩy tin để chọn giải pháp tối ưu cho nhu cầu bán hàng.",
+    "tabs": {
+      "membership": "Gói Hội viên",
+      "voucher": "Gói voucher Đẩy tin"
+    },
+    "aria": {
+      "register": "Đăng ký gói dịch vụ",
+      "membershipTab": "Tab gói hội viên",
+      "voucherTab": "Tab gói voucher đẩy tin"
+    }
+  },
+  "membershipPlans": {
+    "savingSuffix": "mỗi tháng",
+    "basic": {
+      "name": "Hội viên Cơ bản",
+      "description": "Phù hợp với môi giới mới hoặc gói hàng nhỏ"
+    },
+    "standard": {
+      "name": "Hội viên Tiêu chuẩn",
+      "description": "Phù hợp với môi giới chuyên nghiệp có gói hàng từ 10 BDS"
+    },
+    "premium": {
+      "name": "Hội viên Cao cấp",
+      "description": "Phù hợp với môi giới có gói hàng và ngân sách quảng cáo lớn"
+    },
+    "groups": {
+      "monthlyPackage": "Gói tin hằng tháng",
+      "utilities": "Tiện ích"
+    },
+    "features": {
+      "vipGold7": "Tin VIP Vàng (hiển thị 7 ngày)",
+      "vipSilver7": "Tin VIP Bạc (hiển thị 7 ngày)",
+      "1vipGold7": "1 Tin VIP Vàng (hiển thị 7 ngày)",
+      "1vipSilver7": "1 Tin VIP Bạc (hiển thị 7 ngày)",
+      "2vipSilver7": "2 Tin VIP Bạc (hiển thị 7 ngày)",
+      "15standard10": "15 Tin Thường (hiển thị 10 ngày)",
+      "30standard10": "30 Tin Thường (hiển thị 10 ngày)",
+      "50standard10": "50 Tin Thường (hiển thị 10 ngày)",
+      "15pushStandard": "15 lượt đẩy cho Tin Thường",
+      "30pushStandard": "30 lượt đẩy cho Tin Thường",
+      "50pushStandard": "50 lượt đẩy cho Tin Thường",
+      "imageCopyright": "Bản quyền ảnh",
+      "scheduledPosting": "Hẹn giờ đăng tin",
+      "performanceReport": "Báo cáo hiệu suất"
     }
   }
 }
