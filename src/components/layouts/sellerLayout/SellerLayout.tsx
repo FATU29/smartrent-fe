@@ -77,11 +77,12 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
   return (
     <>
       <div className='relative min-h-[100dvh] md:min-h-screen bg-background -mt-px md:mt-0'>
-        <div className='mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8'>
-          <div className='grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-6 py-4 md:py-6'>
+        {/* Full-width grid so sidebar can be flush with left edge */}
+        <div className='w-full'>
+          <div className='grid grid-cols-1 md:grid-cols-[200px_1fr] md:pb-6 pb-4 md:gap-0'>
             {/* Desktop sidebar */}
             <aside className='hidden md:block'>
-              <div className='sticky top-5 rounded-xl border bg-card p-3 shadow-sm max-h-[calc(100vh-40px)] overflow-y-auto overflow-x-hidden pr-1'>
+              <div className='sticky top-0 h-screen rounded-none border-r bg-card p-3 shadow-sm overflow-y-auto overflow-x-hidden pr-1 flex flex-col'>
                 {/* Logo */}
                 <Link
                   href='/'
@@ -108,11 +109,11 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
               </div>
             </aside>
 
-            {/* Content */}
-            <section className='min-h-[60vh] pb-[calc(env(safe-area-inset-bottom)+96px)] md:pb-0 pt-[calc(env(safe-area-inset-top)+56px)] md:pt-0'>
-              {/* Header Card (fixed on mobile, static on desktop) */}
-              <div className='fixed inset-x-0 top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 border-b md:static md:rounded-xl md:border md:bg-card md:shadow-sm mb-4 md:mb-6'>
-                <div className='px-4 sm:px-6 pt-[max(env(safe-area-inset-top),0px)] md:px-4 md:pt-0'>
+            {/* Content area: header in content column only */}
+            <section className='min-h-[60vh] pb-[calc(env(safe-area-inset-bottom)+96px)] md:pb-0 pt-[calc(env(safe-area-inset-top)+56px)] md:pt-0 flex flex-col'>
+              {/* Header: fixed on mobile (full width), sticky inside column on desktop */}
+              <div className='fixed inset-x-0 top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 border-b shadow-sm md:shadow md:sticky md:inset-x-auto md:top-0 md:z-20'>
+                <div className='px-4 sm:px-6 pt-[max(env(safe-area-inset-top),0px)] md:px-6 md:pt-0'>
                   <div className='flex h-14 items-center justify-between gap-2 md:justify-between md:gap-3 md:h-auto md:py-4'>
                     {/* Left: Back logo (mobile) + title/desc */}
                     <div className='flex items-center gap-3 min-w-0'>
@@ -195,9 +196,11 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
                 </div>
               </div>
 
-              {/* Content Card */}
-              <div className='md:rounded-xl md:border md:bg-card md:shadow-sm md:p-4 lg:p-6'>
-                {children}
+              {/* Body container with constrained width (no extra top margin now) */}
+              <div className='mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 md:pt-4 flex-1 flex flex-col'>
+                <div className='md:rounded-xl md:border md:bg-card md:p-4 lg:p-6 flex-1 flex flex-col'>
+                  {children}
+                </div>
               </div>
             </section>
           </div>

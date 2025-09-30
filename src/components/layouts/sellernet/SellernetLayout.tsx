@@ -20,6 +20,7 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
   const t = useTranslations('navigation')
   const tSeller = useTranslations('navigation.seller')
   const [showAccountMenu, setShowAccountMenu] = useState(false)
+  // collapse removed
 
   // Close overlay on route change
   useEffect(() => {
@@ -52,10 +53,7 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
 
   // Derive active header title from nav tree
   const activeTitle = useMemo(() => {
-    if (
-      router.pathname.startsWith(SELLERNET_ROUTES.PERSONAL_PREFIX) ||
-      router.pathname.startsWith(SELLERNET_ROUTES.ACCOUNT)
-    ) {
+    if (router.pathname.startsWith(SELLERNET_ROUTES.PERSONAL_PREFIX)) {
       return t('accountManagement')
     }
     let lastMatchKey: string | undefined
@@ -73,17 +71,15 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
   return (
     <MainLayout>
       <div className='relative min-h-[100dvh] md:min-h-screen bg-background'>
-        <div className='mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8'>
-          <div className='grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-4 md:gap-6 pt-1 pb-2 md:py-6'>
-            {/* Desktop sidebar */}
+        <div className='w-full'>
+          <div className='grid grid-cols-1 md:grid-cols-[auto_1fr] md:gap-0 pt-0 pb-4 md:pb-6'>
             <aside className='hidden md:block'>
-              <div className='sticky top-10 rounded-xl border bg-card p-3 shadow-sm max-h-[calc(100vh-40px)] overflow-y-auto overflow-x-hidden pr-1 w-max'>
-                {/* Logo */}
+              <div className='sticky top-0 h-screen border-r bg-card overflow-y-auto overflow-x-hidden flex flex-col z-40 w-fit min-w-[180px] p-3 pr-5'>
                 <Link
                   href='/'
-                  className='flex items-center gap-2 px-2 py-2 mb-1.5'
+                  className='flex items-center gap-2 px-2 py-2 mb-2'
                 >
-                  <span className='inline-flex h-7 w-7 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
+                  <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
                     <Building2 className='h-4 w-4' />
                   </span>
                   <span className='text-base font-semibold tracking-tight'>
@@ -91,7 +87,8 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
                   </span>
                 </Link>
 
-                {/* Recursive vertical navigation */}
+                {/* floating toggle moved outside; removed here */}
+
                 <VerticalNav
                   items={items}
                   t={(key) => t(key)}
@@ -100,32 +97,29 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
               </div>
             </aside>
 
-            {/* Right section: header (top) + content (below) */}
-            <section className='min-h-[60vh] pb-[calc(env(safe-area-inset-bottom)+64px)] md:pb-0 pt-0 md:pt-0'>
-              {/* Header Card */}
-              <div className='hidden md:block sticky top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 border-b md:static md:rounded-xl md:border md:bg-card md:shadow-sm mb-3 md:mb-6'>
-                <div className='px-4 sm:px-6 pt-0 md:px-4 md:pt-0'>
+            <section className='min-h-[60vh] pb-[calc(env(safe-area-inset-bottom)+64px)] md:pb-0 pt-[calc(env(safe-area-inset-top)+56px)] md:pt-0 flex flex-col'>
+              <div className='fixed inset-x-0 top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 border-b shadow-sm md:shadow md:sticky md:inset-x-auto md:top-0'>
+                <div className='px-4 sm:px-6 pt-[max(env(safe-area-inset-top),0px)] md:pl-9 md:pr-6 md:pt-0'>
                   <div className='flex h-14 items-center justify-between gap-2 md:gap-3 md:h-auto md:py-4'>
                     <div className='min-w-0'>
                       <div className='text-base md:text-lg font-semibold truncate'>
                         {activeTitle}
                       </div>
                     </div>
-                    {/* Right actions placeholder */}
                     <div className='hidden md:flex items-center justify-end gap-2 sm:gap-3'></div>
                   </div>
                 </div>
               </div>
-
-              {/* Content Card */}
-              <div className='md:rounded-xl md:border md:bg-card md:shadow-sm p-4 md:p-4 lg:p-6'>
-                {children}
+              <div className='mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 md:pt-4 flex-1 flex flex-col'>
+                <div className='md:rounded-xl md:border md:bg-card md:p-4 lg:p-6 flex-1 flex flex-col'>
+                  {children}
+                </div>
               </div>
             </section>
           </div>
         </div>
+        {/* collapse toggle removed */}
       </div>
-      {/* Mobile bottom tab bar - use Seller bottom nav */}
       <nav className='fixed md:hidden bottom-0 inset-x-0 z-40 bg-card/95 border-t border-border shadow-[0_-4px_16px_rgba(0,0,0,0.06)] backdrop-blur supports-[backdrop-filter]:bg-card/80 h-16 pb-[env(safe-area-inset-bottom)] pl-[max(env(safe-area-inset-left),0px)] pr-[max(env(safe-area-inset-right),0px)]'>
         <div className='mx-auto max-w-3xl h-full'>
           <ul className='relative grid grid-cols-5 items-center h-full px-2'>

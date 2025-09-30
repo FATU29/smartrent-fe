@@ -13,6 +13,7 @@ import { AvatarUpload } from '../avatarUpload'
 import { User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { VALIDATION_PATTERNS } from '@/api/types/auth.type'
+import { useAuth } from '@/hooks/useAuth'
 
 type PersonalInfoFormData = {
   firstName: string
@@ -39,6 +40,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   className,
 }) => {
   const t = useTranslations()
+  const { updateUser } = useAuth()
 
   const validationSchema = yup.object().shape({
     firstName: yup
@@ -103,11 +105,33 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   const watchedValues = watch()
   const fullName = `${watchedValues.firstName} ${watchedValues.lastName}`.trim()
 
+  // Realtime sync basic identity fields to auth store so dropdown updates immediately
+  React.useEffect(() => {
+    if (
+      watchedValues.firstName ||
+      watchedValues.lastName ||
+      watchedValues.email
+    ) {
+      updateUser({
+        firstName: watchedValues.firstName,
+        lastName: watchedValues.lastName,
+        email: watchedValues.email,
+      })
+    }
+  }, [watchedValues.firstName, watchedValues.lastName, watchedValues.email])
+
   const handleAvatarChange = (file: File | null) => {
     setValue('avatar', file || undefined)
   }
 
   const handleFormSubmit = (data: PersonalInfoFormData) => {
+    // Sync to auth store first
+    updateUser({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phoneNumber: data.phoneNumber as unknown as string,
+    })
     onSubmit?.(data)
   }
 
@@ -133,17 +157,23 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           </div>
 
           {/* Name Fields */}
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
             <FormField
-              label={t(
-                'homePage.auth.accountManagement.personalInfo.firstName',
-              )}
+              label={
+                t(
+                  'homePage.auth.accountManagement.personalInfo.firstName',
+                ) /* Họ */
+              }
               placeholder={t('homePage.auth.register.firstNamePlaceholder')}
               error={errors.firstName?.message}
               {...firstNameController.field}
             />
             <FormField
-              label={t('homePage.auth.accountManagement.personalInfo.lastName')}
+              label={
+                t(
+                  'homePage.auth.accountManagement.personalInfo.lastName',
+                ) /* Tên */
+              }
               placeholder={t('homePage.auth.register.lastNamePlaceholder')}
               error={errors.lastName?.message}
               {...lastNameController.field}
@@ -151,12 +181,12 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           </div>
 
           {/* Contact Information */}
-          <div>
+          <div className='space-y-4'>
             <Typography variant='h4' className='font-medium text-foreground'>
               {t('homePage.auth.accountManagement.personalInfo.contactInfo')}
             </Typography>
 
-            <div className='mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
               <PhoneField
                 name='phoneNumber'
                 control={control}
@@ -177,12 +207,12 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           </div>
 
           {/* Business Information */}
-          <div>
+          <div className='space-y-4'>
             <Typography variant='h4' className='font-medium text-foreground'>
               {t('homePage.auth.accountManagement.personalInfo.businessInfo')}
             </Typography>
 
-            <div className='mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
               <FormField
                 label={t(
                   'homePage.auth.accountManagement.personalInfo.idDocument',
@@ -204,7 +234,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <FormField
               label={t('homePage.auth.accountManagement.personalInfo.address')}
               placeholder='Việt Nam'
-              className='mt-4 md:col-span-2'
+              className='md:col-span-2'
               {...addressController.field}
             />
           </div>

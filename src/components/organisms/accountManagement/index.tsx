@@ -12,6 +12,7 @@ import { User, Lock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { useAuth } from '@/hooks/useAuth'
 
 type PersonalInfoData = {
   firstName: string
@@ -30,19 +31,18 @@ type PasswordChangeData = {
 }
 
 type AccountManagementProps = {
-  initialUserData?: Partial<PersonalInfoData>
   onPersonalInfoUpdate?: (data: PersonalInfoData) => Promise<boolean>
   onPasswordChange?: (data: PasswordChangeData) => Promise<boolean>
   className?: string
 }
 
 const AccountManagement: NextPage<AccountManagementProps> = ({
-  initialUserData,
   onPersonalInfoUpdate,
   onPasswordChange,
   className,
 }) => {
   const t = useTranslations()
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = React.useState('personal-info')
   const [isUpdatingPersonalInfo, setIsUpdatingPersonalInfo] =
     React.useState(false)
@@ -50,9 +50,7 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
 
   const handlePersonalInfoSubmit = async (data: PersonalInfoData) => {
     if (!onPersonalInfoUpdate) {
-      toast.error(
-        t('homePage.auth.accountManagement.personalInfo.updateNotImplemented'),
-      )
+      // Form already syncs to store internally; no extra API call.
       return
     }
 
@@ -135,7 +133,7 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
 
         <TabsContent value='personal-info' className='space-y-6'>
           <PersonalInfoForm
-            initialData={initialUserData}
+            initialData={user || undefined}
             onSubmit={handlePersonalInfoSubmit}
             loading={isUpdatingPersonalInfo}
           />

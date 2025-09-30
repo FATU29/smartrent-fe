@@ -21,7 +21,9 @@ import {
   BadgeCheck,
   Wallet,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, getUserInitials } from '@/lib/utils'
+import Link from 'next/link'
+import { SELLERNET_ROUTES } from '@/constants/route'
 
 interface MenuItem {
   id: string
@@ -61,6 +63,7 @@ const UserDropdown: React.FC = () => {
       id: 'membership',
       icon: <ShieldCheck className='h-4 w-4' />,
       label: t('userMenu.membership'),
+      href: SELLERNET_ROUTES.MEMBERSHIP_REGISTER,
       badge: {
         text: t('userMenu.savePercent', { percent: '-39%' }),
         variant: 'neutral',
@@ -80,6 +83,7 @@ const UserDropdown: React.FC = () => {
       id: 'profile',
       icon: <UserCog className='h-4 w-4' />,
       label: t('userMenu.profile'),
+      href: SELLERNET_ROUTES.PERSONAL_EDIT,
     },
     {
       id: 'password',
@@ -107,7 +111,7 @@ const UserDropdown: React.FC = () => {
   }
 
   const getInitials = (first: string, last: string) =>
-    `${first.charAt(0)}${last.charAt(0)}`.toUpperCase()
+    getUserInitials(first, last)
 
   return (
     <DropdownMenu>
@@ -123,7 +127,7 @@ const UserDropdown: React.FC = () => {
       <DropdownMenuContent
         align='end'
         sideOffset={8}
-        className='p-0 w-72 overflow-hidden rounded-xl'
+        className='p-0 overflow-hidden rounded-xl overflow-x-hidden w-auto min-w-[16rem] max-w-[20rem]'
       >
         {/* Header panel */}
         <div className='p-5 bg-gradient-to-br from-red-900 via-red-800 to-red-700 text-white relative'>
@@ -135,33 +139,55 @@ const UserDropdown: React.FC = () => {
             <p className='text-xs leading-snug opacity-90 mb-3 max-w-[200px]'>
               {t('userMenu.membershipBenefit')}
             </p>
-            <Button size='sm' className='bg-red-600 hover:bg-red-500'>
-              {t('common.learnMore')}
+            <Button size='sm' className='bg-red-600 hover:bg-red-500' asChild>
+              <Link href={SELLERNET_ROUTES.MEMBERSHIP_REGISTER}>
+                {t('common.learnMore')}
+              </Link>
             </Button>
           </div>
         </div>
-        <div className='py-2 max-h-[420px] overflow-y-auto'>
+        <div className='py-2 max-h-[420px] overflow-y-auto overflow-x-hidden'>
           {items.map((item) => (
             <DropdownMenuItem
               key={item.id}
-              asChild={!item.onClick}
+              asChild={!!item.href && !item.onClick}
               onClick={item.onClick}
               className='cursor-pointer px-4 py-2.5 text-sm flex items-center gap-3'
             >
-              <div className='flex items-center gap-3 w-full'>
-                {item.icon}
-                <span className='flex-1 text-foreground'>{item.label}</span>
-                {item.badge && (
-                  <span
-                    className={cn(
-                      'text-[10px] px-2 py-0.5 rounded font-medium whitespace-nowrap',
-                      badgeStyles[item.badge.variant || 'primary'],
-                    )}
-                  >
-                    {item.badge.text}
-                  </span>
-                )}
-              </div>
+              {item.href ? (
+                <Link
+                  href={item.href}
+                  className='flex items-center gap-3 w-full'
+                >
+                  {item.icon}
+                  <span className='flex-1 text-foreground'>{item.label}</span>
+                  {item.badge && (
+                    <span
+                      className={cn(
+                        'text-[10px] px-2 py-0.5 rounded font-medium whitespace-nowrap',
+                        badgeStyles[item.badge.variant || 'primary'],
+                      )}
+                    >
+                      {item.badge.text}
+                    </span>
+                  )}
+                </Link>
+              ) : (
+                <div className='flex items-center gap-3 w-full'>
+                  {item.icon}
+                  <span className='flex-1 text-foreground'>{item.label}</span>
+                  {item.badge && (
+                    <span
+                      className={cn(
+                        'text-[10px] px-2 py-0.5 rounded font-medium whitespace-nowrap',
+                        badgeStyles[item.badge.variant || 'primary'],
+                      )}
+                    >
+                      {item.badge.text}
+                    </span>
+                  )}
+                </div>
+              )}
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator className='my-2' />

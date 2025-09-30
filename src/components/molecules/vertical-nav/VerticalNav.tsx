@@ -21,6 +21,7 @@ type VerticalNavProps = {
   isActive: (href: string) => boolean
   className?: string
   itemClassName?: string
+  collapsed?: boolean
 }
 
 const VerticalNav: React.FC<VerticalNavProps> = ({
@@ -29,6 +30,7 @@ const VerticalNav: React.FC<VerticalNavProps> = ({
   isActive,
   className,
   itemClassName,
+  collapsed = false,
 }) => {
   return (
     <ul className={cn('flex flex-col items-stretch gap-1.5', className)}>
@@ -40,6 +42,7 @@ const VerticalNav: React.FC<VerticalNavProps> = ({
           isActive={isActive}
           depth={0}
           itemClassName={itemClassName}
+          collapsed={collapsed}
         />
       ))}
     </ul>
@@ -52,6 +55,7 @@ type NodeProps = {
   isActive: (href: string) => boolean
   depth: number
   itemClassName?: string
+  collapsed?: boolean
 }
 
 const VerticalNavNode: React.FC<NodeProps> = ({
@@ -60,6 +64,7 @@ const VerticalNavNode: React.FC<NodeProps> = ({
   isActive,
   depth,
   itemClassName,
+  collapsed = false,
 }) => {
   const hasChildren = !!item.children && item.children.length > 0
   const isLeafActive = !!item.href && isActive(item.href)
@@ -101,8 +106,17 @@ const VerticalNavNode: React.FC<NodeProps> = ({
             href={item.href || '#'}
             aria-current={isLeafActive ? 'page' : undefined}
           >
-            {Icon ? <Icon className='size-4' /> : null}
-            <span>{t(item.key)}</span>
+            {Icon ? <Icon className='size-4 shrink-0' /> : null}
+            <span
+              className={cn(
+                'truncate transition-all duration-100 ease-out inline-block',
+                collapsed
+                  ? 'opacity-0 -translate-x-2 w-0 !m-0 overflow-hidden'
+                  : 'opacity-100 translate-x-0 ml-1',
+              )}
+            >
+              {t(item.key)}
+            </span>
           </Link>
         </Button>
       </li>
@@ -126,18 +140,37 @@ const VerticalNavNode: React.FC<NodeProps> = ({
         onClick={() => setOpen((v) => !v)}
       >
         <span className='inline-flex items-center gap-2'>
-          {Icon ? <Icon className='size-4' /> : null}
-          <span>{t(item.key)}</span>
+          {Icon ? <Icon className='size-4 shrink-0' /> : null}
+          <span
+            className={cn(
+              'truncate transition-all duration-100 ease-out inline-block',
+              collapsed
+                ? 'opacity-0 -translate-x-2 w-0 !m-0 overflow-hidden'
+                : 'opacity-100 translate-x-0',
+            )}
+          >
+            {t(item.key)}
+          </span>
         </span>
-        <ChevronDown
-          className={cn(
-            'size-4 transition-transform',
-            open ? 'rotate-180' : '',
-          )}
-        />
+        {!collapsed && (
+          <ChevronDown
+            className={cn(
+              'size-4 transition-transform',
+              open ? 'rotate-180' : '',
+            )}
+          />
+        )}
       </Button>
-      {open && (
-        <ul className='mt-1 ml-2 border-l pl-2 space-y-1'>
+      {!collapsed && (
+        <ul
+          className={cn(
+            'mt-1 ml-2 border-l pl-2 space-y-1 transition-all duration-150 ease-out origin-top',
+            open
+              ? 'opacity-100 max-h-[600px]'
+              : 'opacity-0 max-h-0 overflow-hidden',
+          )}
+          aria-hidden={!open}
+        >
           {item.children!.map((child) => (
             <VerticalNavNode
               key={child.key}
@@ -146,6 +179,7 @@ const VerticalNavNode: React.FC<NodeProps> = ({
               isActive={isActive}
               depth={depth + 1}
               itemClassName={itemClassName}
+              collapsed={collapsed}
             />
           ))}
         </ul>

@@ -150,6 +150,7 @@ const OtpInput: React.FC<OtpInputProps> = ({
         const code = otpValues.join('')
         result = await verifyOtpResetPassword({
           verificationCode: code,
+          email: email,
         })
       }
       if (result?.success) {
