@@ -69,6 +69,10 @@ export interface PropertyInfo {
   // Media
   images: MediaItem[]
   videoUrl: string
+
+  // Package & Configuration
+  selectedMembershipPlanId?: string
+  selectedVoucherPackageId?: string
 }
 
 export interface MediaItem {
@@ -154,6 +158,10 @@ const defaultPropertyInfo: PropertyInfo = {
     },
   ],
   videoUrl: '',
+
+  // Package & Configuration
+  selectedMembershipPlanId: undefined,
+  selectedVoucherPackageId: undefined,
 }
 
 // Create Context

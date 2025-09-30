@@ -6,7 +6,6 @@ import {
   BookmarkCheck,
   Users,
   BadgePercent,
-  Package2,
   BriefcaseBusiness,
   Wallet,
   ListOrdered,
@@ -77,11 +76,6 @@ export const SELLERNET_NAV: SellernetNavItem[] = [
         icon: ShoppingCart,
       },
     ],
-  },
-  {
-    key: 'sellernet.packages',
-    href: SELLERNET_ROUTES.PACKAGES,
-    icon: Package2,
   },
   {
     key: 'sellernet.proAccount',

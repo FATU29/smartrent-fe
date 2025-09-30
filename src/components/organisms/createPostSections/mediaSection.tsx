@@ -7,21 +7,27 @@ import { PhotoGuidelines } from '@/components/molecules/createPostMedia/photoGui
 
 interface MediaSectionProps {
   className?: string
+  showHeader?: boolean
 }
 
-const MediaSection: React.FC<MediaSectionProps> = ({ className }) => {
+const MediaSection: React.FC<MediaSectionProps> = ({
+  className,
+  showHeader = true,
+}) => {
   const t = useTranslations('createPost.sections.media')
 
   return (
     <div className={className}>
-      <div className='mb-5 sm:mb-8'>
-        <h2 className='text-xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'>
-          {t('title')}
-        </h2>
-        <p className='text-sm sm:text-base text-muted-foreground'>
-          {t('description')}
-        </p>
-      </div>
+      {showHeader && (
+        <div className='mb-5 sm:mb-8'>
+          <h2 className='text-xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'>
+            {t('title')}
+          </h2>
+          <p className='text-sm sm:text-base text-muted-foreground'>
+            {t('description')}
+          </p>
+        </div>
+      )}
       <CoverUpload />
       <UploadImages />
       <VideoUrl />

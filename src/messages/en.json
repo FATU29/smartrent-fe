@@ -447,6 +447,7 @@
     "description": "Follow the steps below to create your real estate listing",
     "back": "Back",
     "next": "Next",
+    "completeCurrentStep": "Please complete this step before continuing",
     "generateAutomatically": "Generate Automatically",
     "continueToUpload": "Continue to upload",
     "steps": {
@@ -481,6 +482,10 @@
       }
     },
     "sections": {
+      "packageConfig": {
+        "title": "Package & Configuration",
+        "description": "Select a membership or push voucher package to optimize visibility"
+      },
       "media": {
         "title": "Images & Video",
         "description": "Upload high-quality images and optional video to present your property",
@@ -872,6 +877,72 @@
       }
     }
   },
+  "pricing": {
+    "bestSeller": "Best Seller",
+    "buyNow": "Buy Now",
+    "saveUpTo": "Save up to",
+    "perMonthSuffix": "per month"
+  },
+  "voucher": {
+    "bestSeller": "Best Seller",
+    "buyNow": "Buy Now",
+    "save": "Save",
+    "daySuffix": "days",
+    "voucherUnit": "voucher",
+    "voucherPlural": "vouchers",
+    "pushDescription": "{count} voucher discount {amount} each push",
+    "savingPrefix": "Save",
+    "perPeriod": "/",
+    "currencySymbol": "$"
+  },
+  "membershipPage": {
+    "title": "Service Packages",
+    "subtitle": "Compare Membership packages and Push Voucher bundles to choose the best solution for your sales needs.",
+    "tabs": {
+      "membership": "Membership Packages",
+      "voucher": "Push Voucher Packages"
+    },
+    "aria": {
+      "register": "Register service packages",
+      "membershipTab": "Membership packages tab",
+      "voucherTab": "Push voucher packages tab"
+    }
+  },
+  "membershipPlans": {
+    "savingSuffix": "per month",
+    "basic": {
+      "name": "Basic Membership",
+      "description": "Suitable for new agents or small inventory"
+    },
+    "standard": {
+      "name": "Standard Membership",
+      "description": "For professional agents with 10+ listings"
+    },
+    "premium": {
+      "name": "Premium Membership",
+      "description": "For agents with large inventory and ad budget"
+    },
+    "groups": {
+      "monthlyPackage": "Monthly Listing Quota",
+      "utilities": "Utilities"
+    },
+    "features": {
+      "vipGold7": "Gold VIP Listing (visible 7 days)",
+      "vipSilver7": "Silver VIP Listing (visible 7 days)",
+      "1vipGold7": "1 Gold VIP Listing (visible 7 days)",
+      "1vipSilver7": "1 Silver VIP Listing (visible 7 days)",
+      "2vipSilver7": "2 Silver VIP Listings (visible 7 days)",
+      "15standard10": "15 Standard Listings (visible 10 days)",
+      "30standard10": "30 Standard Listings (visible 10 days)",
+      "50standard10": "50 Standard Listings (visible 10 days)",
+      "15pushStandard": "15 pushes for Standard Listings",
+      "30pushStandard": "30 pushes for Standard Listings",
+      "50pushStandard": "50 pushes for Standard Listings",
+      "imageCopyright": "Image copyright",
+      "scheduledPosting": "Scheduled posting",
+      "performanceReport": "Performance report"
+    }
+  },
   "footer": {
     "description": "Your trusted partner in finding the perfect home. We connect you with premium real estate and exceptional services.",
     "quickLinks": "Quick Links",
@@ -947,8 +1018,6 @@
       "customers": "Customer Management",
       "membership": "Membership",
       "membershipRegister": "Register to buy",
-      "packages": "1k/day Package",
-      "packagesNew": "New",
       "proAccount": "Pro Account",
       "finance": "Finance Management",
       "balanceInfo": "Balance info",
@@ -972,6 +1041,10 @@
     }
   },
   "residentialFilter": {
+    "currency": {
+      "vnd": "VND",
+      "usd": "USD"
+    },
     "searchPlaceholder": "Search residential properties...",
     "actions": {
       "search": "Search",
