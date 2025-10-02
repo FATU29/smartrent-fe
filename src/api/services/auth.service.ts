@@ -115,6 +115,7 @@ export class AuthService {
 
   static async verifyOtpResetPassword(verificationCode: {
     verificationCode: string
+    email: string
   }): Promise<ApiResponse<ResetPasswordResponse>> {
     const response = await apiRequest<ResetPasswordResponse>({
       method: 'POST',

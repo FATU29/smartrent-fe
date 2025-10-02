@@ -13,7 +13,6 @@ export type SellerRouteKey = keyof typeof SELLER_ROUTES
 // Centralized route constants for Sellernet area
 export const SELLERNET_ROUTES = {
   PREFIX: '/sellernet',
-  ACCOUNT: '/sellernet/account',
   OVERVIEW: '/sellernet/overview',
   // Post management
   POST_PREFIX: '/sellernet/post',

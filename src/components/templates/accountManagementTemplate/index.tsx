@@ -3,6 +3,7 @@ import { NextPage } from 'next'
 import AccountManagement from '@/components/organisms/accountManagement'
 import { cn } from '@/lib/utils'
 
+// Personal info + password types kept local for future extension
 type PersonalInfoData = {
   firstName: string
   lastName: string
@@ -20,14 +21,12 @@ type PasswordChangeData = {
 }
 
 type AccountManagementTemplateProps = {
-  initialUserData?: Partial<PersonalInfoData>
   onPersonalInfoUpdate?: (data: PersonalInfoData) => Promise<boolean>
   onPasswordChange?: (data: PasswordChangeData) => Promise<boolean>
   className?: string
 }
 
 const AccountManagementTemplate: NextPage<AccountManagementTemplateProps> = ({
-  initialUserData,
   onPersonalInfoUpdate,
   onPasswordChange,
   className,
@@ -37,7 +36,6 @@ const AccountManagementTemplate: NextPage<AccountManagementTemplateProps> = ({
       {/* Main Content */}
       <main className='container mx-auto  md:py-8 md:px-4'>
         <AccountManagement
-          initialUserData={initialUserData}
           onPersonalInfoUpdate={onPersonalInfoUpdate}
           onPasswordChange={onPasswordChange}
         />
