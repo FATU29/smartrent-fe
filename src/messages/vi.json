@@ -1242,5 +1242,73 @@
       "scheduledPosting": "Hẹn giờ đăng tin",
       "performanceReport": "Báo cáo hiệu suất"
     }
+  },
+  "seller": {
+    "listingManagement": {
+      "toolbar": {
+        "searchPlaceholder": "Tìm kiếm tin...",
+        "filter": "Lọc",
+        "export": "Xuất",
+        "totalZero": "0 tin đăng",
+        "totalOne": "1 tin đăng",
+        "totalMany": "{count} tin đăng"
+      },
+      "status": {
+        "all": "Tất cả",
+        "expired": "Hết hạn",
+        "expiring": "Sắp hết hạn",
+        "active": "Đang hiển thị",
+        "pending": "Chờ duyệt",
+        "review": "Đang duyệt",
+        "payment": "Chờ thanh toán",
+        "rejected": "Bị từ chối",
+        "archived": "Đã lưu trữ"
+      },
+      "empty": {
+        "title": "Chưa có tin đăng",
+        "description": "Bạn chưa đăng tin nào. Hãy tạo tin đầu tiên hoặc mua gói hội viên để mở khóa quyền đăng.",
+        "tagline": "Tăng hiển thị với gói premium và tối ưu AI",
+        "actions": {
+          "buyPackage": "Mua gói",
+          "create": "Đăng tin"
+        }
+      },
+      "filter": {
+        "title": "Bộ lọc",
+        "postingDate": "Ngày đăng tin",
+        "postingDatePlaceholder": "Mặc định",
+        "postingDateDefault": "Mặc định",
+        "postingDateLast7Days": "7 ngày qua",
+        "postingDateLast30Days": "30 ngày qua",
+        "postingDateCustom": "Tùy chọn ngày",
+        "today": "Hôm nay",
+        "yesterday": "Hôm qua",
+        "dateRangeTitle": "Lọc theo ngày",
+        "fromDate": "Từ ngày",
+        "toDate": "Đến ngày",
+        "back": "Quay lại",
+        "datePlaceholder": "Chọn ngày",
+        "editRange": "Sửa khoảng",
+        "propertyType": "Loại BĐS",
+        "add": "+ Thêm",
+        "province": "Tỉnh/ Thành",
+        "district": "Quận/ Huyện",
+        "listingCategory": "Loại tin đăng",
+        "reset": "Đặt lại",
+        "apply": "Áp dụng",
+        "search": "Tìm kiếm...",
+        "noResult": "Không có kết quả",
+        "addProvince": "+ Thêm tỉnh",
+        "clickChipToRemove": "Nhấn vào các chip để xóa tỉnh thành đã chọn",
+        "selectProvinceToFilter": "Chọn tỉnh thành để lọc danh sách bất động sản",
+        "addDistrict": "+ Thêm quận/huyện",
+        "selectDistrictInProvince": "Chọn quận/huyện trong",
+        "selectExactlyOneProvince": "Chọn đúng 1 tỉnh/thành để kích hoạt lọc quận/huyện",
+        "filteringDistrictsIn": "Đang lọc quận/huyện trong:",
+        "ward": "Phường/Xã",
+        "selectDistrictsFirst": "Chọn quận/huyện trước để kích hoạt lọc phường/xã",
+        "filteringWardsIn": "Đang lọc phường/xã trong:"
+      }
+    }
   }
 }

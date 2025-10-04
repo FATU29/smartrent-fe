@@ -23,7 +23,6 @@ export const SELLERNET_ROUTES = {
   // Customers
   CUSTOMERS: '/sellernet/customers',
   // Membership
-  MEMBERSHIP: '/sellernet/membership',
   MEMBERSHIP_REGISTER: '/sellernet/membership/register',
   // Pro account
   PRO_REGISTER: '/sellernet/pro/register',
