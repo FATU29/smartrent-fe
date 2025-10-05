@@ -6,7 +6,8 @@
     "loadMore": "Tải thêm",
     "endOfResults": "Hết kết quả",
     "new": "Mới",
-    "learnMore": "Tìm hiểu thêm"
+    "learnMore": "Tìm hiểu thêm",
+    "go_home": "Về trang chủ"
   },
   "pagination": {
     "showing": "Hiển thị",
@@ -238,6 +239,15 @@
         "newPasswordMinLength": "Mật khẩu mới phải có ít nhất 8 ký tự",
         "newPasswordLowercase": "Mật khẩu cần có ít nhất 1 ký tự viết thường",
         "newPasswordNumber": "Mật khẩu cần có ít nhất 1 ký tự số"
+      },
+      "oauth": {
+        "processing_login": "Đang xử lý đăng nhập...",
+        "please_wait": "Vui lòng đợi trong giây lát",
+        "login_successful": "Đăng nhập thành công!",
+        "redirecting": "Đang chuyển hướng...",
+        "login_failed": "Đăng nhập thất bại",
+        "oauth_authorization_failed": "Xác thực Google OAuth thất bại",
+        "authentication_failed": "Xác thực thất bại"
       },
       "logout": "Đăng xuất",
       "profile": "Hồ sơ",

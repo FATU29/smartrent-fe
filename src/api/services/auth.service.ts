@@ -150,6 +150,25 @@ export class AuthService {
 
     return response?.code === API_ERROR_CODES.SUCCESS
   }
+
+  static async googleOAuth(code: string): Promise<
+    ApiResponse<{
+      tokens: AuthTokens
+      user: UserApi
+    }>
+  > {
+    const response = await apiRequest<{
+      tokens: AuthTokens
+      user: UserApi
+    }>({
+      method: 'POST',
+      url: ENV.API.AUTH.GOOGLE_OAUTH,
+      data: { code },
+      skipAuth: true,
+    })
+
+    return response
+  }
 }
 
 export const {
@@ -161,4 +180,5 @@ export const {
   verifyOtpResetPassword,
   resetPassword,
   changePassword,
+  googleOAuth,
 } = AuthService

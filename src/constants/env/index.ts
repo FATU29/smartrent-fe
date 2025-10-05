@@ -10,6 +10,13 @@ export const ENV = {
   SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'SmartRent',
 
+  // Google OAuth Configuration
+  GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
+  GOOGLE_REDIRECT_URI:
+    process.env.GOOGLE_REDIRECT_URI ||
+    'http://localhost:3000/api/auth/callback/google',
+
   // API endpoints
   API: PATHS,
 
