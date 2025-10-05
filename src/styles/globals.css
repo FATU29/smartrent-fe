@@ -162,11 +162,34 @@
   --color-sidebar-accent-foreground: var(--sidebarAccentForeground);
   --color-sidebar-border: var(--sidebarBorder);
   --color-sidebar-ring: var(--sidebarRing);
-  --font-sans: var(--font-sans, system-ui, Arial, sans-serif);
-  --font-mono: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+  --font-sans: var(
+    --font-sans,
+    -apple-system,
+    BlinkMacSystemFont,
+    'SF Pro Display',
+    'SF Pro Text',
+    system-ui,
+    sans-serif
+  );
+  --font-mono: var(
+    --font-mono,
+    'SF Mono',
+    ui-monospace,
+    SFMono-Regular,
+    'Monaco',
+    'Menlo',
+    monospace
+  );
   --font-heading: var(
     --font-heading,
-    var(--font-sans, system-ui, Arial, sans-serif)
+    var(
+      --font-sans,
+      -apple-system,
+      BlinkMacSystemFont,
+      'SF Pro Display',
+      system-ui,
+      sans-serif
+    )
   );
 }
 
@@ -178,17 +201,35 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+    font-family:
+      var(--font-sans),
+      -apple-system,
+      BlinkMacSystemFont,
+      'SF Pro Display',
+      'SF Pro Text',
+      system-ui,
+      sans-serif;
     font-feature-settings:
       'liga' 1,
-      'kern' 1;
+      'kern' 1,
+      'calt' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1,
   h2,
   h3,
   .font-heading {
-    font-family: var(--font-heading), var(--font-sans), sans-serif;
+    font-family:
+      var(--font-heading),
+      -apple-system,
+      BlinkMacSystemFont,
+      'SF Pro Display',
+      system-ui,
+      sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   html {

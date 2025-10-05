@@ -63,11 +63,6 @@ const ResidentialFilterMobile: React.FC<ResidentialFilterMobileProps> = ({
     setView('main')
   }
 
-  const back = () => {
-    if (view === 'main') return closeDialog()
-    setView('main')
-  }
-
   const renderBody = () => {
     switch (view) {
       case 'price':
@@ -205,8 +200,6 @@ const ResidentialFilterMobile: React.FC<ResidentialFilterMobileProps> = ({
           <MobileFilterHeader
             title={t('actions.filter')}
             onClose={closeDialog}
-            onBack={back}
-            showBack={view !== 'main'}
           />
           <div className='flex-1 overflow-y-auto'>{renderBody()}</div>
           <MobileFilterActionBar onReset={resetAndStay} onApply={apply} />
