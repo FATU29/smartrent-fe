@@ -11,6 +11,7 @@ export const PATHS = {
     FORGOT_PASSWORD: '/v1/auth/forgot-password',
     CHANGE_PASSWORD: '/v1/auth/change-password',
     RESET_PASSWORD: '/v1/auth/reset-password',
+    GOOGLE_OAUTH: '/api/auth/google/callback',
   },
 
   // User endpoints

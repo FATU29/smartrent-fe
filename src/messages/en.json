@@ -6,7 +6,8 @@
     "loadMore": "Load more",
     "endOfResults": "End of results",
     "new": "New",
-    "learnMore": "Learn more"
+    "learnMore": "Learn more",
+    "go_home": "Go Home"
   },
   "pagination": {
     "showing": "Showing",
@@ -237,6 +238,15 @@
         "newPasswordMinLength": "New password must be at least 8 characters",
         "newPasswordLowercase": "Password must have at least 1 lowercase letter",
         "newPasswordNumber": "Password must have at least 1 number"
+      },
+      "oauth": {
+        "processing_login": "Processing login...",
+        "please_wait": "Please wait a moment",
+        "login_successful": "Login successful!",
+        "redirecting": "Redirecting...",
+        "login_failed": "Login failed",
+        "oauth_authorization_failed": "Google OAuth authorization failed",
+        "authentication_failed": "Authentication failed"
       },
       "logout": "Log Out",
       "profile": "Profile",

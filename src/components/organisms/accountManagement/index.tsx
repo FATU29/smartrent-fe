@@ -48,9 +48,21 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
     React.useState(false)
   const [isChangingPassword, setIsChangingPassword] = React.useState(false)
 
+  const getUserInitialData = React.useMemo(() => {
+    if (!user) return undefined
+
+    return {
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      email: user.email,
+      phoneNumber: user.phoneNumber || '',
+      idDocument: user.idDocument || '',
+      taxNumber: user.taxNumber || '',
+    }
+  }, [user])
+
   const handlePersonalInfoSubmit = async (data: PersonalInfoData) => {
     if (!onPersonalInfoUpdate) {
-      // Form already syncs to store internally; no extra API call.
       return
     }
 
@@ -133,7 +145,7 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
 
         <TabsContent value='personal-info' className='space-y-6'>
           <PersonalInfoForm
-            initialData={user || undefined}
+            initialData={getUserInitialData}
             onSubmit={handlePersonalInfoSubmit}
             loading={isUpdatingPersonalInfo}
           />
