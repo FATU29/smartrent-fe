@@ -17,13 +17,12 @@ import {
   Users,
   ShieldCheck,
   UserCog,
-  KeyRound,
   BadgeCheck,
   Wallet,
 } from 'lucide-react'
 import { cn, getUserInitials } from '@/lib/utils'
 import Link from 'next/link'
-import { SELLERNET_ROUTES } from '@/constants/route'
+import { SELLERNET_ROUTES, SELLER_ROUTES } from '@/constants/route'
 
 interface MenuItem {
   id: string
@@ -35,7 +34,7 @@ interface MenuItem {
 }
 
 const badgeStyles: Record<string, string> = {
-  primary: 'bg-red-600 text-white',
+  primary: 'bg-primary text-primary-foreground',
   neutral: 'bg-teal-100 text-teal-700',
   danger: 'bg-destructive text-destructive-foreground',
 }
@@ -52,32 +51,36 @@ const UserDropdown: React.FC = () => {
       id: 'overview',
       icon: <LayoutDashboard className='h-4 w-4' />,
       label: t('userMenu.overview'),
+      href: SELLER_ROUTES.OVERVIEW,
       badge: { text: t('common.new'), variant: 'primary' },
     },
     {
       id: 'listings',
       icon: <FileText className='h-4 w-4' />,
       label: t('userMenu.listings'),
+      href: SELLER_ROUTES.LISTINGS,
+    },
+    {
+      id: 'customers',
+      icon: <Users className='h-4 w-4' />,
+      label: t('userMenu.customers'),
+      href: SELLER_ROUTES.CUSTOMERS,
     },
     {
       id: 'membership',
       icon: <ShieldCheck className='h-4 w-4' />,
       label: t('userMenu.membership'),
-      href: SELLERNET_ROUTES.MEMBERSHIP_REGISTER,
+      href: SELLER_ROUTES.MEMBERSHIP,
       badge: {
         text: t('userMenu.savePercent', { percent: '-39%' }),
         variant: 'neutral',
       },
     },
     {
-      id: 'customers',
-      icon: <Users className='h-4 w-4' />,
-      label: t('userMenu.customers'),
-    },
-    {
-      id: 'sponsored',
-      icon: <BadgeCheck className='h-4 w-4' />,
-      label: t('userMenu.sponsored'),
+      id: 'topup',
+      icon: <Wallet className='h-4 w-4' />,
+      label: t('userMenu.topup'),
+      href: SELLERNET_ROUTES.FINANCE_TOPUP,
     },
     {
       id: 'profile',
@@ -86,20 +89,11 @@ const UserDropdown: React.FC = () => {
       href: SELLERNET_ROUTES.PERSONAL_EDIT,
     },
     {
-      id: 'password',
-      icon: <KeyRound className='h-4 w-4' />,
-      label: t('userMenu.password'),
-    },
-    {
       id: 'proBroker',
       icon: <BadgeCheck className='h-4 w-4' />,
       label: t('userMenu.proBroker'),
+      href: SELLERNET_ROUTES.PERSONAL_PRO_BROKER,
       badge: { text: t('common.new'), variant: 'primary' },
-    },
-    {
-      id: 'topup',
-      icon: <Wallet className='h-4 w-4' />,
-      label: t('userMenu.topup'),
     },
   ]
 
@@ -129,8 +123,7 @@ const UserDropdown: React.FC = () => {
         sideOffset={8}
         className='p-0 overflow-hidden rounded-xl overflow-x-hidden w-auto min-w-[16rem] max-w-[20rem]'
       >
-        {/* Header panel */}
-        <div className='p-5 bg-gradient-to-br from-red-900 via-red-800 to-red-700 text-white relative'>
+        <div className='p-5 bg-gradient-to-br from-primary via-blue-700 to-blue-800 text-white relative'>
           <div className='absolute inset-0 opacity-30 bg-[url(/images/rental-auth-bg.jpg)] bg-cover bg-right-top mix-blend-lighten' />
           <div className='relative'>
             <h3 className='text-base font-semibold mb-1'>
@@ -139,57 +132,54 @@ const UserDropdown: React.FC = () => {
             <p className='text-xs leading-snug opacity-90 mb-3 max-w-[200px]'>
               {t('userMenu.membershipBenefit')}
             </p>
-            <Button size='sm' className='bg-red-600 hover:bg-red-500' asChild>
-              <Link href={SELLERNET_ROUTES.MEMBERSHIP_REGISTER}>
+            <Button size='sm' className='bg-primary hover:bg-blue-600' asChild>
+              <Link href={SELLER_ROUTES.MEMBERSHIP}>
                 {t('common.learnMore')}
               </Link>
             </Button>
           </div>
         </div>
         <div className='py-2 max-h-[420px] overflow-y-auto overflow-x-hidden'>
-          {items.map((item) => (
-            <DropdownMenuItem
-              key={item.id}
-              asChild={!!item.href && !item.onClick}
-              onClick={item.onClick}
-              className='cursor-pointer px-4 py-2.5 text-sm flex items-center gap-3'
-            >
-              {item.href ? (
-                <Link
-                  href={item.href}
-                  className='flex items-center gap-3 w-full'
-                >
-                  {item.icon}
-                  <span className='flex-1 text-foreground'>{item.label}</span>
-                  {item.badge && (
-                    <span
-                      className={cn(
-                        'text-[10px] px-2 py-0.5 rounded font-medium whitespace-nowrap',
-                        badgeStyles[item.badge.variant || 'primary'],
-                      )}
-                    >
-                      {item.badge.text}
-                    </span>
-                  )}
-                </Link>
-              ) : (
-                <div className='flex items-center gap-3 w-full'>
-                  {item.icon}
-                  <span className='flex-1 text-foreground'>{item.label}</span>
-                  {item.badge && (
-                    <span
-                      className={cn(
-                        'text-[10px] px-2 py-0.5 rounded font-medium whitespace-nowrap',
-                        badgeStyles[item.badge.variant || 'primary'],
-                      )}
-                    >
-                      {item.badge.text}
-                    </span>
-                  )}
-                </div>
-              )}
-            </DropdownMenuItem>
-          ))}
+          {items.map((item) => {
+            const ItemContent = () => (
+              <>
+                {item.icon}
+                <span className='flex-1 text-foreground'>{item.label}</span>
+                {item.badge && (
+                  <span
+                    className={cn(
+                      'text-[10px] px-2 py-0.5 rounded font-medium whitespace-nowrap',
+                      badgeStyles[item.badge.variant || 'primary'],
+                    )}
+                  >
+                    {item.badge.text}
+                  </span>
+                )}
+              </>
+            )
+
+            return (
+              <DropdownMenuItem
+                key={item.id}
+                asChild={!!item.href && !item.onClick}
+                onClick={item.onClick}
+                className='cursor-pointer px-4 py-2.5 text-sm flex items-center gap-3'
+              >
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    className='flex items-center gap-3 w-full'
+                  >
+                    <ItemContent />
+                  </Link>
+                ) : (
+                  <div className='flex items-center gap-3 w-full'>
+                    <ItemContent />
+                  </div>
+                )}
+              </DropdownMenuItem>
+            )
+          })}
           <DropdownMenuSeparator className='my-2' />
           <DropdownMenuItem
             onClick={logoutItem.onClick}

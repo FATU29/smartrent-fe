@@ -9,6 +9,39 @@
     "learnMore": "Learn more",
     "go_home": "Go Home"
   },
+  "components": {
+    "statsDisplay": {
+      "views": "Views",
+      "contacts": "Interests",
+      "customers": "Customers"
+    },
+    "statusBadge": {
+      "active": "Active",
+      "expired": "Expired",
+      "expiring": "Expiring Soon",
+      "pending": "Pending",
+      "review": "Under Review",
+      "payment": "Pending Payment",
+      "rejected": "Rejected",
+      "archived": "Archived"
+    },
+    "packageBadge": {
+      "vipDiamond": "VIP Diamond",
+      "vipGold": "VIP Gold",
+      "vipSilver": "VIP Silver",
+      "standard": "Standard",
+      "basic": "Basic"
+    },
+    "rankDisplay": {
+      "page": "Page {page}",
+      "position": "Rank {position}"
+    },
+    "verificationBadge": {
+      "verified": "Verified Listing",
+      "premium": "Premium Listing",
+      "boosted": "Boosted Listing"
+    }
+  },
   "pagination": {
     "showing": "Showing",
     "of": "of",
@@ -1317,6 +1350,29 @@
         "ward": "Ward/Commune",
         "selectDistrictsFirst": "Select districts first to enable ward filtering",
         "filteringWardsIn": "Filtering wards in:"
+      },
+      "allListingsShown": "All listings have been displayed",
+      "card": {
+        "listingCode": "Listing Code",
+        "postedDate": "Posted Date",
+        "expiryDate": "Expiry Date",
+        "expiredMessage": "This listing has expired",
+        "actions": {
+          "edit": "Edit",
+          "editFull": "Edit listing",
+          "promote": "Promote",
+          "promoteFull": "Advertise",
+          "repost": "Repost",
+          "repostFull": "Push listing",
+          "viewReport": "View report",
+          "requestVerification": "Request verification",
+          "copyListing": "Copy listing",
+          "requestContact": "Request contact",
+          "share": "Share",
+          "activityHistory": "Activity history",
+          "takeDown": "Take down",
+          "delete": "Delete"
+        }
       }
     }
   }

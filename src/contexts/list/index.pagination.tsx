@@ -91,46 +91,32 @@ const ListPagination = (props: ListPaginationProps) => {
   return (
     <div
       className={classNames(
-        'flex flex-col sm:flex-row items-center justify-between gap-4',
+        'flex flex-col space-y-4 sm:space-y-0 sm:flex-row items-center justify-between gap-4',
         className,
       )}
     >
-      {/* Page Info */}
+      {/* Page Info - Hide on very small screens, show on sm+ */}
       {showPageInfo && (
-        <div className='text-sm text-muted-foreground'>
-          {t('showing')} {startItem}-{endItem} {t('of')} {total} {t('results')}
+        <div className='text-sm text-muted-foreground order-3 sm:order-1'>
+          <span className='hidden sm:inline'>
+            {t('showing')} {startItem}-{endItem} {t('of')} {total}{' '}
+            {t('results')}
+          </span>
+          <span className='sm:hidden'>
+            {currentPage}/{totalPages} ({total})
+          </span>
         </div>
       )}
 
-      {/* Per Page Selector */}
-      {showPerPageSelector && (
-        <div className='flex items-center gap-2'>
-          <span className='text-sm text-muted-foreground'>{t('show')}</span>
-          <Select
-            value={filters.perPage.toString()}
-            onValueChange={handlePerPageChange}
-          >
-            <SelectTrigger className='w-20'>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='10'>10</SelectItem>
-              <SelectItem value='20'>20</SelectItem>
-              <SelectItem value='50'>50</SelectItem>
-              <SelectItem value='100'>100</SelectItem>
-            </SelectContent>
-          </Select>
-          <span className='text-sm text-muted-foreground'>{t('perPage')}</span>
-        </div>
-      )}
-
-      <div className='flex items-center gap-1'>
+      {/* Navigation Controls - Center on mobile, maintain position on desktop */}
+      <div className='flex items-center gap-1 order-1 sm:order-2'>
+        {/* First Page - Hidden on mobile when screen is very small */}
         <Button
           variant='outline'
           size='sm'
           onClick={() => handlePageChange(1)}
           disabled={!hasPrevious}
-          className='h-8 w-8 p-0'
+          className='h-8 w-8 p-0 hidden xs:flex'
         >
           <ChevronsLeft className='h-4 w-4' />
         </Button>
@@ -146,52 +132,62 @@ const ListPagination = (props: ListPaginationProps) => {
           <ChevronLeft className='h-4 w-4' />
         </Button>
 
-        {/* Page Numbers */}
+        {/* Page Numbers - Simplified for mobile */}
         {showPageNumbers && (
           <>
-            {visiblePages[0] > 1 && (
-              <>
+            {/* Mobile: Show only current page and total */}
+            <div className='flex items-center gap-1 sm:hidden'>
+              <span className='px-2 text-sm font-medium min-w-[60px] text-center'>
+                {currentPage} / {totalPages}
+              </span>
+            </div>
+
+            {/* Desktop: Show full pagination */}
+            <div className='hidden sm:flex items-center gap-1'>
+              {visiblePages[0] > 1 && (
+                <>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => handlePageChange(1)}
+                    className='h-8 w-8 p-0'
+                  >
+                    1
+                  </Button>
+                  {visiblePages[0] > 2 && (
+                    <span className='px-2 text-muted-foreground'>...</span>
+                  )}
+                </>
+              )}
+
+              {visiblePages.map((page) => (
                 <Button
-                  variant='outline'
+                  key={page}
+                  variant={page === currentPage ? 'default' : 'outline'}
                   size='sm'
-                  onClick={() => handlePageChange(1)}
+                  onClick={() => handlePageChange(page)}
                   className='h-8 w-8 p-0'
                 >
-                  1
+                  {page}
                 </Button>
-                {visiblePages[0] > 2 && (
-                  <span className='px-2 text-muted-foreground'>...</span>
-                )}
-              </>
-            )}
+              ))}
 
-            {visiblePages.map((page) => (
-              <Button
-                key={page}
-                variant={page === currentPage ? 'default' : 'outline'}
-                size='sm'
-                onClick={() => handlePageChange(page)}
-                className='h-8 w-8 p-0'
-              >
-                {page}
-              </Button>
-            ))}
-
-            {visiblePages[visiblePages.length - 1] < totalPages && (
-              <>
-                {visiblePages[visiblePages.length - 1] < totalPages - 1 && (
-                  <span className='px-2 text-muted-foreground'>...</span>
-                )}
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={() => handlePageChange(totalPages)}
-                  className='h-8 w-8 p-0'
-                >
-                  {totalPages}
-                </Button>
-              </>
-            )}
+              {visiblePages[visiblePages.length - 1] < totalPages && (
+                <>
+                  {visiblePages[visiblePages.length - 1] < totalPages - 1 && (
+                    <span className='px-2 text-muted-foreground'>...</span>
+                  )}
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => handlePageChange(totalPages)}
+                    className='h-8 w-8 p-0'
+                  >
+                    {totalPages}
+                  </Button>
+                </>
+              )}
+            </div>
           </>
         )}
 
@@ -206,17 +202,44 @@ const ListPagination = (props: ListPaginationProps) => {
           <ChevronRight className='h-4 w-4' />
         </Button>
 
-        {/* Last Page */}
+        {/* Last Page - Hidden on mobile when screen is very small */}
         <Button
           variant='outline'
           size='sm'
           onClick={() => handlePageChange(totalPages)}
           disabled={!hasNext}
-          className='h-8 w-8 p-0'
+          className='h-8 w-8 p-0 hidden xs:flex'
         >
           <ChevronsRight className='h-4 w-4' />
         </Button>
       </div>
+
+      {/* Per Page Selector - Show on mobile, better mobile layout */}
+      {showPerPageSelector && (
+        <div className='flex items-center gap-2 order-2 sm:order-3'>
+          <span className='text-sm text-muted-foreground hidden sm:inline'>
+            {t('show')}
+          </span>
+          <Select
+            value={filters.perPage.toString()}
+            onValueChange={handlePerPageChange}
+          >
+            <SelectTrigger className='w-16 sm:w-20'>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='5'>5</SelectItem>
+              <SelectItem value='10'>10</SelectItem>
+              <SelectItem value='15'>15</SelectItem>
+              <SelectItem value='20'>20</SelectItem>
+            </SelectContent>
+          </Select>
+          <span className='text-sm text-muted-foreground'>
+            <span className='hidden sm:inline'>{t('perPage')}</span>
+            <span className='sm:hidden'>/trang</span>
+          </span>
+        </div>
+      )}
     </div>
   )
 }

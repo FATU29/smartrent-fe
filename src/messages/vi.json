@@ -9,6 +9,39 @@
     "learnMore": "Tìm hiểu thêm",
     "go_home": "Về trang chủ"
   },
+  "components": {
+    "statsDisplay": {
+      "views": "Xem tin",
+      "contacts": "Quan tâm",
+      "customers": "Khách hàng"
+    },
+    "statusBadge": {
+      "active": "Đang hiển thị",
+      "expired": "Hết hạn",
+      "expiring": "Sắp hết hạn",
+      "pending": "Chờ duyệt",
+      "review": "Đang xét duyệt",
+      "payment": "Chờ thanh toán",
+      "rejected": "Bị từ chối",
+      "archived": "Đã lưu trữ"
+    },
+    "packageBadge": {
+      "vipDiamond": "VIP Kim Cương",
+      "vipGold": "VIP Vàng",
+      "vipSilver": "VIP Bạc",
+      "standard": "Thường",
+      "basic": "Cơ bản"
+    },
+    "rankDisplay": {
+      "page": "Trang {page}",
+      "position": "Đứng thứ {position}"
+    },
+    "verificationBadge": {
+      "verified": "Tin xác thực",
+      "premium": "Nâng cấp tin",
+      "boosted": "Đẩy tin"
+    }
+  },
   "pagination": {
     "showing": "Hiển thị",
     "of": "trong",
@@ -1318,6 +1351,29 @@
         "ward": "Phường/Xã",
         "selectDistrictsFirst": "Chọn quận/huyện trước để kích hoạt lọc phường/xã",
         "filteringWardsIn": "Đang lọc phường/xã trong:"
+      },
+      "allListingsShown": "Đã hiển thị tất cả tin đăng",
+      "card": {
+        "listingCode": "Mã tin",
+        "postedDate": "Ngày đăng",
+        "expiryDate": "Ngày hết hạn",
+        "expiredMessage": "Tin đăng này đã hết hạn",
+        "actions": {
+          "edit": "Sửa",
+          "editFull": "Sửa tin",
+          "promote": "QC",
+          "promoteFull": "Quảng cáo",
+          "repost": "Đẩy",
+          "repostFull": "Đẩy tin",
+          "viewReport": "Xem báo cáo",
+          "requestVerification": "Yêu cầu xác thực",
+          "copyListing": "Sao chép tin đăng",
+          "requestContact": "Yêu cầu liên hệ",
+          "share": "Chia sẻ",
+          "activityHistory": "Lịch sử hoạt động",
+          "takeDown": "Hạ tin",
+          "delete": "Xóa tin"
+        }
       }
     }
   }
