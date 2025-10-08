@@ -59,12 +59,20 @@ export interface PropertyInfo {
   amenities: string[]
 
   // District and Ward
+  province?: string
   district: string
   ward: string
+
+  // Address input mode
+  addressMode?: 'structured' | 'freeText'
 
   // Media
   images: MediaItem[]
   videoUrl: string
+
+  // Package & Configuration
+  selectedMembershipPlanId?: string
+  selectedVoucherPackageId?: string
 }
 
 export interface MediaItem {
@@ -133,8 +141,12 @@ const defaultPropertyInfo: PropertyInfo = {
   ],
 
   // District and Ward
+  province: 'hcmc',
   district: 'quan1',
   ward: 'bennghe',
+
+  // Address input mode
+  addressMode: 'structured',
 
   // Media
   images: [
@@ -146,6 +158,10 @@ const defaultPropertyInfo: PropertyInfo = {
     },
   ],
   videoUrl: '',
+
+  // Package & Configuration
+  selectedMembershipPlanId: undefined,
+  selectedVoucherPackageId: undefined,
 }
 
 // Create Context

@@ -24,8 +24,8 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
 }) => {
   return (
     <div className={cn('w-full', className)}>
-      {/* Mobile: Grid layout, Desktop: Horizontal layout */}
-      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-0 sm:flex sm:items-center sm:justify-between'>
+      {/* Grid layout at all sizes; equal-width columns on desktop */}
+      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-0'>
         {steps.map((step, index) => (
           <div
             key={step.id}
@@ -51,7 +51,7 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
             <div className='text-center space-y-1'>
               <h3
                 className={cn(
-                  'text-xs sm:text-sm font-medium leading-tight',
+                  'text-[11px] sm:text-xs font-medium leading-tight tracking-tight',
                   step.isActive
                     ? 'text-primary'
                     : step.isCompleted
@@ -63,7 +63,7 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
               </h3>
               <p
                 className={cn(
-                  'text-xs leading-tight hidden sm:block',
+                  'hidden sm:block text-[10px] leading-snug',
                   step.isActive
                     ? 'text-muted-foreground'
                     : step.isCompleted
@@ -79,12 +79,12 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
             {index < steps.length - 1 && (
               <div
                 className={cn(
-                  'hidden sm:block absolute top-6 sm:top-7 left-1/2 w-full h-0.5 -z-10',
+                  'hidden sm:block absolute top-6 sm:top-7 left-1/2 h-0.5 -z-10',
                   step.isCompleted ? 'bg-green-500' : 'bg-muted-foreground/20',
                 )}
                 style={{
                   left: 'calc(50% + 28px)',
-                  width: 'calc(100% - 56px)',
+                  right: '-28px',
                 }}
               />
             )}

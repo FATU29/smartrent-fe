@@ -1,5 +1,6 @@
 import { NextPage } from 'next'
 import Link from 'next/link'
+import { SELLERNET_ROUTES } from '@/constants'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import { Avatar } from '@/components/atoms/avatar'
@@ -59,7 +60,7 @@ const UserMenu: NextPage = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href='/sellernet/account'>
+          <Link href={SELLERNET_ROUTES.PERSONAL_EDIT}>
             <User className='mr-2 h-4 w-4' />
             <span>{t('navigation.accountManagement')}</span>
           </Link>

@@ -1,6 +1,13 @@
 {
   "common": {
-    "or": "Or"
+    "or": "Or",
+    "loading": "Loading...",
+    "loadingMore": "Loading more...",
+    "loadMore": "Load more",
+    "endOfResults": "End of results",
+    "new": "New",
+    "learnMore": "Learn more",
+    "go_home": "Go Home"
   },
   "pagination": {
     "showing": "Showing",
@@ -14,6 +21,25 @@
     "next": "Next"
   },
   "homePage": {
+    "authMeta": {
+      "otp": {
+        "title": "Enter Verification Code",
+        "description": "We've sent a 6-digit verification code to {contact}",
+        "digitLabel": "Digit {position}",
+        "verifyButton": "Verify Code",
+        "verifyingButton": "Verifying...",
+        "didntReceive": "Didn't receive the code?",
+        "resendButton": "Resend Code",
+        "resendCountdown": "Resend in {seconds} seconds",
+        "backToRegister": "Back to Register",
+        "verificationSuccess": "Verification successful!",
+        "verificationError": "Verification failed. Please try again.",
+        "resendSuccess": "Code resent successfully!",
+        "resendError": "Failed to resend code. Please try again.",
+        "resendingButton": "Resending...",
+        "back": "Back"
+      }
+    },
     "title": "Find Your Dream Home",
     "subtitle": "Explore premium real estate with modern amenities, verified listings, and transparent pricing.",
     "description": "Discover your perfect home",
@@ -54,7 +80,7 @@
       "more": "more",
       "noProperties": "No properties found",
       "noPropertiesDescription": "Try adjusting your search criteria or check back later for new listings.",
-      "listings": "Property Listings",
+      "listings": "Property Listings For You",
       "favorites": "Favorites",
       "additionalAmenities": "Additional Amenities",
       "views": "views",
@@ -183,6 +209,7 @@
       "validation": {
         "firstNameMinLength": "First name must be at least 2 characters",
         "lastNameMinLength": "Last name must be at least 2 characters",
+        "idDocumentMinLength": "ID number must be at least 9 characters",
         "phoneCodeRequired": "Phone code is required",
         "phoneCodeInvalid": "Phone code must be 1–5 characters",
         "phoneNumberRequired": "Phone number is required",
@@ -197,6 +224,7 @@
         "confirmPasswordRequired": "Confirm password is required",
         "confirmPasswordMatch": "Passwords do not match",
         "idDocumentRequired": "ID number is required",
+        "taxNumberInvalid": "Tax number is invalid",
         "taxNumberRequired": "Tax number is required",
         "phoneRequired": "Phone number is required",
         "phoneInvalid": "Please enter a valid phone number",
@@ -210,6 +238,15 @@
         "newPasswordMinLength": "New password must be at least 8 characters",
         "newPasswordLowercase": "Password must have at least 1 lowercase letter",
         "newPasswordNumber": "Password must have at least 1 number"
+      },
+      "oauth": {
+        "processing_login": "Processing login...",
+        "please_wait": "Please wait a moment",
+        "login_successful": "Login successful!",
+        "redirecting": "Redirecting...",
+        "login_failed": "Login failed",
+        "oauth_authorization_failed": "Google OAuth authorization failed",
+        "authentication_failed": "Authentication failed"
       },
       "logout": "Log Out",
       "profile": "Profile",
@@ -226,6 +263,54 @@
       "otp": {
         "title": "Enter Verification Code",
         "description": "We've sent a 6-digit verification code to {contact}",
+        "membershipPage": {
+          "title": "Service Packages",
+          "subtitle": "Compare Membership packages and Boost voucher packages to choose the optimal solution for your sales needs.",
+          "tabs": {
+            "membership": "Membership Package",
+            "voucher": "Boost Voucher Package"
+          },
+          "aria": {
+            "register": "Register service package",
+            "membershipTab": "Membership package tab",
+            "voucherTab": "Boost voucher package tab"
+          }
+        },
+        "membershipPlans": {
+          "savingSuffix": "per month",
+          "basic": {
+            "name": "Basic Membership",
+            "description": "Suitable for new brokers or small portfolios"
+          },
+          "standard": {
+            "name": "Standard Membership",
+            "description": "Suitable for professional brokers with portfolios of 10+ properties"
+          },
+          "premium": {
+            "name": "Premium Membership",
+            "description": "Suitable for brokers with large portfolios and advertising budgets"
+          },
+          "groups": {
+            "monthlyPackage": "Monthly listing package",
+            "utilities": "Utilities"
+          },
+          "features": {
+            "vipGold7": "VIP Gold Listing (display 7 days)",
+            "vipSilver7": "VIP Silver Listing (display 7 days)",
+            "1vipGold7": "1 VIP Gold Listing (display 7 days)",
+            "1vipSilver7": "1 VIP Silver Listing (display 7 days)",
+            "2vipSilver7": "2 VIP Silver Listings (display 7 days)",
+            "15standard10": "15 Standard Listings (display 10 days)",
+            "30standard10": "30 Standard Listings (display 10 days)",
+            "50standard10": "50 Standard Listings (display 10 days)",
+            "15pushStandard": "15 boosts for Standard Listings",
+            "30pushStandard": "30 boosts for Standard Listings",
+            "50pushStandard": "50 boosts for Standard Listings",
+            "imageCopyright": "Image copyright",
+            "scheduledPosting": "Scheduled posting",
+            "performanceReport": "Performance report"
+          }
+        },
         "digitLabel": "Digit {position}",
         "verifyButton": "Verify Code",
         "verifyingButton": "Verifying...",
@@ -298,9 +383,41 @@
         }
       }
     },
+    "locations": {
+      "title": "Properties by location",
+      "listingsSuffix": "listings",
+      "popularProjects": "Featured projects"
+    },
+    "features": {
+      "title": "Why Choose Us",
+      "buyOrRent": {
+        "title": "List & search easily",
+        "desc": "Publish or find listings quickly with a streamlined workflow for both buying and renting."
+      },
+      "rentals": {
+        "title": "Rich rental inventory",
+        "desc": "Continuously updated rooms, serviced apartments and whole homes with transparent details."
+      },
+      "projectReview": {
+        "title": "Objective project reviews",
+        "desc": "Expert insights help you evaluate amenities, growth potential and location value."
+      },
+      "knowledge": {
+        "title": "AI Real Estate Assistant",
+        "desc": "AI delivers tips on safe renting, cost optimization, contract insights, feng shui guidance and fresh market trends."
+      }
+    },
+    "topInterest": {
+      "title": "Top Interested",
+      "viewAll": "View all"
+    },
+    "searchIntro": {
+      "title": "Find your ideal place faster",
+      "description": "Type a keyword or refine with filters for location, price, property type and amenities."
+    },
     "filters": {
       "title": "Filter Properties",
-      "anyAmenities": "Any Amenities",
+      "anyAmenities": "All Amenities",
       "oneAmenity": "1 Amenity",
       "amenitiesCount": "Amenities",
       "propertyType": {
@@ -319,11 +436,11 @@
         "minPrice": "Min Price",
         "maxPrice": "Max Price",
         "currency": "VND",
-        "any": "Any Price"
+        "any": "All prices"
       },
       "bedrooms": {
         "title": "Bedrooms",
-        "any": "Any",
+        "any": "All",
         "studio": "Studio",
         "one": "1+",
         "two": "2+",
@@ -333,7 +450,7 @@
       },
       "bathrooms": {
         "title": "Bathrooms",
-        "any": "Any",
+        "any": "All",
         "one": "1+",
         "two": "2+",
         "three": "3+",
@@ -358,24 +475,58 @@
         "title": "Location",
         "city": "City",
         "district": "District",
-        "any": "Any Location"
+        "any": "All locations"
       },
       "furnishing": {
         "title": "Furnishing",
-        "any": "Any",
+        "any": "All",
         "furnished": "Furnished",
         "semiFurnished": "Semi-Furnished",
         "unfurnished": "Unfurnished"
       },
       "clearAll": "Clear All",
       "applyFilters": "Apply Filters"
+    },
+    "heroSlides": {
+      "rentSecure": {
+        "heading": "Rent with confidence & transparency",
+        "sub": "Verified listings, protected data and support if disputes arise.",
+        "cta": "Explore now"
+      },
+      "smartSearch": {
+        "heading": "Smart search that fits you",
+        "sub": "Granular filters and location-aware suggestions match budget & amenities.",
+        "cta": "Start filtering"
+      },
+      "aiAssist": {
+        "heading": "AI assistant for pricing & renting",
+        "sub": "Instant answers on market value, contract clarity and cost optimization.",
+        "cta": "Ask AI"
+      }
     }
+  },
+  "userMenu": {
+    "overview": "Overview dashboard",
+    "listings": "Manage listings",
+    "membership": "Membership package",
+    "customers": "Customer leads",
+    "sponsored": "Sponsored listings",
+    "profile": "Update profile",
+    "password": "Change password",
+    "proBroker": "Professional broker",
+    "topup": "Deposit / Top-up",
+    "membershipPackage": "Upgrade & save more",
+    "membershipBenefit": "Unlock higher visibility, AI enhancements and lead insights with premium tiers.",
+    "savePercent": "Save {percent}"
   },
   "createPost": {
     "title": "Create Real Estate Listing",
     "description": "Follow the steps below to create your real estate listing",
     "back": "Back",
     "next": "Next",
+    "completeCurrentStep": "Please complete this step before continuing",
+    "generateAutomatically": "Generate Automatically",
+    "continueToUpload": "Continue to upload",
     "steps": {
       "propertyInfo": {
         "generateAutomatically": "Generate Automatically",
@@ -408,6 +559,10 @@
       }
     },
     "sections": {
+      "packageConfig": {
+        "title": "Package & Configuration",
+        "description": "Select a membership or push voucher package to optimize visibility"
+      },
       "media": {
         "title": "Images & Video",
         "description": "Upload high-quality images and optional video to present your property",
@@ -462,6 +617,13 @@
             "filenameHints": "Include \"360\", \"panorama\", or \"pano\" in filenames",
             "aspectRatio": "Prefer 2:1 aspect ratio or wider"
           }
+        },
+        "cover": {
+          "title": "Cover Image",
+          "description": "Upload a cover image that will be shown first in your gallery",
+          "uploadCta": "Upload Cover",
+          "replaceCta": "Replace Cover",
+          "badge": "Cover"
         }
       },
       "propertyInfo": {
@@ -642,12 +804,19 @@
           "district": "District",
           "hcmc": "HCMC",
           "title": "Property Information",
+          "subtitle": "Update property details for the most accurate AI evaluation",
           "address": "Address",
+          "addressMode": "Address Mode",
+          "addressModes": {
+            "structured": "Province/District/Ward",
+            "freeText": "Free text"
+          },
           "addressPlaceholder": "Enter property address...",
           "area": "Area (m²)",
           "type": "Type",
           "districtLabel": "District/County",
           "ward": "Ward/Commune",
+          "province": "Province/City",
           "bedrooms": "Number of bedrooms",
           "bathrooms": "Number of bathrooms",
           "amenities": "Amenities",
@@ -727,6 +896,11 @@
             "cogiang": "Co Giang Ward",
             "nguyenthaihoc": "Nguyen Thai Hoc Ward"
           },
+          "provinces": {
+            "hcmc": "Ho Chi Minh City",
+            "hn": "Ha Noi",
+            "dn": "Da Nang"
+          },
           "amenitiesList": {
             "furnished": "Fully furnished",
             "aircon": "Air conditioning",
@@ -740,6 +914,7 @@
         },
         "results": {
           "title": "AI Evaluation Results",
+          "subtitle": "AI evaluation results based on the property information provided",
           "suggestedPrice": "Suggested Price Range",
           "priceRange": "2.8M - 3.2M/month",
           "reliability": "Reliability",
@@ -779,6 +954,72 @@
       }
     }
   },
+  "pricing": {
+    "bestSeller": "Best Seller",
+    "buyNow": "Buy Now",
+    "saveUpTo": "Save up to",
+    "perMonthSuffix": "per month"
+  },
+  "voucher": {
+    "bestSeller": "Best Seller",
+    "buyNow": "Buy Now",
+    "save": "Save",
+    "daySuffix": "days",
+    "voucherUnit": "voucher",
+    "voucherPlural": "vouchers",
+    "pushDescription": "{count} voucher discount {amount} each push",
+    "savingPrefix": "Save",
+    "perPeriod": "/",
+    "currencySymbol": "$"
+  },
+  "membershipPage": {
+    "title": "Service Packages",
+    "subtitle": "Compare Membership packages and Push Voucher bundles to choose the best solution for your sales needs.",
+    "tabs": {
+      "membership": "Membership Packages",
+      "voucher": "Push Voucher Packages"
+    },
+    "aria": {
+      "register": "Register service packages",
+      "membershipTab": "Membership packages tab",
+      "voucherTab": "Push voucher packages tab"
+    }
+  },
+  "membershipPlans": {
+    "savingSuffix": "per month",
+    "basic": {
+      "name": "Basic Membership",
+      "description": "Suitable for new agents or small inventory"
+    },
+    "standard": {
+      "name": "Standard Membership",
+      "description": "For professional agents with 10+ listings"
+    },
+    "premium": {
+      "name": "Premium Membership",
+      "description": "For agents with large inventory and ad budget"
+    },
+    "groups": {
+      "monthlyPackage": "Monthly Listing Quota",
+      "utilities": "Utilities"
+    },
+    "features": {
+      "vipGold7": "Gold VIP Listing (visible 7 days)",
+      "vipSilver7": "Silver VIP Listing (visible 7 days)",
+      "1vipGold7": "1 Gold VIP Listing (visible 7 days)",
+      "1vipSilver7": "1 Silver VIP Listing (visible 7 days)",
+      "2vipSilver7": "2 Silver VIP Listings (visible 7 days)",
+      "15standard10": "15 Standard Listings (visible 10 days)",
+      "30standard10": "30 Standard Listings (visible 10 days)",
+      "50standard10": "50 Standard Listings (visible 10 days)",
+      "15pushStandard": "15 pushes for Standard Listings",
+      "30pushStandard": "30 pushes for Standard Listings",
+      "50pushStandard": "50 pushes for Standard Listings",
+      "imageCopyright": "Image copyright",
+      "scheduledPosting": "Scheduled posting",
+      "performanceReport": "Performance report"
+    }
+  },
   "footer": {
     "description": "Your trusted partner in finding the perfect home. We connect you with premium real estate and exceptional services.",
     "quickLinks": "Quick Links",
@@ -802,7 +1043,8 @@
     "newsletter": "Newsletter",
     "newsletterDescription": "Subscribe to receive the latest real estate news",
     "subscribe": "Subscribe",
-    "emailPlaceholder": "Enter your email"
+    "emailPlaceholder": "Enter your email",
+    "disclaimer": "This platform is developed solely for the Capstone Graduation Project of the University of Science. It is an academic prototype and not an operational commercial service."
   },
   "navigation": {
     "home": "Home",
@@ -828,6 +1070,254 @@
     "analytics": "Analytics",
     "financial": "Financial Reports",
     "occupancy": "Occupancy Rate",
-    "performance": "Property Performance"
+    "performance": "Property Performance",
+    "seller": {
+      "overview": "Overview",
+      "listings": "Listings",
+      "create": "Create",
+      "customers": "Customers",
+      "membership": "Membership",
+      "account": "Account",
+      "comingSoon": "Coming soon",
+      "deposit": "Top up",
+      "notifications": "Notifications",
+      "balanceTitle": "Account balance",
+      "postAccount": "Listing account",
+      "promoAccount": "Promo account"
+    },
+    "sellernet": {
+      "overview": "Overview",
+      "postManagement": "Post Management",
+      "create": "Create Post",
+      "list": "All Posts",
+      "drafts": "Drafts",
+      "sponsored": "Sponsored Posts",
+      "customers": "Customer Management",
+      "membership": "Membership",
+      "membershipRegister": "Register to buy",
+      "proAccount": "Pro Account",
+      "finance": "Finance Management",
+      "balanceInfo": "Balance info",
+      "transactions": "Transaction history",
+      "myPromos": "My promotions",
+      "topup": "Top up account",
+      "personalAccount": "Personal Account",
+      "editPersonal": "Edit personal info",
+      "accountSettings": "Account settings",
+      "proBroker": "Professional broker",
+      "businessAccount": "Business Account",
+      "businessRegister": "Register business account",
+      "pricingGuide": "Pricing & Guides",
+      "pricing": "Pricing",
+      "paymentGuide": "Payment guide",
+      "usageGuide": "Usage guide",
+      "utilities": "Utilities",
+      "notifications": "Notifications",
+      "emailSubscriptions": "Email subscriptions",
+      "lockRequest": "Account lock request"
+    }
+  },
+  "residentialFilter": {
+    "currency": {
+      "vnd": "VND",
+      "usd": "USD"
+    },
+    "searchPlaceholder": "Search residential properties...",
+    "actions": {
+      "search": "Search",
+      "viewMap": "View map",
+      "filter": "Filter",
+      "clear": "Clear",
+      "apply": "Apply",
+      "reset": "Reset",
+      "back": "Back"
+    },
+    "toggles": {
+      "verified": "Verified",
+      "professionalBroker": "Professional broker",
+      "video": "Has video",
+      "has360": "Has 3D/360°"
+    },
+    "dropdowns": {
+      "propertyType": "Property Type",
+      "priceRange": "Price Range",
+      "areaRange": "Area",
+      "frontage": "Frontage",
+      "orientation": "Orientation",
+      "moveInTime": "Move-in Time",
+      "electricityPrice": "Electricity Price",
+      "waterPrice": "Water Price",
+      "internetPrice": "Internet Price",
+      "amenities": "Amenities",
+      "media": "Media",
+      "areaProject": "Area & Project"
+    },
+    "area": {
+      "any": "All",
+      "min": "Min area",
+      "max": "Max area",
+      "unit": "m²",
+      "title": "Area Range"
+    },
+    "price": {
+      "any": "All prices",
+      "title": "Price Range",
+      "min": "Min price",
+      "max": "Max price",
+      "unit": "VND"
+    },
+    "frontage": {
+      "title": "Frontage Width",
+      "any": "All",
+      "min": "Min frontage",
+      "max": "Max frontage",
+      "unit": "m"
+    },
+    "orientation": {
+      "title": "House Direction",
+      "any": "All",
+      "north": "North",
+      "south": "South",
+      "east": "East",
+      "west": "West",
+      "northeast": "Northeast",
+      "northwest": "Northwest",
+      "southeast": "Southeast",
+      "southwest": "Southwest"
+    },
+    "moveInTime": {
+      "title": "Move-in Time",
+      "any": "All",
+      "immediate": "Immediate",
+      "oneToTwoWeeks": "1 - 2 weeks",
+      "oneMonth": "1 month",
+      "negotiable": "Negotiable"
+    },
+    "utilitiesPrice": {
+      "electricity": {
+        "title": "Electricity Price",
+        "any": "All",
+        "negotiable": "Negotiable",
+        "owner": "Set by owner",
+        "provider": "Provider rate"
+      },
+      "water": {
+        "title": "Water Price",
+        "any": "All",
+        "negotiable": "Negotiable",
+        "owner": "Set by owner",
+        "provider": "Provider rate"
+      },
+      "internet": {
+        "title": "Internet Price",
+        "any": "All",
+        "negotiable": "Negotiable",
+        "owner": "Set by owner"
+      }
+    },
+    "amenities": {
+      "title": "Amenities",
+      "securityService": "Security service",
+      "camera": "Camera",
+      "fireSafety": "Fire safety",
+      "parking": "Parking",
+      "balcony": "Balcony",
+      "garden": "Garden"
+    },
+    "media": {
+      "title": "Media",
+      "video": "Video",
+      "threeSixty": "3D & 360°"
+    },
+    "summary": {
+      "selected": "selected",
+      "all": "All"
+    },
+    "areaProject": {
+      "title": "Area & Project",
+      "province": "Province/City",
+      "district": "District",
+      "ward": "Ward",
+      "street": "Street",
+      "project": "Project",
+      "chooseProvince": "Choose Province/City",
+      "chooseDistrict": "Choose District",
+      "chooseWard": "Choose Ward",
+      "chooseStreet": "Choose Street",
+      "chooseProject": "Choose Project",
+      "any": "Any",
+      "clear": "Clear",
+      "apply": "Apply",
+      "add": "+ Add",
+      "added": "Selected"
+    }
+  },
+  "seller": {
+    "listingManagement": {
+      "toolbar": {
+        "searchPlaceholder": "Search listings...",
+        "filter": "Filter",
+        "export": "Export",
+        "totalZero": "0 listings",
+        "totalOne": "1 listing",
+        "totalMany": "{count} listings"
+      },
+      "status": {
+        "all": "All",
+        "expired": "Expired",
+        "expiring": "Expiring",
+        "active": "Active",
+        "pending": "Pending",
+        "review": "In Review",
+        "payment": "Awaiting Payment",
+        "rejected": "Rejected",
+        "archived": "Archived"
+      },
+      "empty": {
+        "title": "No listings yet",
+        "description": "You haven't posted any listings. Start by creating one or purchase a membership package to unlock posting.",
+        "tagline": "Boost visibility with premium packages and AI optimization",
+        "actions": {
+          "buyPackage": "Buy Package",
+          "create": "Create Listing"
+        }
+      },
+      "filter": {
+        "title": "Filters",
+        "postingDate": "Posting Date",
+        "postingDatePlaceholder": "Default",
+        "postingDateDefault": "Default",
+        "postingDateLast7Days": "Last 7 days",
+        "postingDateLast30Days": "Last 30 days",
+        "postingDateCustom": "Custom range",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "dateRangeTitle": "Filter by date",
+        "fromDate": "From date",
+        "toDate": "To date",
+        "back": "Back",
+        "datePlaceholder": "Select date",
+        "editRange": "Edit range",
+        "propertyType": "Property Type",
+        "add": "+ Add",
+        "province": "Province/City",
+        "district": "District",
+        "listingCategory": "Listing Category",
+        "reset": "Reset",
+        "apply": "Apply",
+        "search": "Search...",
+        "noResult": "No results",
+        "addProvince": "+ Add Province",
+        "clickChipToRemove": "Click on chips to remove selected provinces",
+        "selectProvinceToFilter": "Select provinces to filter property listings",
+        "addDistrict": "+ Add District",
+        "selectDistrictInProvince": "Select districts in",
+        "selectExactlyOneProvince": "Select exactly 1 province to enable district filtering",
+        "filteringDistrictsIn": "Filtering districts in:",
+        "ward": "Ward/Commune",
+        "selectDistrictsFirst": "Select districts first to enable ward filtering",
+        "filteringWardsIn": "Filtering wards in:"
+      }
+    }
   }
 }

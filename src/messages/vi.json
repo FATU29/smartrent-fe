@@ -1,10 +1,17 @@
 {
   "common": {
-    "or": "Hoặc"
+    "or": "Hoặc",
+    "loading": "Đang tải...",
+    "loadingMore": "Đang tải thêm...",
+    "loadMore": "Tải thêm",
+    "endOfResults": "Hết kết quả",
+    "new": "Mới",
+    "learnMore": "Tìm hiểu thêm",
+    "go_home": "Về trang chủ"
   },
   "pagination": {
     "showing": "Hiển thị",
-    "of": "trong tổng số",
+    "of": "trong",
     "results": "kết quả",
     "show": "Hiển thị",
     "perPage": "mỗi trang",
@@ -14,6 +21,25 @@
     "next": "Tiếp"
   },
   "homePage": {
+    "authMeta": {
+      "otp": {
+        "title": "Nhập Mã Xác Minh",
+        "description": "Chúng tôi đã gửi mã xác minh 6 số tới {contact}",
+        "digitLabel": "Số {position}",
+        "verifyButton": "Xác Minh Mã",
+        "verifyingButton": "Đang xác minh...",
+        "didntReceive": "Không nhận được mã?",
+        "resendButton": "Gửi Lại Mã",
+        "resendCountdown": "Gửi lại sau {seconds} giây",
+        "backToRegister": "Quay Lại Đăng Ký",
+        "verificationSuccess": "Xác minh thành công!",
+        "verificationError": "Xác minh thất bại. Vui lòng thử lại.",
+        "resendSuccess": "Đã gửi lại mã thành công!",
+        "resendError": "Không thể gửi lại mã. Vui lòng thử lại.",
+        "resendingButton": "Đang gửi lại...",
+        "back": "Quay Lại"
+      }
+    },
     "title": "Tìm Ngôi Nhà Mơ Ước",
     "subtitle": "Khám phá bất động sản cao cấp với tiện nghi hiện đại, danh sách đã xác minh và giá cả minh bạch.",
     "description": "Khám phá ngôi nhà hoàn hảo của bạn",
@@ -54,7 +80,7 @@
       "more": "thêm",
       "noProperties": "Không tìm thấy bất động sản",
       "noPropertiesDescription": "Hãy thử điều chỉnh tiêu chí tìm kiếm của bạn hoặc kiểm tra lại sau để có danh sách mới.",
-      "listings": "Danh sách Bất động sản",
+      "listings": "Bất động sản dành cho bạn",
       "favorites": "Yêu thích",
       "additionalAmenities": "Tiện nghi Bổ sung",
       "views": "lượt xem",
@@ -214,6 +240,15 @@
         "newPasswordLowercase": "Mật khẩu cần có ít nhất 1 ký tự viết thường",
         "newPasswordNumber": "Mật khẩu cần có ít nhất 1 ký tự số"
       },
+      "oauth": {
+        "processing_login": "Đang xử lý đăng nhập...",
+        "please_wait": "Vui lòng đợi trong giây lát",
+        "login_successful": "Đăng nhập thành công!",
+        "redirecting": "Đang chuyển hướng...",
+        "login_failed": "Đăng nhập thất bại",
+        "oauth_authorization_failed": "Xác thực Google OAuth thất bại",
+        "authentication_failed": "Xác thực thất bại"
+      },
       "logout": "Đăng xuất",
       "profile": "Hồ sơ",
       "settings": "Cài đặt",
@@ -229,6 +264,54 @@
       "otp": {
         "title": "Nhập Mã Xác Minh",
         "description": "Chúng tôi đã gửi mã xác minh 6 số tới {contact}",
+        "membershipPage": {
+          "title": "Gói dịch vụ",
+          "subtitle": "So sánh gói Hội viên và gói voucher Đẩy tin để chọn giải pháp tối ưu cho nhu cầu bán hàng.",
+          "tabs": {
+            "membership": "Gói Hội viên",
+            "voucher": "Gói voucher Đẩy tin"
+          },
+          "aria": {
+            "register": "Đăng ký gói dịch vụ",
+            "membershipTab": "Tab gói hội viên",
+            "voucherTab": "Tab gói voucher đẩy tin"
+          }
+        },
+        "membershipPlans": {
+          "savingSuffix": "mỗi tháng",
+          "basic": {
+            "name": "Hội viên Cơ bản",
+            "description": "Phù hợp với môi giới mới hoặc gói hàng nhỏ"
+          },
+          "standard": {
+            "name": "Hội viên Tiêu chuẩn",
+            "description": "Phù hợp với môi giới chuyên nghiệp có gói hàng từ 10 BDS"
+          },
+          "premium": {
+            "name": "Hội viên Cao cấp",
+            "description": "Phù hợp với môi giới có gói hàng và ngân sách quảng cáo lớn"
+          },
+          "groups": {
+            "monthlyPackage": "Gói tin hằng tháng",
+            "utilities": "Tiện ích"
+          },
+          "features": {
+            "vipGold7": "Tin VIP Vàng (hiển thị 7 ngày)",
+            "vipSilver7": "Tin VIP Bạc (hiển thị 7 ngày)",
+            "1vipGold7": "1 Tin VIP Vàng (hiển thị 7 ngày)",
+            "1vipSilver7": "1 Tin VIP Bạc (hiển thị 7 ngày)",
+            "2vipSilver7": "2 Tin VIP Bạc (hiển thị 7 ngày)",
+            "15standard10": "15 Tin Thường (hiển thị 10 ngày)",
+            "30standard10": "30 Tin Thường (hiển thị 10 ngày)",
+            "50standard10": "50 Tin Thường (hiển thị 10 ngày)",
+            "15pushStandard": "15 lượt đẩy cho Tin Thường",
+            "30pushStandard": "30 lượt đẩy cho Tin Thường",
+            "50pushStandard": "50 lượt đẩy cho Tin Thường",
+            "imageCopyright": "Bản quyền ảnh",
+            "scheduledPosting": "Hẹn giờ đăng tin",
+            "performanceReport": "Báo cáo hiệu suất"
+          }
+        },
         "digitLabel": "Số {position}",
         "verifyButton": "Xác Minh Mã",
         "verifyingButton": "Đang xác minh...",
@@ -251,7 +334,7 @@
           "title": "Thông tin cá nhân",
           "contactInfo": "Thông tin liên hệ",
           "businessInfo": "Thông tin xuất hóa đơn",
-          "firstName": "Họ và tên người mua hàng",
+          "firstName": "Họ",
           "lastName": "Tên",
           "phoneNumber": "Số điện thoại chính",
           "email": "Email",
@@ -301,9 +384,41 @@
         }
       }
     },
+    "locations": {
+      "title": "Bất động sản theo địa điểm",
+      "listingsSuffix": "tin đăng",
+      "popularProjects": "Dự án nổi bật"
+    },
+    "features": {
+      "title": "Tại sao nên chọn chúng tôi",
+      "buyOrRent": {
+        "title": "Tìm & đăng tin dễ dàng",
+        "desc": "Đăng hoặc tìm tin nhanh chóng với quy trình đơn giản, hỗ trợ đầy đủ cho cả mua bán và thuê trọ."
+      },
+      "rentals": {
+        "title": "Nguồn phòng trọ phong phú",
+        "desc": "Cập nhật liên tục phòng trọ, căn hộ dịch vụ, nhà nguyên căn cho thuê với thông tin rõ ràng, minh bạch."
+      },
+      "projectReview": {
+        "title": "Đánh giá dự án khách quan",
+        "desc": "Tổng hợp nhận định chuyên sâu giúp bạn hiểu rõ tiện ích, tiềm năng và giá trị từng khu vực."
+      },
+      "knowledge": {
+        "title": "Trợ lý AI bất động sản",
+        "desc": "AI tư vấn mẹo thuê trọ an toàn, tối ưu chi phí, phân tích hợp đồng, gợi ý phong thủy & cập nhật xu hướng thị trường."
+      }
+    },
+    "topInterest": {
+      "title": "Dẫn đầu",
+      "viewAll": "Xem tất cả"
+    },
+    "searchIntro": {
+      "title": "Tìm căn phù hợp nhanh chóng",
+      "description": "Nhập từ khóa hoặc dùng bộ lọc chi tiết để thu hẹp theo vị trí, giá, loại hình và tiện nghi bạn cần."
+    },
     "filters": {
       "title": "Lọc Bất động sản",
-      "anyAmenities": "Bất kỳ Tiện nghi nào",
+      "anyAmenities": "Tất cả Tiện nghi",
       "oneAmenity": "1 Tiện nghi",
       "amenitiesCount": "Tiện nghi",
       "propertyType": {
@@ -322,11 +437,11 @@
         "minPrice": "Giá Tối thiểu",
         "maxPrice": "Giá Tối đa",
         "currency": "VND",
-        "any": "Bất kỳ Giá nào"
+        "any": "Tất cả Giá"
       },
       "bedrooms": {
         "title": "Phòng ngủ",
-        "any": "Bất kỳ",
+        "any": "Tất cả",
         "studio": "Studio",
         "one": "1+",
         "two": "2+",
@@ -336,7 +451,7 @@
       },
       "bathrooms": {
         "title": "Phòng tắm",
-        "any": "Bất kỳ",
+        "any": "Tất cả",
         "one": "1+",
         "two": "2+",
         "three": "3+",
@@ -361,24 +476,58 @@
         "title": "Vị trí",
         "city": "Thành phố",
         "district": "Quận/Huyện",
-        "any": "Bất kỳ Vị trí nào"
+        "any": "Tất cả Vị trí"
       },
       "furnishing": {
         "title": "Nội thất",
-        "any": "Bất kỳ",
+        "any": "Tất cả",
         "furnished": "Có nội thất",
         "semiFurnished": "Bán nội thất",
         "unfurnished": "Không nội thất"
       },
       "clearAll": "Xóa Tất cả",
       "applyFilters": "Áp dụng Bộ lọc"
+    },
+    "heroSlides": {
+      "rentSecure": {
+        "heading": "Thuê trọ an tâm, giao dịch minh bạch",
+        "sub": "Nguồn phòng đã kiểm duyệt, bảo vệ thông tin và hỗ trợ xử lý khi có tranh chấp.",
+        "cta": "Khám phá ngay"
+      },
+      "smartSearch": {
+        "heading": "Tìm kiếm thông minh theo nhu cầu",
+        "sub": "Bộ lọc chi tiết, gợi ý phù hợp vị trí, ngân sách và tiện ích bạn mong muốn.",
+        "cta": "Bắt đầu lọc"
+      },
+      "aiAssist": {
+        "heading": "AI đồng hành tư vấn thuê & giá",
+        "sub": "Hỏi đáp tức thì về giá trị thị trường, pháp lý hợp đồng và tối ưu chi phí.",
+        "cta": "Hỏi AI"
+      }
     }
+  },
+  "userMenu": {
+    "overview": "Tổng quan",
+    "listings": "Quản lý tin đăng",
+    "membership": "Gói thành viên",
+    "customers": "Khách hàng tiềm năng",
+    "sponsored": "Tin tài trợ",
+    "profile": "Cập nhật hồ sơ",
+    "password": "Đổi mật khẩu",
+    "proBroker": "Môi giới chuyên nghiệp",
+    "topup": "Nạp tiền / Ký quỹ",
+    "membershipPackage": "Nâng cấp & tiết kiệm hơn",
+    "membershipBenefit": "Mở khóa hiển thị cao hơn, AI nâng cao và insight khách hàng với các gói premium.",
+    "savePercent": "Tiết kiệm {percent}"
   },
   "createPost": {
     "title": "Tạo Tin Đăng Bất động sản",
     "description": "Làm theo các bước dưới đây để tạo tin đăng bất động sản",
     "back": "Quay lại",
     "next": "Tiếp theo",
+    "completeCurrentStep": "Vui lòng hoàn thành bước này trước khi tiếp tục",
+    "generateAutomatically": "Tạo tự động",
+    "continueToUpload": "Tiếp tục tải lên",
     "steps": {
       "propertyInfo": {
         "generateAutomatically": "Tạo tự động",
@@ -411,6 +560,10 @@
       }
     },
     "sections": {
+      "packageConfig": {
+        "title": "Gói & Cấu hình",
+        "description": "Chọn gói hội viên hoặc gói đẩy tin phù hợp để tối ưu hiển thị"
+      },
       "media": {
         "title": "Hình ảnh & Video",
         "description": "Tải lên hình ảnh chất lượng cao và video tùy chọn để trình bày bất động sản của bạn",
@@ -465,6 +618,13 @@
             "filenameHints": "Thêm \"360\", \"panorama\" hoặc \"pano\" trong tên tệp",
             "aspectRatio": "Ưu tiên tỷ lệ 2:1 hoặc rộng hơn"
           }
+        },
+        "cover": {
+          "title": "Ảnh bìa",
+          "description": "Tải ảnh bìa sẽ hiển thị đầu tiên trong bộ sưu tập",
+          "uploadCta": "Tải ảnh bìa",
+          "replaceCta": "Thay ảnh bìa",
+          "badge": "Ảnh bìa"
         }
       },
       "propertyInfo": {
@@ -645,12 +805,19 @@
           "district": "Quận",
           "hcmc": "TP.HCM",
           "title": "Thông tin Bất động sản",
+          "subtitle": "Cập nhật thông tin bất động sản để AI đánh giá chính xác nhất",
           "address": "Địa chỉ",
+          "addressMode": "Chế độ nhập địa chỉ",
+          "addressModes": {
+            "structured": "Tỉnh/Quận/Phường",
+            "freeText": "Nhập tự do"
+          },
           "addressPlaceholder": "Nhập địa chỉ bất động sản...",
           "area": "Diện tích (m²)",
           "type": "Loại",
           "districtLabel": "Quận/Huyện",
           "ward": "Phường/Xã",
+          "province": "Tỉnh",
           "bedrooms": "Số phòng ngủ",
           "bathrooms": "Số phòng tắm",
           "amenities": "Tiện nghi",
@@ -668,7 +835,45 @@
               "downloadSample": "Tải Mẫu",
               "titleWithCount": "{count} / 24 ảnh",
               "dropzone": {
+                "hint": "Kéo tối đa 24 ảnh hoặc...",
+                "uploadFromDevice": "Tải từ Thiết bị",
+                "chooseFromLibrary": "Chọn từ Thư viện",
                 "note": "Tối thiểu 3 ảnh · Tối đa 24 · Kích thước tối thiểu 100x100px · Tối đa 15MB mỗi ảnh"
+              },
+              "uploaded": {
+                "title": "Ảnh đã tải lên",
+                "cover": "Ảnh bìa",
+                "setCover": "Đặt làm bìa",
+                "remove": "Xóa"
+              },
+              "video": {
+                "title": "Video (Tùy chọn)",
+                "placeholder": "URL YouTube hoặc TikTok...",
+                "help": "Hỗ trợ YouTube và TikTok để trình bày bất động sản sinh động hơn"
+              },
+              "guidelines": {
+                "title": "Hướng dẫn Chụp ảnh",
+                "collapse": "Thu gọn",
+                "expand": "Mở rộng",
+                "normalTitle": "Ảnh thường (Khuyến nghị)",
+                "normalCount": "12-24 ảnh",
+                "do": {
+                  "naturalLight": "Chụp bằng ánh sáng tự nhiên",
+                  "tidyRoom": "Dọn dẹp phòng trước khi chụp",
+                  "variousAngles": "Chụp nhiều góc khác nhau",
+                  "includeAmenities": "Bao gồm cả nội thất và ngoại thất",
+                  "nightShots": "Bao gồm ảnh ban đêm nếu có thể"
+                },
+                "dont": {
+                  "lowLight": "Tránh điều kiện ánh sáng yếu",
+                  "showPersonal": "Tránh hiển thị dữ liệu cá nhân",
+                  "repetitiveAngles": "Tránh lặp lại góc chụp",
+                  "overEdit": "Tránh chỉnh sửa quá mức",
+                  "tooDarkOrBright": "Tránh quá tối hoặc quá sáng"
+                },
+                "panoramaTitle": "Ảnh 360° (Tùy chọn)",
+                "panoramaCount": "1-4 ảnh",
+                "panoramaDesc": "Hệ thống tự phát hiện ảnh 360° theo tỷ lệ khung hình và tên tệp. Dùng máy ảnh 360 hoặc chế độ panorama điện thoại; ưu tiên tỷ lệ 2:1."
               }
             },
             "quan2": "Quận 2",
@@ -692,6 +897,11 @@
             "cogiang": "Phường Cô Giang",
             "nguyenthaihoc": "Phường Nguyễn Thái Học"
           },
+          "provinces": {
+            "hcmc": "TP. Hồ Chí Minh",
+            "hn": "Hà Nội",
+            "dn": "Đà Nẵng"
+          },
           "amenitiesList": {
             "furnished": "Đầy đủ nội thất",
             "aircon": "Điều hòa",
@@ -705,6 +915,7 @@
         },
         "results": {
           "title": "Kết quả Đánh giá AI",
+          "subtitle": "Kết quả đánh giá AI dựa trên thông tin bất động sản",
           "suggestedPrice": "Khoảng giá đề xuất",
           "priceRange": "2.8M - 3.2M/tháng",
           "reliability": "Độ tin cậy",
@@ -767,7 +978,8 @@
     "newsletter": "Bản tin",
     "newsletterDescription": "Đăng ký để nhận tin tức bất động sản mới nhất",
     "subscribe": "Đăng ký",
-    "emailPlaceholder": "Nhập email của bạn"
+    "emailPlaceholder": "Nhập email của bạn",
+    "disclaimer": "Nền tảng này được phát triển phục vụ duy nhất cho Đồ án Tốt nghiệp của Trường Đại học Khoa học Tự nhiên. Đây là sản phẩm học thuật thử nghiệm, không phải dịch vụ thương mại."
   },
   "navigation": {
     "home": "Trang chủ",
@@ -793,6 +1005,320 @@
     "analytics": "Phân tích",
     "financial": "Báo cáo Tài chính",
     "occupancy": "Tỷ lệ Lấp đầy",
-    "performance": "Hiệu suất Bất động sản"
+    "performance": "Hiệu suất Bất động sản",
+    "seller": {
+      "overview": "Tổng quan",
+      "listings": "Tin đăng",
+      "create": "Đăng tin",
+      "customers": "Khách hàng",
+      "membership": "Gói Hội viên",
+      "account": "Tài khoản",
+      "comingSoon": "Sắp ra mắt",
+      "deposit": "Nạp tiền",
+      "notifications": "Thông báo",
+      "balanceTitle": "Số dư tài khoản",
+      "postAccount": "TK tin đăng",
+      "promoAccount": "TK khuyến mãi"
+    },
+    "sellernet": {
+      "overview": "Tổng quan",
+      "postManagement": "Quản lý tin đăng",
+      "create": "Đăng mới",
+      "list": "Danh sách tin",
+      "drafts": "Tin nháp",
+      "sponsored": "Danh sách tin tài trợ",
+      "customers": "Quản lý khách hàng",
+      "membership": "Gói Hội viên",
+      "membershipRegister": "Đăng ký mua",
+      "proAccount": "Tài khoản Pro",
+      "finance": "Quản lý tài chính",
+      "balanceInfo": "Thông tin số dư",
+      "transactions": "Lịch sử giao dịch",
+      "myPromos": "Khuyến mãi của tôi",
+      "topup": "Nạp tiền vào tài khoản",
+      "personalAccount": "Quản lý TK Cá nhân",
+      "editPersonal": "Chỉnh sửa thông tin cá nhân",
+      "accountSettings": "Cài đặt tài khoản",
+      "proBroker": "Môi giới chuyên nghiệp",
+      "businessAccount": "Quản lý TK Doanh nghiệp",
+      "businessRegister": "Đăng ký tài khoản Doanh nghiệp",
+      "pricingGuide": "Báo giá & Hướng dẫn",
+      "pricing": "Báo giá",
+      "paymentGuide": "Hướng dẫn thanh toán",
+      "usageGuide": "Hướng dẫn sử dụng",
+      "utilities": "Tiện ích",
+      "notifications": "Thông báo",
+      "emailSubscriptions": "Quản lý đăng kí nhận email",
+      "lockRequest": "Yêu cầu khóa tài khoản"
+    }
+  },
+  "residentialFilter": {
+    "currency": {
+      "vnd": "đ",
+      "usd": "Đô"
+    },
+    "searchPlaceholder": "Tìm kiếm bất động sản nhà ở...",
+    "actions": {
+      "search": "Tìm kiếm",
+      "viewMap": "Xem bản đồ",
+      "filter": "Lọc",
+      "clear": "Xóa",
+      "apply": "Áp dụng",
+      "reset": "Đặt lại",
+      "back": "Quay lại"
+    },
+    "toggles": {
+      "verified": "Tin xác thực",
+      "professionalBroker": "Môi giới chuyên nghiệp",
+      "video": "Có video",
+      "has360": "Có 3D/360°"
+    },
+    "dropdowns": {
+      "propertyType": "Loại nhà đất",
+      "priceRange": "Khoảng giá",
+      "areaRange": "Diện tích",
+      "frontage": "Mặt tiền",
+      "orientation": "Hướng nhà",
+      "moveInTime": "Thời gian vào ở",
+      "electricityPrice": "Giá điện",
+      "waterPrice": "Giá nước",
+      "internetPrice": "Giá internet",
+      "amenities": "Tiện ích",
+      "media": "Phương tiện",
+      "areaProject": "Khu vực & Dự án"
+    },
+    "area": {
+      "any": "Tất cả",
+      "min": "Diện tích tối thiểu",
+      "max": "Diện tích tối đa",
+      "unit": "m²",
+      "title": "Khoảng diện tích"
+    },
+    "price": {
+      "any": "Tất cả giá",
+      "title": "Khoảng giá",
+      "min": "Giá thấp nhất",
+      "max": "Giá cao nhất",
+      "unit": "VND"
+    },
+    "frontage": {
+      "title": "Chiều rộng mặt tiền",
+      "any": "Tất cả",
+      "min": "Mặt tiền tối thiểu",
+      "max": "Mặt tiền tối đa",
+      "unit": "m"
+    },
+    "orientation": {
+      "title": "Hướng nhà",
+      "any": "Tất cả",
+      "north": "Bắc",
+      "south": "Nam",
+      "east": "Đông",
+      "west": "Tây",
+      "northeast": "Đông Bắc",
+      "northwest": "Tây Bắc",
+      "southeast": "Đông Nam",
+      "southwest": "Tây Nam"
+    },
+    "moveInTime": {
+      "title": "Thời gian dự kiến vào ở",
+      "any": "Tất cả",
+      "immediate": "Ở ngay",
+      "oneToTwoWeeks": "1 - 2 tuần",
+      "oneMonth": "1 tháng",
+      "negotiable": "Thỏa thuận"
+    },
+    "utilitiesPrice": {
+      "electricity": {
+        "title": "Giá điện",
+        "any": "Tất cả",
+        "negotiable": "Thỏa thuận",
+        "owner": "Do chủ nhà quy định",
+        "provider": "Theo nhà cung cấp"
+      },
+      "water": {
+        "title": "Giá nước",
+        "any": "Tất cả",
+        "negotiable": "Thỏa thuận",
+        "owner": "Do chủ nhà quy định",
+        "provider": "Theo nhà cung cấp"
+      },
+      "internet": {
+        "title": "Giá internet",
+        "any": "Tất cả",
+        "negotiable": "Thỏa thuận",
+        "owner": "Do chủ nhà quy định"
+      }
+    },
+    "amenities": {
+      "title": "Tiện ích",
+      "securityService": "Có dịch vụ bảo vệ",
+      "camera": "Có camera",
+      "fireSafety": "Có PCCC",
+      "parking": "Chỗ để xe",
+      "balcony": "Ban công",
+      "garden": "Vườn"
+    },
+    "media": {
+      "title": "Phương tiện",
+      "video": "Video",
+      "threeSixty": "Hình 3D & 360°"
+    },
+    "summary": {
+      "selected": "đã chọn",
+      "all": "Tất cả"
+    },
+    "areaProject": {
+      "title": "Khu vực & Dự án",
+      "province": "Tỉnh/Thành phố",
+      "district": "Quận/Huyện",
+      "ward": "Phường/Xã",
+      "street": "Đường/Phố",
+      "project": "Dự án",
+      "chooseProvince": "Chọn Tỉnh/Thành phố",
+      "chooseDistrict": "Chọn Quận/Huyện",
+      "chooseWard": "Chọn Phường/Xã",
+      "chooseStreet": "Chọn Đường/Phố",
+      "chooseProject": "Chọn Dự án",
+      "any": "Tất cả",
+      "clear": "Đặt lại",
+      "apply": "Áp dụng",
+      "add": "+ Thêm",
+      "added": "Đã chọn"
+    }
+  },
+  "pricing": {
+    "bestSeller": "Bán chạy nhất",
+    "buyNow": "Mua ngay",
+    "saveUpTo": "Tiết kiệm đến",
+    "perMonthSuffix": "₫/tháng"
+  },
+  "voucher": {
+    "bestSeller": "Bán chạy nhất",
+    "buyNow": "Mua ngay",
+    "save": "Tiết kiệm",
+    "daySuffix": "ngày",
+    "voucherUnit": "voucher",
+    "voucherPlural": "voucher",
+    "pushDescription": "{count} voucher giảm {amount} VND mỗi lần đẩy Tin Thường.",
+    "savingPrefix": "Tiết kiệm",
+    "perPeriod": "/",
+    "currencySymbol": "₫"
+  },
+  "membershipPage": {
+    "title": "Gói dịch vụ",
+    "subtitle": "So sánh gói Hội viên và gói voucher Đẩy tin để chọn giải pháp tối ưu cho nhu cầu bán hàng.",
+    "tabs": {
+      "membership": "Gói Hội viên",
+      "voucher": "Gói voucher Đẩy tin"
+    },
+    "aria": {
+      "register": "Đăng ký gói dịch vụ",
+      "membershipTab": "Tab gói hội viên",
+      "voucherTab": "Tab gói voucher đẩy tin"
+    }
+  },
+  "membershipPlans": {
+    "savingSuffix": "mỗi tháng",
+    "basic": {
+      "name": "Hội viên Cơ bản",
+      "description": "Phù hợp với môi giới mới hoặc gói hàng nhỏ"
+    },
+    "standard": {
+      "name": "Hội viên Tiêu chuẩn",
+      "description": "Phù hợp với môi giới chuyên nghiệp có gói hàng từ 10 BDS"
+    },
+    "premium": {
+      "name": "Hội viên Cao cấp",
+      "description": "Phù hợp với môi giới có gói hàng và ngân sách quảng cáo lớn"
+    },
+    "groups": {
+      "monthlyPackage": "Gói tin hằng tháng",
+      "utilities": "Tiện ích"
+    },
+    "features": {
+      "vipGold7": "Tin VIP Vàng (hiển thị 7 ngày)",
+      "vipSilver7": "Tin VIP Bạc (hiển thị 7 ngày)",
+      "1vipGold7": "1 Tin VIP Vàng (hiển thị 7 ngày)",
+      "1vipSilver7": "1 Tin VIP Bạc (hiển thị 7 ngày)",
+      "2vipSilver7": "2 Tin VIP Bạc (hiển thị 7 ngày)",
+      "15standard10": "15 Tin Thường (hiển thị 10 ngày)",
+      "30standard10": "30 Tin Thường (hiển thị 10 ngày)",
+      "50standard10": "50 Tin Thường (hiển thị 10 ngày)",
+      "15pushStandard": "15 lượt đẩy cho Tin Thường",
+      "30pushStandard": "30 lượt đẩy cho Tin Thường",
+      "50pushStandard": "50 lượt đẩy cho Tin Thường",
+      "imageCopyright": "Bản quyền ảnh",
+      "scheduledPosting": "Hẹn giờ đăng tin",
+      "performanceReport": "Báo cáo hiệu suất"
+    }
+  },
+  "seller": {
+    "listingManagement": {
+      "toolbar": {
+        "searchPlaceholder": "Tìm kiếm tin...",
+        "filter": "Lọc",
+        "export": "Xuất",
+        "totalZero": "0 tin đăng",
+        "totalOne": "1 tin đăng",
+        "totalMany": "{count} tin đăng"
+      },
+      "status": {
+        "all": "Tất cả",
+        "expired": "Hết hạn",
+        "expiring": "Sắp hết hạn",
+        "active": "Đang hiển thị",
+        "pending": "Chờ duyệt",
+        "review": "Đang duyệt",
+        "payment": "Chờ thanh toán",
+        "rejected": "Bị từ chối",
+        "archived": "Đã lưu trữ"
+      },
+      "empty": {
+        "title": "Chưa có tin đăng",
+        "description": "Bạn chưa đăng tin nào. Hãy tạo tin đầu tiên hoặc mua gói hội viên để mở khóa quyền đăng.",
+        "tagline": "Tăng hiển thị với gói premium và tối ưu AI",
+        "actions": {
+          "buyPackage": "Mua gói",
+          "create": "Đăng tin"
+        }
+      },
+      "filter": {
+        "title": "Bộ lọc",
+        "postingDate": "Ngày đăng tin",
+        "postingDatePlaceholder": "Mặc định",
+        "postingDateDefault": "Mặc định",
+        "postingDateLast7Days": "7 ngày qua",
+        "postingDateLast30Days": "30 ngày qua",
+        "postingDateCustom": "Tùy chọn ngày",
+        "today": "Hôm nay",
+        "yesterday": "Hôm qua",
+        "dateRangeTitle": "Lọc theo ngày",
+        "fromDate": "Từ ngày",
+        "toDate": "Đến ngày",
+        "back": "Quay lại",
+        "datePlaceholder": "Chọn ngày",
+        "editRange": "Sửa khoảng",
+        "propertyType": "Loại BĐS",
+        "add": "+ Thêm",
+        "province": "Tỉnh/ Thành",
+        "district": "Quận/ Huyện",
+        "listingCategory": "Loại tin đăng",
+        "reset": "Đặt lại",
+        "apply": "Áp dụng",
+        "search": "Tìm kiếm...",
+        "noResult": "Không có kết quả",
+        "addProvince": "+ Thêm tỉnh",
+        "clickChipToRemove": "Nhấn vào các chip để xóa tỉnh thành đã chọn",
+        "selectProvinceToFilter": "Chọn tỉnh thành để lọc danh sách bất động sản",
+        "addDistrict": "+ Thêm quận/huyện",
+        "selectDistrictInProvince": "Chọn quận/huyện trong",
+        "selectExactlyOneProvince": "Chọn đúng 1 tỉnh/thành để kích hoạt lọc quận/huyện",
+        "filteringDistrictsIn": "Đang lọc quận/huyện trong:",
+        "ward": "Phường/Xã",
+        "selectDistrictsFirst": "Chọn quận/huyện trước để kích hoạt lọc phường/xã",
+        "filteringWardsIn": "Đang lọc phường/xã trong:"
+      }
+    }
   }
 }

@@ -59,6 +59,8 @@ export const DISTRICT_KEYS = [
   'thuduc',
 ] as const
 
+export const PROVINCE_KEYS = ['hcmc', 'hn', 'dn'] as const
+
 // Contract: pass the translator scoped to createPost.sections.aiValuation
 // Example: const t = useTranslations('createPost.sections.aiValuation')
 export const getWardOptions = (t: (key: string) => string): Option[] =>
@@ -110,6 +112,12 @@ export const getDistrictOptions = (t: (key: string) => string): Option[] =>
   DISTRICT_KEYS.map((k) => ({
     value: k,
     label: t(`propertyInfo.districts.${k}`),
+  }))
+
+export const getProvinceOptions = (t: (key: string) => string): Option[] =>
+  PROVINCE_KEYS.map((k) => ({
+    value: k,
+    label: t(`propertyInfo.provinces.${k}`),
   }))
 
 export type ChartItem = { district: string; value: number; color: string }

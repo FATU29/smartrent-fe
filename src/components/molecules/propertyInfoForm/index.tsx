@@ -78,8 +78,11 @@ const PropertyInfoForm: React.FC<PropertyInfoFormProps> = ({ className }) => {
 
           {/* Map Preview - Mobile First */}
           <div className='space-y-3 sm:space-y-4'>
+            {/* Stack on mobile and allow text wrapping */}
             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0'>
-              <h3 className='text-sm font-medium'>{t('mapPreview')}</h3>
+              <h3 className='text-sm font-medium whitespace-normal break-words leading-snug'>
+                {t('mapPreview')}
+              </h3>
               <div className='flex gap-2 w-full sm:w-auto'>
                 <Button
                   variant='outline'

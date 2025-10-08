@@ -19,7 +19,7 @@ import {
 const PhotoGuidelines: React.FC = () => {
   const t = useTranslations('createPost.sections.media')
   // Separate collapsibles for Normal Photos and 360° Photos
-  const [openNormal, setOpenNormal] = useState(true)
+  const [openNormal, setOpenNormal] = useState(false)
   const [open360, setOpen360] = useState(false)
 
   return (

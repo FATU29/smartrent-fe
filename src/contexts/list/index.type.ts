@@ -9,11 +9,31 @@ export interface ListFilters {
   // Property-specific filters
   minPrice?: number
   maxPrice?: number
+  minArea?: number
+  maxArea?: number
   bedrooms?: number
   bathrooms?: number
   propertyType?: string
   city?: string
   amenities?: string[]
+  // Extended residential specific filters
+  verified?: boolean
+  professionalBroker?: boolean
+  orientation?: string
+  moveInTime?: string
+  electricityPrice?: string
+  waterPrice?: string
+  internetPrice?: string
+  minFrontage?: number
+  maxFrontage?: number
+  hasVideo?: boolean
+  has360?: boolean
+  // Location & Project (cascading)
+  provinceId?: string
+  districtId?: string
+  wardId?: string
+  streetId?: string
+  projectId?: string
   [key: string]: unknown
 }
 
@@ -41,4 +61,5 @@ export interface ListContextType<T = unknown> {
   handleLoadMore: () => Promise<void>
   handleLoadNewPage: (newPage: number) => Promise<void>
   isLoading: boolean
+  activeCount: number
 }

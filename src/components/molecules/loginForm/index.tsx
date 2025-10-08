@@ -13,6 +13,7 @@ import SeparatorOr from '@/components/atoms/separatorOr'
 import { useLogin } from '@/hooks/useAuth'
 import { toast } from 'sonner'
 import { VALIDATION_PATTERNS } from '@/api/types/auth.type'
+import { googleOAuthURL } from '@/utils/googleOAuth2'
 
 const ImageAtom = dynamic(() => import('@/components/atoms/imageAtom'), {
   ssr: false,
@@ -85,6 +86,10 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
     handleSubmit(onSubmit)(e)
   }
 
+  const handleLoginGoogle = () => {
+    window.location.href = googleOAuthURL
+  }
+
   return (
     <div className='space-y-3 md:space-y-5'>
       <div className='space-y-3 text-center'>
@@ -136,9 +141,7 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
         type='button'
         variant='outline'
         className='w-full'
-        onClick={() => {
-          console.log('Google login clicked')
-        }}
+        onClick={handleLoginGoogle}
       >
         <ImageAtom
           src='/svg/google.svg'

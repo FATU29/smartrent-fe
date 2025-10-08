@@ -14,6 +14,8 @@ import ImageAtom from '@/components/atoms/imageAtom'
 import { PropertyCard as PropertyCardType } from '@/api/types/property.type'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
 import { useTranslations } from 'next-intl'
+import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
+import { formatByLocale } from '@/utils/currency/convert'
 import {
   Heart,
   MapPin,
@@ -41,18 +43,24 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   onFavorite,
 }) => {
   const t = useTranslations()
+  const { language } = useSwitchLanguage()
   const [isFavorite, setIsFavorite] = useState(false)
 
-  const formatPrice = (price: number, currency: string) => {
-    if (currency === 'VND') {
-      return new Intl.NumberFormat('vi-VN').format(price) + ' ₫/tháng'
+  // Unified price formatter: if language=en convert VND->USD else show VND with grouping
+  const renderPrice = (price: number, currency: string) => {
+    // Assume backend sends VND numeric + currency code like 'VND'. If already USD and language=en, just format.
+    const isVnd = currency === 'VND'
+    if (isVnd) {
+      const formatted = formatByLocale(price, language)
+      // formatByLocale already adds symbol & (for vi) suffix ₫
+      return formatted + (language === 'vi' ? '/tháng' : '/month')
     }
-    return (
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency,
-      }).format(price) + '/month'
-    )
+    // Fallback: non-VND currency keep original style with Intl
+    const intl = new Intl.NumberFormat(language === 'en' ? 'en-US' : 'vi-VN', {
+      style: 'currency',
+      currency,
+    }).format(price)
+    return intl + (language === 'vi' ? '/tháng' : '/month')
   }
 
   const handleClick = (e: React.MouseEvent) => {
@@ -174,7 +182,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               variant='h5'
               className='text-primary font-bold text-base sm:text-lg'
             >
-              {formatPrice(property.price, property.currency)}
+              {renderPrice(property.price, property.currency)}
             </Typography>
             {property.area && (
               <Typography

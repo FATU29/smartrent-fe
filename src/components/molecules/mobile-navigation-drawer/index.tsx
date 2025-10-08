@@ -17,7 +17,6 @@ interface MobileNavigationDrawerProps {
   items: NavigationItemData[]
   className?: string
   onItemClick?: (item: NavigationItemData) => void
-  defaultExpanded?: string[]
   rightContent?: React.ReactNode
 }
 
@@ -25,7 +24,6 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
   items,
   className,
   onItemClick,
-  defaultExpanded = [],
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const { openAuth } = useAuthDialog()
@@ -253,7 +251,7 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
               <NavigationMenu
                 items={items}
                 onItemClick={handleItemClick}
-                defaultExpanded={defaultExpanded}
+                defaultExpanded={[]}
                 isMobile={true}
                 className='space-y-1'
               />
