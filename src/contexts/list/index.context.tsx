@@ -154,24 +154,39 @@ export const ListProvider = <T,>({
     )
   }
 
-  const value: ListContextType<T> = {
-    filters,
-    pagination,
-    handleUpdateFilter,
-    handleResetFilter,
-    handleLoadMore,
-    handleLoadNewPage,
-    itemsData,
-    isLoading,
-    activeCount: useMemo(() => {
-      return Object.entries(filters).filter(([k, v]) => {
-        if (['search', 'page', 'perPage'].includes(k)) return false
-        if (Array.isArray(v)) return v.length > 0
-        if (typeof v === 'boolean') return v
-        return v !== undefined && v !== '' && v !== null
-      }).length
-    }, [filters]),
-  }
+  const activeCount = useMemo(() => {
+    return Object.entries(filters).filter(([k, v]) => {
+      if (['search', 'page', 'perPage'].includes(k)) return false
+      if (Array.isArray(v)) return v.length > 0
+      if (typeof v === 'boolean') return v
+      return v !== undefined && v !== '' && v !== null
+    }).length
+  }, [filters])
+
+  const value: ListContextType<T> = useMemo(
+    () => ({
+      filters,
+      pagination,
+      handleUpdateFilter,
+      handleResetFilter,
+      handleLoadMore,
+      handleLoadNewPage,
+      itemsData,
+      isLoading,
+      activeCount,
+    }),
+    [
+      filters,
+      pagination,
+      handleUpdateFilter,
+      handleResetFilter,
+      handleLoadMore,
+      handleLoadNewPage,
+      itemsData,
+      isLoading,
+      activeCount,
+    ],
+  )
 
   return <ListContext.Provider value={value}>{children}</ListContext.Provider>
 }

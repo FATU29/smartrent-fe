@@ -172,7 +172,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                       type='text'
                       value={propertyInfo.area}
                       onChange={(e) => {
-                        const value = parseFloat(e.target.value) || 0
+                        const value = Number.parseFloat(e.target.value) || 0
                         updatePropertyInfo({ area: value })
                       }}
                       placeholder='0'
@@ -193,7 +193,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                     type='text'
                     value={propertyInfo.bedrooms}
                     onChange={(e) => {
-                      const value = parseInt(e.target.value) || 0
+                      const value = Number.parseInt(e.target.value) || 0
                       updatePropertyInfo({ bedrooms: value })
                     }}
                     placeholder='0'
@@ -210,7 +210,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                     type='text'
                     value={propertyInfo.bathrooms}
                     onChange={(e) => {
-                      const value = parseInt(e.target.value) || 0
+                      const value = Number.parseInt(e.target.value) || 0
                       updatePropertyInfo({ bathrooms: value })
                     }}
                     placeholder='0'
@@ -335,7 +335,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                 <div className='h-40 flex items-end justify-between gap-2'>
                   {getResultsComparisonItems(t).map((item, index) => (
                     <div
-                      key={index}
+                      key={`comparison-item-${index}`}
                       className='flex flex-col items-center flex-1 group'
                     >
                       <div

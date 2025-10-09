@@ -1,18 +1,18 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/atoms/card'
-import { Badge } from '@/components/atoms/badge'
+import { Card, CardContent, CardFooter } from '@/components/atoms/card'
 import { Button } from '@/components/atoms/button'
-import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
-import { formatByLocale, formatSavingByLocale } from '@/utils/currency/convert'
+import { formatByLocale } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
+import { PricingHeader } from './PricingHeader'
+import { PricingFeatures } from './PricingFeatures'
+import {
+  getPricingTranslations,
+  getPricePeriodByLocale,
+  formatDiscountText,
+} from './translations'
+import { getCardStyles, getButtonStyles } from './styles'
 
 /**
  * PricingPlanCard
@@ -89,10 +89,13 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
   compact = false,
 }) => {
   const t = useTranslations('pricing')
-  // Use our language context as single source of truth (router.locale not used)
   const { language } = useSwitchLanguage()
   const locale = language
 
+  // Extract translation texts
+  const translations = getPricingTranslations(t)
+
+  // Format price
   const formattedPrice =
     typeof price === 'number'
       ? formatByLocale(price, locale)
@@ -100,170 +103,38 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
           parseInt(String(price).replace(/[^0-9]/g, '')) || 0,
           locale,
         )
-  const resolvedPricePeriod =
-    pricePeriod || (locale?.startsWith('en') ? '/ month' : '/ tháng')
-  const resolvedCta = ctaLabel || t('buyNow')
-  const bestSellerLabel = t('bestSeller')
-  const discountText =
-    typeof discountPercent === 'number'
-      ? `(${discountPercent > 0 ? '-' : ''}${Math.abs(discountPercent)}%)`
-      : undefined
+
+  // Resolve pricing metadata
+  const resolvedPricePeriod = pricePeriod || getPricePeriodByLocale(locale)
+  const resolvedCta = ctaLabel || translations.buyNow
+  const discountText = formatDiscountText(discountPercent)
 
   return (
     <Card
       aria-labelledby={headingId}
-      className={cn(
-        'relative h-full transition-all duration-300',
-        'bg-gradient-to-b from-background to-background/95 dark:from-background dark:to-background/60',
-        interactive &&
-          'hover:-translate-y-1 hover:shadow-xl hover:border-primary/60 hover:bg-accent/40 focus-within:-translate-y-1 focus-within:shadow-xl focus-within:border-primary/60 active:translate-y-0',
-        selected && 'ring-2 ring-primary shadow-lg',
-        isBestSeller &&
-          'border-primary/70 shadow-[0_0_0_1px_var(--tw-ring-color)] shadow-primary/10',
-        isBestSeller &&
-          'before:absolute before:inset-0 before:-z-10 before:rounded-[inherit] before:bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.15),transparent_60%)]',
-        className,
-      )}
+      className={getCardStyles(interactive, selected, isBestSeller, className)}
     >
-      {isBestSeller && (
-        <div className='absolute -top-3 left-1/2 -translate-x-1/2'>
-          <Badge
-            variant='secondary'
-            className='rounded-b-none rounded-t-md px-3 py-1 text-[11px] tracking-wide'
-          >
-            {bestSellerLabel}
-          </Badge>
-        </div>
-      )}
-      <CardHeader
-        className={cn(
-          'flex flex-col items-center text-center gap-3',
-          compact ? 'pt-6 pb-4' : 'pt-8',
-          isBestSeller && 'mt-2',
-        )}
-      >
-        {icon && (
-          <div className='size-14 flex items-center justify-center'>{icon}</div>
-        )}
-        <CardTitle
-          id={headingId}
-          className={cn('font-semibold', compact ? 'text-base' : 'text-lg')}
-        >
-          {name}
-        </CardTitle>
-        {description && (
-          <Typography
-            variant='muted'
-            as='p'
-            className={cn(
-              'max-w-[240px]',
-              compact ? 'text-[11px] leading-snug' : 'text-xs',
-            )}
-          >
-            {description}
-          </Typography>
-        )}
-        <div
-          className={cn(
-            'flex flex-col items-center gap-1',
-            compact ? 'mt-1' : 'mt-2',
-          )}
-        >
-          <div className='flex items-end gap-1 whitespace-nowrap'>
-            <span
-              className={cn(
-                'font-semibold',
-                compact ? 'text-xl tracking-tight' : 'text-2xl',
-              )}
-            >
-              {formattedPrice}
-            </span>
-            {resolvedPricePeriod && (
-              <span
-                className={cn(
-                  'text-muted-foreground',
-                  compact ? 'text-[11px]' : 'text-sm',
-                )}
-              >
-                {resolvedPricePeriod}
-              </span>
-            )}
-            {discountText && (
-              <span
-                className={cn(
-                  'text-destructive font-medium',
-                  compact ? 'text-[11px]' : 'text-sm',
-                )}
-              >
-                {discountText}
-              </span>
-            )}
-          </div>
-          {savingAmountText && (
-            <span
-              className={cn(
-                'text-muted-foreground',
-                compact ? 'text-[10px]' : 'text-xs',
-              )}
-            >
-              {t('saveUpTo')}{' '}
-              <span className='font-medium text-foreground'>
-                {formatSavingByLocale(savingAmountText, locale)}
-              </span>
-            </span>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent
-        className={cn(
-          'flex flex-col',
-          compact ? 'gap-4 mt-2 pb-2' : 'gap-6 mt-4',
-        )}
-      >
-        {featureGroups.map((group, gi) => (
-          <div key={gi} className='flex flex-col gap-3'>
-            {group.title && (
-              <Typography
-                variant='small'
-                as='h6'
-                className={cn(
-                  'font-semibold tracking-tight',
-                  compact && 'text-[11px]',
-                )}
-              >
-                {group.title}
-              </Typography>
-            )}
-            <ul className='flex flex-col gap-2'>
-              {group.features.map((f, fi) => (
-                <li
-                  key={fi}
-                  className={cn(
-                    'flex items-start gap-2',
-                    compact ? 'text-[11px]' : 'text-sm',
-                  )}
-                >
-                  <FeatureIcon active={f.active} />
-                  <span
-                    className={cn(
-                      !f.active &&
-                        'text-muted-foreground line-through opacity-60',
-                    )}
-                  >
-                    {f.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+      <PricingHeader
+        isBestSeller={isBestSeller}
+        bestSellerLabel={translations.bestSeller}
+        icon={icon}
+        name={name}
+        description={description}
+        formattedPrice={formattedPrice}
+        resolvedPricePeriod={resolvedPricePeriod}
+        discountText={discountText}
+        savingAmountText={savingAmountText}
+        saveUpToText={translations.saveUpTo}
+        locale={locale}
+        compact={compact}
+        headingId={headingId}
+      />
+      <CardContent>
+        <PricingFeatures featureGroups={featureGroups} compact={compact} />
       </CardContent>
       <CardFooter className={cn('mt-auto', compact ? 'pt-3' : 'pt-6')}>
         <Button
-          className={cn(
-            'w-full transition-transform',
-            interactive && 'hover:translate-y-[-2px] active:translate-y-0',
-          )}
+          className={getButtonStyles(interactive)}
           onClick={onSelect}
           aria-label={resolvedCta}
           size={compact ? 'sm' : undefined}
@@ -272,37 +143,6 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
         </Button>
       </CardFooter>
     </Card>
-  )
-}
-
-const FeatureIcon: React.FC<{ active: boolean }> = ({ active }) => {
-  if (active) {
-    return (
-      <svg
-        className='size-4 shrink-0 text-emerald-500'
-        viewBox='0 0 24 24'
-        fill='none'
-        stroke='currentColor'
-        strokeWidth={2}
-        strokeLinecap='round'
-        strokeLinejoin='round'
-      >
-        <path d='M20 6 9 17l-5-5' />
-      </svg>
-    )
-  }
-  return (
-    <svg
-      className='size-4 text-muted-foreground shrink-0'
-      viewBox='0 0 24 24'
-      fill='none'
-      stroke='currentColor'
-      strokeWidth={2}
-      strokeLinecap='round'
-      strokeLinejoin='round'
-    >
-      <path d='m5 12 5 5L20 7' className='opacity-30' />
-    </svg>
   )
 }
 

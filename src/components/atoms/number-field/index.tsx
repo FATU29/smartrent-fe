@@ -39,8 +39,8 @@ export const NumberField: React.FC<NumberFieldProps> = ({
       onChange(0)
       return
     }
-    const numeric = parseFloat(raw.replace(',', '.'))
-    if (isNaN(numeric)) return
+    const numeric = Number.parseFloat(raw.replace(',', '.'))
+    if (Number.isNaN(numeric)) return
     let next = numeric
     if (min !== undefined && next < min) next = min
     if (max !== undefined && next > max) next = max

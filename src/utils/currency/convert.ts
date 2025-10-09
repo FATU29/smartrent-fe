@@ -103,7 +103,7 @@ export const formatCurrencyAuto = (
       .replace(/[^0-9.,]/g, '')
       .replace(/\.(?=\d{3}(?:\D|$))/g, '')
       .replace(/,/g, '')
-    const parsed = parseFloat(cleaned)
+    const parsed = Number.parseFloat(cleaned)
     if (Number.isFinite(parsed)) numeric = parsed
   }
   if (!numeric || numeric <= 0) return '$0'
@@ -128,7 +128,7 @@ export const formatCurrencyAutoCompact = (
       .replace(/[^0-9.,]/g, '')
       .replace(/\.(?=\d{3}(?:\D|$))/g, '')
       .replace(/,/g, '')
-    const parsed = parseFloat(cleaned)
+    const parsed = Number.parseFloat(cleaned)
     if (Number.isFinite(parsed)) numeric = parsed
   }
   if (!numeric || numeric <= 0) return '0 USD'

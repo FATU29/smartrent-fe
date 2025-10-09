@@ -1,9 +1,15 @@
-import { InternalAxiosRequestConfig } from 'axios'
-import { ENV } from '@/constants'
+import { InternalAxiosRequestConfig, AxiosInstance } from 'axios'
 import { CustomAxiosRequestConfig } from './types'
 import { getAccessToken, getRefreshToken } from './utils'
 import { AuthService } from '@/api/services/auth.service'
 import { cookieManager } from '@/utils/cookies'
+import {
+  handleExpiredTokens,
+  handleRefreshFailure,
+  applyAuthToken,
+  applyDefaultConfig,
+  isTokenExpired,
+} from './helpers'
 
 const refreshToken = async (): Promise<string | null> => {
   try {
@@ -11,7 +17,6 @@ const refreshToken = async (): Promise<string | null> => {
     if (!refreshTokenValue) return null
 
     const result = await AuthService.refreshToken(refreshTokenValue)
-
     const { data, success } = result
 
     if (!success) return null
@@ -27,23 +32,25 @@ const refreshToken = async (): Promise<string | null> => {
   }
 }
 
-const isTokenExpired = (token: string): boolean => {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    const currentTime = Math.floor(Date.now() / 1000)
-    return payload.exp < currentTime
-  } catch {
-    return true
+const handleTokenRefresh = async (
+  refreshTokenValue: string | null,
+): Promise<string | null> => {
+  if (handleExpiredTokens(refreshTokenValue)) {
+    return null
   }
+
+  const newToken = await refreshToken()
+  if (!newToken) {
+    handleRefreshFailure()
+    return null
+  }
+
+  return newToken
 }
 
-const clearAuthTokens = () => {
-  if (typeof document !== 'undefined') {
-    cookieManager.clearAuthTokens()
-  }
-}
-
-export function createAuthRequestInterceptor(cookies?: any) {
+export function createAuthRequestInterceptor(
+  cookies?: Record<string, unknown>,
+) {
   return async (
     config: InternalAxiosRequestConfig,
   ): Promise<InternalAxiosRequestConfig> => {
@@ -54,52 +61,36 @@ export function createAuthRequestInterceptor(cookies?: any) {
 
     let accessToken = getAccessToken(cookies)
 
+    // Handle expired access token
     if (accessToken && isTokenExpired(accessToken)) {
       console.log('Access token expired, refreshing...')
 
       const refreshTokenValue = getRefreshToken()
-      if (!refreshTokenValue || isTokenExpired(refreshTokenValue)) {
-        console.log('Refresh token expired or not found, logging out...')
-        clearAuthTokens()
-
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('auth:unauthorized'))
-        }
-        return config
-      }
-
-      const newToken = await refreshToken()
+      const newToken = await handleTokenRefresh(refreshTokenValue)
 
       if (newToken) {
         accessToken = newToken
       } else {
-        clearAuthTokens()
-
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('auth:unauthorized'))
-        }
         return config
       }
     }
 
+    // Apply authentication token
     if (accessToken) {
-      config.headers = config.headers || {}
-      config.headers.Authorization = `Bearer ${accessToken}`
+      applyAuthToken(config, accessToken)
     }
 
-    if (!config.baseURL && !config.url?.startsWith('http')) {
-      config.baseURL = ENV.URL_API_BASE
-    }
-
-    if (!config.timeout) {
-      config.timeout = 30000
-    }
+    // Apply default configuration
+    applyDefaultConfig(config)
 
     return config
   }
 }
 
-export function setupInterceptors(axiosInstance: any, cookies?: any) {
+export function setupInterceptors(
+  axiosInstance: AxiosInstance,
+  cookies?: Record<string, unknown>,
+) {
   axiosInstance.interceptors.request.use(createAuthRequestInterceptor(cookies))
 
   return axiosInstance

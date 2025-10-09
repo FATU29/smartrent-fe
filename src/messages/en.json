@@ -183,11 +183,11 @@
           "legalInfo": "Legal Information"
         },
         "otpSentMessage": "Verification code sent successfully!",
-        "backToLogin": "Back to Login"
+        "backToLogin": "Back to Login",
+        "successTitle": "Registration Successful!",
+        "successDescription": "Your account has been created successfully. You can now log in to your account."
       },
       "success": {
-        "title": "Registration Successful!",
-        "description": "Your account has been created successfully. You can now log in to your account.",
         "emailSent": "A verification email has been sent to",
         "backToLogin": "Back to Login"
       },

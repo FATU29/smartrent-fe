@@ -28,14 +28,13 @@ export const PackageBadge: React.FC<PackageBadgeProps> = ({
   const isVip = packageType.startsWith('vip_')
 
   return (
-    <span
+    <output
       className={cn(
         PACKAGE_BADGE_STYLES.base,
         config.className,
         isVip && showShimmer && PACKAGE_BADGE_STYLES.shimmer,
         className,
       )}
-      role='status'
       aria-label={`${t(config.labelKey)} package`}
       data-priority={PACKAGE_PRIORITIES[packageType]}
     >
@@ -45,6 +44,6 @@ export const PackageBadge: React.FC<PackageBadgeProps> = ({
         </span>
       )}
       {t(config.labelKey)}
-    </span>
+    </output>
   )
 }

@@ -3,7 +3,7 @@ import { Property } from '@/api/types/property.type'
 import { ListingCard } from '@/components/organisms/listing-card'
 import { cn } from '@/lib/utils'
 import { LISTINGS_LIST_STYLES, LISTINGS_LIST_CONFIG } from './index.constants'
-import { ListingCardSkeleton } from '../listing-card'
+import { ListingCardSkeleton } from '../listing-card/ListingCardSkeleton'
 
 export interface ListingsListProps {
   listings: Property[]

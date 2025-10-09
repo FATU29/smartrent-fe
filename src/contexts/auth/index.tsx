@@ -1,5 +1,11 @@
 import { UserApi } from '@/api/types/user.type'
-import { createContext, PropsWithChildren, useContext, useEffect } from 'react'
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react'
 import { useAuthStore } from '@/store/auth/index.store'
 import { AuthTokens } from '@/configs/axios/types'
 import { useValidToken } from '@/hooks/useAuth'
@@ -41,7 +47,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         const tokens = getStoredTokens()
         if (tokens?.accessToken) {
           const result = await validToken(tokens.accessToken)
-          if (result.data?.valid) {
+          if (result.success && 'data' in result && result.data?.valid) {
             const { user } = decodeToken(tokens.accessToken)
             login(user, tokens)
           } else {
@@ -57,16 +63,28 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     initializeAuth()
   }, [])
 
-  const contextValue: AuthContextType = {
-    user,
-    isAuthenticated,
-    isLoading,
-    error,
-    login,
-    logout,
-    updateUser,
-    clearError,
-  }
+  const contextValue: AuthContextType = useMemo(
+    () => ({
+      user,
+      isAuthenticated,
+      isLoading,
+      error,
+      login,
+      logout,
+      updateUser,
+      clearError,
+    }),
+    [
+      user,
+      isAuthenticated,
+      isLoading,
+      error,
+      login,
+      logout,
+      updateUser,
+      clearError,
+    ],
+  )
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

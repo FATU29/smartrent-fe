@@ -116,7 +116,9 @@ const AreaRangeDropdown: React.FC<AreaRangeDropdownProps> = ({
               <Input
                 type='number'
                 value={localMin}
-                onChange={(e) => setLocalMin(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setLocalMin(Number.parseInt(e.target.value) || 0)
+                }
                 placeholder='0'
                 className='h-8'
               />
@@ -132,7 +134,7 @@ const AreaRangeDropdown: React.FC<AreaRangeDropdownProps> = ({
                 type='number'
                 value={localMax}
                 onChange={(e) =>
-                  setLocalMax(parseInt(e.target.value) || maxSliderValue)
+                  setLocalMax(Number.parseInt(e.target.value) || maxSliderValue)
                 }
                 placeholder={maxSliderValue.toString()}
                 className='h-8'
