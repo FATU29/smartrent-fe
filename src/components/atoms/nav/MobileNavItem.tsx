@@ -23,15 +23,17 @@ const MobileNavItem: React.FC<MobileNavItemProps> = ({
   ariaLabel,
   tone = 'default',
 }) => {
+  // Extract nested ternary into readable logic
+  const getTextColor = () => {
+    if (href) {
+      return active ? 'text-foreground' : 'text-muted-foreground'
+    }
+    return tone === 'muted' ? 'text-muted-foreground' : 'text-foreground'
+  }
+
   const contentClasses = cn(
     'flex flex-col items-stretch gap-1 px-2 py-1',
-    href
-      ? active
-        ? 'text-foreground'
-        : 'text-muted-foreground'
-      : tone === 'muted'
-        ? 'text-muted-foreground'
-        : 'text-foreground',
+    getTextColor(),
   )
 
   return (

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useMemo,
+} from 'react'
 
 // Property Information Types
 export interface PropertyInfo {
@@ -188,14 +194,17 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
     setPropertyInfo(defaultPropertyInfo)
   }
 
+  const contextValue = useMemo(
+    () => ({
+      propertyInfo,
+      updatePropertyInfo,
+      resetPropertyInfo,
+    }),
+    [propertyInfo, updatePropertyInfo, resetPropertyInfo],
+  )
+
   return (
-    <CreatePostContext.Provider
-      value={{
-        propertyInfo,
-        updatePropertyInfo,
-        resetPropertyInfo,
-      }}
-    >
+    <CreatePostContext.Provider value={contextValue}>
       {children}
     </CreatePostContext.Provider>
   )

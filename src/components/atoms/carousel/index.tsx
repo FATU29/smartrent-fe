@@ -84,6 +84,18 @@ export const Carousel: React.FC<CarouselProps> = ({
     [emblaApi],
   )
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = React.useMemo(
+    () => ({
+      embla: emblaApi,
+      selectedIndex,
+      scrollTo,
+      canScrollPrev,
+      canScrollNext,
+    }),
+    [emblaApi, selectedIndex, scrollTo, canScrollPrev, canScrollNext],
+  )
+
   // Split slide items (CarouselItem) and any other children (controls, indicators)
   const slideChildren: React.ReactNode[] = []
   const controlChildren: React.ReactNode[] = []
@@ -105,15 +117,7 @@ export const Carousel: React.FC<CarouselProps> = ({
   })
 
   return (
-    <CarouselContext.Provider
-      value={{
-        embla: emblaApi,
-        selectedIndex,
-        scrollTo,
-        canScrollPrev,
-        canScrollNext,
-      }}
-    >
+    <CarouselContext.Provider value={contextValue}>
       <div className={cn('relative', className)}>
         <div className='overflow-hidden' ref={emblaRef}>
           <div className='flex'>{slideChildren}</div>
@@ -201,9 +205,9 @@ export const CarouselIndicators: React.FC<{
   return (
     <div className={cn('flex items-center justify-center gap-1', className)}>
       <div className='inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/70 backdrop-blur-sm shadow-sm ring-1 ring-black/5 dark:bg-black/50 dark:ring-white/10'>
-        {snaps.map((_, i) => (
+        {snaps.map((snap, i) => (
           <button
-            key={i}
+            key={`slide-${snap}-${i}`}
             onClick={() => scrollTo(i)}
             className={cn(
               'h-2 w-2 rounded-full bg-neutral-400/60 hover:bg-neutral-700 dark:bg-neutral-400/40 dark:hover:bg-neutral-200 transition-colors',

@@ -61,9 +61,8 @@ const ForgotPasswordFlow: NextPage<ForgotPasswordFlowProps> = (props) => {
       case 'otp':
         return (
           <OtpInput
-            switchTo={switchTo}
             email={email}
-            onSuccess={handleOtpSuccess}
+            onSuccessForgot={handleOtpSuccess}
             backTo={handleBackToEmail}
             type='forgotPassword'
           />

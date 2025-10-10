@@ -56,9 +56,10 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
 
   return (
     <div className={cn('relative', className)}>
-      <div
+      <button
+        type='button'
         className={cn(
-          'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 cursor-pointer',
+          'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 w-full text-left',
           'hover:bg-accent hover:text-accent-foreground',
           'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
           item.isActive && 'bg-accent text-accent-foreground',
@@ -67,14 +68,6 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
           level === 2 && 'ml-8',
         )}
         onClick={handleClick}
-        role='button'
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            handleClick()
-          }
-        }}
       >
         <div className='flex items-center gap-2 min-w-0 flex-1'>
           {item.icon && (
@@ -101,7 +94,7 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
             )}
           </button>
         )}
-      </div>
+      </button>
 
       {hasChildren && item.isExpanded && item.children && (
         <div className='mt-1 space-y-1'>

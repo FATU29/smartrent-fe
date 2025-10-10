@@ -11,7 +11,8 @@ import { VerificationAPI } from '@/api/types/verification.type'
 import { decodeToken } from '@/utils/decode-jwt'
 
 export const useAuth = () => {
-  return useAuthStore()
+  const authState = useAuthStore()
+  return authState
 }
 
 export const useLogin = () => {
@@ -22,21 +23,27 @@ export const useLogin = () => {
       setError(null)
       setLoading(true)
 
-      const result = await AuthService.login(credentials)
+      try {
+        const result = await AuthService.login(credentials)
+        const { success, message, data: tokens } = result
 
-      const { success, message, data: tokens } = result
+        setLoading(false)
 
-      setLoading(false)
+        if (!success) {
+          setError(message)
+          return result
+        }
 
-      if (!success) {
-        setError(message)
+        const { user } = decodeToken(tokens.accessToken)
+        login(user, tokens)
         return result
+      } catch (error) {
+        setLoading(false)
+        const errorMessage =
+          error instanceof Error ? error.message : 'Login failed'
+        setError(errorMessage)
+        return { success: false, message: errorMessage }
       }
-
-      const { user } = decodeToken(tokens.accessToken)
-
-      login(user, tokens)
-      return result
     },
     [setLoading, setError, login],
   )
@@ -52,19 +59,27 @@ export const useAdminLogin = () => {
       setError(null)
       setLoading(true)
 
-      const result = await AuthService.adminLogin(credentials)
+      try {
+        const result = await AuthService.adminLogin(credentials)
+        const { success, message, data: tokens } = result
 
-      const { success, message, data: tokens } = result
+        setLoading(false)
 
-      if (!success) {
-        setError(message)
+        if (!success) {
+          setError(message)
+          return result
+        }
+
+        const { user } = decodeToken(tokens.accessToken)
+        login(user, tokens)
         return result
+      } catch (error) {
+        setLoading(false)
+        const errorMessage =
+          error instanceof Error ? error.message : 'Admin login failed'
+        setError(errorMessage)
+        return { success: false, message: errorMessage }
       }
-
-      const { user } = decodeToken(tokens.accessToken)
-
-      login(user, tokens)
-      return result
     },
     [setLoading, setError, login],
   )
@@ -80,17 +95,25 @@ export const useRegister = () => {
       setLoading(true)
       setError(null)
 
-      const result = await AuthService.register(data)
+      try {
+        const result = await AuthService.register(data)
+        const { success, message } = result
 
-      const { success, message } = result
+        setLoading(false)
 
-      setLoading(false)
-      if (!success) {
-        setError(message)
+        if (!success) {
+          setError(message)
+          return result
+        }
+
         return result
+      } catch (error) {
+        setLoading(false)
+        const errorMessage =
+          error instanceof Error ? error.message : 'Registration failed'
+        setError(errorMessage)
+        return { success: false, message: errorMessage }
       }
-
-      return result
     },
     [setLoading, setError],
   )
@@ -103,7 +126,12 @@ export const useLogout = () => {
 
   const logoutUser = useCallback(async () => {
     const accessToken = cookieManager.getAccessToken()
-    if (accessToken) {
+
+    if (!accessToken) {
+      return { success: false, message: 'No access token found' }
+    }
+
+    try {
       const result = await AuthService.logout(accessToken)
       const { success, message } = result
 
@@ -111,10 +139,17 @@ export const useLogout = () => {
         setError(message)
         return result
       }
+
       logout()
       return result
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Logout failed'
+      setError(errorMessage)
+      logout() // Still logout locally even if server request fails
+      return { success: false, message: errorMessage }
     }
-  }, [logout])
+  }, [logout, setError])
 
   return { logoutUser }
 }
@@ -124,22 +159,32 @@ export const useTokenRefresh = () => {
 
   const refreshAuthTokens = useCallback(async () => {
     const currentTokens = getStoredTokens()
+
     if (!currentTokens?.refreshToken) {
       return { success: false, message: 'No refresh token available' }
     }
 
-    const result = await AuthService.refreshToken(currentTokens.refreshToken)
-    const { success, message, data: newTokens } = result
+    try {
+      const result = await AuthService.refreshToken(currentTokens.refreshToken)
+      const { success, message, data: newTokens } = result
 
-    if (!success) {
-      setError(message)
+      if (!success) {
+        setError(message)
+        // If refresh fails, logout to clear invalid tokens
+        logout()
+        return result
+      }
+
+      refreshTokens(newTokens)
       return result
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Token refresh failed'
+      setError(errorMessage)
+      logout() // Clear invalid tokens
+      return { success: false, message: errorMessage }
     }
-
-    refreshTokens(newTokens)
-    logout()
-    return result
-  }, [refreshTokens, getStoredTokens])
+  }, [refreshTokens, getStoredTokens, logout, setError])
 
   return { refreshAuthTokens }
 }
@@ -152,16 +197,25 @@ export const useVerifyOtp = () => {
       setLoading(true)
       setError(null)
 
-      const result = await AuthService.verifyOtp(data)
+      try {
+        const result = await AuthService.verifyOtp(data)
+        const { success, message } = result
 
-      const { success, message } = result
+        setLoading(false)
 
-      if (!success) {
-        setError(message)
+        if (!success) {
+          setError(message)
+          return result
+        }
+
         return result
+      } catch (error) {
+        setLoading(false)
+        const errorMessage =
+          error instanceof Error ? error.message : 'OTP verification failed'
+        setError(errorMessage)
+        return { success: false, message: errorMessage }
       }
-
-      return result
     },
     [setLoading, setError],
   )
@@ -177,16 +231,25 @@ export const useResendOtp = () => {
       setLoading(true)
       setError(null)
 
-      const result = await AuthService.resendOtp(email)
+      try {
+        const result = await AuthService.resendOtp(email)
+        const { success, message } = result
 
-      const { success, message } = result
+        setLoading(false)
 
-      if (!success) {
-        setError(message)
+        if (!success) {
+          setError(message)
+          return result
+        }
+
         return result
+      } catch (error) {
+        setLoading(false)
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to resend OTP'
+        setError(errorMessage)
+        return { success: false, message: errorMessage }
       }
-
-      return result
     },
     [setLoading, setError],
   )
@@ -202,16 +265,25 @@ export const useValidToken = () => {
       setLoading(true)
       setError(null)
 
-      const result = await AuthService.validToken(token)
+      try {
+        const result = await AuthService.validToken(token)
+        const { success, message } = result
 
-      const { success, message } = result
+        setLoading(false)
 
-      if (!success) {
-        setError(message)
+        if (!success) {
+          setError(message)
+          return result
+        }
+
         return result
+      } catch (error) {
+        setLoading(false)
+        const errorMessage =
+          error instanceof Error ? error.message : 'Token validation failed'
+        setError(errorMessage)
+        return { success: false, message: errorMessage }
       }
-
-      return result
     },
     [setLoading, setError],
   )

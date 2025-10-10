@@ -20,6 +20,35 @@ export interface Property {
   distance?: number
   ward?: string
   ward_id?: string
+  // Listing management fields
+  code?: string
+  posted_date?: string
+  expiry_date?: string
+  status?:
+    | 'active'
+    | 'expired'
+    | 'expiring'
+    | 'pending'
+    | 'review'
+    | 'payment'
+    | 'rejected'
+    | 'archived'
+  package_type?:
+    | 'vip_diamond'
+    | 'vip_gold'
+    | 'vip_silver'
+    | 'standard'
+    | 'basic'
+  auto_repost?: boolean
+  rank?: {
+    page: number
+    position: number
+  }
+  stats?: {
+    views: number
+    contacts: number
+    customers: number
+  }
 }
 
 export interface PropertyCard {

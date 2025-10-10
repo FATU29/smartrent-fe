@@ -18,7 +18,7 @@ export const FilterActionButtons: React.FC<FilterActionButtonsProps> = ({
   const t = useTranslations('seller.listingManagement.filter')
 
   return (
-    <div className=' flex gap-4'>
+    <div className='flex gap-4'>
       <Button
         type='button'
         variant='outline'

@@ -51,7 +51,11 @@ export default function SeoHead(props: SeoProps = {}) {
       {ogUrl && <meta property='og:url' content={ogUrl} />}
       {siteName && <meta property='og:site_name' content={siteName} />}
       {images.slice(0, 4).map((img, idx) => (
-        <meta key={`og:image:${idx}`} property='og:image' content={img.url} />
+        <meta
+          key={`og:image:${img.url}:${idx}`}
+          property='og:image'
+          content={img.url}
+        />
       ))}
       {images[0]?.width && (
         <meta property='og:image:width' content={String(images[0].width)} />

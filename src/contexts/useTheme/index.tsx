@@ -2,7 +2,13 @@
 import setGlobalColorTheme, { ThemeMode } from '@/theme/index.colors'
 import { LocalStorage } from '@/utils/localstorage'
 import { useTheme } from 'next-themes'
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+} from 'react'
 
 type ThemeColorStateParams = {
   themeMode: ThemeMode
@@ -56,14 +62,20 @@ export default function ThemeDataProvider({ children }: ThemeProviderProps) {
     }
   }, [themeMode, theme, isMounted])
 
+  const contextValue = useMemo(
+    () => ({
+      themeMode: (theme as ThemeMode) || themeMode,
+      setThemeMode,
+    }),
+    [theme, themeMode, setThemeMode],
+  )
+
   if (!isMounted) {
     return null
   }
 
   return (
-    <ThemeContext.Provider
-      value={{ themeMode: (theme as ThemeMode) || themeMode, setThemeMode }}
-    >
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   )

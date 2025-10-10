@@ -18,7 +18,7 @@ export interface AuthTokens {
 }
 
 class CookieManager {
-  private isClient = typeof window !== 'undefined'
+  private readonly isClient = typeof window !== 'undefined'
 
   /**
    * Set a cookie with options
