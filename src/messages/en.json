@@ -840,6 +840,11 @@
           "subtitle": "Update property details for the most accurate AI evaluation",
           "address": "Address",
           "addressMode": "Address Mode",
+          "addressView": "Address View",
+          "addressViews": {
+            "current": "Current address",
+            "new": "New address"
+          },
           "addressModes": {
             "structured": "Province/District/Ward",
             "freeText": "Free text"

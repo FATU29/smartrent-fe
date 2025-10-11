@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent } from '@/components/atoms/dialog'
 import { useTranslations } from 'next-intl'
 import { ListFilters } from '@/contexts/list/index.type'
@@ -51,6 +51,11 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   const t = useTranslations('residentialFilter')
   const [view, setView] = useState<ViewKey>('main')
 
+  // Ensure every time the dialog opens, we start at main view
+  useEffect(() => {
+    if (open) setView('main')
+  }, [open])
+
   const apply = () => {
     onChange(value)
     if (onSearch && searchValue !== undefined) onSearch(searchValue)
@@ -64,6 +69,8 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   const resetAndStay = () => {
     onClear()
   }
+
+  const backToParent = () => setView('main')
 
   const closeDialog = () => {
     onOpenChange(false)
@@ -174,7 +181,11 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
           onClose={closeDialog}
         />
         <div className='flex-1 overflow-y-auto'>{renderBody()}</div>
-        <MobileFilterActionBar onReset={resetAndStay} onApply={apply} />
+        <MobileFilterActionBar
+          onReset={view !== 'main' ? backToParent : resetAndStay}
+          onApply={apply}
+          resetLabel={view !== 'main' ? t('actions.back') : undefined}
+        />
       </DialogContent>
     </Dialog>
   )
