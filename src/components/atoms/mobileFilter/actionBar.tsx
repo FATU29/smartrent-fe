@@ -9,12 +9,14 @@ interface MobileFilterActionBarProps {
   onReset: () => void
   onApply: () => void
   applyDisabled?: boolean
+  resetLabel?: string
 }
 
 const MobileFilterActionBar: React.FC<MobileFilterActionBarProps> = ({
   onReset,
   onApply,
   applyDisabled,
+  resetLabel,
 }) => {
   const t = useTranslations('residentialFilter.actions')
   return (
@@ -25,7 +27,7 @@ const MobileFilterActionBar: React.FC<MobileFilterActionBarProps> = ({
         type='button'
         onClick={onReset}
       >
-        {t('reset')}
+        {resetLabel ?? t('reset')}
       </Button>
       <Button
         className='flex-1'

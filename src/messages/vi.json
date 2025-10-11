@@ -841,6 +841,11 @@
           "subtitle": "Cập nhật thông tin bất động sản để AI đánh giá chính xác nhất",
           "address": "Địa chỉ",
           "addressMode": "Chế độ nhập địa chỉ",
+          "addressView": "Chế độ xem địa chỉ",
+          "addressViews": {
+            "current": "Địa chỉ hiện tại",
+            "new": "Địa chỉ mới"
+          },
           "addressModes": {
             "structured": "Tỉnh/Quận/Phường",
             "freeText": "Nhập tự do"

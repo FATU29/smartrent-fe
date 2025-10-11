@@ -148,9 +148,20 @@ const calculateCounts = () => {
   }
 }
 
-export const ListingsManagementTemplate: React.FC = () => {
+export interface ListingsManagementTemplateProps {
+  children?: React.ReactNode
+}
+
+export const ListingsManagementTemplate: React.FC<
+  ListingsManagementTemplateProps
+> = ({ children }) => {
   const [status, setStatus] = useState<ListingStatus>('all')
   const [filterOpen, setFilterOpen] = useState(false)
+  const [showProvinceSelection, setShowProvinceSelection] = useState(false)
+  const [showDistrictSelection, setShowDistrictSelection] = useState(false)
+  const [showWardSelection, setShowWardSelection] = useState(false)
+  const [showListingTypeSelection, setShowListingTypeSelection] =
+    useState(false)
 
   console.log('ListingsManagementTemplate rendered with status:', status)
   const counts = calculateCounts()
@@ -180,9 +191,19 @@ export const ListingsManagementTemplate: React.FC = () => {
           onSearch={(query) => console.log('Search:', query)}
           onFilterClick={() => {
             console.log('Filter clicked')
+            // Reset subviews when opening filter
+            setShowProvinceSelection(false)
+            setShowDistrictSelection(false)
+            setShowWardSelection(false)
+            setShowListingTypeSelection(false)
             setFilterOpen(true)
           }}
           onExport={() => console.log('Export clicked')}
+          filterButtonChildren={
+            <span className='ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1.5 text-[10px] font-semibold text-primary'>
+              0
+            </span>
+          }
         />
         <ListingStatusFilterResponsive
           value={status}
@@ -192,6 +213,7 @@ export const ListingsManagementTemplate: React.FC = () => {
             setStatus(newStatus)
           }}
         />
+        {children}
         <List.Provider fetcher={listingsFetcher} defaultPerPage={5}>
           <ListingsWithPagination currentStatus={status} />
         </List.Provider>
@@ -204,21 +226,20 @@ export const ListingsManagementTemplate: React.FC = () => {
           console.log('Apply filter')
           setFilterOpen(false)
         }}
-        showProvinceSelection={false}
-        onProvinceSelectionChange={(show) =>
-          console.log('Province selection:', show)
-        }
-        showDistrictSelection={false}
-        onDistrictSelectionChange={(show) =>
-          console.log('District selection:', show)
-        }
-        showWardSelection={false}
-        onWardSelectionChange={(show) => console.log('Ward selection:', show)}
-        showListingTypeSelection={false}
-        onListingTypeSelectionChange={(show) =>
-          console.log('Listing type selection:', show)
-        }
-        onBackToMain={() => console.log('Back to main')}
+        showProvinceSelection={showProvinceSelection}
+        onProvinceSelectionChange={setShowProvinceSelection}
+        showDistrictSelection={showDistrictSelection}
+        onDistrictSelectionChange={setShowDistrictSelection}
+        showWardSelection={showWardSelection}
+        onWardSelectionChange={setShowWardSelection}
+        showListingTypeSelection={showListingTypeSelection}
+        onListingTypeSelectionChange={setShowListingTypeSelection}
+        onBackToMain={() => {
+          setShowProvinceSelection(false)
+          setShowDistrictSelection(false)
+          setShowWardSelection(false)
+          setShowListingTypeSelection(false)
+        }}
       />
     </div>
   )

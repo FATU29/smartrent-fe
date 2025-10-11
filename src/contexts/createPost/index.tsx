@@ -97,7 +97,6 @@ interface CreatePostContextType {
 
 // Default Property Information
 const defaultPropertyInfo: PropertyInfo = {
-  // Basic Info
   listingType: 'rent',
   propertyAddress: '123 Đường Nguyễn Huệ, Quận 1, Thành phố Hồ Chí Minh',
   searchAddress: '123 Đường Nguyễn Huệ, Quận 1, Thành phố Hồ Chí Minh',
@@ -106,7 +105,6 @@ const defaultPropertyInfo: PropertyInfo = {
     lng: 106.7009,
   },
 
-  // Property Details
   propertyType: 'apartment',
   area: 85,
   price: 15000000,
@@ -116,7 +114,6 @@ const defaultPropertyInfo: PropertyInfo = {
   floors: 1,
   moveInDate: '02/01/2024',
 
-  // Utilities & Structure
   waterPrice: 'provider',
   electricityPrice: 'provider',
   internetPrice: 'landlord',
@@ -125,17 +122,14 @@ const defaultPropertyInfo: PropertyInfo = {
   alleyWidth: 3.5,
   frontageWidth: 4.2,
 
-  // Contact Information
   fullName: 'Nguyễn Văn A',
   email: 'nguyenvana@example.com',
   phoneNumber: '+84 123 456 789',
 
-  // AI Content
   listingTitle: 'Căn Hộ Hiện Đại 2 Phòng Ngủ Tại Quận 1 - Trung Tâm Thành Phố',
   propertyDescription:
     'Căn hộ hiện đại đẹp nằm ngay trung tâm Thành phố Hồ Chí Minh với tầm nhìn thành phố tuyệt đẹp và tiện nghi cao cấp.',
 
-  // Amenities
   amenities: [
     'furnished',
     'aircon',
@@ -146,15 +140,12 @@ const defaultPropertyInfo: PropertyInfo = {
     'kitchen',
   ],
 
-  // District and Ward
   province: 'hcmc',
   district: 'quan1',
   ward: 'bennghe',
 
-  // Address input mode
   addressMode: 'structured',
 
-  // Media
   images: [
     {
       id: 'demo-1',
@@ -210,7 +201,6 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   )
 }
 
-// Hook to use the context
 export const useCreatePost = (): CreatePostContextType => {
   const context = useContext(CreatePostContext)
   if (context === undefined) {

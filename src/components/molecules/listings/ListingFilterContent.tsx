@@ -82,10 +82,6 @@ export const ListingFilterContent: React.FC<ListingFilterContentProps> = ({
     toggleListingType,
   } = useFilterState({
     values: contextValues,
-    showProvinceSelection,
-    showDistrictSelection,
-    showWardSelection,
-    showListingTypeSelection,
   })
 
   const { selectedProvinceCode, isWardEnabled, isDistrictEnabled } =

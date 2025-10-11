@@ -59,7 +59,7 @@ export const ListingFilterDialog: React.FC<ListingFilterDialogProps> = ({
             {t('seller.listingManagement.filter.title')}
           </DialogTitle>
         </DialogHeader>
-        <div className='flex-1 w-full overflow-y-auto p-4 sm:p-6 pt-4 '>
+        <div className='flex-1 w-full overflow-y-auto px-4 sm:px-6 '>
           <List.Provider fetcher={listingsFetcher}>
             <ListingFilterContent
               onApply={onApply}
