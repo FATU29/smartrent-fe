@@ -325,6 +325,30 @@ Khối chức năng lớn, chứa business logic và tương tác APIs.
 
 ## 🛠️ Development Guidelines
 
+### Pre-Commit Hooks 🔒
+
+Every commit automatically runs quality checks to maintain code standards:
+
+- ✅ **Type Checking** - Validates TypeScript types (`tsc --noEmit`)
+- ✅ **i18n Validation** - Ensures translation files are in sync
+- ✅ **Lint & Format** - Auto-fixes and formats staged files
+
+**Quick Commands:**
+
+```bash
+npm run pre-commit    # Run all checks manually
+npm run typecheck     # Type check only
+npm run i18n:check    # Validate translations
+npm run format        # Format all files
+```
+
+**📚 Documentation:**
+
+- [Pre-Commit Hooks Guide](./docs/PRE_COMMIT_HOOKS.md) - Detailed documentation
+- [Quick Reference](./docs/QUICK_REFERENCE.md) - Cheat sheet for developers
+
+**⚡ Performance:** Hooks complete in ~5-10 seconds (optimized for speed)
+
 ### Icons & Assets
 
 - **Primary Icons**: [Iconify](https://icon-sets.iconify.design/) và [Lucide React](https://lucide.dev/icons/)
@@ -487,14 +511,21 @@ smart-rent-fe/
 # Development
 npm run dev              # Start development server
 npm run build           # Build for production
+npm run build:check     # Build without linting
 npm run start           # Start production server
+
+# Code Quality
 npm run lint            # Run ESLint
-npm run type-check      # TypeScript check
+npm run typecheck       # TypeScript type check
+npm run i18n:check      # Validate translations
+npm run format          # Format all files
+npm run format:check    # Check formatting
+npm run pre-commit      # Run all pre-commit checks
 
 # Git workflow
 git checkout -b feature/JIRA-123_new-feature
 git add .
-git commit -m "JIRA-123: Implement new feature"
+git commit -m "JIRA-123: Implement new feature"  # Pre-commit hooks run automatically
 git push origin feature/JIRA-123_new-feature
 ```
 

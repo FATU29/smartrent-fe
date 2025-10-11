@@ -1,6 +1,6 @@
 import '@/styles/globals.css'
 import '@/styles/reset.scss'
-import '@/components/molecules/desktop-navigation/navigation.css'
+import '@/components/molecules/desktopNavigation/navigation.css'
 import ThemeDataProvider from '@/contexts/theme'
 import AuthProvider from '@/contexts/auth'
 import React from 'react'
@@ -15,7 +15,6 @@ import { Toaster } from '@/components/atoms/sonner'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { AuthDialogProvider } from '@/contexts/authDialog'
 import { fontVariables } from '@/theme/fonts'
-// import { useRouter } from 'next/router'
 
 const messages = {
   vi,
@@ -25,7 +24,6 @@ const messages = {
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const { language } = useSwitchLanguage()
   const getLayout = Component.getLayout ?? ((page) => page)
-  // const router = useRouter()
 
   return (
     <div className={fontVariables}>

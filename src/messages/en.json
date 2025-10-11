@@ -1374,6 +1374,36 @@
           "delete": "Delete"
         }
       }
+    },
+    "customers": {
+      "title": "Customer Management",
+      "subtitle": "Track and manage customer interactions with your listings",
+      "unviewed": "Unviewed",
+      "total": "Total",
+      "searchPlaceholder": "Search customers, listings...",
+      "tabs": {
+        "customers": "Customers",
+        "listings": "Listings"
+      },
+      "selectToView": "Select an item to view details",
+      "totalInteractions": "Total Interactions",
+      "listingsPosted": "Listings Posted",
+      "lastActivity": "Last Activity",
+      "interactionHistory": "Interaction History",
+      "customerInteractions": "Customer Interactions",
+      "copiedPhone": "Phone number copied to clipboard",
+      "copiedEmail": "Email copied to clipboard",
+      "new": "New",
+      "emptyState": {
+        "customers": {
+          "title": "No customers yet",
+          "description": "When customers click 'Show Number' or 'Chat via Zalo' on your listings, they will appear here."
+        },
+        "listings": {
+          "title": "No listings with interactions",
+          "description": "Listings with customer interactions will appear here."
+        }
+      }
     }
   }
 }

@@ -1375,6 +1375,36 @@
           "delete": "Xóa tin"
         }
       }
+    },
+    "customers": {
+      "title": "Quản lý khách hàng",
+      "subtitle": "Theo dõi và quản lý tương tác khách hàng với tin đăng của bạn",
+      "unviewed": "Chưa xem",
+      "total": "Tổng",
+      "searchPlaceholder": "Tìm kiếm khách hàng, tin đăng...",
+      "tabs": {
+        "customers": "Khách hàng",
+        "listings": "Tin đăng"
+      },
+      "selectToView": "Chọn một mục để xem chi tiết",
+      "totalInteractions": "Tổng tương tác",
+      "listingsPosted": "Tin đã đăng",
+      "lastActivity": "Hoạt động gần đây",
+      "interactionHistory": "Lịch sử tương tác",
+      "customerInteractions": "Khách hàng tương tác",
+      "copiedPhone": "Đã sao chép số điện thoại",
+      "copiedEmail": "Đã sao chép email",
+      "new": "Mới",
+      "emptyState": {
+        "customers": {
+          "title": "Chưa có khách hàng",
+          "description": "Khi khách hàng nhấn 'Hiện số' hoặc 'Chat qua Zalo' trên tin đăng của bạn, họ sẽ xuất hiện tại đây."
+        },
+        "listings": {
+          "title": "Chưa có tin đăng với tương tác",
+          "description": "Các tin đăng có tương tác của khách hàng sẽ xuất hiện tại đây."
+        }
+      }
     }
   }
 }
