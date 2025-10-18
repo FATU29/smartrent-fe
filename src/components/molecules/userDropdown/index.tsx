@@ -12,6 +12,7 @@ import { useAuth, useLogout } from '@/hooks/useAuth'
 import { useTranslations } from 'next-intl'
 import { cn, getUserInitials } from '@/lib/utils'
 import Link from 'next/link'
+import Image from 'next/image'
 import { SELLER_ROUTES } from '@/constants/route'
 import {
   type MenuItem,
@@ -49,8 +50,17 @@ const UserDropdown: React.FC = () => {
         sideOffset={8}
         className='p-0 overflow-hidden rounded-xl overflow-x-hidden w-auto min-w-[16rem] max-w-[20rem]'
       >
-        <div className='p-5 bg-gradient-to-br from-primary via-blue-700 to-blue-800 text-white relative'>
-          <div className='absolute inset-0 opacity-30 bg-[url(/images/rental-auth-bg.jpg)] bg-cover bg-right-top mix-blend-lighten' />
+        <div className='p-5 bg-gradient-to-br from-primary via-blue-700 to-blue-800 text-white relative overflow-hidden'>
+          <div className='absolute inset-0 opacity-30 mix-blend-lighten'>
+            <Image
+              src='/images/rental-auth-bg.jpg'
+              alt='Background pattern'
+              fill
+              className='object-cover object-right-top'
+              priority={false}
+              sizes='20rem'
+            />
+          </div>
           <div className='relative'>
             <h3 className='text-base font-semibold mb-1'>
               {t('userMenu.membershipPackage')}

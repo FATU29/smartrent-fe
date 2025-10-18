@@ -1072,7 +1072,12 @@
     "bestSeller": "Best Seller",
     "buyNow": "Buy Now",
     "saveUpTo": "Save up to",
-    "perMonthSuffix": "per month"
+    "perMonthSuffix": "per month",
+    "pricing": {
+      "bestSeller": "Best Seller",
+      "buyNow": "Buy Now",
+      "saveUpTo": "Save up to"
+    }
   },
   "voucher": {
     "bestSeller": "Best Seller",
@@ -1097,7 +1102,9 @@
       "register": "Register service packages",
       "membershipTab": "Membership packages tab",
       "voucherTab": "Push voucher packages tab"
-    }
+    },
+    "noPlansAvailable": "No membership plans available at the moment.",
+    "noVouchersAvailable": "No voucher packages available at the moment."
   },
   "membershipPlans": {
     "savingSuffix": "per month",
@@ -1488,5 +1495,23 @@
         }
       }
     }
+  },
+  "paymentMethodDialog": {
+    "title": "Payment Method",
+    "description": "Select your preferred payment method",
+    "vnpay": "VNPAY",
+    "momo": "MoMo Wallet",
+    "paypal": "PayPal",
+    "zalopay": "ZaloPay"
+  },
+  "pushDetailsPage": {
+    "title": "Push Packages",
+    "description": "Choose the right push package to increase visibility for your listings",
+    "quantity": "Quantity",
+    "pricePerPush": "Price per push",
+    "totalPrice": "Total price",
+    "discount": "Discount",
+    "savings": "Savings",
+    "buyNow": "Buy now"
   }
 }

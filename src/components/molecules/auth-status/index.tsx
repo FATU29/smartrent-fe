@@ -1,22 +1,17 @@
 import { RefreshCw, CheckCircle, XCircle, Home } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import CountdownTimer from '@/components/atoms/countdown-timer'
 
 type AuthStatus = 'loading' | 'success' | 'error'
 
 interface AuthStatusDisplayProps {
   status: AuthStatus
   error?: string
-  countdown?: number
-  isCountdownActive?: boolean
   onRetry?: () => void
 }
 
 export default function AuthStatusDisplay({
   status,
   error,
-  countdown = 0,
-  isCountdownActive = false,
   onRetry,
 }: AuthStatusDisplayProps) {
   const t = useTranslations()
@@ -26,8 +21,8 @@ export default function AuthStatusDisplay({
       icon: (
         <RefreshCw className='h-10 w-10 sm:h-12 sm:w-12 animate-spin text-blue-600 mx-auto' />
       ),
-      title: t('auth.oauth.processing_login'),
-      description: t('auth.oauth.please_wait'),
+      title: t('homePage.auth.oauth.processing_login'),
+      description: t('homePage.auth.oauth.please_wait'),
       bgColor: 'bg-blue-50',
     },
     success: {
@@ -36,8 +31,8 @@ export default function AuthStatusDisplay({
           <CheckCircle className='h-5 w-5 sm:h-6 sm:w-6 text-green-600' />
         </div>
       ),
-      title: t('auth.oauth.login_successful'),
-      description: t('auth.oauth.redirecting'),
+      title: t('homePage.auth.oauth.login_successful'),
+      description: t('homePage.auth.oauth.redirecting'),
       bgColor: 'bg-green-50',
     },
     error: {
@@ -46,7 +41,7 @@ export default function AuthStatusDisplay({
           <XCircle className='h-5 w-5 sm:h-6 sm:w-6 text-red-600' />
         </div>
       ),
-      title: t('auth.oauth.login_failed'),
+      title: t('homePage.auth.oauth.login_failed'),
       description: error,
       bgColor: 'bg-red-50',
     },
@@ -66,14 +61,6 @@ export default function AuthStatusDisplay({
         <p className='mt-2 text-xs sm:text-sm text-gray-600'>
           {config.description}
         </p>
-      )}
-
-      {status === 'success' && (
-        <CountdownTimer
-          count={countdown}
-          isActive={isCountdownActive}
-          className='mt-4'
-        />
       )}
 
       {status === 'error' && onRetry && (

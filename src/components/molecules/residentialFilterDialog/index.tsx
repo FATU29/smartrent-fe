@@ -42,7 +42,6 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   onChange,
   onClear,
   onSearch,
-  // activeCount (not displayed inside dialog currently; parent may show badge on trigger)
   open,
   onOpenChange,
   title,
@@ -51,7 +50,6 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   const t = useTranslations('residentialFilter')
   const [view, setView] = useState<ViewKey>('main')
 
-  // Ensure every time the dialog opens, we start at main view
   useEffect(() => {
     if (open) setView('main')
   }, [open])
@@ -174,7 +172,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
     >
       <DialogContent
         showCloseButton={false}
-        className='h-dvh md:h-[90vh] max-w-none md:max-w-md rounded-none md:rounded-lg p-0 flex flex-col'
+        className='size-full md:h-[90vh] max-w-none md:max-w-md rounded-none md:rounded-lg p-0 flex flex-col'
       >
         <MobileFilterHeader
           title={title || t('actions.filter')}

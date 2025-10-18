@@ -3,7 +3,7 @@ export const SELLER_ROUTES = {
   LISTINGS: '/seller/listings',
   CREATE: '/seller/create-post',
   CUSTOMERS: '/seller/customers',
-  MEMBERSHIP: '/seller/membership',
+  MEMBERSHIP: '/sellernet/membership/register',
   ACCOUNT: '/seller/account',
 } as const
 
@@ -19,6 +19,7 @@ export const SELLERNET_ROUTES = {
   POST_SPONSORED: '/sellernet/post/sponsored',
   CUSTOMERS: '/sellernet/customers',
   MEMBERSHIP_REGISTER: '/sellernet/membership/register',
+  PUSH_DETAILS: '/sellernet/push',
   PRO_REGISTER: '/sellernet/pro/register',
   FINANCE_BALANCE: '/sellernet/finance/balance',
   FINANCE_TRANSACTIONS: '/sellernet/finance/transactions',

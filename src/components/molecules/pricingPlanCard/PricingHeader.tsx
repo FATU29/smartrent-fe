@@ -14,19 +14,19 @@ import {
 } from './styles'
 
 interface PricingHeaderProps {
-  isBestSeller: boolean
-  bestSellerLabel: string
-  icon?: React.ReactNode
-  name: string
-  description?: string
-  formattedPrice: string
-  resolvedPricePeriod?: string
-  discountText?: string
-  savingAmountText?: string
-  saveUpToText: string
-  locale: string
-  compact: boolean
-  headingId?: string
+  readonly isBestSeller: boolean
+  readonly bestSellerLabel: string
+  readonly icon?: React.ReactNode
+  readonly name: string
+  readonly description?: string
+  readonly formattedPrice: string
+  readonly resolvedPricePeriod?: string
+  readonly discountText?: string
+  readonly savingAmountText?: string
+  readonly saveUpToText: string
+  readonly locale: string
+  readonly compact: boolean
+  readonly headingId?: string
 }
 
 export const PricingHeader: React.FC<PricingHeaderProps> = ({
@@ -45,24 +45,40 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
   headingId,
 }) => {
   return (
-    <>
+    <Typography as='div'>
       {isBestSeller && (
-        <div className='absolute -top-3 left-1/2 -translate-x-1/2'>
+        <Typography
+          as='div'
+          className='absolute -top-3 left-1/2 -translate-x-1/2'
+        >
           <Badge
             variant='secondary'
             className='rounded-b-none rounded-t-md px-3 py-1 text-[11px] tracking-wide'
           >
             {bestSellerLabel}
           </Badge>
-        </div>
+        </Typography>
       )}
-      <div className={getHeaderStyles(compact, isBestSeller)}>
-        {icon && (
-          <div className='size-14 flex items-center justify-center'>{icon}</div>
+      <Typography as='div' className={getHeaderStyles(compact, isBestSeller)}>
+        {icon ? (
+          <Typography
+            as='div'
+            className='size-14 flex items-center justify-center'
+          >
+            {icon}
+          </Typography>
+        ) : (
+          <Typography
+            as='div'
+            className='size-14 flex items-center justify-center bg-red-100 text-red-500 rounded-full text-xs font-bold'
+            title='Icon missing - check packageLevel prop'
+          >
+            ?
+          </Typography>
         )}
-        <h3 id={headingId} className={getTitleStyles(compact)}>
+        <Typography as='h3' id={headingId} className={getTitleStyles(compact)}>
           {name}
-        </h3>
+        </Typography>
         {description && (
           <Typography
             variant='muted'
@@ -72,28 +88,35 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
             {description}
           </Typography>
         )}
-        <div className={getPriceContainerStyles(compact)}>
-          <div className='flex items-end gap-1 whitespace-nowrap'>
-            <span className={getPriceStyles(compact)}>{formattedPrice}</span>
+        <Typography as='div' className={getPriceContainerStyles(compact)}>
+          <Typography
+            as='div'
+            className='flex items-end gap-1 whitespace-nowrap'
+          >
+            <Typography as='span' className={getPriceStyles(compact)}>
+              {formattedPrice}
+            </Typography>
             {resolvedPricePeriod && (
-              <span className={getPricePeriodStyles(compact)}>
+              <Typography as='span' className={getPricePeriodStyles(compact)}>
                 {resolvedPricePeriod}
-              </span>
+              </Typography>
             )}
             {discountText && (
-              <span className={getDiscountStyles(compact)}>{discountText}</span>
+              <Typography as='span' className={getDiscountStyles(compact)}>
+                {discountText}
+              </Typography>
             )}
-          </div>
+          </Typography>
           {savingAmountText && (
-            <span className={getSavingStyles(compact)}>
+            <Typography as='span' className={getSavingStyles(compact)}>
               {saveUpToText}{' '}
-              <span className='font-medium text-foreground'>
+              <Typography as='span' className='font-medium text-foreground'>
                 {formatSavingByLocale(savingAmountText, locale)}
-              </span>
-            </span>
+              </Typography>
+            </Typography>
           )}
-        </div>
-      </div>
-    </>
+        </Typography>
+      </Typography>
+    </Typography>
   )
 }

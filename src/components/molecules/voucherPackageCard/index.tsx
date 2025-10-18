@@ -9,57 +9,29 @@ import {
 import { Badge } from '@/components/atoms/badge'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
+import { Skeleton } from '@/components/atoms/skeleton'
 import { cn } from '@/lib/utils'
 import { formatByLocale, formatSavingByLocale } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { useTranslations } from 'next-intl'
-
-/**
- * VoucherPackageCard
- * For displaying push voucher bundles (e.g., 30 / 50 / 100 vouchers) with discount & saving info.
- * Reuses existing atoms; fully i18n using "voucher" namespace.
- */
+import type { PushDetail } from '@/api/types/push.type'
 
 export interface VoucherPackageCardProps {
-  /** e.g. 30, 50, 100 */
-  voucherCount: number
-  /** Validity period in days */
-  periodDays: number
-  /** Price (raw number or preformatted string). If number, localized with vi-VN for grouping. */
-  price: number | string
-  /** Discount percent (positive number for reduction) */
-  discountPercent?: number
-  /** Saving amount localized string (e.g. "60.000 đ") */
-  savingAmountText?: string
-  /** Optional description below highlight bar (auto generated if not provided). */
-  customDescription?: string
-  /** Icon node displayed top-right */
-  icon?: React.ReactNode
-  /** Is best seller */
-  isBestSeller?: boolean
-  /** CTA label override */
-  ctaLabel?: string
-  /** Called when user clicks purchase */
-  onSelect?: () => void
-  /** Highlight bar background class override */
-  highlightClassName?: string
-  /** Card class override */
-  className?: string
-  /** Selected visual state */
-  selected?: boolean
-  /** Enable subtle interactive hover effects */
-  interactive?: boolean
+  readonly pushDetail: PushDetail
+  readonly icon?: React.ReactNode
+  readonly isBestSeller?: boolean
+  readonly ctaLabel?: string
+  readonly onSelect?: () => void
+  readonly highlightClassName?: string
+  readonly className?: string
+  readonly selected?: boolean
+  readonly interactive?: boolean
 }
 
 const VoucherPackageCard: React.FC<VoucherPackageCardProps> = ({
-  voucherCount,
-  periodDays,
-  price,
-  discountPercent,
-  savingAmountText,
-  customDescription,
+  pushDetail,
   icon,
-  isBestSeller,
+  isBestSeller = false,
   ctaLabel,
   onSelect,
   highlightClassName,
@@ -70,22 +42,23 @@ const VoucherPackageCard: React.FC<VoucherPackageCardProps> = ({
   const t = useTranslations('voucher')
   const { language } = useSwitchLanguage()
   const locale = language
-  const formattedPrice =
-    typeof price === 'number'
-      ? formatByLocale(price, locale)
-      : formatByLocale(
-          parseInt(String(price).replace(/[^0-9]/g, '')) || 0,
-          locale,
-        )
+
+  const formattedPrice = formatByLocale(pushDetail.totalPrice, locale)
   const discountText =
-    typeof discountPercent === 'number' ? `(-${discountPercent}%)` : undefined
+    pushDetail.discountPercentage > 0
+      ? `(-${pushDetail.discountPercentage}%)`
+      : undefined
   const resolvedCta = ctaLabel || t('buyNow')
-  const unit = voucherCount === 1 ? t('voucherUnit') : t('voucherPlural')
-  const period = `${periodDays} ${t('daySuffix')}`
-  const title = `${t('voucherUnit').charAt(0).toUpperCase() + t('voucherUnit').slice(1)} ${voucherCount} ${unit}`
+
+  // Use English or Vietnamese name based on locale
+  const title =
+    locale === 'en' ? pushDetail.detailNameEn : pushDetail.detailName
   const description =
-    customDescription ||
-    t('pushDescription', { count: voucherCount, amount: '10.000' })
+    pushDetail.description ||
+    t('pushDescription', {
+      count: pushDetail.quantity,
+      amount: formatByLocale(pushDetail.pricePerPush, locale),
+    })
 
   return (
     <Card
@@ -112,40 +85,46 @@ const VoucherPackageCard: React.FC<VoucherPackageCardProps> = ({
       <CardHeader
         className={cn('pt-8 pb-4 flex flex-col gap-2', isBestSeller && 'mt-2')}
       >
-        <div className='flex items-start justify-between'>
-          <div className='flex flex-col gap-1'>
-            <CardTitle className='text-base font-semibold flex flex-wrap items-center gap-1'>
-              {title}{' '}
-              <span className='text-muted-foreground font-normal'>
-                / {period}
-              </span>
-            </CardTitle>
-          </div>
+        <Typography as='div' className='flex items-start justify-between'>
+          <Typography as='div' className='flex flex-col gap-1'>
+            <CardTitle className='text-base font-semibold'>{title}</CardTitle>
+            <Typography as='p' variant='muted' className='text-sm'>
+              {pushDetail.quantity} {t('voucherUnit')} -{' '}
+              {formatByLocale(pushDetail.pricePerPush, locale)} {t('perPush')}
+            </Typography>
+          </Typography>
           {icon && (
-            <div className='size-12 rounded-full bg-muted flex items-center justify-center shrink-0'>
+            <Typography
+              as='div'
+              className='size-12 rounded-full bg-muted flex items-center justify-center shrink-0'
+            >
               {icon}
-            </div>
+            </Typography>
           )}
-        </div>
-        <div className='flex flex-col gap-1 mt-2'>
-          <div className='flex items-end gap-1'>
-            {/* formattedPrice already contains symbol for USD or adds ₫ suffix for VND */}
-            <span className='text-2xl font-semibold'>{formattedPrice}</span>
+        </Typography>
+        <Typography as='div' className='flex flex-col gap-1 mt-2'>
+          <Typography as='div' className='flex items-end gap-1'>
+            <Typography as='span' className='text-2xl font-semibold'>
+              {formattedPrice}
+            </Typography>
             {discountText && (
-              <span className='text-sm text-destructive font-medium'>
+              <Typography
+                as='span'
+                className='text-sm text-destructive font-medium'
+              >
                 {discountText}
-              </span>
+              </Typography>
             )}
-          </div>
-          {savingAmountText && (
-            <span className='text-xs text-muted-foreground'>
+          </Typography>
+          {pushDetail.savings > 0 && (
+            <Typography as='span' className='text-xs text-muted-foreground'>
               {t('savingPrefix')}{' '}
-              <span className='font-medium text-foreground'>
-                {formatSavingByLocale(savingAmountText, locale)}
-              </span>
-            </span>
+              <Typography as='span' className='font-medium text-foreground'>
+                {formatSavingByLocale(pushDetail.savings.toString(), locale)}
+              </Typography>
+            </Typography>
           )}
-        </div>
+        </Typography>
       </CardHeader>
       <CardFooter className='pt-0 pb-6'>
         <Button
@@ -199,37 +178,35 @@ const TicketIcon = () => (
 
 export default VoucherPackageCard
 
-// Skeleton for voucher card
-export const VoucherPackageCardSkeleton: React.FC<{ className?: string }> = ({
-  className,
-}) => {
+/**
+ * VoucherPackageCardSkeleton
+ * Loading skeleton for voucher package cards using Skeleton atoms
+ */
+export const VoucherPackageCardSkeleton: React.FC<{
+  readonly className?: string
+}> = ({ className }) => {
   return (
-    <div
-      className={cn(
-        'relative h-full bg-card border rounded-xl p-6 flex flex-col gap-5',
-        className,
-      )}
-    >
-      <div className='flex flex-col gap-4'>
-        <div className='flex items-start justify-between'>
-          <div className='h-4 w-48 bg-accent rounded animate-pulse' />
-          <div className='size-12 bg-accent/60 rounded-full animate-pulse' />
-        </div>
-        <div className='flex flex-col gap-2'>
-          <div className='flex items-end gap-2'>
-            <div className='h-7 w-32 bg-accent rounded animate-pulse' />
-            <div className='h-5 w-6 bg-accent rounded animate-pulse' />
-            <div className='h-4 w-12 bg-accent rounded animate-pulse' />
-          </div>
-          <div className='h-3 w-40 bg-accent rounded animate-pulse' />
-        </div>
-      </div>
-      <div className='mt-auto pt-2'>
-        <div className='h-9 w-full bg-accent rounded-md animate-pulse' />
-      </div>
-      <div className='border-t mt-5 -mx-6 w-[calc(100%+3rem)] bg-accent/40 px-5 py-4'>
-        <div className='h-4 w-64 bg-accent rounded animate-pulse' />
-      </div>
-    </div>
+    <Card className={cn('relative h-full flex flex-col gap-5', className)}>
+      <CardHeader className='flex flex-col gap-4'>
+        <Typography as='div' className='flex items-start justify-between'>
+          <Skeleton className='h-4 w-48' />
+          <Skeleton className='size-12 rounded-full' />
+        </Typography>
+        <Typography as='div' className='flex flex-col gap-2'>
+          <Typography as='div' className='flex items-end gap-2'>
+            <Skeleton className='h-7 w-32' />
+            <Skeleton className='h-5 w-6' />
+            <Skeleton className='h-4 w-12' />
+          </Typography>
+          <Skeleton className='h-3 w-40' />
+        </Typography>
+      </CardHeader>
+      <CardFooter className='mt-auto pt-2'>
+        <Skeleton className='h-9 w-full' />
+      </CardFooter>
+      <CardContent className='border-t bg-accent/40 px-5 py-4'>
+        <Skeleton className='h-4 w-64' />
+      </CardContent>
+    </Card>
   )
 }

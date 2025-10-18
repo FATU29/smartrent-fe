@@ -1307,7 +1307,12 @@
     "bestSeller": "Bán chạy nhất",
     "buyNow": "Mua ngay",
     "saveUpTo": "Tiết kiệm đến",
-    "perMonthSuffix": "₫/tháng"
+    "perMonthSuffix": "₫/tháng",
+    "pricing": {
+      "bestSeller": "Bán chạy nhất",
+      "buyNow": "Mua ngay",
+      "saveUpTo": "Tiết kiệm đến"
+    }
   },
   "voucher": {
     "bestSeller": "Bán chạy nhất",
@@ -1332,7 +1337,9 @@
       "register": "Đăng ký gói dịch vụ",
       "membershipTab": "Tab gói hội viên",
       "voucherTab": "Tab gói voucher đẩy tin"
-    }
+    },
+    "noPlansAvailable": "Hiện chưa có gói hội viên nào.",
+    "noVouchersAvailable": "Hiện chưa có gói voucher nào."
   },
   "membershipPlans": {
     "savingSuffix": "mỗi tháng",
@@ -1489,5 +1496,23 @@
         }
       }
     }
+  },
+  "paymentMethodDialog": {
+    "title": "Phương thức thanh toán",
+    "description": "Chọn phương thức thanh toán phù hợp với bạn",
+    "vnpay": "VNPAY",
+    "momo": "Ví MoMo",
+    "paypal": "PayPal",
+    "zalopay": "ZaloPay"
+  },
+  "pushDetailsPage": {
+    "title": "Gói Đẩy Tin",
+    "description": "Chọn gói đẩy tin phù hợp để tăng độ hiển thị cho bài đăng của bạn",
+    "quantity": "Số lượng",
+    "pricePerPush": "Giá mỗi lượt",
+    "totalPrice": "Tổng giá",
+    "discount": "Giảm giá",
+    "savings": "Tiết kiệm",
+    "buyNow": "Mua ngay"
   }
 }

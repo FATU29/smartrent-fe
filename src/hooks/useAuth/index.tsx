@@ -146,7 +146,7 @@ export const useLogout = () => {
       const errorMessage =
         error instanceof Error ? error.message : 'Logout failed'
       setError(errorMessage)
-      logout() // Still logout locally even if server request fails
+      logout()
       return { success: false, message: errorMessage }
     }
   }, [logout, setError])
@@ -170,7 +170,6 @@ export const useTokenRefresh = () => {
 
       if (!success) {
         setError(message)
-        // If refresh fails, logout to clear invalid tokens
         logout()
         return result
       }
@@ -181,7 +180,7 @@ export const useTokenRefresh = () => {
       const errorMessage =
         error instanceof Error ? error.message : 'Token refresh failed'
       setError(errorMessage)
-      logout() // Clear invalid tokens
+      logout()
       return { success: false, message: errorMessage }
     }
   }, [refreshTokens, getStoredTokens, logout, setError])
