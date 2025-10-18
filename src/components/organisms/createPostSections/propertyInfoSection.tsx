@@ -46,6 +46,7 @@ import {
   getWardOptions,
 } from './index.helper'
 import NumberField from '@/components/atoms/number-field'
+import classNames from 'classnames'
 
 interface PropertyInfoSectionProps {
   className?: string
@@ -67,7 +68,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
 
   return (
-    <div className={className}>
+    <div className={classNames(className)}>
       {/* Layout Wrapper */}
       <div className='space-y-10'>
         {/* Main Property Information Card */}

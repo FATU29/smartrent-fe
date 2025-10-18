@@ -79,6 +79,9 @@ export interface PropertyInfo {
   // Package & Configuration
   selectedMembershipPlanId?: string
   selectedVoucherPackageId?: string
+  selectedPackageType?: string
+  selectedDuration?: number
+  packageStartDate?: string
 }
 
 export interface MediaItem {

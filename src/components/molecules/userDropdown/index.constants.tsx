@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   UserCog,
   BadgeCheck,
-  Wallet,
 } from 'lucide-react'
 import { SELLERNET_ROUTES, SELLER_ROUTES } from '../../../constants/route'
 
@@ -55,12 +54,6 @@ export const getMenuItems = (t: any): MenuItem[] => [
       text: t('userMenu.savePercent', { percent: '-39%' }),
       variant: 'neutral',
     },
-  },
-  {
-    id: 'topup',
-    icon: <Wallet className='h-4 w-4' />,
-    label: t('userMenu.topup'),
-    href: SELLERNET_ROUTES.FINANCE_TOPUP,
   },
   {
     id: 'profile',

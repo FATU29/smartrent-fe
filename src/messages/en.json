@@ -572,6 +572,7 @@
     "description": "Follow the steps below to create your real estate listing",
     "back": "Back",
     "next": "Next",
+    "payment": "Payment",
     "completeCurrentStep": "Please complete this step before continuing",
     "generateAutomatically": "Generate Automatically",
     "continueToUpload": "Continue to upload",
@@ -609,7 +610,66 @@
     "sections": {
       "packageConfig": {
         "title": "Package & Configuration",
-        "description": "Select a membership or push voucher package to optimize visibility"
+        "description": "Select a membership or push voucher package to optimize visibility",
+        "selectPackageType": "Select package type",
+        "selectDuration": "Post longer, save more!",
+        "packages": {
+          "vipDiamond": {
+            "name": "VIP Diamond",
+            "description": "Display on top"
+          },
+          "vipGold": {
+            "name": "VIP Gold",
+            "description": "Below VIP Diamond"
+          },
+          "vipSilver": {
+            "name": "VIP Silver",
+            "description": "Below VIP Gold"
+          },
+          "standard": {
+            "name": "Standard",
+            "description": "Display at bottom"
+          }
+        },
+        "perDay": "day",
+        "days": "days",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "promotionCode": "Promotion",
+        "enterPromotionCode": "Post now",
+        "apply": "Apply",
+        "usePromotion": "Use 1 promotion",
+        "summary": "Total amount",
+        "selectedPackage": "Package type",
+        "duration": "Duration",
+        "totalAmount": "Total amount",
+        "vatIncluded": "VAT included"
+      },
+      "orderSummary": {
+        "title": "Order Summary",
+        "description": "Review your property information and posting package before payment",
+        "propertyInfo": "Property Information",
+        "edit": "Edit",
+        "packageDetails": "Package Details",
+        "packageType": "Package Type",
+        "duration": "Duration",
+        "days": "days",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "priceBreakdown": "Price Breakdown",
+        "packagePrice": "Package Price",
+        "vat10": "VAT (10%)",
+        "discount": "Discount",
+        "totalAmount": "Total Amount",
+        "vatIncluded": "VAT included",
+        "contactInfo": "Contact Information",
+        "fullName": "Full Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "confirmationNotice": {
+          "title": "Confirm Information",
+          "description": "Please review carefully before proceeding. You can edit by going back to previous steps."
+        }
       },
       "media": {
         "title": "Images & Video",
@@ -877,7 +937,8 @@
           "types": {
             "apartment": "Apartment",
             "house": "House",
-            "villa": "Villa"
+            "villa": "Villa",
+            "studio": "Studio"
           },
           "districts": {
             "quan1": "District 1",

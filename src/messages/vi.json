@@ -573,6 +573,7 @@
     "description": "Làm theo các bước dưới đây để tạo tin đăng bất động sản",
     "back": "Quay lại",
     "next": "Tiếp theo",
+    "payment": "Thanh toán",
     "completeCurrentStep": "Vui lòng hoàn thành bước này trước khi tiếp tục",
     "generateAutomatically": "Tạo tự động",
     "continueToUpload": "Tiếp tục tải lên",
@@ -610,7 +611,66 @@
     "sections": {
       "packageConfig": {
         "title": "Gói & Cấu hình",
-        "description": "Chọn gói hội viên hoặc gói đẩy tin phù hợp để tối ưu hiển thị"
+        "description": "Chọn gói hội viên hoặc gói đẩy tin phù hợp để tối ưu hiển thị",
+        "selectPackageType": "Chọn loại tin",
+        "selectDuration": "Đăng dài ngày hơn, hiệu kiệm hơn!",
+        "packages": {
+          "vipDiamond": {
+            "name": "VIP Kim Cương",
+            "description": "Hiện thị trên cùng"
+          },
+          "vipGold": {
+            "name": "VIP Vàng",
+            "description": "Dưới VIP Kim Cương"
+          },
+          "vipSilver": {
+            "name": "VIP Bạc",
+            "description": "Dưới VIP Vàng"
+          },
+          "standard": {
+            "name": "Tin thường",
+            "description": "Hiện thị dưới cùng"
+          }
+        },
+        "perDay": "ngày",
+        "days": "ngày",
+        "startDate": "Ngày bắt đầu",
+        "endDate": "Kết thúc ngày",
+        "promotionCode": "Khuyến mãi",
+        "enterPromotionCode": "Đăng ngay bây giờ",
+        "apply": "Áp dụng",
+        "usePromotion": "Đã áp dụng 1 khuyến mãi",
+        "summary": "Tổng tiền",
+        "selectedPackage": "Loại tin",
+        "duration": "Thời hạn",
+        "totalAmount": "Tổng tiền",
+        "vatIncluded": "Đã bao gồm VAT"
+      },
+      "orderSummary": {
+        "title": "Tóm tắt Đơn hàng",
+        "description": "Xem lại thông tin bất động sản và gói đăng tin của bạn trước khi thanh toán",
+        "propertyInfo": "Thông tin bất động sản",
+        "edit": "Chỉnh sửa",
+        "packageDetails": "Chi tiết gói đăng tin",
+        "packageType": "Loại tin",
+        "duration": "Thời hạn",
+        "days": "ngày",
+        "startDate": "Ngày bắt đầu",
+        "endDate": "Ngày kết thúc",
+        "priceBreakdown": "Chi tiết thanh toán",
+        "packagePrice": "Giá gói",
+        "vat10": "VAT (10%)",
+        "discount": "Giảm giá",
+        "totalAmount": "Tổng cộng",
+        "vatIncluded": "Đã bao gồm VAT",
+        "contactInfo": "Thông tin liên hệ",
+        "fullName": "Họ và tên",
+        "email": "Email",
+        "phone": "Số điện thoại",
+        "confirmationNotice": {
+          "title": "Xác nhận thông tin",
+          "description": "Vui lòng kiểm tra kỹ thông tin trước khi tiếp tục. Bạn có thể chỉnh sửa bằng cách quay lại các bước trước."
+        }
       },
       "media": {
         "title": "Hình ảnh & Video",
@@ -878,7 +938,8 @@
           "types": {
             "apartment": "Căn hộ",
             "house": "Nhà",
-            "villa": "Biệt thự"
+            "villa": "Biệt thự",
+            "studio": "Studio"
           },
           "districts": {
             "quan1": "Quận 1",
