@@ -35,12 +35,14 @@ interface PropertyCardProps {
   property: PropertyCardType
   onClick?: (property: PropertyCardType) => void
   onFavorite?: (property: PropertyCardType, isFavorite: boolean) => void
+  className?: string
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({
   property,
   onClick,
   onFavorite,
+  className,
 }) => {
   const t = useTranslations()
   const { language } = useSwitchLanguage()
@@ -91,7 +93,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   return (
     <TooltipProvider delayDuration={0}>
       <Card
-        className='group cursor-pointer hover:shadow-lg transition-all duration-300 overflow-hidden hover:scale-[1.02] h-full flex flex-col bg-card border shadow-sm hover:border-primary/20'
+        className={classNames(
+          'group cursor-pointer hover:shadow-lg transition-shadow duration-300 flex flex-col',
+          className,
+        )}
         onClick={handleClick}
       >
         <div className='relative aspect-[4/3] overflow-hidden'>

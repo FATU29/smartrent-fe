@@ -2,16 +2,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
-import { Plus, Building2, Bell, ChevronDown, Wallet, X } from 'lucide-react'
+import { Building2, Bell, X } from 'lucide-react'
 import { SELLER_ROUTES } from '@/constants'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/atoms/dropdown-menu'
+
 import { NAV_ITEMS } from './index.helper'
 import { SELLERNET_NAV } from '@/components/layouts/sellernet/index.helper'
 import VerticalNav, {
@@ -126,46 +119,6 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
                     </div>
 
                     <div className='flex items-center justify-center md:justify-end gap-2 sm:gap-3'>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            type='button'
-                            className='inline-flex items-center gap-2 rounded-full border bg-muted px-2.5 py-1.5 text-xs md:px-3 md:py-2 md:text-sm shadow-sm hover:bg-muted/80 transition-colors'
-                          >
-                            <span className='inline-flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-primary text-primary-foreground shadow'>
-                              <Wallet className='h-3.5 w-3.5 md:h-4 md:w-4' />
-                            </span>
-                            <span className='font-semibold'>0 đ</span>
-                            <ChevronDown className='h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground' />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end' className='w-64'>
-                          <DropdownMenuLabel className='flex items-center justify-between'>
-                            <span>{t('balanceTitle')}</span>
-                            <span className='font-semibold'>0</span>
-                          </DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className='flex items-center justify-between'>
-                            <span>{t('postAccount')}</span>
-                            <span className='font-medium'>0</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className='flex items-center justify-between'>
-                            <span>{t('promoAccount')}</span>
-                            <span className='font-medium'>0</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-
-                      <button
-                        type='button'
-                        className='inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm font-semibold shadow hover:bg-primary/90'
-                      >
-                        <span className='inline-flex h-6 w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-background/10'>
-                          <Plus className='h-3.5 w-3.5 md:h-4 md:w-4' />
-                        </span>
-                        {t('deposit')}
-                      </button>
-
                       <button
                         type='button'
                         aria-label={t('notifications')}
