@@ -9,6 +9,21 @@
     "learnMore": "Tìm hiểu thêm",
     "go_home": "Về trang chủ"
   },
+  "location": {
+    "label": "Vị trí của bạn",
+    "loading": "Đang lấy vị trí...",
+    "enabled": "Vị trí đã bật",
+    "disabled": "Bật vị trí",
+    "error": "Lỗi vị trí",
+    "enableTooltip": "Nhấp để bật theo dõi vị trí",
+    "disableTooltip": "Nhấp để tắt theo dõi vị trí",
+    "coordinates": "Tọa độ",
+    "permissionDenied": "Quyền truy cập vị trí bị từ chối. Vui lòng bật truy cập vị trí trong cài đặt trình duyệt VÀ cài đặt hệ thống, sau đó khởi động lại trình duyệt.",
+    "positionUnavailable": "Thông tin vị trí không khả dụng. Vui lòng bật dịch vụ vị trí trên thiết bị của bạn.",
+    "timeout": "Yêu cầu vị trí hết thời gian chờ. Vui lòng thử lại.",
+    "unknownError": "Đã xảy ra lỗi không xác định khi lấy vị trí.",
+    "notSupported": "Trình duyệt không hỗ trợ vị trí"
+  },
   "components": {
     "statsDisplay": {
       "views": "Xem tin",
@@ -1096,6 +1111,7 @@
       "usd": "Đô"
     },
     "searchPlaceholder": "Tìm kiếm bất động sản nhà ở...",
+    "locationEnabled": "Đang tìm gần vị trí của bạn",
     "actions": {
       "search": "Tìm kiếm",
       "viewMap": "Xem bản đồ",
@@ -1108,6 +1124,7 @@
     "toggles": {
       "verified": "Tin xác thực",
       "professionalBroker": "Môi giới chuyên nghiệp",
+      "location": "Vị trí của bạn",
       "video": "Có video",
       "has360": "Có 3D/360°"
     },

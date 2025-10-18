@@ -9,6 +9,21 @@
     "learnMore": "Learn more",
     "go_home": "Go Home"
   },
+  "location": {
+    "label": "Your Location",
+    "loading": "Getting location...",
+    "enabled": "Location enabled",
+    "disabled": "Enable location",
+    "error": "Location error",
+    "enableTooltip": "Click to enable location tracking",
+    "disableTooltip": "Click to disable location tracking",
+    "coordinates": "Coordinates",
+    "permissionDenied": "Location permission denied. Please enable location access in both browser settings AND system settings, then restart your browser.",
+    "positionUnavailable": "Location information unavailable. Please enable location services on your device.",
+    "timeout": "Location request timed out. Please try again.",
+    "unknownError": "An unknown error occurred while getting location.",
+    "notSupported": "Location not supported by your browser"
+  },
   "components": {
     "statsDisplay": {
       "views": "Views",
@@ -1161,6 +1176,7 @@
       "usd": "USD"
     },
     "searchPlaceholder": "Search residential properties...",
+    "locationEnabled": "Searching near your location",
     "actions": {
       "search": "Search",
       "viewMap": "View map",
@@ -1173,6 +1189,7 @@
     "toggles": {
       "verified": "Verified",
       "professionalBroker": "Professional broker",
+      "location": "Your Location",
       "video": "Has video",
       "has360": "Has 3D/360°"
     },

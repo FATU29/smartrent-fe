@@ -11,6 +11,7 @@ import MainLayout from '@/components/layouts/MainLayout'
 import React from 'react'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
+import LocationProvider from '@/contexts/location'
 
 const Home: NextPageWithLayout<{
   initialProperties: PropertyCard[]
@@ -29,11 +30,13 @@ const Home: NextPageWithLayout<{
         title='SmartRent – Thuê nhà dễ dàng'
         description='Khám phá căn hộ phù hợp nhất với bạn. Tìm kiếm nhanh, lọc thông minh, liên hệ chủ nhà chỉ với một cú nhấp.'
       />
-      <ListProvider fetcher={propertyFetcher} initialData={initialProperties}>
-        <div className='container mx-auto space-y-6'>
-          <HomepageTemplate onPropertyClick={handlePropertyClick} />
-        </div>
-      </ListProvider>
+      <LocationProvider>
+        <ListProvider fetcher={propertyFetcher} initialData={initialProperties}>
+          <div className='container mx-auto space-y-6'>
+            <HomepageTemplate onPropertyClick={handlePropertyClick} />
+          </div>
+        </ListProvider>
+      </LocationProvider>
     </>
   )
 }
