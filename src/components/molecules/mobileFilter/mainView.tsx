@@ -2,6 +2,8 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import RadioRow from '@/components/atoms/mobileFilter/radioRow'
 import ToggleChip from '@/components/atoms/mobileFilter/toggleChip'
+import LocationToggleChip from '@/components/atoms/mobileFilter/locationToggleChip'
+import ToggleSection from '@/components/molecules/mobileFilter/toggleSection'
 import {
   DollarSign,
   Ruler,
@@ -131,22 +133,21 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
       </div>
 
       <div className='p-4 space-y-6'>
-        <div className='space-y-2'>
-          <div className='text-sm font-medium flex items-center gap-2'>
-            <ShieldCheck className='h-4 w-4 text-muted-foreground' />
-            {t('toggles.verified')}
-          </div>
+        <ToggleSection
+          icon={<ShieldCheck className='h-4 w-4 text-muted-foreground' />}
+          title={t('toggles.verified')}
+        >
           <ToggleChip
             label={t('toggles.verified')}
             active={!!filters.verified}
             onClick={() => onUpdate({ verified: !filters.verified })}
           />
-        </div>
-        <div className='space-y-2'>
-          <div className='text-sm font-medium flex items-center gap-2'>
-            <Briefcase className='h-4 w-4 text-muted-foreground' />
-            {t('toggles.professionalBroker')}
-          </div>
+        </ToggleSection>
+
+        <ToggleSection
+          icon={<Briefcase className='h-4 w-4 text-muted-foreground' />}
+          title={t('toggles.professionalBroker')}
+        >
           <ToggleChip
             label={t('toggles.professionalBroker')}
             active={!!filters.professionalBroker}
@@ -154,12 +155,19 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
               onUpdate({ professionalBroker: !filters.professionalBroker })
             }
           />
-        </div>
-        <div className='space-y-2'>
-          <div className='text-sm font-medium flex items-center gap-2'>
-            <Camera className='h-4 w-4 text-muted-foreground' />
-            {t('amenities.title')}
-          </div>
+        </ToggleSection>
+
+        <ToggleSection
+          icon={<MapPin className='h-4 w-4 text-muted-foreground' />}
+          title={t('toggles.location')}
+        >
+          <LocationToggleChip />
+        </ToggleSection>
+
+        <ToggleSection
+          icon={<Camera className='h-4 w-4 text-muted-foreground' />}
+          title={t('amenities.title')}
+        >
           <div className='flex flex-wrap gap-2'>
             {AMENITY_KEYS.map((k) => (
               <ToggleChip
@@ -170,12 +178,12 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
               />
             ))}
           </div>
-        </div>
-        <div className='space-y-2'>
-          <div className='text-sm font-medium flex items-center gap-2'>
-            <Video className='h-4 w-4 text-muted-foreground' />
-            {t('dropdowns.media')}
-          </div>
+        </ToggleSection>
+
+        <ToggleSection
+          icon={<Video className='h-4 w-4 text-muted-foreground' />}
+          title={t('dropdowns.media')}
+        >
           <div className='flex gap-2 flex-wrap'>
             <ToggleChip
               label={t('media.video')}
@@ -188,7 +196,7 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
               onClick={() => onUpdate({ has360: !filters.has360 })}
             />
           </div>
-        </div>
+        </ToggleSection>
       </div>
     </div>
   )
