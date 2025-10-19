@@ -1,5 +1,7 @@
 import { PATHS } from '@/api/paths'
 
+console.log('env:', process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI)
+
 export const ENV = {
   GOOGLE_MAP_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || '',
   IS_PRODUCTION: process.env.NEXT_PUBLIC_DEPLOY_ENV || '',
@@ -14,8 +16,8 @@ export const ENV = {
   GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
   GOOGLE_REDIRECT_URI:
-    process.env.GOOGLE_REDIRECT_URI ||
-    'http://localhost:3000/api/auth/callback/google',
+    process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI ||
+    'http://localhost:3000/auth/callback/google',
 
   // API endpoints
   API: PATHS,

@@ -1,10 +1,19 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { Card, CardContent, CardFooter } from '@/components/atoms/card'
+import { Leaf, Sparkles, Crown } from 'lucide-react'
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from '@/components/atoms/card'
 import { Button } from '@/components/atoms/button'
+import { Skeleton } from '@/components/atoms/skeleton'
+import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
+import { MembershipPackageLevel } from '@/api/types/memembership.type'
 import { PricingHeader } from './PricingHeader'
 import { PricingFeatures } from './PricingFeatures'
 import {
@@ -14,60 +23,53 @@ import {
 } from './translations'
 import { getCardStyles, getButtonStyles } from './styles'
 
-/**
- * PricingPlanCard
- * Reusable card component for displaying subscription / membership plans.
- * Uses existing atoms (Card, Badge, Button, Typography) and tailwind design tokens.
- * No arbitrary colors – relies on semantic classes (primary, muted, destructive, etc.).
- */
+export const getMembershipLevelIcon = (
+  level: MembershipPackageLevel,
+): React.ReactNode => {
+  const iconMap: Record<MembershipPackageLevel, React.ReactNode> = {
+    [MembershipPackageLevel.BASIC]: (
+      <Leaf className='size-10 text-emerald-500' />
+    ),
+    [MembershipPackageLevel.STANDARD]: (
+      <Sparkles className='size-10 text-blue-500' />
+    ),
+    [MembershipPackageLevel.ADVANCED]: (
+      <Crown className='size-10 text-amber-500' />
+    ),
+  }
+
+  return iconMap[level]
+}
 
 export interface PricingPlanFeature {
-  label: string
-  /** Whether this feature is included in the plan */
-  active: boolean
-  /** Optional hint / description for the feature */
-  hint?: string
+  readonly label: string
+  readonly active: boolean
+  readonly hint?: string
 }
 
 export interface PricingPlanFeatureGroup {
-  /** Group title, e.g., "Gói tin hằng tháng" or "Tiện ích" */
-  title?: string
-  features: PricingPlanFeature[]
+  readonly title?: string
+  readonly features: readonly PricingPlanFeature[]
 }
 
 export interface PricingPlanCardProps {
-  /** Plan name – e.g., "Hội viên Cơ bản" */
-  name: string
-  /** Brief description underneath name */
-  description?: string
-  /** Price per period (already formatted or raw number). If number, we format with locale. */
-  price: number | string
-  /** Period text appended after price (e.g., "d/tháng") */
-  pricePeriod?: string
-  /** Discount percent (negative number or positive representing the reduction) */
-  discountPercent?: number
-  /** Money saving amount text (already localized) */
-  savingAmountText?: string
-  /** Feature groups */
-  featureGroups: PricingPlanFeatureGroup[]
-  /** CTA label for purchase/select button */
-  ctaLabel?: string
-  /** Plan icon (React node) */
-  icon?: React.ReactNode
-  /** Best seller flag – will show a badge */
-  isBestSeller?: boolean
-  /** Called when CTA button is clicked */
-  onSelect?: () => void
-  /** Additional className overrides */
-  className?: string
-  /** Selected state style (outline) */
-  selected?: boolean
-  /** Accessibility: id for heading linking */
-  headingId?: string
-  /** Enable subtle interactive hover effects */
-  interactive?: boolean
-  /** Compact visual variant (for embedded flows) */
-  compact?: boolean
+  readonly name: string
+  readonly description?: string
+  readonly price: number | string
+  readonly pricePeriod?: string
+  readonly discountPercent?: number
+  readonly savingAmountText?: string
+  readonly featureGroups: readonly PricingPlanFeatureGroup[]
+  readonly ctaLabel?: string
+  readonly icon?: React.ReactNode
+  readonly packageLevel?: MembershipPackageLevel
+  readonly isBestSeller?: boolean
+  readonly onSelect?: () => void
+  readonly className?: string
+  readonly selected?: boolean
+  readonly headingId?: string
+  readonly interactive?: boolean
+  readonly compact?: boolean
 }
 
 const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
@@ -80,6 +82,7 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
   featureGroups,
   ctaLabel,
   icon,
+  packageLevel,
   isBestSeller = false,
   onSelect,
   className,
@@ -92,10 +95,8 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
   const { language } = useSwitchLanguage()
   const locale = language
 
-  // Extract translation texts
   const translations = getPricingTranslations(t)
 
-  // Format price
   const formattedPrice =
     typeof price === 'number'
       ? formatByLocale(price, locale)
@@ -104,31 +105,35 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
           locale,
         )
 
-  // Resolve pricing metadata
   const resolvedPricePeriod = pricePeriod || getPricePeriodByLocale(locale)
   const resolvedCta = ctaLabel || translations.buyNow
   const discountText = formatDiscountText(discountPercent)
+
+  const resolvedIcon =
+    icon || (packageLevel && getMembershipLevelIcon(packageLevel))
 
   return (
     <Card
       aria-labelledby={headingId}
       className={getCardStyles(interactive, selected, isBestSeller, className)}
     >
-      <PricingHeader
-        isBestSeller={isBestSeller}
-        bestSellerLabel={translations.bestSeller}
-        icon={icon}
-        name={name}
-        description={description}
-        formattedPrice={formattedPrice}
-        resolvedPricePeriod={resolvedPricePeriod}
-        discountText={discountText}
-        savingAmountText={savingAmountText}
-        saveUpToText={translations.saveUpTo}
-        locale={locale}
-        compact={compact}
-        headingId={headingId}
-      />
+      <CardHeader>
+        <PricingHeader
+          isBestSeller={isBestSeller}
+          bestSellerLabel={translations.bestSeller}
+          icon={resolvedIcon}
+          name={name}
+          description={description}
+          formattedPrice={formattedPrice}
+          resolvedPricePeriod={resolvedPricePeriod}
+          discountText={discountText}
+          savingAmountText={savingAmountText}
+          saveUpToText={translations.saveUpTo}
+          locale={locale}
+          compact={compact}
+          headingId={headingId}
+        />
+      </CardHeader>
       <CardContent>
         <PricingFeatures featureGroups={featureGroups} compact={compact} />
       </CardContent>
@@ -148,47 +153,48 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
 
 export default PricingPlanCard
 
-// Skeleton version while loading pricing plans
-export const PricingPlanCardSkeleton: React.FC<{ className?: string }> = ({
-  className,
-}) => {
+export const PricingPlanCardSkeleton: React.FC<{
+  readonly className?: string
+}> = ({ className }) => {
   return (
-    <div
-      className={cn(
-        'relative h-full bg-card border rounded-xl p-6 flex flex-col gap-5',
-        className,
-      )}
-    >
-      <div className='flex flex-col items-center text-center gap-3 mt-2'>
-        <div className='bg-accent/60 rounded-full size-14 animate-pulse' />
-        <div className='h-4 w-40 bg-accent rounded animate-pulse' />
-        <div className='h-3 w-56 bg-accent rounded animate-pulse' />
-        <div className='flex flex-col items-center gap-2 mt-2 w-full'>
-          <div className='flex items-end gap-2'>
-            <div className='h-7 w-28 bg-accent rounded animate-pulse' />
-            <div className='h-4 w-14 bg-accent rounded animate-pulse' />
-          </div>
-          <div className='h-3 w-44 bg-accent rounded animate-pulse' />
-        </div>
-      </div>
-      <div className='flex flex-col gap-6 mt-4'>
+    <Card className={cn('relative h-full flex flex-col gap-5', className)}>
+      <CardHeader className='flex flex-col items-center text-center gap-3'>
+        <Skeleton className='rounded-full size-14' />
+        <Skeleton className='h-4 w-40' />
+        <Skeleton className='h-3 w-56' />
+        <Typography
+          as='div'
+          className='flex flex-col items-center gap-2 mt-2 w-full'
+        >
+          <Typography as='div' className='flex items-end gap-2'>
+            <Skeleton className='h-7 w-28' />
+            <Skeleton className='h-4 w-14' />
+          </Typography>
+          <Skeleton className='h-3 w-44' />
+        </Typography>
+      </CardHeader>
+      <CardContent className='flex flex-col gap-6 mt-4'>
         {[0, 1].map((i) => (
-          <div key={i} className='flex flex-col gap-3'>
-            <div className='h-4 w-32 bg-accent rounded animate-pulse' />
-            <ul className='flex flex-col gap-2'>
+          <Typography key={i} as='div' className='flex flex-col gap-3'>
+            <Skeleton className='h-4 w-32' />
+            <Typography as='div' className='flex flex-col gap-2'>
               {[0, 1, 2].map((j) => (
-                <li key={j} className='flex items-center gap-2'>
-                  <div className='size-4 bg-accent rounded-full animate-pulse' />
-                  <div className='h-3 w-52 bg-accent rounded animate-pulse' />
-                </li>
+                <Typography
+                  key={j}
+                  as='div'
+                  className='flex items-center gap-2'
+                >
+                  <Skeleton className='size-4 rounded-full' />
+                  <Skeleton className='h-3 w-52' />
+                </Typography>
               ))}
-            </ul>
-          </div>
+            </Typography>
+          </Typography>
         ))}
-      </div>
-      <div className='mt-auto pt-6'>
-        <div className='h-9 w-full bg-accent rounded-md animate-pulse' />
-      </div>
-    </div>
+      </CardContent>
+      <CardFooter className='mt-auto pt-6'>
+        <Skeleton className='h-9 w-full' />
+      </CardFooter>
+    </Card>
   )
 }

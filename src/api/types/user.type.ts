@@ -1,5 +1,5 @@
 export interface UserApi {
-  id: string
+  userId: string
   phoneCode: string
   phoneNumber: string
   email: string

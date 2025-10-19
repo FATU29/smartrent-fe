@@ -1,12 +1,8 @@
 import axios, { AxiosInstance } from 'axios'
 import { ENV } from '@/constants'
-import {
-  AxiosInstanceConfig,
-  CustomAxiosRequestConfig,
-  ApiResponse,
-} from './types'
+import { AxiosInstanceConfig, CustomAxiosRequestConfig } from './types'
 import { setupInterceptors } from './interceptors'
-import { logError } from './utils'
+import { apiRequest } from './instance'
 
 function createClientAxiosInstance(
   config: Partial<AxiosInstanceConfig> = {},
@@ -47,24 +43,6 @@ export const instanceClientAxios = createClientAxiosInstance({
   baseURL: ENV.URL_API_BASE,
   withCredentials: true,
 })
-
-export async function apiRequest<T = any>(
-  config: CustomAxiosRequestConfig,
-): Promise<ApiResponse<T>> {
-  try {
-    const response = await instanceClientAxios(config)
-    return {
-      ...response.data,
-      success: true,
-    }
-  } catch (error: any) {
-    logError(error, 'API Request')
-    return {
-      ...error?.response?.data,
-      success: false,
-    }
-  }
-}
 
 export const api = {
   get: <T = any>(url: string, config?: CustomAxiosRequestConfig) =>

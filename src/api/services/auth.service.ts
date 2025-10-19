@@ -1,4 +1,3 @@
-import { apiRequest } from '@/configs/axios/axiosClient'
 import { ENV } from '@/constants/env'
 import {
   LoginRequest,
@@ -13,8 +12,18 @@ import {
 import { UserApi } from '../types/user.type'
 import { ApiResponse } from '@/configs/axios/types'
 import { VerificationAPI } from '../types/verification.type'
+import { apiRequest } from '@/configs/axios/instance'
 
+/**
+ * Authentication Service
+ * Handles all authentication and authorization operations
+ */
 export class AuthService {
+  /**
+   * Login with email and password
+   * @param credentials - Login credentials (email, password)
+   * @returns Authentication tokens
+   */
   static async login(
     credentials: LoginRequest,
   ): Promise<ApiResponse<AuthTokens>> {
@@ -28,6 +37,11 @@ export class AuthService {
     return response
   }
 
+  /**
+   * Admin login with elevated privileges
+   * @param credentials - Admin login credentials
+   * @returns Authentication tokens with admin scope
+   */
   static async adminLogin(
     credentials: AdminLoginRequest,
   ): Promise<ApiResponse<AuthTokens>> {
@@ -41,6 +55,11 @@ export class AuthService {
     return response
   }
 
+  /**
+   * Logout user and invalidate token
+   * @param token - Current authentication token
+   * @returns Success response
+   */
   static async logout(token: string): Promise<ApiResponse<null>> {
     const response = await apiRequest<null>({
       method: 'POST',
@@ -51,6 +70,11 @@ export class AuthService {
     return response
   }
 
+  /**
+   * Refresh authentication token
+   * @param refreshToken - Valid refresh token
+   * @returns New authentication tokens
+   */
   static async refreshToken(
     refreshToken: string,
   ): Promise<ApiResponse<AuthTokens>> {
@@ -64,6 +88,11 @@ export class AuthService {
     return response
   }
 
+  /**
+   * Register new user account
+   * @param userData - User registration data
+   * @returns Created user information
+   */
   static async register(
     userData: RegisterRequest,
   ): Promise<ApiResponse<UserApi>> {
@@ -77,6 +106,11 @@ export class AuthService {
     return response
   }
 
+  /**
+   * Verify OTP code for email verification
+   * @param request - Verification request with code and email
+   * @returns Success response
+   */
   static async verifyOtp(request: VerificationAPI): Promise<ApiResponse<null>> {
     const response = await apiRequest<null>({
       method: 'POST',
@@ -88,6 +122,11 @@ export class AuthService {
     return response
   }
 
+  /**
+   * Resend OTP code to email
+   * @param email - User email address
+   * @returns Success response
+   */
   static async resendOtp(email: string): Promise<ApiResponse<null>> {
     const response = await apiRequest<null>({
       method: 'POST',
@@ -98,6 +137,11 @@ export class AuthService {
     return response
   }
 
+  /**
+   * Validate authentication token
+   * @param token - Token to validate
+   * @returns Validation result
+   */
   static async validToken(
     token: string,
   ): Promise<ApiResponse<{ valid: boolean }>> {
@@ -113,6 +157,11 @@ export class AuthService {
     return response
   }
 
+  /**
+   * Verify OTP for password reset
+   * @param verificationCode - Verification code and email
+   * @returns Reset password token
+   */
   static async verifyOtpResetPassword(verificationCode: {
     verificationCode: string
     email: string
@@ -127,6 +176,11 @@ export class AuthService {
     return response
   }
 
+  /**
+   * Reset password with token
+   * @param request - Reset password request with new password
+   * @returns Success response
+   */
   static async resetPassword(
     request: ResetPasswordRequest,
   ): Promise<ApiResponse<null>> {
@@ -139,6 +193,11 @@ export class AuthService {
     return response
   }
 
+  /**
+   * Change password for authenticated user
+   * @param passwordData - Current and new password data
+   * @returns Boolean indicating success
+   */
   static async changePassword(
     passwordData: ChangePasswordRequest,
   ): Promise<boolean> {
@@ -151,16 +210,13 @@ export class AuthService {
     return response?.code === API_ERROR_CODES.SUCCESS
   }
 
-  static async googleOAuth(code: string): Promise<
-    ApiResponse<{
-      tokens: AuthTokens
-      user: UserApi
-    }>
-  > {
-    const response = await apiRequest<{
-      tokens: AuthTokens
-      user: UserApi
-    }>({
+  /**
+   * Authenticate with Google OAuth
+   * @param code - Google OAuth authorization code
+   * @returns Authentication tokens and user data
+   */
+  static async googleOAuth(code: string): Promise<ApiResponse<AuthTokens>> {
+    const response = await apiRequest<AuthTokens>({
       method: 'POST',
       url: ENV.API.AUTH.GOOGLE_OAUTH,
       data: { code },
@@ -171,12 +227,16 @@ export class AuthService {
   }
 }
 
+// Export individual methods for convenience
 export const {
   login,
   adminLogin,
   logout,
   refreshToken,
   register,
+  verifyOtp,
+  resendOtp,
+  validToken,
   verifyOtpResetPassword,
   resetPassword,
   changePassword,

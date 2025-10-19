@@ -1,4 +1,5 @@
 import React from 'react'
+import { Check } from 'lucide-react'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 import { PricingPlanFeatureGroup } from './index'
@@ -9,79 +10,73 @@ import {
 } from './styles'
 
 interface FeatureIconProps {
-  active: boolean
+  readonly active: boolean
 }
 
+/**
+ * FeatureIcon component using lucide-react Check icon
+ * Displays active/inactive state for pricing features
+ */
 const FeatureIcon: React.FC<FeatureIconProps> = ({ active }) => {
-  if (active) {
-    return (
-      <svg
-        className='size-4 shrink-0 text-emerald-500'
-        viewBox='0 0 24 24'
-        fill='none'
-        stroke='currentColor'
-        strokeWidth={2}
-        strokeLinecap='round'
-        strokeLinejoin='round'
-      >
-        <path d='M20 6 9 17l-5-5' />
-      </svg>
-    )
-  }
   return (
-    <svg
-      className='size-4 text-muted-foreground shrink-0'
-      viewBox='0 0 24 24'
-      fill='none'
-      stroke='currentColor'
-      strokeWidth={2}
-      strokeLinecap='round'
-      strokeLinejoin='round'
-    >
-      <path d='m5 12 5 5L20 7' className='opacity-30' />
-    </svg>
+    <Check
+      className={cn(
+        'size-4 shrink-0',
+        active ? 'text-emerald-500' : 'text-muted-foreground opacity-30',
+      )}
+    />
   )
 }
 
 interface PricingFeaturesProps {
-  featureGroups: PricingPlanFeatureGroup[]
-  compact: boolean
+  readonly featureGroups: readonly PricingPlanFeatureGroup[]
+  readonly compact: boolean
 }
 
+/**
+ * PricingFeatures component
+ * Renders feature groups with titles and feature lists
+ * Uses Typography atoms instead of raw HTML tags
+ */
 export const PricingFeatures: React.FC<PricingFeaturesProps> = ({
   featureGroups,
   compact,
 }) => {
   return (
-    <div className={getContentStyles(compact)}>
+    <Typography as='div' className={getContentStyles(compact)}>
       {featureGroups.map((group, gi) => (
-        <div key={gi} className='flex flex-col gap-3'>
+        <Typography key={gi} as='div' className='flex flex-col gap-3'>
           {group.title && (
             <Typography
               variant='small'
-              as='h6'
+              as='p'
               className={getFeatureGroupTitleStyles(compact)}
             >
               {group.title}
             </Typography>
           )}
-          <ul className='flex flex-col gap-2'>
+          <Typography as='div' className='flex flex-col gap-2'>
             {group.features.map((f, fi) => (
-              <li key={fi} className={getFeatureItemStyles(compact)}>
+              <Typography
+                key={fi}
+                as='div'
+                className={getFeatureItemStyles(compact)}
+              >
                 <FeatureIcon active={f.active} />
-                <span
+                <Typography
+                  as='span'
                   className={cn(
                     !f.active &&
                       'text-muted-foreground line-through opacity-60',
                   )}
                 >
                   {f.label}
-                </span>
-              </li>
+                </Typography>
+              </Typography>
             ))}
-          </ul>
-        </div>
+          </Typography>
+        </Typography>
       ))}
-    </div>
+    </Typography>
   )
 }

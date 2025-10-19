@@ -24,25 +24,4 @@ const getGoogleOAuthURL = () => {
 
 export const googleOAuthURL = getGoogleOAuthURL()
 
-export const exchangeCodeForTokens = async (code: string) => {
-  try {
-    const response = await fetch('/api/auth/google/callback', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ code }),
-    })
-
-    if (!response.ok) {
-      throw new Error('Failed to exchange code for tokens')
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error('Token exchange error:', error)
-    throw error
-  }
-}
-
 export { getGoogleOAuthURL, GOOGLE_OAUTH_CONFIG }
