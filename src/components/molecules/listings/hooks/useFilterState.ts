@@ -3,19 +3,9 @@ import { ListingFilterValues } from '../ListingFilterContent'
 
 interface UseFilterStateProps {
   values: ListingFilterValues
-  showProvinceSelection: boolean
-  showDistrictSelection: boolean
-  showWardSelection: boolean
-  showListingTypeSelection: boolean
 }
 
-export const useFilterState = ({
-  values,
-  showProvinceSelection,
-  showDistrictSelection,
-  showWardSelection,
-  showListingTypeSelection,
-}: UseFilterStateProps) => {
+export const useFilterState = ({ values }: UseFilterStateProps) => {
   // Draft states for selections
   const [provinceDraft, setProvinceDraft] = React.useState<string[]>(
     values.provinceCodes || [],
@@ -30,30 +20,22 @@ export const useFilterState = ({
     values.listingTypeCodes || [],
   )
 
-  // Sync draft states when dialogs open
+  // Sync drafts with applied values when they change, but do not reset on view toggles
   React.useEffect(() => {
-    if (showProvinceSelection) {
-      setProvinceDraft(values.provinceCodes || [])
-    }
-  }, [showProvinceSelection, values.provinceCodes])
+    setProvinceDraft(values.provinceCodes || [])
+  }, [values.provinceCodes])
 
   React.useEffect(() => {
-    if (showDistrictSelection) {
-      setDistrictDraft(values.districtCodes || [])
-    }
-  }, [showDistrictSelection, values.districtCodes])
+    setDistrictDraft(values.districtCodes || [])
+  }, [values.districtCodes])
 
   React.useEffect(() => {
-    if (showWardSelection) {
-      setWardDraft(values.wardCodes || [])
-    }
-  }, [showWardSelection, values.wardCodes])
+    setWardDraft(values.wardCodes || [])
+  }, [values.wardCodes])
 
   React.useEffect(() => {
-    if (showListingTypeSelection) {
-      setListingTypeDraft(values.listingTypeCodes || [])
-    }
-  }, [showListingTypeSelection, values.listingTypeCodes])
+    setListingTypeDraft(values.listingTypeCodes || [])
+  }, [values.listingTypeCodes])
 
   // Toggle functions
   const toggleProvince = (code: string) => {

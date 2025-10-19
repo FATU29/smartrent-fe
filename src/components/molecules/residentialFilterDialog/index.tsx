@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent } from '@/components/atoms/dialog'
 import { useTranslations } from 'next-intl'
 import { ListFilters } from '@/contexts/list/index.type'
@@ -42,7 +42,6 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   onChange,
   onClear,
   onSearch,
-  // activeCount (not displayed inside dialog currently; parent may show badge on trigger)
   open,
   onOpenChange,
   title,
@@ -50,6 +49,10 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
 }) => {
   const t = useTranslations('residentialFilter')
   const [view, setView] = useState<ViewKey>('main')
+
+  useEffect(() => {
+    if (open) setView('main')
+  }, [open])
 
   const apply = () => {
     onChange(value)
@@ -64,6 +67,8 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   const resetAndStay = () => {
     onClear()
   }
+
+  const backToParent = () => setView('main')
 
   const closeDialog = () => {
     onOpenChange(false)
@@ -167,14 +172,18 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
     >
       <DialogContent
         showCloseButton={false}
-        className='h-dvh md:h-[90vh] max-w-none md:max-w-md rounded-none md:rounded-lg p-0 flex flex-col'
+        className='size-full md:h-[90vh] max-w-none md:max-w-md rounded-none md:rounded-lg p-0 flex flex-col'
       >
         <MobileFilterHeader
           title={title || t('actions.filter')}
           onClose={closeDialog}
         />
         <div className='flex-1 overflow-y-auto'>{renderBody()}</div>
-        <MobileFilterActionBar onReset={resetAndStay} onApply={apply} />
+        <MobileFilterActionBar
+          onReset={view !== 'main' ? backToParent : resetAndStay}
+          onApply={apply}
+          resetLabel={view !== 'main' ? t('actions.back') : undefined}
+        />
       </DialogContent>
     </Dialog>
   )

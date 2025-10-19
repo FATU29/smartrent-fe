@@ -1,7 +1,7 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 import MobileNavigationDrawer from '@/components/molecules/mobile-navigation-drawer'
-import DesktopNavigation from '@/components/molecules/desktop-navigation'
+import DesktopNavigation from '@/components/molecules/desktopNavigation'
 import { NavigationItemData } from '@/components/atoms/navigation-item'
 
 interface NavigationProps {

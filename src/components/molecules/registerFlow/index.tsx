@@ -36,19 +36,16 @@ const RegisterFlow: NextPage<RegisterFlowProps> = (props) => {
   }, [])
 
   const renderCurrentStep = useCallback(() => {
-    console.log('renderCurrentStep called with currentStep:', currentStep)
     switch (currentStep) {
       case 'register':
         return (
           <RegisterForm switchTo={switchTo} onSuccess={handleRegisterSuccess} />
         )
       case 'otp':
-        console.log('Rendering OtpInput component')
         return (
           <OtpInput
-            switchTo={switchTo}
             email={email}
-            onSuccess={handleOtpSuccess}
+            onSuccessRegister={handleOtpSuccess}
             backTo={handleBackToRegister}
           />
         )

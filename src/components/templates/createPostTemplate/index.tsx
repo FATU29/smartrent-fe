@@ -9,15 +9,18 @@ import { AIValuationSection } from '@/components/organisms/createPostSections/ai
 import { Button } from '@/components/atoms/button'
 import { MediaSection } from '@/components/organisms/createPostSections/mediaSection'
 import { PackageConfigSection } from '@/components/organisms/createPostSections/packageConfigSection'
+import { OrderSummarySection } from '@/components/organisms/createPostSections/orderSummarySection'
+import { Card } from '@/components/atoms/card'
+import { Typography } from '@/components/atoms/typography'
 import {
   Home,
   Brain,
   Camera,
   FileText,
   ClipboardList,
-  Eye,
   ArrowLeft,
   ArrowRight,
+  CreditCard,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { CreatePostProvider, useCreatePost } from '@/contexts/createPost'
@@ -53,7 +56,8 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       case 3: {
         if (
           !propertyInfo.selectedMembershipPlanId &&
-          !propertyInfo.selectedVoucherPackageId
+          !propertyInfo.selectedVoucherPackageId &&
+          !propertyInfo.selectedPackageType
         )
           errors.push('package')
         break
@@ -115,14 +119,6 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       isActive: currentStep === 4,
       isCompleted: currentStep > 4,
     },
-    {
-      id: 'review-payment',
-      title: tSteps('reviewAndPayment.title'),
-      description: tSteps('reviewAndPayment.description'),
-      icon: <Eye className='w-4 h-4 sm:w-5 sm:h-5' />,
-      isActive: currentStep === 5,
-      isCompleted: currentStep > 5,
-    },
   ]
 
   const handleNext = () => {
@@ -149,77 +145,94 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
     switch (currentStep) {
       case 0:
         return (
-          <div className='w-full mx-auto md:max-w-6xl'>
-            <div className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-              <div className='mb-6 sm:mb-8'>
-                <h2 className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'>
+          <Card className='w-full mx-auto md:max-w-6xl border-0 shadow-none p-0'>
+            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
+              <Card className='mb-6 sm:mb-8 border-0 shadow-none p-0'>
+                <Typography
+                  variant='h2'
+                  className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'
+                >
                   {t('sections.propertyInfo.title')}
-                </h2>
-                <p className='text-sm sm:text-base text-muted-foreground'>
+                </Typography>
+                <Typography variant='muted' className='text-sm sm:text-base'>
                   {t('sections.propertyInfo.description')}
-                </p>
-              </div>
+                </Typography>
+              </Card>
               <PropertyInfoSection className='w-full' />
-            </div>
-          </div>
+            </Card>
+          </Card>
         )
       case 1:
         return (
-          <div className='w-full mx-auto md:max-w-7xl'>
-            <div className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-              <div className='mb-6 sm:mb-8'>
-                <h2 className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'>
+          <Card className='w-full mx-auto md:max-w-7xl border-0 shadow-none p-0'>
+            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
+              <Card className='mb-6 sm:mb-8 border-0 shadow-none p-0'>
+                <Typography
+                  variant='h2'
+                  className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'
+                >
                   {t('sections.aiValuation.title')}
-                </h2>
-                <p className='text-sm sm:text-base text-muted-foreground'>
+                </Typography>
+                <Typography variant='muted' className='text-sm sm:text-base'>
                   {t('sections.aiValuation.description')}
-                </p>
-              </div>
+                </Typography>
+              </Card>
               <AIValuationSection className='w-full' />
-            </div>
-          </div>
+            </Card>
+          </Card>
         )
       case 2:
         return (
-          <div className='w-full mx-auto md:max-w-7xl'>
-            <div className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-              <div className='mb-6 sm:mb-8'>
-                <h2 className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'>
+          <Card className='w-full mx-auto md:max-w-7xl border-0 shadow-none p-0'>
+            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
+              <Card className='mb-6 sm:mb-8 border-0 shadow-none p-0'>
+                <Typography
+                  variant='h2'
+                  className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'
+                >
                   {t('sections.media.title')}
-                </h2>
-                <p className='text-sm sm:text-base text-muted-foreground'>
+                </Typography>
+                <Typography variant='muted' className='text-sm sm:text-base'>
                   {t('sections.media.description')}
-                </p>
-              </div>
+                </Typography>
+              </Card>
               <MediaSection className='w-full' showHeader={false} />
-            </div>
-          </div>
+            </Card>
+          </Card>
         )
       case 3:
         return (
-          <div className='w-full mx-auto md:max-w-7xl'>
-            <div className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
+          <Card className='w-full mx-auto md:max-w-7xl border-0 shadow-none p-0'>
+            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
               <PackageConfigSection className='w-full' />
-            </div>
-          </div>
+            </Card>
+          </Card>
+        )
+      case 4:
+        return (
+          <Card className='w-full mx-auto md:max-w-7xl border-0 shadow-none p-0'>
+            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
+              <OrderSummarySection className='w-full' />
+            </Card>
+          </Card>
         )
       default:
         return (
-          <div className='w-full mx-auto md:max-w-6xl'>
-            <div className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-              <div className='text-center py-12'>
-                <h2 className='text-2xl font-bold mb-4'>
+          <Card className='w-full mx-auto md:max-w-6xl border-0 shadow-none p-0'>
+            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
+              <Card className='text-center py-12 border-0 shadow-none p-0'>
+                <Typography variant='h2' className='text-2xl font-bold mb-4'>
                   {progressSteps[currentStep].title}
-                </h2>
-                <p className='text-muted-foreground'>
+                </Typography>
+                <Typography variant='muted'>
                   {progressSteps[currentStep].description}
-                </p>
-                <p className='text-sm text-muted-foreground mt-4'>
+                </Typography>
+                <Typography variant='muted' className='text-sm mt-4'>
                   Coming soon...
-                </p>
-              </div>
-            </div>
-          </div>
+                </Typography>
+              </Card>
+            </Card>
+          </Card>
         )
     }
   }
@@ -228,20 +241,22 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const canProceed = currentErrors.length === 0
 
   return (
-    <div className={`min-h-screen bg-background ${className || ''}`}>
-      <div className='w-full mx-auto  md:container md:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4 sm:py-6 lg:py-8'>
+    <Card
+      className={`min-h-screen bg-background border-0 shadow-none p-0 ${className || ''}`}
+    >
+      <Card className='w-full mx-auto md:container md:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4 sm:py-6 lg:py-8 border-0 shadow-none p-0'>
         <HeaderModule />
-        <div className='mb-6 sm:mb-8'>
+        <Card className='mb-6 sm:mb-8 flex justify-center border-0 shadow-none p-0'>
           <ProgressSteps
             currentStep={currentStep}
             steps={progressSteps}
             className='bg-card p-4 sm:p-6 rounded-lg shadow-sm border'
             onStepClick={handleStepClick}
           />
-        </div>
+        </Card>
         {renderCurrentSection()}
-        <div className='w-full mx-auto md:max-w-6xl mt-8 sm:mt-12'>
-          <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 justify-between items-center flex-wrap'>
+        <Card className='w-full mx-auto md:max-w-6xl mt-8 sm:mt-12 border-0 shadow-none p-0'>
+          <Card className='flex flex-col sm:flex-row gap-4 sm:gap-6 justify-between items-center flex-wrap border-0 shadow-none p-0'>
             {currentStep > 0 && (
               <Button
                 variant='outline'
@@ -252,7 +267,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
                 {t('back')}
               </Button>
             )}
-            {currentStep < progressSteps.length - 1 && (
+            {currentStep < progressSteps.length - 1 ? (
               <Button
                 onClick={handleNext}
                 disabled={!canProceed}
@@ -261,31 +276,59 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
                 {t('next')}
                 <ArrowRight className='w-4 h-4 ml-2' />
               </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  // TODO: Handle payment
+                  console.log('Processing payment...')
+                }}
+                disabled={!canProceed}
+                className='w-full sm:w-auto order-1 sm:order-2 h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
+              >
+                <CreditCard className='w-4 h-4 mr-2' />
+                {t('payment')}
+              </Button>
             )}
-          </div>
+          </Card>
           {!canProceed && (
-            <div className='mt-3 w-full flex flex-col gap-1 text-xs text-destructive text-center sm:text-right'>
-              <p>
+            <Card className='mt-3 w-full flex flex-col gap-1 text-xs text-destructive text-center sm:text-right border-0 shadow-none p-0'>
+              <Typography variant='muted' className='text-destructive'>
                 {t('completeCurrentStep') ||
                   'Vui lòng hoàn thành bước này trước khi tiếp tục'}
-              </p>
+              </Typography>
               {/* Simple mapping of error codes to readable (temporary, could i18n later) */}
-              <div className='flex flex-wrap gap-x-3 gap-y-1 justify-center sm:justify-end'>
-                {currentErrors.includes('address') && <span>• Địa chỉ</span>}
-                {currentErrors.includes('area') && <span>• Diện tích</span>}
-                {currentErrors.includes('price') && <span>• Giá</span>}
+              <Card className='flex flex-wrap gap-x-3 gap-y-1 justify-center sm:justify-end border-0 shadow-none p-0'>
+                {currentErrors.includes('address') && (
+                  <Typography variant='muted' className='text-destructive'>
+                    • Địa chỉ
+                  </Typography>
+                )}
+                {currentErrors.includes('area') && (
+                  <Typography variant='muted' className='text-destructive'>
+                    • Diện tích
+                  </Typography>
+                )}
+                {currentErrors.includes('price') && (
+                  <Typography variant='muted' className='text-destructive'>
+                    • Giá
+                  </Typography>
+                )}
                 {currentErrors.includes('imagesMin') && (
-                  <span>• Tối thiểu 3 ảnh</span>
+                  <Typography variant='muted' className='text-destructive'>
+                    • Tối thiểu 3 ảnh
+                  </Typography>
                 )}
                 {currentErrors.includes('package') && (
-                  <span>• Chọn gói hoặc voucher</span>
+                  <Typography variant='muted' className='text-destructive'>
+                    • Chọn gói hoặc voucher
+                  </Typography>
                 )}
-              </div>
-            </div>
+              </Card>
+            </Card>
           )}
-        </div>
-      </div>
-    </div>
+        </Card>
+      </Card>
+    </Card>
   )
 }
 

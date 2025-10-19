@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { Locale } from '@/types'
-import React, { createContext, ReactNode } from 'react'
+import React, { createContext, ReactNode, useMemo } from 'react'
 
 type SwitchLanguageProps = {
   children: ReactNode
@@ -23,14 +23,17 @@ const SwitchLanguageProvider = ({ children }: SwitchLanguageProps) => {
     switchLanguage(language)
   }
 
+  const contextValue = useMemo(
+    () => ({
+      language: language as Locale,
+      updateLanguage,
+      switchTranslation,
+    }),
+    [language, updateLanguage, switchTranslation],
+  )
+
   return (
-    <SwitchLanguageContext.Provider
-      value={{
-        language: language as Locale,
-        updateLanguage,
-        switchTranslation,
-      }}
-    >
+    <SwitchLanguageContext.Provider value={contextValue}>
       {children}
     </SwitchLanguageContext.Provider>
   )

@@ -11,6 +11,7 @@ import {
 } from '@/api/services/property.service'
 import { PropertyCard } from '@/api/types/property.type'
 import { GetStaticProps } from 'next'
+import LocationProvider from '@/contexts/location'
 
 interface ResidentialPropertiesPageProps {
   initialData: PropertyCard[]
@@ -29,7 +30,9 @@ const ResidentialPropertiesPage: NextPageWithLayout<
       />
       <div className='container mx-auto py-6 px-4 md:px-0'>
         <ListProvider fetcher={propertyFetcher} initialData={initialData}>
-          <ResidentialPropertiesTemplate />
+          <LocationProvider>
+            <ResidentialPropertiesTemplate />
+          </LocationProvider>
         </ListProvider>
       </div>
     </>

@@ -10,13 +10,32 @@ import * as yup from 'yup'
 import { toast } from 'sonner'
 import { ArrowLeft, RotateCcw } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { AuthType } from '@/components/organisms/authDialog'
 import { useResendOtp, useVerifyOtp } from '@/hooks/useAuth'
 import { verifyOtpResetPassword } from '@/api/services/auth.service'
 
+// Constants
+const OTP_LENGTH = 6
+const COUNTDOWN_INITIAL = 60
+
+// Helper functions
+const createEmptyOtpValues = (): string[] => Array(OTP_LENGTH).fill('')
+
+const isOtpComplete = (otpValues: string[]): boolean =>
+  otpValues.join('').length === OTP_LENGTH
+
+const parseOtpFromPaste = (pastedText: string): string[] =>
+  pastedText
+    .slice(0, OTP_LENGTH)
+    .split('')
+    .concat(Array(OTP_LENGTH).fill(''))
+    .slice(0, OTP_LENGTH)
+
+const findNextEmptyIndex = (otpValues: string[]): number =>
+  otpValues.findIndex((val) => val === '')
+
 interface OtpInputProps {
-  switchTo: (type: AuthType) => void
-  onSuccess: (token?: string) => void
+  onSuccessForgot?: (token?: string) => void
+  onSuccessRegister?: (isVerified: boolean) => void
   email: string
   backTo: () => void
   type?: 'register' | 'forgotPassword'
@@ -28,14 +47,15 @@ type OtpFormData = {
 
 const OtpInput: React.FC<OtpInputProps> = ({
   backTo,
-  onSuccess,
+  onSuccessForgot,
+  onSuccessRegister,
   email,
   type = 'register',
 }) => {
   const t = useTranslations()
-  const [countdown, setCountdown] = useState(60)
+  const [countdown, setCountdown] = useState(COUNTDOWN_INITIAL)
   const [canResend, setCanResend] = useState(false)
-  const [otpValues, setOtpValues] = useState(['', '', '', '', '', ''])
+  const [otpValues, setOtpValues] = useState(createEmptyOtpValues())
   const [isVerifying, setIsVerifying] = useState(false)
   const [isResending, setIsResending] = useState(false)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
@@ -55,7 +75,7 @@ const OtpInput: React.FC<OtpInputProps> = ({
     otp: yup
       .string()
       .required(t('homePage.auth.validation.otpRequired'))
-      .length(6, t('homePage.auth.validation.otpLength')),
+      .length(OTP_LENGTH, t('homePage.auth.validation.otpLength')),
   })
 
   const {
@@ -78,7 +98,7 @@ const OtpInput: React.FC<OtpInputProps> = ({
     setOtpValues(newOtpValues)
     setValue('otp', newOtpValues.join(''))
 
-    if (value && index < 5) {
+    if (value && index < OTP_LENGTH - 1) {
       inputRefs.current[index + 1]?.focus()
     }
   }
@@ -91,21 +111,55 @@ const OtpInput: React.FC<OtpInputProps> = ({
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault()
-    const pastedData = e.clipboardData.getData('text').slice(0, 6)
-    const newOtpValues = pastedData
-      .split('')
-      .concat(Array(6).fill(''))
-      .slice(0, 6)
+    const pastedData = e.clipboardData.getData('text')
+    const newOtpValues = parseOtpFromPaste(pastedData)
 
     setOtpValues(newOtpValues)
     setValue('otp', newOtpValues.join(''))
 
-    const lastFilledIndex = newOtpValues.findIndex((val) => val === '')
-    if (lastFilledIndex !== -1) {
-      inputRefs.current[lastFilledIndex]?.focus()
+    const nextEmptyIndex = findNextEmptyIndex(newOtpValues)
+    const focusIndex = nextEmptyIndex !== -1 ? nextEmptyIndex : OTP_LENGTH - 1
+    inputRefs.current[focusIndex]?.focus()
+  }
+
+  const resetOtpForm = () => {
+    setCanResend(false)
+    setCountdown(COUNTDOWN_INITIAL)
+    setOtpValues(createEmptyOtpValues())
+    setValue('otp', '')
+    inputRefs.current[0]?.focus()
+  }
+
+  const handleRegisterVerification = async (otpCode: string) => {
+    const result = await verifyOtp({
+      email,
+      verificationCode: otpCode,
+    })
+
+    if (result?.success) {
+      onSuccessRegister?.(result.success)
+      toast.success(t('homePage.auth.otp.verificationSuccess'))
     } else {
-      inputRefs.current[5]?.focus()
+      toast.error(result?.message || t('homePage.auth.otp.verificationError'))
     }
+
+    return result
+  }
+
+  const handleForgotPasswordVerification = async (otpCode: string) => {
+    const result = await verifyOtpResetPassword({
+      verificationCode: otpCode,
+      email: email,
+    })
+
+    if (result?.success) {
+      onSuccessForgot?.(result?.data?.resetPasswordToken)
+      toast.success(t('homePage.auth.otp.verificationSuccess'))
+    } else {
+      toast.error(result?.message || t('homePage.auth.otp.verificationError'))
+    }
+
+    return result
   }
 
   const handleResend = async () => {
@@ -118,17 +172,10 @@ const OtpInput: React.FC<OtpInputProps> = ({
 
       if (result.success) {
         toast.success(t('homePage.auth.otp.resendSuccess'))
+        resetOtpForm()
       } else {
         toast.error(result.message || t('homePage.auth.otp.resendError'))
       }
-
-      setCanResend(false)
-      setCountdown(60)
-      setOtpValues(['', '', '', '', '', ''])
-      setValue('otp', '')
-      inputRefs.current[0]?.focus()
-
-      toast.success(t('homePage.auth.otp.resendSuccess'))
     } catch (error) {
       console.error('OTP resend error:', error)
       toast.error(t('homePage.auth.otp.resendError'))
@@ -140,24 +187,12 @@ const OtpInput: React.FC<OtpInputProps> = ({
   const onSubmit = async () => {
     try {
       setIsVerifying(true)
-      let result = null
+      const otpCode = otpValues.join('')
+
       if (type === 'register') {
-        result = await verifyOtp({
-          email,
-          verificationCode: otpValues.join(''),
-        })
+        await handleRegisterVerification(otpCode)
       } else if (type === 'forgotPassword') {
-        const code = otpValues.join('')
-        result = await verifyOtpResetPassword({
-          verificationCode: code,
-          email: email,
-        })
-      }
-      if (result?.success) {
-        onSuccess?.(result?.data?.resetPasswordToken)
-        toast.success(t('homePage.auth.otp.verificationSuccess'))
-      } else {
-        toast.error(result?.message || t('homePage.auth.otp.verificationError'))
+        await handleForgotPasswordVerification(otpCode)
       }
     } catch (error) {
       console.error('OTP verification error:', error)
@@ -220,9 +255,7 @@ const OtpInput: React.FC<OtpInputProps> = ({
 
         <Button
           type='submit'
-          disabled={
-            isVerifying || isResending || otpValues.join('').length !== 6
-          }
+          disabled={isVerifying || isResending || !isOtpComplete(otpValues)}
           className='w-full'
         >
           {isVerifying

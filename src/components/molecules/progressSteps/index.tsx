@@ -1,4 +1,6 @@
 import React from 'react'
+import { Card } from '@/components/atoms/card'
+import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 
 interface ProgressStep {
@@ -23,19 +25,24 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
   onStepClick,
 }) => {
   return (
-    <div className={cn('w-full', className)}>
+    <Card
+      className={cn(
+        'w-full flex justify-center border-0 shadow-none p-0',
+        className,
+      )}
+    >
       {/* Grid layout at all sizes; equal-width columns on desktop */}
-      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-0'>
+      <Card className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-0 border-0 shadow-none p-0'>
         {steps.map((step, index) => (
-          <div
+          <Card
             key={step.id}
-            className='flex flex-col items-center space-y-2 relative'
+            className='flex flex-col items-center space-y-2 relative border-0 shadow-none p-0'
             onClick={() => onStepClick?.(index)}
           >
             {/* Step Circle - Mobile First */}
-            <div
+            <Card
               className={cn(
-                'w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center border-2 transition-colors',
+                'w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center border-2 transition-colors shadow-none p-0',
                 step.isActive
                   ? 'bg-primary border-primary text-primary-foreground'
                   : step.isCompleted
@@ -45,11 +52,12 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
               )}
             >
               {step.icon}
-            </div>
+            </Card>
 
             {/* Step Content - Mobile First */}
-            <div className='text-center space-y-1'>
-              <h3
+            <Card className='text-center space-y-1 border-0 shadow-none p-0'>
+              <Typography
+                variant='h3'
                 className={cn(
                   'text-[11px] sm:text-xs font-medium leading-tight tracking-tight',
                   step.isActive
@@ -60,8 +68,9 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
                 )}
               >
                 {step.title}
-              </h3>
-              <p
+              </Typography>
+              <Typography
+                variant='muted'
                 className={cn(
                   'hidden sm:block text-[10px] leading-snug',
                   step.isActive
@@ -72,14 +81,14 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
                 )}
               >
                 {step.description}
-              </p>
-            </div>
+              </Typography>
+            </Card>
 
             {/* Connector Line - Hidden on mobile, shown on desktop */}
             {index < steps.length - 1 && (
-              <div
+              <Card
                 className={cn(
-                  'hidden sm:block absolute top-6 sm:top-7 left-1/2 h-0.5 -z-10',
+                  'hidden sm:block absolute top-6 sm:top-7 left-1/2 h-0.5 -z-10 border-0 shadow-none p-0',
                   step.isCompleted ? 'bg-green-500' : 'bg-muted-foreground/20',
                 )}
                 style={{
@@ -88,10 +97,10 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
                 }}
               />
             )}
-          </div>
+          </Card>
         ))}
-      </div>
-    </div>
+      </Card>
+    </Card>
   )
 }
 

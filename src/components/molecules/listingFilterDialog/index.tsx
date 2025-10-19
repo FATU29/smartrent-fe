@@ -8,7 +8,6 @@ import {
 } from '@/components/atoms/dialog'
 import { ListingFilterContent } from '@/components/molecules/listings/ListingFilterContent'
 import { List } from '@/contexts/list'
-import { createMockListingsFetcher } from '@/components/templates/listingsManagement/index.helpers'
 
 export interface ListingFilterDialogProps {
   open: boolean
@@ -40,17 +39,27 @@ export const ListingFilterDialog: React.FC<ListingFilterDialogProps> = ({
   onBackToMain,
 }) => {
   const t = useTranslations()
-  const listingsFetcher = createMockListingsFetcher()
+  const listingsFetcher = () => {
+    console.log('Fetching listings with applied filters')
+    return Promise.resolve({
+      data: [],
+      total: 0,
+      page: 1,
+      totalPages: 0,
+      hasNext: false,
+      hasPrevious: false,
+    })
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='!fixed !w-full !h-full sm:!w-auto sm:!h-auto sm:!max-w-xl sm:!max-h-[650px] !p-0 !rounded-none sm:!rounded-3xl !m-0 sm:!m-auto !inset-0 sm:!inset-auto !translate-x-0 !translate-y-0 sm:!translate-x-[-50%] sm:!translate-y-[-50%] !left-0 !top-0 sm:!left-[50%] sm:!top-[50%] !border-0 sm:!border !shadow-none sm:!shadow-lg !flex !flex-col'>
-        <DialogHeader className='w-full flex-shrink-0 p-4 sm:p-6 pb-2 border-b border-border'>
-          <DialogTitle className='flex items-center gap-2 text-lg sm:text-base font-semibold'>
+      <DialogContent className='size-full  md:size-fit rounded-none md:rounded-2xl shadow-lg'>
+        <DialogHeader>
+          <DialogTitle>
             {t('seller.listingManagement.filter.title')}
           </DialogTitle>
         </DialogHeader>
-        <div className='flex-1 w-full overflow-y-auto p-4 sm:p-6 pt-4 pb-24'>
+        <div className='size-full overflow-y-auto px-4 sm:px-6 -mx-4'>
           <List.Provider fetcher={listingsFetcher}>
             <ListingFilterContent
               onApply={onApply}

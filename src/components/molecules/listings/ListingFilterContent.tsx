@@ -1,7 +1,7 @@
 import React from 'react'
 import { useListContext } from '@/contexts/list'
 import { ProvinceSelectionDialog } from '@/components/molecules/province-selection-dialog'
-import { DistrictSelectionDialog } from '@/components/molecules/district-selection-dialog'
+import { DistrictSelectionDialog } from '@/components/molecules/districtSelectionDialog'
 import { WardSelectionDialog } from '@/components/molecules/ward-selection-dialog'
 import { ListingTypeSelectionDialog } from '@/components/molecules/listing-type-selection-dialog'
 import { FilterActionButtons } from '@/components/molecules/filter-action-buttons'
@@ -82,10 +82,6 @@ export const ListingFilterContent: React.FC<ListingFilterContentProps> = ({
     toggleListingType,
   } = useFilterState({
     values: contextValues,
-    showProvinceSelection,
-    showDistrictSelection,
-    showWardSelection,
-    showListingTypeSelection,
   })
 
   const { selectedProvinceCode, isWardEnabled, isDistrictEnabled } =

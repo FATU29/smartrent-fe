@@ -58,35 +58,30 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
     <div className={cn('relative', className)}>
       <div
         className={cn(
-          'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 cursor-pointer',
+          'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 w-full',
           'hover:bg-accent hover:text-accent-foreground',
-          'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
           item.isActive && 'bg-accent text-accent-foreground',
           level > 0 && 'ml-4',
           level === 1 && 'ml-6',
           level === 2 && 'ml-8',
         )}
-        onClick={handleClick}
-        role='button'
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            handleClick()
-          }
-        }}
       >
-        <div className='flex items-center gap-2 min-w-0 flex-1'>
+        <button
+          type='button'
+          className='flex items-center gap-2 min-w-0 flex-1 text-left focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm'
+          onClick={handleClick}
+        >
           {item.icon && (
             <span className='flex-shrink-0 text-muted-foreground group-hover:text-accent-foreground'>
               {item.icon}
             </span>
           )}
           <span className='truncate'>{item.label}</span>
-        </div>
+        </button>
 
         {isExpandable && (
           <button
+            type='button'
             onClick={handleToggle}
             className={cn(
               'flex-shrink-0 p-1 rounded-sm transition-transform duration-200',

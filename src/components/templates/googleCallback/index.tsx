@@ -2,20 +2,16 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import { googleOAuth } from '@/api/services/auth.service'
 import { useTranslations } from 'next-intl'
-import { useCountdown } from '@/hooks/useCountdown'
 import AuthStatusDisplay from '@/components/molecules/auth-status'
 import { decodeToken } from '@/utils/decode-jwt'
 import { useAuth } from '@/hooks/useAuth'
 
-const REDIRECT_DELAY = 5
 const DEFAULT_RETURN_PATH = '/'
 
 interface OAuthResponse {
-  data: {
-    tokens: {
-      accessToken: string
-      refreshToken?: string
-    }
+  data?: {
+    accessToken: string
+    refreshToken: string
   }
   message: string | null
   code: string
@@ -37,22 +33,18 @@ export default function GoogleCallback() {
     router.push(returnTo)
   }, [router])
 
-  const { count, isActive, start } = useCountdown({
-    initialCount: REDIRECT_DELAY,
-    onComplete: handleRedirect,
-  })
-
   const handleOAuthSuccess = useCallback(
     (response: OAuthResponse) => {
-      if (response.data?.tokens) {
-        const { user } = decodeToken(response.data.tokens.accessToken)
-
-        login(user, response.data.tokens)
+      console.log('response', response)
+      if (response.data) {
+        const { accessToken, refreshToken } = response.data
+        const { user } = decodeToken(accessToken)
+        login(user, { accessToken, refreshToken })
         setStatus('success')
-        start()
+        handleRedirect()
       }
     },
-    [login, start],
+    [login, handleRedirect],
   )
 
   const handleOAuthError = useCallback((errorMessage: string) => {
@@ -66,7 +58,7 @@ export default function GoogleCallback() {
       const { code, error: oauthError } = router.query
 
       if (oauthError) {
-        const errorMsg = t('auth.oauth.oauth_authorization_failed')
+        const errorMsg = t('homePage.auth.oauth.oauth_authorization_failed')
         handleOAuthError(errorMsg)
         return
       }
@@ -78,12 +70,15 @@ export default function GoogleCallback() {
       try {
         setStatus('loading')
         const response = await googleOAuth(code)
+        if (!response.success) {
+          throw new Error(response.message || 'Authentication failed')
+        }
         handleOAuthSuccess(response)
       } catch (error) {
         const errorMessage =
           error instanceof Error
             ? error.message
-            : t('auth.oauth.authentication_failed')
+            : t('homePage.auth.oauth.authentication_failed')
         handleOAuthError(errorMessage)
       }
     }
@@ -103,8 +98,6 @@ export default function GoogleCallback() {
         <AuthStatusDisplay
           status={status}
           error={error}
-          countdown={count}
-          isCountdownActive={isActive}
           onRetry={handleRetry}
         />
       </div>

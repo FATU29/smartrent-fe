@@ -9,6 +9,54 @@
     "learnMore": "Tìm hiểu thêm",
     "go_home": "Về trang chủ"
   },
+  "location": {
+    "label": "Vị trí của bạn",
+    "loading": "Đang lấy vị trí...",
+    "enabled": "Vị trí đã bật",
+    "disabled": "Bật vị trí",
+    "error": "Lỗi vị trí",
+    "enableTooltip": "Nhấp để bật theo dõi vị trí",
+    "disableTooltip": "Nhấp để tắt theo dõi vị trí",
+    "coordinates": "Tọa độ",
+    "permissionDenied": "Quyền truy cập vị trí bị từ chối. Vui lòng bật truy cập vị trí trong cài đặt trình duyệt VÀ cài đặt hệ thống, sau đó khởi động lại trình duyệt.",
+    "positionUnavailable": "Thông tin vị trí không khả dụng. Vui lòng bật dịch vụ vị trí trên thiết bị của bạn.",
+    "timeout": "Yêu cầu vị trí hết thời gian chờ. Vui lòng thử lại.",
+    "unknownError": "Đã xảy ra lỗi không xác định khi lấy vị trí.",
+    "notSupported": "Trình duyệt không hỗ trợ vị trí"
+  },
+  "components": {
+    "statsDisplay": {
+      "views": "Xem tin",
+      "contacts": "Quan tâm",
+      "customers": "Khách hàng"
+    },
+    "statusBadge": {
+      "active": "Đang hiển thị",
+      "expired": "Hết hạn",
+      "expiring": "Sắp hết hạn",
+      "pending": "Chờ duyệt",
+      "review": "Đang xét duyệt",
+      "payment": "Chờ thanh toán",
+      "rejected": "Bị từ chối",
+      "archived": "Đã lưu trữ"
+    },
+    "packageBadge": {
+      "vipDiamond": "VIP Kim Cương",
+      "vipGold": "VIP Vàng",
+      "vipSilver": "VIP Bạc",
+      "standard": "Thường",
+      "basic": "Cơ bản"
+    },
+    "rankDisplay": {
+      "page": "Trang {page}",
+      "position": "Đứng thứ {position}"
+    },
+    "verificationBadge": {
+      "verified": "Tin xác thực",
+      "premium": "Nâng cấp tin",
+      "boosted": "Đẩy tin"
+    }
+  },
   "pagination": {
     "showing": "Hiển thị",
     "of": "trong",
@@ -150,11 +198,11 @@
           "legalInfo": "Thông tin Pháp lý"
         },
         "otpSentMessage": "Mã xác minh đã được gửi thành công!",
-        "backToLogin": "Quay về đăng nhập"
+        "backToLogin": "Quay về đăng nhập",
+        "successTitle": "Đăng ký thành công!",
+        "successDescription": "Tài khoản của bạn đã được tạo thành công. Bây giờ bạn có thể đăng nhập vào tài khoản của mình."
       },
       "success": {
-        "title": "Đăng ký thành công!",
-        "description": "Tài khoản của bạn đã được tạo thành công. Bây giờ bạn có thể đăng nhập vào tài khoản của mình.",
         "emailSent": "Email xác thực đã được gửi đến",
         "backToLogin": "Quay về đăng nhập"
       },
@@ -525,6 +573,7 @@
     "description": "Làm theo các bước dưới đây để tạo tin đăng bất động sản",
     "back": "Quay lại",
     "next": "Tiếp theo",
+    "payment": "Thanh toán",
     "completeCurrentStep": "Vui lòng hoàn thành bước này trước khi tiếp tục",
     "generateAutomatically": "Tạo tự động",
     "continueToUpload": "Tiếp tục tải lên",
@@ -562,7 +611,66 @@
     "sections": {
       "packageConfig": {
         "title": "Gói & Cấu hình",
-        "description": "Chọn gói hội viên hoặc gói đẩy tin phù hợp để tối ưu hiển thị"
+        "description": "Chọn gói hội viên hoặc gói đẩy tin phù hợp để tối ưu hiển thị",
+        "selectPackageType": "Chọn loại tin",
+        "selectDuration": "Đăng dài ngày hơn, hiệu kiệm hơn!",
+        "packages": {
+          "vipDiamond": {
+            "name": "VIP Kim Cương",
+            "description": "Hiện thị trên cùng"
+          },
+          "vipGold": {
+            "name": "VIP Vàng",
+            "description": "Dưới VIP Kim Cương"
+          },
+          "vipSilver": {
+            "name": "VIP Bạc",
+            "description": "Dưới VIP Vàng"
+          },
+          "standard": {
+            "name": "Tin thường",
+            "description": "Hiện thị dưới cùng"
+          }
+        },
+        "perDay": "ngày",
+        "days": "ngày",
+        "startDate": "Ngày bắt đầu",
+        "endDate": "Kết thúc ngày",
+        "promotionCode": "Khuyến mãi",
+        "enterPromotionCode": "Đăng ngay bây giờ",
+        "apply": "Áp dụng",
+        "usePromotion": "Đã áp dụng 1 khuyến mãi",
+        "summary": "Tổng tiền",
+        "selectedPackage": "Loại tin",
+        "duration": "Thời hạn",
+        "totalAmount": "Tổng tiền",
+        "vatIncluded": "Đã bao gồm VAT"
+      },
+      "orderSummary": {
+        "title": "Tóm tắt Đơn hàng",
+        "description": "Xem lại thông tin bất động sản và gói đăng tin của bạn trước khi thanh toán",
+        "propertyInfo": "Thông tin bất động sản",
+        "edit": "Chỉnh sửa",
+        "packageDetails": "Chi tiết gói đăng tin",
+        "packageType": "Loại tin",
+        "duration": "Thời hạn",
+        "days": "ngày",
+        "startDate": "Ngày bắt đầu",
+        "endDate": "Ngày kết thúc",
+        "priceBreakdown": "Chi tiết thanh toán",
+        "packagePrice": "Giá gói",
+        "vat10": "VAT (10%)",
+        "discount": "Giảm giá",
+        "totalAmount": "Tổng cộng",
+        "vatIncluded": "Đã bao gồm VAT",
+        "contactInfo": "Thông tin liên hệ",
+        "fullName": "Họ và tên",
+        "email": "Email",
+        "phone": "Số điện thoại",
+        "confirmationNotice": {
+          "title": "Xác nhận thông tin",
+          "description": "Vui lòng kiểm tra kỹ thông tin trước khi tiếp tục. Bạn có thể chỉnh sửa bằng cách quay lại các bước trước."
+        }
       },
       "media": {
         "title": "Hình ảnh & Video",
@@ -808,6 +916,11 @@
           "subtitle": "Cập nhật thông tin bất động sản để AI đánh giá chính xác nhất",
           "address": "Địa chỉ",
           "addressMode": "Chế độ nhập địa chỉ",
+          "addressView": "Chế độ xem địa chỉ",
+          "addressViews": {
+            "current": "Địa chỉ hiện tại",
+            "new": "Địa chỉ mới"
+          },
           "addressModes": {
             "structured": "Tỉnh/Quận/Phường",
             "freeText": "Nhập tự do"
@@ -825,7 +938,8 @@
           "types": {
             "apartment": "Căn hộ",
             "house": "Nhà",
-            "villa": "Biệt thự"
+            "villa": "Biệt thự",
+            "studio": "Studio"
           },
           "districts": {
             "quan1": "Quận 1",
@@ -1058,6 +1172,7 @@
       "usd": "Đô"
     },
     "searchPlaceholder": "Tìm kiếm bất động sản nhà ở...",
+    "locationEnabled": "Đang tìm gần vị trí của bạn",
     "actions": {
       "search": "Tìm kiếm",
       "viewMap": "Xem bản đồ",
@@ -1070,6 +1185,7 @@
     "toggles": {
       "verified": "Tin xác thực",
       "professionalBroker": "Môi giới chuyên nghiệp",
+      "location": "Vị trí của bạn",
       "video": "Có video",
       "has360": "Có 3D/360°"
     },
@@ -1191,7 +1307,12 @@
     "bestSeller": "Bán chạy nhất",
     "buyNow": "Mua ngay",
     "saveUpTo": "Tiết kiệm đến",
-    "perMonthSuffix": "₫/tháng"
+    "perMonthSuffix": "₫/tháng",
+    "pricing": {
+      "bestSeller": "Bán chạy nhất",
+      "buyNow": "Mua ngay",
+      "saveUpTo": "Tiết kiệm đến"
+    }
   },
   "voucher": {
     "bestSeller": "Bán chạy nhất",
@@ -1216,7 +1337,9 @@
       "register": "Đăng ký gói dịch vụ",
       "membershipTab": "Tab gói hội viên",
       "voucherTab": "Tab gói voucher đẩy tin"
-    }
+    },
+    "noPlansAvailable": "Hiện chưa có gói hội viên nào.",
+    "noVouchersAvailable": "Hiện chưa có gói voucher nào."
   },
   "membershipPlans": {
     "savingSuffix": "mỗi tháng",
@@ -1318,7 +1441,78 @@
         "ward": "Phường/Xã",
         "selectDistrictsFirst": "Chọn quận/huyện trước để kích hoạt lọc phường/xã",
         "filteringWardsIn": "Đang lọc phường/xã trong:"
+      },
+      "allListingsShown": "Đã hiển thị tất cả tin đăng",
+      "card": {
+        "listingCode": "Mã tin",
+        "postedDate": "Ngày đăng",
+        "expiryDate": "Ngày hết hạn",
+        "expiredMessage": "Tin đăng này đã hết hạn",
+        "actions": {
+          "edit": "Sửa",
+          "editFull": "Sửa tin",
+          "promote": "QC",
+          "promoteFull": "Quảng cáo",
+          "repost": "Đẩy",
+          "repostFull": "Đẩy tin",
+          "viewReport": "Xem báo cáo",
+          "requestVerification": "Yêu cầu xác thực",
+          "copyListing": "Sao chép tin đăng",
+          "requestContact": "Yêu cầu liên hệ",
+          "share": "Chia sẻ",
+          "activityHistory": "Lịch sử hoạt động",
+          "takeDown": "Hạ tin",
+          "delete": "Xóa tin"
+        }
+      }
+    },
+    "customers": {
+      "title": "Quản lý khách hàng",
+      "subtitle": "Theo dõi và quản lý tương tác khách hàng với tin đăng của bạn",
+      "unviewed": "Chưa xem",
+      "total": "Tổng",
+      "searchPlaceholder": "Tìm kiếm khách hàng, tin đăng...",
+      "tabs": {
+        "customers": "Khách hàng",
+        "listings": "Tin đăng"
+      },
+      "selectToView": "Chọn một mục để xem chi tiết",
+      "totalInteractions": "Tổng tương tác",
+      "listingsPosted": "Tin đã đăng",
+      "lastActivity": "Hoạt động gần đây",
+      "interactionHistory": "Lịch sử tương tác",
+      "customerInteractions": "Khách hàng tương tác",
+      "copiedPhone": "Đã sao chép số điện thoại",
+      "copiedEmail": "Đã sao chép email",
+      "new": "Mới",
+      "emptyState": {
+        "customers": {
+          "title": "Chưa có khách hàng",
+          "description": "Khi khách hàng nhấn 'Hiện số' hoặc 'Chat qua Zalo' trên tin đăng của bạn, họ sẽ xuất hiện tại đây."
+        },
+        "listings": {
+          "title": "Chưa có tin đăng với tương tác",
+          "description": "Các tin đăng có tương tác của khách hàng sẽ xuất hiện tại đây."
+        }
       }
     }
+  },
+  "paymentMethodDialog": {
+    "title": "Phương thức thanh toán",
+    "description": "Chọn phương thức thanh toán phù hợp với bạn",
+    "vnpay": "VNPAY",
+    "momo": "Ví MoMo",
+    "paypal": "PayPal",
+    "zalopay": "ZaloPay"
+  },
+  "pushDetailsPage": {
+    "title": "Gói Đẩy Tin",
+    "description": "Chọn gói đẩy tin phù hợp để tăng độ hiển thị cho bài đăng của bạn",
+    "quantity": "Số lượng",
+    "pricePerPush": "Giá mỗi lượt",
+    "totalPrice": "Tổng giá",
+    "discount": "Giảm giá",
+    "savings": "Tiết kiệm",
+    "buyNow": "Mua ngay"
   }
 }

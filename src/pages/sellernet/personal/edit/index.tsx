@@ -18,7 +18,6 @@ const PersonalEditPage: NextPageWithLayout = () => {
     data: PersonalInfoFormData,
   ): Promise<boolean> => {
     try {
-      // Optimistic update – in real case you'd call API then update store
       updateUser({
         firstName: data.firstName ?? user?.firstName,
         lastName: data.lastName ?? user?.lastName,

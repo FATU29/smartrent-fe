@@ -44,6 +44,43 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   const t = useTranslations('createPost.sections.aiValuation')
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
 
+  // Local view state for address view toggle
+  const [addressView, setAddressView] = React.useState<'current' | 'new'>(
+    'current',
+  )
+
+  const getLabelByValue = (
+    value: string | undefined,
+    options: { value: string; label: string }[],
+  ) => options.find((o) => o.value === value)?.label
+
+  const structuredAddress = React.useMemo(() => {
+    const provinceLabel = getLabelByValue(
+      propertyInfo.province,
+      getProvinceOptions(t),
+    )
+    const districtLabel = getLabelByValue(
+      propertyInfo.district,
+      getDistrictOptions(t),
+    )
+    const wardLabel = getLabelByValue(propertyInfo.ward, getWardOptions(t))
+    return [wardLabel, districtLabel, provinceLabel].filter(Boolean).join(', ')
+  }, [propertyInfo.province, propertyInfo.district, propertyInfo.ward, t])
+
+  const currentAddress = React.useMemo(() => {
+    if (propertyInfo.addressMode === 'freeText')
+      return propertyInfo.propertyAddress || ''
+    // If not freeText, fall back to structured address
+    return structuredAddress
+  }, [
+    propertyInfo.addressMode,
+    propertyInfo.propertyAddress,
+    structuredAddress,
+  ])
+
+  const displayedAddress =
+    addressView === 'current' ? currentAddress : structuredAddress
+
   return (
     <div className={className}>
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
@@ -61,7 +98,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             </p>
           </CardHeader>
           <CardContent className='space-y-6'>
-            {/* Address with mode toggle */}
+            {/* Address with view toggle */}
             <div className='space-y-3'>
               <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
                 <MapPin className='w-4 h-4 text-blue-500' />
@@ -69,154 +106,99 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
               </label>
               <div className='flex items-center justify-between'>
                 <span className='text-xs text-muted-foreground'>
-                  {t('propertyInfo.addressMode')}
+                  {t('propertyInfo.addressView')}
                 </span>
                 <div className='flex items-center gap-2 text-xs'>
                   <button
-                    className={`px-2 py-1 rounded border ${propertyInfo.addressMode !== 'freeText' ? 'bg-accent text-accent-foreground' : 'bg-muted text-foreground/80'}`}
-                    onClick={() =>
-                      updatePropertyInfo({ addressMode: 'structured' })
-                    }
+                    className={`px-2 py-1 rounded border ${addressView === 'current' ? 'bg-accent text-accent-foreground' : 'bg-muted text-foreground/80'}`}
+                    onClick={() => setAddressView('current')}
                     type='button'
                   >
-                    {t('propertyInfo.addressModes.structured')}
+                    {t('propertyInfo.addressViews.current')}
                   </button>
                   <button
-                    className={`px-2 py-1 rounded border ${propertyInfo.addressMode === 'freeText' ? 'bg-accent text-accent-foreground' : 'bg-muted text-foreground/80'}`}
-                    onClick={() =>
-                      updatePropertyInfo({ addressMode: 'freeText' })
-                    }
+                    className={`px-2 py-1 rounded border ${addressView === 'new' ? 'bg-accent text-accent-foreground' : 'bg-muted text-foreground/80'}`}
+                    onClick={() => setAddressView('new')}
                     type='button'
                   >
-                    {t('propertyInfo.addressModes.freeText')}
+                    {t('propertyInfo.addressViews.new')}
                   </button>
                 </div>
               </div>
-              {propertyInfo.addressMode === 'freeText' ? (
-                <div className='relative group'>
-                  <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
-                  <input
-                    type='text'
-                    className='w-full h-12 pl-12 pr-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'
-                    placeholder={t('propertyInfo.addressPlaceholder')}
-                    value={propertyInfo.propertyAddress}
-                    onChange={(e) =>
-                      updatePropertyInfo({ propertyAddress: e.target.value })
-                    }
-                  />
-                </div>
-              ) : (
-                <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
-                  <SelectDropdown
-                    label={t('propertyInfo.province')}
-                    value={propertyInfo.province || 'hcmc'}
-                    onValueChange={(value) =>
-                      updatePropertyInfo({ province: value })
-                    }
-                    options={getProvinceOptions(t)}
-                    className='space-y-2'
-                  />
-                  <SelectDropdown
-                    label={t('propertyInfo.districtLabel')}
-                    value={propertyInfo.district}
-                    onValueChange={(value) =>
-                      updatePropertyInfo({ district: value })
-                    }
-                    options={getDistrictOptions(t)}
-                    className='space-y-2'
-                  />
-                  <SelectDropdown
-                    label={t('propertyInfo.ward')}
-                    value={propertyInfo.ward}
-                    onValueChange={(value) =>
-                      updatePropertyInfo({ ward: value })
-                    }
-                    options={getWardOptions(t)}
-                    className='space-y-2'
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Main Layout: Dropdowns on Left, Inputs on Right */}
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-              {/* Left Column - All Dropdowns */}
-              <div className='space-y-4'>
-                {/* Property Type Dropdown */}
-                <SelectDropdown
-                  label={t('propertyInfo.type')}
-                  value={propertyInfo.propertyType}
-                  onValueChange={(value) =>
-                    updatePropertyInfo({
-                      propertyType: value as
-                        | 'apartment'
-                        | 'house'
-                        | 'villa'
-                        | 'studio',
-                    })
-                  }
-                  options={getAiPropertyTypeOptions(t)}
-                  className='space-y-2'
+              <div className='relative group'>
+                <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
+                <input
+                  type='text'
+                  className='w-full h-12 pl-12 pr-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'
+                  placeholder={t('propertyInfo.addressPlaceholder')}
+                  value={displayedAddress}
+                  readOnly
                 />
               </div>
+            </div>
 
-              {/* Right Column - Numeric Inputs */}
-              <div className='space-y-4'>
-                {/* Area Input */}
-                <div className='space-y-2'>
-                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                    {t('propertyInfo.area')}
-                  </label>
-                  <div className='relative'>
-                    <input
-                      type='text'
-                      value={propertyInfo.area}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value) || 0
-                        updatePropertyInfo({ area: value })
-                      }}
-                      placeholder='0'
-                      className='w-full h-12 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-base'
-                    />
-                    <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400'>
-                      m²
-                    </span>
-                  </div>
-                </div>
-
-                {/* Bedrooms Input */}
-                <div className='space-y-2'>
-                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                    {t('propertyInfo.bedrooms')}
-                  </label>
+            {/* Main Layout: One row for Type + Area (applies on mobile) */}
+            <div className='grid grid-cols-2 gap-3 w-full'>
+              <SelectDropdown
+                label={t('propertyInfo.type')}
+                value={propertyInfo.propertyType}
+                onValueChange={(value) =>
+                  updatePropertyInfo({
+                    propertyType: value as
+                      | 'apartment'
+                      | 'house'
+                      | 'villa'
+                      | 'studio',
+                  })
+                }
+                options={getAiPropertyTypeOptions(t)}
+                className='space-y-2'
+                disabled
+              />
+              <div className='space-y-2'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                  {t('propertyInfo.area')}
+                </label>
+                <div className='relative'>
                   <input
                     type='text'
-                    value={propertyInfo.bedrooms}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value) || 0
-                      updatePropertyInfo({ bedrooms: value })
-                    }}
+                    value={propertyInfo.area}
+                    readOnly
                     placeholder='0'
                     className='w-full h-12 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-base'
                   />
+                  <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400'>
+                    m²
+                  </span>
                 </div>
+              </div>
+            </div>
 
-                {/* Bathrooms Input */}
-                <div className='space-y-2'>
-                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                    {t('propertyInfo.bathrooms')}
-                  </label>
-                  <input
-                    type='text'
-                    value={propertyInfo.bathrooms}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value) || 0
-                      updatePropertyInfo({ bathrooms: value })
-                    }}
-                    placeholder='0'
-                    className='w-full h-12 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-base'
-                  />
-                </div>
+            {/* Second row for Bedrooms + Bathrooms (read-only) */}
+            <div className='grid grid-cols-2 gap-3 w-full'>
+              <div className='space-y-2'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                  {t('propertyInfo.bedrooms')}
+                </label>
+                <input
+                  type='text'
+                  value={propertyInfo.bedrooms}
+                  readOnly
+                  placeholder='0'
+                  className='w-full h-12 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-base'
+                />
+              </div>
+              <div className='space-y-2'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                  {t('propertyInfo.bathrooms')}
+                </label>
+                <input
+                  type='text'
+                  value={propertyInfo.bathrooms}
+                  readOnly
+                  placeholder='0'
+                  className='w-full h-12 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-base'
+                />
               </div>
             </div>
 
@@ -264,19 +246,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                       type='checkbox'
                       className='w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 shrink-0'
                       checked={propertyInfo.amenities.includes(amenity.key)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          updatePropertyInfo({
-                            amenities: [...propertyInfo.amenities, amenity.key],
-                          })
-                        } else {
-                          updatePropertyInfo({
-                            amenities: propertyInfo.amenities.filter(
-                              (a) => a !== amenity.key,
-                            ),
-                          })
-                        }
-                      }}
+                      disabled
                     />
                     <span className='text-sm font-medium whitespace-normal break-words leading-snug min-w-0'>
                       {amenity.label}
@@ -335,7 +305,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                 <div className='h-40 flex items-end justify-between gap-2'>
                   {getResultsComparisonItems(t).map((item, index) => (
                     <div
-                      key={index}
+                      key={`comparison-item-${index}`}
                       className='flex flex-col items-center flex-1 group'
                     >
                       <div

@@ -9,6 +9,54 @@
     "learnMore": "Learn more",
     "go_home": "Go Home"
   },
+  "location": {
+    "label": "Your Location",
+    "loading": "Getting location...",
+    "enabled": "Location enabled",
+    "disabled": "Enable location",
+    "error": "Location error",
+    "enableTooltip": "Click to enable location tracking",
+    "disableTooltip": "Click to disable location tracking",
+    "coordinates": "Coordinates",
+    "permissionDenied": "Location permission denied. Please enable location access in both browser settings AND system settings, then restart your browser.",
+    "positionUnavailable": "Location information unavailable. Please enable location services on your device.",
+    "timeout": "Location request timed out. Please try again.",
+    "unknownError": "An unknown error occurred while getting location.",
+    "notSupported": "Location not supported by your browser"
+  },
+  "components": {
+    "statsDisplay": {
+      "views": "Views",
+      "contacts": "Interests",
+      "customers": "Customers"
+    },
+    "statusBadge": {
+      "active": "Active",
+      "expired": "Expired",
+      "expiring": "Expiring Soon",
+      "pending": "Pending",
+      "review": "Under Review",
+      "payment": "Pending Payment",
+      "rejected": "Rejected",
+      "archived": "Archived"
+    },
+    "packageBadge": {
+      "vipDiamond": "VIP Diamond",
+      "vipGold": "VIP Gold",
+      "vipSilver": "VIP Silver",
+      "standard": "Standard",
+      "basic": "Basic"
+    },
+    "rankDisplay": {
+      "page": "Page {page}",
+      "position": "Rank {position}"
+    },
+    "verificationBadge": {
+      "verified": "Verified Listing",
+      "premium": "Premium Listing",
+      "boosted": "Boosted Listing"
+    }
+  },
   "pagination": {
     "showing": "Showing",
     "of": "of",
@@ -150,11 +198,11 @@
           "legalInfo": "Legal Information"
         },
         "otpSentMessage": "Verification code sent successfully!",
-        "backToLogin": "Back to Login"
+        "backToLogin": "Back to Login",
+        "successTitle": "Registration Successful!",
+        "successDescription": "Your account has been created successfully. You can now log in to your account."
       },
       "success": {
-        "title": "Registration Successful!",
-        "description": "Your account has been created successfully. You can now log in to your account.",
         "emailSent": "A verification email has been sent to",
         "backToLogin": "Back to Login"
       },
@@ -524,6 +572,7 @@
     "description": "Follow the steps below to create your real estate listing",
     "back": "Back",
     "next": "Next",
+    "payment": "Payment",
     "completeCurrentStep": "Please complete this step before continuing",
     "generateAutomatically": "Generate Automatically",
     "continueToUpload": "Continue to upload",
@@ -561,7 +610,66 @@
     "sections": {
       "packageConfig": {
         "title": "Package & Configuration",
-        "description": "Select a membership or push voucher package to optimize visibility"
+        "description": "Select a membership or push voucher package to optimize visibility",
+        "selectPackageType": "Select package type",
+        "selectDuration": "Post longer, save more!",
+        "packages": {
+          "vipDiamond": {
+            "name": "VIP Diamond",
+            "description": "Display on top"
+          },
+          "vipGold": {
+            "name": "VIP Gold",
+            "description": "Below VIP Diamond"
+          },
+          "vipSilver": {
+            "name": "VIP Silver",
+            "description": "Below VIP Gold"
+          },
+          "standard": {
+            "name": "Standard",
+            "description": "Display at bottom"
+          }
+        },
+        "perDay": "day",
+        "days": "days",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "promotionCode": "Promotion",
+        "enterPromotionCode": "Post now",
+        "apply": "Apply",
+        "usePromotion": "Use 1 promotion",
+        "summary": "Total amount",
+        "selectedPackage": "Package type",
+        "duration": "Duration",
+        "totalAmount": "Total amount",
+        "vatIncluded": "VAT included"
+      },
+      "orderSummary": {
+        "title": "Order Summary",
+        "description": "Review your property information and posting package before payment",
+        "propertyInfo": "Property Information",
+        "edit": "Edit",
+        "packageDetails": "Package Details",
+        "packageType": "Package Type",
+        "duration": "Duration",
+        "days": "days",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "priceBreakdown": "Price Breakdown",
+        "packagePrice": "Package Price",
+        "vat10": "VAT (10%)",
+        "discount": "Discount",
+        "totalAmount": "Total Amount",
+        "vatIncluded": "VAT included",
+        "contactInfo": "Contact Information",
+        "fullName": "Full Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "confirmationNotice": {
+          "title": "Confirm Information",
+          "description": "Please review carefully before proceeding. You can edit by going back to previous steps."
+        }
       },
       "media": {
         "title": "Images & Video",
@@ -807,6 +915,11 @@
           "subtitle": "Update property details for the most accurate AI evaluation",
           "address": "Address",
           "addressMode": "Address Mode",
+          "addressView": "Address View",
+          "addressViews": {
+            "current": "Current address",
+            "new": "New address"
+          },
           "addressModes": {
             "structured": "Province/District/Ward",
             "freeText": "Free text"
@@ -824,7 +937,8 @@
           "types": {
             "apartment": "Apartment",
             "house": "House",
-            "villa": "Villa"
+            "villa": "Villa",
+            "studio": "Studio"
           },
           "districts": {
             "quan1": "District 1",
@@ -958,7 +1072,12 @@
     "bestSeller": "Best Seller",
     "buyNow": "Buy Now",
     "saveUpTo": "Save up to",
-    "perMonthSuffix": "per month"
+    "perMonthSuffix": "per month",
+    "pricing": {
+      "bestSeller": "Best Seller",
+      "buyNow": "Buy Now",
+      "saveUpTo": "Save up to"
+    }
   },
   "voucher": {
     "bestSeller": "Best Seller",
@@ -983,7 +1102,9 @@
       "register": "Register service packages",
       "membershipTab": "Membership packages tab",
       "voucherTab": "Push voucher packages tab"
-    }
+    },
+    "noPlansAvailable": "No membership plans available at the moment.",
+    "noVouchersAvailable": "No voucher packages available at the moment."
   },
   "membershipPlans": {
     "savingSuffix": "per month",
@@ -1123,6 +1244,7 @@
       "usd": "USD"
     },
     "searchPlaceholder": "Search residential properties...",
+    "locationEnabled": "Searching near your location",
     "actions": {
       "search": "Search",
       "viewMap": "View map",
@@ -1135,6 +1257,7 @@
     "toggles": {
       "verified": "Verified",
       "professionalBroker": "Professional broker",
+      "location": "Your Location",
       "video": "Has video",
       "has360": "Has 3D/360°"
     },
@@ -1317,7 +1440,78 @@
         "ward": "Ward/Commune",
         "selectDistrictsFirst": "Select districts first to enable ward filtering",
         "filteringWardsIn": "Filtering wards in:"
+      },
+      "allListingsShown": "All listings have been displayed",
+      "card": {
+        "listingCode": "Listing Code",
+        "postedDate": "Posted Date",
+        "expiryDate": "Expiry Date",
+        "expiredMessage": "This listing has expired",
+        "actions": {
+          "edit": "Edit",
+          "editFull": "Edit listing",
+          "promote": "Promote",
+          "promoteFull": "Advertise",
+          "repost": "Repost",
+          "repostFull": "Push listing",
+          "viewReport": "View report",
+          "requestVerification": "Request verification",
+          "copyListing": "Copy listing",
+          "requestContact": "Request contact",
+          "share": "Share",
+          "activityHistory": "Activity history",
+          "takeDown": "Take down",
+          "delete": "Delete"
+        }
+      }
+    },
+    "customers": {
+      "title": "Customer Management",
+      "subtitle": "Track and manage customer interactions with your listings",
+      "unviewed": "Unviewed",
+      "total": "Total",
+      "searchPlaceholder": "Search customers, listings...",
+      "tabs": {
+        "customers": "Customers",
+        "listings": "Listings"
+      },
+      "selectToView": "Select an item to view details",
+      "totalInteractions": "Total Interactions",
+      "listingsPosted": "Listings Posted",
+      "lastActivity": "Last Activity",
+      "interactionHistory": "Interaction History",
+      "customerInteractions": "Customer Interactions",
+      "copiedPhone": "Phone number copied to clipboard",
+      "copiedEmail": "Email copied to clipboard",
+      "new": "New",
+      "emptyState": {
+        "customers": {
+          "title": "No customers yet",
+          "description": "When customers click 'Show Number' or 'Chat via Zalo' on your listings, they will appear here."
+        },
+        "listings": {
+          "title": "No listings with interactions",
+          "description": "Listings with customer interactions will appear here."
+        }
       }
     }
+  },
+  "paymentMethodDialog": {
+    "title": "Payment Method",
+    "description": "Select your preferred payment method",
+    "vnpay": "VNPAY",
+    "momo": "MoMo Wallet",
+    "paypal": "PayPal",
+    "zalopay": "ZaloPay"
+  },
+  "pushDetailsPage": {
+    "title": "Push Packages",
+    "description": "Choose the right push package to increase visibility for your listings",
+    "quantity": "Quantity",
+    "pricePerPush": "Price per push",
+    "totalPrice": "Total price",
+    "discount": "Discount",
+    "savings": "Savings",
+    "buyNow": "Buy now"
   }
 }

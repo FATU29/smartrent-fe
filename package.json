@@ -5,11 +5,14 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:check": "next build --no-lint",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "i18n:check": "node scripts/check-i18n-keys.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "pre-commit": "npm run typecheck && npm run i18n:check",
     "prepare": "husky",
     "test": "echo \"No tests specified\" && exit 0"
   },
@@ -27,6 +30,8 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@tanstack/react-query": "^5.90.5",
+    "@tanstack/react-query-devtools": "^5.90.2",
     "axios": "^1.11.0",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
@@ -77,8 +82,11 @@
   },
   "lint-staged": {
     "**/*.{ts,tsx}": [
-      "npm run lint",
-      "npm run format"
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/*.{js,jsx,json,css,scss,md}": [
+      "prettier --write"
     ]
   }
 }
