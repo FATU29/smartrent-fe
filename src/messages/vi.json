@@ -1514,5 +1514,127 @@
     "discount": "Giảm giá",
     "savings": "Tiết kiệm",
     "buyNow": "Mua ngay"
+  },
+  "apartmentDetail": {
+    "title": "Chi tiết bất động sản",
+    "breadcrumb": {
+      "home": "Bán",
+      "sell": "Bán"
+    },
+    "actions": {
+      "back": "Quay lại",
+      "save": "Lưu tin",
+      "saved": "Đã lưu",
+      "compare": "So sánh",
+      "share": "Chia sẻ",
+      "export": "Xuất PDF",
+      "call": "Gọi điện",
+      "message": "Nhắn tin",
+      "chatZalo": "Chat qua Zalo",
+      "showPhone": "Hiện số"
+    },
+    "property": {
+      "price": "Khoảng giá",
+      "pricePerSqm": "tr/m²",
+      "pricePerMonth": "/ tháng",
+      "area": "Diện tích",
+      "bedrooms": "Phòng ngủ",
+      "bathrooms": "Phòng tắm",
+      "floors": "Số tầng",
+      "frontWidth": "Mặt tiền",
+      "roadWidth": "Đường vào",
+      "legalDocuments": "Pháp lý",
+      "direction": "Hướng",
+      "furnishing": "Nội thất",
+      "views": "lượt xem",
+      "posted": "Đăng",
+      "description": "Mô tả",
+      "amenities": "Tiện ích",
+      "smartPrice": {
+        "title": "Đánh giá giá thông minh",
+        "description": "AI so sánh dữ liệu thị trường để giúp bạn quyết định.",
+        "button": "Đánh giá giá AI",
+        "score": "Điểm"
+      }
+    },
+    "sections": {
+      "features": "Đặc điểm bất động sản",
+      "description": "Thông tin mô tả",
+      "priceHistory": "Lịch sử giá bán nhà riêng tại {district}",
+      "location": "Xem trên bản đồ",
+      "metadata": "Thông tin bổ sung",
+      "similarProperties": "Bất động sản dành cho bạn",
+      "recentlyViewed": "Tin đăng đã xem"
+    },
+    "priceHistory": {
+      "title": "Lịch sử giá bán nhà riêng tại {district}",
+      "simpleTitle": "Lịch sử giá",
+      "noHistory": "Chưa có lịch sử giá",
+      "tabs": {
+        "buy": "Mua bán",
+        "rent": "Cho thuê"
+      },
+      "period": {
+        "1year": "1 năm",
+        "2years": "2 năm",
+        "5years": "5 năm"
+      },
+      "increase": "Giá bán đã tăng trong {period}",
+      "increaseWithTime": "Giá bán đã tăng trong {period} qua {timeRange}",
+      "current": "{price} tr/m²",
+      "average": "Giá bán phổ biến nhất",
+      "highest": "Giá phổ biến {period} là cao nhất trong {years} năm qua",
+      "disclaimer": "Dữ liệu giá được tổng hợp và xử lý từ các tin đăng trên trang Batdongsan.com.vn. Bạn hãy lưu ý về tin đăng nằm ngoài khoảng giá chúng tôi gợi ý và xác minh thêm thông tin trước khi giao dịch.",
+      "chartLabels": {
+        "highest": "Giá cao nhất",
+        "average": "Giá phổ biến nhất",
+        "lowest": "Giá thấp nhất",
+        "searching": "Giá tin đang xem: ~{price} tr/m²"
+      },
+      "statistics": {
+        "title": "Thống kê giá",
+        "minPrice": "Giá thấp nhất",
+        "maxPrice": "Giá cao nhất",
+        "avgPrice": "Giá trung bình",
+        "totalChanges": "Tổng thay đổi",
+        "priceIncreases": "Tăng giá",
+        "priceDecreases": "Giảm giá",
+        "times": "lần",
+        "priceUnit": "tr/m²"
+      }
+    },
+    "seller": {
+      "title": "Thông tin người bán",
+      "viewMore": "Xem thêm {count} tin khác",
+      "professionalAccount": "X2 hiệu quả hiển thị cùng tài khoản Môi giới chuyên nghiệp.",
+      "registerFree": "Đăng ký miễn phí",
+      "role": {
+        "owner": "Chủ nhà",
+        "agent": "Môi giới",
+        "broker": "Môi giới"
+      }
+    },
+    "metadata": {
+      "postDate": "Ngày đăng",
+      "expiryDate": "Ngày hết hạn",
+      "listingType": "Loại tin",
+      "listingId": "Mã tin"
+    },
+    "propertyCard": {
+      "verified": "XÁC THỰC",
+      "vip": "VIP",
+      "images": "{count} ảnh"
+    },
+    "map": {
+      "viewLarger": "Xem bản đồ lớn hơn",
+      "openInGoogleMaps": "Mở trên Google Maps"
+    },
+    "imageSlider": {
+      "noMediaAvailable": "Không có hình ảnh",
+      "videoTour": "Video giới thiệu",
+      "image": "Hình ảnh",
+      "video": "Video",
+      "of": "/"
+    }
   }
 }

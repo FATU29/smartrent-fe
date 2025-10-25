@@ -1513,5 +1513,127 @@
     "discount": "Discount",
     "savings": "Savings",
     "buyNow": "Buy now"
+  },
+  "apartmentDetail": {
+    "title": "Property Details",
+    "breadcrumb": {
+      "home": "Sell",
+      "sell": "Sell"
+    },
+    "actions": {
+      "back": "Back",
+      "save": "Save",
+      "saved": "Saved",
+      "compare": "Compare",
+      "share": "Share",
+      "export": "Export PDF",
+      "call": "Call",
+      "message": "Message",
+      "chatZalo": "Chat via Zalo",
+      "showPhone": "Show phone"
+    },
+    "property": {
+      "price": "Price Range",
+      "pricePerSqm": "per m²",
+      "pricePerMonth": "/ month",
+      "area": "Area",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "floors": "Floors",
+      "frontWidth": "Front Width",
+      "roadWidth": "Road Width",
+      "legalDocuments": "Legal Documents",
+      "direction": "Direction",
+      "furnishing": "Furnishing",
+      "views": "views",
+      "posted": "Posted",
+      "description": "Description",
+      "amenities": "Amenities",
+      "smartPrice": {
+        "title": "Smart Price Evaluation",
+        "description": "AI compares market data to help you decide.",
+        "button": "AI Price Evaluation",
+        "score": "Score"
+      }
+    },
+    "sections": {
+      "features": "Property Features",
+      "description": "Description",
+      "priceHistory": "Price History for {district}",
+      "location": "View on Map",
+      "metadata": "Additional Information",
+      "similarProperties": "Similar Properties",
+      "recentlyViewed": "Recently Viewed"
+    },
+    "priceHistory": {
+      "title": "Price History for Houses in {district}",
+      "simpleTitle": "Price History",
+      "noHistory": "No price history available",
+      "tabs": {
+        "buy": "Buy & Sell",
+        "rent": "Rent"
+      },
+      "period": {
+        "1year": "1 year",
+        "2years": "2 years",
+        "5years": "5 years"
+      },
+      "increase": "Price has increased in {period}",
+      "increaseWithTime": "Price has increased in {period} from {timeRange}",
+      "current": "{price} per m²",
+      "average": "Most common selling price",
+      "highest": "Common price in {period} is highest in {years} years",
+      "disclaimer": "Price data is aggregated and processed from listings on Batdongsan.com.vn. Please note listings outside our suggested price range and verify information before transacting.",
+      "chartLabels": {
+        "highest": "Highest price",
+        "average": "Most common price",
+        "lowest": "Lowest price",
+        "searching": "Current listing price: ~{price} per m²"
+      },
+      "statistics": {
+        "title": "Price Statistics",
+        "minPrice": "Lowest price",
+        "maxPrice": "Highest price",
+        "avgPrice": "Average price",
+        "totalChanges": "Total changes",
+        "priceIncreases": "Price increases",
+        "priceDecreases": "Price decreases",
+        "times": "times",
+        "priceUnit": "per m²"
+      }
+    },
+    "seller": {
+      "title": "Seller Information",
+      "viewMore": "View {count} more listings",
+      "professionalAccount": "X2 display effectiveness with professional agent account.",
+      "registerFree": "Register for free",
+      "role": {
+        "owner": "Owner",
+        "agent": "Agent",
+        "broker": "Broker"
+      }
+    },
+    "metadata": {
+      "postDate": "Post Date",
+      "expiryDate": "Expiry Date",
+      "listingType": "Listing Type",
+      "listingId": "Listing ID"
+    },
+    "propertyCard": {
+      "verified": "VERIFIED",
+      "vip": "VIP",
+      "images": "{count} photos"
+    },
+    "map": {
+      "viewLarger": "View larger map",
+      "openInGoogleMaps": "Open in Google Maps"
+    },
+    "imageSlider": {
+      "noMediaAvailable": "No images available",
+      "videoTour": "Video Tour",
+      "image": "Image",
+      "video": "Video",
+      "of": "/"
+    }
   }
 }

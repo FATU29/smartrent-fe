@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import {
@@ -22,75 +23,44 @@ import {
   Zap,
 } from 'lucide-react'
 import { ApartmentDetail } from '@/types/apartmentDetail.types'
+import { formatByLocale } from '@/utils/currency/convert'
 
 interface ApartmentInfoProps {
   apartment: ApartmentDetail
   onAIPriceEvaluation?: () => void
 }
 
+const stripTrailingDong = (value: string): string =>
+  value.endsWith('₫') ? value.slice(0, -1).trimEnd() : value
+
+const AMENITY_ICON_RULES: Array<{
+  patterns: string[]
+  Icon: React.ElementType
+}> = [
+  { patterns: ['wifi', 'internet'], Icon: Wifi },
+  { patterns: ['parking', 'garage'], Icon: Car },
+  { patterns: ['security', 'safe'], Icon: Shield },
+  { patterns: ['pool', 'swimming'], Icon: Waves },
+  { patterns: ['gym', 'fitness'], Icon: Dumbbell },
+  { patterns: ['elevator', 'lift'], Icon: Building },
+  { patterns: ['air', 'conditioning'], Icon: Wind },
+  { patterns: ['balcony'], Icon: Square },
+  { patterns: ['pet'], Icon: Dog },
+  { patterns: ['laundry'], Icon: Zap },
+]
+
 const ApartmentInfo: React.FC<ApartmentInfoProps> = ({
   apartment,
   onAIPriceEvaluation,
 }) => {
-  const formatPrice = (price: number, currency: string) => {
-    if (currency === 'VND') {
-      return new Intl.NumberFormat('vi-VN').format(price) + ' VND / tháng'
-    }
-    return (
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency,
-      }).format(price) + ' / month'
-    )
-  }
-
-  const formatPriceIncrease = (
-    increase: { amount: number; percentage: number },
-    currency: string,
-  ) => {
-    const formattedAmount =
-      currency === 'VND'
-        ? new Intl.NumberFormat('vi-VN').format(increase.amount)
-        : new Intl.NumberFormat('en-US').format(increase.amount)
-
-    return `+${formattedAmount} ${currency} (${increase.percentage}%)`
-  }
-
+  const t = useTranslations('apartmentDetail.property')
   const getAmenityIcon = (amenity: string) => {
-    const lowerAmenity = amenity.toLowerCase()
-
-    if (lowerAmenity.includes('wifi') || lowerAmenity.includes('internet')) {
-      return <Wifi className='w-5 h-5' />
-    }
-    if (lowerAmenity.includes('parking') || lowerAmenity.includes('garage')) {
-      return <Car className='w-5 h-5' />
-    }
-    if (lowerAmenity.includes('security') || lowerAmenity.includes('safe')) {
-      return <Shield className='w-5 h-5' />
-    }
-    if (lowerAmenity.includes('pool') || lowerAmenity.includes('swimming')) {
-      return <Waves className='w-5 h-5' />
-    }
-    if (lowerAmenity.includes('gym') || lowerAmenity.includes('fitness')) {
-      return <Dumbbell className='w-5 h-5' />
-    }
-    if (lowerAmenity.includes('elevator') || lowerAmenity.includes('lift')) {
-      return <Building className='w-5 h-5' />
-    }
-    if (lowerAmenity.includes('air') || lowerAmenity.includes('conditioning')) {
-      return <Wind className='w-5 h-5' />
-    }
-    if (lowerAmenity.includes('balcony')) {
-      return <Square className='w-5 h-5' />
-    }
-    if (lowerAmenity.includes('pet')) {
-      return <Dog className='w-5 h-5' />
-    }
-    if (lowerAmenity.includes('laundry')) {
-      return <Zap className='w-5 h-5' />
-    }
-
-    return <Heart className='w-5 h-5' />
+    const lower = amenity.toLowerCase()
+    const matched = AMENITY_ICON_RULES.find(({ patterns }) =>
+      patterns.some((p) => lower.includes(p)),
+    )
+    const Icon = matched?.Icon ?? Heart
+    return <Icon className='w-5 h-5' />
   }
 
   return (
@@ -116,10 +86,14 @@ const ApartmentInfo: React.FC<ApartmentInfoProps> = ({
           <div className='flex items-center space-x-5'>
             <div className='flex items-center'>
               <Eye className='w-4 h-4 mr-1.5' />
-              <span className='font-medium'>{apartment.views || 0} views</span>
+              <span className='font-medium'>
+                {apartment.views || 0} {t('views')}
+              </span>
             </div>
             {apartment.postDate && (
-              <span className='font-medium'>Posted {apartment.postDate}</span>
+              <span className='font-medium'>
+                {t('posted')} {apartment.postDate}
+              </span>
             )}
           </div>
         </div>
@@ -132,16 +106,30 @@ const ApartmentInfo: React.FC<ApartmentInfoProps> = ({
             variant='h2'
             className='text-2xl md:text-3xl font-bold text-primary'
           >
-            {formatPrice(apartment.price, apartment.currency)}
+            {apartment.currency === 'VND'
+              ? formatByLocale(apartment.price, 'vi-VN') +
+                ' ' +
+                t('pricePerMonth')
+              : new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: apartment.currency,
+                }).format(apartment.price) +
+                ' ' +
+                t('pricePerMonth')}
           </Typography>
           {apartment.priceIncrease && (
             <div className='flex items-center text-red-600'>
               <TrendingUp className='w-4 h-4 mr-1.5' />
               <Typography variant='small' className='font-semibold'>
-                {formatPriceIncrease(
-                  apartment.priceIncrease,
-                  apartment.currency,
-                )}
+                +
+                {apartment.currency === 'VND'
+                  ? stripTrailingDong(
+                      formatByLocale(apartment.priceIncrease.amount, 'vi-VN'),
+                    )
+                  : new Intl.NumberFormat('en-US').format(
+                      apartment.priceIncrease.amount,
+                    )}{' '}
+                {apartment.currency} ({apartment.priceIncrease.percentage}%)
               </Typography>
             </div>
           )}
@@ -155,26 +143,26 @@ const ApartmentInfo: React.FC<ApartmentInfoProps> = ({
                 <div className='flex items-center space-x-2.5 mb-3'>
                   <Sparkles className='w-5 h-5' />
                   <Typography variant='h6' className='font-semibold text-white'>
-                    Smart Price Evaluation
+                    {t('smartPrice.title')}
                   </Typography>
                 </div>
                 <Typography
                   variant='small'
                   className='text-purple-100 mb-4 leading-relaxed'
                 >
-                  AI compares market data to help you decide.
+                  {t('smartPrice.description')}
                 </Typography>
                 <Button
                   variant='secondary'
                   className='bg-white/20 hover:bg-white/30 text-white border-white/20 font-medium'
                   onClick={onAIPriceEvaluation}
                 >
-                  AI Price Evaluation
+                  {t('smartPrice.button')}
                 </Button>
               </div>
               <div className='text-right ml-4'>
                 <Typography variant='small' className='text-purple-100 mb-1'>
-                  Score
+                  {t('smartPrice.score')}
                 </Typography>
                 <Typography variant='h5' className='font-bold text-white'>
                   {apartment.smartPriceScore}/10
@@ -193,7 +181,7 @@ const ApartmentInfo: React.FC<ApartmentInfoProps> = ({
             {apartment.area}m²
           </Typography>
           <Typography variant='small' className='text-muted-foreground'>
-            Area
+            {t('area')}
           </Typography>
         </div>
 
@@ -203,7 +191,7 @@ const ApartmentInfo: React.FC<ApartmentInfoProps> = ({
             {apartment.bedrooms}
           </Typography>
           <Typography variant='small' className='text-muted-foreground'>
-            Bedrooms
+            {t('bedrooms')}
           </Typography>
         </div>
 
@@ -213,7 +201,7 @@ const ApartmentInfo: React.FC<ApartmentInfoProps> = ({
             {apartment.bathrooms}
           </Typography>
           <Typography variant='small' className='text-muted-foreground'>
-            Bathrooms
+            {t('bathrooms')}
           </Typography>
         </div>
 
@@ -224,7 +212,7 @@ const ApartmentInfo: React.FC<ApartmentInfoProps> = ({
               {apartment.direction}
             </Typography>
             <Typography variant='small' className='text-muted-foreground'>
-              Direction
+              {t('direction')}
             </Typography>
           </div>
         )}
@@ -234,7 +222,7 @@ const ApartmentInfo: React.FC<ApartmentInfoProps> = ({
       {apartment.fullDescription && (
         <div className='space-y-3'>
           <Typography variant='h5' className='font-semibold'>
-            Description
+            {t('description')}
           </Typography>
           <Typography
             variant='p'
@@ -249,7 +237,7 @@ const ApartmentInfo: React.FC<ApartmentInfoProps> = ({
       {apartment.amenities && apartment.amenities.length > 0 && (
         <div className='space-y-3'>
           <Typography variant='h5' className='font-semibold'>
-            Amenities
+            {t('amenities')}
           </Typography>
           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3'>
             {apartment.amenities.map((amenity, index) => (
