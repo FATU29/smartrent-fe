@@ -8,6 +8,7 @@ import {
   SimilarProperty,
   mockApartmentDetail,
   mockSimilarProperties,
+  mockRecentlyViewed,
 } from '@/types/apartmentDetail.types'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 
@@ -16,49 +17,48 @@ import SeoHead from '@/components/atoms/seo/SeoHead'
 interface ApartmentDetailPageProps {
   apartment?: ApartmentDetail
   similarProperties?: SimilarProperty[]
-  onBack?: () => void
-  onSave?: () => void
-  onCompare?: () => void
-  onShare?: () => void
+  recentlyViewed?: SimilarProperty[]
   onExport?: () => void
   onCall?: () => void
-  onMessage?: () => void
+  onChatZalo?: () => void
   onPlayVideo?: () => void
-  onAIPriceEvaluation?: () => void
   onSimilarPropertyClick?: (property: SimilarProperty) => void
 }
 
 const ApartmentDetailPage: NextPageWithLayout<ApartmentDetailPageProps> = ({
   apartment = mockApartmentDetail,
   similarProperties = mockSimilarProperties,
-  onBack,
-  onSave,
-  onCompare,
-  onShare,
+  recentlyViewed = mockRecentlyViewed,
   onExport,
   onCall,
-  onMessage,
+  onChatZalo,
   onPlayVideo,
-  onAIPriceEvaluation,
   onSimilarPropertyClick,
 }) => {
   const router = useRouter()
 
-  const handleBack = () => {
-    router.back()
-    onBack?.()
+  const handleSimilarPropertyClick = (property: SimilarProperty) => {
+    router.push(`/apartment-detail/${property.id}`)
+    onSimilarPropertyClick?.(property)
   }
 
-  const handleSimilarPropertyClick = (property: SimilarProperty) => {
-    router.push(`/apartment-detail?id=${property.id}`)
-    onSimilarPropertyClick?.(property)
+  const handleCall = () => {
+    // Show full phone number logic
+    onCall?.()
+  }
+
+  const handleChatZalo = () => {
+    // Open Zalo chat
+    onChatZalo?.()
   }
 
   return (
     <>
       <SeoHead
         title={`${apartment.title} – SmartRent`}
-        description={apartment.description || 'Chi tiết căn hộ trên SmartRent'}
+        description={
+          apartment.description || 'Chi tiết bất động sản trên SmartRent'
+        }
         openGraph={{
           type: 'article',
           images: (apartment.images || []).slice(0, 1).map((url) => ({ url })),
@@ -67,15 +67,11 @@ const ApartmentDetailPage: NextPageWithLayout<ApartmentDetailPageProps> = ({
       <DetailPostTemplate
         apartment={apartment}
         similarProperties={similarProperties}
-        onBack={handleBack}
-        onSave={onSave}
-        onCompare={onCompare}
-        onShare={onShare}
+        recentlyViewed={recentlyViewed}
         onExport={onExport}
-        onCall={onCall}
-        onMessage={onMessage}
+        onCall={handleCall}
+        onChatZalo={handleChatZalo}
         onPlayVideo={onPlayVideo}
-        onAIPriceEvaluation={onAIPriceEvaluation}
         onSimilarPropertyClick={handleSimilarPropertyClick}
       />
     </>

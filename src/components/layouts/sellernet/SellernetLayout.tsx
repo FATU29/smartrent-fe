@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Building2, X } from 'lucide-react'
 import VerticalNav, {
   type VerticalNavItem,
-} from '@/components/molecules/vertical-nav/VerticalNav'
+} from '@/components/molecules/verticalNav/VerticalNav'
 import MainLayout from '@/components/layouts/MainLayout'
 import { SELLERNET_NAV, SellernetNavItem } from './index.helper'
 import { NAV_ITEMS } from '@/components/layouts/sellerLayout/index.helper'
