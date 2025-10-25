@@ -9,7 +9,7 @@ import { NAV_ITEMS } from './index.helper'
 import { SELLERNET_NAV } from '@/components/layouts/sellernet/index.helper'
 import VerticalNav, {
   type VerticalNavItem as GenericVerticalNavItem,
-} from '@/components/molecules/vertical-nav/VerticalNav'
+} from '@/components/molecules/verticalNav/VerticalNav'
 import MobileNavItem from '@/components/atoms/nav/MobileNavItem'
 import MobileNavCenterAction from '@/components/atoms/nav/MobileNavCenterAction'
 
