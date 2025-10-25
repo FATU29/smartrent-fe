@@ -7,3 +7,11 @@ export { RankDisplay } from './rank-display'
 export { StatsDisplay } from './stats-display'
 export { VerificationBadge } from './verification-badge'
 export { LocationSwitch } from './locationSwitch'
+export {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from './chart'
+export type { ChartConfig } from './chart'

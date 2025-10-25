@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import classNames from 'classnames'
-import { Card } from '@/components/atoms/card'
+import { Card, CardContent } from '@/components/atoms/card'
 import { Badge } from '@/components/atoms/badge'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
@@ -48,16 +48,12 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   const { language } = useSwitchLanguage()
   const [isFavorite, setIsFavorite] = useState(false)
 
-  // Unified price formatter: if language=en convert VND->USD else show VND with grouping
   const renderPrice = (price: number, currency: string) => {
-    // Assume backend sends VND numeric + currency code like 'VND'. If already USD and language=en, just format.
     const isVnd = currency === 'VND'
     if (isVnd) {
       const formatted = formatByLocale(price, language)
-      // formatByLocale already adds symbol & (for vi) suffix ₫
       return formatted + (language === 'vi' ? '/tháng' : '/month')
     }
-    // Fallback: non-VND currency keep original style with Intl
     const intl = new Intl.NumberFormat(language === 'en' ? 'en-US' : 'vi-VN', {
       style: 'currency',
       currency,
@@ -94,7 +90,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
     <TooltipProvider delayDuration={0}>
       <Card
         className={classNames(
-          'group cursor-pointer hover:shadow-lg transition-shadow duration-300 flex flex-col',
+          'group cursor-pointer transition-all duration-300 flex flex-col overflow-hidden',
           className,
         )}
         onClick={handleClick}
@@ -127,19 +123,21 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             />
           </Button>
 
-          <div className='absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-2 z-10'>
-            {property.verified && (
-              <Badge className='bg-green-500 text-white text-xs px-2 py-1 rounded-md shadow-sm'>
-                ✓ {t('homePage.property.verified')}
-              </Badge>
-            )}
-            {property.virtual_tour && (
-              <Badge className='bg-blue-500 text-white text-xs px-2 py-1 rounded-md shadow-sm flex items-center gap-1'>
-                <Video className='w-3 h-3' />
-                {t('homePage.property.video')}
-              </Badge>
-            )}
-          </div>
+          {(property.verified || property.virtual_tour) && (
+            <div className='absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-2 z-10'>
+              {property.verified && (
+                <Badge className='bg-green-500 text-white text-xs px-2 py-1 rounded-md shadow-sm'>
+                  ✓ {t('homePage.property.verified')}
+                </Badge>
+              )}
+              {property.virtual_tour && (
+                <Badge className='bg-blue-500 text-white text-xs px-2 py-1 rounded-md shadow-sm flex items-center gap-1'>
+                  <Video className='w-3 h-3' />
+                  {t('homePage.property.video')}
+                </Badge>
+              )}
+            </div>
+          )}
 
           {property.featured && (
             <Badge className='absolute top-2 right-10 sm:top-3 sm:right-12 bg-yellow-500 text-white text-xs px-2 py-1 rounded-md shadow-sm flex items-center gap-1 z-10'>
@@ -149,37 +147,35 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           )}
         </div>
 
-        <div className='p-3 sm:p-4 space-y-2 sm:space-y-3 flex-1 flex flex-col'>
-          <div className='space-y-1.5 sm:space-y-2'>
-            <Typography
-              variant='h6'
-              className='line-clamp-2 text-sm sm:text-base text-foreground group-hover:text-primary transition-colors duration-200 leading-tight'
-            >
-              {property.title}
-            </Typography>
+        <CardContent className='p-3 sm:p-4 space-y-2 sm:space-y-3 flex-1 flex flex-col'>
+          <Typography
+            variant='h6'
+            className='line-clamp-2 text-sm sm:text-base text-foreground group-hover:text-primary transition-colors duration-200 leading-tight'
+          >
+            {property.title}
+          </Typography>
 
-            <div className='flex items-center justify-between'>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className='flex items-center text-xs sm:text-sm text-muted-foreground cursor-help flex-1 min-w-0'>
-                    <MapPin className='w-3 h-3 mr-1 flex-shrink-0' />
-                    <span className='truncate'>{fullAddress}</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side='top' className='max-w-xs z-50'>
-                  <p className='break-words'>{fullAddress}</p>
-                </TooltipContent>
-              </Tooltip>
-
-              {property.distance && (
-                <div className='flex items-center text-xs text-muted-foreground ml-2 flex-shrink-0'>
-                  <Navigation className='w-3 h-3 mr-1' />
-                  <span>
-                    {property.distance} {t('homePage.property.distance')}
-                  </span>
+          <div className='flex items-center justify-between gap-2'>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className='flex items-center text-xs sm:text-sm text-muted-foreground cursor-help flex-1 min-w-0'>
+                  <MapPin className='w-3 h-3 mr-1 flex-shrink-0' />
+                  <span className='truncate'>{fullAddress}</span>
                 </div>
-              )}
-            </div>
+              </TooltipTrigger>
+              <TooltipContent side='top' className='max-w-xs z-50'>
+                <p className='break-words'>{fullAddress}</p>
+              </TooltipContent>
+            </Tooltip>
+
+            {property.distance && (
+              <div className='flex items-center text-xs text-muted-foreground flex-shrink-0'>
+                <Navigation className='w-3 h-3 mr-1' />
+                <span>
+                  {property.distance} {t('homePage.property.distance')}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className='flex items-center justify-between'>
@@ -285,7 +281,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               )}
             </div>
           )}
-        </div>
+        </CardContent>
       </Card>
     </TooltipProvider>
   )
