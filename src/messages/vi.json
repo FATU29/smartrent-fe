@@ -1636,5 +1636,54 @@
       "video": "Video",
       "of": "/"
     }
+  },
+  "propertiesPage": {
+    "listingCount": "Hiện có {count} bất động sản.",
+    "emailNotification": "Nhận email tin mới",
+    "sort": {
+      "default": "Mặc định",
+      "priceAsc": "Giá tăng dần",
+      "priceDesc": "Giá giảm dần",
+      "newest": "Mới nhất",
+      "oldest": "Cũ nhất"
+    },
+    "noProperties": "Không tìm thấy bất động sản",
+    "noPropertiesDescription": "Hãy thử điều chỉnh tiêu chí tìm kiếm của bạn hoặc kiểm tra lại sau để có danh sách mới.",
+    "loadingMore": "Đang tải thêm...",
+    "filter": {
+      "price": {
+        "title": "Lọc theo khoảng giá",
+        "negotiable": "Thỏa thuận",
+        "under1M": "Dưới 1 triệu",
+        "1to3M": "1 - 3 triệu",
+        "3to5M": "3 - 5 triệu",
+        "5to10M": "5 - 10 triệu",
+        "10to40M": "10 - 40 triệu",
+        "40to70M": "40 - 70 triệu",
+        "70to100M": "70 - 100 triệu",
+        "over100M": "Trên 100 triệu"
+      },
+      "area": {
+        "title": "Lọc theo diện tích",
+        "under30": "Dưới 30 m²",
+        "30to50": "30 - 50 m²",
+        "50to80": "50 - 80 m²",
+        "80to100": "80 - 100 m²",
+        "100to150": "100 - 150 m²",
+        "150to200": "150 - 200 m²",
+        "200to250": "200 - 250 m²",
+        "250to300": "250 - 300 m²",
+        "300to500": "300 - 500 m²",
+        "over500": "Trên 500 m²"
+      },
+      "bedroom": {
+        "title": "Lọc theo số phòng ngủ",
+        "1": "1 phòng ngủ",
+        "2": "2 phòng ngủ",
+        "3": "3 phòng ngủ",
+        "4": "4 phòng ngủ",
+        "5plus": "5+ phòng ngủ"
+      }
+    }
   }
 }

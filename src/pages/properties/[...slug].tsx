@@ -10,7 +10,7 @@ import {
   getInitialProperties,
 } from '@/api/services/property.service'
 import { PropertyCard } from '@/api/types/property.type'
-import { GetStaticProps } from 'next'
+import { GetStaticProps, GetStaticPaths } from 'next'
 import LocationProvider from '@/contexts/location'
 
 interface ResidentialPropertiesPageProps {
@@ -46,6 +46,14 @@ ResidentialPropertiesPage.getLayout = function getLayout(
 }
 
 export default ResidentialPropertiesPage
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  // Return empty paths array with blocking fallback to accept all paths dynamically
+  return {
+    paths: [],
+    fallback: 'blocking', // All paths will be generated on-demand
+  }
+}
 
 export const getStaticProps: GetStaticProps = async () => {
   const initialData = await getInitialProperties()
