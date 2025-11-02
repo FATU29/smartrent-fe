@@ -40,26 +40,31 @@ function createClientAxiosInstance(
 }
 
 export const instanceClientAxios = createClientAxiosInstance({
-  baseURL: ENV.URL_API_BASE,
   withCredentials: true,
 })
 
 export const api = {
-  get: <T = any>(url: string, config?: CustomAxiosRequestConfig) =>
+  get: <T = unknown>(url: string, config?: CustomAxiosRequestConfig) =>
     apiRequest<T>({ ...config, method: 'GET', url }),
 
-  post: <T = any>(url: string, data?: any, config?: CustomAxiosRequestConfig) =>
-    apiRequest<T>({ ...config, method: 'POST', url, data }),
-
-  put: <T = any>(url: string, data?: any, config?: CustomAxiosRequestConfig) =>
-    apiRequest<T>({ ...config, method: 'PUT', url, data }),
-
-  patch: <T = any>(
+  post: <T = unknown>(
     url: string,
-    data?: any,
+    data?: unknown,
+    config?: CustomAxiosRequestConfig,
+  ) => apiRequest<T>({ ...config, method: 'POST', url, data }),
+
+  put: <T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: CustomAxiosRequestConfig,
+  ) => apiRequest<T>({ ...config, method: 'PUT', url, data }),
+
+  patch: <T = unknown>(
+    url: string,
+    data?: unknown,
     config?: CustomAxiosRequestConfig,
   ) => apiRequest<T>({ ...config, method: 'PATCH', url, data }),
 
-  delete: <T = any>(url: string, config?: CustomAxiosRequestConfig) =>
+  delete: <T = unknown>(url: string, config?: CustomAxiosRequestConfig) =>
     apiRequest<T>({ ...config, method: 'DELETE', url }),
 }

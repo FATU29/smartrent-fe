@@ -12,8 +12,18 @@ import type {
   Province,
   ProvinceSimple,
   District,
+  DistrictExtended,
   Ward,
+  WardExtended,
   Street,
+  StreetExtended,
+  Project,
+  NewProvince,
+  NewWard,
+  SearchNewAddressResponse,
+  NewFullAddressResponse,
+  AddressConversionResponse,
+  HealthCheckResponse,
 } from '../types/address.type'
 
 export class AddressService {
@@ -260,6 +270,355 @@ export class AddressService {
     return apiRequest<Street>({
       method: 'GET',
       url: PATHS.ADDRESS.STREET_BY_ID.replace(':streetId', streetId.toString()),
+    })
+  }
+
+  /**
+   * Search wards by name
+   * @param {string} query - Search term
+   * @param {number} [districtId] - Optional district ID to filter by
+   * @returns {Promise<ApiResponse<readonly WardExtended[]>>} Promise resolving to list of wards
+   * @example
+   * const wards = await AddressService.searchWards('Phúc Xá', 1)
+   */
+  static async searchWards(
+    query: string,
+    districtId?: number,
+  ): Promise<ApiResponse<readonly WardExtended[]>> {
+    const params: Record<string, string | number> = { q: query }
+    if (districtId !== undefined) {
+      params.districtId = districtId
+    }
+    return apiRequest<readonly WardExtended[]>({
+      method: 'GET',
+      url: PATHS.ADDRESS.WARD_SEARCH,
+      params,
+    })
+  }
+
+  /**
+   * Search streets by name
+   * @param {string} query - Search term
+   * @param {number} [provinceId] - Optional province ID to filter by
+   * @param {number} [districtId] - Optional district ID to filter by
+   * @returns {Promise<ApiResponse<readonly StreetExtended[]>>} Promise resolving to list of streets
+   * @example
+   * const streets = await AddressService.searchStreets('Nguyễn Trãi', 1, 1)
+   */
+  static async searchStreets(
+    query: string,
+    provinceId?: number,
+    districtId?: number,
+  ): Promise<ApiResponse<readonly StreetExtended[]>> {
+    const params: Record<string, string | number> = { q: query }
+    if (provinceId !== undefined) {
+      params.provinceId = provinceId
+    }
+    if (districtId !== undefined) {
+      params.districtId = districtId
+    }
+    return apiRequest<readonly StreetExtended[]>({
+      method: 'GET',
+      url: PATHS.ADDRESS.STREET_SEARCH,
+      params,
+    })
+  }
+
+  /**
+   * Search addresses in new structure
+   * @param {string} keyword - Search keyword
+   * @param {number} [page=1] - Page number
+   * @param {number} [limit=20] - Items per page (max 100)
+   * @returns {Promise<ApiResponse<SearchNewAddressResponse>>} Promise resolving to search results
+   * @example
+   * const results = await AddressService.searchNewAddress('Hà Nội', 1, 20)
+   */
+  static async searchNewAddress(
+    keyword: string,
+    page: number = 1,
+    limit: number = 20,
+  ): Promise<ApiResponse<SearchNewAddressResponse>> {
+    return apiRequest<SearchNewAddressResponse>({
+      method: 'GET',
+      url: PATHS.ADDRESS.SEARCH_NEW,
+      params: { keyword, page, limit },
+    })
+  }
+
+  /**
+   * Get streets by province ID
+   * @param {number} provinceId - The province ID
+   * @returns {Promise<ApiResponse<readonly StreetExtended[]>>} Promise resolving to list of streets
+   * @example
+   * const streets = await AddressService.getStreetsByProvince(1)
+   */
+  static async getStreetsByProvince(
+    provinceId: number,
+  ): Promise<ApiResponse<readonly StreetExtended[]>> {
+    return apiRequest<readonly StreetExtended[]>({
+      method: 'GET',
+      url: PATHS.ADDRESS.STREETS_BY_PROVINCE.replace(
+        ':provinceId',
+        provinceId.toString(),
+      ),
+    })
+  }
+
+  /**
+   * Get projects by province ID
+   * @param {number} provinceId - The province ID
+   * @returns {Promise<ApiResponse<readonly Project[]>>} Promise resolving to list of projects
+   * @example
+   * const projects = await AddressService.getProjectsByProvince(79)
+   */
+  static async getProjectsByProvince(
+    provinceId: number,
+  ): Promise<ApiResponse<readonly Project[]>> {
+    return apiRequest<readonly Project[]>({
+      method: 'GET',
+      url: PATHS.ADDRESS.PROJECTS_BY_PROVINCE.replace(
+        ':provinceId',
+        provinceId.toString(),
+      ),
+    })
+  }
+
+  /**
+   * Search districts by name
+   * @param {string} query - Search term
+   * @param {number} [provinceId] - Optional province ID to filter by
+   * @returns {Promise<ApiResponse<readonly DistrictExtended[]>>} Promise resolving to list of districts
+   * @example
+   * const districts = await AddressService.searchDistricts('Ba Đình', 1)
+   */
+  static async searchDistricts(
+    query: string,
+    provinceId?: number,
+  ): Promise<ApiResponse<readonly DistrictExtended[]>> {
+    const params: Record<string, string | number> = { q: query }
+    if (provinceId !== undefined) {
+      params.provinceId = provinceId
+    }
+    return apiRequest<readonly DistrictExtended[]>({
+      method: 'GET',
+      url: PATHS.ADDRESS.DISTRICT_SEARCH,
+      params,
+    })
+  }
+
+  /**
+   * Get streets by district ID
+   * @param {number} districtId - The district ID
+   * @returns {Promise<ApiResponse<readonly StreetExtended[]>>} Promise resolving to list of streets
+   * @example
+   * const streets = await AddressService.getStreetsByDistrict(1)
+   */
+  static async getStreetsByDistrict(
+    districtId: number,
+  ): Promise<ApiResponse<readonly StreetExtended[]>> {
+    return apiRequest<readonly StreetExtended[]>({
+      method: 'GET',
+      url: PATHS.ADDRESS.STREETS_BY_DISTRICT.replace(
+        ':districtId',
+        districtId.toString(),
+      ),
+    })
+  }
+
+  /**
+   * Get projects by district ID
+   * @param {number} districtId - The district ID
+   * @returns {Promise<ApiResponse<readonly Project[]>>} Promise resolving to list of projects
+   * @example
+   * const projects = await AddressService.getProjectsByDistrict(769)
+   */
+  static async getProjectsByDistrict(
+    districtId: number,
+  ): Promise<ApiResponse<readonly Project[]>> {
+    return apiRequest<readonly Project[]>({
+      method: 'GET',
+      url: PATHS.ADDRESS.PROJECTS_BY_DISTRICT.replace(
+        ':districtId',
+        districtId.toString(),
+      ),
+    })
+  }
+
+  /**
+   * Get project by ID
+   * @param {number} projectId - The project ID
+   * @returns {Promise<ApiResponse<Project>>} Promise resolving to project data
+   * @example
+   * const project = await AddressService.getProjectById(1)
+   */
+  static async getProjectById(
+    projectId: number,
+  ): Promise<ApiResponse<Project>> {
+    return apiRequest<Project>({
+      method: 'GET',
+      url: PATHS.ADDRESS.PROJECT_BY_ID.replace(
+        ':projectId',
+        projectId.toString(),
+      ),
+    })
+  }
+
+  /**
+   * Search projects by name
+   * @param {string} query - Search term
+   * @param {number} [provinceId] - Optional province ID to filter by
+   * @param {number} [districtId] - Optional district ID to filter by
+   * @returns {Promise<ApiResponse<readonly Project[]>>} Promise resolving to list of projects
+   * @example
+   * const projects = await AddressService.searchProjects('Vinhomes', 79, 769)
+   */
+  static async searchProjects(
+    query: string,
+    provinceId?: number,
+    districtId?: number,
+  ): Promise<ApiResponse<readonly Project[]>> {
+    const params: Record<string, string | number> = { q: query }
+    if (provinceId !== undefined) {
+      params.provinceId = provinceId
+    }
+    if (districtId !== undefined) {
+      params.districtId = districtId
+    }
+    return apiRequest<readonly Project[]>({
+      method: 'GET',
+      url: PATHS.ADDRESS.PROJECT_SEARCH,
+      params,
+    })
+  }
+
+  /**
+   * Get all provinces in new structure (34 provinces)
+   * @param {string} [keyword] - Optional search keyword
+   * @param {number} [page=1] - Page number
+   * @param {number} [limit=20] - Items per page (max 100)
+   * @returns {Promise<ApiResponse<readonly NewProvince[]>>} Promise resolving to list of provinces
+   * @example
+   * const provinces = await AddressService.getNewProvinces('Hà Nội', 1, 20)
+   */
+  static async getNewProvinces(
+    keyword?: string,
+    page: number = 1,
+    limit: number = 34,
+  ): Promise<ApiResponse<readonly NewProvince[]>> {
+    const params: Record<string, string | number> = { page, limit }
+    if (keyword) {
+      params.keyword = keyword
+    }
+    return apiRequest<readonly NewProvince[]>({
+      method: 'GET',
+      url: PATHS.ADDRESS.NEW_PROVINCES,
+      params,
+    })
+  }
+
+  /**
+   * Get wards by province code in new structure
+   * @param {string} provinceCode - The province code
+   * @param {string} [keyword] - Optional search keyword
+   * @param {number} [page=1] - Page number
+   * @param {number} [limit=20] - Items per page (max 100)
+   * @returns {Promise<ApiResponse<readonly NewWard[]>>} Promise resolving to list of wards
+   * @example
+   * const wards = await AddressService.getNewProvinceWards('01', 'Ba Đình', 1, 20)
+   */
+  static async getNewProvinceWards(
+    provinceCode: string,
+    keyword?: string,
+    page: number = 1,
+    limit: number = 20,
+  ): Promise<ApiResponse<readonly NewWard[]>> {
+    const params: Record<string, string | number> = { page, limit }
+    if (keyword) {
+      params.keyword = keyword
+    }
+    return apiRequest<readonly NewWard[]>({
+      method: 'GET',
+      url: PATHS.ADDRESS.NEW_PROVINCE_WARDS.replace(
+        ':provinceCode',
+        provinceCode,
+      ),
+      params,
+    })
+  }
+
+  /**
+   * Get full address information in new structure
+   * @param {string} provinceCode - Province code (required)
+   * @param {string} [wardCode] - Optional ward code
+   * @returns {Promise<ApiResponse<NewFullAddressResponse>>} Promise resolving to full address data
+   * @example
+   * const address = await AddressService.getNewFullAddress('01', '00004')
+   */
+  static async getNewFullAddress(
+    provinceCode: string,
+    wardCode?: string,
+  ): Promise<ApiResponse<NewFullAddressResponse>> {
+    const params: Record<string, string> = { provinceCode }
+    if (wardCode) {
+      params.wardCode = wardCode
+    }
+    return apiRequest<NewFullAddressResponse>({
+      method: 'GET',
+      url: PATHS.ADDRESS.NEW_FULL_ADDRESS,
+      params,
+    })
+  }
+
+  /**
+   * Convert address from new structure to legacy structure
+   * @param {string} provinceCode - New province code
+   * @param {string} wardCode - New ward code
+   * @returns {Promise<ApiResponse<AddressConversionResponse>>} Promise resolving to conversion result
+   * @example
+   * const conversion = await AddressService.convertNewToLegacy('01', '00001')
+   */
+  static async convertNewToLegacy(
+    provinceCode: string,
+    wardCode: string,
+  ): Promise<ApiResponse<AddressConversionResponse>> {
+    return apiRequest<AddressConversionResponse>({
+      method: 'GET',
+      url: PATHS.ADDRESS.CONVERT_NEW_TO_LEGACY,
+      params: { provinceCode, wardCode },
+    })
+  }
+
+  /**
+   * Convert address from legacy structure to new structure
+   * @param {number} provinceId - Legacy province ID
+   * @param {number} districtId - Legacy district ID
+   * @param {number} wardId - Legacy ward ID
+   * @returns {Promise<ApiResponse<AddressConversionResponse>>} Promise resolving to conversion result
+   * @example
+   * const conversion = await AddressService.convertLegacyToNew(1, 1, 1)
+   */
+  static async convertLegacyToNew(
+    provinceId: number,
+    districtId: number,
+    wardId: number,
+  ): Promise<ApiResponse<AddressConversionResponse>> {
+    return apiRequest<AddressConversionResponse>({
+      method: 'GET',
+      url: PATHS.ADDRESS.CONVERT_LEGACY_TO_NEW,
+      params: { provinceId, districtId, wardId },
+    })
+  }
+
+  /**
+   * Health check for Address API
+   * @returns {Promise<ApiResponse<HealthCheckResponse>>} Promise resolving to health check result
+   * @example
+   * const health = await AddressService.healthCheck()
+   */
+  static async healthCheck(): Promise<ApiResponse<HealthCheckResponse>> {
+    return apiRequest<HealthCheckResponse>({
+      method: 'GET',
+      url: PATHS.ADDRESS.HEALTH,
     })
   }
 }

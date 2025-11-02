@@ -1,9 +1,9 @@
-import { AxiosInstance } from 'axios'
+import { AxiosInstance, isAxiosError } from 'axios'
 import { ApiResponse, CustomAxiosRequestConfig } from './types'
 import { instanceClientAxios } from './axiosClient'
 import { logError } from './utils'
 
-export async function apiRequest<T = any>(
+export async function apiRequest<T = unknown>(
   config: CustomAxiosRequestConfig,
   instance: AxiosInstance = instanceClientAxios,
 ): Promise<ApiResponse<T>> {
@@ -13,11 +13,14 @@ export async function apiRequest<T = any>(
       ...response.data,
       success: true,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     logError(error, 'API Request')
+    const data = isAxiosError(error)
+      ? (error.response?.data as Partial<ApiResponse<T>> | undefined)
+      : undefined
     return {
-      ...error?.response?.data,
+      ...(data ?? {}),
       success: false,
-    }
+    } as ApiResponse<T>
   }
 }

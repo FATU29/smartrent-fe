@@ -10,35 +10,92 @@ import { Button } from '@/components/atoms/button'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { ImagePlus, Upload, Images } from 'lucide-react'
+import { MediaService } from '@/api/services'
+import { toast } from 'sonner'
 
 const MAX_IMAGES = 24
 
 const UploadImages: React.FC = () => {
   const t = useTranslations('createPost.sections.media')
-  const { propertyInfo, updatePropertyInfo } = useCreatePost()
+  const {
+    propertyInfo,
+    updatePropertyInfo,
+    setImageUploadProgress,
+    resetImageUploadProgress,
+  } = useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const handleFiles = (files: FileList | null) => {
+  const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return
-    const current = propertyInfo.images
+    const current = propertyInfo?.images || []
     const remaining = Math.max(0, MAX_IMAGES - current.length)
     const slice = Array.from(files).slice(0, remaining)
 
-    const newItems = slice.map((file, idx) => ({
-      id: `${Date.now()}-${idx}-${file.name}`,
-      url: URL.createObjectURL(file),
-      caption: file.name.replace(/\.[^.]+$/, ''),
-      isCover: false,
-    }))
+    if (slice.length === 0) return
 
-    updatePropertyInfo({ images: [...current, ...newItems] })
+    // Initialize global image upload progress
+    setImageUploadProgress({
+      isUploading: true,
+      progress: 0,
+      total: slice.length,
+      currentIndex: 0,
+      error: null,
+      fileName: '',
+    })
+
+    let working = (propertyInfo?.images || []).slice()
+    for (let i = 0; i < slice.length; i++) {
+      const file = slice[i]
+      try {
+        setImageUploadProgress({
+          currentIndex: i + 1,
+          fileName: file.name,
+        })
+
+        const res = await MediaService.upload(
+          { file, mediaType: 'IMAGE' },
+          {
+            onUploadProgress: (e) => {
+              const filePercent = e.total ? e.loaded / e.total : 0
+              const overall = ((i + filePercent) / slice.length) * 100
+              setImageUploadProgress({ progress: overall })
+            },
+          },
+        )
+        if (res?.success && res?.data?.url) {
+          const item = {
+            id: String(res.data.mediaId ?? `${Date.now()}-${file.name}`),
+            url: res.data.url,
+            caption: file.name.replace(/\.[^.]+$/, ''),
+            isCover: false,
+          }
+          working = [...working, item]
+          updatePropertyInfo({ images: working })
+        } else {
+          const msg = res?.message || 'Không thể tải ảnh lên'
+          setImageUploadProgress({ error: msg, isUploading: false })
+          toast.error(msg)
+          break
+        }
+      } catch {
+        const msg = 'Không thể tải ảnh lên'
+        setImageUploadProgress({ error: msg, isUploading: false })
+        toast.error(msg)
+        break
+      }
+    }
+
+    // Complete progress
+    setImageUploadProgress({ progress: 100, isUploading: false })
+    // Auto-hide after short delay
+    setTimeout(() => {
+      resetImageUploadProgress()
+    }, 1200)
   }
-
-  // Removed inline setCover; cover is chosen in dedicated section
 
   const removeImage = (id: string) => {
     updatePropertyInfo({
-      images: propertyInfo.images.filter((i) => i.id !== id),
+      images: (propertyInfo?.images || []).filter((i) => i.id !== id),
     })
   }
 
@@ -96,11 +153,11 @@ const UploadImages: React.FC = () => {
               {t('uploaded.title')}
             </span>
             <span className='text-xs text-gray-500'>
-              {propertyInfo.images.length}/{MAX_IMAGES}
+              {(propertyInfo?.images || []).length}/{MAX_IMAGES}
             </span>
           </div>
           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5'>
-            {propertyInfo.images.map((img) => (
+            {(propertyInfo?.images || []).map((img) => (
               <div
                 key={img.id}
                 className={`group relative rounded-xl border bg-white dark:bg-gray-900 overflow-hidden ${
