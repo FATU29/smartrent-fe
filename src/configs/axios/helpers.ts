@@ -1,5 +1,6 @@
 import { InternalAxiosRequestConfig } from 'axios'
 import { ENV } from '@/constants'
+import { decodeToken } from '@/utils/decode-jwt'
 
 // Helper functions for token management to reduce cognitive complexity
 
@@ -47,6 +48,15 @@ export const applyAuthToken = (
 ) => {
   config.headers = config.headers || {}
   config.headers.Authorization = `Bearer ${accessToken}`
+
+  try {
+    const decoded = decodeToken(accessToken)
+    if (decoded?.user?.userId) {
+      config.headers['userId'] = decoded.user.userId
+    }
+  } catch (error) {
+    console.error('Failed to decode token for userId:', error)
+  }
 }
 
 export const applyDefaultConfig = (config: InternalAxiosRequestConfig) => {

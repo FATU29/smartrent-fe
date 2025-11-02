@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/atoms/select'
+import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface SelectOption {
@@ -38,6 +39,9 @@ export interface SelectDropdownProps {
   icon?: React.ReactNode
   iconPosition?: 'left' | 'right'
 
+  // Loading state
+  loading?: boolean
+
   // Layout
   fullWidth?: boolean
 }
@@ -56,6 +60,7 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
   helperText,
   icon,
   iconPosition = 'left',
+  loading = false,
   fullWidth = true,
 }) => {
   const sizeClasses = {
@@ -110,7 +115,11 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
         )}
 
         {/* Select Component */}
-        <Select value={value} onValueChange={onValueChange} disabled={disabled}>
+        <Select
+          value={value}
+          onValueChange={onValueChange}
+          disabled={disabled || loading}
+        >
           <SelectTrigger
             className={cn(
               'rounded-xl transition-all duration-200 shadow-sm',
@@ -118,12 +127,24 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
               variantClasses[variant],
               icon && iconPosition === 'left' && 'pl-10',
               icon && iconPosition === 'right' && 'pr-10',
+              loading && 'pr-10',
               error && 'border-red-500',
               disabled && 'opacity-50 cursor-not-allowed',
+              loading && 'opacity-70 cursor-wait',
               fullWidth && 'w-full',
             )}
           >
-            <SelectValue placeholder={placeholder} />
+            <SelectValue placeholder={placeholder || 'Select an option...'} />
+            {loading && (
+              <div className='absolute right-3 top-1/2 transform -translate-y-1/2 z-10'>
+                <Loader2
+                  className={cn(
+                    'text-gray-400 animate-spin',
+                    iconSizeClasses[size],
+                  )}
+                />
+              </div>
+            )}
           </SelectTrigger>
 
           <SelectContent>

@@ -40,6 +40,13 @@ export interface PurchaseMembershipRequest {
   readonly returnUrl: string
 }
 
+export interface PurchaseMembershipResponse {
+  readonly paymentUrl: string
+  readonly transactionRef: string
+  readonly amount: number
+  readonly provider: string
+}
+
 export interface MembershipBenefit {
   readonly benefitId: number
   readonly benefitType: BenefitType
@@ -94,8 +101,6 @@ export interface UserMembership {
   readonly createdAt: string
   readonly updatedAt: string
 }
-
-export interface PurchaseMembershipResponse extends UserMembership {}
 
 export type GetPackagesResponse = Membership[]
 

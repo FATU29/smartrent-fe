@@ -61,7 +61,6 @@ export function createAuthRequestInterceptor(
 
     let accessToken = getAccessToken(cookies)
 
-    // Handle expired access token
     if (accessToken && isTokenExpired(accessToken)) {
       console.log('Access token expired, refreshing...')
 
@@ -75,12 +74,10 @@ export function createAuthRequestInterceptor(
       }
     }
 
-    // Apply authentication token
     if (accessToken) {
       applyAuthToken(config, accessToken)
     }
 
-    // Apply default configuration
     applyDefaultConfig(config)
 
     return config
