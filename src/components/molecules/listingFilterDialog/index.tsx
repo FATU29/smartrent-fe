@@ -53,7 +53,7 @@ export const ListingFilterDialog: React.FC<ListingFilterDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='size-full  md:size-fit rounded-none md:rounded-2xl shadow-lg'>
+      <DialogContent className='size-full md:size-[600px] rounded-none md:rounded-2xl shadow-lg'>
         <DialogHeader>
           <DialogTitle>
             {t('seller.listingManagement.filter.title')}

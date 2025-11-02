@@ -1,7 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
+import { useVipTiers } from '@/hooks/useVipTiers'
+import type { VipTier } from '@/api/types/vip-tier.type'
 import { Button } from '@/components/atoms/button'
+import { DatePicker } from '@/components/atoms'
 import {
   Card,
   CardContent,
@@ -9,28 +12,27 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/atoms/card'
-import { Input } from '@/components/atoms/input'
 import { Label } from '@/components/atoms/label'
 import { Typography } from '@/components/atoms/typography'
-import { Calendar, Tag, ChevronRight, Check } from 'lucide-react'
+import {
+  Calendar,
+  Tag,
+  ChevronRight,
+  Check,
+  Loader2,
+  AlertCircle,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { SelectPromotionDialog } from '@/components/molecules/createPostSections/SelectPromotionDialog'
+import type { BenefitType, UserBenefit } from '@/api/types/memembership.type'
 
 interface PackageConfigSectionProps {
   className?: string
 }
 
-interface PackageType {
-  id: string
-  name: string
-  description: string
-  pricePerDay: number
-  icon: string
-  iconBg: string
-}
-
 interface DurationOption {
   days: number
-  pricePerDay: number
+  price: number
 }
 
 const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
@@ -39,64 +41,79 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   const t = useTranslations('createPost.sections.packageConfig')
   const { updatePropertyInfo } = useCreatePost()
 
-  const [selectedPackageId, setSelectedPackageId] = useState<string>('standard')
+  // Fetch VIP tiers using React Query
+  const { data: vipTiers = [], isLoading, isError, error } = useVipTiers()
+
+  const [selectedTierId, setSelectedTierId] = useState<number | null>(null)
   const [selectedDuration, setSelectedDuration] = useState<number>(10)
   const [startDate, setStartDate] = useState<string>('')
+  const [promoOpen, setPromoOpen] = useState(false)
 
-  const packageTypes: PackageType[] = [
-    {
-      id: 'vip-diamond',
-      name: t('packages.vipDiamond.name'),
-      description: t('packages.vipDiamond.description'),
-      pricePerDay: 280000,
-      icon: '💎',
-      iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
-    },
-    {
-      id: 'vip-gold',
-      name: t('packages.vipGold.name'),
-      description: t('packages.vipGold.description'),
-      pricePerDay: 110000,
-      icon: '🥇',
-      iconBg: 'bg-gradient-to-br from-yellow-400 to-orange-500',
-    },
-    {
-      id: 'vip-silver',
-      name: t('packages.vipSilver.name'),
-      description: t('packages.vipSilver.description'),
-      pricePerDay: 50000,
-      icon: '🥈',
-      iconBg: 'bg-gradient-to-br from-cyan-400 to-blue-500',
-    },
-    {
-      id: 'standard',
-      name: t('packages.standard.name'),
-      description: t('packages.standard.description'),
-      pricePerDay: 2700,
-      icon: '📄',
-      iconBg: 'bg-gradient-to-br from-gray-400 to-gray-600',
-    },
-  ]
+  // Auto-select first tier when data loads
+  useEffect(() => {
+    if (vipTiers.length > 0 && selectedTierId === null) {
+      const firstTier = vipTiers[0]
+      setSelectedTierId(firstTier.tierId)
+      updatePropertyInfo({
+        selectedPackageType: firstTier.tierCode,
+        selectedTierId: firstTier.tierId,
+        selectedDuration: 10,
+        packageStartDate: startDate,
+      })
+    }
+  }, [vipTiers, selectedTierId, updatePropertyInfo, startDate])
 
-  const durationOptions: DurationOption[] = [
-    { days: 10, pricePerDay: 2700 },
-    { days: 15, pricePerDay: 2400 },
-    { days: 30, pricePerDay: 2200 },
-  ]
+  const selectedTier = vipTiers.find((t) => t.tierId === selectedTierId)
 
-  const selectedPackage = packageTypes.find((p) => p.id === selectedPackageId)
+  // Get duration options for selected tier
+  const getDurationOptions = (tier: VipTier | undefined): DurationOption[] => {
+    if (!tier) return []
+    return [
+      { days: 10, price: tier.price10Days },
+      { days: 15, price: tier.price15Days },
+      { days: 30, price: tier.price30Days },
+    ]
+  }
+
+  const durationOptions = getDurationOptions(selectedTier)
   const selectedDurationOption = durationOptions.find(
     (d) => d.days === selectedDuration,
   )
-  const totalPrice = selectedDurationOption
-    ? selectedDurationOption.pricePerDay * selectedDuration
-    : 0
+  const totalPrice = selectedDurationOption?.price || 0
 
-  const handlePackageSelect = (packageId: string) => {
-    setSelectedPackageId(packageId)
+  // Icon mapping for tier codes
+  const getTierIcon = (tierCode: string) => {
+    const icons: Record<string, string> = {
+      NORMAL: '📄',
+      SILVER: '🥈',
+      GOLD: '🥇',
+      DIAMOND: '💎',
+    }
+    return icons[tierCode] || '📄'
+  }
+
+  // Icon background mapping
+  const getTierIconBg = (tierCode: string) => {
+    const backgrounds: Record<string, string> = {
+      NORMAL: 'bg-gradient-to-br from-gray-400 to-gray-600',
+      SILVER: 'bg-gradient-to-br from-cyan-400 to-blue-500',
+      GOLD: 'bg-gradient-to-br from-yellow-400 to-orange-500',
+      DIAMOND: 'bg-gradient-to-br from-purple-500 to-pink-500',
+    }
+    return (
+      backgrounds[tierCode] || 'bg-gradient-to-br from-gray-400 to-gray-600'
+    )
+  }
+
+  const handleTierSelect = (tierId: number) => {
+    setSelectedTierId(tierId)
+    // Reset duration to 10 days when switching tiers
+    setSelectedDuration(10)
+    const tier = vipTiers.find((t) => t.tierId === tierId)
     updatePropertyInfo({
-      selectedPackageType: packageId,
-      selectedDuration,
+      selectedPackageType: tier?.tierCode,
+      selectedTierId: tierId,
+      selectedDuration: 10,
       packageStartDate: startDate,
     })
   }
@@ -104,10 +121,69 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   const handleDurationSelect = (days: number) => {
     setSelectedDuration(days)
     updatePropertyInfo({
-      selectedPackageType: selectedPackageId,
+      selectedPackageType: selectedTier?.tierCode,
       selectedDuration: days,
       packageStartDate: startDate,
     })
+  }
+
+  const mapBenefitToTierCode = (type: BenefitType): string | undefined => {
+    switch (type) {
+      case 'POST_STANDARD':
+        return 'NORMAL'
+      case 'POST_SILVER':
+        return 'SILVER'
+      case 'POST_GOLD':
+        return 'GOLD'
+      default:
+        return undefined
+    }
+  }
+
+  const handleApplyPromotion = (benefit: UserBenefit) => {
+    const tierCode = mapBenefitToTierCode(benefit.benefitType as BenefitType)
+    // Try to match vip tier by code to set selectedTierId
+    const tier = vipTiers.find((t) => t.tierCode === tierCode)
+    if (tier) {
+      setSelectedTierId(tier.tierId)
+    }
+    updatePropertyInfo({
+      selectedPackageType: tierCode,
+      selectedTierId: tier?.tierId,
+      selectedDuration: selectedDuration,
+      packageStartDate: startDate,
+      appliedPromotionBenefitId: benefit.userBenefitId,
+      appliedPromotionType: benefit.benefitType,
+      appliedPromotionLabel: benefit.benefitNameDisplay,
+    })
+  }
+
+  if (isLoading) {
+    return (
+      <Card className={cn('border-0 shadow-none', className)}>
+        <CardContent className='flex items-center justify-center py-12'>
+          <Loader2 className='w-8 h-8 animate-spin text-primary' />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (isError) {
+    return (
+      <Card className={cn('border-0 shadow-none', className)}>
+        <CardContent className='flex flex-col items-center justify-center py-12 gap-4'>
+          <AlertCircle className='w-12 h-12 text-destructive' />
+          <Typography variant='muted' className='text-center'>
+            {error instanceof Error
+              ? error.message
+              : 'Failed to load VIP tiers'}
+          </Typography>
+          <Button variant='outline' onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
@@ -128,41 +204,43 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
             <CardTitle className='text-lg'>{t('selectPackageType')}</CardTitle>
           </CardHeader>
           <CardContent className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
-            {packageTypes.map((pkg) => (
+            {vipTiers.map((tier) => (
               <Button
-                key={pkg.id}
+                key={tier.tierId}
                 variant='outline'
-                onClick={() => handlePackageSelect(pkg.id)}
+                onClick={() => handleTierSelect(tier.tierId)}
                 className={cn(
                   'relative h-auto p-5 text-left transition-all hover:shadow-lg flex-col items-center sm:items-start',
-                  selectedPackageId === pkg.id &&
+                  selectedTierId === tier.tierId &&
                     'border-primary bg-primary/5 shadow-md',
                 )}
               >
                 <Card
                   className={cn(
                     'w-12 h-12 rounded-lg flex items-center justify-center text-2xl mb-3 border-0',
-                    pkg.iconBg,
+                    getTierIconBg(tier.tierCode),
                   )}
                 >
-                  <Typography as='span'>{pkg.icon}</Typography>
+                  <Typography as='span'>
+                    {getTierIcon(tier.tierCode)}
+                  </Typography>
                 </Card>
                 <Typography
                   variant='h4'
                   className='font-bold text-base mb-1 text-center sm:text-left break-words w-full'
                 >
-                  {pkg.name}
+                  {tier.tierName}
                 </Typography>
                 <Typography
                   variant='muted'
                   className='text-xs mb-3 text-center sm:text-left break-words w-full'
                 >
-                  {pkg.description}
+                  {tier.tierNameEn}
                 </Typography>
                 <Typography className='font-bold text-lg mt-auto text-center sm:text-left w-full break-words'>
-                  {pkg.pricePerDay.toLocaleString('vi-VN')} đ/{t('perDay')}
+                  {tier.pricePerDay.toLocaleString('vi-VN')} đ/{t('perDay')}
                 </Typography>
-                {selectedPackageId === pkg.id && (
+                {selectedTierId === tier.tierId && (
                   <Card className='absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center border-0 p-0'>
                     <Check className='w-4 h-4 text-primary-foreground' />
                   </Card>
@@ -195,8 +273,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                       {option.days} {t('days')}
                     </Typography>
                     <Typography variant='muted' className='text-sm'>
-                      {option.pricePerDay.toLocaleString('vi-VN')} đ/
-                      {t('perDay')}
+                      {option.price.toLocaleString('vi-VN')} đ
                     </Typography>
                   </CardContent>
                   <Card
@@ -224,14 +301,13 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               <Calendar className='w-4 h-4' />
               {t('startDate')}
             </Label>
-            <Input
-              type='date'
+            <DatePicker
               value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value)
-                updatePropertyInfo({ packageStartDate: e.target.value })
+              onChange={(date) => {
+                setStartDate(date || '')
+                updatePropertyInfo({ packageStartDate: date || '' })
               }}
-              className='w-full'
+              placeholder={t('selectStartDate')}
             />
             {startDate && (
               <Typography variant='muted' className='text-xs'>
@@ -249,25 +325,21 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               <Tag className='w-4 h-4' />
               {t('promotionCode')}
             </Label>
-            <Card className='flex gap-2 border-0 shadow-none p-0'>
-              <Input
-                type='text'
-                placeholder={t('enterPromotionCode')}
-                className='flex-1'
-              />
-              <Button variant='outline' className='px-6'>
-                {t('apply')}
-              </Button>
-            </Card>
             <Button
               variant='link'
               className='text-sm text-primary hover:underline p-0 h-auto flex items-center gap-1'
+              onClick={() => setPromoOpen(true)}
             >
               {t('usePromotion')}
               <ChevronRight className='w-4 h-4' />
             </Button>
           </CardContent>
         </Card>
+        <SelectPromotionDialog
+          open={promoOpen}
+          onOpenChange={setPromoOpen}
+          onApply={handleApplyPromotion}
+        />
 
         {/* Summary - Flex Layout */}
         <Card className='flex flex-col lg:flex-row gap-6 p-6'>
@@ -278,7 +350,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 {t('selectedPackage')}:
               </Typography>
               <Typography className='font-medium text-sm'>
-                {selectedPackage?.name}
+                {selectedTier?.tierName}
               </Typography>
             </Card>
             <Card className='flex justify-between border-0 shadow-none p-0'>

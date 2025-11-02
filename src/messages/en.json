@@ -7,7 +7,9 @@
     "endOfResults": "End of results",
     "new": "New",
     "learnMore": "Learn more",
-    "go_home": "Go Home"
+    "go_home": "Go Home",
+    "reset": "Clear",
+    "selectDate": "Select date"
   },
   "location": {
     "label": "Your Location",
@@ -573,7 +575,17 @@
     "back": "Back",
     "next": "Next",
     "payment": "Payment",
+    "uploadNow": "Upload now",
     "completeCurrentStep": "Please complete this step before continuing",
+    "validation": {
+      "addressRequired": "Address is required",
+      "areaRequired": "Area is required",
+      "priceRequired": "Price is required",
+      "mediaImagesOrYoutube": "Add at least 3 images or a YouTube link",
+      "packageRequired": "Please select a package",
+      "durationRequired": "Please select a duration",
+      "startDateRequired": "Please select a start date"
+    },
     "generateAutomatically": "Generate Automatically",
     "continueToUpload": "Continue to upload",
     "steps": {
@@ -634,11 +646,19 @@
         "perDay": "day",
         "days": "days",
         "startDate": "Start date",
+        "selectStartDate": "Select start date",
         "endDate": "End date",
         "promotionCode": "Promotion",
         "enterPromotionCode": "Post now",
         "apply": "Apply",
-        "usePromotion": "Use 1 promotion",
+        "usePromotion": "Use promotion",
+        "selectPromotion": "Select a promotion",
+        "selectPromotionDesc": "Choose a free posting benefit from your membership",
+        "loadingPromotions": "Loading your promotions...",
+        "noPromotionAvailable": "No promotions available",
+        "applyPromotion": "Use",
+        "remaining": "Remaining: {count}",
+        "close": "Close",
         "summary": "Total amount",
         "selectedPackage": "Package type",
         "duration": "Duration",
@@ -652,6 +672,7 @@
         "edit": "Edit",
         "packageDetails": "Package Details",
         "packageType": "Package Type",
+        "promotionApplied": "Promotion Applied",
         "duration": "Duration",
         "days": "days",
         "startDate": "Start Date",
@@ -691,7 +712,29 @@
         "video": {
           "title": "Video (Optional)",
           "placeholder": "YouTube or TikTok URL...",
-          "help": "Support YouTube and TikTok to showcase your property more vividly"
+          "help": "Support YouTube and TikTok to showcase your property more vividly",
+          "external": {
+            "save": "Save link",
+            "saving": "Saving...",
+            "success": "Video link saved",
+            "error": "Failed to save video link",
+            "uploadedNote": "You have added a YouTube/TikTok link. Remove the link to upload a video."
+          },
+          "upload": {
+            "title": "Upload Video",
+            "button": "Choose video to upload",
+            "uploadButton": "Upload Video",
+            "help": "Supported formats: MP4, WebM, OGG. Maximum size: {maxSize}MB",
+            "invalidType": "Video format is not supported",
+            "tooLarge": "Video size must not exceed {maxSize}MB",
+            "uploading": "Uploading...",
+            "error": "Error uploading video",
+            "success": "Video uploaded successfully!",
+            "retry": "Retry",
+            "previewNote": "Preview video before uploading",
+            "uploadedNote": "You have uploaded a video. Remove the video to enter a YouTube/TikTok link."
+          },
+          "uploadedNote": "You have uploaded a video. Entering a new URL will replace the uploaded video."
         },
         "guidelines": {
           "title": "Photo Guidelines",
@@ -700,9 +743,18 @@
           "normalTitle": "Normal Photos (Recommended)",
           "normalCount": "12-24 photos",
           "do": {
-            "naturalLight": "Shoot in natural light",
-            "tidyRoom": "Tidy the room before shooting",
-            "variousAngles": "Capture multiple angles",
+            "title": "DO",
+            "placeholder": "YouTube or TikTok URL...",
+            "help": "Supports YouTube and TikTok to better showcase your property",
+            "external": {
+              "save": "Save link",
+              "saving": "Saving...",
+              "success": "Video link saved",
+              "error": "Failed to save video link"
+            },
+            "naturalLight": "Shoot with natural light",
+            "tidyRoom": "Tidy up before shooting",
+            "variousAngles": "Shoot from various angles",
             "includeAmenities": "Include both interior and exterior",
             "nightShots": "Include night shots if possible"
           },
@@ -742,6 +794,7 @@
         "hcmc": "HCMC",
         "title": "Property Information",
         "description": "Enter details about your real estate listing",
+        "loading": "Loading...",
         "listingType": "Listing Type",
         "listingTypes": {
           "rent": "For Rent",
@@ -765,6 +818,8 @@
         "dragMarker": "Drag marker to select exact location",
         "searchAddresses": "Search Addresses",
         "interactiveMap": "Interactive Map",
+        "displayAddress": "Display address on listing",
+        "displayAddressPlaceholder": "e.g., 123 Nguyen Hue, Ben Nghe Ward, District 1, Ho Chi Minh City",
         "selectedLocation": "Selected Location",
         "zoom": "Zoom",
         "coordinates": "Coordinates",
@@ -799,6 +854,87 @@
           "northwest": "Northwest",
           "southeast": "Southeast",
           "southwest": "Southwest"
+        },
+        "address": {
+          "structureType": {
+            "label": "Address Structure",
+            "legacy": "Legacy (63 provinces)",
+            "new": "New (34 provinces)",
+            "legacyShort": "Legacy",
+            "newShort": "New",
+            "legacyDescription": "Use legacy structure: Province/City → District/County → Ward/Commune",
+            "newDescription": "Use new structure: Province/City → Ward/Commune"
+          },
+          "province": "Province/City",
+          "district": "District/County",
+          "ward": "Ward/Commune",
+          "street": "Street",
+          "project": "Project",
+          "loading": {
+            "provinces": "Loading provinces...",
+            "districts": "Loading districts...",
+            "wards": "Loading wards...",
+            "streets": "Loading streets...",
+            "projects": "Loading projects..."
+          },
+          "placeholders": {
+            "selectProvince": "Select province/city",
+            "selectDistrict": "Select district/county",
+            "selectWard": "Select ward/commune",
+            "selectStreet": "Select street",
+            "selectProject": "Select project",
+            "searchProvince": "Search province/city...",
+            "searchDistrict": "Search district/county...",
+            "searchWard": "Search ward/commune...",
+            "searchStreet": "Search street...",
+            "searchProject": "Search project..."
+          },
+          "empty": {
+            "noResults": "No results found.",
+            "noOptions": "No options available."
+          },
+          "convert": {
+            "toNew": "Convert to new structure",
+            "toLegacy": "Convert to legacy structure",
+            "converting": "Converting...",
+            "success": "Conversion successful!",
+            "autoConvertSuccess": "Address automatically converted successfully!"
+          },
+          "errors": {
+            "loadProvincesFailed": "Failed to load provinces list",
+            "loadDistrictsFailed": "Failed to load districts list",
+            "loadWardsFailed": "Failed to load wards list",
+            "convertMissingFields": "Please select complete address information",
+            "convertFailed": "Failed to convert address"
+          }
+        },
+        "amenities": {
+          "ac": "Air Conditioning",
+          "fridge": "Refrigerator",
+          "washingMachine": "Washing Machine",
+          "wardrobe": "Wardrobe",
+          "bed": "Bed",
+          "tableChair": "Table & Chair",
+          "wifi": "Free WiFi",
+          "elevator": "Elevator",
+          "parking": "Parking",
+          "balcony": "Balcony",
+          "window": "Window",
+          "bathroom": "Private Bathroom",
+          "securityCamera": "Security Camera",
+          "securityGuard": "24/7 Security Guard",
+          "magneticDoor": "Magnetic Door",
+          "fingerprint": "Fingerprint Lock",
+          "tv": "TV",
+          "swimmingPool": "Swimming Pool",
+          "gym": "Gym",
+          "tennis": "Tennis Court",
+          "busStop": "Near Bus Stop",
+          "trainStation": "Near Train Station",
+          "airport": "Near Airport",
+          "hospital": "Near Hospital",
+          "school": "Near School",
+          "market": "Near Market/Supermarket"
         }
       },
       "propertyDetails": {
@@ -877,6 +1013,9 @@
           "selectInteriorCondition": "Select interior condition",
           "selectHouseDirection": "Select house direction",
           "selectBalconyDirection": "Select balcony direction",
+          "selectWaterPrice": "Select water price",
+          "selectElectricityPrice": "Select electricity price",
+          "selectInternetPrice": "Select internet price",
           "enterFullName": "Enter full name",
           "enterEmail": "Enter email",
           "enterPhoneNumber": "Enter phone number",
@@ -900,7 +1039,9 @@
         "listingTitle": "Listing Title",
         "propertyDescription": "Property Description",
         "titleLength": "Optimal length: 30-99 characters. Current: 60 characters",
-        "descriptionHint": "AI description includes location benefits, surrounding amenities, and target audience"
+        "descriptionHint": "AI description includes location benefits, surrounding amenities, and target audience",
+        "addressReadOnlyHint": "This address is automatically generated from the Property Information section above",
+        "amenitiesSyncHint": "Amenities are automatically synced with the Property Information section"
       },
       "aiValuation": {
         "title": "AI Valuation",
@@ -914,6 +1055,7 @@
           "title": "Property Information",
           "subtitle": "Update property details for the most accurate AI evaluation",
           "address": "Address",
+          "addressReadOnlyHint": "This address is automatically generated from the Property Information section above",
           "addressMode": "Address Mode",
           "addressView": "Address View",
           "addressViews": {
@@ -933,6 +1075,7 @@
           "bedrooms": "Number of bedrooms",
           "bathrooms": "Number of bathrooms",
           "amenities": "Amenities",
+          "amenitiesTitle": "Amenities",
           "reevaluate": "Re-evaluate",
           "types": {
             "apartment": "Apartment",
