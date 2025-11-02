@@ -14,6 +14,7 @@ import SeparatorOr from '@/components/atoms/separatorOr'
 import { useRegister } from '@/hooks/useAuth'
 import { toast } from 'sonner'
 import { EMAIL_REGEX, PASSWORD_STRENGTH_REGEX } from '@/constants/regex'
+import { googleOAuthURL } from '@/utils/googleOAuth2'
 
 const ImageAtom = dynamic(() => import('@/components/atoms/imageAtom'), {
   ssr: false,
@@ -123,6 +124,10 @@ const RegisterForm: NextPage<RegisterFormProps> = (props) => {
     handleSubmit(onSubmit)(e)
   }
 
+  const handleRegisterGoogle = () => {
+    window.location.href = googleOAuthURL
+  }
+
   return (
     <div className='space-y-3 md:space-y-5'>
       <div className='space-y-3 text-center'>
@@ -200,9 +205,7 @@ const RegisterForm: NextPage<RegisterFormProps> = (props) => {
         type='button'
         variant='outline'
         className='w-full'
-        onClick={() => {
-          console.log('Google register clicked')
-        }}
+        onClick={handleRegisterGoogle}
       >
         <ImageAtom
           src='/svg/google.svg'

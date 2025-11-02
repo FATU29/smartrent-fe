@@ -19,7 +19,7 @@ export class MembershipService {
   ): Promise<ApiResponse<PurchaseMembershipResponse>> {
     const response = await apiRequest<PurchaseMembershipResponse>({
       method: 'POST',
-      url: PATHS.MEMBERSHIP.PURCHASE,
+      url: PATHS.MEMBERSHIP.INITIATE_PURCHASE,
       data: request,
       headers: {
         'user-id': userId,
