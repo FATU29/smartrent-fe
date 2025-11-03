@@ -10,6 +10,8 @@ import {
   CardTitle,
 } from '@/components/atoms/card'
 import { ImagePlus } from 'lucide-react'
+import { MediaService } from '@/api/services'
+import { toast } from 'sonner'
 
 const MAX_IMAGES = 24
 
@@ -18,48 +20,63 @@ const CoverUpload: React.FC = () => {
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const cover = propertyInfo.images.find((i) => i.isCover)
+  const cover = propertyInfo?.images?.find((i) => i.isCover)
 
-  const onPick = (files: FileList | null) => {
+  const onPick = async (files: FileList | null) => {
     if (!files || files.length === 0) return
 
     const picked = Array.from(files)
 
-    // Build new cover from first file
     const coverFile = picked[0]
-    const coverItem = {
-      id: `${Date.now()}-cover-${coverFile.name}`,
-      url: URL.createObjectURL(coverFile),
-      caption: coverFile.name.replace(/\.[^.]+$/, ''),
-      isCover: true,
+
+    // Upload cover first
+    try {
+      const res = await MediaService.upload({
+        file: coverFile,
+        mediaType: 'IMAGE',
+      })
+      if (!res?.success || !res?.data?.url) throw new Error('upload failed')
+
+      const coverItem = {
+        id: String(res.data.mediaId ?? `${Date.now()}-cover-${coverFile.name}`),
+        url: res.data.url,
+        caption: coverFile.name.replace(/\.[^.]+$/, ''),
+        isCover: true,
+      }
+
+      // Existing images turned to non-cover
+      const existingNonCover =
+        propertyInfo?.images?.map((i) => ({
+          ...i,
+          isCover: false,
+        })) || []
+
+      let workingList = [coverItem, ...existingNonCover]
+      updatePropertyInfo({ images: workingList.slice(0, MAX_IMAGES) })
+
+      // Upload extra files sequentially and append
+      const remainingCapacity = Math.max(0, MAX_IMAGES - workingList.length)
+      const extraFiles = picked.slice(1, 1 + remainingCapacity)
+      for (const file of extraFiles) {
+        try {
+          const r = await MediaService.upload({ file, mediaType: 'IMAGE' })
+          if (r?.success && r?.data?.url) {
+            const item = {
+              id: String(r.data.mediaId ?? `${Date.now()}-${file.name}`),
+              url: r.data.url,
+              caption: file.name.replace(/\.[^.]+$/, ''),
+              isCover: false,
+            }
+            workingList = [...workingList, item]
+            updatePropertyInfo({ images: workingList.slice(0, MAX_IMAGES) })
+          }
+        } catch {
+          // ignore single failure, optionally toast
+        }
+      }
+    } catch {
+      toast.error('Không thể tải ảnh bìa')
     }
-
-    // Existing images turned to non-cover
-    const existingNonCover = propertyInfo.images.map((i) => ({
-      ...i,
-      isCover: false,
-    }))
-
-    // How many more images can we add after placing the cover
-    const remainingCapacity = Math.max(
-      0,
-      MAX_IMAGES - (existingNonCover.length + 1),
-    )
-
-    const extraFiles = picked.slice(1, 1 + remainingCapacity)
-    const extraItems = extraFiles.map((file, idx) => ({
-      id: `${Date.now()}-${idx}-${file.name}`,
-      url: URL.createObjectURL(file),
-      caption: file.name.replace(/\.[^.]+$/, ''),
-      isCover: false,
-    }))
-
-    updatePropertyInfo({
-      images: [coverItem, ...existingNonCover, ...extraItems].slice(
-        0,
-        MAX_IMAGES,
-      ),
-    })
   }
 
   return (

@@ -1,9 +1,30 @@
 import axios, { AxiosInstance } from 'axios'
 import { ENV } from '@/constants'
-import { AxiosInstanceConfig } from './types'
+import { AxiosInstanceConfig, CookieStore } from './types'
 import { setupInterceptors } from './interceptors'
 
-function createServerAxiosInstance(cookies?: any): AxiosInstance {
+/**
+ * Parse cookie string from request headers into CookieStore format
+ */
+export function parseCookieString(cookieString?: string): CookieStore {
+  if (!cookieString) return {}
+
+  const cookies: Record<string, string> = {}
+  cookieString.split(';').forEach((cookie) => {
+    const [name, ...rest] = cookie.split('=')
+    if (name && rest.length > 0) {
+      cookies[name.trim()] = rest.join('=').trim()
+    }
+  })
+
+  return cookies
+}
+
+function createServerAxiosInstance(
+  cookies?: CookieStore | string,
+): AxiosInstance {
+  const cookieStore =
+    typeof cookies === 'string' ? parseCookieString(cookies) : cookies
   const config: Partial<AxiosInstanceConfig> = {
     baseURL: ENV.URL_API_BASE,
     timeout: 30000,
@@ -20,7 +41,7 @@ function createServerAxiosInstance(cookies?: any): AxiosInstance {
     },
   })
 
-  setupInterceptors(instance, cookies)
+  setupInterceptors(instance, cookieStore)
 
   return instance
 }

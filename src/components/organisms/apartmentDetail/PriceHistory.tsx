@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Card,
   CardContent,
@@ -6,36 +7,23 @@ import {
   CardTitle,
 } from '@/components/atoms/card'
 import { Typography } from '@/components/atoms/typography'
-import { PriceHistory as PriceHistoryType } from '@/types/apartmentDetail.types'
+import { PriceHistoryPoint } from '@/types/apartmentDetail.types'
+import { formatByLocale } from '@/utils/currency/convert'
+import { formatDate } from '@/utils/date/formatters'
 
 interface PriceHistoryProps {
-  priceHistory: PriceHistoryType[]
+  priceHistory: PriceHistoryPoint[]
 }
 
 const PriceHistory: React.FC<PriceHistoryProps> = ({ priceHistory }) => {
-  const formatPrice = (price: number, currency: string) => {
-    if (currency === 'VND') {
-      return new Intl.NumberFormat('vi-VN').format(price) + ' VND'
-    }
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-    }).format(price)
-  }
-
-  const formatDate = (dateString: string) => {
-    // If already in DD/MM/YYYY format, return as is
-    if (dateString.includes('/')) {
-      return dateString
-    }
-    // Otherwise, format from ISO date
-    return new Date(dateString).toLocaleDateString('vi-VN')
-  }
+  const t = useTranslations('apartmentDetail.priceHistory')
 
   return (
     <Card className='w-full'>
       <CardHeader className='pb-4'>
-        <CardTitle className='text-lg font-semibold'>Lịch sử giá</CardTitle>
+        <CardTitle className='text-lg font-semibold'>
+          {t('simpleTitle')}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className='space-y-3.5'>
@@ -48,13 +36,13 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ priceHistory }) => {
                 variant='small'
                 className='text-muted-foreground font-medium'
               >
-                {formatDate(entry.date)}
+                {entry.date.includes('/') ? entry.date : formatDate(entry.date)}
               </Typography>
               <Typography
                 variant='small'
                 className='font-semibold text-foreground'
               >
-                {formatPrice(entry.price, entry.currency)}
+                {formatByLocale(entry.price, 'vi-VN')}
               </Typography>
             </div>
           ))}
@@ -63,7 +51,7 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ priceHistory }) => {
         {priceHistory.length === 0 && (
           <div className='text-center py-6'>
             <Typography variant='small' className='text-muted-foreground'>
-              Chưa có lịch sử giá
+              {t('noHistory')}
             </Typography>
           </div>
         )}

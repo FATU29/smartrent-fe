@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useMemo,
 } from 'react'
+import type { VipTierCode } from '@/api/types/vip-tier.type'
 
 // Property Information Types
 export interface PropertyInfo {
@@ -64,13 +65,27 @@ export interface PropertyInfo {
   // Amenities
   amenities: string[]
 
-  // District and Ward
+  // District and Ward (Legacy structure - 63 provinces)
   province?: string
   district: string
   ward: string
 
+  // Street and Project (Legacy)
+  streetId?: string
+  projectId?: string
+
+  // New structure (34 provinces)
+  newProvinceCode?: string
+  newWardCode?: string
+
+  // Address structure type
+  addressStructureType?: 'legacy' | 'new'
+
   // Address input mode
   addressMode?: 'structured' | 'freeText'
+
+  // Whether user manually edited display address (to stop auto-overwrite)
+  propertyAddressEdited?: boolean
 
   // Media
   images: MediaItem[]
@@ -79,9 +94,15 @@ export interface PropertyInfo {
   // Package & Configuration
   selectedMembershipPlanId?: string
   selectedVoucherPackageId?: string
-  selectedPackageType?: string
-  selectedDuration?: number
+  selectedPackageType?: VipTierCode | string // VIP tier code (NORMAL, SILVER, GOLD, DIAMOND)
+  selectedTierId?: number // VIP tier ID from API
+  selectedDuration?: number // Duration in days (10, 15, 30)
   packageStartDate?: string
+
+  // Applied promotion from membership benefits (free posting)
+  appliedPromotionBenefitId?: number
+  appliedPromotionType?: string
+  appliedPromotionLabel?: string
 }
 
 export interface MediaItem {
@@ -91,77 +112,34 @@ export interface MediaItem {
   isCover: boolean
 }
 
-// Context Type
-interface CreatePostContextType {
-  propertyInfo: PropertyInfo
-  updatePropertyInfo: (updates: Partial<PropertyInfo>) => void
-  resetPropertyInfo: () => void
+export interface VideoUploadProgress {
+  isUploading: boolean
+  progress: number
+  fileName: string
+  error: string | null
+  uploadedUrl: string | null
 }
 
-// Default Property Information
-const defaultPropertyInfo: PropertyInfo = {
-  listingType: 'rent',
-  propertyAddress: '123 Đường Nguyễn Huệ, Quận 1, Thành phố Hồ Chí Minh',
-  searchAddress: '123 Đường Nguyễn Huệ, Quận 1, Thành phố Hồ Chí Minh',
-  coordinates: {
-    lat: 10.7769,
-    lng: 106.7009,
-  },
+export interface ImageUploadProgress {
+  isUploading: boolean
+  progress: number // 0-100 total across all selected images
+  currentIndex: number // 1-based index of the file being uploaded
+  total: number
+  fileName?: string
+  error: string | null
+}
 
-  propertyType: 'apartment',
-  area: 85,
-  price: 15000000,
-  interiorCondition: 'furnished',
-  bedrooms: 2,
-  bathrooms: 2,
-  floors: 1,
-  moveInDate: '02/01/2024',
-
-  waterPrice: 'provider',
-  electricityPrice: 'provider',
-  internetPrice: 'landlord',
-  houseDirection: 'south',
-  balconyDirection: 'south',
-  alleyWidth: 3.5,
-  frontageWidth: 4.2,
-
-  fullName: 'Nguyễn Văn A',
-  email: 'nguyenvana@example.com',
-  phoneNumber: '+84 123 456 789',
-
-  listingTitle: 'Căn Hộ Hiện Đại 2 Phòng Ngủ Tại Quận 1 - Trung Tâm Thành Phố',
-  propertyDescription:
-    'Căn hộ hiện đại đẹp nằm ngay trung tâm Thành phố Hồ Chí Minh với tầm nhìn thành phố tuyệt đẹp và tiện nghi cao cấp.',
-
-  amenities: [
-    'furnished',
-    'aircon',
-    'toilet',
-    'wifi',
-    'elevator',
-    'balcony',
-    'kitchen',
-  ],
-
-  province: 'hcmc',
-  district: 'quan1',
-  ward: 'bennghe',
-
-  addressMode: 'structured',
-
-  images: [
-    {
-      id: 'demo-1',
-      url: '/images/example.png',
-      caption: 'Phòng khách rộng rãi với nội thất hiện đại',
-      isCover: true,
-    },
-  ],
-  videoUrl: '',
-
-  // Package & Configuration
-  selectedMembershipPlanId: undefined,
-  selectedVoucherPackageId: undefined,
+// Context Type
+interface CreatePostContextType {
+  propertyInfo: Partial<PropertyInfo>
+  updatePropertyInfo: (updates: Partial<PropertyInfo>) => void
+  resetPropertyInfo: () => void
+  videoUploadProgress: VideoUploadProgress
+  setVideoUploadProgress: (progress: Partial<VideoUploadProgress>) => void
+  resetVideoUploadProgress: () => void
+  imageUploadProgress: ImageUploadProgress
+  setImageUploadProgress: (progress: Partial<ImageUploadProgress>) => void
+  resetImageUploadProgress: () => void
 }
 
 // Create Context
@@ -174,18 +152,58 @@ interface CreatePostProviderProps {
   children: ReactNode
 }
 
+const defaultVideoUploadProgress: VideoUploadProgress = {
+  isUploading: false,
+  progress: 0,
+  fileName: '',
+  error: null,
+  uploadedUrl: null,
+}
+
+const defaultImageUploadProgress: ImageUploadProgress = {
+  isUploading: false,
+  progress: 0,
+  currentIndex: 0,
+  total: 0,
+  fileName: '',
+  error: null,
+}
+
 export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   children,
 }) => {
-  const [propertyInfo, setPropertyInfo] =
-    useState<PropertyInfo>(defaultPropertyInfo)
+  const [propertyInfo, setPropertyInfo] = useState<Partial<PropertyInfo>>({
+    amenities: [],
+  })
+  const [videoUploadProgress, setVideoUploadProgressState] =
+    useState<VideoUploadProgress>(defaultVideoUploadProgress)
+  const [imageUploadProgress, setImageUploadProgressState] =
+    useState<ImageUploadProgress>(defaultImageUploadProgress)
 
   const updatePropertyInfo = (updates: Partial<PropertyInfo>) => {
     setPropertyInfo((prev) => ({ ...prev, ...updates }))
   }
 
   const resetPropertyInfo = () => {
-    setPropertyInfo(defaultPropertyInfo)
+    setPropertyInfo({
+      amenities: [],
+    })
+  }
+
+  const setVideoUploadProgress = (progress: Partial<VideoUploadProgress>) => {
+    setVideoUploadProgressState((prev) => ({ ...prev, ...progress }))
+  }
+
+  const resetVideoUploadProgress = () => {
+    setVideoUploadProgressState(defaultVideoUploadProgress)
+  }
+
+  const setImageUploadProgress = (progress: Partial<ImageUploadProgress>) => {
+    setImageUploadProgressState((prev) => ({ ...prev, ...progress }))
+  }
+
+  const resetImageUploadProgress = () => {
+    setImageUploadProgressState(defaultImageUploadProgress)
   }
 
   const contextValue = useMemo(
@@ -193,8 +211,24 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       propertyInfo,
       updatePropertyInfo,
       resetPropertyInfo,
+      videoUploadProgress,
+      setVideoUploadProgress,
+      resetVideoUploadProgress,
+      imageUploadProgress,
+      setImageUploadProgress,
+      resetImageUploadProgress,
     }),
-    [propertyInfo, updatePropertyInfo, resetPropertyInfo],
+    [
+      propertyInfo,
+      updatePropertyInfo,
+      resetPropertyInfo,
+      videoUploadProgress,
+      setVideoUploadProgress,
+      resetVideoUploadProgress,
+      imageUploadProgress,
+      setImageUploadProgress,
+      resetImageUploadProgress,
+    ],
   )
 
   return (

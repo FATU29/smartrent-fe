@@ -7,7 +7,9 @@
     "endOfResults": "End of results",
     "new": "New",
     "learnMore": "Learn more",
-    "go_home": "Go Home"
+    "go_home": "Go Home",
+    "reset": "Clear",
+    "selectDate": "Select date"
   },
   "location": {
     "label": "Your Location",
@@ -573,7 +575,17 @@
     "back": "Back",
     "next": "Next",
     "payment": "Payment",
+    "uploadNow": "Upload now",
     "completeCurrentStep": "Please complete this step before continuing",
+    "validation": {
+      "addressRequired": "Address is required",
+      "areaRequired": "Area is required",
+      "priceRequired": "Price is required",
+      "mediaImagesOrYoutube": "Add at least 3 images or a YouTube link",
+      "packageRequired": "Please select a package",
+      "durationRequired": "Please select a duration",
+      "startDateRequired": "Please select a start date"
+    },
     "generateAutomatically": "Generate Automatically",
     "continueToUpload": "Continue to upload",
     "steps": {
@@ -634,11 +646,19 @@
         "perDay": "day",
         "days": "days",
         "startDate": "Start date",
+        "selectStartDate": "Select start date",
         "endDate": "End date",
         "promotionCode": "Promotion",
         "enterPromotionCode": "Post now",
         "apply": "Apply",
-        "usePromotion": "Use 1 promotion",
+        "usePromotion": "Use promotion",
+        "selectPromotion": "Select a promotion",
+        "selectPromotionDesc": "Choose a free posting benefit from your membership",
+        "loadingPromotions": "Loading your promotions...",
+        "noPromotionAvailable": "No promotions available",
+        "applyPromotion": "Use",
+        "remaining": "Remaining: {count}",
+        "close": "Close",
         "summary": "Total amount",
         "selectedPackage": "Package type",
         "duration": "Duration",
@@ -652,6 +672,7 @@
         "edit": "Edit",
         "packageDetails": "Package Details",
         "packageType": "Package Type",
+        "promotionApplied": "Promotion Applied",
         "duration": "Duration",
         "days": "days",
         "startDate": "Start Date",
@@ -691,7 +712,29 @@
         "video": {
           "title": "Video (Optional)",
           "placeholder": "YouTube or TikTok URL...",
-          "help": "Support YouTube and TikTok to showcase your property more vividly"
+          "help": "Support YouTube and TikTok to showcase your property more vividly",
+          "external": {
+            "save": "Save link",
+            "saving": "Saving...",
+            "success": "Video link saved",
+            "error": "Failed to save video link",
+            "uploadedNote": "You have added a YouTube/TikTok link. Remove the link to upload a video."
+          },
+          "upload": {
+            "title": "Upload Video",
+            "button": "Choose video to upload",
+            "uploadButton": "Upload Video",
+            "help": "Supported formats: MP4, WebM, OGG. Maximum size: {maxSize}MB",
+            "invalidType": "Video format is not supported",
+            "tooLarge": "Video size must not exceed {maxSize}MB",
+            "uploading": "Uploading...",
+            "error": "Error uploading video",
+            "success": "Video uploaded successfully!",
+            "retry": "Retry",
+            "previewNote": "Preview video before uploading",
+            "uploadedNote": "You have uploaded a video. Remove the video to enter a YouTube/TikTok link."
+          },
+          "uploadedNote": "You have uploaded a video. Entering a new URL will replace the uploaded video."
         },
         "guidelines": {
           "title": "Photo Guidelines",
@@ -700,9 +743,18 @@
           "normalTitle": "Normal Photos (Recommended)",
           "normalCount": "12-24 photos",
           "do": {
-            "naturalLight": "Shoot in natural light",
-            "tidyRoom": "Tidy the room before shooting",
-            "variousAngles": "Capture multiple angles",
+            "title": "DO",
+            "placeholder": "YouTube or TikTok URL...",
+            "help": "Supports YouTube and TikTok to better showcase your property",
+            "external": {
+              "save": "Save link",
+              "saving": "Saving...",
+              "success": "Video link saved",
+              "error": "Failed to save video link"
+            },
+            "naturalLight": "Shoot with natural light",
+            "tidyRoom": "Tidy up before shooting",
+            "variousAngles": "Shoot from various angles",
             "includeAmenities": "Include both interior and exterior",
             "nightShots": "Include night shots if possible"
           },
@@ -742,6 +794,7 @@
         "hcmc": "HCMC",
         "title": "Property Information",
         "description": "Enter details about your real estate listing",
+        "loading": "Loading...",
         "listingType": "Listing Type",
         "listingTypes": {
           "rent": "For Rent",
@@ -765,6 +818,8 @@
         "dragMarker": "Drag marker to select exact location",
         "searchAddresses": "Search Addresses",
         "interactiveMap": "Interactive Map",
+        "displayAddress": "Display address on listing",
+        "displayAddressPlaceholder": "e.g., 123 Nguyen Hue, Ben Nghe Ward, District 1, Ho Chi Minh City",
         "selectedLocation": "Selected Location",
         "zoom": "Zoom",
         "coordinates": "Coordinates",
@@ -799,6 +854,87 @@
           "northwest": "Northwest",
           "southeast": "Southeast",
           "southwest": "Southwest"
+        },
+        "address": {
+          "structureType": {
+            "label": "Address Structure",
+            "legacy": "Legacy (63 provinces)",
+            "new": "New (34 provinces)",
+            "legacyShort": "Legacy",
+            "newShort": "New",
+            "legacyDescription": "Use legacy structure: Province/City → District/County → Ward/Commune",
+            "newDescription": "Use new structure: Province/City → Ward/Commune"
+          },
+          "province": "Province/City",
+          "district": "District/County",
+          "ward": "Ward/Commune",
+          "street": "Street",
+          "project": "Project",
+          "loading": {
+            "provinces": "Loading provinces...",
+            "districts": "Loading districts...",
+            "wards": "Loading wards...",
+            "streets": "Loading streets...",
+            "projects": "Loading projects..."
+          },
+          "placeholders": {
+            "selectProvince": "Select province/city",
+            "selectDistrict": "Select district/county",
+            "selectWard": "Select ward/commune",
+            "selectStreet": "Select street",
+            "selectProject": "Select project",
+            "searchProvince": "Search province/city...",
+            "searchDistrict": "Search district/county...",
+            "searchWard": "Search ward/commune...",
+            "searchStreet": "Search street...",
+            "searchProject": "Search project..."
+          },
+          "empty": {
+            "noResults": "No results found.",
+            "noOptions": "No options available."
+          },
+          "convert": {
+            "toNew": "Convert to new structure",
+            "toLegacy": "Convert to legacy structure",
+            "converting": "Converting...",
+            "success": "Conversion successful!",
+            "autoConvertSuccess": "Address automatically converted successfully!"
+          },
+          "errors": {
+            "loadProvincesFailed": "Failed to load provinces list",
+            "loadDistrictsFailed": "Failed to load districts list",
+            "loadWardsFailed": "Failed to load wards list",
+            "convertMissingFields": "Please select complete address information",
+            "convertFailed": "Failed to convert address"
+          }
+        },
+        "amenities": {
+          "ac": "Air Conditioning",
+          "fridge": "Refrigerator",
+          "washingMachine": "Washing Machine",
+          "wardrobe": "Wardrobe",
+          "bed": "Bed",
+          "tableChair": "Table & Chair",
+          "wifi": "Free WiFi",
+          "elevator": "Elevator",
+          "parking": "Parking",
+          "balcony": "Balcony",
+          "window": "Window",
+          "bathroom": "Private Bathroom",
+          "securityCamera": "Security Camera",
+          "securityGuard": "24/7 Security Guard",
+          "magneticDoor": "Magnetic Door",
+          "fingerprint": "Fingerprint Lock",
+          "tv": "TV",
+          "swimmingPool": "Swimming Pool",
+          "gym": "Gym",
+          "tennis": "Tennis Court",
+          "busStop": "Near Bus Stop",
+          "trainStation": "Near Train Station",
+          "airport": "Near Airport",
+          "hospital": "Near Hospital",
+          "school": "Near School",
+          "market": "Near Market/Supermarket"
         }
       },
       "propertyDetails": {
@@ -877,6 +1013,9 @@
           "selectInteriorCondition": "Select interior condition",
           "selectHouseDirection": "Select house direction",
           "selectBalconyDirection": "Select balcony direction",
+          "selectWaterPrice": "Select water price",
+          "selectElectricityPrice": "Select electricity price",
+          "selectInternetPrice": "Select internet price",
           "enterFullName": "Enter full name",
           "enterEmail": "Enter email",
           "enterPhoneNumber": "Enter phone number",
@@ -900,7 +1039,9 @@
         "listingTitle": "Listing Title",
         "propertyDescription": "Property Description",
         "titleLength": "Optimal length: 30-99 characters. Current: 60 characters",
-        "descriptionHint": "AI description includes location benefits, surrounding amenities, and target audience"
+        "descriptionHint": "AI description includes location benefits, surrounding amenities, and target audience",
+        "addressReadOnlyHint": "This address is automatically generated from the Property Information section above",
+        "amenitiesSyncHint": "Amenities are automatically synced with the Property Information section"
       },
       "aiValuation": {
         "title": "AI Valuation",
@@ -914,6 +1055,7 @@
           "title": "Property Information",
           "subtitle": "Update property details for the most accurate AI evaluation",
           "address": "Address",
+          "addressReadOnlyHint": "This address is automatically generated from the Property Information section above",
           "addressMode": "Address Mode",
           "addressView": "Address View",
           "addressViews": {
@@ -933,6 +1075,7 @@
           "bedrooms": "Number of bedrooms",
           "bathrooms": "Number of bathrooms",
           "amenities": "Amenities",
+          "amenitiesTitle": "Amenities",
           "reevaluate": "Re-evaluate",
           "types": {
             "apartment": "Apartment",
@@ -1513,5 +1656,176 @@
     "discount": "Discount",
     "savings": "Savings",
     "buyNow": "Buy now"
+  },
+  "apartmentDetail": {
+    "title": "Property Details",
+    "breadcrumb": {
+      "home": "Sell",
+      "sell": "Sell"
+    },
+    "actions": {
+      "back": "Back",
+      "save": "Save",
+      "saved": "Saved",
+      "compare": "Compare",
+      "share": "Share",
+      "export": "Export PDF",
+      "call": "Call",
+      "message": "Message",
+      "chatZalo": "Chat via Zalo",
+      "showPhone": "Show phone"
+    },
+    "property": {
+      "price": "Price Range",
+      "pricePerSqm": "per m²",
+      "pricePerMonth": "/ month",
+      "area": "Area",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "floors": "Floors",
+      "frontWidth": "Front Width",
+      "roadWidth": "Road Width",
+      "legalDocuments": "Legal Documents",
+      "direction": "Direction",
+      "furnishing": "Furnishing",
+      "views": "views",
+      "posted": "Posted",
+      "description": "Description",
+      "amenities": "Amenities",
+      "smartPrice": {
+        "title": "Smart Price Evaluation",
+        "description": "AI compares market data to help you decide.",
+        "button": "AI Price Evaluation",
+        "score": "Score"
+      }
+    },
+    "sections": {
+      "features": "Property Features",
+      "description": "Description",
+      "priceHistory": "Price History for {district}",
+      "location": "View on Map",
+      "metadata": "Additional Information",
+      "similarProperties": "Similar Properties",
+      "recentlyViewed": "Recently Viewed"
+    },
+    "priceHistory": {
+      "title": "Price History for Houses in {district}",
+      "simpleTitle": "Price History",
+      "noHistory": "No price history available",
+      "tabs": {
+        "buy": "Buy & Sell",
+        "rent": "Rent"
+      },
+      "period": {
+        "1year": "1 year",
+        "2years": "2 years",
+        "5years": "5 years"
+      },
+      "increase": "Price has increased in {period}",
+      "increaseWithTime": "Price has increased in {period} from {timeRange}",
+      "current": "{price} per m²",
+      "average": "Most common selling price",
+      "highest": "Common price in {period} is highest in {years} years",
+      "disclaimer": "Price data is aggregated and processed from listings on Batdongsan.com.vn. Please note listings outside our suggested price range and verify information before transacting.",
+      "chartLabels": {
+        "highest": "Highest price",
+        "average": "Most common price",
+        "lowest": "Lowest price",
+        "searching": "Current listing price: ~{price} per m²"
+      },
+      "statistics": {
+        "title": "Price Statistics",
+        "minPrice": "Lowest price",
+        "maxPrice": "Highest price",
+        "avgPrice": "Average price",
+        "totalChanges": "Total changes",
+        "priceIncreases": "Price increases",
+        "priceDecreases": "Price decreases",
+        "times": "times",
+        "priceUnit": "per m²"
+      }
+    },
+    "seller": {
+      "title": "Seller Information",
+      "viewMore": "View {count} more listings",
+      "professionalAccount": "X2 display effectiveness with professional agent account.",
+      "registerFree": "Register for free",
+      "role": {
+        "owner": "Owner",
+        "agent": "Agent",
+        "broker": "Broker"
+      }
+    },
+    "metadata": {
+      "postDate": "Post Date",
+      "expiryDate": "Expiry Date",
+      "listingType": "Listing Type",
+      "listingId": "Listing ID"
+    },
+    "propertyCard": {
+      "verified": "VERIFIED",
+      "vip": "VIP",
+      "images": "{count} photos"
+    },
+    "map": {
+      "viewLarger": "View larger map",
+      "openInGoogleMaps": "Open in Google Maps"
+    },
+    "imageSlider": {
+      "noMediaAvailable": "No images available",
+      "videoTour": "Video Tour",
+      "image": "Image",
+      "video": "Video",
+      "of": "/"
+    }
+  },
+  "propertiesPage": {
+    "listingCount": "Currently {count} properties available.",
+    "emailNotification": "Receive new email notifications",
+    "sort": {
+      "default": "Default",
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low",
+      "newest": "Newest",
+      "oldest": "Oldest"
+    },
+    "noProperties": "No properties found",
+    "noPropertiesDescription": "Try adjusting your search criteria or check back later for new listings.",
+    "loadingMore": "Loading more...",
+    "filter": {
+      "price": {
+        "title": "Filter by price range",
+        "negotiable": "Negotiable",
+        "under1M": "Under 1 million",
+        "1to3M": "1 - 3 million",
+        "3to5M": "3 - 5 million",
+        "5to10M": "5 - 10 million",
+        "10to40M": "10 - 40 million",
+        "40to70M": "40 - 70 million",
+        "70to100M": "70 - 100 million",
+        "over100M": "Over 100 million"
+      },
+      "area": {
+        "title": "Filter by area",
+        "under30": "Under 30 m²",
+        "30to50": "30 - 50 m²",
+        "50to80": "50 - 80 m²",
+        "80to100": "80 - 100 m²",
+        "100to150": "100 - 150 m²",
+        "150to200": "150 - 200 m²",
+        "200to250": "200 - 250 m²",
+        "250to300": "250 - 300 m²",
+        "300to500": "300 - 500 m²",
+        "over500": "Over 500 m²"
+      },
+      "bedroom": {
+        "title": "Filter by number of bedrooms",
+        "1": "1 bedroom",
+        "2": "2 bedrooms",
+        "3": "3 bedrooms",
+        "4": "4 bedrooms",
+        "5plus": "5+ bedrooms"
+      }
+    }
   }
 }

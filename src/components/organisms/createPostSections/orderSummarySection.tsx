@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
+import { useVipTiers } from '@/hooks/useVipTiers'
 import {
   Card,
   CardContent,
@@ -26,52 +27,33 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
 }) => {
   const t = useTranslations('createPost.sections.orderSummary')
   const { propertyInfo } = useCreatePost()
+  const { data: vipTiers = [] } = useVipTiers()
 
-  const getPackageName = (packageType?: string) => {
-    switch (packageType) {
-      case 'vip-diamond':
-        return 'VIP Kim Cương'
-      case 'vip-gold':
-        return 'VIP Vàng'
-      case 'vip-silver':
-        return 'VIP Bạc'
-      case 'standard':
-        return 'Tin thường'
+  // Resolve selected VIP tier from context selection (by id or code)
+  const selectedTier =
+    vipTiers.find((t) => t.tierId === propertyInfo.selectedTierId) ||
+    vipTiers.find((t) => t.tierCode === propertyInfo.selectedPackageType)
+
+  const packageName = selectedTier?.tierName || 'Chưa chọn'
+
+  // Compute total price based on selected duration using API-provided tier pricing
+  const usingPromotion = !!propertyInfo.appliedPromotionBenefitId
+  const totalPrice = (() => {
+    const duration = propertyInfo.selectedDuration
+    if (usingPromotion) return 0
+    if (!selectedTier || !duration) return 0
+    switch (duration) {
+      case 10:
+        return selectedTier.price10Days
+      case 15:
+        return selectedTier.price15Days
+      case 30:
+        return selectedTier.price30Days
       default:
-        return 'Chưa chọn'
+        // Fallback: per-day price times days
+        return (selectedTier.pricePerDay || 0) * duration
     }
-  }
-
-  const getPackagePrice = (packageType?: string, duration?: number) => {
-    if (!packageType || !duration) return 0
-
-    const pricePerDay: Record<string, number> = {
-      'vip-diamond': 280000,
-      'vip-gold': 110000,
-      'vip-silver': 50000,
-      standard: 2700,
-    }
-
-    const durationPricePerDay: Record<number, number> = {
-      10: 2700,
-      15: 2400,
-      30: 2200,
-    }
-
-    const basePrice = pricePerDay[packageType] || 0
-    const adjustedPricePerDay =
-      packageType === 'standard'
-        ? durationPricePerDay[duration] || 2700
-        : basePrice
-
-    return adjustedPricePerDay * duration
-  }
-
-  const packagePrice = getPackageName(propertyInfo.selectedPackageType)
-  const totalPrice = getPackagePrice(
-    propertyInfo.selectedPackageType,
-    propertyInfo.selectedDuration,
-  )
+  })()
   const vatAmount = totalPrice * 0.1
   const finalTotal = totalPrice + vatAmount
 
@@ -166,11 +148,24 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                 label={t('packageType')}
                 value={
                   <Badge variant='default' className='font-medium'>
-                    {packagePrice}
+                    {packageName}
                   </Badge>
                 }
                 variant='highlight'
               />
+              {usingPromotion && (
+                <>
+                  <Separator />
+                  <OrderSummaryRow
+                    label={t('promotionApplied')}
+                    value={
+                      <Typography className='text-sm text-primary'>
+                        {propertyInfo.appliedPromotionLabel || 'Promotion'}
+                      </Typography>
+                    }
+                  />
+                </>
+              )}
               <Separator />
               <OrderSummaryRow
                 label={t('duration')}
