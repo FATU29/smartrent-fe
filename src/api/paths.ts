@@ -1,4 +1,9 @@
 export const PATHS = {
+  // AI endpoints
+  AI: {
+    LISTING_DESCRIPTION: '/v1/ai/listing-description',
+  },
+
   // Auth endpoints
   AUTH: {
     LOGIN: '/v1/auth',
@@ -40,7 +45,7 @@ export const PATHS = {
 
   // Membership endpoints
   MEMBERSHIP: {
-    PURCHASE: '/v1/memberships/purchase',
+    INITIATE_PURCHASE: '/v1/memberships/initiate-purchase',
     PACKAGES: '/v1/memberships/packages',
     PACKAGE_BY_ID: '/v1/memberships/packages/:membershipId',
     MY_MEMBERSHIP: '/v1/memberships/my-membership',
@@ -55,21 +60,61 @@ export const PATHS = {
     ALL_DETAILS: '/v1/push-details/all',
   },
 
+  // VIP Tier endpoints
+  VIP_TIER: {
+    ACTIVE: '/v1/vip-tiers',
+    BY_CODE: '/v1/vip-tiers/:tierCode',
+    ALL: '/v1/vip-tiers/all',
+  },
+
+  // Media endpoints
+  MEDIA: {
+    UPLOAD_URL: '/v1/media/upload-url',
+    CONFIRM_UPLOAD: '/v1/media/:mediaId/confirm',
+    UPLOAD: '/v1/media/upload',
+    EXTERNAL: '/v1/media/external',
+    BY_ID: '/v1/media/:mediaId',
+    DELETE: '/v1/media/:mediaId',
+    DOWNLOAD_URL: '/v1/media/:mediaId/download-url',
+    MY_MEDIA: '/v1/media/my-media',
+    BY_LISTING: '/v1/media/listing/:listingId',
+  },
+
   // Address endpoints
   ADDRESS: {
     CREATE: '/v1/addresses',
     BY_ID: '/v1/addresses/:addressId',
     SEARCH: '/v1/addresses/search',
+    SEARCH_NEW: '/v1/addresses/search-new-address',
     SUGGEST: '/v1/addresses/suggest',
     NEARBY: '/v1/addresses/nearby',
+    HEALTH: '/v1/addresses/health',
+    // Legacy structure (63 provinces)
     PROVINCES: '/v1/addresses/provinces',
     PROVINCE_BY_ID: '/v1/addresses/provinces/:provinceId',
     PROVINCE_SEARCH: '/v1/addresses/provinces/search',
     DISTRICTS_BY_PROVINCE: '/v1/addresses/provinces/:provinceId/districts',
+    STREETS_BY_PROVINCE: '/v1/addresses/provinces/:provinceId/streets',
+    PROJECTS_BY_PROVINCE: '/v1/addresses/provinces/:provinceId/projects',
     DISTRICT_BY_ID: '/v1/addresses/districts/:districtId',
+    DISTRICT_SEARCH: '/v1/addresses/districts/search',
     WARDS_BY_DISTRICT: '/v1/addresses/districts/:districtId/wards',
+    STREETS_BY_DISTRICT: '/v1/addresses/districts/:districtId/streets',
+    PROJECTS_BY_DISTRICT: '/v1/addresses/districts/:districtId/projects',
     WARD_BY_ID: '/v1/addresses/wards/:wardId',
+    WARD_SEARCH: '/v1/addresses/wards/search',
     STREETS_BY_WARD: '/v1/addresses/wards/:wardId/streets',
     STREET_BY_ID: '/v1/addresses/streets/:streetId',
+    STREET_SEARCH: '/v1/addresses/streets/search',
+    // New structure (34 provinces)
+    NEW_PROVINCES: '/v1/addresses/new-provinces',
+    NEW_PROVINCE_WARDS: '/v1/addresses/new-provinces/:provinceCode/wards',
+    NEW_FULL_ADDRESS: '/v1/addresses/new-full-address',
+    // Projects
+    PROJECT_BY_ID: '/v1/addresses/projects/:projectId',
+    PROJECT_SEARCH: '/v1/addresses/projects/search',
+    // Conversion
+    CONVERT_NEW_TO_LEGACY: '/v1/addresses/convert/new-to-legacy',
+    CONVERT_LEGACY_TO_NEW: '/v1/addresses/convert/legacy-to-new',
   },
 }

@@ -12,6 +12,7 @@ import {
   VideoPlayerSeekForwardButton,
 } from '@/components/atoms/video-player'
 import { cn } from '@/lib/utils'
+import { isYouTube, toYouTubeEmbed } from '@/utils/video/url'
 
 interface VideoPlayerFullProps {
   src: string
@@ -40,6 +41,29 @@ const VideoPlayerFull: React.FC<VideoPlayerFullProps> = ({
     '21/9': 'aspect-[21/9]',
     '1/1': 'aspect-square',
   }[aspectRatio]
+
+  // Render YouTube iframe for YouTube links
+  if (isYouTube(src)) {
+    const embed = src ? toYouTubeEmbed(src) : null
+    return (
+      <div
+        className={cn(
+          'w-full rounded-lg overflow-hidden bg-black',
+          aspectRatioClass,
+          className,
+        )}
+      >
+        {embed && (
+          <iframe
+            src={embed}
+            className='w-full h-full'
+            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+            allowFullScreen
+          />
+        )}
+      </div>
+    )
+  }
 
   return (
     <VideoPlayer

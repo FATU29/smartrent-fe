@@ -1,13 +1,12 @@
 import { PATHS } from '@/api/paths'
 
-console.log('env:', process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI)
-
 export const ENV = {
   GOOGLE_MAP_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || '',
   IS_PRODUCTION: process.env.NEXT_PUBLIC_DEPLOY_ENV || '',
   URL_API_AI: process.env.NEXT_PUBLIC_URL_API_AI || 'http://localhost:8000/',
   URL_API_BASE:
     process.env.NEXT_PUBLIC_URL_API_BASE || 'http://localhost:8080/',
+  MAX_VIDEO_SIZE_MB: Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE_MB || 100),
   // Site metadata
   SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'SmartRent',

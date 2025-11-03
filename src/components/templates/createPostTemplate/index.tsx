@@ -1,17 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   ProgressSteps,
   ProgressStep,
 } from '@/components/molecules/progressSteps'
 import { HeaderModule } from '@/components/molecules/createPostModules/headerModule'
-import { PropertyInfoSection } from '@/components/organisms/createPostSections/propertyInfoSection'
-import { AIValuationSection } from '@/components/organisms/createPostSections/aiValuationSection'
 import { Button } from '@/components/atoms/button'
-import { MediaSection } from '@/components/organisms/createPostSections/mediaSection'
-import { PackageConfigSection } from '@/components/organisms/createPostSections/packageConfigSection'
-import { OrderSummarySection } from '@/components/organisms/createPostSections/orderSummarySection'
 import { Card } from '@/components/atoms/card'
-import { Typography } from '@/components/atoms/typography'
 import {
   Home,
   Brain,
@@ -23,13 +17,19 @@ import {
   CreditCard,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { isYouTube } from '@/utils/video/url'
 import { CreatePostProvider, useCreatePost } from '@/contexts/createPost'
+import { PropertyInfoStep } from './PropertyInfoStep'
+import { AIValuationStep } from './AIValuationStep'
+import { MediaStep } from './MediaStep'
+import { PackageConfigStep } from './PackageConfigStep'
+import { OrderSummaryStep } from './OrderSummaryStep'
+import { DefaultStep } from './DefaultStep'
 
 interface CreatePostTemplateProps {
   className?: string
 }
 
-// Inner component to access context values
 const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   className,
 }) => {
@@ -37,29 +37,69 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const tSteps = useTranslations('createPost.steps')
   const { propertyInfo } = useCreatePost()
   const [currentStep, setCurrentStep] = useState(0)
+  const topRef = useRef<HTMLDivElement | null>(null)
 
-  // Collect validation errors for a step
+  const scrollToTop = () => {
+    // Scroll the anchor into view (handles inner scrollable containers)
+    if (topRef.current) {
+      try {
+        topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } catch {}
+    }
+    // Also scroll window for good measure
+    if (typeof window !== 'undefined') {
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } catch {}
+    }
+  }
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    scrollToTop()
+  }, [currentStep])
+
   const getStepErrors = (index: number): string[] => {
     const errors: string[] = []
     switch (index) {
       case 0: {
-        if (!propertyInfo.propertyAddress?.trim()) errors.push('address')
-        if (!propertyInfo.area || propertyInfo.area <= 0) errors.push('area')
-        if (!propertyInfo.price || propertyInfo.price <= 0) errors.push('price')
+        if (!propertyInfo?.propertyAddress?.trim()) errors.push('address')
+        if (!propertyInfo?.area || propertyInfo?.area <= 0) errors.push('area')
+        if (!propertyInfo?.price || propertyInfo?.price <= 0)
+          errors.push('price')
         break
       }
       case 2: {
-        const count = propertyInfo.images?.length || 0
-        if (count < 3) errors.push('imagesMin')
+        const count = propertyInfo?.images?.length || 0
+        const url = propertyInfo?.videoUrl || ''
+        const isYT = typeof url === 'string' && isYouTube(url)
+        // Accept if either at least 3 images or a YouTube link is provided
+        if (count < 3 && !isYT) errors.push('imagesMin')
         break
       }
       case 3: {
+        // Require a package selection (any of the supported types)
         if (
-          !propertyInfo.selectedMembershipPlanId &&
-          !propertyInfo.selectedVoucherPackageId &&
-          !propertyInfo.selectedPackageType
-        )
+          !propertyInfo?.selectedMembershipPlanId &&
+          !propertyInfo?.selectedVoucherPackageId &&
+          !propertyInfo?.selectedPackageType
+        ) {
           errors.push('package')
+        }
+        // Require duration
+        if (
+          !propertyInfo?.selectedDuration ||
+          propertyInfo.selectedDuration <= 0
+        ) {
+          errors.push('duration')
+        }
+        // Require start date
+        if (
+          !propertyInfo?.packageStartDate ||
+          !propertyInfo.packageStartDate.trim()
+        ) {
+          errors.push('startDate')
+        }
         break
       }
       default:
@@ -122,13 +162,21 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   ]
 
   const handleNext = () => {
+    // Always scroll to top when pressing Next
+    scrollToTop()
+
+    // If current step is not complete, stop here (show validation section)
     if (!isStepComplete(currentStep)) return
+
+    // Otherwise proceed to next step
     if (currentStep < progressSteps.length - 1) {
       setCurrentStep(currentStep + 1)
     }
   }
 
   const handleBack = () => {
+    // Always scroll to top when pressing Back
+    scrollToTop()
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1)
     }
@@ -144,106 +192,53 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const renderCurrentSection = () => {
     switch (currentStep) {
       case 0:
-        return (
-          <Card className='w-full mx-auto md:max-w-6xl border-0 shadow-none p-0'>
-            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-              <Card className='mb-6 sm:mb-8 border-0 shadow-none p-0'>
-                <Typography
-                  variant='h2'
-                  className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'
-                >
-                  {t('sections.propertyInfo.title')}
-                </Typography>
-                <Typography variant='muted' className='text-sm sm:text-base'>
-                  {t('sections.propertyInfo.description')}
-                </Typography>
-              </Card>
-              <PropertyInfoSection className='w-full' />
-            </Card>
-          </Card>
-        )
+        return <PropertyInfoStep />
       case 1:
-        return (
-          <Card className='w-full mx-auto md:max-w-7xl border-0 shadow-none p-0'>
-            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-              <Card className='mb-6 sm:mb-8 border-0 shadow-none p-0'>
-                <Typography
-                  variant='h2'
-                  className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'
-                >
-                  {t('sections.aiValuation.title')}
-                </Typography>
-                <Typography variant='muted' className='text-sm sm:text-base'>
-                  {t('sections.aiValuation.description')}
-                </Typography>
-              </Card>
-              <AIValuationSection className='w-full' />
-            </Card>
-          </Card>
-        )
+        return <AIValuationStep />
       case 2:
-        return (
-          <Card className='w-full mx-auto md:max-w-7xl border-0 shadow-none p-0'>
-            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-              <Card className='mb-6 sm:mb-8 border-0 shadow-none p-0'>
-                <Typography
-                  variant='h2'
-                  className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'
-                >
-                  {t('sections.media.title')}
-                </Typography>
-                <Typography variant='muted' className='text-sm sm:text-base'>
-                  {t('sections.media.description')}
-                </Typography>
-              </Card>
-              <MediaSection className='w-full' showHeader={false} />
-            </Card>
-          </Card>
-        )
+        return <MediaStep />
       case 3:
-        return (
-          <Card className='w-full mx-auto md:max-w-7xl border-0 shadow-none p-0'>
-            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-              <PackageConfigSection className='w-full' />
-            </Card>
-          </Card>
-        )
+        return <PackageConfigStep />
       case 4:
-        return (
-          <Card className='w-full mx-auto md:max-w-7xl border-0 shadow-none p-0'>
-            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-              <OrderSummarySection className='w-full' />
-            </Card>
-          </Card>
-        )
+        return <OrderSummaryStep />
       default:
-        return (
-          <Card className='w-full mx-auto md:max-w-6xl border-0 shadow-none p-0'>
-            <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-              <Card className='text-center py-12 border-0 shadow-none p-0'>
-                <Typography variant='h2' className='text-2xl font-bold mb-4'>
-                  {progressSteps[currentStep].title}
-                </Typography>
-                <Typography variant='muted'>
-                  {progressSteps[currentStep].description}
-                </Typography>
-                <Typography variant='muted' className='text-sm mt-4'>
-                  Coming soon...
-                </Typography>
-              </Card>
-            </Card>
-          </Card>
-        )
+        return <DefaultStep step={progressSteps[currentStep]} />
     }
   }
 
   const currentErrors = getStepErrors(currentStep)
   const canProceed = currentErrors.length === 0
 
+  const getErrorMessage = (errorKey: string): string => {
+    switch (errorKey) {
+      case 'address':
+        return t('validation.addressRequired')
+      case 'area':
+        return t('validation.areaRequired')
+      case 'price':
+        return t('validation.priceRequired')
+      case 'imagesMin':
+        return (
+          t('validation.mediaImagesOrYoutube') ||
+          'Vui lòng thêm ít nhất 3 ảnh hoặc 1 liên kết YouTube'
+        )
+      case 'package':
+        return t('validation.packageRequired')
+      case 'duration':
+        return t('validation.durationRequired')
+      case 'startDate':
+        return t('validation.startDateRequired')
+      default:
+        return ''
+    }
+  }
+
   return (
     <Card
       className={`min-h-screen bg-background border-0 shadow-none p-0 ${className || ''}`}
     >
+      {/* Anchor used for reliable scroll-to-top across inner containers */}
+      <div ref={topRef} />
       <Card className='w-full mx-auto md:container md:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4 sm:py-6 lg:py-8 border-0 shadow-none p-0'>
         <HeaderModule />
         <Card className='mb-6 sm:mb-8 flex justify-center border-0 shadow-none p-0'>
@@ -255,6 +250,47 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           />
         </Card>
         {renderCurrentSection()}
+
+        {/* Validation Errors */}
+        {!canProceed && currentErrors.length > 0 && (
+          <Card className='w-full mx-auto md:max-w-6xl mt-4 border-0 shadow-none p-0'>
+            <div className='bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded-lg'>
+              <div className='flex items-start gap-3'>
+                <div className='flex-shrink-0'>
+                  <svg
+                    className='w-5 h-5 text-red-500'
+                    fill='currentColor'
+                    viewBox='0 0 20 20'
+                  >
+                    <path
+                      fillRule='evenodd'
+                      d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'
+                      clipRule='evenodd'
+                    />
+                  </svg>
+                </div>
+                <div className='flex-1'>
+                  <h3 className='text-sm font-semibold text-red-800 dark:text-red-300 mb-1'>
+                    {t('completeCurrentStep')}
+                  </h3>
+                  <p className='text-xs text-red-700 dark:text-red-400 mb-2'>
+                    {/* Show which step needs attention using translated step title */}
+                    {progressSteps[currentStep]?.title}
+                  </p>
+                  <ul className='text-sm text-red-700 dark:text-red-400 space-y-1'>
+                    {currentErrors.map((error) => (
+                      <li key={error} className='flex items-center gap-2'>
+                        <span className='text-red-500'>•</span>
+                        {getErrorMessage(error)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
         <Card className='w-full mx-auto md:max-w-6xl mt-8 sm:mt-12 border-0 shadow-none p-0'>
           <Card className='flex flex-col sm:flex-row gap-4 sm:gap-6 justify-between items-center flex-wrap border-0 shadow-none p-0'>
             {currentStep > 0 && (
@@ -270,8 +306,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
             {currentStep < progressSteps.length - 1 ? (
               <Button
                 onClick={handleNext}
-                disabled={!canProceed}
-                className='w-full sm:w-auto order-1 sm:order-2 h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
+                className='w-full sm:w-auto order-1 sm:order-2 h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90'
               >
                 {t('next')}
                 <ArrowRight className='w-4 h-4 ml-2' />
@@ -279,53 +314,23 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
             ) : (
               <Button
                 onClick={() => {
-                  // TODO: Handle payment
-                  console.log('Processing payment...')
+                  // If promotion applied, proceed to upload immediately; otherwise start payment
+                  if (propertyInfo.appliedPromotionBenefitId) {
+                    console.log('Proceeding to upload with promotion...')
+                  } else {
+                    console.log('Processing payment...')
+                  }
                 }}
                 disabled={!canProceed}
                 className='w-full sm:w-auto order-1 sm:order-2 h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
               >
                 <CreditCard className='w-4 h-4 mr-2' />
-                {t('payment')}
+                {propertyInfo.appliedPromotionBenefitId
+                  ? t('uploadNow')
+                  : t('payment')}
               </Button>
             )}
           </Card>
-          {!canProceed && (
-            <Card className='mt-3 w-full flex flex-col gap-1 text-xs text-destructive text-center sm:text-right border-0 shadow-none p-0'>
-              <Typography variant='muted' className='text-destructive'>
-                {t('completeCurrentStep') ||
-                  'Vui lòng hoàn thành bước này trước khi tiếp tục'}
-              </Typography>
-              {/* Simple mapping of error codes to readable (temporary, could i18n later) */}
-              <Card className='flex flex-wrap gap-x-3 gap-y-1 justify-center sm:justify-end border-0 shadow-none p-0'>
-                {currentErrors.includes('address') && (
-                  <Typography variant='muted' className='text-destructive'>
-                    • Địa chỉ
-                  </Typography>
-                )}
-                {currentErrors.includes('area') && (
-                  <Typography variant='muted' className='text-destructive'>
-                    • Diện tích
-                  </Typography>
-                )}
-                {currentErrors.includes('price') && (
-                  <Typography variant='muted' className='text-destructive'>
-                    • Giá
-                  </Typography>
-                )}
-                {currentErrors.includes('imagesMin') && (
-                  <Typography variant='muted' className='text-destructive'>
-                    • Tối thiểu 3 ảnh
-                  </Typography>
-                )}
-                {currentErrors.includes('package') && (
-                  <Typography variant='muted' className='text-destructive'>
-                    • Chọn gói hoặc voucher
-                  </Typography>
-                )}
-              </Card>
-            </Card>
-          )}
         </Card>
       </Card>
     </Card>
