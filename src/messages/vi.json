@@ -9,7 +9,8 @@
     "learnMore": "Tìm hiểu thêm",
     "go_home": "Về trang chủ",
     "reset": "Xóa",
-    "selectDate": "Chọn ngày"
+    "selectDate": "Chọn ngày",
+    "filter": "Lọc"
   },
   "location": {
     "label": "Vị trí của bạn",
@@ -1828,5 +1829,11 @@
         "5plus": "5+ phòng ngủ"
       }
     }
+  },
+  "notFound": {
+    "title": "Không Tìm Thấy Trang",
+    "description": "Rất tiếc! Trang bạn đang tìm kiếm không tồn tại. Có thể nó đã được di chuyển hoặc xóa.",
+    "goBack": "Quay Lại",
+    "goHome": "Về Trang Chủ"
   }
 }
