@@ -27,13 +27,32 @@ export const PATHS = {
     CHANGE_PASSWORD: '/v1/users/change-password',
   },
 
-  // Property endpoints
+  // Property endpoints (deprecated - use LISTING instead)
   PROPERTY: {
     LIST: '/v1/properties',
     DETAIL: '/v1/properties/:id',
     CREATE: '/v1/properties',
     UPDATE: '/v1/properties/:id',
     DELETE: '/v1/properties/:id',
+  },
+
+  // Listing endpoints
+  LISTING: {
+    LIST: '/v1/listings',
+    BY_ID: '/v1/listings/:id',
+    CREATE: '/v1/listings',
+    CREATE_VIP: '/v1/listings/vip',
+    UPDATE: '/v1/listings/:id',
+    DELETE: '/v1/listings/:id',
+    ADMIN_DETAIL: '/v1/listings/:id/admin',
+    QUOTA_CHECK: '/v1/listings/quota-check',
+    UPDATE_PRICE: '/v1/listings/:listingId/price',
+    PRICING_HISTORY: '/v1/listings/:listingId/pricing-history',
+    PRICING_HISTORY_DATE_RANGE:
+      '/v1/listings/:listingId/pricing-history/date-range',
+    PRICE_STATISTICS: '/v1/listings/:listingId/price-statistics',
+    CURRENT_PRICE: '/v1/listings/:listingId/current-price',
+    RECENT_PRICE_CHANGES: '/v1/listings/recent-price-changes',
   },
 
   // Admin endpoints
