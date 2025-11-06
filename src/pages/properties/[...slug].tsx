@@ -5,10 +5,7 @@ import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
 import ResidentialPropertiesTemplate from '@/components/templates/residentialProperties'
 import { ListProvider } from '@/contexts/list/index.context'
-import {
-  propertyFetcher,
-  getInitialProperties,
-} from '@/api/services/property.service'
+import { fetchListings, getInitial } from '@/api/services'
 import { PropertyCard } from '@/api/types/property.type'
 import { GetStaticProps, GetStaticPaths } from 'next'
 import LocationProvider from '@/contexts/location'
@@ -29,7 +26,7 @@ const ResidentialPropertiesPage: NextPageWithLayout<
         description='Residential property search'
       />
       <div className='container mx-auto py-6 px-4 md:px-0'>
-        <ListProvider fetcher={propertyFetcher} initialData={initialData}>
+        <ListProvider fetcher={fetchListings} initialData={initialData}>
           <LocationProvider>
             <ResidentialPropertiesTemplate />
           </LocationProvider>
@@ -56,6 +53,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const initialData = await getInitialProperties()
+  const initialData = await getInitial()
   return { props: { initialData } }
 }

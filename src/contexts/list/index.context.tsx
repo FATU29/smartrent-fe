@@ -14,7 +14,7 @@ export interface ListProviderProps<T = unknown> {
   children: React.ReactNode
   fetcher: (filters: ListFilters) => Promise<ListFetcherResponse<T>>
   initialData?: T[]
-  initialFilters?: ListFilters
+  initialFilters?: Partial<ListFilters>
   defaultSearch?: string
   defaultPerPage?: number
   defaultPage?: number
@@ -29,13 +29,12 @@ export const ListProvider = <T,>({
   defaultPerPage = DEFAULT_PER_PAGE,
   defaultPage = DEFAULT_PAGE,
 }: ListProviderProps<T>) => {
-  const [filters, setFilters] = useState<ListFilters>(
-    initialFilters || {
-      search: defaultSearch,
-      perPage: defaultPerPage,
-      page: defaultPage,
-    },
-  )
+  const [filters, setFilters] = useState<ListFilters>({
+    search: defaultSearch,
+    perPage: defaultPerPage,
+    page: defaultPage,
+    ...initialFilters,
+  })
 
   const [isLoading, setIsLoading] = useState(false)
   const [itemsData, setItemsData] = useState<T[]>(initialData)

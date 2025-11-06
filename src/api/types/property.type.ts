@@ -234,3 +234,148 @@ export interface PropertyFilters {
   city?: string
   amenities?: string[]
 }
+
+// ============= LISTING SERVICE TYPES =============
+
+/**
+ * API response type for listing list
+ */
+export interface ListingListApiResponse {
+  listings?: Listing[]
+  pagination?: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}
+
+/**
+ * Create listing request
+ */
+export interface CreateListingRequest {
+  title: string
+  description: string
+  userId: string
+  expiryDate?: string
+  listingType: ListingType
+  verified?: boolean
+  isVerify?: boolean
+  expired?: boolean
+  vipType?: VipType
+  categoryId?: number
+  productType: PropertyType
+  price: number
+  priceUnit: PriceUnit
+  address: {
+    streetNumber?: string
+    streetId: number
+    wardId: number
+    districtId: number
+    provinceId: number
+    latitude?: number
+    longitude?: number
+  }
+  area?: number
+  bedrooms?: number
+  bathrooms?: number
+  direction?: Direction
+  furnishing?: Furnishing
+  propertyType?: PropertyType
+  roomCapacity?: number
+  amenityIds?: number[]
+}
+
+/**
+ * Update listing request
+ */
+export interface UpdateListingRequest {
+  title?: string
+  description?: string
+  userId?: number
+  expiryDate?: string
+  listingType?: ListingType
+  vipType?: VipType
+  categoryId?: number
+  productType?: PropertyType
+  price?: number
+  priceUnit?: PriceUnit
+  addressId?: number
+  area?: number
+  bedrooms?: number
+  bathrooms?: number
+  direction?: Direction
+  furnishing?: Furnishing
+  propertyType?: PropertyType
+  roomCapacity?: number
+  amenityIds?: number[]
+}
+
+/**
+ * Create VIP listing request
+ */
+export interface CreateVipListingRequest extends CreateListingRequest {
+  vipType: Exclude<VipType, 'NORMAL'>
+  useMembershipQuota?: boolean
+  durationDays?: number
+}
+
+/**
+ * Quota check response
+ */
+export interface QuotaCheckResponse {
+  vipPosts?: {
+    totalAvailable: number
+    totalUsed: number
+    totalGranted: number
+  }
+  premiumPosts?: {
+    totalAvailable: number
+    totalUsed: number
+    totalGranted: number
+  }
+  boosts?: {
+    totalAvailable: number
+    totalUsed: number
+    totalGranted: number
+  }
+}
+
+/**
+ * Price update request
+ */
+export interface UpdatePriceRequest {
+  newPrice: number
+  effectiveAt?: string
+}
+
+/**
+ * Price history item
+ */
+export interface PriceHistory {
+  id: number
+  listingId: number
+  oldPrice: number
+  newPrice: number
+  oldPriceUnit: string
+  newPriceUnit: string
+  changeType: string
+  changePercentage: number
+  changeAmount: number
+  changedBy: string
+  changeReason: string
+  changedAt: string
+  current: boolean
+}
+
+/**
+ * Price statistics
+ */
+export interface PriceStatistics {
+  minPrice: number
+  maxPrice: number
+  avgPrice: number
+  totalChanges: number
+  priceIncreases: number
+  priceDecreases: number
+}

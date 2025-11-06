@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useState,
+  useEffect,
+} from 'react'
 import SearchInput from '@/components/molecules/searchInput'
 import {
   PropertyTypeDropdown,
@@ -13,6 +18,8 @@ import { useLocation } from '@/hooks/useLocation'
 
 import { ListFilters } from '@/contexts/list/index.type'
 import { LocationSwitch } from '@/components/atoms'
+import { useRouter } from 'next/router'
+import { pushQueryParams } from '@/utils/queryParams'
 
 interface ResidentialFilterBarProps {
   onSearch?: (query: string) => void
@@ -22,15 +29,19 @@ interface ResidentialFilterBarProps {
   onOpenAdvanced?: () => void // opens the new unified dialog
 }
 
-const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
-  onSearch,
-  onFiltersChange,
-  value,
-  activeCount,
-  onOpenAdvanced,
-}) => {
+export interface ResidentialFilterBarRef {
+  triggerApply: () => void
+}
+
+const ResidentialFilterBar = forwardRef<
+  ResidentialFilterBarRef,
+  ResidentialFilterBarProps
+>(({ onSearch, onFiltersChange, value, activeCount, onOpenAdvanced }, ref) => {
   const t = useTranslations('residentialFilter')
   const { coordinates, isEnabled, disableLocation } = useLocation()
+  const router = useRouter()
+
+  // Local state for UI (doesn't trigger API until Apply is clicked)
   const [search, setSearch] = useState(value?.search || '')
   const [propertyType, setPropertyType] = useState<string>(
     value?.propertyType || 'any',
@@ -43,7 +54,12 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
   const [professional, setProfessional] = useState<boolean>(
     !!value?.professionalBroker,
   )
+  const [bedrooms, setBedrooms] = useState<number | undefined>(value?.bedrooms)
+  const [bathrooms, setBathrooms] = useState<number | undefined>(
+    value?.bathrooms,
+  )
 
+  // Sync with external value changes (from URL or context)
   useEffect(() => {
     if (!value) return
     setSearch(value.search || '')
@@ -54,10 +70,12 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
     setMaxArea(value.maxArea)
     setVerified(!!value.verified)
     setProfessional(!!value.professionalBroker)
+    setBedrooms(value.bedrooms)
+    setBathrooms(value.bathrooms)
   }, [value])
 
   const handleApply = () => {
-    const filters: ListFilters = {
+    const filters: Partial<ListFilters> = {
       propertyType: propertyType === 'any' ? undefined : propertyType,
       minPrice,
       maxPrice,
@@ -66,12 +84,40 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
       verified,
       professionalBroker: professional,
       search,
-      perPage: value?.perPage || 10,
+      bedrooms,
+      bathrooms,
       page: 1,
     }
-    onFiltersChange?.(filters)
+    onFiltersChange?.(filters as ListFilters)
     onSearch?.(search)
+
+    // Push all filter fields to URL
+    pushQueryParams(
+      router,
+      {
+        category:
+          propertyType && propertyType !== 'any'
+            ? String(propertyType).toLowerCase()
+            : null,
+        search: search || null,
+        minPrice: minPrice ?? null,
+        maxPrice: maxPrice ?? null,
+        minArea: minArea ?? null,
+        maxArea: maxArea ?? null,
+        bedrooms: bedrooms ?? null,
+        bathrooms: bathrooms ?? null,
+        verified: verified || null,
+        professionalBroker: professional || null,
+        page: null,
+      },
+      { shallow: true },
+    )
   }
+
+  // Expose triggerApply to parent via ref
+  useImperativeHandle(ref, () => ({
+    triggerApply: handleApply,
+  }))
 
   const handleClear = () => {
     setSearch('')
@@ -82,9 +128,28 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
     setMaxArea(undefined)
     setVerified(false)
     setProfessional(false)
+    setBedrooms(undefined)
+    setBathrooms(undefined)
     disableLocation()
-    onFiltersChange?.({ search: '', perPage: 10, page: 1 })
+    onFiltersChange?.({
+      search: '',
+      perPage: value?.perPage || 10,
+      page: 1,
+    } as ListFilters)
     onSearch?.('')
+    pushQueryParams(router, {
+      category: null,
+      search: null,
+      minPrice: null,
+      maxPrice: null,
+      minArea: null,
+      maxArea: null,
+      bedrooms: null,
+      bathrooms: null,
+      verified: null,
+      professionalBroker: null,
+      page: null,
+    })
   }
 
   return (
@@ -187,7 +252,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
               <Switch
                 size='sm'
                 checked={verified}
-                onCheckedChange={setVerified}
+                onCheckedChange={(v) => setVerified(v)}
               />
               <span className='text-sm flex items-center gap-1'>
                 <ShieldCheck className='h-3.5 w-3.5 text-muted-foreground' />
@@ -198,7 +263,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
               <Switch
                 size='sm'
                 checked={professional}
-                onCheckedChange={setProfessional}
+                onCheckedChange={(v) => setProfessional(v)}
               />
               <span className='text-sm flex items-center gap-1'>
                 <Briefcase className='h-3.5 w-3.5 text-muted-foreground' />
@@ -221,6 +286,8 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
       </div>
     </div>
   )
-}
+})
+
+ResidentialFilterBar.displayName = 'ResidentialFilterBar'
 
 export default ResidentialFilterBar

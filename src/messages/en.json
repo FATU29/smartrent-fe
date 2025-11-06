@@ -9,7 +9,8 @@
     "learnMore": "Learn more",
     "go_home": "Go Home",
     "reset": "Clear",
-    "selectDate": "Select date"
+    "selectDate": "Select date",
+    "filter": "Filter"
   },
   "location": {
     "label": "Your Location",
@@ -1827,5 +1828,11 @@
         "5plus": "5+ bedrooms"
       }
     }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Oops! The page you're looking for doesn't exist. It might have been moved or deleted.",
+    "goBack": "Go Back",
+    "goHome": "Go Home"
   }
 }
