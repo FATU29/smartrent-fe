@@ -4,7 +4,7 @@ import PropertyList from '@/components/organisms/propertyList'
 import { PropertyCard } from '@/api/types/property.type'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
-import { useState, useRef, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { Button } from '@/components/atoms/button'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import { useListContext } from '@/contexts/list/useListContext'
@@ -13,8 +13,10 @@ import PromoFeaturesSection from '@/components/organisms/promoFeaturesSection'
 import TopInterestSection from '@/components/organisms/topInterestSection'
 import { List } from '@/contexts/list'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
+import ClearFilterButton from '@/components/atoms/clearFilterButton'
 import type { VipTier } from '@/api/types/vip-tier.type'
 import type { GetPackagesResponse } from '@/api/types/memembership.type'
+import type { CityItem } from '@/components/organisms/locationBrowseSection/types'
 
 interface HomepageTemplateProps {
   onPropertyClick?: (property: PropertyCard) => void
@@ -24,33 +26,25 @@ interface HomepageTemplateProps {
 
 const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   onPropertyClick,
-  vipTiers,
-  membershipPackages,
 }) => {
   const t = useTranslations()
   const { pagination } = useListContext()
   const router = useRouter()
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
-  const filterApplyRef = useRef<(() => void) | undefined>(undefined)
 
   const handlePropertyClick = (property: PropertyCard) => {
     console.log('Property clicked:', property)
     onPropertyClick?.(property)
   }
 
-  // TODO: Use vipTiers and membershipPackages in UI
-  console.log('VIP Tiers:', vipTiers)
-  console.log('Membership Packages:', membershipPackages)
-
-  const handleApplyFilter = useCallback(() => {
-    // Trigger the filter bar's apply which will push params
-    filterApplyRef.current?.()
-  }, [])
-
-  const ApplyFilterButton = () => (
-    <Button onClick={handleApplyFilter} variant='default' className='px-6'>
-      {t('common.filter')}
-    </Button>
+  const handleSelectCity = useCallback(
+    (city: CityItem) => {
+      router.push({
+        pathname: PUBLIC_ROUTES.RESIDENTIAL_LIST,
+        query: { city: city.name },
+      })
+    },
+    [router],
   )
 
   return (
@@ -83,9 +77,10 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                 </div>
                 <div className='backdrop-blur-sm bg-white/75 dark:bg-black/50 p-3 sm:p-4 rounded-xl shadow-lg ring-1 ring-white/40 dark:ring-white/10'>
                   <div className='flex flex-col gap-3'>
-                    <ResidentialFilterResponsive onApplyRef={filterApplyRef} />
-                    <div className='flex justify-end'>
-                      <ApplyFilterButton />
+                    <ResidentialFilterResponsive />
+                    <div className='flex justify-between items-center'>
+                      {/* ClearFilterButton is always present but hidden on homepage by default */}
+                      <ClearFilterButton show={false} onClick={() => {}} />
                     </div>
                   </div>
                 </div>
@@ -154,6 +149,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                   listings: 3457,
                 },
               ]}
+              onSelectCity={handleSelectCity}
             />
             <PromoFeaturesSection />
           </div>

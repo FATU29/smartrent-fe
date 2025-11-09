@@ -17,7 +17,8 @@ const AuthDialog = dynamic(() => import('@/components/organisms/authDialog'), {
 type AuthDialogContextType = {
   open: boolean
   type: AuthType
-  openAuth: (type?: AuthType) => void
+  returnUrl: string | null
+  openAuth: (type?: AuthType, returnUrl?: string) => void
   closeAuth: () => void
 }
 
@@ -28,17 +29,25 @@ const AuthDialogContext = createContext<AuthDialogContextType | undefined>(
 export const AuthDialogProvider = ({ children }: PropsWithChildren) => {
   const [open, setOpen] = useState(false)
   const [type, setType] = useState<AuthType>('login')
+  const [returnUrl, setReturnUrl] = useState<string | null>(null)
 
-  const openAuth = useCallback((t: AuthType = 'login') => {
+  const openAuth = useCallback((t: AuthType = 'login', url?: string) => {
     setType(t)
+    setReturnUrl(url || null)
+    try {
+      if (url) localStorage.setItem('returnUrl', url)
+    } catch {}
     setOpen(true)
   }, [])
 
-  const closeAuth = useCallback(() => setOpen(false), [])
+  const closeAuth = useCallback(() => {
+    setOpen(false)
+    setReturnUrl(null)
+  }, [])
 
   const value = useMemo(
-    () => ({ open, type, openAuth, closeAuth }),
-    [open, type, openAuth, closeAuth],
+    () => ({ open, type, returnUrl, openAuth, closeAuth }),
+    [open, type, returnUrl, openAuth, closeAuth],
   )
 
   return (

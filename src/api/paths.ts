@@ -86,6 +86,20 @@ export const PATHS = {
     ALL: '/v1/vip-tiers/all',
   },
 
+  // Payment endpoints
+  PAYMENT: {
+    CREATE: '/v1/payments/create',
+    REFUND: '/v1/payments/refund/:transactionRef',
+    CANCEL: '/v1/payments/cancel/:transactionRef',
+    TRANSACTION: '/v1/payments/transactions/:txnRef',
+    PROVIDERS: '/v1/payments/providers',
+    HISTORY: '/v1/payments/history',
+    HISTORY_BY_STATUS: '/v1/payments/history/status/:status',
+    EXISTS: '/v1/payments/exists/:transactionRef',
+    IPN: '/v1/payments/ipn/:provider',
+    CALLBACK: '/v1/payments/callback/:provider',
+  },
+
   // Media endpoints
   MEDIA: {
     UPLOAD_URL: '/v1/media/upload-url',

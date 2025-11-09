@@ -1,6 +1,6 @@
 import React from 'react'
 import { useRouter } from 'next/router'
-import MainLayout from '@/components/layouts/MainLayout'
+import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import DetailPostTemplate from '@/components/templates/detailPostTemplate'
 import {

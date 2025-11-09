@@ -37,7 +37,6 @@ export enum PaymentProvider {
 export interface PurchaseMembershipRequest {
   readonly membershipId: number
   readonly paymentProvider: PaymentProvider
-  readonly returnUrl: string
 }
 
 export interface PurchaseMembershipResponse {

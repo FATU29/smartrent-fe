@@ -15,7 +15,7 @@ export interface ListFilters {
   bathrooms?: number
   propertyType?: string
   city?: string
-  amenities?: string[]
+  amenities?: { id: number; name?: string }[] // Array of amenity objects with id and optional name
   // Extended residential specific filters
   verified?: boolean
   professionalBroker?: boolean
@@ -29,11 +29,19 @@ export interface ListFilters {
   hasVideo?: boolean
   has360?: boolean
   // Location & Project (cascading)
-  provinceId?: string
-  districtId?: string
-  wardId?: string
+  // Legacy structure (63 provinces)
+  province?: string
+  district?: string
+  ward?: string
+  // New structure (34 provinces)
+  newProvinceCode?: string
+  newWardCode?: string
+  // Common fields
   streetId?: string
   projectId?: string
+  addressStructureType?: 'legacy' | 'new'
+  searchAddress?: string
+  addressEdited?: boolean
   [key: string]: unknown
 }
 

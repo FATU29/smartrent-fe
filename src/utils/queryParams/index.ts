@@ -21,41 +21,158 @@ function toQueryValue(value: unknown): string | undefined {
 }
 
 /**
+ * Helper to parse string query params
+ */
+function parseStringParam(
+  query: ParsedUrlQuery,
+  key: string,
+): string | undefined {
+  return query[key] ? (query[key] as string) : undefined
+}
+
+/**
+ * Helper to parse number query params
+ */
+function parseNumberParam(
+  query: ParsedUrlQuery,
+  key: string,
+): number | undefined {
+  return query[key] ? Number(query[key]) : undefined
+}
+
+/**
+ * Helper to parse boolean query params
+ */
+function parseBooleanParam(
+  query: ParsedUrlQuery,
+  key: string,
+): boolean | undefined {
+  return query[key] === 'true' ? true : undefined
+}
+
+/**
+ * Helper to parse amenities array
+ */
+function parseAmenities(
+  query: ParsedUrlQuery,
+): Array<{ id: number }> | undefined {
+  if (!query.amenities) return undefined
+
+  const ids = (query.amenities as string)
+    .split(',')
+    .map((id) => Number(id))
+    .filter((id) => !isNaN(id))
+
+  return ids.length > 0 ? ids.map((id) => ({ id })) : undefined
+}
+
+/**
+ * Parse basic property filters
+ */
+function parseBasicFilters(query: ParsedUrlQuery): Partial<ListFilters> {
+  const filters: Partial<ListFilters> = {}
+
+  // Property type - map 'category' to 'propertyType'
+  filters.propertyType =
+    parseStringParam(query, 'category') || parseStringParam(query, 'type')
+  filters.search = parseStringParam(query, 'search')
+  filters.city = parseStringParam(query, 'city')
+
+  // Price range
+  filters.minPrice = parseNumberParam(query, 'minPrice')
+  filters.maxPrice = parseNumberParam(query, 'maxPrice')
+
+  // Area range
+  filters.minArea = parseNumberParam(query, 'minArea')
+  filters.maxArea = parseNumberParam(query, 'maxArea')
+
+  // Frontage range
+  filters.minFrontage = parseNumberParam(query, 'minFrontage')
+  filters.maxFrontage = parseNumberParam(query, 'maxFrontage')
+
+  // Rooms
+  filters.bedrooms = parseNumberParam(query, 'bedrooms')
+  filters.bathrooms = parseNumberParam(query, 'bathrooms')
+
+  // Amenities
+  filters.amenities = parseAmenities(query)
+
+  // Pagination
+  filters.page = parseNumberParam(query, 'page')
+
+  return filters
+}
+
+/**
+ * Parse boolean feature filters
+ */
+function parseFeatureFilters(query: ParsedUrlQuery): Partial<ListFilters> {
+  return {
+    verified: parseBooleanParam(query, 'verified'),
+    professionalBroker: parseBooleanParam(query, 'professionalBroker'),
+    hasVideo: parseBooleanParam(query, 'hasVideo'),
+    has360: parseBooleanParam(query, 'has360'),
+  }
+}
+
+/**
+ * Parse utility price filters
+ */
+function parseUtilityFilters(query: ParsedUrlQuery): Partial<ListFilters> {
+  return {
+    orientation: parseStringParam(query, 'orientation'),
+    moveInTime: parseStringParam(query, 'moveInTime'),
+    electricityPrice: parseStringParam(query, 'electricityPrice'),
+    waterPrice: parseStringParam(query, 'waterPrice'),
+    internetPrice: parseStringParam(query, 'internetPrice'),
+  }
+}
+
+/**
+ * Parse address filters
+ */
+function parseAddressFilters(query: ParsedUrlQuery): Partial<ListFilters> {
+  const filters: Partial<ListFilters> = {}
+
+  // Legacy structure (63 provinces)
+  filters.province = parseStringParam(query, 'province')
+  filters.district = parseStringParam(query, 'district')
+  filters.ward = parseStringParam(query, 'ward')
+
+  // New structure (34 provinces)
+  filters.newProvinceCode = parseStringParam(query, 'newProvinceCode')
+  filters.newWardCode = parseStringParam(query, 'newWardCode')
+
+  // Common fields
+  filters.streetId = parseStringParam(query, 'streetId')
+  filters.projectId = parseStringParam(query, 'projectId')
+
+  // Structure type flag
+  if (query.addressType === 'legacy' || query.addressType === 'new') {
+    filters.addressStructureType = query.addressType as 'legacy' | 'new'
+  }
+
+  return filters
+}
+
+/**
  * Parse URL query params into ListFilters format
- * Maps 'category' to 'propertyType', handles numbers/arrays/booleans
+ * Split into smaller functions to reduce complexity
  */
 export function getFiltersFromQuery(
   query: ParsedUrlQuery,
 ): Partial<ListFilters> {
-  const filters: Partial<ListFilters> = {}
-
-  // Map category → propertyType (homepage uses 'category', list pages might use 'type')
-  if (query.category) filters.propertyType = query.category as string
-  if (query.type) filters.propertyType = query.type as string
-
-  if (query.search) filters.search = query.search as string
-
-  if (query.minPrice) filters.minPrice = Number(query.minPrice)
-  if (query.maxPrice) filters.maxPrice = Number(query.maxPrice)
-
-  if (query.minArea) filters.minArea = Number(query.minArea)
-  if (query.maxArea) filters.maxArea = Number(query.maxArea)
-
-  if (query.bedrooms) filters.bedrooms = Number(query.bedrooms)
-  if (query.bathrooms) filters.bathrooms = Number(query.bathrooms)
-
-  if (query.city) filters.city = query.city as string
-
-  if (query.amenities) {
-    filters.amenities = (query.amenities as string).split(',')
+  const merged: Partial<ListFilters> = {
+    ...parseBasicFilters(query),
+    ...parseFeatureFilters(query),
+    ...parseUtilityFilters(query),
+    ...parseAddressFilters(query),
   }
 
-  if (query.verified === 'true') filters.verified = true
-  if (query.professionalBroker === 'true') filters.professionalBroker = true
-
-  if (query.page) filters.page = Number(query.page)
-
-  return filters
+  // Remove undefined values so callers get a clean, serializable object
+  return Object.fromEntries(
+    Object.entries(merged).filter(([, v]) => v !== undefined),
+  ) as Partial<ListFilters>
 }
 
 /**
