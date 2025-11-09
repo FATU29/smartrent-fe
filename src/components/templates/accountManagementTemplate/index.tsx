@@ -14,31 +14,20 @@ type PersonalInfoData = {
   avatar?: File
 }
 
-type PasswordChangeData = {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
-}
-
 type AccountManagementTemplateProps = {
   onPersonalInfoUpdate?: (data: PersonalInfoData) => Promise<boolean>
-  onPasswordChange?: (data: PasswordChangeData) => Promise<boolean>
   className?: string
 }
 
 const AccountManagementTemplate: NextPage<AccountManagementTemplateProps> = ({
   onPersonalInfoUpdate,
-  onPasswordChange,
   className,
 }) => {
   return (
     <div className={cn('min-h-screen bg-background', className)}>
       {/* Main Content */}
       <main className='container mx-auto  md:py-8 md:px-4'>
-        <AccountManagement
-          onPersonalInfoUpdate={onPersonalInfoUpdate}
-          onPasswordChange={onPasswordChange}
-        />
+        <AccountManagement onPersonalInfoUpdate={onPersonalInfoUpdate} />
       </main>
     </div>
   )

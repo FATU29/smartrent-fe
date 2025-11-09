@@ -1,22 +1,25 @@
 import React from 'react'
-import MainLayout from '@/components/layouts/MainLayout'
+import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
 import ResidentialPropertiesTemplate from '@/components/templates/residentialProperties'
 import { ListProvider } from '@/contexts/list/index.context'
-import { fetchListings, getInitial } from '@/api/services'
+import { fetchListings } from '@/api/services/listing.service'
 import { PropertyCard } from '@/api/types/property.type'
-import { GetStaticProps, GetStaticPaths } from 'next'
+import type { GetServerSideProps } from 'next'
 import LocationProvider from '@/contexts/location'
+import { getFiltersFromQuery } from '@/utils/queryParams'
+import { ListFilters } from '@/contexts/list/index.type'
 
 interface ResidentialPropertiesPageProps {
   initialData: PropertyCard[]
+  initialFilters: Partial<ListFilters>
 }
 
 const ResidentialPropertiesPage: NextPageWithLayout<
   ResidentialPropertiesPageProps
-> = ({ initialData }) => {
+> = ({ initialData, initialFilters }) => {
   const t = useTranslations('navigation')
 
   return (
@@ -26,7 +29,11 @@ const ResidentialPropertiesPage: NextPageWithLayout<
         description='Residential property search'
       />
       <div className='container mx-auto py-6 px-4 md:px-0'>
-        <ListProvider fetcher={fetchListings} initialData={initialData}>
+        <ListProvider
+          fetcher={fetchListings}
+          initialData={initialData}
+          initialFilters={initialFilters}
+        >
           <LocationProvider>
             <ResidentialPropertiesTemplate />
           </LocationProvider>
@@ -44,15 +51,25 @@ ResidentialPropertiesPage.getLayout = function getLayout(
 
 export default ResidentialPropertiesPage
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  // Return empty paths array with blocking fallback to accept all paths dynamically
-  return {
-    paths: [],
-    fallback: 'blocking', // All paths will be generated on-demand
-  }
-}
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  try {
+    const parsed = getFiltersFromQuery(ctx.query)
+    const filters: ListFilters = {
+      search: '',
+      perPage: 10,
+      page: 1,
+      ...parsed,
+    }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const initialData = await getInitial()
-  return { props: { initialData } }
+    const list = await fetchListings(filters)
+    return {
+      props: {
+        initialData: list.data as PropertyCard[],
+        initialFilters: parsed,
+      },
+    }
+  } catch {
+    // If something goes wrong, still render page without data
+    return { props: { initialData: [], initialFilters: {} } }
+  }
 }

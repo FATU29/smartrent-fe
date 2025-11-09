@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
-import { Building2, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import VerticalNav, {
   type VerticalNavItem,
 } from '@/components/molecules/verticalNav/VerticalNav'
-import MainLayout from '@/components/layouts/MainLayout'
+import MainLayout from '@/components/layouts/homePageLayout'
 import { SELLERNET_NAV, SellernetNavItem } from './index.helper'
 import { NAV_ITEMS } from '@/components/layouts/sellerLayout/index.helper'
 import MobileNavItem from '@/components/atoms/nav/MobileNavItem'
@@ -75,20 +74,6 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
           <div className='grid grid-cols-1 md:grid-cols-[auto_1fr] md:gap-0 pt-0 pb-4 md:pb-6'>
             <aside className='hidden md:block'>
               <div className='sticky top-0 h-screen border-r bg-card overflow-y-auto overflow-x-hidden flex flex-col z-40 w-fit min-w-[180px] p-3 pr-5'>
-                <Link
-                  href='/'
-                  className='flex items-center gap-2 px-2 py-2 mb-2'
-                >
-                  <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
-                    <Building2 className='h-4 w-4' />
-                  </span>
-                  <span className='text-base font-semibold tracking-tight'>
-                    SmartRent
-                  </span>
-                </Link>
-
-                {/* floating toggle moved outside; removed here */}
-
                 <VerticalNav
                   items={items}
                   t={(key) => t(key)}
@@ -99,10 +84,10 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
 
             <section className='min-h-[60vh] pb-[calc(env(safe-area-inset-bottom)+64px)] md:pb-0 pt-[calc(env(safe-area-inset-top)+56px)] md:pt-0 flex flex-col'>
               <div className='fixed inset-x-0 top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 border-b shadow-sm md:shadow md:sticky md:inset-x-auto md:top-0'>
-                <div className='px-4 sm:px-6 pt-[max(env(safe-area-inset-top),0px)] md:pl-9 md:pr-6 md:pt-0'>
+                <div className='px-4 sm:px-6 pt-[max(env(safe-area-inset-top),0px)] md:px-6 md:pt-0'>
                   <div className='flex h-14 items-center justify-between gap-2 md:gap-3 md:h-auto md:py-4'>
                     <div className='min-w-0'>
-                      <div className='text-base md:text-lg font-semibold truncate'>
+                      <div className='hidden md:block text-base md:text-lg font-semibold truncate'>
                         {activeTitle}
                       </div>
                     </div>

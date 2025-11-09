@@ -69,13 +69,22 @@ const AppHeader: React.FC<AppHeaderProps> = ({
     <div className='flex items-center gap-2 sm:gap-3'>
       <LanguageSwitch />
       <ThemeSwitch />
+      <Button
+        onClick={() => router.push('/seller/create-post')}
+        variant='default'
+        size='sm'
+        className='bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-md transition-all duration-300 text-xs sm:text-sm'
+      >
+        {t('common.createPost')}
+      </Button>
       {isAuthenticated ? (
         <UserDropdown />
       ) : (
         <Button
-          onClick={() => openAuth('login')}
+          onClick={() => openAuth('login', router.asPath)}
           size='sm'
-          className='text-xs sm:text-sm'
+          variant='default'
+          className='bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-md transition-all duration-300 text-xs sm:text-sm'
         >
           {t('homePage.auth.login.loginButton')}
         </Button>
