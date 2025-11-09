@@ -17,6 +17,7 @@ import { AuthDialogProvider } from '@/contexts/authDialog'
 import { fontVariables } from '@/theme/fonts'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import AuthRouteGate from '@/components/utility/AuthRouteGate'
 
 const messages = {
   vi,
@@ -45,6 +46,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
             <ThemeDataProvider>
               <AuthProvider>
                 <AuthDialogProvider>
+                  <AuthRouteGate />
                   {getLayout(<Component {...pageProps} />)}
                   <Toaster />
                 </AuthDialogProvider>

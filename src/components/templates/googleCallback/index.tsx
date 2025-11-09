@@ -28,9 +28,17 @@ export default function GoogleCallback() {
   const [error, setError] = useState<string>('')
 
   const handleRedirect = useCallback(() => {
-    const returnTo = localStorage.getItem('returnTo') || DEFAULT_RETURN_PATH
-    localStorage.removeItem('returnTo')
-    router.push(returnTo)
+    // Prefer unified returnUrl key used by middleware/AuthRouteGate
+    const returnUrl = localStorage.getItem('returnUrl')
+    const legacyReturnTo = localStorage.getItem('returnTo')
+    const target = returnUrl || legacyReturnTo || DEFAULT_RETURN_PATH
+    // Cleanup both keys to avoid stale redirects
+    try {
+      localStorage.removeItem('returnUrl')
+      localStorage.removeItem('returnTo')
+    } catch {}
+    // Use replace to avoid creating a new history entry for the callback page
+    router.replace(target)
   }, [router])
 
   const handleOAuthSuccess = useCallback(

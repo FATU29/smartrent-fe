@@ -8,7 +8,10 @@ import MobileFilterMainView from '@/components/molecules/mobileFilter/mainView'
 import RangeView from '@/components/molecules/mobileFilter/rangeView'
 import SimpleListView from '@/components/molecules/mobileFilter/simpleListView'
 import OrientationView from '@/components/molecules/mobileFilter/orientationView'
+import AmenitiesView from '@/components/molecules/mobileFilter/amenitiesView'
 import AreaProjectView from '@/components/molecules/mobileFilter/areaProjectView'
+import AddressView from '@/components/molecules/mobileFilter/addressView'
+import { AddressFilterData } from '@/components/molecules/filterAddress'
 
 // ResidentialFilterDialog
 // Reusable full-screen (mobile) or centered (desktop) dialog hosting the multi-step filter views.
@@ -23,6 +26,7 @@ interface ResidentialFilterDialogProps {
   onOpenChange: (open: boolean) => void
   title?: string
   searchValue?: string
+  onApply?: (filters: ListFilters) => void
 }
 
 type ViewKey =
@@ -35,7 +39,9 @@ type ViewKey =
   | 'waterPrice'
   | 'internetPrice'
   | 'orientation'
+  | 'amenities'
   | 'areaProject'
+  | 'address'
 
 const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   value,
@@ -46,6 +52,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   onOpenChange,
   title,
   searchValue,
+  onApply,
 }) => {
   const t = useTranslations('residentialFilter')
   const [view, setView] = useState<ViewKey>('main')
@@ -55,6 +62,10 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   }, [open])
 
   const apply = () => {
+    if (onApply) {
+      onApply(value)
+      return
+    }
     onChange(value)
     if (onSearch && searchValue !== undefined) onSearch(searchValue)
     onOpenChange(false)
@@ -147,11 +158,49 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
             onChange={(v) => update({ orientation: v })}
           />
         )
+      case 'amenities':
+        return (
+          <AmenitiesView
+            values={value.amenities || []}
+            onChange={(v) => update({ amenities: v })}
+          />
+        )
       case 'areaProject':
         return (
           <AreaProjectView
             value={value}
             onChange={(partial: Partial<ListFilters>) => update(partial)}
+          />
+        )
+      case 'address':
+        return (
+          <AddressView
+            value={{
+              province: value.province,
+              district: value.district,
+              ward: value.ward,
+              newProvinceCode: value.newProvinceCode,
+              newWardCode: value.newWardCode,
+              streetId: value.streetId,
+              projectId: value.projectId,
+              addressStructureType: value.addressStructureType,
+              searchAddress: value.searchAddress,
+              addressEdited: value.addressEdited,
+            }}
+            onChange={(addressData: Partial<AddressFilterData>) =>
+              update({
+                province: addressData.province,
+                district: addressData.district,
+                ward: addressData.ward,
+                newProvinceCode: addressData.newProvinceCode,
+                newWardCode: addressData.newWardCode,
+                streetId: addressData.streetId,
+                projectId: addressData.projectId,
+                addressStructureType: addressData.addressStructureType,
+                searchAddress: addressData.searchAddress,
+                addressEdited: addressData.addressEdited,
+              })
+            }
           />
         )
       default:
@@ -172,7 +221,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
     >
       <DialogContent
         showCloseButton={false}
-        className='size-full md:h-[90vh] max-w-none md:max-w-md rounded-none md:rounded-lg p-0 flex flex-col'
+        className='size-full md:h-[90vh] max-w-none md:max-w-[500px] rounded-none md:rounded-lg p-0 flex flex-col'
       >
         <MobileFilterHeader
           title={title || t('actions.filter')}

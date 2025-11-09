@@ -47,37 +47,31 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
     return parts.join(' ') + (unit ? ` ${unit}` : '')
   }
 
-  const AMENITY_KEYS: string[] = [
-    'securityService',
-    'camera',
-    'fireSafety',
-    'parking',
-    'balcony',
-    'garden',
-  ]
-
-  const toggleAmenity = (k: string) => {
-    const current = filters.amenities || []
-    if (current.includes(k)) {
-      onUpdate({ amenities: current.filter((v) => v !== k) })
-    } else {
-      onUpdate({ amenities: [...current, k] })
-    }
-  }
-
   return (
     <div className='pb-20'>
       <div className='space-y-1'>
         <RadioRow
           label={
-            filters.provinceId || filters.districtId || filters.projectId
-              ? `${t('dropdowns.areaProject')} (${t('areaProject.added')})`
-              : `${t('dropdowns.areaProject')} (${t('areaProject.add')})`
+            filters.province ||
+            filters.district ||
+            filters.projectId ||
+            filters.newProvinceCode ||
+            filters.newWardCode ||
+            filters.searchAddress
+              ? `${t('dropdowns.address')} (${t('address.added')})`
+              : `${t('dropdowns.address')} (${t('address.add')})`
           }
           selected={
-            !!(filters.provinceId || filters.districtId || filters.projectId)
+            !!(
+              filters.province ||
+              filters.district ||
+              filters.projectId ||
+              filters.newProvinceCode ||
+              filters.newWardCode ||
+              filters.searchAddress
+            )
           }
-          onClick={() => onNavigate('areaProject')}
+          onClick={() => onNavigate('address')}
           iconLeft={<MapPin className='h-4 w-4 text-muted-foreground' />}
         />
         <RadioRow
@@ -130,6 +124,12 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           onClick={() => onNavigate('internetPrice')}
           iconLeft={<Wifi className='h-4 w-4 text-muted-foreground' />}
         />
+        <RadioRow
+          label={`${t('amenities.title')} ${filters.amenities && filters.amenities.length > 0 ? `(${filters.amenities.length})` : ''}`}
+          selected={!!(filters.amenities && filters.amenities.length > 0)}
+          onClick={() => onNavigate('amenities')}
+          iconLeft={<Camera className='h-4 w-4 text-muted-foreground' />}
+        />
       </div>
 
       <div className='p-4 space-y-6'>
@@ -162,22 +162,6 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           title={t('toggles.location')}
         >
           <LocationToggleChip />
-        </ToggleSection>
-
-        <ToggleSection
-          icon={<Camera className='h-4 w-4 text-muted-foreground' />}
-          title={t('amenities.title')}
-        >
-          <div className='flex flex-wrap gap-2'>
-            {AMENITY_KEYS.map((k) => (
-              <ToggleChip
-                key={k}
-                label={t(`amenities.${k}`)}
-                active={!!filters.amenities?.includes(k)}
-                onClick={() => toggleAmenity(k)}
-              />
-            ))}
-          </div>
         </ToggleSection>
 
         <ToggleSection

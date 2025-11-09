@@ -1,13 +1,13 @@
+import React from 'react'
 import HomepageTemplate from '@/components/templates/homepage'
-import { getInitial, fetchListings } from '@/api/services'
+import { getInitial, fetchListings } from '@/api/services/listing.service'
 import { MembershipService } from '@/api/services/membership.service'
 import { VipTierService } from '@/api/services/vip-tier.service'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { PropertyCard } from '@/api/types/property.type'
 import { ListProvider } from '@/contexts/list/index.context'
-import MainLayout from '@/components/layouts/MainLayout'
-import React from 'react'
+import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import LocationProvider from '@/contexts/location'
@@ -69,8 +69,8 @@ export default Home
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
-    // Parse filters from URL query
-    const queryFilters = getFiltersFromQuery(context.query)
+    // Parse filters from URL query (already cleaned inside getFiltersFromQuery)
+    const initialFiltersFromQuery = getFiltersFromQuery(context.query)
 
     const [initialProperties, vipTiersResponse, membershipPackagesResponse] =
       await Promise.all([
@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         membershipPackages: membershipPackagesResponse.data || {
           packages: [],
         },
-        initialFilters: queryFilters,
+        initialFilters: initialFiltersFromQuery,
       },
     }
   } catch (error) {
