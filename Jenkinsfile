@@ -295,6 +295,47 @@ pipeline {
         }
       }
     }
+
+    stage('Deploy to Production') {
+      when {
+        allOf {
+          branch 'main'
+          expression { 
+            return currentBuild.result == null || currentBuild.result == 'SUCCESS' 
+          }
+        }
+      }
+      options {
+        timeout(time: 15, unit: 'MINUTES')
+      }
+      steps {
+        script {
+          echo "🚀 Deploying to production environment..."
+          
+          withCredentials([
+            string(credentialsId: 'DOCKER_TOKEN', variable: 'DOCKER_TOKEN')
+          ]) {
+            // Run deploy script (builds, pushes, and pulls image with nginx)
+            sh """
+              chmod +x deploy.sh
+              export DOCKER_TOKEN=\${DOCKER_TOKEN}
+              ./deploy.sh
+            """
+          }
+        }
+      }
+      post {
+        success {
+          echo "✅ Deployment to production completed successfully!"
+        }
+        failure {
+          script {
+            env.FAILED_STAGE = 'Deploy to Production'
+            echo "❌ Deployment to production failed!"
+          }
+        }
+      }
+    }
   }
 
   post {

@@ -5,6 +5,7 @@ const IMAGE_REMOTE_HOST = process.env.NEXT_PUBLIC_IMAGE_REMOTE_HOST
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   basePath: '',
+  output: 'standalone', // Enable standalone output for Docker
   images: {
     remotePatterns: IMAGE_REMOTE_HOST
       ? [
