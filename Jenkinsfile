@@ -17,13 +17,10 @@ pipeline {
 
   options {
     buildDiscarder(logRotator(numToKeepStr: '10'))
-    timeout(time: 30, unit: 'MINUTES')
+    timeout(time: 20, unit: 'MINUTES')
     timestamps()
     ansiColor('xterm')
-    // Cancel previous builds when a new build starts (for same PR/branch)
-    // This ensures only the latest commit runs CI
     disableConcurrentBuilds(abortPrevious: true)
-    // Skip stages if workspace is unchanged (saves time on rebuilds)
     skipStagesAfterUnstable()
   }
 
@@ -209,137 +206,91 @@ pipeline {
       }
     }
 
-    stage('Build') {
-      options {
-        // Increase timeout for build stage (build can take longer)
-        timeout(time: 45, unit: 'MINUTES')
-      }
-      steps {
-        nodejs(nodeJSInstallationName: env.NODEJS_TOOL_NAME ?: 'NodeJS') {
-          script {
-            echo "Building Next.js application with optimized caching..."
-            echo "Using build:check to skip lint/typecheck (already done in Validation stage)"
-            try {
-              // Create cache directories for Next.js build cache
-              sh """
-                mkdir -p ${NEXT_BUILD_CACHE_DIR}
-                mkdir -p .next/cache
-              """
-              
-              // Use build:check to skip lint/typecheck (already validated in separate stages)
-              // This significantly speeds up the build process
-              // Set NODE_ENV=production for faster builds
-              sh """
-                NODE_ENV=production npm run build:check
-              """
-              env.BUILD_STATUS = 'SUCCESS'
-              echo "✅ Build completed successfully!"
-            } catch (Exception e) {
-              echo "❌ Caught exception: ${e.getClass().getName()}"
-              echo "❌ Error message: ${e.getMessage()}"
-              env.FAILED_STAGE = 'Build'
-              env.BUILD_STATUS = 'FAILED'
-              error("Build failed: ${e.getMessage()}")
-            }
+    // Run Build and SonarCloud in parallel for faster pipeline
+    stage('Build & Quality') {
+      parallel {
+        stage('Build') {
+          options {
+            timeout(time: 30, unit: 'MINUTES')
           }
-        }
-      }
-      post {
-        success {
-          script {
-            echo "✅ Build completed successfully!"
-            archiveArtifacts artifacts: '.next/**/*', allowEmptyArchive: false, fingerprint: true
-          }
-        }
-        failure {
-          script {
-            echo "❌ Build failed. Please check the build logs."
-            // Archive build logs for debugging
-            archiveArtifacts artifacts: '**/build-output.log', allowEmptyArchive: true
-          }
-        }
-      }
-    }
-
-    stage('SonarCloud Analysis') {
-      options {
-        // Increase timeout to 20 minutes (optimized configuration should be faster)
-        timeout(time: 20, unit: 'MINUTES')
-        // Allow SonarCloud to run even if build fails (for code quality monitoring)
-        skipDefaultCheckout(false)
-      }
-      steps {
-        script {
-          echo "Running SonarCloud analysis (optimized for performance)..."
-          
-          withCredentials([
-            string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN'),
-            string(credentialsId: 'SONAR_PROJECT_KEY', variable: 'SONAR_PROJECT_KEY'),
-            string(credentialsId: 'SONAR_ORG', variable: 'SONAR_ORG')
-          ]) {
+          steps {
             nodejs(nodeJSInstallationName: env.NODEJS_TOOL_NAME ?: 'NodeJS') {
-              try {
-                // Check if sonar-scanner is available, if not use npx
-                def scannerCommand = sh(
-                  script: 'which sonar-scanner || echo "not-found"',
-                  returnStdout: true
-                ).trim()
-
-                def sonarCmd = scannerCommand != 'not-found' ? 'sonar-scanner' : 'npx -y sonar-scanner@latest'
-
-                // Optimized SonarCloud configuration for faster analysis
-                // Key optimizations:
-                // 1. More exclusions to reduce files scanned
-                // 2. Higher CPD minimum tokens (reduces duplicate detection overhead)
-                // 3. Disable unnecessary analysis features
-                // 4. Limit analysis to changed files when possible
-                sh """
-                  ${sonarCmd} \\
-                    -Dsonar.projectKey=\${SONAR_PROJECT_KEY} \\
-                    -Dsonar.organization=\${SONAR_ORG} \\
-                    -Dsonar.sources=src \\
-                    -Dsonar.sourceEncoding=UTF-8 \\
-                    -Dsonar.host.url=https://sonarcloud.io \\
-                    -Dsonar.login=\${SONAR_TOKEN} \\
-                    -Dsonar.exclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/__tests__/**,**/__mocks__/**,**/constants/common/districts.ts,**/constants/common/wards.ts,**/node_modules/**,**/.next/**,**/dist/**,**/build/**,**/*.d.ts,**/types/**,**/generated/**,**/coverage/**,**/.cache/**,**/public/**,**/messages/** \\
-                    -Dsonar.cpd.exclusions=**/constants/common/districts.ts,**/constants/common/wards.ts,**/constants/common/provinces.ts \\
-                    -Dsonar.coverage.exclusions=src/**/* \\
-                    -Dsonar.cpd.minimumTokens=150 \\
-                    -Dsonar.javascript.lcov.reportPaths= \\
-                    -Dsonar.typescript.lcov.reportPaths= \\
-                    -Dsonar.typescript.tsconfigPath=tsconfig.json
-                """
-                echo "✅ SonarCloud analysis completed!"
-              } catch (Exception e) {
-                echo "❌ Caught exception: ${e.getClass().getName()}"
-                echo "❌ Error message: ${e.getMessage()}"
-                env.FAILED_STAGE = 'SonarCloud Analysis'
-                // Don't fail the entire build on SonarCloud timeout/errors
-                // SonarCloud is for code quality monitoring, not blocking deployment
-                if (e.getMessage().contains('Timeout')) {
-                  echo "⚠️ SonarCloud analysis timed out (this is common for large projects)"
-                  echo "ℹ️ Consider running SonarCloud analysis separately or reducing scan scope"
-                } else {
-                  echo "⚠️ SonarCloud analysis failed but continuing pipeline..."
+              script {
+                echo "Building Next.js application..."
+                try {
+                  sh """
+                    mkdir -p ${NEXT_BUILD_CACHE_DIR}
+                    mkdir -p .next/cache
+                    NODE_ENV=production npm run build:check
+                  """
+                  env.BUILD_STATUS = 'SUCCESS'
+                  echo "✅ Build completed successfully!"
+                } catch (Exception e) {
+                  env.FAILED_STAGE = 'Build'
+                  env.BUILD_STATUS = 'FAILED'
+                  error("Build failed: ${e.getMessage()}")
                 }
-                echo "ℹ️ Check SonarCloud dashboard for details"
-                // Uncomment below if you want SonarCloud failures to fail the build:
-                // env.BUILD_STATUS = 'FAILED'
-                // error("SonarCloud analysis failed: ${e.getMessage()}")
               }
             }
           }
-        }
-      }
-      post {
-        always {
-          script {
-            echo "SonarCloud analysis stage completed."
+          post {
+            success {
+              archiveArtifacts artifacts: '.next/**/*', allowEmptyArchive: false, fingerprint: true
+            }
           }
         }
-        failure {
-          script {
-            echo "❌ SonarCloud analysis failed. Check SonarCloud dashboard for details."
+
+        stage('SonarCloud Analysis') {
+          options {
+            timeout(time: 10, unit: 'MINUTES')
+            // Non-blocking: don't fail pipeline if SonarCloud fails
+            skipDefaultCheckout(false)
+          }
+          steps {
+            script {
+              echo "Running SonarCloud analysis (fast mode)..."
+              
+              withCredentials([
+                string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN'),
+                string(credentialsId: 'SONAR_PROJECT_KEY', variable: 'SONAR_PROJECT_KEY'),
+                string(credentialsId: 'SONAR_ORG', variable: 'SONAR_ORG')
+              ]) {
+                nodejs(nodeJSInstallationName: env.NODEJS_TOOL_NAME ?: 'NodeJS') {
+                  try {
+                    def sonarCmd = sh(
+                      script: 'which sonar-scanner || echo "npx -y sonar-scanner@latest"',
+                      returnStdout: true
+                    ).trim()
+                    
+                    if (sonarCmd == 'npx -y sonar-scanner@latest') {
+                      sonarCmd = 'npx -y sonar-scanner@latest'
+                    }
+
+                    // Optimized for speed: minimal analysis, more exclusions, higher CPD threshold
+                    sh """
+                      ${sonarCmd} \\
+                        -Dsonar.projectKey=\${SONAR_PROJECT_KEY} \\
+                        -Dsonar.organization=\${SONAR_ORG} \\
+                        -Dsonar.sources=src \\
+                        -Dsonar.sourceEncoding=UTF-8 \\
+                        -Dsonar.host.url=https://sonarcloud.io \\
+                        -Dsonar.login=\${SONAR_TOKEN} \\
+                        -Dsonar.exclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/__tests__/**,**/__mocks__/**,**/constants/common/**,**/node_modules/**,**/.next/**,**/dist/**,**/build/**,**/*.d.ts,**/types/**,**/generated/**,**/coverage/**,**/.cache/**,**/public/**,**/messages/**,**/scripts/** \\
+                        -Dsonar.cpd.exclusions=**/constants/common/** \\
+                        -Dsonar.coverage.exclusions=src/**/* \\
+                        -Dsonar.cpd.minimumTokens=200 \\
+                        -Dsonar.typescript.tsconfigPath=tsconfig.json \\
+                        -Dsonar.scanner.force-deprecated-java-version=true
+                    """
+                    echo "✅ SonarCloud analysis completed!"
+                  } catch (Exception e) {
+                    // Non-blocking: log error but don't fail pipeline
+                    echo "⚠️ SonarCloud analysis failed (non-blocking): ${e.getMessage()}"
+                    echo "ℹ️ Check SonarCloud dashboard for details"
+                  }
+                }
+              }
+            }
           }
         }
       }
