@@ -30,6 +30,7 @@ const Home: NextPageWithLayout<{
         title='SmartRent – Thuê nhà dễ dàng'
         description='Khám phá căn hộ phù hợp nhất với bạn. Tìm kiếm nhanh, lọc thông minh, liên hệ chủ nhà chỉ với một cú nhấp.'
       />
+      <h1>Hello World 123</h1>
       <LocationProvider>
         <ListProvider fetcher={propertyFetcher} initialData={initialProperties}>
           <div className='container mx-auto space-y-6'>
