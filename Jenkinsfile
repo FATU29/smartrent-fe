@@ -30,39 +30,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        script {
-          // Get branch/PR information
-          def branchName = env.GIT_BRANCH ?: env.BRANCH_NAME ?: 'unknown'
-          def isPR = branchName.contains('PR-') || branchName.contains('pull/')
-          
-          echo "============================================"
-          echo "Build Information"
-          echo "============================================"
-          echo "Branch: ${branchName}"
-          echo "Is PR: ${isPR}"
-          echo "Build Number: ${env.BUILD_NUMBER}"
-          echo "============================================"
-          
-          // Checkout first to get the actual commit
-          echo "Checking out code from ${branchName}"
-          checkout scm
-          
-          // Get the actual checked out commit
-          def checkedOutCommit = sh(
-            script: 'git rev-parse HEAD',
-            returnStdout: true
-          ).trim()
-          
-          echo "Checked out commit: ${checkedOutCommit}"
-          
-          // Note: disableConcurrentBuilds(abortPrevious: true) in options will automatically
-          // cancel any previous builds for the same job when a new build starts.
-          // This ensures only the latest commit runs CI for each PR/branch.
-          if (isPR || (branchName != 'main' && branchName != 'master' && branchName != 'dev')) {
-            echo "ℹ️ Previous builds for ${branchName} will be automatically canceled"
-            echo "ℹ️ Only the latest commit will run CI"
-          }
-        }
+        checkout scm
       }
     }
 
