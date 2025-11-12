@@ -15,14 +15,21 @@ import {
   useNewWards,
   useSearchStreets,
 } from '@/hooks/useAddress/useAddressQueries'
-import type {
-  NewProvince,
-  NewWard,
-  Project,
-  StreetExtended,
-} from '@/api/types/address.type'
+import type { Project } from '@/api/types/address.type'
 import { useDebounce } from '@/hooks/useDebounce'
 import { usePagedList, type Option } from './usePagedList'
+import {
+  useLegacyProvinceOptions,
+  useLegacyDistrictOptions,
+  useLegacyWardOptions,
+  useLegacyStreetOptions,
+  useLegacyProjectOptions,
+  useNewProvinceOptions,
+  useNewWardOptions,
+  useStreetExtendedOptions,
+  useProjectOptions,
+  useSearchStreetOptions,
+} from './addressOptionUtils'
 
 export interface AddressFilterData {
   province?: string
@@ -266,122 +273,18 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     [value, onChange],
   )
 
-  type LegacyProvinceItem = {
-    provinceId?: number
-    id?: number
-    code?: string
-    name?: string
-  }
-
-  const legacyProvinceOptions: Option[] = useMemo(() => {
-    const list = (
-      Array.isArray(legacyProvinces)
-        ? (legacyProvinces as LegacyProvinceItem[])
-        : []
-    ) as LegacyProvinceItem[]
-    return list
-      .filter((p) => (p?.provinceId ?? p?.id ?? p?.code) && p?.name)
-      .map((p) => {
-        const pid = p?.id ?? p?.provinceId ?? p?.code
-        return { value: String(pid), label: p.name! } as Option
-      })
-  }, [legacyProvinces])
-
-  type LegacyDistrictItem = { districtId?: number; id?: number; name?: string }
-  const legacyDistrictOptions: Option[] = useMemo(() => {
-    const list = (
-      Array.isArray(legacyDistricts)
-        ? (legacyDistricts as LegacyDistrictItem[])
-        : []
-    ) as LegacyDistrictItem[]
-    return list
-      .filter((d) => (d?.districtId ?? d?.id) && d?.name)
-      .map((d) => {
-        const did = d?.districtId ?? d?.id
-        return { value: String(did), label: d.name! } as Option
-      })
-  }, [legacyDistricts])
-
-  type LegacyWardItem = { wardId?: number; id?: number; name?: string }
-  const legacyWardOptions: Option[] = useMemo(() => {
-    const list = (
-      Array.isArray(legacyWards) ? (legacyWards as LegacyWardItem[]) : []
-    ) as LegacyWardItem[]
-    return list
-      .filter((w) => (w?.wardId ?? w?.id) && w?.name)
-      .map((w) => {
-        const wid = w?.wardId ?? w?.id
-        return { value: String(wid), label: w.name! } as Option
-      })
-  }, [legacyWards])
-
-  type LegacyStreetItem = { streetId?: number; id?: number; name?: string }
-  const legacyStreetOptions: Option[] = useMemo(() => {
-    const list = (
-      Array.isArray(legacyStreets) ? (legacyStreets as LegacyStreetItem[]) : []
-    ) as LegacyStreetItem[]
-    return list
-      .filter((s) => (s?.streetId ?? s?.id) && s?.name)
-      .map((s) => {
-        const sid = s?.streetId ?? s?.id
-        return { value: String(sid), label: s.name! } as Option
-      })
-  }, [legacyStreets])
-
-  type LegacyProjectItem = Project & { projectId?: number }
-  const legacyProjectOptions: Option[] = useMemo(() => {
-    const list = (
-      Array.isArray(legacyProjects)
-        ? (legacyProjects as LegacyProjectItem[])
-        : []
-    ) as LegacyProjectItem[]
-    return list
-      .filter((p) => (p?.id ?? p?.projectId) && p?.name)
-      .map((p) => ({
-        value: String(p.id ?? p.projectId),
-        label: p.name,
-      }))
-  }, [legacyProjects])
-
-  const newProvinceOptions: Option[] = useMemo(
-    () =>
-      (newProvinces || [])
-        .filter((p: NewProvince) => p?.code && p?.name)
-        .map((p: NewProvince) => ({
-          value: p.code,
-          label: p.name,
-        })),
-    [newProvinces],
+  const legacyProvinceOptions = useLegacyProvinceOptions(legacyProvinces)
+  const legacyDistrictOptions = useLegacyDistrictOptions(legacyDistricts)
+  const legacyWardOptions = useLegacyWardOptions(legacyWards)
+  const legacyStreetOptions = useLegacyStreetOptions(legacyStreets)
+  const legacyProjectOptions = useLegacyProjectOptions(
+    legacyProjects as (Project & { projectId?: number })[] | undefined,
   )
 
-  const newWardOptions: Option[] = useMemo(
-    () =>
-      (newWards || [])
-        .filter((w: NewWard) => w?.code && w?.name)
-        .map((w: NewWard) => ({
-          value: w.code,
-          label: w.name,
-        })),
-    [newWards],
-  )
-
-  const newModeStreetOptions: Option[] = useMemo(() => {
-    const list = Array.isArray(newModeStreets)
-      ? (newModeStreets as readonly StreetExtended[])
-      : []
-    return list
-      .filter((s) => s?.streetId && s?.name)
-      .map((s) => ({ value: String(s.streetId), label: s.name }))
-  }, [newModeStreets])
-
-  const newModeProjectOptions: Option[] = useMemo(() => {
-    const list = Array.isArray(newModeProjects)
-      ? (newModeProjects as readonly Project[])
-      : []
-    return list
-      .filter((p) => (p as Project)?.id && p?.name)
-      .map((p) => ({ value: String((p as Project).id), label: p.name }))
-  }, [newModeProjects])
+  const newProvinceOptions = useNewProvinceOptions(newProvinces)
+  const newWardOptions = useNewWardOptions(newWards)
+  const newModeStreetOptions = useStreetExtendedOptions(newModeStreets)
+  const newModeProjectOptions = useProjectOptions(newModeProjects)
 
   const [legacyStreetSearch, setLegacyStreetSearch] = React.useState('')
   const debouncedLegacyStreetSearch = useDebounce(legacyStreetSearch, 250)
@@ -402,39 +305,9 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       derivedLegacyIds.districtId,
     )
 
-  const streetIdOf = (
-    s: Partial<StreetExtended> & { id?: number },
-  ): number | undefined => s.streetId ?? s.id
-
-  const legacySearchStreetOptions: Option[] = useMemo(() => {
-    const list = Array.isArray(legacySearchStreets)
-      ? (legacySearchStreets as readonly StreetExtended[])
-      : []
-    return list
-      .filter(
-        (s: Partial<StreetExtended> & { id?: number; name?: string }) =>
-          Boolean(streetIdOf(s)) && Boolean(s?.name),
-      )
-      .map((s: Partial<StreetExtended> & { id?: number; name?: string }) => ({
-        value: String(streetIdOf(s)!),
-        label: String(s?.name ?? ''),
-      }))
-  }, [legacySearchStreets])
-
-  const newModeSearchStreetOptions: Option[] = useMemo(() => {
-    const list = Array.isArray(newModeSearchStreets)
-      ? (newModeSearchStreets as readonly StreetExtended[])
-      : []
-    return list
-      .filter(
-        (s: Partial<StreetExtended> & { id?: number; name?: string }) =>
-          Boolean(streetIdOf(s)) && Boolean(s?.name),
-      )
-      .map((s: Partial<StreetExtended> & { id?: number; name?: string }) => ({
-        value: String(streetIdOf(s)!),
-        label: String(s?.name ?? ''),
-      }))
-  }, [newModeSearchStreets])
+  const legacySearchStreetOptions = useSearchStreetOptions(legacySearchStreets)
+  const newModeSearchStreetOptions =
+    useSearchStreetOptions(newModeSearchStreets)
 
   const legacyStreetPager = usePagedList(legacyStreetOptions)
   const legacyStreetSearchPager = usePagedList(legacySearchStreetOptions)

@@ -10,6 +10,7 @@ import type {
 import type { VipTier } from '@/api/types/vip-tier.type'
 import { useMembershipPackages } from '@/hooks/useMembership'
 import { useVipTiers } from '@/hooks/useVipTiers'
+import VipTierCard from './VipTierCard'
 
 interface PricingGuideTemplateProps {
   memberships?: Membership[]
@@ -197,135 +198,41 @@ const PricingGuideTemplate: React.FC<PricingGuideTemplateProps> = ({
 
         <div className='space-y-4'>
           {goldTier && (
-            <div className='p-4 border rounded-lg'>
-              <div className='flex items-start justify-between mb-2'>
-                <Typography variant='h4' className='text-yellow-600'>
-                  {t('postTypes.vipGold.name')}
-                </Typography>
-                <Badge variant='default' className='bg-yellow-600'>
-                  {t('postTypes.priority.highest')}
-                </Badge>
-              </div>
-              <Typography variant='p' className='mb-3 text-muted-foreground'>
-                {goldTier.description || t('postTypes.vipGold.description')}
-              </Typography>
-              <div className='grid grid-cols-2 gap-2 text-sm'>
-                <div>
-                  <span className='text-muted-foreground'>
-                    {t('postTypes.duration')}:
-                  </span>{' '}
-                  <strong>
-                    {goldTier.price30Days
-                      ? '30'
-                      : goldTier.price15Days
-                        ? '15'
-                        : '10'}{' '}
-                    ngày
-                  </strong>
-                </div>
-                <div>
-                  <span className='text-muted-foreground'>
-                    {t('postTypes.price')}:
-                  </span>{' '}
-                  <strong className='text-yellow-600'>
-                    {formatPrice(
-                      goldTier.price30Days ||
-                        goldTier.price15Days ||
-                        goldTier.price10Days,
-                    )}{' '}
-                    đ
-                  </strong>
-                </div>
-              </div>
-            </div>
+            <VipTierCard
+              tier={goldTier}
+              nameKey='postTypes.vipGold.name'
+              descriptionKey='postTypes.vipGold.description'
+              priorityKey='postTypes.priority.highest'
+              titleClassName='text-yellow-600'
+              priceClassName='text-yellow-600'
+              badgeVariant='default'
+              badgeClassName='bg-yellow-600'
+              formatPrice={formatPrice}
+            />
           )}
 
           {silverTier && (
-            <div className='p-4 border rounded-lg'>
-              <div className='flex items-start justify-between mb-2'>
-                <Typography variant='h4' className='text-gray-400'>
-                  {t('postTypes.vipSilver.name')}
-                </Typography>
-                <Badge variant='secondary'>
-                  {t('postTypes.priority.high')}
-                </Badge>
-              </div>
-              <Typography variant='p' className='mb-3 text-muted-foreground'>
-                {silverTier.description || t('postTypes.vipSilver.description')}
-              </Typography>
-              <div className='grid grid-cols-2 gap-2 text-sm'>
-                <div>
-                  <span className='text-muted-foreground'>
-                    {t('postTypes.duration')}:
-                  </span>{' '}
-                  <strong>
-                    {silverTier.price30Days
-                      ? '30'
-                      : silverTier.price15Days
-                        ? '15'
-                        : '10'}{' '}
-                    ngày
-                  </strong>
-                </div>
-                <div>
-                  <span className='text-muted-foreground'>
-                    {t('postTypes.price')}:
-                  </span>{' '}
-                  <strong className='text-gray-600'>
-                    {formatPrice(
-                      silverTier.price30Days ||
-                        silverTier.price15Days ||
-                        silverTier.price10Days,
-                    )}{' '}
-                    đ
-                  </strong>
-                </div>
-              </div>
-            </div>
+            <VipTierCard
+              tier={silverTier}
+              nameKey='postTypes.vipSilver.name'
+              descriptionKey='postTypes.vipSilver.description'
+              priorityKey='postTypes.priority.high'
+              titleClassName='text-gray-400'
+              priceClassName='text-gray-600'
+              badgeVariant='secondary'
+              formatPrice={formatPrice}
+            />
           )}
 
           {normalTier && (
-            <div className='p-4 border rounded-lg'>
-              <div className='flex items-start justify-between mb-2'>
-                <Typography variant='h4'>
-                  {t('postTypes.regular.name')}
-                </Typography>
-                <Badge variant='outline'>
-                  {t('postTypes.priority.normal')}
-                </Badge>
-              </div>
-              <Typography variant='p' className='mb-3 text-muted-foreground'>
-                {normalTier.description || t('postTypes.regular.description')}
-              </Typography>
-              <div className='grid grid-cols-2 gap-2 text-sm'>
-                <div>
-                  <span className='text-muted-foreground'>
-                    {t('postTypes.duration')}:
-                  </span>{' '}
-                  <strong>
-                    {normalTier.price30Days
-                      ? '30'
-                      : normalTier.price15Days
-                        ? '15'
-                        : '10'}{' '}
-                    ngày
-                  </strong>
-                </div>
-                <div>
-                  <span className='text-muted-foreground'>
-                    {t('postTypes.price')}:
-                  </span>{' '}
-                  <strong>
-                    {formatPrice(
-                      normalTier.price30Days ||
-                        normalTier.price15Days ||
-                        normalTier.price10Days,
-                    )}{' '}
-                    đ
-                  </strong>
-                </div>
-              </div>
-            </div>
+            <VipTierCard
+              tier={normalTier}
+              nameKey='postTypes.regular.name'
+              descriptionKey='postTypes.regular.description'
+              priorityKey='postTypes.priority.normal'
+              badgeVariant='outline'
+              formatPrice={formatPrice}
+            />
           )}
         </div>
       </Card>
