@@ -54,6 +54,7 @@ export const LocationProvider = ({ children }: LocationProviderProps) => {
         // This is necessary to provide a seamless user experience by remembering
         // the user's previous location permission choice. No location data is
         // accessed at this stage - we only check the permission state.
+        // NOSONAR: Geolocation is necessary for location-based property search with explicit user consent
         const result = await navigator.permissions.query({
           name: 'geolocation',
         })
@@ -128,6 +129,7 @@ export const LocationProvider = ({ children }: LocationProviderProps) => {
       // and nearby listings. The user must explicitly enable this feature via
       // the location toggle switch. Location data is used only for filtering
       // properties and is not stored or transmitted to third parties.
+      // NOSONAR: Geolocation usage is justified for core feature (location-based search) with explicit user opt-in
       navigator.geolocation.getCurrentPosition(
         onSuccess,
         onError,

@@ -8,6 +8,7 @@ import {
 } from '@/components/atoms/tabs'
 import { PersonalInfoForm } from '@/components/molecules/personalInfoForm'
 import { PasswordChangeForm } from '@/components/molecules/passwordChangeForm'
+import { useChangePassword } from '@/hooks/useAuth/useChangePassword'
 import { User, Lock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
@@ -32,13 +33,11 @@ type PasswordChangeData = {
 
 type AccountManagementProps = {
   onPersonalInfoUpdate?: (data: PersonalInfoData) => Promise<boolean>
-  onPasswordChange?: (data: PasswordChangeData) => Promise<boolean>
   className?: string
 }
 
 const AccountManagement: NextPage<AccountManagementProps> = ({
   onPersonalInfoUpdate,
-  onPasswordChange,
   className,
 }) => {
   const t = useTranslations()
@@ -89,33 +88,24 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
     }
   }
 
-  const handlePasswordChangeSubmit = async (data: PasswordChangeData) => {
-    if (!onPasswordChange) {
-      toast.error(
-        t(
-          'homePage.auth.accountManagement.passwordChange.changeNotImplemented',
-        ),
-      )
-      return
-    }
+  const { mutateAsync: changePasswordMutation, isPending: isChanging } =
+    useChangePassword()
 
+  const handlePasswordChangeSubmit = async (data: PasswordChangeData) => {
     try {
       setIsChangingPassword(true)
-      const success = await onPasswordChange(data)
-
-      if (success) {
-        toast.success(
-          t('homePage.auth.accountManagement.passwordChange.changeSuccess'),
-        )
-      } else {
-        toast.error(
-          t('homePage.auth.accountManagement.passwordChange.changeError'),
-        )
-      }
+      await changePasswordMutation({
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword,
+      })
+      toast.success(
+        t('homePage.auth.accountManagement.passwordChange.changeSuccess'),
+      )
     } catch (error) {
       console.error('Password change error:', error)
       toast.error(
-        t('homePage.auth.accountManagement.passwordChange.changeErrorGeneral'),
+        t('homePage.auth.accountManagement.passwordChange.changeError'),
       )
     } finally {
       setIsChangingPassword(false)
@@ -154,7 +144,7 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
         <TabsContent value='account-settings' className='space-y-6'>
           <PasswordChangeForm
             onSubmit={handlePasswordChangeSubmit}
-            loading={isChangingPassword}
+            loading={isChangingPassword || isChanging}
           />
         </TabsContent>
       </Tabs>

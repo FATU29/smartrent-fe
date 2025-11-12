@@ -9,7 +9,52 @@
     "learnMore": "Tìm hiểu thêm",
     "go_home": "Về trang chủ",
     "reset": "Xóa",
-    "selectDate": "Chọn ngày"
+    "selectDate": "Chọn ngày",
+    "filter": "Lọc",
+    "createPost": "Đăng tin"
+  },
+  "paymentStatusPage": {
+    "title": "Trạng thái thanh toán",
+    "subtitle": "Chúng tôi đang theo dõi giao dịch của bạn. Trang sẽ tự động cập nhật.",
+    "labels": {
+      "transactionRef": "Mã giao dịch",
+      "checking": "Đang kiểm tra"
+    },
+    "actions": {
+      "backHome": "Về trang chủ",
+      "retry": "Thử lại",
+      "refresh": "Tải lại"
+    },
+    "errors": {
+      "missingRef": "Thiếu mã giao dịch.",
+      "loadFailed": "Không tải được trạng thái giao dịch."
+    },
+    "states": {
+      "completed": {
+        "title": "Thanh toán thành công",
+        "desc": "Giao dịch của bạn đã hoàn tất. Cảm ơn bạn!"
+      },
+      "pending": {
+        "title": "Đang chờ xác nhận",
+        "desc": "Đang chờ xác nhận từ nhà cung cấp thanh toán..."
+      },
+      "failed": {
+        "title": "Thanh toán thất bại",
+        "desc": "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức khác."
+      },
+      "cancelled": {
+        "title": "Đã hủy thanh toán",
+        "desc": "Bạn đã hủy giao dịch trước khi hoàn tất."
+      },
+      "refunded": {
+        "title": "Đã hoàn tiền",
+        "desc": "Khoản thanh toán này đã được hoàn tiền."
+      },
+      "unknown": {
+        "title": "Trạng thái không xác định",
+        "desc": "Không thể xác định trạng thái thanh toán."
+      }
+    }
   },
   "location": {
     "label": "Vị trí của bạn",
@@ -57,6 +102,14 @@
       "verified": "Tin xác thực",
       "premium": "Nâng cấp tin",
       "boosted": "Đẩy tin"
+    },
+    "paymentStatusBadge": {
+      "completed": "Hoàn tất",
+      "pending": "Đang chờ",
+      "failed": "Thất bại",
+      "cancelled": "Đã hủy",
+      "refunded": "Đã hoàn tiền",
+      "unknown": "Không xác định"
     }
   },
   "pagination": {
@@ -1344,7 +1397,8 @@
       "internetPrice": "Giá internet",
       "amenities": "Tiện ích",
       "media": "Phương tiện",
-      "areaProject": "Khu vực & Dự án"
+      "areaProject": "Khu vực & Dự án",
+      "address": "Địa chỉ"
     },
     "area": {
       "any": "Tất cả",
@@ -1411,6 +1465,13 @@
     },
     "amenities": {
       "title": "Tiện ích",
+      "categories": {
+        "basic": "Cơ bản",
+        "convenience": "Tiện nghi",
+        "security": "An ninh",
+        "entertainment": "Giải trí",
+        "transport": "Gần các tiện ích"
+      },
       "securityService": "Có dịch vụ bảo vệ",
       "camera": "Có camera",
       "fireSafety": "Có PCCC",
@@ -1442,6 +1503,11 @@
       "any": "Tất cả",
       "clear": "Đặt lại",
       "apply": "Áp dụng",
+      "add": "+ Thêm",
+      "added": "Đã chọn"
+    },
+    "address": {
+      "title": "Địa chỉ",
       "add": "+ Thêm",
       "added": "Đã chọn"
     }
@@ -1482,7 +1548,18 @@
       "voucherTab": "Tab gói voucher đẩy tin"
     },
     "noPlansAvailable": "Hiện chưa có gói hội viên nào.",
-    "noVouchersAvailable": "Hiện chưa có gói voucher nào."
+    "noVouchersAvailable": "Hiện chưa có gói voucher nào.",
+    "errors": {
+      "loadFailed": "Không thể tải danh sách gói",
+      "loginRequired": "Vui lòng đăng nhập để tiếp tục",
+      "purchaseFailed": "Đã có lỗi xảy ra khi đăng ký gói"
+    },
+    "success": {
+      "purchaseSuccess": "Đã đăng ký gói thành công!"
+    },
+    "loading": {
+      "fetchingData": "Đang tải dữ liệu..."
+    }
   },
   "membershipPlans": {
     "savingSuffix": "mỗi tháng",
@@ -1826,6 +1903,250 @@
         "3": "3 phòng ngủ",
         "4": "4 phòng ngủ",
         "5plus": "5+ phòng ngủ"
+      }
+    }
+  },
+  "notFound": {
+    "title": "Không Tìm Thấy Trang",
+    "description": "Rất tiếc! Trang bạn đang tìm kiếm không tồn tại. Có thể nó đã được di chuyển hoặc xóa.",
+    "goBack": "Quay Lại",
+    "goHome": "Về Trang Chủ"
+  },
+  "auth": {
+    "loginRequired": {
+      "title": "Vui lòng đăng nhập",
+      "description": "Bạn cần đăng nhập để truy cập trang này.",
+      "loginButton": "Đăng nhập"
+    }
+  },
+  "guides": {
+    "pricing": {
+      "title": "Bảng Giá Dịch Vụ",
+      "description": "Xem chi tiết bảng giá các gói dịch vụ và loại tin đăng của SmartRent",
+      "loading": "Đang tải dữ liệu...",
+      "error": "Không thể tải dữ liệu",
+      "membership": {
+        "title": "Giá Gói Hội Viên",
+        "description": "Các gói hội viên được tính theo tháng, tự động gia hạn và cung cấp số lượng tin đăng cố định mỗi tháng.",
+        "note": {
+          "title": "Lưu ý:",
+          "content": "Số tin đăng được reset vào đầu mỗi tháng. Tin chưa sử dụng sẽ không được chuyển sang tháng tiếp theo."
+        },
+        "plans": {
+          "basic": {
+            "name": "Hội viên Cơ bản",
+            "description": "Phù hợp với môi giới mới hoặc gói hàng nhỏ"
+          },
+          "standard": {
+            "name": "Hội viên Tiêu chuẩn",
+            "description": "Phù hợp với môi giới chuyên nghiệp có gói hàng từ 10 BDS"
+          },
+          "premium": {
+            "name": "Hội viên Cao cấp",
+            "description": "Phù hợp với môi giới có gói hàng và ngân sách quảng cáo lớn"
+          },
+          "popular": "Phổ biến"
+        }
+      },
+      "postTypes": {
+        "title": "Giá Theo Loại Tin Đăng",
+        "duration": "Thời gian hiển thị",
+        "price": "Giá",
+        "priority": {
+          "highest": "Ưu tiên cao nhất",
+          "high": "Ưu tiên cao",
+          "normal": "Ưu tiên thường"
+        },
+        "vipGold": {
+          "name": "Tin VIP Vàng",
+          "description": "Hiển thị nổi bật nhất, luôn ở đầu danh sách, có khung viền vàng và badge đặc biệt",
+          "price": "Theo gói hội viên"
+        },
+        "vipSilver": {
+          "name": "Tin VIP Bạc",
+          "description": "Hiển thị ưu tiên cao, có khung viền bạc và vị trí nổi bật",
+          "price": "Theo gói hội viên"
+        },
+        "regular": {
+          "name": "Tin Thường",
+          "description": "Tin đăng tiêu chuẩn, hiển thị theo thời gian đăng và được đẩy lên top",
+          "price": "Theo gói hội viên"
+        }
+      },
+      "services": {
+        "title": "Dịch Vụ Bổ Sung",
+        "push": {
+          "name": "Đẩy tin lên top",
+          "description": "Đưa tin đăng của bạn lên đầu danh sách trong 1 giờ",
+          "price": "Miễn phí với gói hội viên"
+        },
+        "imageRights": {
+          "name": "Bản quyền ảnh",
+          "description": "Bảo vệ ảnh của bạn khỏi sao chép, có watermark",
+          "price": "Bao gồm trong gói Tiêu chuẩn+"
+        },
+        "schedule": {
+          "name": "Hẹn giờ đăng tin",
+          "description": "Lên lịch đăng tin vào thời gian tối ưu",
+          "price": "Bao gồm trong gói Tiêu chuẩn+"
+        }
+      }
+    },
+    "payment": {
+      "title": "Hướng Dẫn Thanh Toán",
+      "description": "Tìm hiểu các phương thức thanh toán và quy trình mua gói dịch vụ",
+      "methods": {
+        "title": "Phương Thức Thanh Toán",
+        "card": {
+          "title": "Thẻ ATM/Visa/Mastercard",
+          "description": "Thanh toán trực tuyến qua cổng thanh toán",
+          "feature1": "Tự động xử lý ngay lập tức",
+          "feature2": "Bảo mật cao với mã hóa SSL",
+          "feature3": "Hỗ trợ đa dạng ngân hàng"
+        },
+        "wallet": {
+          "title": "Ví điện tử",
+          "description": "Momo, ZaloPay, VNPay",
+          "feature1": "Nhanh chóng, tiện lợi",
+          "feature2": "Có khuyến mãi từ ví"
+        },
+        "bank": {
+          "title": "Chuyển khoản ngân hàng",
+          "description": "Chuyển khoản trực tiếp",
+          "feature1": "Phù hợp với giao dịch lớn",
+          "feature2": "Xác nhận trong 1-2 giờ"
+        }
+      },
+      "howToPay": {
+        "title": "Quy Trình Thanh Toán",
+        "step1": {
+          "title": "Chọn gói dịch vụ",
+          "description": "Vào mục 'Gói Hội viên' và chọn gói phù hợp với nhu cầu của bạn. So sánh các tính năng và giá cả để đưa ra quyết định tốt nhất."
+        },
+        "step2": {
+          "title": "Chọn phương thức thanh toán",
+          "description": "Chọn phương thức thanh toán phù hợp: Thẻ ngân hàng, Ví điện tử hoặc Chuyển khoản. Mỗi phương thức có ưu điểm riêng về tốc độ và tiện lợi."
+        },
+        "step3": {
+          "title": "Xác nhận thanh toán",
+          "description": "Kiểm tra lại thông tin đơn hàng, mã giảm giá (nếu có) và tổng số tiền. Sau đó tiến hành thanh toán theo hướng dẫn của cổng thanh toán."
+        },
+        "step4": {
+          "title": "Kích hoạt tài khoản",
+          "description": "Sau khi thanh toán thành công, gói dịch vụ sẽ được kích hoạt ngay lập tức. Bạn có thể bắt đầu sử dụng các tính năng và đăng tin ngay."
+        }
+      },
+      "notes": {
+        "title": "Lưu Ý Quan Trọng",
+        "note1": "Gói hội viên tự động gia hạn hàng tháng. Bạn có thể hủy bất cứ lúc nào.",
+        "note2": "Số tin đăng được reset vào đầu mỗi tháng và không được chuyển sang tháng tiếp theo.",
+        "note3": "Hóa đơn điện tử sẽ được gửi qua email sau mỗi lần thanh toán.",
+        "note4": "Liên hệ hotline 1900-xxxx nếu gặp vấn đề trong quá trình thanh toán."
+      }
+    },
+    "usage": {
+      "title": "Hướng Dẫn Sử Dụng SmartRent",
+      "description": "Hướng dẫn chi tiết cách sử dụng hệ thống để quản lý và đăng tin hiệu quả",
+      "gettingStarted": {
+        "title": "Bắt Đầu Với SmartRent",
+        "description": "Các bước cơ bản để bắt đầu sử dụng hệ thống",
+        "step1": {
+          "title": "1. Đăng ký tài khoản",
+          "description": "Tạo tài khoản miễn phí bằng email hoặc đăng nhập qua Google. Điền đầy đủ thông tin cá nhân để tăng độ tin cậy với khách hàng."
+        },
+        "step2": {
+          "title": "2. Chọn gói hội viên",
+          "description": "Dựa trên số lượng bất động sản bạn muốn quảng cáo, chọn gói phù hợp: Cơ bản (15 tin), Tiêu chuẩn (30 tin) hoặc Cao cấp (50 tin)."
+        },
+        "step3": {
+          "title": "3. Bắt đầu đăng tin",
+          "description": "Sau khi mua gói, bạn có thể bắt đầu tạo tin đăng ngay. Hệ thống sẽ hướng dẫn từng bước để hoàn thiện thông tin."
+        }
+      },
+      "membership": {
+        "title": "Hiểu Về Gói Hội Viên",
+        "description": "Cách thức hoạt động của hệ thống gói hội viên",
+        "choosingPlan": {
+          "title": "Chọn Gói Phù Hợp",
+          "tip1": "Gói Cơ bản: Phù hợp nếu bạn có 10-15 BDS cần quảng cáo",
+          "tip2": "Gói Tiêu chuẩn: Tốt nhất cho môi giới chuyên nghiệp với 20-30 BDS",
+          "tip3": "Gói Cao cấp: Dành cho môi giới có lượng hàng lớn hoặc cần VIP nhiều"
+        },
+        "monthlyAllocation": {
+          "title": "Số Tin Đăng Hàng Tháng",
+          "description": "Mỗi tháng bạn nhận được số lượng tin đăng cố định theo gói. Tin chưa dùng sẽ không chuyển sang tháng sau.",
+          "example": "Ví dụ: Gói Tiêu chuẩn = 30 tin/tháng. Nếu tháng này bạn chỉ dùng 25 tin, 5 tin còn lại sẽ mất khi sang tháng mới."
+        }
+      },
+      "posts": {
+        "title": "Tạo và Quản Lý Tin Đăng",
+        "description": "Hướng dẫn chi tiết về các loại tin và cách tạo tin hiệu quả",
+        "types": {
+          "title": "Các Loại Tin Đăng",
+          "vipGold": "Tin VIP Vàng",
+          "vipGoldDesc": "Hiển thị ưu tiên cao nhất, luôn ở top, có khung vàng nổi bật. Tốt nhất cho BDS cao cấp hoặc cần bán gấp.",
+          "vipSilver": "Tin VIP Bạc",
+          "vipSilverDesc": "Hiển thị ưu tiên cao, có khung bạc. Phù hợp cho BDS tầm trung cần tăng lượt xem.",
+          "regular": "Tin Thường",
+          "regularDesc": "Tin tiêu chuẩn, hiển thị theo thời gian. Có thể đẩy lên top bằng lượt push miễn phí."
+        },
+        "bestPractices": {
+          "title": "Mẹo Đăng Tin Hiệu Quả",
+          "tip1": "Sử dụng ảnh chất lượng cao, đủ ánh sáng, chụp nhiều góc (tối thiểu 5-8 ảnh)",
+          "tip2": "Viết tiêu đề ngắn gọn, nổi bật (ví dụ: 'Căn hộ 2PN view sông Q7, giá tốt')",
+          "tip3": "Mô tả chi tiết: diện tích, số phòng, nội thất, pháp lý, giá, liên hệ",
+          "tip4": "Cập nhật giá chính xác, không để giá quá cao hoặc 'thỏa thuận'",
+          "tip5": "Thêm video hoặc tour 3D/360° để tăng độ tin cậy và lượt xem"
+        },
+        "pushing": {
+          "title": "Đẩy Tin Lên Top",
+          "description": "Mỗi gói hội viên đều có lượt đẩy tin miễn phí (push). Sử dụng push để đưa tin thường lên đầu danh sách trong 1 giờ.",
+          "tip": "Tip: Đẩy tin vào khung giờ cao điểm (9-11h sáng, 19-21h tối) để tối ưu hiệu quả."
+        }
+      },
+      "managing": {
+        "title": "Quản Lý Danh Sách Tin",
+        "description": "Theo dõi và điều chỉnh tin đăng của bạn",
+        "editing": {
+          "title": "Chỉnh sửa tin",
+          "description": "Bạn có thể chỉnh sửa tiêu đề, mô tả, ảnh, giá bất cứ lúc nào. Tin sẽ được cập nhật ngay lập tức."
+        },
+        "pausing": {
+          "title": "Tạm dừng/Ẩn tin",
+          "description": "Nếu BDS đã cho thuê/bán, hãy tạm dừng tin để không nhận thêm liên hệ. Tin tạm dừng vẫn tính vào hạn mức tháng."
+        },
+        "renewing": {
+          "title": "Gia hạn tin",
+          "description": "Tin hết hạn có thể gia hạn miễn phí nếu bạn còn hạn mức trong gói. Tin gia hạn sẽ được đẩy lên mới."
+        }
+      },
+      "customers": {
+        "title": "Quản Lý Khách Hàng",
+        "description": "Tổ chức và theo dõi khách hàng tiềm năng",
+        "features": "Hệ thống giúp bạn:",
+        "feature1": "Lưu thông tin khách hàng liên hệ qua tin đăng",
+        "feature2": "Phân loại khách theo trạng thái (mới, đang tư vấn, thành công)",
+        "feature3": "Ghi chú và lịch hẹn với từng khách hàng"
+      },
+      "settings": {
+        "title": "Cài Đặt Tài Khoản",
+        "description": "Tùy chỉnh tài khoản và thông báo",
+        "profile": {
+          "title": "Hồ sơ cá nhân",
+          "description": "Cập nhật ảnh đại diện, số điện thoại, địa chỉ. Hồ sơ đầy đủ giúp tăng độ tin cậy với khách hàng."
+        },
+        "notifications": {
+          "title": "Quản lý thông báo",
+          "description": "Chọn nhận thông báo qua email, SMS hoặc push notification khi có khách hàng liên hệ, tin sắp hết hạn, v.v."
+        }
+      },
+      "tips": {
+        "title": "Mẹo Thành Công",
+        "tip1": "Trả lời tin nhắn/cuộc gọi nhanh chóng (trong vòng 1-2 giờ) để không bỏ lỡ khách hàng",
+        "tip2": "Cập nhật tin đăng thường xuyên (ít nhất 1 tuần/lần) để duy trì độ mới",
+        "tip3": "Sử dụng gói VIP cho BDS cao cấp hoặc gấp, tin thường cho BDS thông thường",
+        "tip4": "Tham gia các khóa đào tạo và cộng đồng môi giới để học hỏi kinh nghiệm",
+        "tip5": "Theo dõi báo cáo hiệu suất để biết tin nào được quan tâm nhiều nhất"
       }
     }
   }

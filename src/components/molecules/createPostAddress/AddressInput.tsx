@@ -23,14 +23,10 @@ import type {
   StreetExtended,
 } from '@/api/types/address.type'
 import { useDebounce } from '@/hooks/useDebounce'
+import { usePagedList, type Option } from '../filterAddress/usePagedList'
 
 export interface AddressInputProps {
   className?: string
-}
-
-type Option = {
-  value: string
-  label: string
 }
 
 export const AddressInput: React.FC<AddressInputProps> = ({ className }) => {
@@ -442,42 +438,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({ className }) => {
   }, [newModeSearchStreets])
 
   // Client-side infinite pagination for long lists (streets, projects)
-  const usePagedList = (
-    options: Option[],
-    pageSize: number = 50,
-  ): {
-    visible: Option[]
-    hasMore: boolean
-    loadMore: () => void
-    isLoadingMore: boolean
-  } => {
-    const [page, setPage] = React.useState(1)
-    const [isLoadingMore, setIsLoadingMore] = React.useState(false)
-
-    // Reset pagination when underlying options change
-    React.useEffect(() => {
-      setPage(1)
-    }, [options])
-
-    const visible = React.useMemo(() => {
-      return options.slice(0, page * pageSize)
-    }, [options, page, pageSize])
-
-    const hasMore = visible.length < options.length
-
-    const loadMore = React.useCallback(() => {
-      if (!hasMore || isLoadingMore) return
-      setIsLoadingMore(true)
-      // Simulate async for UI feedback; data is already in-memory
-      setTimeout(() => {
-        setPage((p) => p + 1)
-        setIsLoadingMore(false)
-      }, 0)
-    }, [hasMore, isLoadingMore])
-
-    return { visible, hasMore, loadMore, isLoadingMore }
-  }
-
   // Legacy pagers
   const legacyStreetPager = usePagedList(legacyStreetOptions)
   const legacyStreetSearchPager = usePagedList(legacySearchStreetOptions)

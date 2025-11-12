@@ -12,7 +12,7 @@ interface PropertyListProps {
 
 const PropertyList: React.FC<PropertyListProps> = ({ onPropertyClick }) => {
   const t = useTranslations()
-  const { itemsData } = useListContext<PropertyCardType>()
+  const { itemsData, isLoading } = useListContext<PropertyCardType>()
 
   const handleFavorite = () => {}
 
@@ -44,7 +44,16 @@ const PropertyList: React.FC<PropertyListProps> = ({ onPropertyClick }) => {
     </div>
   )
 
-  const PropertyNotFound = null
+  const PropertyNotFound = (
+    <div className='flex flex-col items-center justify-center py-10 text-center'>
+      <Typography variant='h3' className='mb-2'>
+        {t('homePage.property.noProperties')}
+      </Typography>
+      <Typography variant='p' className='text-muted-foreground'>
+        {t('homePage.property.noPropertiesDescription')}
+      </Typography>
+    </div>
+  )
 
   return (
     <div className='w-full'>
@@ -55,8 +64,8 @@ const PropertyList: React.FC<PropertyListProps> = ({ onPropertyClick }) => {
         {t('homePage.property.listings')} ({itemsData.length})
       </Typography>
 
-      {itemsData.length === 0 && PropertyNotFound}
-      {itemsData.length === 0 && PropertySkeleton}
+      {itemsData.length === 0 && isLoading && PropertySkeleton}
+      {itemsData.length === 0 && !isLoading && PropertyNotFound}
       {itemsData.length > 0 && (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6'>
           {itemsData.map((p) => PropertyItem(p))}
