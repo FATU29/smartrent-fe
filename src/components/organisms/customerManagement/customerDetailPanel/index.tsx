@@ -12,7 +12,6 @@ import {
 import CopyButton from '@/components/atoms/copy-button'
 import { useTranslations } from 'next-intl'
 import InteractionBadge from '@/components/molecules/customerManagement/interactionBadge'
-import { Badge } from '@/components/atoms/badge'
 import { Card } from '@/components/atoms/card'
 
 interface CustomerDetailPanelProps {
@@ -121,18 +120,13 @@ const CustomerDetailPanel: React.FC<CustomerDetailPanelProps> = ({
                     </div>
                   </div>
                   <div className='text-right shrink-0'>
-                    <div className='flex items-center gap-1 lg:gap-1.5 text-xs text-muted-foreground mb-1'>
+                    <div className='flex items-center gap-1 lg:gap-1.5 text-xs text-muted-foreground'>
                       <Calendar
                         size={10}
                         className='text-muted-foreground/70'
                       />
                       <span className='text-xs'>{interaction.timestamp}</span>
                     </div>
-                    {!interaction.viewed && (
-                      <Badge className='bg-red-500 text-white text-xs px-1.5 py-0.5'>
-                        {t('new')}
-                      </Badge>
-                    )}
                   </div>
                 </div>
 
