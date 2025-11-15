@@ -7,7 +7,6 @@ export interface CustomerInteraction {
   listingId: string
   listingTitle: string
   listingAddress: string
-  viewed: boolean
 }
 
 export interface Customer {
@@ -19,7 +18,6 @@ export interface Customer {
   interactions: CustomerInteraction[]
   totalInteractions: number
   latestInteraction: string
-  hasUnviewed: boolean
 }
 
 export interface ListingCustomerInteraction {
@@ -31,7 +29,6 @@ export interface ListingCustomerInteraction {
   customerInitials: string
   type: InteractionType
   timestamp: string
-  viewed: boolean
 }
 
 export interface ListingWithCustomers {
