@@ -7,6 +7,7 @@ import {
   ListFetcherResponse,
   ListFilters,
 } from './index.type'
+import { countActiveFilters } from '@/utils/filters/countActiveFilters'
 
 export const ListContext = createContext<ListContextType | undefined>(undefined)
 
@@ -14,7 +15,8 @@ export interface ListProviderProps<T = unknown> {
   children: React.ReactNode
   fetcher: (filters: ListFilters) => Promise<ListFetcherResponse<T>>
   initialData?: T[]
-  initialFilters?: ListFilters
+  initialFilters?: Partial<ListFilters>
+  defaultFilters?: Partial<ListFilters> // alias for initialFilters (compat)
   defaultSearch?: string
   defaultPerPage?: number
   defaultPage?: number
@@ -25,17 +27,21 @@ export const ListProvider = <T,>({
   fetcher,
   initialData = [],
   initialFilters,
+  defaultFilters,
   defaultSearch = DEFAULT_SEARCH,
   defaultPerPage = DEFAULT_PER_PAGE,
   defaultPage = DEFAULT_PAGE,
 }: ListProviderProps<T>) => {
-  const [filters, setFilters] = useState<ListFilters>(
-    initialFilters || {
-      search: defaultSearch,
-      perPage: defaultPerPage,
-      page: defaultPage,
-    },
-  )
+  const resolvedInitialFilters = {
+    ...(defaultFilters || {}),
+    ...(initialFilters || {}),
+  }
+  const [filters, setFilters] = useState<ListFilters>({
+    search: defaultSearch,
+    perPage: defaultPerPage,
+    page: defaultPage,
+    ...resolvedInitialFilters,
+  })
 
   const [isLoading, setIsLoading] = useState(false)
   const [itemsData, setItemsData] = useState<T[]>(initialData)
@@ -155,12 +161,7 @@ export const ListProvider = <T,>({
   }
 
   const activeCount = useMemo(() => {
-    return Object.entries(filters).filter(([k, v]) => {
-      if (['search', 'page', 'perPage'].includes(k)) return false
-      if (Array.isArray(v)) return v.length > 0
-      if (typeof v === 'boolean') return v
-      return v !== undefined && v !== '' && v !== null
-    }).length
+    return countActiveFilters(filters)
   }, [filters])
 
   const value: ListContextType<T> = useMemo(

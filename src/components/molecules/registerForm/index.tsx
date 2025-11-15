@@ -125,6 +125,10 @@ const RegisterForm: NextPage<RegisterFormProps> = (props) => {
   }
 
   const handleRegisterGoogle = () => {
+    try {
+      const currentPath = window.location.pathname + window.location.search
+      localStorage.setItem('returnUrl', currentPath)
+    } catch {}
     window.location.href = googleOAuthURL
   }
 

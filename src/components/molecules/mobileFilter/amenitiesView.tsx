@@ -1,59 +1,92 @@
 import React from 'react'
 import ToggleChip from '@/components/atoms/mobileFilter/toggleChip'
 import { useTranslations } from 'next-intl'
+import {
+  getAmenitiesByCategory,
+  type AmenityCategory,
+} from '@/constants/amenities'
 
 // AmenitiesView
-// Multi-select amenity picker implemented with ToggleChips.
-// Keeps a constrained allow-list (AMENITY_KEYS) for predictable translation & API mapping.
+// Multi-select amenity picker with full list grouped by category
+// Supports scroll-y for long lists
 interface AmenitiesViewProps {
-  values?: string[]
-  onChange: (vals: string[]) => void
+  values?: { id: number; name?: string }[] // Array of amenity objects
+  onChange: (vals: { id: number; name?: string }[]) => void
 }
-
-const AMENITY_KEYS = [
-  'securityService',
-  'camera',
-  'fireSafety',
-  'parking',
-  'balcony',
-  'garden',
-] as const
 
 const AmenitiesView: React.FC<AmenitiesViewProps> = ({
   values = [],
   onChange,
 }) => {
-  const t = useTranslations('residentialFilter.amenities')
+  const t = useTranslations('createPost.sections.propertyInfo')
+  const tFilter = useTranslations('residentialFilter')
 
-  const toggle = (k: string) => {
-    if (values.includes(k)) {
-      onChange(values.filter((v) => v !== k))
+  const toggle = (id: number, name: string) => {
+    const isSelected = values.some((v) => v.id === id)
+    if (isSelected) {
+      onChange(values.filter((v) => v.id !== id))
     } else {
-      onChange([...values, k])
+      onChange([...values, { id, name }])
     }
   }
 
+  const categories: AmenityCategory[] = [
+    'BASIC',
+    'CONVENIENCE',
+    'SECURITY',
+    'ENTERTAINMENT',
+    'TRANSPORT',
+  ]
+
+  const categoryLabels: Record<AmenityCategory, string> = {
+    BASIC: tFilter('amenities.categories.basic'),
+    CONVENIENCE: tFilter('amenities.categories.convenience'),
+    SECURITY: tFilter('amenities.categories.security'),
+    ENTERTAINMENT: tFilter('amenities.categories.entertainment'),
+    TRANSPORT: tFilter('amenities.categories.transport'),
+  }
+
   return (
-    <div className='p-4 space-y-4'>
-      <div className='flex flex-wrap gap-2'>
-        {AMENITY_KEYS.map((k) => (
-          <ToggleChip
-            key={k}
-            label={t(k)}
-            active={values.includes(k)}
-            onClick={() => toggle(k)}
-          />
-        ))}
+    <div className='pb-20 overflow-y-auto max-h-[calc(100vh-200px)]'>
+      <div className='p-4 space-y-4'>
+        <div className='text-sm font-medium'>{tFilter('amenities.title')}</div>
+        {categories.map((category) => {
+          const categoryAmenities = getAmenitiesByCategory(category)
+          if (categoryAmenities.length === 0) return null
+
+          return (
+            <div key={category} className='space-y-2'>
+              <div className='text-xs font-semibold text-muted-foreground uppercase'>
+                {categoryLabels[category]}
+              </div>
+              <div className='flex flex-wrap gap-2'>
+                {categoryAmenities.map((amenity) => {
+                  const translatedName = t(
+                    `amenities.${amenity.translationKey}`,
+                  )
+                  return (
+                    <ToggleChip
+                      key={amenity.id}
+                      label={translatedName}
+                      active={values.some((v) => v.id === amenity.id)}
+                      onClick={() => toggle(amenity.id, translatedName)}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
+        {values.length > 0 && (
+          <button
+            className='text-xs text-muted-foreground underline'
+            type='button'
+            onClick={() => onChange([])}
+          >
+            {tFilter('actions.reset')}
+          </button>
+        )}
       </div>
-      {values.length > 0 && (
-        <button
-          className='text-xs text-muted-foreground underline'
-          type='button'
-          onClick={() => onChange([])}
-        >
-          {t('title')} – reset
-        </button>
-      )}
     </div>
   )
 }

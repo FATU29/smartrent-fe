@@ -6,17 +6,10 @@ import {
   BookmarkCheck,
   Users,
   BadgePercent,
-  BriefcaseBusiness,
-  Wallet,
   ListOrdered,
-  TicketPercent,
   Plus,
   User,
-  Building,
-  ShoppingCart,
-  Bell,
-  MailCheck,
-  Lock,
+  TicketPercent,
 } from 'lucide-react'
 
 export type SellernetNavItem = {
@@ -73,31 +66,7 @@ export const SELLERNET_NAV: SellernetNavItem[] = [
       {
         key: 'sellernet.membershipRegister',
         href: SELLERNET_ROUTES.MEMBERSHIP_REGISTER,
-        icon: ShoppingCart,
       },
-    ],
-  },
-  {
-    key: 'sellernet.proAccount',
-    icon: BriefcaseBusiness,
-    children: [
-      {
-        key: 'sellernet.membershipRegister',
-        href: SELLERNET_ROUTES.PRO_REGISTER,
-      },
-    ],
-  },
-  {
-    key: 'sellernet.finance',
-    icon: Wallet,
-    children: [
-      { key: 'sellernet.balanceInfo', href: SELLERNET_ROUTES.FINANCE_BALANCE },
-      {
-        key: 'sellernet.transactions',
-        href: SELLERNET_ROUTES.FINANCE_TRANSACTIONS,
-      },
-      { key: 'sellernet.myPromos', href: SELLERNET_ROUTES.FINANCE_PROMOS },
-      { key: 'sellernet.topup', href: SELLERNET_ROUTES.FINANCE_TOPUP },
     ],
   },
   {
@@ -109,20 +78,6 @@ export const SELLERNET_NAV: SellernetNavItem[] = [
         key: 'sellernet.accountSettings',
         href: SELLERNET_ROUTES.PERSONAL_SETTINGS,
       },
-      {
-        key: 'sellernet.proBroker',
-        href: SELLERNET_ROUTES.PERSONAL_PRO_BROKER,
-      },
-    ],
-  },
-  {
-    key: 'sellernet.businessAccount',
-    icon: Building,
-    children: [
-      {
-        key: 'sellernet.businessRegister',
-        href: SELLERNET_ROUTES.BUSINESS_REGISTER,
-      },
     ],
   },
   {
@@ -132,26 +87,6 @@ export const SELLERNET_NAV: SellernetNavItem[] = [
       { key: 'sellernet.pricing', href: SELLERNET_ROUTES.PRICING },
       { key: 'sellernet.paymentGuide', href: SELLERNET_ROUTES.PAYMENT_GUIDE },
       { key: 'sellernet.usageGuide', href: SELLERNET_ROUTES.USAGE_GUIDE },
-    ],
-  },
-  {
-    key: 'sellernet.utilities',
-    icon: Bell,
-    children: [
-      {
-        key: 'sellernet.notifications',
-        href: SELLERNET_ROUTES.UTIL_NOTIFICATIONS,
-      },
-      {
-        key: 'sellernet.emailSubscriptions',
-        href: SELLERNET_ROUTES.UTIL_EMAIL_SUBSCRIPTIONS,
-        icon: MailCheck,
-      },
-      {
-        key: 'sellernet.lockRequest',
-        href: SELLERNET_ROUTES.UTIL_LOCK_REQUEST,
-        icon: Lock,
-      },
     ],
   },
 ]

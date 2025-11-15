@@ -19,6 +19,10 @@ export default function GoogleLoginButton({
       localStorage.setItem('returnTo', window.location.pathname)
     }
 
+    try {
+      const currentPath = window.location.pathname + window.location.search
+      localStorage.setItem('returnUrl', currentPath)
+    } catch {}
     window.location.href = getGoogleOAuthURL()
   }
 
