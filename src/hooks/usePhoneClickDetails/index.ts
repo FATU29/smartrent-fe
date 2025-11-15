@@ -23,14 +23,6 @@ export const phoneClickDetailKeys = {
     [...phoneClickDetailKeys.all, 'stats', listingId] as const,
 }
 
-interface UseMyListingsClicksOptions {
-  initialData?: {
-    customers: Customer[]
-    listings: ListingWithCustomers[]
-  }
-  enabled?: boolean
-}
-
 interface UseMyCustomersOptions {
   initialData?: Customer[]
   enabled?: boolean
@@ -39,52 +31,6 @@ interface UseMyCustomersOptions {
 interface UseMyListingsOptions {
   initialData?: ListingWithCustomers[]
   enabled?: boolean
-}
-
-/**
- * Query hook for fetching phone clicks for all owned listings
- * Returns transformed data as customers and listings
- * @deprecated Use useMyCustomers and useMyListings separately instead
- */
-export const useMyListingsClicks = (
-  options: UseMyListingsClicksOptions = {},
-) => {
-  const { initialData, enabled = true } = options
-
-  return useQuery({
-    queryKey: phoneClickDetailKeys.myListings(),
-    queryFn: async () => {
-      const response = await PhoneClickDetailService.getMyListingsClicks()
-
-      if (!response.data || response.code !== '999999') {
-        throw new Error(
-          response.message || 'Failed to fetch phone click details',
-        )
-      }
-
-      const phoneClicks: PhoneClickDetail[] = response.data || []
-
-      // Transform to Customer and ListingWithCustomers format
-      const customers = transformToCustomers(phoneClicks)
-      const listings = transformToListingsWithCustomers(phoneClicks)
-
-      return {
-        phoneClicks,
-        customers,
-        listings,
-      }
-    },
-    placeholderData: initialData
-      ? {
-          phoneClicks: [],
-          customers: initialData.customers,
-          listings: initialData.listings,
-        }
-      : undefined,
-    staleTime: 30 * 1000, // Consider data fresh for 30 seconds
-    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
-    enabled,
-  })
 }
 
 /**
