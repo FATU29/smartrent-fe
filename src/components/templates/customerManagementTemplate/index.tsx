@@ -13,9 +13,16 @@ import DetailEmptyState from '@/components/molecules/customerManagement/detailEm
 import TabHeader from '@/components/molecules/customerManagement/tabHeader'
 import CustomerList from '@/components/molecules/customerManagement/customerList'
 import ListingList from '@/components/molecules/customerManagement/listingList'
+import CustomerManagementSkeleton from '@/components/molecules/customerManagement/customerManagementSkeleton'
 import { useCustomerManagement } from './hooks/useCustomerManagement'
 
-const CustomerManagementTemplate: React.FC = () => {
+interface CustomerManagementTemplateProps {
+  initialCustomers?: Customer[]
+}
+
+const CustomerManagementTemplate: React.FC<CustomerManagementTemplateProps> = ({
+  initialCustomers = [],
+}) => {
   const t = useTranslations('seller.customers')
   const { language } = useSwitchLanguage()
   const { isMobile, dialogOpen, openDialog, setDialogOpen } =
@@ -33,25 +40,22 @@ const CustomerManagementTemplate: React.FC = () => {
     isLoading,
     filteredCustomers,
     filteredListings,
-    unviewedCustomersCount,
-    unviewedListingsCount,
     totalCustomers,
     totalListings,
-  } = useCustomerManagement(!!isMobile)
+  } = useCustomerManagement(!!isMobile, initialCustomers)
+
+  // Show skeleton on initial load for customers tab (when no initial data)
+  if (isLoading && activeTab === 'customers' && initialCustomers.length === 0) {
+    return <CustomerManagementSkeleton />
+  }
 
   const handleCustomerSelect = (customer: Customer) => {
     setSelectedCustomer(customer)
-    // Mark as viewed
-    customer.hasUnviewed = false
     openDialog()
   }
 
   const handleListingSelect = (listing: ListingWithCustomers) => {
     setSelectedListing(listing)
-    // Mark all interactions as viewed
-    listing.interactions.forEach((int) => {
-      int.viewed = true
-    })
     openDialog()
   }
 
@@ -70,10 +74,7 @@ const CustomerManagementTemplate: React.FC = () => {
                   onChange={(value) => setSearchQuery(value)}
                 />
               </div>
-              <StatsDisplay
-                totalCount={totalCustomers + totalListings}
-                unviewedCount={unviewedCustomersCount + unviewedListingsCount}
-              />
+              <StatsDisplay totalCount={totalCustomers + totalListings} />
             </div>
           </div>
 
@@ -88,8 +89,6 @@ const CustomerManagementTemplate: React.FC = () => {
             <TabHeader
               totalCustomers={totalCustomers}
               totalListings={totalListings}
-              unviewedCustomersCount={unviewedCustomersCount}
-              unviewedListingsCount={unviewedListingsCount}
             />
 
             {/* Customers Tab */}
@@ -100,7 +99,7 @@ const CustomerManagementTemplate: React.FC = () => {
               <CustomerList
                 customers={filteredCustomers}
                 selectedCustomerId={selectedCustomer?.id || null}
-                isLoading={isLoading}
+                isLoading={isLoading && activeTab === 'customers'}
                 onCustomerSelect={handleCustomerSelect}
               />
             </TabsContent>
@@ -113,7 +112,7 @@ const CustomerManagementTemplate: React.FC = () => {
               <ListingList
                 listings={filteredListings}
                 selectedListingId={selectedListing?.id || null}
-                isLoading={isLoading}
+                isLoading={isLoading && activeTab === 'listings'}
                 language={language}
                 onListingSelect={handleListingSelect}
               />

@@ -1,39 +1,68 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Customer, ListingWithCustomers } from '@/api/types/customer.type'
-import {
-  mockCustomers,
-  mockListingsWithCustomers,
-} from '@/components/molecules/customerManagement/index.helper'
+import { useMyCustomers, useMyListings } from '@/hooks/usePhoneClickDetails'
 
-export const useCustomerManagement = (isMobile: boolean) => {
+export const useCustomerManagement = (
+  isMobile: boolean,
+  initialCustomers: Customer[] = [],
+) => {
   const [activeTab, setActiveTab] = useState<'customers' | 'listings'>(
     'customers',
   )
   const [searchQuery, setSearchQuery] = useState('')
+
+  // Fetch customers (always enabled, uses server-side data as initial)
+  const {
+    data: customersData,
+    isLoading: isCustomersLoading,
+    isFetching: isCustomersFetching,
+  } = useMyCustomers({
+    initialData: initialCustomers.length > 0 ? initialCustomers : undefined,
+    enabled: true,
+  })
+
+  // Fetch listings only when listings tab is active (client-side)
+  const {
+    data: listingsData,
+    isLoading: isListingsLoading,
+    isFetching: isListingsFetching,
+  } = useMyListings({
+    initialData: undefined, // Always fetch fresh from client-side
+    enabled: activeTab === 'listings', // Only fetch when listings tab is active
+  })
+
+  const customers = customersData || initialCustomers
+  const listings = listingsData || []
+
+  // Loading states
+  const isCustomersDataLoading = isCustomersLoading || isCustomersFetching
+  const isListingsDataLoading = isListingsLoading || isListingsFetching
+  const isDataLoading =
+    activeTab === 'customers' ? isCustomersDataLoading : isListingsDataLoading
+
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null,
   )
   const [selectedListing, setSelectedListing] =
     useState<ListingWithCustomers | null>(null)
-  const [isLoading] = useState(false)
 
   // Filter customers
   const filteredCustomers = useMemo(() => {
-    if (!searchQuery) return mockCustomers
+    if (!searchQuery) return customers
     const query = searchQuery.toLowerCase()
-    return mockCustomers.filter(
+    return customers.filter(
       (customer) =>
         customer.name.toLowerCase().includes(query) ||
         customer.phone.toLowerCase().includes(query) ||
         customer.email?.toLowerCase().includes(query),
     )
-  }, [searchQuery])
+  }, [searchQuery, customers])
 
   // Filter listings
   const filteredListings = useMemo(() => {
-    if (!searchQuery) return mockListingsWithCustomers
+    if (!searchQuery) return listings
     const query = searchQuery.toLowerCase()
-    return mockListingsWithCustomers.filter(
+    return listings.filter(
       (listing) =>
         listing.title.toLowerCase().includes(query) ||
         listing.address.toLowerCase().includes(query) ||
@@ -43,30 +72,22 @@ export const useCustomerManagement = (isMobile: boolean) => {
             int.customerPhone.toLowerCase().includes(query),
         ),
     )
-  }, [searchQuery])
+  }, [searchQuery, listings])
 
-  // Count unviewed
-  const unviewedCustomersCount = mockCustomers.filter(
-    (c) => c.hasUnviewed,
-  ).length
-  const unviewedListingsCount = mockListingsWithCustomers.filter((l) =>
-    l.interactions.some((int) => !int.viewed),
-  ).length
-
-  const totalCustomers = mockCustomers.length
-  const totalListings = mockListingsWithCustomers.length
+  const totalCustomers = customers.length
+  const totalListings = listings.length
 
   // Auto-select first item on desktop if nothing is selected
   useEffect(() => {
     if (isMobile === false) {
-      if (!selectedCustomer && mockCustomers.length > 0) {
-        setSelectedCustomer(mockCustomers[0])
+      if (!selectedCustomer && customers.length > 0) {
+        setSelectedCustomer(customers[0])
       }
-      if (!selectedListing && mockListingsWithCustomers.length > 0) {
-        setSelectedListing(mockListingsWithCustomers[0])
+      if (!selectedListing && listings.length > 0) {
+        setSelectedListing(listings[0])
       }
     }
-  }, [isMobile, selectedCustomer, selectedListing])
+  }, [isMobile, selectedCustomer, selectedListing, customers, listings])
 
   return {
     activeTab,
@@ -77,11 +98,9 @@ export const useCustomerManagement = (isMobile: boolean) => {
     setSelectedCustomer,
     selectedListing,
     setSelectedListing,
-    isLoading,
+    isLoading: isDataLoading,
     filteredCustomers,
     filteredListings,
-    unviewedCustomersCount,
-    unviewedListingsCount,
     totalCustomers,
     totalListings,
   }

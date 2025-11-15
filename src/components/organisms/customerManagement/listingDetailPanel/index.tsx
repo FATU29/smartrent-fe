@@ -153,7 +153,7 @@ const ListingDetailPanel: React.FC<ListingDetailPanelProps> = ({
                         )}
                       </div>
                       <div className='text-right shrink-0'>
-                        <div className='flex items-center gap-1 text-xs text-muted-foreground mb-1'>
+                        <div className='flex items-center gap-1 text-xs text-muted-foreground'>
                           <Calendar
                             size={10}
                             className='text-muted-foreground/70'
@@ -162,11 +162,6 @@ const ListingDetailPanel: React.FC<ListingDetailPanelProps> = ({
                             {interaction.timestamp}
                           </span>
                         </div>
-                        {!interaction.viewed && (
-                          <Badge className='bg-red-500 text-white text-xs px-1.5 py-0.5'>
-                            {t('new')}
-                          </Badge>
-                        )}
                       </div>
                     </div>
 

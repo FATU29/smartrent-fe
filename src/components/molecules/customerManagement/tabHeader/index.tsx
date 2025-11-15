@@ -1,21 +1,16 @@
 import React from 'react'
 import { Users, Home } from 'lucide-react'
 import { TabsList, TabsTrigger } from '@/components/atoms/tabs'
-import { Badge } from '@/components/atoms/badge'
 import { useTranslations } from 'next-intl'
 
 interface TabHeaderProps {
   totalCustomers: number
   totalListings: number
-  unviewedCustomersCount: number
-  unviewedListingsCount: number
 }
 
 const TabHeader: React.FC<TabHeaderProps> = ({
   totalCustomers,
   totalListings,
-  unviewedCustomersCount,
-  unviewedListingsCount,
 }) => {
   const t = useTranslations('seller.customers')
 
@@ -29,11 +24,6 @@ const TabHeader: React.FC<TabHeaderProps> = ({
         <span>
           {t('tabs.customers')} ({totalCustomers})
         </span>
-        {unviewedCustomersCount > 0 && (
-          <Badge className='ml-1 bg-red-500 text-white h-5 min-w-[20px] px-1.5'>
-            {unviewedCustomersCount}
-          </Badge>
-        )}
       </TabsTrigger>
       <TabsTrigger
         value='listings'
@@ -43,11 +33,6 @@ const TabHeader: React.FC<TabHeaderProps> = ({
         <span>
           {t('tabs.listings')} ({totalListings})
         </span>
-        {unviewedListingsCount > 0 && (
-          <Badge className='ml-1 bg-red-500 text-white h-5 min-w-[20px] px-1.5'>
-            {unviewedListingsCount}
-          </Badge>
-        )}
       </TabsTrigger>
     </TabsList>
   )

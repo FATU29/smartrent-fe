@@ -150,4 +150,13 @@ export const PATHS = {
     CONVERT_NEW_TO_LEGACY: '/v1/addresses/convert/new-to-legacy',
     CONVERT_LEGACY_TO_NEW: '/v1/addresses/convert/legacy-to-new',
   },
+
+  // Phone Click Detail endpoints
+  PHONE_CLICK_DETAIL: {
+    TRACK: '/v1/phone-click-details',
+    BY_LISTING: '/v1/phone-click-details/listing/:listingId',
+    MY_CLICKS: '/v1/phone-click-details/my-clicks',
+    LISTING_STATS: '/v1/phone-click-details/listing/:listingId/stats',
+    MY_LISTINGS: '/v1/phone-click-details/my-listings',
+  },
 }

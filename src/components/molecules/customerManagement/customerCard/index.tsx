@@ -33,21 +33,15 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
         isSelected
           ? 'border-primary bg-primary/5 shadow-md'
           : 'hover:border-primary/50',
-        customer.hasUnviewed && !isSelected && 'bg-blue-500/5',
       )}
     >
       <div className='flex items-start gap-3'>
         {/* Avatar */}
-        <div className='relative'>
-          <Avatar className='h-12 w-12'>
-            <AvatarFallback className='bg-primary/10 text-primary font-semibold'>
-              {customer.initials}
-            </AvatarFallback>
-          </Avatar>
-          {customer.hasUnviewed && (
-            <div className='absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white' />
-          )}
-        </div>
+        <Avatar className='h-12 w-12'>
+          <AvatarFallback className='bg-primary/10 text-primary font-semibold'>
+            {customer.initials}
+          </AvatarFallback>
+        </Avatar>
 
         {/* Content */}
         <div className='flex-1 min-w-0'>

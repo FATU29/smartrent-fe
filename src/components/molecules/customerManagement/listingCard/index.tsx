@@ -20,7 +20,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   onClick,
   language,
 }) => {
-  const hasUnviewed = listing.interactions.some((int) => !int.viewed)
   const formattedPrice = formatByLocale(listing.price, language)
 
   return (
@@ -31,7 +30,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
         isSelected
           ? 'border-primary bg-primary/5 shadow-md'
           : 'hover:border-primary/50',
-        hasUnviewed && !isSelected && 'bg-blue-500/5',
       )}
     >
       <div className='flex gap-3'>
@@ -48,9 +46,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <div className='w-full h-full flex items-center justify-center text-gray-400'>
               <span className='text-xs'>No image</span>
             </div>
-          )}
-          {hasUnviewed && (
-            <div className='absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-white' />
           )}
         </div>
 
