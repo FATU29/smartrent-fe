@@ -11,7 +11,15 @@
     "reset": "Xóa",
     "selectDate": "Chọn ngày",
     "filter": "Lọc",
-    "createPost": "Đăng tin"
+    "createPost": "Đăng tin",
+    "propertyTypes": {
+      "0": "Tất cả",
+      "1": "Cho thuê phòng trọ",
+      "2": "Cho thuê căn hộ",
+      "3": "Cho thuê nhà nguyên căn",
+      "4": "Cho thuê văn phòng",
+      "5": "Cho thuê mặt bằng"
+    }
   },
   "paymentStatusPage": {
     "title": "Trạng thái thanh toán",
@@ -490,7 +498,9 @@
     "locations": {
       "title": "Bất động sản theo địa điểm",
       "listingsSuffix": "tin đăng",
-      "popularProjects": "Dự án nổi bật"
+      "popularProjects": "Dự án nổi bật",
+      "noData": "Hiện tại chưa có dữ liệu địa điểm",
+      "noDataDescription": "Vui lòng thử lại sau"
     },
     "features": {
       "title": "Tại sao nên chọn chúng tôi",
@@ -632,16 +642,43 @@
     "uploadNow": "Tải tin lên ngay",
     "completeCurrentStep": "Vui lòng hoàn thành bước này trước khi tiếp tục",
     "validation": {
+      "propertyTypeRequired": "Loại bất động sản là bắt buộc",
+      "propertyTypeInvalid": "Loại bất động sản không hợp lệ",
       "addressRequired": "Địa chỉ là bắt buộc",
       "areaRequired": "Diện tích là bắt buộc",
       "priceRequired": "Giá là bắt buộc",
       "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 3 ảnh hoặc 1 liên kết YouTube",
       "packageRequired": "Vui lòng chọn gói đăng",
       "durationRequired": "Vui lòng chọn thời hạn",
-      "startDateRequired": "Vui lòng chọn ngày bắt đầu"
+      "startDateRequired": "Vui lòng chọn ngày bắt đầu",
+      "listingTitleRequired": "Tiêu đề tin đăng là bắt buộc",
+      "propertyDescriptionRequired": "Mô tả bất động sản là bắt buộc",
+      "fullNameRequired": "Họ và tên là bắt buộc",
+      "emailRequired": "Email là bắt buộc",
+      "emailInvalid": "Email không hợp lệ",
+      "phoneNumberRequired": "Số điện thoại là bắt buộc",
+      "phoneNumberInvalid": "Số điện thoại không hợp lệ",
+      "waterPriceRequired": "Giá nước là bắt buộc",
+      "electricityPriceRequired": "Giá điện là bắt buộc",
+      "internetPriceRequired": "Giá internet là bắt buộc",
+      "interiorConditionRequired": "Tình trạng nội thất là bắt buộc",
+      "bedroomsRequired": "Số phòng ngủ là bắt buộc",
+      "bathroomsRequired": "Số phòng tắm là bắt buộc",
+      "moveInDateRequired": "Ngày chuyển vào là bắt buộc"
     },
     "generateAutomatically": "Tạo tự động",
     "continueToUpload": "Tiếp tục tải lên",
+    "draftDialog": {
+      "title": "Lưu bản nháp?",
+      "description": "Bạn có thay đổi chưa được lưu. Bạn có muốn lưu tin đăng này thành bản nháp trước khi rời đi không?",
+      "save": "Lưu bản nháp",
+      "discard": "Hủy bỏ",
+      "cancel": "Hủy",
+      "saving": "Đang lưu...",
+      "loginRequired": "Vui lòng đăng nhập để lưu bản nháp",
+      "saveSuccess": "Lưu bản nháp thành công",
+      "saveFailed": "Lưu bản nháp thất bại. Vui lòng thử lại."
+    },
     "steps": {
       "propertyInfo": {
         "generateAutomatically": "Tạo tự động",
@@ -837,7 +874,8 @@
           "description": "Tải ảnh bìa sẽ hiển thị đầu tiên trong bộ sưu tập",
           "uploadCta": "Tải ảnh bìa",
           "replaceCta": "Thay ảnh bìa",
-          "badge": "Ảnh bìa"
+          "badge": "Ảnh bìa",
+          "uploading": "Đang tải lên..."
         }
       },
       "propertyInfo": {
@@ -1131,6 +1169,8 @@
           "amenities": "Tiện nghi",
           "amenitiesTitle": "Tiện nghi",
           "reevaluate": "Đánh giá lại",
+          "predicting": "Đang dự đoán...",
+          "incompleteData": "Vui lòng điền đầy đủ thông tin địa chỉ, diện tích và tọa độ GPS",
           "types": {
             "apartment": "Căn hộ",
             "house": "Nhà",
@@ -1237,6 +1277,15 @@
           "similarPropertiesValue": "24 căn",
           "trend": "Xu hướng",
           "trendValue": "Tăng 3% so với tháng trước",
+          "noPrediction": "Nhấn \"Đánh giá lại\" để xem dự đoán giá từ AI",
+          "loading": "Đang phân tích và dự đoán giá...",
+          "error": {
+            "title": "Không thể dự đoán giá",
+            "message": "Đã xảy ra lỗi khi dự đoán giá. Vui lòng thử lại sau."
+          },
+          "minPrice": "Giá tối thiểu",
+          "maxPrice": "Giá tối đa",
+          "propertyType": "Loại hình",
           "optimizationTip": {
             "title": "Gợi ý Tối ưu",
             "description": "Để tăng lượt xem, đặt giá trong khoảng 2.9-3.1M"
@@ -1320,6 +1369,7 @@
       "overview": "Tổng quan",
       "listings": "Tin đăng",
       "create": "Đăng tin",
+      "drafts": "Tin nháp",
       "customers": "Khách hàng",
       "membership": "Gói Hội viên",
       "account": "Tài khoản",
@@ -1684,6 +1734,23 @@
           "takeDown": "Hạ tin",
           "delete": "Xóa tin"
         }
+      }
+    },
+    "drafts": {
+      "title": "Tin nháp",
+      "description": "Quản lý các tin đăng đã lưu nháp",
+      "emptyState": {
+        "title": "Chưa có tin nháp",
+        "description": "Các tin đăng đã lưu nháp của bạn sẽ hiển thị ở đây",
+        "createButton": "Tạo tin đăng mới"
+      },
+      "allDraftsShown": "Đã hiển thị tất cả tin nháp",
+      "card": {
+        "draftTitle": "Bản nháp",
+        "createdAt": "Tạo lúc",
+        "bedrooms": "phòng ngủ",
+        "bathrooms": "phòng tắm",
+        "edit": "Chỉnh sửa"
       }
     },
     "customers": {

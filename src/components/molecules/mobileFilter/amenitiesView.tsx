@@ -8,7 +8,6 @@ import {
 
 // AmenitiesView
 // Multi-select amenity picker with full list grouped by category
-// Supports scroll-y for long lists
 interface AmenitiesViewProps {
   values?: { id: number; name?: string }[] // Array of amenity objects
   onChange: (vals: { id: number; name?: string }[]) => void
@@ -47,7 +46,7 @@ const AmenitiesView: React.FC<AmenitiesViewProps> = ({
   }
 
   return (
-    <div className='pb-20 overflow-y-auto max-h-[calc(100vh-200px)]'>
+    <div className='pb-20'>
       <div className='p-4 space-y-4'>
         <div className='text-sm font-medium'>{tFilter('amenities.title')}</div>
         {categories.map((category) => {

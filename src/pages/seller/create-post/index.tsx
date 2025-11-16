@@ -3,13 +3,19 @@ import { CreatePostTemplate } from '@/components/templates/createPostTemplate'
 import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import LocationProvider from '@/contexts/location'
+import { CreatePostProvider } from '@/contexts/createPost'
+import { CreatePostDraftGuard } from '@/components/molecules/createPostDraftGuard'
 
 const CreatePostPage: NextPageWithLayout = () => {
   return (
     <>
       <SeoHead title='Đăng tin – Seller' noindex />
       <LocationProvider>
-        <CreatePostTemplate />
+        <CreatePostProvider>
+          <CreatePostDraftGuard>
+            <CreatePostTemplate />
+          </CreatePostDraftGuard>
+        </CreatePostProvider>
       </LocationProvider>
     </>
   )

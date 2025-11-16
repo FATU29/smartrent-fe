@@ -1,6 +1,11 @@
 import type { NextRouter } from 'next/router'
 import type { ParsedUrlQuery, ParsedUrlQueryInput } from 'querystring'
 import type { ListFilters } from '@/contexts/list/index.type'
+import type { ListingSearchRequest } from '@/api/types/property.type'
+import {
+  toApiPropertyType,
+  getPropertyTypeBySlug,
+} from '@/constants/common/propertyTypes'
 
 export type PushQueryOptions = {
   shallow?: boolean
@@ -51,32 +56,26 @@ function parseBooleanParam(
 }
 
 /**
- * Helper to parse amenities array
- */
-function parseAmenities(
-  query: ParsedUrlQuery,
-): Array<{ id: number }> | undefined {
-  if (!query.amenities) return undefined
-
-  const ids = (query.amenities as string)
-    .split(',')
-    .map((id) => Number(id))
-    .filter((id) => !isNaN(id))
-
-  return ids.length > 0 ? ids.map((id) => ({ id })) : undefined
-}
-
-/**
  * Parse basic property filters
+ * Uses API keys directly (keyword, productType, amenityIds, etc.)
  */
 function parseBasicFilters(query: ParsedUrlQuery): Partial<ListFilters> {
   const filters: Partial<ListFilters> = {}
 
-  // Property type - map 'category' to 'propertyType'
-  filters.propertyType =
-    parseStringParam(query, 'category') || parseStringParam(query, 'type')
-  filters.search = parseStringParam(query, 'search')
-  filters.city = parseStringParam(query, 'city')
+  // Property type - map 'category' (slug) to 'productType' (API key)
+  const categoryParam = parseStringParam(query, 'category')
+  const productTypeParam = parseStringParam(query, 'productType')
+  if (productTypeParam) {
+    filters.productType = productTypeParam
+  } else if (categoryParam) {
+    filters.productType = categoryParam
+  }
+
+  // Search - use API key 'keyword'
+  const keywordParam = parseStringParam(query, 'keyword')
+  if (keywordParam) {
+    filters.keyword = keywordParam
+  }
 
   // Price range
   filters.minPrice = parseNumberParam(query, 'minPrice')
@@ -86,16 +85,21 @@ function parseBasicFilters(query: ParsedUrlQuery): Partial<ListFilters> {
   filters.minArea = parseNumberParam(query, 'minArea')
   filters.maxArea = parseNumberParam(query, 'maxArea')
 
-  // Frontage range
-  filters.minFrontage = parseNumberParam(query, 'minFrontage')
-  filters.maxFrontage = parseNumberParam(query, 'maxFrontage')
-
   // Rooms
   filters.bedrooms = parseNumberParam(query, 'bedrooms')
   filters.bathrooms = parseNumberParam(query, 'bathrooms')
 
-  // Amenities
-  filters.amenities = parseAmenities(query)
+  // Amenities - use API key 'amenityIds'
+  const amenityIdsParam = query.amenityIds
+  if (amenityIdsParam) {
+    const ids = (amenityIdsParam as string)
+      .split(',')
+      .map((id) => Number(id))
+      .filter((id) => !isNaN(id))
+    if (ids.length > 0) {
+      filters.amenityIds = ids
+    }
+  }
 
   // Pagination
   filters.page = parseNumberParam(query, 'page')
@@ -105,23 +109,22 @@ function parseBasicFilters(query: ParsedUrlQuery): Partial<ListFilters> {
 
 /**
  * Parse boolean feature filters
+ * Uses API keys directly (hasMedia, verified, etc.)
  */
 function parseFeatureFilters(query: ParsedUrlQuery): Partial<ListFilters> {
   return {
     verified: parseBooleanParam(query, 'verified'),
-    professionalBroker: parseBooleanParam(query, 'professionalBroker'),
-    hasVideo: parseBooleanParam(query, 'hasVideo'),
-    has360: parseBooleanParam(query, 'has360'),
+    hasMedia: parseBooleanParam(query, 'hasMedia'),
   }
 }
 
 /**
  * Parse utility price filters
+ * Uses API keys directly (direction, etc.)
  */
 function parseUtilityFilters(query: ParsedUrlQuery): Partial<ListFilters> {
   return {
-    orientation: parseStringParam(query, 'orientation'),
-    moveInTime: parseStringParam(query, 'moveInTime'),
+    direction: parseStringParam(query, 'direction'),
     electricityPrice: parseStringParam(query, 'electricityPrice'),
     waterPrice: parseStringParam(query, 'waterPrice'),
     internetPrice: parseStringParam(query, 'internetPrice'),
@@ -130,22 +133,20 @@ function parseUtilityFilters(query: ParsedUrlQuery): Partial<ListFilters> {
 
 /**
  * Parse address filters
+ * Uses API keys directly (provinceId, districtId, wardId, provinceCode, etc.)
  */
 function parseAddressFilters(query: ParsedUrlQuery): Partial<ListFilters> {
   const filters: Partial<ListFilters> = {}
 
-  // Legacy structure (63 provinces)
-  filters.province = parseStringParam(query, 'province')
-  filters.district = parseStringParam(query, 'district')
-  filters.ward = parseStringParam(query, 'ward')
+  // Location IDs (numbers)
+  filters.provinceId = parseNumberParam(query, 'provinceId')
+  filters.districtId = parseNumberParam(query, 'districtId')
+  filters.wardId = parseNumberParam(query, 'wardId')
+  filters.streetId = parseNumberParam(query, 'streetId')
 
-  // New structure (34 provinces)
-  filters.newProvinceCode = parseStringParam(query, 'newProvinceCode')
+  // Location codes (strings)
+  filters.provinceCode = parseStringParam(query, 'provinceCode')
   filters.newWardCode = parseStringParam(query, 'newWardCode')
-
-  // Common fields
-  filters.streetId = parseStringParam(query, 'streetId')
-  filters.projectId = parseStringParam(query, 'projectId')
 
   // Structure type flag
   if (query.addressType === 'legacy' || query.addressType === 'new') {
@@ -218,4 +219,182 @@ export function pushQueryParams(
 
   const method = replace ? router.replace : router.push
   return method({ pathname, query: nextQuery }, undefined, { shallow, scroll })
+}
+
+/**
+ * Convert ListFilters to ListingSearchRequest (API format)
+ * Maps frontend filter format to backend API request format
+ *
+ * NOTE: Some filters from ListFilters are NOT supported by the API:
+ * - electricityPrice, waterPrice, internetPrice -> NOT supported (property fields, not search filters)
+ */
+export function listFiltersToSearchRequest(
+  filters: Partial<ListFilters>,
+): ListingSearchRequest {
+  const request: ListingSearchRequest = {}
+
+  // User & Ownership Filters
+  if (filters.verified !== undefined) {
+    request.verified = filters.verified
+  }
+
+  // Location Filters - API keys
+  if (filters.provinceId !== undefined) {
+    request.provinceId = filters.provinceId
+  }
+
+  if (filters.districtId !== undefined) {
+    request.districtId = filters.districtId
+  }
+
+  if (filters.wardId !== undefined) {
+    request.wardId = filters.wardId
+  }
+
+  if (filters.provinceCode) {
+    request.provinceCode = filters.provinceCode
+  }
+
+  if (filters.newWardCode) {
+    request.newWardCode = filters.newWardCode
+  }
+
+  if (filters.streetId !== undefined) {
+    request.streetId = filters.streetId
+  }
+
+  // Category & Type Filters
+  if (filters.productType) {
+    // Check if it's a slug first
+    const typeBySlug = getPropertyTypeBySlug(filters.productType)
+    if (typeBySlug) {
+      // Skip "ALL" option - don't filter by productType
+      if (typeBySlug.value !== 'ALL') {
+        request.productType = typeBySlug.apiValue
+      }
+    } else {
+      // Otherwise, convert value to API format
+      // Skip "ALL" or "all" values
+      if (
+        filters.productType.toLowerCase() !== 'all' &&
+        filters.productType.toLowerCase() !== 'tat-ca'
+      ) {
+        request.productType = toApiPropertyType(filters.productType)
+      }
+    }
+  }
+
+  // Property Specs Filters
+  if (filters.minPrice !== undefined) {
+    request.minPrice = filters.minPrice
+  }
+
+  if (filters.maxPrice !== undefined) {
+    request.maxPrice = filters.maxPrice
+  }
+
+  if (filters.minArea !== undefined) {
+    request.minArea = filters.minArea
+  }
+
+  if (filters.maxArea !== undefined) {
+    request.maxArea = filters.maxArea
+  }
+
+  if (filters.bedrooms !== undefined) {
+    request.bedrooms = filters.bedrooms
+  }
+
+  if (filters.bathrooms !== undefined) {
+    request.bathrooms = filters.bathrooms
+  }
+
+  // Direction
+  if (filters.direction) {
+    const upperDirection = filters.direction.toUpperCase()
+    const validDirections = [
+      'NORTH',
+      'SOUTH',
+      'EAST',
+      'WEST',
+      'NORTHEAST',
+      'NORTHWEST',
+      'SOUTHEAST',
+      'SOUTHWEST',
+    ]
+    if (validDirections.includes(upperDirection)) {
+      request.direction = upperDirection as
+        | 'NORTH'
+        | 'SOUTH'
+        | 'EAST'
+        | 'WEST'
+        | 'NORTHEAST'
+        | 'NORTHWEST'
+        | 'SOUTHEAST'
+        | 'SOUTHWEST'
+    }
+  }
+
+  // Furnishing (if available in filters)
+  const filtersWithFurnishing = filters as Partial<ListFilters> & {
+    furnishing?: string
+  }
+  if (filtersWithFurnishing.furnishing) {
+    const upperFurnishing = filtersWithFurnishing.furnishing.toUpperCase()
+    if (
+      ['FULLY_FURNISHED', 'SEMI_FURNISHED', 'UNFURNISHED'].includes(
+        upperFurnishing,
+      )
+    ) {
+      request.furnishing = upperFurnishing as
+        | 'FULLY_FURNISHED'
+        | 'SEMI_FURNISHED'
+        | 'UNFURNISHED'
+    }
+  }
+
+  // Listing Type (if available in filters)
+  const filtersWithListingType = filters as Partial<ListFilters> & {
+    listingType?: string
+  }
+  if (filtersWithListingType.listingType) {
+    const upperListingType = filtersWithListingType.listingType.toUpperCase()
+    if (['RENT', 'SALE', 'SHARE'].includes(upperListingType)) {
+      request.listingType = upperListingType as 'RENT' | 'SALE' | 'SHARE'
+    }
+  }
+
+  // Amenities & Media Filters
+  if (filters.amenityIds && filters.amenityIds.length > 0) {
+    request.amenityIds = filters.amenityIds
+    request.amenityMatchMode = 'ALL'
+  }
+
+  if (filters.hasMedia !== undefined) {
+    request.hasMedia = filters.hasMedia
+  }
+
+  // Content Search
+  if (filters.keyword) {
+    request.keyword = filters.keyword
+  }
+
+  // Pagination & Sorting
+  if (filters.page !== undefined) {
+    // Convert 1-based page to 0-based for API
+    request.page = filters.page > 0 ? filters.page - 1 : 0
+  }
+
+  if (filters.perPage !== undefined) {
+    request.size = filters.perPage
+  }
+
+  // Default sorting
+  request.sortBy = 'postDate'
+  request.sortDirection = 'DESC'
+
+  // Default exclude expired for public search
+  request.excludeExpired = true
+
+  return request
 }

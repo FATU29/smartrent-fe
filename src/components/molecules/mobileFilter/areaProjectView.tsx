@@ -76,19 +76,19 @@ const AreaProjectView: React.FC<AreaProjectViewProps> = ({
   }, [wardId])
 
   const handleProvince = (id: string) => {
-    onChange({ provinceId: id || undefined })
+    onChange({ provinceId: id ? Number(id) : undefined })
   }
 
   const handleDistrict = (id: string) => {
-    onChange({ districtId: id || undefined })
+    onChange({ districtId: id ? Number(id) : undefined })
   }
 
   const handleWard = (id: string) => {
-    onChange({ wardId: id || undefined })
+    onChange({ wardId: id ? Number(id) : undefined })
   }
 
   const handleStreet = (id: string) => {
-    onChange({ streetId: id || undefined })
+    onChange({ streetId: id ? Number(id) : undefined })
   }
 
   const handleProject = (id: string) => {
@@ -140,7 +140,7 @@ const AreaProjectView: React.FC<AreaProjectViewProps> = ({
         <CascadeSelectField
           label={t('street')}
           placeholder={t('chooseStreet')}
-          value={value.streetId}
+          value={value.streetId ? String(value.streetId) : undefined}
           disabled={!districtId || streetsLoading}
           options={streets.map((s) => ({
             id: String(s.streetId),
@@ -152,7 +152,7 @@ const AreaProjectView: React.FC<AreaProjectViewProps> = ({
         <CascadeSelectField
           label={t('project')}
           placeholder={t('chooseProject')}
-          value={value.projectId}
+          value={value.projectId as string | undefined}
           disabled={!districtId || projectsLoading}
           options={projects.map((pr) => ({
             id: String(pr.id),

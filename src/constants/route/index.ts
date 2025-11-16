@@ -2,6 +2,7 @@ export const SELLER_ROUTES = {
   OVERVIEW: '/seller/dashboard',
   LISTINGS: '/seller/listings',
   CREATE: '/seller/create-post',
+  DRAFTS: '/seller/drafts',
   CUSTOMERS: '/seller/customers',
   MEMBERSHIP: '/sellernet/membership/register',
   ACCOUNT: '/seller/account',
@@ -15,7 +16,7 @@ export const SELLERNET_ROUTES = {
   POST_PREFIX: '/sellernet/post',
   POST_CREATE: '/seller/create-post', // Redirect to seller layout
   POST_LIST: '/seller/listings', // Redirect to seller layout
-  POST_DRAFTS: '/sellernet/post/drafts',
+  POST_DRAFTS: '/seller/drafts',
   POST_SPONSORED: '/sellernet/post/sponsored',
   CUSTOMERS: '/seller/customers', // Redirect to seller layout
   MEMBERSHIP_REGISTER: '/sellernet/membership/register',

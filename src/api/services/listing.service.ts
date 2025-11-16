@@ -7,7 +7,6 @@
 import {
   PropertyCard,
   Listing,
-  ListingListApiResponse,
   CreateListingRequest,
   UpdateListingRequest,
   CreateVipListingRequest,
@@ -15,11 +14,17 @@ import {
   UpdatePriceRequest,
   PriceHistory,
   PriceStatistics,
+  ProvinceStatsRequest,
+  ProvinceStatsItem,
+  ListingSearchRequest,
+  ListingSearchApiResponse,
 } from '@/api/types/property.type'
 import { ListFilters, ListFetcherResponse } from '@/contexts/list/index.type'
 import { apiRequest } from '@/configs/axios/instance'
 import type { ApiResponse } from '@/configs/axios/types'
 import { PATHS } from '@/api/paths'
+import { AxiosInstance } from 'axios'
+import { listFiltersToSearchRequest } from '@/utils/queryParams'
 
 // ============= HELPER FUNCTIONS =============
 
@@ -31,13 +36,13 @@ const convertListingToPropertyCard = (listing: Listing): PropertyCard => {
     address: '',
     city: '',
     property_type: listing.productType,
-    bedrooms: listing.bedrooms,
-    bathrooms: listing.bathrooms,
+    bedrooms: listing.bedrooms || 0,
+    bathrooms: listing.bathrooms || 0,
     price: listing.price,
     currency: listing.priceUnit,
     area: listing.area,
-    furnishing: listing.furnishing,
-    amenities: listing.amenities.map((a) => a.name),
+    furnishing: listing.furnishing || '',
+    amenities: listing.amenities?.map((a) => a.name) || [],
     verified: listing.verified,
     featured: listing.vipType !== 'NORMAL',
   }
@@ -47,48 +52,35 @@ export async function fetchListings(
   filters: ListFilters,
 ): Promise<ListFetcherResponse<PropertyCard>> {
   try {
-    const params: Record<string, string | number> = {
-      page: (filters.page || 1) - 1,
-      size: filters.perPage || 20,
-    }
+    // Convert ListFilters to ListingSearchRequest format
+    const searchRequest = listFiltersToSearchRequest(filters)
 
-    if (filters.search) params.search = filters.search
-    if (filters.propertyType)
-      params.productType = filters.propertyType.toUpperCase()
-    if (filters.minPrice !== undefined) params.minPrice = filters.minPrice
-    if (filters.maxPrice !== undefined) params.maxPrice = filters.maxPrice
-    if (filters.bedrooms !== undefined) params.bedrooms = filters.bedrooms
-    if (filters.bathrooms !== undefined) params.bathrooms = filters.bathrooms
-    if (filters.city) params.city = filters.city
-    if (filters.amenities?.length)
-      params.amenities = filters.amenities.join(',')
-
-    const response = await apiRequest<ListingListApiResponse | Listing[]>({
-      method: 'GET',
-      url: PATHS.LISTING.LIST,
-      params,
-    })
+    // Call the new search API
+    const response = await ListingService.search(searchRequest)
 
     if (!response.data || response.code !== '999999') {
       throw new Error(response.message || 'Failed to fetch listings')
     }
 
-    const listings = Array.isArray(response.data)
-      ? response.data
-      : response.data.listings || []
-    const pagination = Array.isArray(response.data)
-      ? undefined
-      : response.data.pagination
+    const searchData = response.data
+    const listings = searchData.listings || []
 
     const properties = listings.map(convertListingToPropertyCard)
 
     return {
       data: properties,
-      total: pagination?.total || listings.length,
-      page: (pagination?.page || filters.page || 0) + 1,
-      totalPages: pagination?.totalPages || 1,
-      hasNext: pagination ? pagination.page + 1 < pagination.totalPages : false,
-      hasPrevious: pagination ? pagination.page > 0 : false,
+      total: searchData.totalCount || 0,
+      page: (searchData.currentPage || 0) + 1, // Convert 0-based to 1-based
+      totalPages: searchData.totalPages || 1,
+      hasNext:
+        searchData.currentPage !== undefined &&
+        searchData.totalPages !== undefined
+          ? searchData.currentPage + 1 < searchData.totalPages
+          : false,
+      hasPrevious:
+        searchData.currentPage !== undefined
+          ? searchData.currentPage > 0
+          : false,
     }
   } catch (error) {
     console.error('Error fetching listings:', error)
@@ -302,6 +294,111 @@ export class ListingService {
     })
     return response.data
   }
+
+  /**
+   * Save listing as draft
+   * Creates a new listing with minimal required fields for draft status
+   */
+  static async saveDraft(
+    data: Partial<CreateListingRequest>,
+  ): Promise<ApiResponse<{ listingId: number; status: string }>> {
+    // Ensure minimum required fields for draft
+    const draftData: CreateListingRequest = {
+      title: data.title || 'Draft',
+      description: data.description || '',
+      userId: data.userId || '',
+      listingType: data.listingType || 'RENT',
+      productType: data.productType || 'APARTMENT',
+      price: data.price || 0,
+      priceUnit: data.priceUnit || 'MONTH',
+      address: data.address || {
+        streetId: 0,
+        wardId: 0,
+        districtId: 0,
+        provinceId: 0,
+      },
+      ...data,
+    }
+
+    return apiRequest<{ listingId: number; status: string }>({
+      method: 'POST',
+      url: PATHS.LISTING.CREATE,
+      data: draftData,
+    })
+  }
+
+  /**
+   * Update existing listing as draft
+   */
+  static async updateDraft(
+    id: string | number,
+    data: Partial<UpdateListingRequest>,
+  ): Promise<ApiResponse<string>> {
+    const url = PATHS.LISTING.UPDATE.replace(':id', id.toString())
+    return apiRequest<string>({
+      method: 'PUT',
+      url,
+      data,
+    })
+  }
+
+  /**
+   * Get province statistics for listings
+   * Public API - no authentication required
+   * @param {ProvinceStatsRequest} request - Province IDs or codes and filters
+   * @param {AxiosInstance} instance - Optional axios instance for server-side calls
+   * @returns {Promise<ApiResponse<ProvinceStatsItem[]>>} Promise resolving to province statistics
+   * @example
+   * const stats = await ListingService.getProvinceStats({
+   *   provinceIds: [1, 79, 48, 31, 92],
+   *   verifiedOnly: false
+   * })
+   */
+  static async getProvinceStats(
+    request: ProvinceStatsRequest,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ProvinceStatsItem[]>> {
+    return apiRequest<ProvinceStatsItem[]>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.PROVINCE_STATS,
+        data: request,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Search listings with comprehensive filters
+   * POST /v1/listings/search
+   * @param {ListingSearchRequest} request - Search filters (all optional)
+   * @param {AxiosInstance} instance - Optional axios instance for server-side calls
+   * @returns {Promise<ApiResponse<ListingSearchResponse>>} Promise resolving to search results
+   * @example
+   * const results = await ListingService.search({
+   *   provinceId: 1,
+   *   listingType: 'RENT',
+   *   minPrice: 5000000,
+   *   maxPrice: 15000000,
+   *   page: 0,
+   *   size: 20
+   * })
+   */
+  static async search(
+    request: ListingSearchRequest,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingSearchApiResponse['data']>> {
+    const response = await apiRequest<ListingSearchApiResponse['data']>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.SEARCH,
+        data: request,
+      },
+      instance,
+    )
+
+    return response
+  }
 }
 
 // ============= EXPORTS =============
@@ -321,4 +418,6 @@ export const {
   getRecentPriceChanges,
   getByIdAdmin,
   getInitial,
+  getProvinceStats,
+  search,
 } = ListingService

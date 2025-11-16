@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo, useEffect, useState } from 'react'
 import {
   Card,
   CardContent,
@@ -9,22 +9,32 @@ import { Button } from '@/components/atoms/button'
 import SelectDropdown from '@/components/atoms/select-dropdown'
 import {
   BarChart3,
-  TrendingUp,
-  Save,
-  Share2,
   RefreshCw,
   Home,
   MapPin,
   CheckCircle,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { getAmenityByCode } from '@/constants/amenities'
+import { getAiPropertyTypeOptions, getAmenityItems } from './index.helper'
+import { useHousingPredictor } from '@/hooks/useAI'
 import {
-  getAiPropertyTypeOptions,
-  getResultsComparisonItems,
-  getAmenityItems,
-} from './index.helper'
+  extractAddressNames,
+  buildHousingPredictorRequest,
+  getAveragePrice,
+} from '@/utils/ai/housingPredictor'
+import {
+  useLegacyProvinces,
+  useLegacyDistricts,
+  useLegacyWards,
+  useNewProvinces,
+  useNewWards,
+} from '@/hooks/useAddress'
+import { formatByLocale } from '@/utils/currency/convert'
+import type { HousingPredictorResponse } from '@/api/types/ai.type'
 
 interface AIValuationSectionProps {
   className?: string
@@ -34,9 +44,156 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   className,
 }) => {
   const t = useTranslations('createPost.sections.aiValuation')
+  const tCommon = useTranslations('common')
   const tAddress = useTranslations('createPost.sections.propertyInfo.address')
   const tPropertyInfo = useTranslations('createPost.sections.propertyInfo')
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
+  const [prediction, setPrediction] = useState<HousingPredictorResponse | null>(
+    null,
+  )
+
+  // Address data hooks
+
+  const selectedLegacyProvinceId = useMemo(() => {
+    const id = parseInt(propertyInfo?.province || '0')
+    return id > 0 ? id : undefined
+  }, [propertyInfo?.province])
+
+  const selectedLegacyDistrictId = useMemo(() => {
+    const id = parseInt(propertyInfo?.district || '0')
+    return id > 0 ? id : undefined
+  }, [propertyInfo?.district])
+
+  const { data: legacyProvinces = [] } = useLegacyProvinces()
+  const { data: legacyDistricts = [] } = useLegacyDistricts(
+    selectedLegacyProvinceId,
+  )
+  const { data: legacyWards = [] } = useLegacyWards(selectedLegacyDistrictId)
+  const { data: newProvinces = [] } = useNewProvinces()
+  const { data: newWards = [] } = useNewWards(propertyInfo?.newProvinceCode)
+
+  // Find selected address entities
+  const selectedLegacyProvince = useMemo(() => {
+    return legacyProvinces.find(
+      (p) => p.provinceId === selectedLegacyProvinceId,
+    )
+  }, [legacyProvinces, selectedLegacyProvinceId])
+
+  const selectedLegacyDistrict = useMemo(() => {
+    return legacyDistricts.find(
+      (d) => d.districtId === selectedLegacyDistrictId,
+    )
+  }, [legacyDistricts, selectedLegacyDistrictId])
+
+  const selectedLegacyWard = useMemo(() => {
+    const wardId = parseInt(propertyInfo?.ward || '0')
+    return legacyWards.find((w) => w.wardId === wardId)
+  }, [legacyWards, propertyInfo?.ward])
+
+  const selectedNewProvince = useMemo(() => {
+    return newProvinces.find((p) => p.code === propertyInfo?.newProvinceCode)
+  }, [newProvinces, propertyInfo?.newProvinceCode])
+
+  const selectedNewWard = useMemo(() => {
+    return newWards.find((w) => w.code === propertyInfo?.newWardCode)
+  }, [newWards, propertyInfo?.newWardCode])
+
+  // Extract address names
+  const addressNames = useMemo(() => {
+    return extractAddressNames(
+      propertyInfo,
+      selectedLegacyProvince,
+      selectedLegacyDistrict,
+      selectedLegacyWard,
+      selectedNewProvince,
+      selectedNewWard,
+    )
+  }, [
+    propertyInfo,
+    selectedLegacyProvince,
+    selectedLegacyDistrict,
+    selectedLegacyWard,
+    selectedNewProvince,
+    selectedNewWard,
+  ])
+
+  // Housing predictor hook
+  const {
+    mutate: predictPrice,
+    isPending: isPredicting,
+    error: predictionError,
+  } = useHousingPredictor()
+
+  // Build request
+  const predictionRequest = useMemo(() => {
+    if (!addressNames) return null
+    return buildHousingPredictorRequest(propertyInfo, addressNames)
+  }, [propertyInfo, addressNames])
+
+  // Track if we've attempted prediction for current request
+  const predictionRequestRef = React.useRef<string | null>(null)
+
+  // Auto-predict when predictionRequest becomes available or changes
+  useEffect(() => {
+    if (!predictionRequest) {
+      // Reset prediction when request becomes invalid
+      if (prediction) {
+        setPrediction(null)
+      }
+      predictionRequestRef.current = null
+      return
+    }
+
+    // Create a unique key for this request to avoid duplicate calls
+    const requestKey = JSON.stringify(predictionRequest)
+
+    // Only predict if:
+    // 1. We have a valid request
+    // 2. We haven't predicted for this exact request yet
+    // 3. We're not currently predicting
+    if (requestKey !== predictionRequestRef.current && !isPredicting) {
+      predictionRequestRef.current = requestKey
+      predictPrice(predictionRequest, {
+        onSuccess: (response) => {
+          if (response.code === '999999' && response.data) {
+            setPrediction(response.data)
+          } else {
+            // Reset ref on failure so we can retry
+            predictionRequestRef.current = null
+          }
+        },
+        onError: () => {
+          // Error handled by predictionError
+          predictionRequestRef.current = null
+        },
+      })
+    }
+  }, [predictionRequest, isPredicting, predictPrice])
+
+  // Handle re-evaluate button
+  const handleReevaluate = () => {
+    if (!predictionRequest) return
+    // Reset ref to allow re-prediction
+    predictionRequestRef.current = null
+    setPrediction(null)
+    predictPrice(predictionRequest, {
+      onSuccess: (response) => {
+        if (response.code === '999999' && response.data) {
+          setPrediction(response.data)
+          // Update ref to prevent duplicate calls
+          predictionRequestRef.current = JSON.stringify(predictionRequest)
+        }
+      },
+    })
+  }
+
+  // Format price for display
+  const formatPrice = (price: number) => {
+    return formatByLocale(price, 'vi-VN')
+  }
+
+  // Check if we can predict
+  const canPredict = !!predictionRequest
 
   return (
     <div className={className}>
@@ -119,13 +276,14 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                 onValueChange={(value) =>
                   updatePropertyInfo({
                     propertyType: value as
+                      | 'room'
                       | 'apartment'
                       | 'house'
-                      | 'villa'
-                      | 'studio',
+                      | 'office'
+                      | 'store',
                   })
                 }
-                options={getAiPropertyTypeOptions(t)}
+                options={getAiPropertyTypeOptions(t, tCommon)}
                 className='space-y-2'
                 disabled
               />
@@ -220,10 +378,30 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             </div>
 
             {/* Re-evaluate Button */}
-            <Button className='w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105'>
-              <RefreshCw className='w-5 h-5 mr-2' />
-              {t('propertyInfo.reevaluate')}
+            <Button
+              onClick={handleReevaluate}
+              disabled={!canPredict || isPredicting}
+              className='w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
+            >
+              {isPredicting ? (
+                <>
+                  <Loader2 className='w-5 h-5 mr-2 animate-spin' />
+                  {t('propertyInfo.predicting') || 'Đang dự đoán...'}
+                </>
+              ) : (
+                <>
+                  <RefreshCw className='w-5 h-5 mr-2' />
+                  {t('propertyInfo.reevaluate')}
+                </>
+              )}
             </Button>
+            {!canPredict && (
+              <p className='text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1'>
+                <AlertCircle className='w-3 h-3' />
+                {t('propertyInfo.incompleteData') ||
+                  'Vui lòng điền đầy đủ thông tin địa chỉ, diện tích và tọa độ GPS'}
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -241,120 +419,117 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             </p>
           </CardHeader>
           <CardContent className='space-y-5'>
-            {/* Suggested Price Range */}
-            <div className='mt-3 sm:mt-4 space-y-2 sm:space-y-3'>
-              <h3 className='text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-300'>
-                {t('results.suggestedPrice')}
-              </h3>
-              <div className='bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-4 sm:p-6 text-white shadow-lg mb-2 sm:mb-3'>
-                <div className='text-2xl sm:text-3xl font-extrabold leading-tight tracking-tight mb-1 sm:mb-2'>
-                  {t('results.priceRange')}
-                </div>
-                <div className='flex items-center gap-2 sm:gap-2.5'>
-                  <div className='w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse'></div>
-                  <span className='text-xs sm:text-sm opacity-90'>
-                    {t('results.reliability')}: 85%
-                  </span>
-                </div>
+            {/* Loading State */}
+            {isPredicting && !prediction && (
+              <div className='flex flex-col items-center justify-center py-12 space-y-4'>
+                <Loader2 className='w-12 h-12 text-blue-500 animate-spin' />
+                <p className='text-sm text-gray-600 dark:text-gray-400'>
+                  {t('results.loading') || 'Đang phân tích và dự đoán giá...'}
+                </p>
               </div>
-            </div>
+            )}
 
-            {/* Price Comparison Chart */}
-            <div className='space-y-4'>
-              <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                {t('results.comparisonChart')}
-              </h3>
-              <div className='bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-inner'>
-                <div className='h-40 flex items-end justify-between gap-2'>
-                  {getResultsComparisonItems(t).map((item, index) => (
-                    <div
-                      key={`comparison-item-${index}`}
-                      className='flex flex-col items-center flex-1 group'
-                    >
-                      <div
-                        className={`w-full ${item.color} rounded-t-lg shadow-lg transition-all duration-300 group-hover:scale-105`}
-                        style={{ height: `${(item.value / 3.2) * 100}%` }}
-                      ></div>
-                      <span className='text-xs text-gray-600 dark:text-gray-400 mt-2 text-center font-medium'>
-                        {item.district}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Market Information */}
-            <div className='space-y-4'>
-              <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                {t('results.marketInfo')}
-              </h3>
-              <div className='space-y-3'>
-                <div className='flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-xl'>
-                  <span className='text-sm text-gray-600 dark:text-gray-400'>
-                    {t('results.averagePrice')}:
-                  </span>
-                  <span className='text-sm font-semibold text-gray-900 dark:text-gray-100'>
-                    {t('results.averagePriceValue')}
-                  </span>
-                </div>
-                <div className='flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-xl'>
-                  <span className='text-sm text-gray-600 dark:text-gray-400'>
-                    {t('results.similarProperties')}:
-                  </span>
-                  <span className='text-sm font-semibold text-gray-900 dark:text-gray-100'>
-                    {t('results.similarPropertiesValue')}
-                  </span>
-                </div>
-                <div className='flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800'>
-                  <span className='text-sm text-gray-600 dark:text-gray-400'>
-                    {t('results.trend')}:
-                  </span>
-                  <div className='flex items-center gap-2'>
-                    <TrendingUp className='w-4 h-4 text-green-500' />
-                    <span className='text-sm font-semibold text-green-600 dark:text-green-400'>
-                      {t('results.trendValue')}
-                    </span>
+            {/* Error State */}
+            {predictionError && !prediction && (
+              <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4'>
+                <div className='flex items-start gap-3'>
+                  <AlertCircle className='w-5 h-5 text-red-500 flex-shrink-0 mt-0.5' />
+                  <div className='flex-1'>
+                    <h4 className='text-sm font-semibold text-red-800 dark:text-red-300 mb-1'>
+                      {t('results.error.title') || 'Không thể dự đoán giá'}
+                    </h4>
+                    <p className='text-sm text-red-700 dark:text-red-400'>
+                      {t('results.error.message') ||
+                        'Đã xảy ra lỗi khi dự đoán giá. Vui lòng thử lại sau.'}
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Suggested Price Range */}
+            {prediction && (
+              <>
+                <div className='mt-3 sm:mt-4 space-y-2 sm:space-y-3'>
+                  <h3 className='text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-300'>
+                    {t('results.suggestedPrice')}
+                  </h3>
+                  <div className='bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-4 sm:p-6 text-white shadow-lg mb-2 sm:mb-3'>
+                    <div className='text-lg sm:text-xl font-bold leading-tight tracking-tight mb-2'>
+                      {formatPrice(prediction.price_range.min)} -{' '}
+                      {formatPrice(prediction.price_range.max)}
+                    </div>
+                    <div className='text-sm opacity-90 mb-3'>
+                      {prediction.location}
+                    </div>
+                    <div className='flex items-center gap-2 sm:gap-2.5'>
+                      <div className='w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse'></div>
+                      <span className='text-xs sm:text-sm opacity-90'>
+                        {t('results.reliability') || 'Độ tin cậy'}: 85%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Price Details */}
+                <div className='space-y-3'>
+                  <div className='flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-xl'>
+                    <span className='text-sm text-gray-600 dark:text-gray-400'>
+                      {t('results.minPrice') || 'Giá tối thiểu'}:
+                    </span>
+                    <span className='text-sm font-semibold text-blue-600 dark:text-blue-400'>
+                      {formatPrice(prediction.price_range.min)}
+                    </span>
+                  </div>
+                  <div className='flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-xl'>
+                    <span className='text-sm text-gray-600 dark:text-gray-400'>
+                      {t('results.averagePrice') || 'Giá trung bình'}:
+                    </span>
+                    <span className='text-sm font-semibold text-green-600 dark:text-green-400'>
+                      {formatPrice(
+                        getAveragePrice(
+                          prediction.price_range.min,
+                          prediction.price_range.max,
+                        ),
+                      )}
+                    </span>
+                  </div>
+                  <div className='flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-xl'>
+                    <span className='text-sm text-gray-600 dark:text-gray-400'>
+                      {t('results.maxPrice') || 'Giá tối đa'}:
+                    </span>
+                    <span className='text-sm font-semibold text-orange-600 dark:text-orange-400'>
+                      {formatPrice(prediction.price_range.max)}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Placeholder when no prediction */}
+            {!prediction && !isPredicting && !predictionError && (
+              <div className='text-center py-12'>
+                <BarChart3 className='w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4' />
+                <p className='text-sm text-gray-500 dark:text-gray-400'>
+                  {t('results.noPrediction') ||
+                    'Nhấn "Đánh giá lại" để xem dự đoán giá từ AI'}
+                </p>
+              </div>
+            )}
 
             {/* Optimization Tip */}
-            <div className='bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800 rounded-2xl p-4'>
-              <h4 className='text-sm font-semibold text-yellow-800 dark:text-yellow-200 mb-2 flex items-center gap-2'>
-                <div className='w-2 h-2 bg-yellow-500 rounded-full'></div>
-                {t('results.optimizationTip.title')}
-              </h4>
-              <p className='text-sm text-yellow-700 dark:text-yellow-300 leading-relaxed'>
-                {t('results.optimizationTip.description')}
-              </p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className='flex flex-col sm:flex-row gap-2 sm:gap-3 w-full'>
-              <Button
-                variant='outline'
-                className='w-full sm:w-auto flex-1 h-12 border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl font-semibold transition-all duration-200'
-              >
-                <Save className='w-4 h-4 mr-2' />
-                {t('results.actions.save')}
-              </Button>
-              <Button
-                variant='outline'
-                className='w-full sm:w-auto flex-1 h-12 border-2 border-blue-200 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl font-semibold transition-all duration-200'
-              >
-                <Share2 className='w-4 h-4 mr-2' />
-                {t('results.actions.share')}
-              </Button>
-            </div>
-
-            {/* Feedback */}
-            <div className='text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl'>
-              <p className='text-sm text-gray-600 dark:text-gray-400'>
-                {t('results.feedback')}
-              </p>
-            </div>
+            {prediction && (
+              <div className='bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800 rounded-2xl p-4'>
+                <h4 className='text-sm font-semibold text-yellow-800 dark:text-yellow-200 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-yellow-500 rounded-full'></div>
+                  {t('results.optimizationTip.title') || 'Lưu ý về dự đoán giá'}
+                </h4>
+                <p className='text-sm text-yellow-700 dark:text-yellow-300 leading-relaxed'>
+                  {t('results.optimizationTip.description') ||
+                    'Giá dự đoán dựa trên AI/ML models và có thể khác với giá thực tế. Đây chỉ là tham khảo để bạn có cơ sở định giá ban đầu.'}
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

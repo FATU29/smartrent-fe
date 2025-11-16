@@ -106,11 +106,13 @@ const AreaProjectViewDual: React.FC<AreaProjectViewDualProps> = ({
   }
 
   const handleProvince = (id: string) =>
-    onChange({ provinceId: id || undefined })
+    onChange({ provinceId: id ? Number(id) : undefined })
   const handleDistrict = (id: string) =>
-    onChange({ districtId: id || undefined })
-  const handleWard = (id: string) => onChange({ wardId: id || undefined })
-  const handleStreet = (id: string) => onChange({ streetId: id || undefined })
+    onChange({ districtId: id ? Number(id) : undefined })
+  const handleWard = (id: string) =>
+    onChange({ wardId: id ? Number(id) : undefined })
+  const handleStreet = (id: string) =>
+    onChange({ streetId: id ? Number(id) : undefined })
   const handleProject = (id: string) => onChange({ projectId: id || undefined })
 
   if (structure === 'legacy') {
@@ -169,7 +171,7 @@ const AreaProjectViewDual: React.FC<AreaProjectViewDualProps> = ({
           <CascadeSelectField
             label={t('street')}
             placeholder={t('chooseStreet')}
-            value={value.streetId}
+            value={value.streetId ? String(value.streetId) : undefined}
             disabled={!districtId || legacyStreetsLoading}
             options={legacyStreets.map((s) => ({
               id: String(s.streetId),
@@ -181,7 +183,7 @@ const AreaProjectViewDual: React.FC<AreaProjectViewDualProps> = ({
           <CascadeSelectField
             label={t('project')}
             placeholder={t('chooseProject')}
-            value={value.projectId}
+            value={value.projectId as string | undefined}
             disabled={!districtId || legacyProjectsLoading}
             options={legacyProjects.map((pr) => ({
               id: String(pr.id),

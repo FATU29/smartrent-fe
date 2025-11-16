@@ -11,6 +11,7 @@ import {
   DropdownMenuLabel,
 } from '@/components/atoms/dropdown-menu'
 import { ChevronDown, Home } from 'lucide-react'
+import { PROPERTY_TYPES } from '@/constants/common/propertyTypes'
 
 interface PropertyTypeDropdownProps {
   value?: string
@@ -19,22 +20,20 @@ interface PropertyTypeDropdownProps {
 }
 
 const PropertyTypeDropdown: React.FC<PropertyTypeDropdownProps> = ({
-  value = 'any',
+  value = 'tat-ca', // Default to "Tất cả" slug
   onChange,
   className = '',
 }) => {
   const t = useTranslations('homePage.filters.propertyType')
+  const tCommon = useTranslations('common')
 
-  const propertyTypes = [
-    { value: 'any', label: t('all'), icon: Home },
-    { value: 'apartment', label: t('apartment'), icon: Home },
-    { value: 'studio', label: t('studio'), icon: Home },
-    { value: 'villa', label: t('villa'), icon: Home },
-    { value: 'house', label: t('house'), icon: Home },
-    { value: 'condo', label: t('condo'), icon: Home },
-    { value: 'townhouse', label: t('townhouse'), icon: Home },
-    { value: 'penthouse', label: t('penthouse'), icon: Home },
-  ]
+  // Use PROPERTY_TYPES directly (already includes "Tất cả" as first item)
+  // Use translation for names, keep slugs as-is
+  const propertyTypes = PROPERTY_TYPES.map((type) => ({
+    value: type.slug, // Use slug for consistency (no translation)
+    label: tCommon(`propertyTypes.${type.id}`), // Use translation by id
+    icon: Home,
+  }))
 
   const selectedType =
     propertyTypes.find((type) => type.value === value) || propertyTypes[0]

@@ -26,14 +26,16 @@ const ListSearch: React.FC<ListSearchProps> = ({
   className = '',
 }) => {
   const { filters, handleUpdateFilter, isLoading } = useListContext()
-  const [searchTerm, setSearchTerm] = useState(filters.search || '')
+  const [searchTerm, setSearchTerm] = useState(
+    (filters.search as string | undefined) || '',
+  )
 
   const debouncedSearchTerm = useDebounce(searchTerm, debounceMs)
 
   useEffect(() => {
     if (autoSearch && debouncedSearchTerm !== filters.search) {
       handleUpdateFilter({ search: debouncedSearchTerm })
-      onSearch?.(debouncedSearchTerm)
+      onSearch?.(debouncedSearchTerm || '')
     }
   }, [
     debouncedSearchTerm,
@@ -46,7 +48,7 @@ const ListSearch: React.FC<ListSearchProps> = ({
   const handleSearch = () => {
     if (searchTerm !== filters.search) {
       handleUpdateFilter({ search: searchTerm })
-      onSearch?.(searchTerm)
+      onSearch?.(searchTerm || '')
     }
   }
 

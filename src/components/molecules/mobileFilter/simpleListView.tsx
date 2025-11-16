@@ -3,10 +3,10 @@ import RadioRow from '@/components/atoms/mobileFilter/radioRow'
 import { useTranslations } from 'next-intl'
 
 // SimpleListView
-// Generic radio list for enumerated single-value filters (move-in time & utilities pricing responsibility).
+// Generic radio list for enumerated single-value filters (utilities pricing responsibility).
 // 'any' option maps to undefined to simplify active filter counting & API payload.
 interface SimpleListViewProps {
-  type: 'moveInTime' | 'electricityPrice' | 'waterPrice' | 'internetPrice'
+  type: 'electricityPrice' | 'waterPrice' | 'internetPrice'
   value?: string
   onChange: (val?: string) => void
 }
@@ -19,27 +19,23 @@ const SimpleListView: React.FC<SimpleListViewProps> = ({
   const t = useTranslations('residentialFilter')
 
   const keyMap: Record<string, string[]> = {
-    moveInTime: ['any', 'immediate', 'oneToTwoWeeks', 'oneMonth', 'negotiable'],
     electricityPrice: ['any', 'negotiable', 'owner', 'provider'],
     waterPrice: ['any', 'negotiable', 'owner', 'provider'],
     internetPrice: ['any', 'negotiable', 'owner'],
   }
 
   const titleKey: Record<string, string> = {
-    moveInTime: 'moveInTime.title',
     electricityPrice: 'utilitiesPrice.electricity.title',
     waterPrice: 'utilitiesPrice.water.title',
     internetPrice: 'utilitiesPrice.internet.title',
   }
 
   const prefix =
-    type === 'moveInTime'
-      ? 'moveInTime'
-      : type === 'electricityPrice'
-        ? 'utilitiesPrice.electricity'
-        : type === 'waterPrice'
-          ? 'utilitiesPrice.water'
-          : 'utilitiesPrice.internet'
+    type === 'electricityPrice'
+      ? 'utilitiesPrice.electricity'
+      : type === 'waterPrice'
+        ? 'utilitiesPrice.water'
+        : 'utilitiesPrice.internet'
 
   return (
     <div className='pb-20'>

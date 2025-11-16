@@ -2,6 +2,7 @@ export const PATHS = {
   // AI endpoints
   AI: {
     LISTING_DESCRIPTION: '/v1/ai/listing-description',
+    HOUSING_PREDICTOR: '/v1/housing-predictor/predict',
   },
 
   // Auth endpoints
@@ -39,6 +40,7 @@ export const PATHS = {
   // Listing endpoints
   LISTING: {
     LIST: '/v1/listings',
+    SEARCH: '/v1/listings/search',
     BY_ID: '/v1/listings/:id',
     CREATE: '/v1/listings',
     CREATE_VIP: '/v1/listings/vip',
@@ -53,6 +55,7 @@ export const PATHS = {
     PRICE_STATISTICS: '/v1/listings/:listingId/price-statistics',
     CURRENT_PRICE: '/v1/listings/:listingId/current-price',
     RECENT_PRICE_CHANGES: '/v1/listings/recent-price-changes',
+    PROVINCE_STATS: '/v1/listings/stats/provinces',
   },
 
   // Admin endpoints
