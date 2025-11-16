@@ -9,20 +9,11 @@ import {
   useLegacyProvinces,
   useLegacyDistricts,
   useLegacyWards,
-  useLegacyStreets,
-  useLegacyProjects,
   useNewProvinces,
   useNewWards,
-  useSearchStreets,
 } from '@/hooks/useAddress/useAddressQueries'
-import type {
-  NewProvince,
-  NewWard,
-  Project,
-  StreetExtended,
-} from '@/api/types/address.type'
-import { useDebounce } from '@/hooks/useDebounce'
-import { usePagedList, type Option } from './usePagedList'
+import type { NewProvince, NewWard } from '@/api/types/address.type'
+import type { Option } from './usePagedList'
 
 export interface AddressFilterData {
   province?: string
@@ -31,7 +22,6 @@ export interface AddressFilterData {
   newProvinceCode?: string
   newWardCode?: string
   streetId?: string
-  projectId?: string
   addressStructureType?: 'legacy' | 'new'
   searchAddress?: string
   addressEdited?: boolean
@@ -85,24 +75,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     error: errorLegacyWards,
   } = useLegacyWards(selectedLegacyDistrictId)
 
-  const selectedLegacyWardId = undefined
-
-  const {
-    data: legacyStreets = [],
-    isLoading: loadingLegacyStreets,
-    isFetching: fetchingLegacyStreets,
-  } = useLegacyStreets(
-    undefined,
-    selectedLegacyDistrictId,
-    selectedLegacyProvinceId,
-  )
-
-  const {
-    data: legacyProjects = [],
-    isLoading: loadingLegacyProjects,
-    isFetching: fetchingLegacyProjects,
-  } = useLegacyProjects(selectedLegacyProvinceId, selectedLegacyDistrictId)
-
   const {
     data: newProvinces = [],
     isLoading: loadingNewProvinces,
@@ -116,57 +88,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     isFetching: fetchingNewWards,
     error: errorNewWards,
   } = useNewWards(value?.newProvinceCode)
-
-  const [derivedLegacyIds, setDerivedLegacyIds] = React.useState<{
-    provinceId?: number
-    districtId?: number
-    wardId?: number
-  }>({})
-
-  React.useEffect(() => {
-    let cancelled = false
-    const convert = async () => {
-      if (!value?.newProvinceCode || !value?.newWardCode) {
-        if (!cancelled) setDerivedLegacyIds({})
-        return
-      }
-      try {
-        const res = await AddressService.convertNewToLegacy(
-          value.newProvinceCode,
-          value.newWardCode,
-        )
-        const legacy = res?.data?.data?.legacyAddress
-        if (legacy && !cancelled) {
-          setDerivedLegacyIds({
-            provinceId: legacy.province?.id,
-            districtId: legacy.district?.id,
-            wardId: legacy.ward?.id,
-          })
-        }
-      } catch {
-        if (!cancelled) setDerivedLegacyIds({})
-      }
-    }
-    convert()
-    return () => {
-      cancelled = true
-    }
-  }, [value?.newProvinceCode, value?.newWardCode])
-
-  const {
-    data: newModeStreets = [],
-    isLoading: loadingNewModeStreets,
-    isFetching: fetchingNewModeStreets,
-  } = useLegacyStreets(undefined, derivedLegacyIds.districtId, undefined)
-
-  const {
-    data: newModeProjects = [],
-    isLoading: loadingNewModeProjects,
-    isFetching: fetchingNewModeProjects,
-  } = useLegacyProjects(
-    derivedLegacyIds.provinceId,
-    derivedLegacyIds.districtId,
-  )
 
   React.useEffect(() => {
     if (errorLegacyProvinces || errorNewProvinces) {
@@ -315,34 +236,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       })
   }, [legacyWards])
 
-  type LegacyStreetItem = { streetId?: number; id?: number; name?: string }
-  const legacyStreetOptions: Option[] = useMemo(() => {
-    const list = (
-      Array.isArray(legacyStreets) ? (legacyStreets as LegacyStreetItem[]) : []
-    ) as LegacyStreetItem[]
-    return list
-      .filter((s) => (s?.streetId ?? s?.id) && s?.name)
-      .map((s) => {
-        const sid = s?.streetId ?? s?.id
-        return { value: String(sid), label: s.name! } as Option
-      })
-  }, [legacyStreets])
-
-  type LegacyProjectItem = Project & { projectId?: number }
-  const legacyProjectOptions: Option[] = useMemo(() => {
-    const list = (
-      Array.isArray(legacyProjects)
-        ? (legacyProjects as LegacyProjectItem[])
-        : []
-    ) as LegacyProjectItem[]
-    return list
-      .filter((p) => (p?.id ?? p?.projectId) && p?.name)
-      .map((p) => ({
-        value: String(p.id ?? p.projectId),
-        label: p.name,
-      }))
-  }, [legacyProjects])
-
   const newProvinceOptions: Option[] = useMemo(
     () =>
       (newProvinces || [])
@@ -365,85 +258,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     [newWards],
   )
 
-  const newModeStreetOptions: Option[] = useMemo(() => {
-    const list = Array.isArray(newModeStreets)
-      ? (newModeStreets as readonly StreetExtended[])
-      : []
-    return list
-      .filter((s) => s?.streetId && s?.name)
-      .map((s) => ({ value: String(s.streetId), label: s.name }))
-  }, [newModeStreets])
-
-  const newModeProjectOptions: Option[] = useMemo(() => {
-    const list = Array.isArray(newModeProjects)
-      ? (newModeProjects as readonly Project[])
-      : []
-    return list
-      .filter((p) => (p as Project)?.id && p?.name)
-      .map((p) => ({ value: String((p as Project).id), label: p.name }))
-  }, [newModeProjects])
-
-  const [legacyStreetSearch, setLegacyStreetSearch] = React.useState('')
-  const debouncedLegacyStreetSearch = useDebounce(legacyStreetSearch, 250)
-  const [newStreetSearch, setNewStreetSearch] = React.useState('')
-  const debouncedNewStreetSearch = useDebounce(newStreetSearch, 250)
-
-  const { data: legacySearchStreets = [], isFetching: fetchingLegacySearch } =
-    useSearchStreets(
-      debouncedLegacyStreetSearch,
-      selectedLegacyProvinceId,
-      selectedLegacyDistrictId,
-    )
-
-  const { data: newModeSearchStreets = [], isFetching: fetchingNewModeSearch } =
-    useSearchStreets(
-      debouncedNewStreetSearch,
-      derivedLegacyIds.provinceId,
-      derivedLegacyIds.districtId,
-    )
-
-  const streetIdOf = (
-    s: Partial<StreetExtended> & { id?: number },
-  ): number | undefined => s.streetId ?? s.id
-
-  const legacySearchStreetOptions: Option[] = useMemo(() => {
-    const list = Array.isArray(legacySearchStreets)
-      ? (legacySearchStreets as readonly StreetExtended[])
-      : []
-    return list
-      .filter(
-        (s: Partial<StreetExtended> & { id?: number; name?: string }) =>
-          Boolean(streetIdOf(s)) && Boolean(s?.name),
-      )
-      .map((s: Partial<StreetExtended> & { id?: number; name?: string }) => ({
-        value: String(streetIdOf(s)!),
-        label: String(s?.name ?? ''),
-      }))
-  }, [legacySearchStreets])
-
-  const newModeSearchStreetOptions: Option[] = useMemo(() => {
-    const list = Array.isArray(newModeSearchStreets)
-      ? (newModeSearchStreets as readonly StreetExtended[])
-      : []
-    return list
-      .filter(
-        (s: Partial<StreetExtended> & { id?: number; name?: string }) =>
-          Boolean(streetIdOf(s)) && Boolean(s?.name),
-      )
-      .map((s: Partial<StreetExtended> & { id?: number; name?: string }) => ({
-        value: String(streetIdOf(s)!),
-        label: String(s?.name ?? ''),
-      }))
-  }, [newModeSearchStreets])
-
-  const legacyStreetPager = usePagedList(legacyStreetOptions)
-  const legacyStreetSearchPager = usePagedList(legacySearchStreetOptions)
-  const legacyProjectPager = usePagedList(legacyProjectOptions)
-
-  const newModeStreetPager = usePagedList(newModeStreetOptions)
-  const newModeStreetSearchPager = usePagedList(newModeSearchStreetOptions)
-  const newModeProjectPager = usePagedList(newModeProjectOptions)
-
   React.useEffect(() => {
     if (value?.addressEdited) return
 
@@ -453,12 +267,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     const parts: string[] = []
 
     if (isLegacy) {
-      const projectLabel = findLabel(legacyProjectOptions, value?.projectId)
-      if (projectLabel) parts.push(projectLabel)
-
-      const streetLabel = findLabel(legacyStreetOptions, value?.streetId)
-      if (streetLabel) parts.push(streetLabel)
-
       const wardLabel = findLabel(legacyWardOptions, value?.ward)
       if (wardLabel) parts.push(wardLabel)
       const districtLabel = findLabel(legacyDistrictOptions, value?.district)
@@ -466,12 +274,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       const provinceLabel = findLabel(legacyProvinceOptions, value?.province)
       if (provinceLabel) parts.push(provinceLabel)
     } else {
-      const projectLabel = findLabel(newModeProjectOptions, value?.projectId)
-      if (projectLabel) parts.push(projectLabel)
-
-      const streetLabel = findLabel(newModeStreetOptions, value?.streetId)
-      if (streetLabel) parts.push(streetLabel)
-
       const wardLabel = findLabel(newWardOptions, value?.newWardCode)
       if (wardLabel) parts.push(wardLabel)
       const provinceLabel = findLabel(
@@ -488,22 +290,17 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   }, [
     value?.addressEdited,
     isLegacy,
-    value?.projectId,
-    value?.streetId,
     value?.ward,
     value?.district,
     value?.province,
     value?.newProvinceCode,
     value?.newWardCode,
-    legacyProjectOptions,
-    legacyStreetOptions,
     legacyWardOptions,
     legacyDistrictOptions,
     legacyProvinceOptions,
     newProvinceOptions,
     newWardOptions,
-    newModeProjectOptions,
-    newModeStreetOptions,
+    onChange,
   ])
 
   return (
@@ -558,8 +355,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
                 province: val,
                 district: '',
                 ward: '',
-                streetId: '',
-                projectId: '',
               })
             }}
             options={legacyProvinceOptions}
@@ -586,8 +381,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
                 ...value,
                 district: val,
                 ward: '',
-                streetId: '',
-                projectId: '',
               })
             }}
             options={legacyDistrictOptions}
@@ -610,7 +403,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
             label={tAddress('ward')}
             value={value?.ward || undefined}
             onValueChange={(val: string) => {
-              onChange({ ...value, ward: val, streetId: '' })
+              onChange({ ...value, ward: val })
             }}
             options={legacyWardOptions}
             disabled={loadingLegacyWards || !value?.district}
@@ -627,77 +420,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
             emptyText={tAddress('empty.noResults')}
             noOptionsText={tAddress('empty.noOptions')}
           />
-          <Combobox
-            label={tAddress('street') || 'Đường phố'}
-            value={value?.streetId || undefined}
-            onValueChange={(val: string) => {
-              onChange({ ...value, streetId: val })
-            }}
-            options={
-              debouncedLegacyStreetSearch
-                ? legacyStreetSearchPager.visible
-                : legacyStreetPager.visible
-            }
-            disabled={
-              (loadingLegacyStreets && !debouncedLegacyStreetSearch) ||
-              (!debouncedLegacyStreetSearch &&
-                !(selectedLegacyWardId || selectedLegacyDistrictId))
-            }
-            loading={fetchingLegacyStreets || fetchingLegacySearch}
-            placeholder={
-              loadingLegacyStreets
-                ? tAddress('loading.streets') || 'Đang tải đường phố...'
-                : tAddress('placeholders.selectStreet') || 'Chọn đường phố'
-            }
-            searchable={true}
-            searchPlaceholder={
-              tAddress('placeholders.searchStreet') || 'Tìm kiếm đường phố...'
-            }
-            onSearchChange={setLegacyStreetSearch}
-            emptyText={tAddress('empty.noResults')}
-            noOptionsText={tAddress('empty.noOptions')}
-            hasMore={
-              debouncedLegacyStreetSearch
-                ? legacyStreetSearchPager.hasMore
-                : legacyStreetPager.hasMore
-            }
-            onLoadMore={
-              debouncedLegacyStreetSearch
-                ? legacyStreetSearchPager.loadMore
-                : legacyStreetPager.loadMore
-            }
-            isLoadingMore={
-              debouncedLegacyStreetSearch
-                ? legacyStreetSearchPager.isLoadingMore
-                : legacyStreetPager.isLoadingMore
-            }
-          />
-          <Combobox
-            label={tAddress('project') || 'Dự án'}
-            value={value?.projectId || undefined}
-            onValueChange={(val: string) => {
-              onChange({ ...value, projectId: val })
-            }}
-            options={legacyProjectPager.visible}
-            disabled={
-              loadingLegacyProjects || !(value?.district || value?.province)
-            }
-            loading={fetchingLegacyProjects}
-            placeholder={
-              loadingLegacyProjects
-                ? tAddress('loading.projects') || 'Đang tải dự án...'
-                : tAddress('placeholders.selectProject') || 'Chọn dự án'
-            }
-            searchable={true}
-            searchPlaceholder={
-              tAddress('placeholders.searchProject') || 'Tìm kiếm dự án...'
-            }
-            emptyText={tAddress('empty.noResults')}
-            noOptionsText={tAddress('empty.noOptions')}
-            hasMore={legacyProjectPager.hasMore}
-            onLoadMore={legacyProjectPager.loadMore}
-            isLoadingMore={legacyProjectPager.isLoadingMore}
-          />
         </div>
       )}
 
@@ -712,8 +434,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
                 ...value,
                 newProvinceCode: val,
                 newWardCode: '',
-                streetId: '',
-                projectId: '',
               })
             }}
             options={newProvinceOptions}
@@ -736,7 +456,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
             label={tAddress('ward')}
             value={value?.newWardCode || undefined}
             onValueChange={(val: string) => {
-              onChange({ ...value, newWardCode: val, streetId: '' })
+              onChange({ ...value, newWardCode: val })
             }}
             options={newWardOptions}
             disabled={loadingNewWards || !value?.newProvinceCode}
@@ -752,77 +472,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
             }
             emptyText={tAddress('empty.noResults')}
             noOptionsText={tAddress('empty.noOptions')}
-          />
-          <Combobox
-            label={tAddress('street') || 'Street'}
-            value={value?.streetId || undefined}
-            onValueChange={(val: string) => {
-              onChange({ ...value, streetId: val })
-            }}
-            options={
-              debouncedNewStreetSearch
-                ? newModeStreetSearchPager.visible
-                : newModeStreetPager.visible
-            }
-            disabled={
-              (loadingNewModeStreets && !debouncedNewStreetSearch) ||
-              (!debouncedNewStreetSearch && !derivedLegacyIds.districtId)
-            }
-            loading={fetchingNewModeStreets || fetchingNewModeSearch}
-            placeholder={
-              loadingNewModeStreets
-                ? tAddress('loading.streets') || 'Loading streets...'
-                : tAddress('placeholders.selectStreet') || 'Select street'
-            }
-            searchable={true}
-            searchPlaceholder={
-              tAddress('placeholders.searchStreet') || 'Search street...'
-            }
-            onSearchChange={setNewStreetSearch}
-            emptyText={tAddress('empty.noResults')}
-            noOptionsText={tAddress('empty.noOptions')}
-            hasMore={
-              debouncedNewStreetSearch
-                ? newModeStreetSearchPager.hasMore
-                : newModeStreetPager.hasMore
-            }
-            onLoadMore={
-              debouncedNewStreetSearch
-                ? newModeStreetSearchPager.loadMore
-                : newModeStreetPager.loadMore
-            }
-            isLoadingMore={
-              debouncedNewStreetSearch
-                ? newModeStreetSearchPager.isLoadingMore
-                : newModeStreetPager.isLoadingMore
-            }
-          />
-          <Combobox
-            label={tAddress('project') || 'Project'}
-            value={value?.projectId || undefined}
-            onValueChange={(val: string) => {
-              onChange({ ...value, projectId: val })
-            }}
-            options={newModeProjectPager.visible}
-            disabled={
-              loadingNewModeProjects ||
-              !(value?.newWardCode || value?.newProvinceCode)
-            }
-            loading={fetchingNewModeProjects}
-            placeholder={
-              loadingNewModeProjects
-                ? tAddress('loading.projects') || 'Loading projects...'
-                : tAddress('placeholders.selectProject') || 'Select project'
-            }
-            searchable={true}
-            searchPlaceholder={
-              tAddress('placeholders.searchProject') || 'Search project...'
-            }
-            emptyText={tAddress('empty.noResults')}
-            noOptionsText={tAddress('empty.noOptions')}
-            hasMore={newModeProjectPager.hasMore}
-            onLoadMore={newModeProjectPager.loadMore}
-            isLoadingMore={newModeProjectPager.isLoadingMore}
           />
         </div>
       )}

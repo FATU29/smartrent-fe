@@ -25,11 +25,12 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useFormContext, Controller } from 'react-hook-form'
 import { useCreatePost } from '@/contexts/createPost'
 import type { PropertyInfo } from '@/contexts/createPost'
+import type { PriceType } from '@/api/types/property.type'
 import { useLocationContext } from '@/contexts/location'
 import {
-  getListingTypeOptions,
   getPropertyTypeOptions,
   getInteriorConditionOptions,
   getUtilityPriceOptions,
@@ -55,6 +56,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   className,
 }) => {
   const t = useTranslations('createPost.sections.propertyInfo')
+  const tCommon = useTranslations('common')
   const tDetails = useTranslations('createPost.sections.propertyDetails')
   const tUtilities = useTranslations('createPost.sections.utilitiesStructure')
   const tContact = useTranslations('createPost.sections.contactInfo')
@@ -63,6 +65,17 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   const tPlaceholders = useTranslations(
     'createPost.sections.utilitiesStructure.placeholders',
   )
+  const tValidation = useTranslations('createPost.validation')
+
+  // Helper to normalize error message key (strip prefix if exists)
+  const getValidationKey = (message: string | undefined): string => {
+    if (!message) return ''
+    // Remove 'createPost.validation.' prefix if exists
+    return message.replace(/^createPost\.validation\./, '')
+  }
+
+  // Get form context for validation
+  const { control, setValue } = useFormContext<Partial<PropertyInfo>>()
 
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
   const {
@@ -70,6 +83,15 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     requestLocation,
     isLoading: locationLoading,
   } = useLocationContext()
+
+  // Sync propertyAddress from context to form when it changes
+  React.useEffect(() => {
+    if (propertyInfo?.propertyAddress !== undefined) {
+      setValue('propertyAddress', propertyInfo.propertyAddress, {
+        shouldValidate: true,
+      })
+    }
+  }, [propertyInfo?.propertyAddress, setValue])
 
   const handleUseMyLocation = async () => {
     const success = await requestLocation()
@@ -108,7 +130,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       bathrooms: propertyInfo?.bathrooms,
       area: propertyInfo?.area,
       price: propertyInfo?.price,
-      priceUnit: propertyInfo?.listingType === 'rent' ? 'MONTH' : 'YEAR',
+      priceUnit: 'MONTH', // Default to MONTH for rent
       furnishing: mapFurnishing(propertyInfo?.interiorCondition),
       propertyType: mapPropertyType(propertyInfo?.propertyType),
       tone: 'friendly',
@@ -134,45 +156,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
   // UI simplification toggles based on current property type
   const pType = propertyInfo?.propertyType
-  const isHouseLike = pType === 'house' || pType === 'villa'
+  const isHouseLike = pType === 'house'
   const isApartment = pType === 'apartment'
-  const isStudio = pType === 'studio'
-  const showBedrooms = !isStudio
+  const showBedrooms = true // All property types show bedrooms
   const showBathrooms = true
   const showFloors = isHouseLike
   const showHouseDirection = isHouseLike
-  const showBalconyDirection = isApartment || pType === 'villa'
+  const showBalconyDirection = isApartment
   const showDimensions = isHouseLike
-
-  // Helper to prune state fields according to selected property type
-  type PropertyTypeUI = PropertyInfo['propertyType']
-  const PRUNE_BY_TYPE: Record<PropertyTypeUI, Partial<PropertyInfo>> = {
-    apartment: {
-      floors: undefined,
-      houseDirection: undefined,
-      alleyWidth: undefined,
-      frontageWidth: undefined,
-    },
-    house: {
-      balconyDirection: undefined,
-    },
-    villa: {},
-    studio: {
-      bedrooms: undefined,
-      floors: undefined,
-      houseDirection: undefined,
-      balconyDirection: undefined,
-      alleyWidth: undefined,
-      frontageWidth: undefined,
-    },
-  }
-
-  const pruneInfoByPropertyType = (
-    newType: PropertyTypeUI,
-  ): Partial<PropertyInfo> => ({
-    propertyType: newType,
-    ...PRUNE_BY_TYPE[newType],
-  })
 
   return (
     <div className={classNames(className)}>
@@ -189,29 +180,65 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent className='space-y-6'>
-            {/* Listing Type */}
-            <SelectDropdown
-              label={t('listingType')}
-              value={propertyInfo?.listingType}
-              onValueChange={(value) =>
-                updatePropertyInfo({ listingType: value as 'rent' | 'sale' })
-              }
-              placeholder={tPlaceholders('selectListingType')}
-              options={getListingTypeOptions(t)}
+            {/* Property Type */}
+            <Controller
+              name='propertyType'
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <div className='space-y-2'>
+                  <SelectDropdown
+                    label={
+                      <>
+                        {t('propertyType')}
+                        <span className='text-destructive ml-1'>*</span>
+                      </>
+                    }
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value)
+                      updatePropertyInfo({
+                        propertyType: value as
+                          | 'room'
+                          | 'apartment'
+                          | 'house'
+                          | 'office'
+                          | 'store',
+                      })
+                    }}
+                    placeholder={tPlaceholders('selectPropertyType')}
+                    options={getPropertyTypeOptions(t, tCommon)}
+                    error={
+                      error?.message
+                        ? tValidation(getValidationKey(error.message))
+                        : undefined
+                    }
+                  />
+                </div>
+              )}
             />
 
             {/* Property Address */}
-            <div className='space-y-3'>
-              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
-                <MapPin className='w-4 h-4 text-blue-500' />
-                {t('propertyAddress')}
-              </label>
-              <AddressInput className='w-full' />
-
-              <p className='text-xs text-gray-500 dark:text-gray-400'>
-                {t('addressHint')}
-              </p>
-            </div>
+            <Controller
+              name='propertyAddress'
+              control={control}
+              render={({ fieldState: { error } }) => (
+                <div className='space-y-3'>
+                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                    <MapPin className='w-4 h-4 text-blue-500' />
+                    {t('propertyAddress')}
+                    <span className='text-destructive ml-1'>*</span>
+                  </label>
+                  <AddressInput
+                    className='w-full'
+                    error={
+                      error?.message
+                        ? tValidation(getValidationKey(error.message))
+                        : undefined
+                    }
+                  />
+                </div>
+              )}
+            />
 
             {/* Map Preview */}
             <div className='space-y-4'>
@@ -279,53 +306,93 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent className='space-y-6'>
-            {/* Property Type */}
-            <SelectDropdown
-              label={tDetails('propertyType')}
-              value={propertyInfo?.propertyType}
-              onValueChange={(value) =>
-                updatePropertyInfo(
-                  pruneInfoByPropertyType(value as PropertyTypeUI),
-                )
-              }
-              placeholder={tPlaceholders('selectPropertyType')}
-              options={getPropertyTypeOptions(tDetails)}
-            />
-
             {/* Area and Price Row */}
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-              <NumberField
-                label={tDetails('area')}
-                value={propertyInfo?.area ?? 0}
-                onChange={(v) => updatePropertyInfo({ area: v })}
-                placeholder={tPlaceholders('enterArea')}
-                suffix='m²'
-                min={0}
+              <Controller
+                name='area'
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <div className='space-y-2'>
+                    <NumberField
+                      label={tDetails('area')}
+                      value={field.value ?? 0}
+                      onChange={(v) => {
+                        field.onChange(v)
+                        updatePropertyInfo({ area: v })
+                      }}
+                      placeholder={tPlaceholders('enterArea')}
+                      suffix='m²'
+                      min={0}
+                      required
+                      error={
+                        error?.message
+                          ? tValidation(getValidationKey(error.message))
+                          : undefined
+                      }
+                    />
+                  </div>
+                )}
               />
-              <NumberField
-                label={tDetails('price')}
-                value={propertyInfo?.price ?? 0}
-                onChange={(v) => updatePropertyInfo({ price: v })}
-                placeholder={tPlaceholders('enterPrice')}
-                suffix='VND'
-                min={0}
+              <Controller
+                name='price'
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <div className='space-y-2'>
+                    <NumberField
+                      label={tDetails('price')}
+                      value={field.value ?? 0}
+                      onChange={(v) => {
+                        field.onChange(v)
+                        updatePropertyInfo({ price: v })
+                      }}
+                      placeholder={tPlaceholders('enterPrice')}
+                      suffix='VND'
+                      min={0}
+                      required
+                      error={
+                        error?.message
+                          ? tValidation(getValidationKey(error.message))
+                          : undefined
+                      }
+                    />
+                  </div>
+                )}
               />
             </div>
 
             {/* Interior Condition */}
-            <SelectDropdown
-              label={tDetails('interiorCondition')}
-              value={propertyInfo?.interiorCondition}
-              onValueChange={(value) =>
-                updatePropertyInfo({
-                  interiorCondition: value as
-                    | 'furnished'
-                    | 'semi-furnished'
-                    | 'unfurnished',
-                })
-              }
-              placeholder={tPlaceholders('selectInteriorCondition')}
-              options={getInteriorConditionOptions(tDetails)}
+            <Controller
+              name='interiorCondition'
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <div className='space-y-2'>
+                  <SelectDropdown
+                    label={
+                      <>
+                        {tDetails('interiorCondition')}
+                        <span className='text-destructive ml-1'>*</span>
+                      </>
+                    }
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value)
+                      updatePropertyInfo({
+                        interiorCondition: value as
+                          | 'furnished'
+                          | 'semi-furnished'
+                          | 'unfurnished',
+                      })
+                    }}
+                    placeholder={tPlaceholders('selectInteriorCondition')}
+                    options={getInteriorConditionOptions(tDetails)}
+                    error={
+                      error?.message
+                        ? tValidation(getValidationKey(error.message))
+                        : undefined
+                    }
+                  />
+                </div>
+              )}
             />
 
             {/* Rooms Section */}
@@ -337,23 +404,55 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                   {showBedrooms && (
-                    <NumberField
-                      label={tDetails('bedrooms')}
-                      value={propertyInfo?.bedrooms ?? 0}
-                      onChange={(v) => updatePropertyInfo({ bedrooms: v })}
-                      placeholder='0'
-                      min={0}
-                      step={1}
+                    <Controller
+                      name='bedrooms'
+                      control={control}
+                      render={({ field, fieldState: { error } }) => (
+                        <div className='space-y-2'>
+                          <NumberField
+                            label={tDetails('bedrooms')}
+                            value={field.value ?? 0}
+                            onChange={(v) => {
+                              field.onChange(v)
+                              updatePropertyInfo({ bedrooms: v })
+                            }}
+                            placeholder='0'
+                            min={0}
+                            step={1}
+                            error={
+                              error?.message
+                                ? tValidation(getValidationKey(error.message))
+                                : undefined
+                            }
+                          />
+                        </div>
+                      )}
                     />
                   )}
                   {showBathrooms && (
-                    <NumberField
-                      label={tDetails('bathrooms')}
-                      value={propertyInfo?.bathrooms ?? 0}
-                      onChange={(v) => updatePropertyInfo({ bathrooms: v })}
-                      placeholder='0'
-                      min={0}
-                      step={1}
+                    <Controller
+                      name='bathrooms'
+                      control={control}
+                      render={({ field, fieldState: { error } }) => (
+                        <div className='space-y-2'>
+                          <NumberField
+                            label={tDetails('bathrooms')}
+                            value={field.value ?? 0}
+                            onChange={(v) => {
+                              field.onChange(v)
+                              updatePropertyInfo({ bathrooms: v })
+                            }}
+                            placeholder='0'
+                            min={0}
+                            step={1}
+                            error={
+                              error?.message
+                                ? tValidation(getValidationKey(error.message))
+                                : undefined
+                            }
+                          />
+                        </div>
+                      )}
                     />
                   )}
                 </div>
@@ -373,19 +472,31 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             )}
 
             {/* Move-in Date */}
-            <div className='space-y-3'>
-              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                {tDetails('moveInDate')}
-              </label>
-              <DatePicker
-                value={propertyInfo?.moveInDate}
-                onChange={(date) => updatePropertyInfo({ moveInDate: date })}
-                placeholder={tPlaceholders('dateFormat')}
-              />
-              <p className='text-xs text-gray-500 dark:text-gray-400'>
-                {tDetails('dateFormat')}
-              </p>
-            </div>
+            <Controller
+              name='moveInDate'
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <div className='space-y-3'>
+                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                    {tDetails('moveInDate')}
+                    <span className='text-destructive ml-1'>*</span>
+                  </label>
+                  <DatePicker
+                    value={field.value}
+                    onChange={(date) => {
+                      field.onChange(date)
+                      updatePropertyInfo({ moveInDate: date })
+                    }}
+                    placeholder={tPlaceholders('dateFormat')}
+                    error={
+                      error?.message
+                        ? tValidation(getValidationKey(error.message))
+                        : undefined
+                    }
+                  />
+                </div>
+              )}
+            />
 
             {/* Amenities (moved from AI Valuation) */}
             <div className='space-y-4'>
@@ -463,45 +574,96 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 {tUtilities('monthlyUtilities')}
               </h3>
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                <SelectDropdown
-                  label={tUtilities('waterPrice')}
-                  value={propertyInfo?.waterPrice}
-                  onValueChange={(value) =>
-                    updatePropertyInfo({
-                      waterPrice: value as 'provider' | 'fixed' | 'negotiable',
-                    })
-                  }
-                  placeholder={tPlaceholders('selectWaterPrice')}
-                  options={getUtilityPriceOptions(tUtilities)}
+                <Controller
+                  name='waterPrice'
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <div className='space-y-2'>
+                      <SelectDropdown
+                        label={
+                          <>
+                            {tUtilities('waterPrice')}
+                            <span className='text-destructive ml-1'>*</span>
+                          </>
+                        }
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value)
+                          updatePropertyInfo({
+                            waterPrice: value as PriceType,
+                          })
+                        }}
+                        placeholder={tPlaceholders('selectWaterPrice')}
+                        options={getUtilityPriceOptions(tUtilities)}
+                        error={
+                          error?.message
+                            ? tValidation(getValidationKey(error.message))
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
                 />
-                <SelectDropdown
-                  label={tUtilities('electricityPrice')}
-                  value={propertyInfo?.electricityPrice}
-                  onValueChange={(value) =>
-                    updatePropertyInfo({
-                      electricityPrice: value as
-                        | 'provider'
-                        | 'fixed'
-                        | 'negotiable',
-                    })
-                  }
-                  placeholder={tPlaceholders('selectElectricityPrice')}
-                  options={getUtilityPriceOptions(tUtilities)}
+                <Controller
+                  name='electricityPrice'
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <div className='space-y-2'>
+                      <SelectDropdown
+                        label={
+                          <>
+                            {tUtilities('electricityPrice')}
+                            <span className='text-destructive ml-1'>*</span>
+                          </>
+                        }
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value)
+                          updatePropertyInfo({
+                            electricityPrice: value as PriceType,
+                          })
+                        }}
+                        placeholder={tPlaceholders('selectElectricityPrice')}
+                        options={getUtilityPriceOptions(tUtilities)}
+                        error={
+                          error?.message
+                            ? tValidation(getValidationKey(error.message))
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
                 />
-                <SelectDropdown
-                  className='sm:col-span-2 lg:col-span-1'
-                  label={tUtilities('internetPrice')}
-                  value={propertyInfo?.internetPrice}
-                  onValueChange={(value) =>
-                    updatePropertyInfo({
-                      internetPrice: value as
-                        | 'landlord'
-                        | 'tenant'
-                        | 'included',
-                    })
-                  }
-                  placeholder={tPlaceholders('selectInternetPrice')}
-                  options={getInternetOptions(tUtilities)}
+                <Controller
+                  name='internetPrice'
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <div className='space-y-2 sm:col-span-2 lg:col-span-1'>
+                      <SelectDropdown
+                        className='sm:col-span-2 lg:col-span-1'
+                        label={
+                          <>
+                            {tUtilities('internetPrice')}
+                            <span className='text-destructive ml-1'>*</span>
+                          </>
+                        }
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value)
+                          updatePropertyInfo({
+                            internetPrice: value as PriceType,
+                          })
+                        }}
+                        placeholder={tPlaceholders('selectInternetPrice')}
+                        options={getInternetOptions(tUtilities)}
+                        error={
+                          error?.message
+                            ? tValidation(getValidationKey(error.message))
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
                 />
               </div>
             </div>
@@ -604,57 +766,114 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
           </CardHeader>
           <CardContent className='space-y-4'>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-              <div className='space-y-3'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                  {tContact('fullName')}
-                </label>
-                <div className='relative group'>
-                  <User className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
-                  <input
-                    type='text'
-                    className='w-full h-12 pl-12 pr-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'
-                    placeholder={tPlaceholders('enterFullName')}
-                    value={propertyInfo?.fullName}
-                    onChange={(e) =>
-                      updatePropertyInfo({ fullName: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-              <div className='space-y-3'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                  {tContact('email')}
-                </label>
-                <div className='relative group'>
-                  <Mail className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
-                  <input
-                    type='email'
-                    className='w-full h-12 pl-12 pr-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'
-                    placeholder={tPlaceholders('enterEmail')}
-                    value={propertyInfo?.email}
-                    onChange={(e) =>
-                      updatePropertyInfo({ email: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-              <div className='space-y-3 sm:col-span-2 lg:col-span-1'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                  {tContact('phoneNumber')}
-                </label>
-                <div className='relative group'>
-                  <Phone className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
-                  <input
-                    type='tel'
-                    className='w-full h-12 pl-12 pr-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'
-                    placeholder={tPlaceholders('enterPhoneNumber')}
-                    value={propertyInfo?.phoneNumber}
-                    onChange={(e) =>
-                      updatePropertyInfo({ phoneNumber: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
+              <Controller
+                name='fullName'
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <div className='space-y-3'>
+                    <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                      {tContact('fullName')}
+                      <span className='text-destructive ml-1'>*</span>
+                    </label>
+                    <div className='relative group'>
+                      <User className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
+                      <input
+                        type='text'
+                        {...field}
+                        className={`w-full h-12 pl-12 pr-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
+                          error
+                            ? 'border-destructive dark:border-destructive'
+                            : 'border-gray-200 dark:border-gray-700'
+                        }`}
+                        placeholder={tPlaceholders('enterFullName')}
+                        onChange={(e) => {
+                          field.onChange(e)
+                          updatePropertyInfo({ fullName: e.target.value })
+                        }}
+                      />
+                    </div>
+                    {error && (
+                      <p className='text-xs text-destructive' role='alert'>
+                        {error.message
+                          ? tValidation(getValidationKey(error.message))
+                          : ''}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+              <Controller
+                name='email'
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <div className='space-y-3'>
+                    <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                      {tContact('email')}
+                      <span className='text-destructive ml-1'>*</span>
+                    </label>
+                    <div className='relative group'>
+                      <Mail className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
+                      <input
+                        type='email'
+                        {...field}
+                        className={`w-full h-12 pl-12 pr-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
+                          error
+                            ? 'border-destructive dark:border-destructive'
+                            : 'border-gray-200 dark:border-gray-700'
+                        }`}
+                        placeholder={tPlaceholders('enterEmail')}
+                        onChange={(e) => {
+                          field.onChange(e)
+                          updatePropertyInfo({ email: e.target.value })
+                        }}
+                      />
+                    </div>
+                    {error && (
+                      <p className='text-xs text-destructive' role='alert'>
+                        {error.message
+                          ? tValidation(getValidationKey(error.message))
+                          : ''}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+              <Controller
+                name='phoneNumber'
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <div className='space-y-3 sm:col-span-2 lg:col-span-1'>
+                    <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                      {tContact('phoneNumber')}
+                      <span className='text-destructive ml-1'>*</span>
+                    </label>
+                    <div className='relative group'>
+                      <Phone className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
+                      <input
+                        type='tel'
+                        {...field}
+                        className={`w-full h-12 pl-12 pr-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
+                          error
+                            ? 'border-destructive dark:border-destructive'
+                            : 'border-gray-200 dark:border-gray-700'
+                        }`}
+                        placeholder={tPlaceholders('enterPhoneNumber')}
+                        onChange={(e) => {
+                          field.onChange(e)
+                          updatePropertyInfo({ phoneNumber: e.target.value })
+                        }}
+                      />
+                    </div>
+                    {error && (
+                      <p className='text-xs text-destructive' role='alert'>
+                        {error.message
+                          ? tValidation(getValidationKey(error.message))
+                          : ''}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
             </div>
           </CardContent>
         </Card>
@@ -687,41 +906,85 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
           </CardHeader>
           <CardContent className='space-y-6'>
             {/* Listing Title */}
-            <div className='space-y-3'>
-              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                {tAI('listingTitle')}
-              </label>
-              <input
-                type='text'
-                className='w-full h-12 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'
-                placeholder={tPlaceholders('enterListingTitle')}
-                value={propertyInfo?.listingTitle}
-                onChange={(e) =>
-                  updatePropertyInfo({ listingTitle: e.target.value })
-                }
-              />
-              <p className='text-xs text-gray-500 dark:text-gray-400'>
-                {tAI('titleLength')}
-              </p>
-            </div>
+            <Controller
+              name='listingTitle'
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <div className='space-y-3'>
+                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                    {tAI('listingTitle')}
+                    <span className='text-destructive ml-1'>*</span>
+                  </label>
+                  <input
+                    type='text'
+                    {...field}
+                    className={`w-full h-12 px-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
+                      error
+                        ? 'border-destructive dark:border-destructive'
+                        : 'border-gray-200 dark:border-gray-700'
+                    }`}
+                    placeholder={tPlaceholders('enterListingTitle')}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      updatePropertyInfo({ listingTitle: e.target.value })
+                    }}
+                  />
+                  {error && (
+                    <p className='text-xs text-destructive' role='alert'>
+                      {error.message
+                        ? tValidation(getValidationKey(error.message))
+                        : ''}
+                    </p>
+                  )}
+                  {!error && (
+                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                      {tAI('titleLength')}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
 
             {/* Property Description */}
-            <div className='space-y-3'>
-              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                {tAI('propertyDescription')}
-              </label>
-              <textarea
-                className='w-full h-32 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 resize-none'
-                placeholder={tPlaceholders('enterPropertyDescription')}
-                value={propertyInfo?.propertyDescription}
-                onChange={(e) =>
-                  updatePropertyInfo({ propertyDescription: e.target.value })
-                }
-              />
-              <p className='text-xs text-gray-500 dark:text-gray-400'>
-                {tAI('descriptionHint')}
-              </p>
-            </div>
+            <Controller
+              name='propertyDescription'
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <div className='space-y-3'>
+                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                    {tAI('propertyDescription')}
+                    <span className='text-destructive ml-1'>*</span>
+                  </label>
+                  <textarea
+                    {...field}
+                    className={`w-full h-32 px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 resize-none ${
+                      error
+                        ? 'border-destructive dark:border-destructive'
+                        : 'border-gray-200 dark:border-gray-700'
+                    }`}
+                    placeholder={tPlaceholders('enterPropertyDescription')}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      updatePropertyInfo({
+                        propertyDescription: e.target.value,
+                      })
+                    }}
+                  />
+                  {error && (
+                    <p className='text-xs text-destructive' role='alert'>
+                      {error.message
+                        ? tValidation(getValidationKey(error.message))
+                        : ''}
+                    </p>
+                  )}
+                  {!error && (
+                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                      {tAI('descriptionHint')}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
           </CardContent>
         </Card>
       </div>

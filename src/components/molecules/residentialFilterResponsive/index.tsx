@@ -43,45 +43,42 @@ const ResidentialFilterResponsive: React.FC<
 
     // Immediately reset pending draft so dialog/bar UI reflects cleared state
     const cleared: ListFilters = {
-      search: '',
+      keyword: '', // Use API key
       perPage: filters.perPage,
       page: 1,
     } as ListFilters
     setPendingDraft(cleared)
 
     // Reset the bar's pending state via ref
+    // Only reset fields that are supported by API search request - use API keys
     filterBarRef.current?.setPending({
-      search: '',
-      propertyType: undefined,
+      keyword: '', // API key
+      productType: undefined, // API key
       minPrice: undefined,
       maxPrice: undefined,
       minArea: undefined,
       maxArea: undefined,
       bedrooms: undefined,
       bathrooms: undefined,
-      city: undefined,
-      amenities: [],
+      amenityIds: [], // API key
       verified: false,
-      professionalBroker: false,
-      orientation: undefined,
-      moveInTime: undefined,
-      electricityPrice: undefined,
-      waterPrice: undefined,
-      internetPrice: undefined,
-      minFrontage: undefined,
-      maxFrontage: undefined,
-      hasVideo: false,
-      has360: false,
-      province: undefined,
-      district: undefined,
-      ward: undefined,
-      streetId: undefined,
-      projectId: undefined,
-      newProvinceCode: undefined,
+      direction: undefined, // API key
+      hasMedia: false, // API key
+      // Location filters (supported by API) - use API keys
+      provinceId: undefined, // API key
+      districtId: undefined, // API key
+      wardId: undefined, // API key
+      provinceCode: undefined, // API key
       newWardCode: undefined,
+      streetId: undefined, // API key (number)
+      // UI-only fields (not in API but needed for UI state)
       addressStructureType: undefined,
       searchAddress: undefined,
       addressEdited: undefined,
+      // Note: electricityPrice, waterPrice, internetPrice are kept in UI but not sent to API
+      electricityPrice: undefined,
+      waterPrice: undefined,
+      internetPrice: undefined,
     })
   }
 
@@ -93,10 +90,9 @@ const ResidentialFilterResponsive: React.FC<
   }
 
   const handleApplyFromDialog = (draft: ListFilters) => {
-    // Update context filters first
-    handleUpdateFilter(draft)
-
     // Set pending state in bar and trigger apply to push all params to URL
+    // Don't call handleUpdateFilter here - triggerApply will navigate and URL will trigger re-fetch
+    // This prevents duplicate API calls
     filterBarRef.current?.setPending(draft)
     filterBarRef.current?.triggerApply()
 
@@ -119,7 +115,7 @@ const ResidentialFilterResponsive: React.FC<
             onFiltersChange={(f) =>
               handleUpdateFilter(f as Partial<ListFilters>)
             }
-            onSearch={(q) => handleUpdateFilter({ search: q })}
+            onSearch={(q) => handleUpdateFilter({ keyword: q })} // Use API key
             onPendingChange={handlePendingChange}
             onClear={onClear || showClearButton ? handleClearButton : undefined}
             value={filters}

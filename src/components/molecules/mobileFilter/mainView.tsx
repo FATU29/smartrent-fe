@@ -7,14 +7,11 @@ import ToggleSection from '@/components/molecules/mobileFilter/toggleSection'
 import {
   DollarSign,
   Ruler,
-  MoveHorizontal,
   Compass,
-  Clock,
   Zap,
   Droplets,
   Wifi,
   ShieldCheck,
-  Briefcase,
   Video,
   Camera,
   MapPin,
@@ -52,10 +49,10 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
       <div className='space-y-1'>
         <RadioRow
           label={
-            filters.province ||
-            filters.district ||
-            filters.projectId ||
-            filters.newProvinceCode ||
+            filters.provinceId ||
+            filters.districtId ||
+            filters.wardId ||
+            filters.provinceCode ||
             filters.newWardCode ||
             filters.searchAddress
               ? `${t('dropdowns.address')} (${t('address.added')})`
@@ -63,10 +60,10 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           }
           selected={
             !!(
-              filters.province ||
-              filters.district ||
-              filters.projectId ||
-              filters.newProvinceCode ||
+              filters.provinceId ||
+              filters.districtId ||
+              filters.wardId ||
+              filters.provinceCode ||
               filters.newWardCode ||
               filters.searchAddress
             )
@@ -87,24 +84,10 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           iconLeft={<Ruler className='h-4 w-4 text-muted-foreground' />}
         />
         <RadioRow
-          label={`${t('dropdowns.frontage')} (${formatRange(filters.minFrontage, filters.maxFrontage, 'm')})`}
-          selected={!!(filters.minFrontage || filters.maxFrontage)}
-          onClick={() => onNavigate('frontage')}
-          iconLeft={
-            <MoveHorizontal className='h-4 w-4 text-muted-foreground' />
-          }
-        />
-        <RadioRow
           label={t('dropdowns.orientation')}
-          selected={!!filters.orientation}
+          selected={!!filters.direction}
           onClick={() => onNavigate('orientation')}
           iconLeft={<Compass className='h-4 w-4 text-muted-foreground' />}
-        />
-        <RadioRow
-          label={t('dropdowns.moveInTime')}
-          selected={!!filters.moveInTime}
-          onClick={() => onNavigate('moveInTime')}
-          iconLeft={<Clock className='h-4 w-4 text-muted-foreground' />}
         />
         <RadioRow
           label={t('dropdowns.electricityPrice')}
@@ -125,8 +108,8 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           iconLeft={<Wifi className='h-4 w-4 text-muted-foreground' />}
         />
         <RadioRow
-          label={`${t('amenities.title')} ${filters.amenities && filters.amenities.length > 0 ? `(${filters.amenities.length})` : ''}`}
-          selected={!!(filters.amenities && filters.amenities.length > 0)}
+          label={`${t('amenities.title')} ${filters.amenityIds && filters.amenityIds.length > 0 ? `(${filters.amenityIds.length})` : ''}`}
+          selected={!!(filters.amenityIds && filters.amenityIds.length > 0)}
           onClick={() => onNavigate('amenities')}
           iconLeft={<Camera className='h-4 w-4 text-muted-foreground' />}
         />
@@ -145,19 +128,6 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
         </ToggleSection>
 
         <ToggleSection
-          icon={<Briefcase className='h-4 w-4 text-muted-foreground' />}
-          title={t('toggles.professionalBroker')}
-        >
-          <ToggleChip
-            label={t('toggles.professionalBroker')}
-            active={!!filters.professionalBroker}
-            onClick={() =>
-              onUpdate({ professionalBroker: !filters.professionalBroker })
-            }
-          />
-        </ToggleSection>
-
-        <ToggleSection
           icon={<MapPin className='h-4 w-4 text-muted-foreground' />}
           title={t('toggles.location')}
         >
@@ -171,13 +141,8 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           <div className='flex gap-2 flex-wrap'>
             <ToggleChip
               label={t('media.video')}
-              active={!!filters.hasVideo}
-              onClick={() => onUpdate({ hasVideo: !filters.hasVideo })}
-            />
-            <ToggleChip
-              label={t('media.threeSixty')}
-              active={!!filters.has360}
-              onClick={() => onUpdate({ has360: !filters.has360 })}
+              active={!!filters.hasMedia}
+              onClick={() => onUpdate({ hasMedia: !filters.hasMedia })}
             />
           </div>
         </ToggleSection>

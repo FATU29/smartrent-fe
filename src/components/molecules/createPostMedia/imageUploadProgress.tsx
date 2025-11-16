@@ -85,41 +85,23 @@ export const ImageUploadProgress: React.FC = () => {
               )}
             </div>
 
-            {/* Sub-title with batch index */}
-            {isUploading && imageUploadProgress.total > 1 && (
-              <Typography
-                variant='small'
-                className='text-gray-600 dark:text-gray-300 mb-1'
-              >
-                {`${imageUploadProgress.currentIndex}/${imageUploadProgress.total}`}
-              </Typography>
-            )}
-
-            {/* Progress Bar */}
+            {/* Uploading Status */}
             {isUploading && (
-              <div className='mb-2'>
-                <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden relative'>
-                  <div
-                    className='bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-300 ease-out rounded-full relative'
-                    style={{ width: `${imageUploadProgress.progress}%` }}
-                  >
-                    <div className='absolute inset-0 bg-white/20 animate-pulse rounded-full' />
-                  </div>
-                </div>
-                <div className='flex items-center justify-between mt-3'>
+              <div className='mt-2'>
+                {imageUploadProgress.total > 1 && (
                   <Typography
                     variant='small'
-                    className='text-gray-600 dark:text-gray-300 font-medium'
+                    className='text-gray-600 dark:text-gray-300 mb-1'
                   >
-                    {t('video.upload.uploading') || 'Đang tải lên...'}
+                    {`${imageUploadProgress.currentIndex}/${imageUploadProgress.total}`}
                   </Typography>
-                  <Typography
-                    variant='small'
-                    className='font-bold text-blue-600 dark:text-blue-400'
-                  >
-                    {Math.round(imageUploadProgress.progress)}%
-                  </Typography>
-                </div>
+                )}
+                <Typography
+                  variant='small'
+                  className='text-gray-600 dark:text-gray-300 font-medium'
+                >
+                  {t('video.upload.uploading') || 'Đang tải lên...'}
+                </Typography>
               </div>
             )}
 

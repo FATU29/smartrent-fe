@@ -48,13 +48,17 @@ const AppHeader: React.FC<AppHeaderProps> = ({
 }) => {
   const [active, setActive] = useState(activeItem)
   const t = useTranslations()
+  const tCommon = useTranslations('common')
   const { isAuthenticated } = useAuth()
   const { openAuth } = useAuthDialog()
   const router = useRouter()
 
   useEffect(() => setActive(activeItem), [activeItem])
 
-  const items = useMemo(() => getNavigationItems(active, t), [active, t])
+  const items = useMemo(
+    () => getNavigationItems(active, t, tCommon),
+    [active, t, tCommon],
+  )
 
   const handleNavClick = (item: NavigationItemData) => {
     setActive(item.id)

@@ -22,10 +22,12 @@ interface HomepageTemplateProps {
   onPropertyClick?: (property: PropertyCard) => void
   vipTiers?: VipTier[]
   membershipPackages?: GetPackagesResponse
+  cities?: CityItem[]
 }
 
 const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   onPropertyClick,
+  cities,
 }) => {
   const t = useTranslations()
   const { pagination } = useListContext()
@@ -108,47 +110,8 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
               )}
             </div>
             <LocationBrowseSection
-              cities={[
-                {
-                  id: 'hcm',
-                  name: 'TP. Hồ Chí Minh',
-                  image: '/images/rental-auth-bg.jpg',
-                  listings: 71520,
-                  projects: [
-                    'Vinhomes Central Park',
-                    'Vinhomes Grand Park',
-                    'Vinhomes Smart City',
-                    'Vinhomes Ocean Park',
-                    'Vũng Tàu Pearl',
-                    'Bcons Green View',
-                    'Grandeur Palace',
-                  ],
-                },
-                {
-                  id: 'hn',
-                  name: 'Hà Nội',
-                  image: '/images/example.png',
-                  listings: 58023,
-                },
-                {
-                  id: 'dn',
-                  name: 'Đà Nẵng',
-                  image: '/images/default-image.jpg',
-                  listings: 9216,
-                },
-                {
-                  id: 'bd',
-                  name: 'Bình Dương',
-                  image: '/images/default-image.jpg',
-                  listings: 8381,
-                },
-                {
-                  id: 'dnai',
-                  name: 'Đồng Nai',
-                  image: '/images/example.png',
-                  listings: 3457,
-                },
-              ]}
+              cities={cities}
+              loading={cities === undefined}
               onSelectCity={handleSelectCity}
             />
             <PromoFeaturesSection />

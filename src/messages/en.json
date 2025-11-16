@@ -11,7 +11,15 @@
     "reset": "Clear",
     "selectDate": "Select date",
     "filter": "Filter",
-    "createPost": "Post Property"
+    "createPost": "Post Property",
+    "propertyTypes": {
+      "0": "All",
+      "1": "Room for Rent",
+      "2": "Apartment for Rent",
+      "3": "House for Rent",
+      "4": "Office for Rent",
+      "5": "Store for Rent"
+    }
   },
   "location": {
     "label": "Your Location",
@@ -446,7 +454,9 @@
     "locations": {
       "title": "Properties by location",
       "listingsSuffix": "listings",
-      "popularProjects": "Featured projects"
+      "popularProjects": "Featured projects",
+      "noData": "No location data available",
+      "noDataDescription": "Please try again later"
     },
     "features": {
       "title": "Why Choose Us",
@@ -588,16 +598,43 @@
     "uploadNow": "Upload now",
     "completeCurrentStep": "Please complete this step before continuing",
     "validation": {
+      "propertyTypeRequired": "Property type is required",
+      "propertyTypeInvalid": "Invalid property type",
       "addressRequired": "Address is required",
       "areaRequired": "Area is required",
       "priceRequired": "Price is required",
       "mediaImagesOrYoutube": "Add at least 3 images or a YouTube link",
       "packageRequired": "Please select a package",
       "durationRequired": "Please select a duration",
-      "startDateRequired": "Please select a start date"
+      "startDateRequired": "Please select a start date",
+      "listingTitleRequired": "Listing title is required",
+      "propertyDescriptionRequired": "Property description is required",
+      "fullNameRequired": "Full name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "phoneNumberRequired": "Phone number is required",
+      "phoneNumberInvalid": "Invalid phone number",
+      "waterPriceRequired": "Water price is required",
+      "electricityPriceRequired": "Electricity price is required",
+      "internetPriceRequired": "Internet price is required",
+      "interiorConditionRequired": "Interior condition is required",
+      "bedroomsRequired": "Number of bedrooms is required",
+      "bathroomsRequired": "Number of bathrooms is required",
+      "moveInDateRequired": "Move-in date is required"
     },
     "generateAutomatically": "Generate Automatically",
     "continueToUpload": "Continue to upload",
+    "draftDialog": {
+      "title": "Save as Draft?",
+      "description": "You have unsaved changes. Do you want to save this post as a draft before leaving?",
+      "save": "Save Draft",
+      "discard": "Discard",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "loginRequired": "Please login to save draft",
+      "saveSuccess": "Draft saved successfully",
+      "saveFailed": "Failed to save draft. Please try again."
+    },
     "steps": {
       "propertyInfo": {
         "generateAutomatically": "Generate Automatically",
@@ -793,7 +830,8 @@
           "description": "Upload a cover image that will be shown first in your gallery",
           "uploadCta": "Upload Cover",
           "replaceCta": "Replace Cover",
-          "badge": "Cover"
+          "badge": "Cover",
+          "uploading": "Uploading..."
         }
       },
       "propertyInfo": {
@@ -1087,6 +1125,8 @@
           "amenities": "Amenities",
           "amenitiesTitle": "Amenities",
           "reevaluate": "Re-evaluate",
+          "predicting": "Predicting...",
+          "incompleteData": "Please fill in complete address, area and GPS coordinates information",
           "types": {
             "apartment": "Apartment",
             "house": "House",
@@ -1193,6 +1233,15 @@
           "similarPropertiesValue": "24 units",
           "trend": "Trend",
           "trendValue": "Up 3% from last month",
+          "noPrediction": "Click \"Re-evaluate\" to see AI price prediction",
+          "loading": "Analyzing and predicting price...",
+          "error": {
+            "title": "Unable to predict price",
+            "message": "An error occurred while predicting price. Please try again later."
+          },
+          "minPrice": "Minimum price",
+          "maxPrice": "Maximum price",
+          "propertyType": "Property type",
           "optimizationTip": {
             "title": "Optimization Tip",
             "description": "To increase views, set the price in the range of 2.9-3.1M"
@@ -1360,6 +1409,7 @@
       "overview": "Overview",
       "listings": "Listings",
       "create": "Create",
+      "drafts": "Drafts",
       "customers": "Customers",
       "membership": "Membership",
       "account": "Account",
@@ -1640,6 +1690,23 @@
           "takeDown": "Take down",
           "delete": "Delete"
         }
+      }
+    },
+    "drafts": {
+      "title": "Drafts",
+      "description": "Manage your saved draft listings",
+      "emptyState": {
+        "title": "No drafts yet",
+        "description": "Your saved drafts will appear here",
+        "createButton": "Create New Listing"
+      },
+      "allDraftsShown": "All drafts have been displayed",
+      "card": {
+        "draftTitle": "Draft",
+        "createdAt": "Created",
+        "bedrooms": "bedrooms",
+        "bathrooms": "bathrooms",
+        "edit": "Edit"
       }
     },
     "customers": {

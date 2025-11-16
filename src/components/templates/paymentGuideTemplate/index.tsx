@@ -67,7 +67,7 @@ const PaymentGuideTemplate = () => {
       <GuideCard title={t('howToPay.title')}>
         <Indented>
           <NumberedStepList
-            steps={['step1', 'step2', 'step3', 'step4', 'step5'].map((k) => ({
+            steps={['step1', 'step2', 'step3', 'step4'].map((k) => ({
               title: t(`howToPay.${k}.title`),
               description: t(`howToPay.${k}.description`),
             }))}

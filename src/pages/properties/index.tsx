@@ -15,24 +15,29 @@ import { ListFilters } from '@/contexts/list/index.type'
 interface ResidentialPropertiesPageProps {
   initialData: PropertyCard[]
   initialFilters: Partial<ListFilters>
+  initialPagination?: {
+    total: number
+    page: number
+    totalPages: number
+    hasNext: boolean
+    hasPrevious: boolean
+  }
 }
 
 const ResidentialPropertiesPage: NextPageWithLayout<
   ResidentialPropertiesPageProps
-> = ({ initialData, initialFilters }) => {
+> = ({ initialData, initialFilters, initialPagination }) => {
   const t = useTranslations('navigation')
 
   return (
     <>
-      <SeoHead
-        title={t('residential')}
-        description='Residential property search'
-      />
+      <SeoHead title={t('properties')} description='Property search' />
       <div className='container mx-auto py-6 px-4 md:px-0'>
         <ListProvider
           fetcher={fetchListings}
           initialData={initialData}
           initialFilters={initialFilters}
+          initialPagination={initialPagination}
         >
           <LocationProvider>
             <ResidentialPropertiesTemplate />
@@ -52,24 +57,29 @@ ResidentialPropertiesPage.getLayout = function getLayout(
 export default ResidentialPropertiesPage
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  try {
-    const parsed = getFiltersFromQuery(ctx.query)
-    const filters: ListFilters = {
-      search: '',
-      perPage: 10,
-      page: 1,
-      ...parsed,
-    }
+  // Only parse query params, don't fetch data
+  // Data will be fetched client-side with skeleton loading
+  const parsed = getFiltersFromQuery(ctx.query)
 
-    const list = await fetchListings(filters)
-    return {
-      props: {
-        initialData: list.data as PropertyCard[],
-        initialFilters: parsed,
+  // When page is not in query (null/undefined), it means filters were just applied
+  // In that case, reset to page 1
+  // When page is in query, use it (for pagination navigation)
+  const page = parsed.page !== undefined ? parsed.page : 1
+
+  return {
+    props: {
+      initialData: [], // Empty array - will be fetched client-side
+      initialFilters: {
+        ...parsed,
+        page, // Ensure page is set correctly
       },
-    }
-  } catch {
-    // If something goes wrong, still render page without data
-    return { props: { initialData: [], initialFilters: {} } }
+      initialPagination: {
+        total: 0,
+        page,
+        totalPages: 0,
+        hasNext: false,
+        hasPrevious: false,
+      },
+    },
   }
 }

@@ -14,13 +14,18 @@ import AreaRangeDropdown from '@/components/molecules/areaRangeDropdown'
 import { Button } from '@/components/atoms/button'
 import Switch from '@/components/atoms/switch'
 import { useTranslations } from 'next-intl'
-import { Filter, MapIcon, ShieldCheck, Briefcase } from 'lucide-react'
+import { Filter, MapIcon, ShieldCheck } from 'lucide-react'
 import { useLocation } from '@/hooks/useLocation'
 
 import { ListFilters } from '@/contexts/list/index.type'
 import { LocationSwitch } from '@/components/atoms'
 import { useRouter } from 'next/router'
 import { pushQueryParams } from '@/utils/queryParams'
+import {
+  getPropertyTypeByValue,
+  PROPERTY_TYPES,
+} from '@/constants/common/propertyTypes'
+import { PUBLIC_ROUTES } from '@/constants/route'
 
 interface ResidentialFilterBarProps {
   onSearch?: (query: string) => void
@@ -44,8 +49,10 @@ const ResidentialFilterBar = forwardRef<
 >(
   (
     {
-      onSearch,
-      onFiltersChange,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      onSearch: _onSearch,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      onFiltersChange: _onFiltersChange,
       onPendingChange,
       onClear,
       value,
@@ -60,9 +67,9 @@ const ResidentialFilterBar = forwardRef<
     const router = useRouter()
 
     // Local state for UI (doesn't trigger API until Apply is clicked)
-    const [search, setSearch] = useState(value?.search || '')
+    const [search, setSearch] = useState(value?.keyword || '')
     const [propertyType, setPropertyType] = useState<string>(
-      value?.propertyType || 'any',
+      value?.productType || 'tat-ca',
     )
     const [minPrice, setMinPrice] = useState<number | undefined>(
       value?.minPrice,
@@ -73,9 +80,6 @@ const ResidentialFilterBar = forwardRef<
     const [minArea, setMinArea] = useState<number | undefined>(value?.minArea)
     const [maxArea, setMaxArea] = useState<number | undefined>(value?.maxArea)
     const [verified, setVerified] = useState<boolean>(!!value?.verified)
-    const [professional, setProfessional] = useState<boolean>(
-      !!value?.professionalBroker,
-    )
     const [bedrooms, setBedrooms] = useState<number | undefined>(
       value?.bedrooms,
     )
@@ -90,14 +94,13 @@ const ResidentialFilterBar = forwardRef<
     // Sync with external value changes (from URL or context)
     useEffect(() => {
       if (!value) return
-      setSearch(value.search || '')
-      setPropertyType(value.propertyType || 'any')
+      setSearch(value.keyword || '')
+      setPropertyType(value.productType || 'tat-ca')
       setMinPrice(value.minPrice)
       setMaxPrice(value.maxPrice)
       setMinArea(value.minArea)
       setMaxArea(value.maxArea)
       setVerified(!!value.verified)
-      setProfessional(!!value.professionalBroker)
       setBedrooms(value.bedrooms)
       setBathrooms(value.bathrooms)
       // Sync extended filters from value (from URL or context)
@@ -105,38 +108,71 @@ const ResidentialFilterBar = forwardRef<
     }, [value])
 
     const handleApply = () => {
-      const filters: Partial<ListFilters> = {
-        propertyType: propertyType === 'any' ? undefined : propertyType,
+      // Merge: value from context + pendingExtended from dialog
+      const fullFilters: ListFilters = {
+        ...(value || {}),
+        ...pendingExtended,
+        // Basic filters from bar UI
+        productType: propertyType === 'tat-ca' ? undefined : propertyType,
         minPrice,
         maxPrice,
         minArea,
         maxArea,
         verified,
-        professionalBroker: professional,
-        search,
+        keyword: search,
         bedrooms,
         bathrooms,
         page: 1,
-      }
-      onFiltersChange?.(filters as ListFilters)
-      onSearch?.(search)
-
-      // Merge: value from context + pendingExtended from dialog
-      const fullFilters: ListFilters = {
-        ...(value || {}),
-        ...pendingExtended,
       } as ListFilters
 
-      // Push all filter fields to URL
+      // Map amenities (Array<{ id: number, name: string }>) to amenityIds (number[])
+      let amenityIds: number[] | undefined = undefined
+      if (fullFilters.amenities && Array.isArray(fullFilters.amenities)) {
+        amenityIds = fullFilters.amenities
+          .map((item: { id?: number; name?: string } | number) => {
+            if (typeof item === 'number') return item
+            return item.id
+          })
+          .filter((id): id is number => typeof id === 'number' && !isNaN(id))
+      } else if (
+        fullFilters.amenityIds &&
+        Array.isArray(fullFilters.amenityIds)
+      ) {
+        amenityIds = fullFilters.amenityIds
+      }
+
+      // Don't call onFiltersChange/onSearch here - navigation will trigger re-fetch from URL
+      // This prevents duplicate API calls
+
+      // Determine propertyType slug for URL
+      let categorySlug: string | null = null
+      if (propertyType && propertyType !== 'tat-ca') {
+        // Check if propertyType is already a slug
+        const typeBySlug = PROPERTY_TYPES.find(
+          (type) => type.slug === propertyType.toLowerCase(),
+        )
+        if (typeBySlug) {
+          categorySlug = typeBySlug.slug
+        } else {
+          // Check if it's a value (e.g., 'apartment', 'room')
+          const typeByValue = getPropertyTypeByValue(propertyType)
+          if (typeByValue) {
+            categorySlug = typeByValue.slug
+          } else {
+            // Fallback: use as-is (lowercase)
+            categorySlug = propertyType.toLowerCase()
+          }
+        }
+      }
+
+      // Always push to /properties page with filters
+      // Use API keys in query params: keyword, productType, direction, hasMedia, amenityIds
       pushQueryParams(
         router,
         {
-          // Basic filters (from bar UI)
-          category:
-            propertyType && propertyType !== 'any'
-              ? String(propertyType).toLowerCase()
-              : null,
-          search: search || null,
+          // Basic filters (from bar UI) - use API keys
+          category: categorySlug,
+          keyword: search || null,
           minPrice: minPrice ?? null,
           maxPrice: maxPrice ?? null,
           minArea: minArea ?? null,
@@ -144,39 +180,32 @@ const ResidentialFilterBar = forwardRef<
           bedrooms: bedrooms ?? null,
           bathrooms: bathrooms ?? null,
           verified: verified || null,
-          professionalBroker: professional || null,
 
-          // Extended filters (from dialog)
-          orientation: fullFilters.orientation ?? null,
-          moveInTime: fullFilters.moveInTime ?? null,
+          // Extended filters (from dialog) - use API keys
+          direction: fullFilters.direction ?? null,
           electricityPrice: fullFilters.electricityPrice ?? null,
           waterPrice: fullFilters.waterPrice ?? null,
           internetPrice: fullFilters.internetPrice ?? null,
-          minFrontage: fullFilters.minFrontage ?? null,
-          maxFrontage: fullFilters.maxFrontage ?? null,
-          hasVideo: fullFilters.hasVideo || null,
-          has360: fullFilters.has360 || null,
-          amenities:
-            fullFilters.amenities && fullFilters.amenities.length > 0
-              ? fullFilters.amenities.map((a) => a.id).join(',')
-              : null,
+          hasMedia: fullFilters.hasMedia ?? null,
+          amenityIds:
+            amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
 
-          // Address filters - Use addressType flag to determine structure
+          // Address filters - Use API keys
           addressType: fullFilters.addressStructureType ?? null,
-          // Legacy structure fields
-          province: fullFilters.province ?? null,
-          district: fullFilters.district ?? null,
-          ward: fullFilters.ward ?? null,
-          // New structure fields
-          newProvinceCode: fullFilters.newProvinceCode ?? null,
+          provinceId: fullFilters.provinceId ?? null,
+          districtId: fullFilters.districtId ?? null,
+          wardId: fullFilters.wardId ?? null,
+          provinceCode: fullFilters.provinceCode ?? null,
           newWardCode: fullFilters.newWardCode ?? null,
-          // Common address fields
           streetId: fullFilters.streetId ?? null,
-          projectId: fullFilters.projectId ?? null,
 
           page: null,
         },
-        { shallow: true },
+        {
+          pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX, // /properties
+          shallow: false, // Navigate to new page
+          scroll: true,
+        },
       )
     }
 
@@ -184,29 +213,29 @@ const ResidentialFilterBar = forwardRef<
     useImperativeHandle(ref, () => ({
       triggerApply: handleApply,
       getPending: () => ({
-        propertyType: propertyType === 'any' ? undefined : propertyType,
+        productType: propertyType === 'tat-ca' ? undefined : propertyType,
         minPrice,
         maxPrice,
         minArea,
         maxArea,
         verified,
-        professionalBroker: professional,
-        search,
+        keyword: search,
         bedrooms,
         bathrooms,
       }),
       setPending: (partial: Partial<ListFilters>) => {
         // Update bar's basic filter states
-        if (partial.search !== undefined) setSearch(partial.search || '')
-        if (partial.propertyType !== undefined)
-          setPropertyType(partial.propertyType || 'any')
+        if (partial.keyword !== undefined) {
+          setSearch(partial.keyword || '')
+        }
+        if (partial.productType !== undefined) {
+          setPropertyType(partial.productType || 'tat-ca')
+        }
         if (partial.minPrice !== undefined) setMinPrice(partial.minPrice)
         if (partial.maxPrice !== undefined) setMaxPrice(partial.maxPrice)
         if (partial.minArea !== undefined) setMinArea(partial.minArea)
         if (partial.maxArea !== undefined) setMaxArea(partial.maxArea)
         if (partial.verified !== undefined) setVerified(!!partial.verified)
-        if (partial.professionalBroker !== undefined)
-          setProfessional(!!partial.professionalBroker)
         if (partial.bedrooms !== undefined) setBedrooms(partial.bedrooms)
         if (partial.bathrooms !== undefined) setBathrooms(partial.bathrooms)
 
@@ -220,7 +249,7 @@ const ResidentialFilterBar = forwardRef<
     const handleSearchPendingChange = useCallback(
       (v: string) => {
         setSearch(v)
-        onPendingChange?.({ search: v })
+        onPendingChange?.({ keyword: v }) // Use API key
       },
       [onPendingChange],
     )
@@ -347,20 +376,6 @@ const ResidentialFilterBar = forwardRef<
                 <span className='text-sm flex items-center gap-1'>
                   <ShieldCheck className='h-3.5 w-3.5 text-muted-foreground' />
                   {t('toggles.verified')}
-                </span>
-              </div>
-              <div className='flex items-center gap-1'>
-                <Switch
-                  size='sm'
-                  checked={professional}
-                  onCheckedChange={(v) => {
-                    setProfessional(v)
-                    onPendingChange?.({ professionalBroker: v })
-                  }}
-                />
-                <span className='text-sm flex items-center gap-1'>
-                  <Briefcase className='h-3.5 w-3.5 text-muted-foreground' />
-                  {t('toggles.professionalBroker')}
                 </span>
               </div>
               <div className='flex items-center gap-1'>

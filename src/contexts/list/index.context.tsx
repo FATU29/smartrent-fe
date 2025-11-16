@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useMemo } from 'react'
 import {
   DEFAULT_PAGE,
   DEFAULT_PER_PAGE,
-  DEFAULT_SEARCH,
+  DEFAULT_KEYWORD,
   ListContextType,
   ListFetcherResponse,
   ListFilters,
@@ -16,6 +16,13 @@ export interface ListProviderProps<T = unknown> {
   fetcher: (filters: ListFilters) => Promise<ListFetcherResponse<T>>
   initialData?: T[]
   initialFilters?: Partial<ListFilters>
+  initialPagination?: {
+    total: number
+    page: number
+    totalPages: number
+    hasNext: boolean
+    hasPrevious: boolean
+  }
   defaultFilters?: Partial<ListFilters> // alias for initialFilters (compat)
   defaultSearch?: string
   defaultPerPage?: number
@@ -27,8 +34,9 @@ export const ListProvider = <T,>({
   fetcher,
   initialData = [],
   initialFilters,
+  initialPagination,
   defaultFilters,
-  defaultSearch = DEFAULT_SEARCH,
+  defaultSearch = DEFAULT_KEYWORD,
   defaultPerPage = DEFAULT_PER_PAGE,
   defaultPage = DEFAULT_PAGE,
 }: ListProviderProps<T>) => {
@@ -37,7 +45,7 @@ export const ListProvider = <T,>({
     ...(initialFilters || {}),
   }
   const [filters, setFilters] = useState<ListFilters>({
-    search: defaultSearch,
+    keyword: defaultSearch || '',
     perPage: defaultPerPage,
     page: defaultPage,
     ...resolvedInitialFilters,
@@ -45,22 +53,23 @@ export const ListProvider = <T,>({
 
   const [isLoading, setIsLoading] = useState(false)
   const [itemsData, setItemsData] = useState<T[]>(initialData)
-  const [pagination, setPagination] = useState({
+
+  // Initialize pagination from initialPagination prop (from SSR) to prevent hydration mismatch
+  // This ensures server and client have the same initial state
+  const initialPage = resolvedInitialFilters.page || defaultPage
+  const paginationState = initialPagination || {
     total: 0,
-    page: defaultPage,
+    page: initialPage,
     totalPages: 0,
     hasNext: false,
     hasPrevious: false,
-  })
+  }
 
-  // Load initial data if not provided or if we need to get pagination data
+  const [pagination, setPagination] = useState(paginationState)
+
+  // Always fetch data client-side (best practice with skeleton loading)
   useEffect(() => {
-    if (initialData.length === 0) {
-      handleLoadNewPage(defaultPage)
-    } else {
-      // If we have initial data, we need to fetch the full pagination info
-      handleLoadNewPage(defaultPage)
-    }
+    handleLoadNewPage(filters.page || defaultPage)
   }, [])
 
   interface PaginationMeta {
@@ -144,7 +153,7 @@ export const ListProvider = <T,>({
 
   const handleResetFilter = async () => {
     const resetFilters: ListFilters = {
-      search: defaultSearch,
+      keyword: defaultSearch || '',
       perPage: defaultPerPage,
       page: defaultPage,
     }

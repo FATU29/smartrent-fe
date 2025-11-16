@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   ListingStatus,
@@ -6,13 +6,14 @@ import {
 } from '@/components/molecules/listings/ListingStatusFilterResponsive'
 import { ListingEmptyState } from '@/components/organisms/listings/ListingEmptyState'
 import { ListingToolbar } from '@/components/molecules/listings/ListingToolbar'
-import { ListingFilterDialog } from '@/components/molecules/listingFilterDialog'
+import ResidentialFilterDialog from '@/components/molecules/residentialFilterDialog'
 import { ListingsList } from '@/components/organisms/listings-list'
 import { MOCK_LISTINGS } from './index.constants'
 import { Property } from '@/api/types/property.type'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { List, useListContext } from '@/contexts/list'
+import { countActiveFilters } from '@/utils/filters/countActiveFilters'
 
 const ListingsWithPagination: React.FC<{ currentStatus: ListingStatus }> = ({
   currentStatus,
@@ -157,11 +158,6 @@ export const ListingsManagementTemplate: React.FC<
 > = ({ children }) => {
   const [status, setStatus] = useState<ListingStatus>('all')
   const [filterOpen, setFilterOpen] = useState(false)
-  const [showProvinceSelection, setShowProvinceSelection] = useState(false)
-  const [showDistrictSelection, setShowDistrictSelection] = useState(false)
-  const [showWardSelection, setShowWardSelection] = useState(false)
-  const [showListingTypeSelection, setShowListingTypeSelection] =
-    useState(false)
 
   console.log('ListingsManagementTemplate rendered with status:', status)
   const counts = calculateCounts()
@@ -171,40 +167,9 @@ export const ListingsManagementTemplate: React.FC<
       ? MOCK_LISTINGS
       : MOCK_LISTINGS.filter((item: Property) => item.status === status)
 
-  const listingsFetcher = useCallback(async () => {
-    console.log('Simple fetcher called')
-    return {
-      data: MOCK_LISTINGS,
-      total: MOCK_LISTINGS.length,
-      page: 1,
-      totalPages: 1,
-      hasNext: false,
-      hasPrevious: false,
-    }
-  }, [])
-
   return (
     <div className='p-3 sm:p-4'>
       <div className='mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6'>
-        <ListingToolbar
-          total={listings.length}
-          onSearch={(query) => console.log('Search:', query)}
-          onFilterClick={() => {
-            console.log('Filter clicked')
-            // Reset subviews when opening filter
-            setShowProvinceSelection(false)
-            setShowDistrictSelection(false)
-            setShowWardSelection(false)
-            setShowListingTypeSelection(false)
-            setFilterOpen(true)
-          }}
-          onExport={() => console.log('Export clicked')}
-          filterButtonChildren={
-            <span className='ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1.5 text-[10px] font-semibold text-primary'>
-              0
-            </span>
-          }
-        />
         <ListingStatusFilterResponsive
           value={status}
           counts={counts}
@@ -214,33 +179,75 @@ export const ListingsManagementTemplate: React.FC<
           }}
         />
         {children}
-        <List.Provider fetcher={listingsFetcher} defaultPerPage={5}>
-          <ListingsWithPagination currentStatus={status} />
-        </List.Provider>
+        <ToolbarWithBadge
+          total={listings.length}
+          onFilterClick={() => {
+            console.log('Filter clicked')
+            setFilterOpen(true)
+          }}
+        />
+        <ListingsWithPagination currentStatus={status} />
+        <FilterDialogWrapper open={filterOpen} onOpenChange={setFilterOpen} />
       </div>
-
-      <ListingFilterDialog
-        open={filterOpen}
-        onOpenChange={setFilterOpen}
-        onApply={() => {
-          console.log('Apply filter')
-          setFilterOpen(false)
-        }}
-        showProvinceSelection={showProvinceSelection}
-        onProvinceSelectionChange={setShowProvinceSelection}
-        showDistrictSelection={showDistrictSelection}
-        onDistrictSelectionChange={setShowDistrictSelection}
-        showWardSelection={showWardSelection}
-        onWardSelectionChange={setShowWardSelection}
-        showListingTypeSelection={showListingTypeSelection}
-        onListingTypeSelectionChange={setShowListingTypeSelection}
-        onBackToMain={() => {
-          setShowProvinceSelection(false)
-          setShowDistrictSelection(false)
-          setShowWardSelection(false)
-          setShowListingTypeSelection(false)
-        }}
-      />
     </div>
+  )
+}
+
+const ToolbarWithBadge: React.FC<{
+  total: number
+  onFilterClick: () => void
+}> = ({ total, onFilterClick }) => {
+  return (
+    <ListingToolbar
+      total={total}
+      onSearch={(query) => console.log('Search:', query)}
+      onFilterClick={onFilterClick}
+      onExport={() => console.log('Export clicked')}
+      filterButtonChildren={<FilterButtonBadge />}
+    />
+  )
+}
+
+const FilterButtonBadge: React.FC = () => {
+  const { filters, activeCount } = useListContext()
+  const activeFiltersCount = activeCount || countActiveFilters(filters)
+
+  if (activeFiltersCount === 0) return null
+
+  return (
+    <span className='ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1.5 text-[10px] font-semibold text-primary'>
+      {activeFiltersCount}
+    </span>
+  )
+}
+
+const FilterDialogWrapper: React.FC<{
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}> = ({ open, onOpenChange }) => {
+  const { filters, handleUpdateFilter, handleResetFilter, activeCount } =
+    useListContext()
+  const t = useTranslations('seller.listingManagement')
+
+  const handleApply = (newFilters: typeof filters) => {
+    handleUpdateFilter(newFilters)
+    onOpenChange(false)
+  }
+
+  const handleClear = () => {
+    handleResetFilter()
+  }
+
+  return (
+    <ResidentialFilterDialog
+      value={filters}
+      onChange={handleUpdateFilter}
+      onClear={handleClear}
+      activeCount={activeCount || countActiveFilters(filters)}
+      open={open}
+      onOpenChange={onOpenChange}
+      onApply={handleApply}
+      title={t('filter.title')}
+    />
   )
 }

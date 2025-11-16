@@ -2,6 +2,7 @@ import { SELLER_ROUTES } from '@/constants'
 import {
   BadgePercent,
   FileText,
+  FileX,
   PieChart,
   Plus,
   User,
@@ -13,6 +14,7 @@ type SellerNavKey =
   | 'overview'
   | 'listings'
   | 'create'
+  | 'drafts'
   | 'customers'
   | 'membership'
   | 'account'
@@ -60,13 +62,22 @@ export const NAV_ITEMS: SellerNavItem[] = [
     mobileOrder: 3,
   },
   {
+    key: 'drafts',
+    href: SELLER_ROUTES.DRAFTS,
+    icon: FileX,
+    showOnDesktop: true,
+    showOnMobile: true,
+    mobilePlacement: 'normal',
+    mobileOrder: 4,
+  },
+  {
     key: 'customers',
     href: SELLER_ROUTES.CUSTOMERS,
     icon: Users,
     showOnDesktop: true,
     showOnMobile: true,
     mobilePlacement: 'normal',
-    mobileOrder: 4,
+    mobileOrder: 5,
   },
   {
     key: 'membership',
@@ -75,7 +86,7 @@ export const NAV_ITEMS: SellerNavItem[] = [
     showOnDesktop: true,
     showOnMobile: false,
     mobilePlacement: 'normal',
-    mobileOrder: 5,
+    mobileOrder: 6,
   },
   {
     key: 'account',
@@ -84,6 +95,6 @@ export const NAV_ITEMS: SellerNavItem[] = [
     showOnDesktop: true,
     showOnMobile: true,
     mobilePlacement: 'normal',
-    mobileOrder: 6,
+    mobileOrder: 7,
   },
 ]
