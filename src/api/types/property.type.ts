@@ -20,6 +20,13 @@ export type AmenityCategory =
   | 'CONVENIENCE'
   | 'SECURITY'
   | 'ENTERTAINMENT'
+export type PriceType = 'ALL' | 'NEGOTIABLE' | 'SET_BY_OWNER' | 'PROVIDER_RATE'
+export type MoveInTimeType =
+  | 'ALL'
+  | 'IMMEDIATE'
+  | '1_2_WEEKS'
+  | '1_MONTH'
+  | 'NEGOTIABLE'
 
 // Amenity interface
 export interface Amenity {
@@ -92,29 +99,43 @@ export interface Listing {
   title: string
   description: string
   userId: string
+  // Contact Info
+  ownerContactPhoneNumber?: string
+  ownerContactPhoneVerified?: boolean
+  ownerZaloLink?: string
+  contactAvailable?: boolean
+  // Dates
   postDate: string
   expiryDate: string
+  createdAt: string
+  updatedAt: string
+  // Status
   listingType: ListingType
   verified: boolean
   isVerify: boolean
   expired: boolean
+  isDraft?: boolean
   vipType: VipType
+  // Property Info
   categoryId: number
   productType: PropertyType
   price: number
   priceUnit: PriceUnit
   addressId: number
   area: number
-  bedrooms: number
-  bathrooms: number
-  direction: Direction
-  furnishing: Furnishing
-  propertyType: PropertyType
-  roomCapacity: number
-  amenities: Amenity[]
-  locationPricing: LocationPricing
-  createdAt: string
-  updatedAt: string
+  bedrooms?: number
+  bathrooms?: number
+  direction?: Direction
+  furnishing?: Furnishing
+  propertyType?: PropertyType
+  roomCapacity?: number
+  amenities?: Amenity[]
+  locationPricing?: LocationPricing
+  electricityPrice?: PriceType
+  waterPrice?: PriceType
+  internetPrice?: PriceType
+  priceType?: PriceType
+  moveInTime?: MoveInTimeType
 }
 
 // Legacy Property interface (keep for backward compatibility)
@@ -233,4 +254,271 @@ export interface PropertyFilters {
   propertyType?: string
   city?: string
   amenities?: string[]
+}
+
+// ============= LISTING SERVICE TYPES =============
+
+/**
+ * API response type for listing list
+ */
+export interface ListingListApiResponse {
+  listings?: Listing[]
+  pagination?: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}
+
+/**
+ * Create listing request
+ */
+export interface CreateListingRequest {
+  title: string
+  description: string
+  userId: string
+  expiryDate?: string
+  listingType: ListingType
+  verified?: boolean
+  isVerify?: boolean
+  expired?: boolean
+  vipType?: VipType
+  categoryId?: number
+  productType: PropertyType
+  price: number
+  priceUnit: PriceUnit
+  address: {
+    streetNumber?: string
+    streetId: number
+    wardId: number
+    districtId: number
+    provinceId: number
+    latitude?: number
+    longitude?: number
+  }
+  area?: number
+  bedrooms?: number
+  bathrooms?: number
+  direction?: Direction
+  furnishing?: Furnishing
+  propertyType?: PropertyType
+  roomCapacity?: number
+  amenityIds?: number[]
+}
+
+/**
+ * Update listing request
+ */
+export interface UpdateListingRequest {
+  title?: string
+  description?: string
+  userId?: number
+  expiryDate?: string
+  listingType?: ListingType
+  vipType?: VipType
+  categoryId?: number
+  productType?: PropertyType
+  price?: number
+  priceUnit?: PriceUnit
+  addressId?: number
+  area?: number
+  bedrooms?: number
+  bathrooms?: number
+  direction?: Direction
+  furnishing?: Furnishing
+  propertyType?: PropertyType
+  roomCapacity?: number
+  amenityIds?: number[]
+}
+
+/**
+ * Create VIP listing request
+ */
+export interface CreateVipListingRequest extends CreateListingRequest {
+  vipType: Exclude<VipType, 'NORMAL'>
+  useMembershipQuota?: boolean
+  durationDays?: number
+}
+
+/**
+ * Quota check response
+ */
+export interface QuotaCheckResponse {
+  vipPosts?: {
+    totalAvailable: number
+    totalUsed: number
+    totalGranted: number
+  }
+  premiumPosts?: {
+    totalAvailable: number
+    totalUsed: number
+    totalGranted: number
+  }
+  boosts?: {
+    totalAvailable: number
+    totalUsed: number
+    totalGranted: number
+  }
+}
+
+/**
+ * Price update request
+ */
+export interface UpdatePriceRequest {
+  newPrice: number
+  effectiveAt?: string
+}
+
+/**
+ * Price history item
+ */
+export interface PriceHistory {
+  id: number
+  listingId: number
+  oldPrice: number
+  newPrice: number
+  oldPriceUnit: string
+  newPriceUnit: string
+  changeType: string
+  changePercentage: number
+  changeAmount: number
+  changedBy: string
+  changeReason: string
+  changedAt: string
+  current: boolean
+}
+
+/**
+ * Price statistics
+ */
+export interface PriceStatistics {
+  minPrice: number
+  maxPrice: number
+  avgPrice: number
+  totalChanges: number
+  priceIncreases: number
+  priceDecreases: number
+}
+
+/**
+ * Province statistics request
+ */
+export interface ProvinceStatsRequest {
+  provinceIds?: number[]
+  provinceCodes?: string[]
+  verifiedOnly?: boolean
+  addressType?: 'OLD' | 'NEW'
+}
+
+/**
+ * Province statistics response item
+ */
+export interface ProvinceStatsItem {
+  provinceId: number | null
+  provinceCode: string | null
+  provinceName: string
+  totalListings: number
+  verifiedListings: number
+  vipListings: number
+}
+
+// ============= LISTING SEARCH API TYPES =============
+
+/**
+ * Listing search request - matches POST /v1/listings/search
+ * All fields are optional
+ */
+export interface ListingSearchRequest {
+  // User & Ownership Filters
+  userId?: string
+  isDraft?: boolean
+  verified?: boolean
+  isVerify?: boolean
+  expired?: boolean
+  excludeExpired?: boolean
+
+  // Location Filters
+  provinceId?: number
+  provinceCode?: string
+  districtId?: number
+  wardId?: number
+  newWardCode?: string
+  streetId?: number
+  userLatitude?: number
+  userLongitude?: number
+  radiusKm?: number
+
+  // Category & Type Filters
+  categoryId?: number
+  listingType?: ListingType
+  vipType?: VipType
+  productType?: PropertyType
+
+  // Property Specs Filters
+  minPrice?: number
+  maxPrice?: number
+  minArea?: number
+  maxArea?: number
+  bedrooms?: number
+  bathrooms?: number
+  minBedrooms?: number
+  maxBedrooms?: number
+  minBathrooms?: number
+  maxBathrooms?: number
+  furnishing?: Furnishing
+  direction?: Direction
+  propertyType?: PropertyType
+  minRoomCapacity?: number
+  maxRoomCapacity?: number
+
+  // Amenities & Media Filters
+  amenityIds?: number[]
+  amenityMatchMode?: 'ALL' | 'ANY'
+  hasMedia?: boolean
+  minMediaCount?: number
+
+  // Content Search
+  keyword?: string
+
+  // Contact Filters
+  ownerPhoneVerified?: boolean
+
+  // Time Filters
+  postedWithinDays?: number
+  updatedWithinDays?: number
+
+  // Pagination & Sorting
+  page?: number
+  size?: number
+  sortBy?:
+    | 'postDate'
+    | 'price'
+    | 'area'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'distance'
+  sortDirection?: 'ASC' | 'DESC'
+}
+
+/**
+ * Listing search response - matches API response structure
+ */
+export interface ListingSearchResponse {
+  listings: Listing[]
+  totalCount: number
+  currentPage: number
+  pageSize: number
+  totalPages: number
+  recommendations?: Listing[]
+  filterCriteria?: Partial<ListingSearchRequest>
+}
+
+/**
+ * API Response wrapper for listing search
+ */
+export interface ListingSearchApiResponse {
+  code: string
+  message: string | null
+  data: ListingSearchResponse
 }

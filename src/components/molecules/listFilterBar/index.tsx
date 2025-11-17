@@ -50,11 +50,13 @@ const ListFilterBar: React.FC<ListFilterBarProps> = ({
     isLoading,
   } = useListContext()
   const t = useTranslations('pagination')
-  const [search, setSearch] = useState(filters.search || '')
+  const [search, setSearch] = useState(
+    (filters.search as string | undefined) || '',
+  )
 
   // Sync external changes (e.g., reset from elsewhere)
   useEffect(() => {
-    setSearch(filters.search || '')
+    setSearch((filters.search as string | undefined) || '')
   }, [filters.search])
 
   // Debounce search

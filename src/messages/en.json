@@ -9,7 +9,17 @@
     "learnMore": "Learn more",
     "go_home": "Go Home",
     "reset": "Clear",
-    "selectDate": "Select date"
+    "selectDate": "Select date",
+    "filter": "Filter",
+    "createPost": "Post Property",
+    "propertyTypes": {
+      "0": "All",
+      "1": "Room for Rent",
+      "2": "Apartment for Rent",
+      "3": "House for Rent",
+      "4": "Office for Rent",
+      "5": "Store for Rent"
+    }
   },
   "location": {
     "label": "Your Location",
@@ -57,6 +67,14 @@
       "verified": "Verified Listing",
       "premium": "Premium Listing",
       "boosted": "Boosted Listing"
+    },
+    "paymentStatusBadge": {
+      "completed": "Completed",
+      "pending": "Pending",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded",
+      "unknown": "Unknown"
     }
   },
   "pagination": {
@@ -436,7 +454,9 @@
     "locations": {
       "title": "Properties by location",
       "listingsSuffix": "listings",
-      "popularProjects": "Featured projects"
+      "popularProjects": "Featured projects",
+      "noData": "No location data available",
+      "noDataDescription": "Please try again later"
     },
     "features": {
       "title": "Why Choose Us",
@@ -578,16 +598,43 @@
     "uploadNow": "Upload now",
     "completeCurrentStep": "Please complete this step before continuing",
     "validation": {
+      "propertyTypeRequired": "Property type is required",
+      "propertyTypeInvalid": "Invalid property type",
       "addressRequired": "Address is required",
       "areaRequired": "Area is required",
       "priceRequired": "Price is required",
       "mediaImagesOrYoutube": "Add at least 3 images or a YouTube link",
       "packageRequired": "Please select a package",
       "durationRequired": "Please select a duration",
-      "startDateRequired": "Please select a start date"
+      "startDateRequired": "Please select a start date",
+      "listingTitleRequired": "Listing title is required",
+      "propertyDescriptionRequired": "Property description is required",
+      "fullNameRequired": "Full name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "phoneNumberRequired": "Phone number is required",
+      "phoneNumberInvalid": "Invalid phone number",
+      "waterPriceRequired": "Water price is required",
+      "electricityPriceRequired": "Electricity price is required",
+      "internetPriceRequired": "Internet price is required",
+      "interiorConditionRequired": "Interior condition is required",
+      "bedroomsRequired": "Number of bedrooms is required",
+      "bathroomsRequired": "Number of bathrooms is required",
+      "moveInDateRequired": "Move-in date is required"
     },
     "generateAutomatically": "Generate Automatically",
     "continueToUpload": "Continue to upload",
+    "draftDialog": {
+      "title": "Save as Draft?",
+      "description": "You have unsaved changes. Do you want to save this post as a draft before leaving?",
+      "save": "Save Draft",
+      "discard": "Discard",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "loginRequired": "Please login to save draft",
+      "saveSuccess": "Draft saved successfully",
+      "saveFailed": "Failed to save draft. Please try again."
+    },
     "steps": {
       "propertyInfo": {
         "generateAutomatically": "Generate Automatically",
@@ -783,7 +830,8 @@
           "description": "Upload a cover image that will be shown first in your gallery",
           "uploadCta": "Upload Cover",
           "replaceCta": "Replace Cover",
-          "badge": "Cover"
+          "badge": "Cover",
+          "uploading": "Uploading..."
         }
       },
       "propertyInfo": {
@@ -1077,6 +1125,8 @@
           "amenities": "Amenities",
           "amenitiesTitle": "Amenities",
           "reevaluate": "Re-evaluate",
+          "predicting": "Predicting...",
+          "incompleteData": "Please fill in complete address, area and GPS coordinates information",
           "types": {
             "apartment": "Apartment",
             "house": "House",
@@ -1183,6 +1233,15 @@
           "similarPropertiesValue": "24 units",
           "trend": "Trend",
           "trendValue": "Up 3% from last month",
+          "noPrediction": "Click \"Re-evaluate\" to see AI price prediction",
+          "loading": "Analyzing and predicting price...",
+          "error": {
+            "title": "Unable to predict price",
+            "message": "An error occurred while predicting price. Please try again later."
+          },
+          "minPrice": "Minimum price",
+          "maxPrice": "Maximum price",
+          "propertyType": "Property type",
           "optimizationTip": {
             "title": "Optimization Tip",
             "description": "To increase views, set the price in the range of 2.9-3.1M"
@@ -1247,7 +1306,18 @@
       "voucherTab": "Push voucher packages tab"
     },
     "noPlansAvailable": "No membership plans available at the moment.",
-    "noVouchersAvailable": "No voucher packages available at the moment."
+    "noVouchersAvailable": "No voucher packages available at the moment.",
+    "errors": {
+      "loadFailed": "Failed to load packages",
+      "loginRequired": "Please login to continue",
+      "purchaseFailed": "An error occurred while registering the package"
+    },
+    "success": {
+      "purchaseSuccess": "Package registered successfully!"
+    },
+    "loading": {
+      "fetchingData": "Loading data..."
+    }
   },
   "membershipPlans": {
     "savingSuffix": "per month",
@@ -1339,6 +1409,7 @@
       "overview": "Overview",
       "listings": "Listings",
       "create": "Create",
+      "drafts": "Drafts",
       "customers": "Customers",
       "membership": "Membership",
       "account": "Account",
@@ -1416,7 +1487,8 @@
       "internetPrice": "Internet Price",
       "amenities": "Amenities",
       "media": "Media",
-      "areaProject": "Area & Project"
+      "areaProject": "Area & Project",
+      "address": "Address"
     },
     "area": {
       "any": "All",
@@ -1483,6 +1555,13 @@
     },
     "amenities": {
       "title": "Amenities",
+      "categories": {
+        "basic": "Basic",
+        "convenience": "Convenience",
+        "security": "Security",
+        "entertainment": "Entertainment",
+        "transport": "Nearby"
+      },
       "securityService": "Security service",
       "camera": "Camera",
       "fireSafety": "Fire safety",
@@ -1514,6 +1593,11 @@
       "any": "Any",
       "clear": "Clear",
       "apply": "Apply",
+      "add": "+ Add",
+      "added": "Selected"
+    },
+    "address": {
+      "title": "Address",
       "add": "+ Add",
       "added": "Selected"
     }
@@ -1606,6 +1690,23 @@
           "takeDown": "Take down",
           "delete": "Delete"
         }
+      }
+    },
+    "drafts": {
+      "title": "Drafts",
+      "description": "Manage your saved draft listings",
+      "emptyState": {
+        "title": "No drafts yet",
+        "description": "Your saved drafts will appear here",
+        "createButton": "Create New Listing"
+      },
+      "allDraftsShown": "All drafts have been displayed",
+      "card": {
+        "draftTitle": "Draft",
+        "createdAt": "Created",
+        "bedrooms": "bedrooms",
+        "bathrooms": "bathrooms",
+        "edit": "Edit"
       }
     },
     "customers": {
@@ -1825,6 +1926,293 @@
         "3": "3 bedrooms",
         "4": "4 bedrooms",
         "5plus": "5+ bedrooms"
+      }
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Oops! The page you're looking for doesn't exist. It might have been moved or deleted.",
+    "goBack": "Go Back",
+    "goHome": "Go Home"
+  },
+  "auth": {
+    "loginRequired": {
+      "title": "Please log in",
+      "description": "You need to log in to access this page.",
+      "loginButton": "Log in"
+    }
+  },
+  "guides": {
+    "pricing": {
+      "title": "Service Pricing",
+      "description": "View detailed pricing for membership packages and listing types on SmartRent",
+      "loading": "Loading data...",
+      "error": "Failed to load data",
+      "membership": {
+        "title": "Membership Pricing",
+        "description": "Membership packages are billed monthly, auto-renewed, and provide a fixed number of listings each month.",
+        "note": {
+          "title": "Note:",
+          "content": "Listing allocations reset at the start of each month. Unused listings do not carry over to the next month."
+        },
+        "plans": {
+          "basic": {
+            "name": "Basic Member",
+            "description": "Suitable for new agents or small inventory"
+          },
+          "standard": {
+            "name": "Standard Member",
+            "description": "Suitable for professional agents with 10+ properties"
+          },
+          "premium": {
+            "name": "Premium Member",
+            "description": "Suitable for agents with large inventory and marketing budget"
+          },
+          "popular": "Popular"
+        }
+      },
+      "postTypes": {
+        "title": "Pricing by Listing Type",
+        "duration": "Display duration",
+        "price": "Price",
+        "priority": {
+          "highest": "Highest priority",
+          "high": "High priority",
+          "normal": "Normal priority"
+        },
+        "vipGold": {
+          "name": "VIP Gold Listing",
+          "description": "Most prominent display, always at top, gold border and special badge",
+          "price": "Per membership plan"
+        },
+        "vipSilver": {
+          "name": "VIP Silver Listing",
+          "description": "High priority display, silver border and prominent position",
+          "price": "Per membership plan"
+        },
+        "regular": {
+          "name": "Regular Listing",
+          "description": "Standard listing, displayed by post date and can be pushed to top",
+          "price": "Per membership plan"
+        }
+      },
+      "services": {
+        "title": "Additional Services",
+        "push": {
+          "name": "Push to top",
+          "description": "Move your listing to the top for 1 hour",
+          "price": "Free with membership"
+        },
+        "imageRights": {
+          "name": "Image copyright",
+          "description": "Protect your images from copying with watermark",
+          "price": "Included in Standard+ plans"
+        },
+        "schedule": {
+          "name": "Schedule posting",
+          "description": "Schedule listings to post at optimal times",
+          "price": "Included in Standard+ plans"
+        }
+      }
+    },
+    "payment": {
+      "title": "Payment Guide",
+      "description": "Learn about payment methods and the purchase process",
+      "methods": {
+        "title": "Payment Methods",
+        "card": {
+          "title": "ATM/Visa/Mastercard",
+          "description": "Online payment via payment gateway",
+          "feature1": "Automatically processed instantly",
+          "feature2": "High security with SSL encryption",
+          "feature3": "Supports multiple banks"
+        },
+        "wallet": {
+          "title": "E-Wallet",
+          "description": "Momo, ZaloPay, VNPay",
+          "feature1": "Fast and convenient",
+          "feature2": "Available wallet promotions"
+        },
+        "bank": {
+          "title": "Bank Transfer",
+          "description": "Direct bank transfer",
+          "feature1": "Suitable for large transactions",
+          "feature2": "Confirmed within 1-2 hours"
+        }
+      },
+      "howToPay": {
+        "title": "Payment Process",
+        "step1": {
+          "title": "Choose a service package",
+          "description": "Go to 'Membership' and select the package that suits your needs. Compare features and pricing to make the best decision."
+        },
+        "step2": {
+          "title": "Select payment method",
+          "description": "Choose a suitable payment method: Bank card, E-wallet, or Bank transfer. Each method has its own advantages in speed and convenience."
+        },
+        "step3": {
+          "title": "Confirm payment",
+          "description": "Review order details, discount code (if any), and total amount. Then proceed with payment according to the payment gateway instructions."
+        },
+        "step4": {
+          "title": "Account activation",
+          "description": "After successful payment, the service package will be activated immediately. You can start using features and posting listings right away."
+        }
+      },
+      "notes": {
+        "title": "Important Notes",
+        "note1": "Membership auto-renews monthly. You can cancel anytime.",
+        "note2": "Listing allocations reset at the start of each month and do not carry over.",
+        "note3": "Electronic invoices will be sent via email after each payment.",
+        "note4": "Contact hotline 1900-xxxx if you encounter any payment issues."
+      }
+    },
+    "usage": {
+      "title": "SmartRent User Guide",
+      "description": "Detailed instructions on using the system to manage and post listings effectively",
+      "gettingStarted": {
+        "title": "Getting Started with SmartRent",
+        "description": "Basic steps to start using the system",
+        "step1": {
+          "title": "1. Register an account",
+          "description": "Create a free account with email or sign in via Google. Complete your profile to increase credibility with customers."
+        },
+        "step2": {
+          "title": "2. Choose a membership plan",
+          "description": "Based on the number of properties you want to advertise, choose a suitable plan: Basic (15 listings), Standard (30 listings), or Premium (50 listings)."
+        },
+        "step3": {
+          "title": "3. Start posting",
+          "description": "After purchasing a plan, you can start creating listings immediately. The system will guide you step by step to complete the information."
+        }
+      },
+      "membership": {
+        "title": "Understanding Membership Plans",
+        "description": "How the membership plan system works",
+        "choosingPlan": {
+          "title": "Choose the Right Plan",
+          "tip1": "Basic Plan: Suitable if you have 10-15 properties to advertise",
+          "tip2": "Standard Plan: Best for professional agents with 20-30 properties",
+          "tip3": "Premium Plan: For agents with large inventory or need many VIP listings"
+        },
+        "monthlyAllocation": {
+          "title": "Monthly Listing Allocation",
+          "description": "Each month you receive a fixed number of listings according to your plan. Unused listings do not carry over to the next month.",
+          "example": "Example: Standard Plan = 30 listings/month. If you only use 25 listings this month, the remaining 5 will be lost when the new month starts."
+        }
+      },
+      "posts": {
+        "title": "Creating and Managing Listings",
+        "description": "Detailed guide on listing types and how to create effective listings",
+        "types": {
+          "title": "Listing Types",
+          "vipGold": "VIP Gold Listing",
+          "vipGoldDesc": "Highest priority display, always at top, gold border. Best for premium properties or urgent sales.",
+          "vipSilver": "VIP Silver Listing",
+          "vipSilverDesc": "High priority display with silver border. Suitable for mid-range properties needing more views.",
+          "regular": "Regular Listing",
+          "regularDesc": "Standard listing, displayed by post time. Can be pushed to top with free push credits."
+        },
+        "bestPractices": {
+          "title": "Tips for Effective Listings",
+          "tip1": "Use high-quality, well-lit photos from multiple angles (minimum 5-8 photos)",
+          "tip2": "Write concise, eye-catching titles (e.g., '2BR apartment with river view in D7, great price')",
+          "tip3": "Detailed description: area, rooms, furnishing, legal status, price, contact",
+          "tip4": "Update accurate pricing, avoid overpricing or 'negotiable' only",
+          "tip5": "Add videos or 3D/360° tours to increase credibility and views"
+        },
+        "pushing": {
+          "title": "Push to Top",
+          "description": "Each membership plan includes free push credits. Use push to move regular listings to the top for 1 hour.",
+          "tip": "Tip: Push listings during peak hours (9-11 AM, 7-9 PM) to optimize effectiveness."
+        }
+      },
+      "managing": {
+        "title": "Managing Your Listings",
+        "description": "Track and adjust your listings",
+        "editing": {
+          "title": "Editing listings",
+          "description": "You can edit title, description, photos, and price anytime. Listings will be updated immediately."
+        },
+        "pausing": {
+          "title": "Pause/Hide listings",
+          "description": "If the property is rented/sold, pause the listing to stop receiving contacts. Paused listings still count toward monthly allocation."
+        },
+        "renewing": {
+          "title": "Renewing listings",
+          "description": "Expired listings can be renewed for free if you have remaining allocation in your plan. Renewed listings will be pushed up as new."
+        }
+      },
+      "customers": {
+        "title": "Customer Management",
+        "description": "Organize and track potential customers",
+        "features": "The system helps you:",
+        "feature1": "Save contact information of customers who inquired about listings",
+        "feature2": "Categorize customers by status (new, consulting, successful)",
+        "feature3": "Notes and appointments with each customer"
+      },
+      "settings": {
+        "title": "Account Settings",
+        "description": "Customize your account and notifications",
+        "profile": {
+          "title": "Personal profile",
+          "description": "Update profile photo, phone number, address. Complete profiles increase customer trust."
+        },
+        "notifications": {
+          "title": "Manage notifications",
+          "description": "Choose to receive notifications via email, SMS, or push when customers contact you, listings are expiring, etc."
+        }
+      },
+      "tips": {
+        "title": "Tips for Success",
+        "tip1": "Respond to messages/calls quickly (within 1-2 hours) to not miss customers",
+        "tip2": "Update listings regularly (at least once a week) to maintain freshness",
+        "tip3": "Use VIP packages for premium or urgent properties, regular for standard ones",
+        "tip4": "Join training courses and agent communities to learn from experience",
+        "tip5": "Track performance reports to know which listings get the most attention"
+      }
+    }
+  },
+  "paymentStatusPage": {
+    "title": "Payment Status",
+    "subtitle": "We are tracking your transaction. This page will update automatically.",
+    "labels": {
+      "transactionRef": "Transaction Ref",
+      "checking": "Checking status"
+    },
+    "actions": {
+      "backHome": "Back to Home",
+      "retry": "Retry",
+      "refresh": "Refresh"
+    },
+    "errors": {
+      "missingRef": "Missing transaction reference.",
+      "loadFailed": "Failed to load transaction status."
+    },
+    "states": {
+      "completed": {
+        "title": "Payment Completed",
+        "desc": "Your payment was successful. Thank you!"
+      },
+      "pending": {
+        "title": "Payment Pending",
+        "desc": "Waiting for confirmation from the payment provider..."
+      },
+      "failed": {
+        "title": "Payment Failed",
+        "desc": "The payment was not successful. Please try again or use another method."
+      },
+      "cancelled": {
+        "title": "Payment Cancelled",
+        "desc": "The payment was cancelled before completion."
+      },
+      "refunded": {
+        "title": "Payment Refunded",
+        "desc": "This payment was refunded."
+      },
+      "unknown": {
+        "title": "Unknown Status",
+        "desc": "Unable to determine payment status."
       }
     }
   }

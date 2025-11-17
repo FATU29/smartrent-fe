@@ -31,7 +31,7 @@ export interface SelectDropdownProps {
   className?: string
 
   // Label and error
-  label?: string
+  label?: string | React.ReactNode
   error?: string
   helperText?: string
 
@@ -128,7 +128,7 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
               icon && iconPosition === 'left' && 'pl-10',
               icon && iconPosition === 'right' && 'pr-10',
               loading && 'pr-10',
-              error && 'border-red-500',
+              error && 'border-destructive dark:border-destructive',
               disabled && 'opacity-50 cursor-not-allowed',
               loading && 'opacity-70 cursor-wait',
               fullWidth && 'w-full',

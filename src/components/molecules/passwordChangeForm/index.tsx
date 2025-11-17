@@ -7,7 +7,7 @@ import { Button } from '@/components/atoms/button'
 import { Card } from '@/components/atoms/card'
 import { Typography } from '@/components/atoms/typography'
 import { PasswordField } from '../passwordField'
-import { Lock, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Lock, ChevronDown, ChevronUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Separator } from '@/components/atoms/separator'
 import { VALIDATION_PATTERNS } from '@/api/types/auth.type'
@@ -31,7 +31,6 @@ const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({
 }) => {
   const t = useTranslations()
   const [showRequirements, setShowRequirements] = React.useState(false)
-  const [showAccountActions, setShowAccountActions] = React.useState(false)
 
   const validationSchema = yup.object({
     currentPassword: yup
@@ -205,7 +204,21 @@ const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({
 
         <Separator />
 
-        {/* Account Actions */}
+        {/* 
+          ACCOUNT DELETION REQUEST - DISABLED
+          ====================================
+          The entire "Account Actions" section (including "Lock Account" and "Delete Account" buttons)
+          is temporarily disabled and hidden from the UI.
+          
+          This feature requires:
+          - Backend API implementation
+          - React Query mutations
+          - Confirmation dialogs
+          - Error handling
+          
+          Re-enable when ready for production.
+        */}
+        {/* 
         <div className='space-y-3'>
           <button
             type='button'
@@ -289,6 +302,7 @@ const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({
             </div>
           )}
         </div>
+        */}
       </div>
     </Card>
   )

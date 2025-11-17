@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/atoms/card'
-import { ImagePlus } from 'lucide-react'
+import { ImagePlus, Loader2 } from 'lucide-react'
 import { MediaService } from '@/api/services'
 import { toast } from 'sonner'
 
@@ -19,6 +19,7 @@ const CoverUpload: React.FC = () => {
   const t = useTranslations('createPost.sections.media.cover')
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   const cover = propertyInfo?.images?.find((i) => i.isCover)
 
@@ -30,6 +31,7 @@ const CoverUpload: React.FC = () => {
     const coverFile = picked[0]
 
     // Upload cover first
+    setIsUploading(true)
     try {
       const res = await MediaService.upload({
         file: coverFile,
@@ -76,6 +78,8 @@ const CoverUpload: React.FC = () => {
       }
     } catch {
       toast.error('Không thể tải ảnh bìa')
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -94,6 +98,11 @@ const CoverUpload: React.FC = () => {
                 <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-yellow-400 text-gray-900 font-medium shadow-sm'>
                   {t('badge')}
                 </span>
+                {isUploading && (
+                  <div className='absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm'>
+                    <Loader2 className='w-8 h-8 text-white animate-spin' />
+                  </div>
+                )}
                 <Image
                   src={cover.url}
                   alt={cover.caption}
@@ -109,24 +118,40 @@ const CoverUpload: React.FC = () => {
                   size='sm'
                   className='rounded-md'
                   onClick={() => inputRef.current?.click()}
+                  disabled={isUploading}
                 >
-                  <ImagePlus className='w-4 h-4 mr-2' />
+                  {isUploading ? (
+                    <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                  ) : (
+                    <ImagePlus className='w-4 h-4 mr-2' />
+                  )}
                   {t('replaceCta')}
                 </Button>
               </div>
             </div>
           ) : (
             <div className='rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 p-6 flex flex-col items-center justify-center text-center bg-white dark:bg-gray-900/50'>
-              <p className='text-sm text-gray-600 dark:text-gray-400'>
-                {t('description')}
-              </p>
-              <Button
-                className='mt-4 rounded-lg'
-                onClick={() => inputRef.current?.click()}
-              >
-                <ImagePlus className='w-4 h-4 mr-2' />
-                {t('uploadCta')}
-              </Button>
+              {isUploading ? (
+                <div className='flex flex-col items-center gap-3'>
+                  <Loader2 className='w-8 h-8 text-blue-500 animate-spin' />
+                  <p className='text-sm text-gray-600 dark:text-gray-400'>
+                    {t('uploading')}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className='text-sm text-gray-600 dark:text-gray-400'>
+                    {t('description')}
+                  </p>
+                  <Button
+                    className='mt-4 rounded-lg'
+                    onClick={() => inputRef.current?.click()}
+                  >
+                    <ImagePlus className='w-4 h-4 mr-2' />
+                    {t('uploadCta')}
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </div>

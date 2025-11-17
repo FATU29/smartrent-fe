@@ -87,6 +87,11 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
   }
 
   const handleLoginGoogle = () => {
+    // Persist current path as returnUrl before redirecting to Google
+    try {
+      const currentPath = window.location.pathname + window.location.search
+      localStorage.setItem('returnUrl', currentPath)
+    } catch {}
     window.location.href = googleOAuthURL
   }
 

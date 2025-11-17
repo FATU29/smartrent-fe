@@ -8,7 +8,9 @@ import MobileFilterMainView from '@/components/molecules/mobileFilter/mainView'
 import RangeView from '@/components/molecules/mobileFilter/rangeView'
 import SimpleListView from '@/components/molecules/mobileFilter/simpleListView'
 import OrientationView from '@/components/molecules/mobileFilter/orientationView'
-import AreaProjectView from '@/components/molecules/mobileFilter/areaProjectView'
+import AmenitiesView from '@/components/molecules/mobileFilter/amenitiesView'
+import AddressView from '@/components/molecules/mobileFilter/addressView'
+import { AddressFilterData } from '@/components/molecules/filterAddress'
 
 // ResidentialFilterDialog
 // Reusable full-screen (mobile) or centered (desktop) dialog hosting the multi-step filter views.
@@ -23,19 +25,19 @@ interface ResidentialFilterDialogProps {
   onOpenChange: (open: boolean) => void
   title?: string
   searchValue?: string
+  onApply?: (filters: ListFilters) => void
 }
 
 type ViewKey =
   | 'main'
   | 'price'
   | 'area'
-  | 'frontage'
-  | 'moveInTime'
   | 'electricityPrice'
   | 'waterPrice'
   | 'internetPrice'
   | 'orientation'
-  | 'areaProject'
+  | 'amenities'
+  | 'address'
 
 const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   value,
@@ -46,6 +48,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   onOpenChange,
   title,
   searchValue,
+  onApply,
 }) => {
   const t = useTranslations('residentialFilter')
   const [view, setView] = useState<ViewKey>('main')
@@ -55,6 +58,10 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   }, [open])
 
   const apply = () => {
+    if (onApply) {
+      onApply(value)
+      return
+    }
     onChange(value)
     if (onSearch && searchValue !== undefined) onSearch(searchValue)
     onOpenChange(false)
@@ -97,25 +104,6 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
             unit='m²'
           />
         )
-      case 'frontage':
-        return (
-          <RangeView
-            type='frontage'
-            value={{ min: value.minFrontage, max: value.maxFrontage }}
-            onChange={({ min, max }) =>
-              update({ minFrontage: min, maxFrontage: max })
-            }
-            unit='m'
-          />
-        )
-      case 'moveInTime':
-        return (
-          <SimpleListView
-            type='moveInTime'
-            value={value.moveInTime}
-            onChange={(v) => update({ moveInTime: v })}
-          />
-        )
       case 'electricityPrice':
         return (
           <SimpleListView
@@ -143,15 +131,46 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
       case 'orientation':
         return (
           <OrientationView
-            value={value.orientation}
-            onChange={(v) => update({ orientation: v })}
+            value={value.orientation as string | undefined}
+            onChange={(v: string | undefined) => update({ orientation: v })}
           />
         )
-      case 'areaProject':
+      case 'amenities':
         return (
-          <AreaProjectView
-            value={value}
-            onChange={(partial: Partial<ListFilters>) => update(partial)}
+          <AmenitiesView
+            values={
+              (value.amenities || []) as Array<{ id: number; name?: string }>
+            }
+            onChange={(v) =>
+              update({ amenities: v as Array<{ id: number; name: string }> })
+            }
+          />
+        )
+      case 'address':
+        return (
+          <AddressView
+            value={{
+              province: value.province as string | undefined,
+              district: value.district as string | undefined,
+              ward: value.ward as string | undefined,
+              newProvinceCode: value.newProvinceCode as string | undefined,
+              newWardCode: value.newWardCode as string | undefined,
+              addressStructureType: value.addressStructureType,
+              searchAddress: value.searchAddress,
+              addressEdited: value.addressEdited,
+            }}
+            onChange={(addressData: Partial<AddressFilterData>) =>
+              update({
+                province: addressData.province,
+                district: addressData.district,
+                ward: addressData.ward,
+                newProvinceCode: addressData.newProvinceCode,
+                newWardCode: addressData.newWardCode,
+                addressStructureType: addressData.addressStructureType,
+                searchAddress: addressData.searchAddress,
+                addressEdited: addressData.addressEdited,
+              })
+            }
           />
         )
       default:
@@ -172,7 +191,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
     >
       <DialogContent
         showCloseButton={false}
-        className='size-full md:h-[90vh] max-w-none md:max-w-md rounded-none md:rounded-lg p-0 flex flex-col'
+        className='size-full md:h-[90vh] max-w-none md:max-w-[500px] rounded-none md:rounded-lg p-0 flex flex-col'
       >
         <MobileFilterHeader
           title={title || t('actions.filter')}

@@ -12,6 +12,7 @@ import type { AuthType } from '@/components/organisms/authDialog'
 import { useTranslations } from 'next-intl'
 import { useAuth, useLogout } from '@/hooks/useAuth'
 import { useAuthDialog } from '@/contexts/authDialog'
+import { useRouter } from 'next/router'
 
 interface MobileNavigationDrawerProps {
   items: NavigationItemData[]
@@ -27,6 +28,7 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const { openAuth } = useAuthDialog()
+  const router = useRouter()
   const t = useTranslations()
   const { user, isAuthenticated } = useAuth()
   const { logoutUser } = useLogout()
@@ -60,7 +62,7 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
   }
 
   const handleAuthClick = (type: AuthType) => {
-    openAuth(type)
+    openAuth(type, router.asPath)
     setIsOpen(false)
   }
 
@@ -166,6 +168,17 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
               {/* User Actions */}
               <div className='flex flex-col gap-2'>
                 <Button
+                  variant='default'
+                  size='sm'
+                  className='w-full justify-start gap-2'
+                  onClick={() => {
+                    router.push('/seller/create-post')
+                    setIsOpen(false)
+                  }}
+                >
+                  {t('common.createPost')}
+                </Button>
+                <Button
                   variant='ghost'
                   size='sm'
                   className='w-full justify-start gap-2 text-left'
@@ -194,6 +207,17 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
             </div>
           ) : (
             <div className='flex flex-col gap-2'>
+              <Button
+                variant='default'
+                size='sm'
+                className='w-full justify-start gap-2'
+                onClick={() => {
+                  router.push('/seller/create-post')
+                  setIsOpen(false)
+                }}
+              >
+                {t('common.createPost')}
+              </Button>
               <Button
                 variant='default'
                 size='sm'

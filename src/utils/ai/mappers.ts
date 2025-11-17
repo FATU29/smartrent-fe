@@ -12,14 +12,14 @@ export const mapFurnishing = (
 }
 
 export const mapPropertyType = (
-  value?: 'apartment' | 'house' | 'villa' | 'studio' | 'room' | 'office',
+  value?: 'room' | 'apartment' | 'house' | 'office' | 'store',
 ): PropertyType | undefined => {
   const mapping: Record<string, PropertyType> = {
     apartment: 'APARTMENT',
     house: 'HOUSE',
     room: 'ROOM',
-    studio: 'STUDIO',
     office: 'OFFICE',
+    store: 'OFFICE', // Map STORE to OFFICE for API (same as in PROPERTY_TYPES)
   }
   return value ? mapping[value] : undefined
 }

@@ -1,39 +1,43 @@
 export const DEFAULT_PER_PAGE = 5
 export const DEFAULT_PAGE = 1
-export const DEFAULT_SEARCH = ''
+export const DEFAULT_KEYWORD = ''
 
 export interface ListFilters {
-  search: string
+  // Pagination (frontend only)
   perPage: number
   page: number
-  // Property-specific filters
+
+  // API-supported filters (using API keys directly)
+  keyword?: string
+  productType?: string
   minPrice?: number
   maxPrice?: number
   minArea?: number
   maxArea?: number
   bedrooms?: number
   bathrooms?: number
-  propertyType?: string
-  city?: string
-  amenities?: string[]
-  // Extended residential specific filters
+  direction?: string
+  amenityIds?: number[]
   verified?: boolean
-  professionalBroker?: boolean
-  orientation?: string
-  moveInTime?: string
-  electricityPrice?: string
-  waterPrice?: string
-  internetPrice?: string
-  minFrontage?: number
-  maxFrontage?: number
-  hasVideo?: boolean
-  has360?: boolean
-  // Location & Project (cascading)
-  provinceId?: string
-  districtId?: string
-  wardId?: string
-  streetId?: string
-  projectId?: string
+  hasMedia?: boolean
+
+  // Location Filters - API keys
+  provinceId?: number
+  provinceCode?: string
+  districtId?: number
+  wardId?: number
+  newWardCode?: string
+  streetId?: number
+
+  // UI-only fields (not in API but needed for UI state)
+  addressStructureType?: 'legacy' | 'new'
+  searchAddress?: string
+  addressEdited?: boolean
+  electricityPrice?: string // UI only - not supported by API
+  waterPrice?: string // UI only - not supported by API
+  internetPrice?: string // UI only - not supported by API
+  amenities?: Array<{ id: number; name: string }> // UI only - will be mapped to amenityIds when applying
+
   [key: string]: unknown
 }
 

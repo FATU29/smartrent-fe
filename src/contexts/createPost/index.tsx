@@ -6,11 +6,11 @@ import React, {
   useMemo,
 } from 'react'
 import type { VipTierCode } from '@/api/types/vip-tier.type'
+import type { PriceType } from '@/api/types/property.type'
 
 // Property Information Types
 export interface PropertyInfo {
   // Basic Info
-  listingType: 'rent' | 'sale'
   propertyAddress: string
   searchAddress: string
   coordinates: {
@@ -19,7 +19,7 @@ export interface PropertyInfo {
   }
 
   // Property Details
-  propertyType: 'apartment' | 'house' | 'villa' | 'studio'
+  propertyType: 'room' | 'apartment' | 'house' | 'office' | 'store' // Match PROPERTY_TYPES (excluding 'ALL')
   area: number
   price: number
   interiorCondition: 'furnished' | 'semi-furnished' | 'unfurnished'
@@ -29,9 +29,9 @@ export interface PropertyInfo {
   moveInDate: string
 
   // Utilities & Structure
-  waterPrice: 'provider' | 'fixed' | 'negotiable'
-  electricityPrice: 'provider' | 'fixed' | 'negotiable'
-  internetPrice: 'landlord' | 'tenant' | 'included'
+  waterPrice: PriceType
+  electricityPrice: PriceType
+  internetPrice: PriceType
   houseDirection:
     | 'north'
     | 'south'

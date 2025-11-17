@@ -1,20 +1,18 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { MembershipHeader } from './MembershipHeader'
 import { MembershipPlansGrid } from './MembershipPlansGrid'
-import type { Membership, PaymentProvider } from '@/api/types/memembership.type'
+import type { PaymentProvider } from '@/api/types/memembership.type'
 import { useDialog } from '@/hooks/useDialog'
 import PaymentMethodDialog from '@/components/molecules/paymentMethodDialog'
-import { MembershipService } from '@/api/services'
 import { useAuthContext } from '@/contexts/auth'
+import {
+  useMembershipPackages,
+  usePurchaseMembership,
+} from '@/hooks/useMembership'
+import { toast } from 'sonner'
 
-interface MembershipRegisterTemplateProps {
-  readonly memberships?: readonly Membership[]
-}
-
-export const MembershipRegisterTemplate: React.FC<
-  MembershipRegisterTemplateProps
-> = ({ memberships = [] }) => {
+export const MembershipRegisterTemplate: React.FC = () => {
   const tPage = useTranslations('membershipPage')
 
   const [membershipId, setMembershipId] = useState<number | null>(null)
@@ -22,44 +20,73 @@ export const MembershipRegisterTemplate: React.FC<
 
   const { open: openDialog, handleOpen, handleClose } = useDialog()
 
-  const membershipLoading = useMemo(() => {
-    return memberships?.length === 0
-  }, [memberships])
+  // Use React Query to fetch memberships
+  const {
+    data: memberships = [],
+    isLoading: membershipLoading,
+    error: membershipError,
+  } = useMembershipPackages()
+
+  // Use mutation for purchasing
+  const purchaseMutation = usePurchaseMembership()
 
   const handleSelectMethod = useCallback(
     async (provider: PaymentProvider) => {
       if (!membershipId || !user?.userId) {
+        toast.error(tPage('errors.loginRequired'))
         return
       }
 
       try {
-        const response = await MembershipService.purchaseMembership(
-          {
+        const result = await purchaseMutation.mutateAsync({
+          request: {
             membershipId: membershipId,
             paymentProvider: provider,
-            returnUrl: window.location.href,
           },
-          user?.userId,
-        )
+          userId: user.userId,
+        })
 
         // Redirect to payment URL if available
-        if (response.data?.paymentUrl) {
-          window.location.href = response.data.paymentUrl
+        // Backend will handle callback and redirect to configured frontend URL
+        if (result.paymentUrl) {
+          window.location.href = result.paymentUrl
+        } else {
+          toast.success(tPage('success.purchaseSuccess'))
         }
 
         handleClose()
       } catch (error) {
         console.error('Purchase failed:', error)
-        // Handle error (show toast, etc.)
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : tPage('errors.purchaseFailed'),
+        )
       }
     },
-    [membershipId, user?.userId, handleClose],
+    [membershipId, user?.userId, handleClose, purchaseMutation, tPage],
   )
 
-  const handlePlanSelect = useCallback(async (membershipId: number) => {
-    setMembershipId(membershipId)
-    handleOpen()
-  }, [])
+  const handlePlanSelect = useCallback(
+    async (membershipId: number) => {
+      setMembershipId(membershipId)
+      handleOpen()
+    },
+    [handleOpen],
+  )
+
+  // Show error state
+  if (membershipError) {
+    return (
+      <div className='flex items-center justify-center py-12'>
+        <p className='text-destructive'>
+          {membershipError instanceof Error
+            ? membershipError.message
+            : tPage('errors.loadFailed')}
+        </p>
+      </div>
+    )
+  }
 
   return (
     <>

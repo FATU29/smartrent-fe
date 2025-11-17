@@ -14,9 +14,17 @@ export const WARD_KEYS = [
   'nguyenthaihoc',
 ] as const
 
+import {
+  PROPERTY_TYPES as PROPERTY_TYPES_CONST,
+  getPropertyTypeName,
+} from '@/constants/common/propertyTypes'
+
 export const LISTING_TYPES = ['rent', 'sale'] as const
 
-export const PROPERTY_TYPES = ['apartment', 'house', 'villa', 'studio'] as const
+// Use property types from constants
+export const PROPERTY_TYPES = PROPERTY_TYPES_CONST.map((type) =>
+  type.value.toLowerCase(),
+) as readonly string[]
 
 export const INTERIOR_CONDITIONS = [
   'furnished',
@@ -24,6 +32,14 @@ export const INTERIOR_CONDITIONS = [
   'unfurnished',
 ] as const
 
+// PriceType enum values for utilities
+export const PRICE_TYPE_OPTIONS = [
+  'PROVIDER_RATE',
+  'SET_BY_OWNER',
+  'NEGOTIABLE',
+] as const
+
+// Legacy mapping for backward compatibility (if needed)
 export const UTILITY_PRICE_OPTIONS = [
   'provider',
   'fixed',
@@ -70,8 +86,15 @@ export const getWardOptions = (t: (key: string) => string): Option[] =>
 export const getListingTypeOptions = (t: (key: string) => string): Option[] =>
   LISTING_TYPES.map((k) => ({ value: k, label: t(`listingTypes.${k}`) }))
 
-export const getPropertyTypeOptions = (t: (key: string) => string): Option[] =>
-  PROPERTY_TYPES.map((k) => ({ value: k, label: t(`propertyTypes.${k}`) }))
+export const getPropertyTypeOptions = (
+  t: (key: string) => string,
+  tCommon: (key: string) => string,
+): Option[] =>
+  PROPERTY_TYPES_CONST.filter((type) => type.value !== 'ALL') // Exclude 'ALL' option for create post
+    .map((type) => ({
+      value: type.value.toLowerCase(),
+      label: getPropertyTypeName(type.id, tCommon), // Use translation by id
+    }))
 
 export const getInteriorConditionOptions = (
   t: (key: string) => string,
@@ -87,14 +110,33 @@ export const getInteriorConditionOptions = (
   }))
 }
 
-export const getUtilityPriceOptions = (t: (key: string) => string): Option[] =>
-  UTILITY_PRICE_OPTIONS.map((k) => ({
+export const getUtilityPriceOptions = (
+  t: (key: string) => string,
+): Option[] => {
+  // Map PriceType enum to display labels
+  const labelMap: Record<(typeof PRICE_TYPE_OPTIONS)[number], string> = {
+    PROVIDER_RATE: 'provider',
+    SET_BY_OWNER: 'fixed',
+    NEGOTIABLE: 'negotiable',
+  }
+  return PRICE_TYPE_OPTIONS.map((k) => ({
     value: k,
-    label: t(`utilityOptions.${k}`),
+    label: t(`utilityOptions.${labelMap[k]}`),
   }))
+}
 
-export const getInternetOptions = (t: (key: string) => string): Option[] =>
-  INTERNET_OPTIONS.map((k) => ({ value: k, label: t(`utilityOptions.${k}`) }))
+export const getInternetOptions = (t: (key: string) => string): Option[] => {
+  // Internet price uses same PriceType enum
+  const labelMap: Record<(typeof PRICE_TYPE_OPTIONS)[number], string> = {
+    PROVIDER_RATE: 'provider',
+    SET_BY_OWNER: 'fixed',
+    NEGOTIABLE: 'negotiable',
+  }
+  return PRICE_TYPE_OPTIONS.map((k) => ({
+    value: k,
+    label: t(`utilityOptions.${labelMap[k]}`),
+  }))
+}
 
 export const getDirectionOptions = (t: (key: string) => string): Option[] =>
   DIRECTIONS.map((k) => ({ value: k, label: t(`directions.${k}`) }))
@@ -102,11 +144,13 @@ export const getDirectionOptions = (t: (key: string) => string): Option[] =>
 // AI Valuation section helpers
 export const getAiPropertyTypeOptions = (
   t: (key: string) => string,
+  tCommon: (key: string) => string,
 ): Option[] =>
-  PROPERTY_TYPES.map((k) => ({
-    value: k,
-    label: t(`propertyInfo.types.${k}`),
-  }))
+  PROPERTY_TYPES_CONST.filter((type) => type.value !== 'ALL') // Exclude 'ALL' option for create post
+    .map((type) => ({
+      value: type.value.toLowerCase(),
+      label: getPropertyTypeName(type.id, tCommon), // Use translation by id
+    }))
 
 export const getDistrictOptions = (t: (key: string) => string): Option[] =>
   DISTRICT_KEYS.map((k) => ({

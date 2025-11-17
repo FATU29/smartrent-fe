@@ -2,6 +2,7 @@ export const PATHS = {
   // AI endpoints
   AI: {
     LISTING_DESCRIPTION: '/v1/ai/listing-description',
+    HOUSING_PREDICTOR: '/v1/housing-predictor/predict',
   },
 
   // Auth endpoints
@@ -27,13 +28,34 @@ export const PATHS = {
     CHANGE_PASSWORD: '/v1/users/change-password',
   },
 
-  // Property endpoints
+  // Property endpoints (deprecated - use LISTING instead)
   PROPERTY: {
     LIST: '/v1/properties',
     DETAIL: '/v1/properties/:id',
     CREATE: '/v1/properties',
     UPDATE: '/v1/properties/:id',
     DELETE: '/v1/properties/:id',
+  },
+
+  // Listing endpoints
+  LISTING: {
+    LIST: '/v1/listings',
+    SEARCH: '/v1/listings/search',
+    BY_ID: '/v1/listings/:id',
+    CREATE: '/v1/listings',
+    CREATE_VIP: '/v1/listings/vip',
+    UPDATE: '/v1/listings/:id',
+    DELETE: '/v1/listings/:id',
+    ADMIN_DETAIL: '/v1/listings/:id/admin',
+    QUOTA_CHECK: '/v1/listings/quota-check',
+    UPDATE_PRICE: '/v1/listings/:listingId/price',
+    PRICING_HISTORY: '/v1/listings/:listingId/pricing-history',
+    PRICING_HISTORY_DATE_RANGE:
+      '/v1/listings/:listingId/pricing-history/date-range',
+    PRICE_STATISTICS: '/v1/listings/:listingId/price-statistics',
+    CURRENT_PRICE: '/v1/listings/:listingId/current-price',
+    RECENT_PRICE_CHANGES: '/v1/listings/recent-price-changes',
+    PROVINCE_STATS: '/v1/listings/stats/provinces',
   },
 
   // Admin endpoints
@@ -65,6 +87,20 @@ export const PATHS = {
     ACTIVE: '/v1/vip-tiers',
     BY_CODE: '/v1/vip-tiers/:tierCode',
     ALL: '/v1/vip-tiers/all',
+  },
+
+  // Payment endpoints
+  PAYMENT: {
+    CREATE: '/v1/payments/create',
+    REFUND: '/v1/payments/refund/:transactionRef',
+    CANCEL: '/v1/payments/cancel/:transactionRef',
+    TRANSACTION: '/v1/payments/transactions/:txnRef',
+    PROVIDERS: '/v1/payments/providers',
+    HISTORY: '/v1/payments/history',
+    HISTORY_BY_STATUS: '/v1/payments/history/status/:status',
+    EXISTS: '/v1/payments/exists/:transactionRef',
+    IPN: '/v1/payments/ipn/:provider',
+    CALLBACK: '/v1/payments/callback/:provider',
   },
 
   // Media endpoints
@@ -116,5 +152,14 @@ export const PATHS = {
     // Conversion
     CONVERT_NEW_TO_LEGACY: '/v1/addresses/convert/new-to-legacy',
     CONVERT_LEGACY_TO_NEW: '/v1/addresses/convert/legacy-to-new',
+  },
+
+  // Phone Click Detail endpoints
+  PHONE_CLICK_DETAIL: {
+    TRACK: '/v1/phone-click-details',
+    BY_LISTING: '/v1/phone-click-details/listing/:listingId',
+    MY_CLICKS: '/v1/phone-click-details/my-clicks',
+    LISTING_STATS: '/v1/phone-click-details/listing/:listingId/stats',
+    MY_LISTINGS: '/v1/phone-click-details/my-listings',
   },
 }

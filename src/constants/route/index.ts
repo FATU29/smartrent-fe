@@ -2,6 +2,7 @@ export const SELLER_ROUTES = {
   OVERVIEW: '/seller/dashboard',
   LISTINGS: '/seller/listings',
   CREATE: '/seller/create-post',
+  DRAFTS: '/seller/drafts',
   CUSTOMERS: '/seller/customers',
   MEMBERSHIP: '/sellernet/membership/register',
   ACCOUNT: '/seller/account',
@@ -11,13 +12,13 @@ export type SellerRouteKey = keyof typeof SELLER_ROUTES
 
 export const SELLERNET_ROUTES = {
   PREFIX: '/sellernet',
-  OVERVIEW: '/sellernet/overview',
+  OVERVIEW: '/seller/dashboard', // Redirect to seller layout
   POST_PREFIX: '/sellernet/post',
-  POST_CREATE: '/sellernet/post/create',
-  POST_LIST: '/sellernet/post/list',
-  POST_DRAFTS: '/sellernet/post/drafts',
+  POST_CREATE: '/seller/create-post', // Redirect to seller layout
+  POST_LIST: '/seller/listings', // Redirect to seller layout
+  POST_DRAFTS: '/seller/drafts',
   POST_SPONSORED: '/sellernet/post/sponsored',
-  CUSTOMERS: '/sellernet/customers',
+  CUSTOMERS: '/seller/customers', // Redirect to seller layout
   MEMBERSHIP_REGISTER: '/sellernet/membership/register',
   PUSH_DETAILS: '/sellernet/push',
   PRO_REGISTER: '/sellernet/pro/register',
@@ -31,9 +32,9 @@ export const SELLERNET_ROUTES = {
   PERSONAL_PRO_BROKER: '/sellernet/personal/pro-broker',
   BUSINESS_PREFIX: '/sellernet/business',
   BUSINESS_REGISTER: '/sellernet/business/register',
-  PRICING: '/sellernet/pricing',
-  PAYMENT_GUIDE: '/sellernet/payment-guide',
-  USAGE_GUIDE: '/sellernet/usage-guide',
+  PRICING: '/sellernet/guides/pricing',
+  PAYMENT_GUIDE: '/sellernet/guides/payment-guide',
+  USAGE_GUIDE: '/sellernet/guides/usage-guide',
   UTIL_NOTIFICATIONS: '/sellernet/utilities/notifications',
   UTIL_EMAIL_SUBSCRIPTIONS: '/sellernet/utilities/email-subscriptions',
   UTIL_LOCK_REQUEST: '/sellernet/utilities/lock-request',
@@ -47,6 +48,7 @@ export const PUBLIC_ROUTES = {
   RESIDENTIAL_LIST: '/properties/residential',
   PROPERTIES_PREFIX: '/properties',
   APARTMENT_DETAIL_PREFIX: '/apartment-detail', // dynamic [...slug]
+  PAYMENT_STATUS: '/payment/status',
 } as const
 
 export type PublicRouteKey = keyof typeof PUBLIC_ROUTES

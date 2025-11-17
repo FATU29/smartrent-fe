@@ -14,6 +14,7 @@ export interface NumberFieldProps {
   disabled?: boolean
   required?: boolean
   compact?: boolean
+  error?: string
 }
 
 export const NumberField: React.FC<NumberFieldProps> = ({
@@ -29,9 +30,10 @@ export const NumberField: React.FC<NumberFieldProps> = ({
   disabled,
   required,
   compact,
+  error,
 }) => {
   const [touched, setTouched] = useState(false)
-  const invalid = touched && value < (min ?? 0)
+  const invalid = (touched && value < (min ?? 0)) || !!error
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/[^0-9.,-]/g, '')
@@ -61,8 +63,8 @@ export const NumberField: React.FC<NumberFieldProps> = ({
           inputMode='decimal'
           className={cn(
             'w-full h-12 px-4 pr-10 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600',
-            invalid &&
-              'border-destructive focus:border-destructive focus:ring-destructive/50',
+            (invalid || error) &&
+              'border-destructive dark:border-destructive focus:border-destructive focus:ring-destructive/50',
             disabled && 'opacity-60 cursor-not-allowed',
             compact && 'h-10 text-sm',
           )}
@@ -79,7 +81,14 @@ export const NumberField: React.FC<NumberFieldProps> = ({
           </span>
         )}
       </div>
-      {invalid && <p className='text-xs text-destructive'>Min {min}</p>}
+      {error && (
+        <p className='text-xs text-destructive' role='alert'>
+          {error}
+        </p>
+      )}
+      {invalid && !error && (
+        <p className='text-xs text-destructive'>Min {min}</p>
+      )}
     </div>
   )
 }
