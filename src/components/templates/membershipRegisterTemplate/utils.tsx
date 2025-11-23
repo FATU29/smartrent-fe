@@ -2,7 +2,7 @@ import {
   MembershipPackageLevel,
   type Membership,
   type TransformedMembershipPlan,
-} from '@/api/types/memembership.type'
+} from '@/api/types/membership.type'
 
 export const transformMembershipToPricingCard = (
   membership: Membership,

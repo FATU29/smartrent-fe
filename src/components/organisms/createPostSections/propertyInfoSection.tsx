@@ -15,37 +15,38 @@ import {
   RotateCcw,
   Home,
   DollarSign,
-  User,
-  Mail,
-  Phone,
   Zap as ZapIcon,
   Navigation,
-  Ruler,
   CheckCircle,
   Loader2,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useFormContext, Controller } from 'react-hook-form'
 import { useCreatePost } from '@/contexts/createPost'
-import type { PropertyInfo } from '@/contexts/createPost'
-import type { PriceType } from '@/api/types/property.type'
+import type {
+  CreateListingRequest,
+  Direction,
+  FURNISHING,
+  PriceType,
+  PriceUnit,
+  PropertyType,
+} from '@/api/types/property.type'
 import { useLocationContext } from '@/contexts/location'
 import {
-  getPropertyTypeOptions,
   getInteriorConditionOptions,
   getUtilityPriceOptions,
   getInternetOptions,
   getDirectionOptions,
   getAmenityItems,
+  getPriceUnitOptions,
+  getPropertyTypeOptions,
 } from './index.helper'
 import { getAmenityByCode } from '@/constants/amenities'
 import { AddressInput } from '@/components/molecules/createPostAddress'
 import GoogleMapPicker from '@/components/molecules/googleMapPicker'
 import NumberField from '@/components/atoms/number-field'
-import { DatePicker } from '@/components/atoms'
 import classNames from 'classnames'
 import { useGenerateListingDescription } from '@/hooks/useAI'
-import { mapFurnishing, mapPropertyType } from '@/utils/ai'
 import type { ListingDescriptionRequest } from '@/api/types/ai.type'
 
 interface PropertyInfoSectionProps {
@@ -59,7 +60,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   const tCommon = useTranslations('common')
   const tDetails = useTranslations('createPost.sections.propertyDetails')
   const tUtilities = useTranslations('createPost.sections.utilitiesStructure')
-  const tContact = useTranslations('createPost.sections.contactInfo')
   const tValuation = useTranslations('createPost.sections.aiValuation')
   const tAI = useTranslations('createPost.sections.aiContent')
   const tPlaceholders = useTranslations(
@@ -67,55 +67,120 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   )
   const tValidation = useTranslations('createPost.validation')
 
-  // Helper to normalize error message key (strip prefix if exists)
   const getValidationKey = (message: string | undefined): string => {
     if (!message) return ''
-    // Remove 'createPost.validation.' prefix if exists
     return message.replace(/^createPost\.validation\./, '')
   }
 
-  // Get form context for validation
-  const { control, setValue } = useFormContext<Partial<PropertyInfo>>()
+  const { control, setValue } = useFormContext<Partial<CreateListingRequest>>()
 
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
+
+  React.useEffect(() => {
+    // Sync all property info fields to react-hook-form
+    if (propertyInfo.propertyType) {
+      setValue('propertyType', propertyInfo.propertyType, {
+        shouldValidate: true,
+      })
+    }
+    if (propertyInfo.address) {
+      setValue('address', propertyInfo.address, { shouldValidate: true })
+    }
+    if (propertyInfo.area) {
+      setValue('area', propertyInfo.area, { shouldValidate: true })
+    }
+    if (propertyInfo.price) {
+      setValue('price', propertyInfo.price, { shouldValidate: true })
+    }
+    if (propertyInfo.priceUnit) {
+      setValue('priceUnit', propertyInfo.priceUnit, { shouldValidate: true })
+    }
+    if (propertyInfo.title) {
+      setValue('title', propertyInfo.title, { shouldValidate: true })
+    }
+    if (propertyInfo.description) {
+      setValue('description', propertyInfo.description, {
+        shouldValidate: true,
+      })
+    }
+    if (propertyInfo.waterPrice) {
+      setValue('waterPrice', propertyInfo.waterPrice, { shouldValidate: true })
+    }
+    if (propertyInfo.electricityPrice) {
+      setValue('electricityPrice', propertyInfo.electricityPrice, {
+        shouldValidate: true,
+      })
+    }
+    if (propertyInfo.internetPrice) {
+      setValue('internetPrice', propertyInfo.internetPrice, {
+        shouldValidate: true,
+      })
+    }
+    if (propertyInfo.furnishing) {
+      setValue('furnishing', propertyInfo.furnishing, { shouldValidate: true })
+    }
+    if (propertyInfo.bedrooms) {
+      setValue('bedrooms', propertyInfo.bedrooms, { shouldValidate: true })
+    }
+    if (propertyInfo.bathrooms) {
+      setValue('bathrooms', propertyInfo.bathrooms, { shouldValidate: true })
+    }
+    if (propertyInfo.direction) {
+      setValue('direction', propertyInfo.direction, { shouldValidate: true })
+    }
+  }, [propertyInfo, setValue])
+
   const {
     coordinates,
     requestLocation,
     isLoading: locationLoading,
   } = useLocationContext()
 
-  // Sync propertyAddress from context to form when it changes
-  React.useEffect(() => {
-    if (propertyInfo?.propertyAddress !== undefined) {
-      setValue('propertyAddress', propertyInfo.propertyAddress, {
-        shouldValidate: true,
-      })
-    }
-  }, [propertyInfo?.propertyAddress, setValue])
+  const { title, description, address, propertyType, furnishing, amenityIds } =
+    propertyInfo
+
+  const {
+    new: newAddress,
+    legacy: oldAddress,
+    latitude,
+    longitude,
+  } = address || {}
 
   const handleUseMyLocation = async () => {
     const success = await requestLocation()
     if (success && coordinates) {
       updatePropertyInfo({
-        coordinates: {
-          lat: coordinates.latitude,
-          lng: coordinates.longitude,
+        address: {
+          new: newAddress,
+          legacy: oldAddress,
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
         },
       })
     }
   }
 
   // Update coordinates when location context changes
+  const prevCoordinatesRef = React.useRef(coordinates)
   React.useEffect(() => {
-    if (coordinates) {
+    // Only update if coordinates actually changed (not just re-render)
+    if (
+      coordinates &&
+      (prevCoordinatesRef.current?.latitude !== coordinates.latitude ||
+        prevCoordinatesRef.current?.longitude !== coordinates.longitude)
+    ) {
+      prevCoordinatesRef.current = coordinates
       updatePropertyInfo({
-        coordinates: {
-          lat: coordinates.latitude,
-          lng: coordinates.longitude,
+        address: {
+          new: newAddress,
+          legacy: oldAddress,
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
         },
       })
     }
-  }, [coordinates])
+  }, [coordinates, newAddress, oldAddress])
+  // Note: updatePropertyInfo intentionally excluded from deps to avoid loop
 
   // AI generation using React Query
   const { mutate: generateAI, isPending: aiLoading } =
@@ -123,47 +188,32 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
   const handleGenerateAI = () => {
     const req: ListingDescriptionRequest = {
-      title: propertyInfo?.listingTitle,
-      addressText:
-        propertyInfo?.propertyAddress || propertyInfo?.searchAddress || '',
+      title: title,
+      addressText: '',
       bedrooms: propertyInfo?.bedrooms,
       bathrooms: propertyInfo?.bathrooms,
       area: propertyInfo?.area,
       price: propertyInfo?.price,
-      priceUnit: 'MONTH', // Default to MONTH for rent
-      furnishing: mapFurnishing(propertyInfo?.interiorCondition),
-      propertyType: mapPropertyType(propertyInfo?.propertyType),
+      priceUnit: 'MONTH',
+      furnishing: furnishing,
+      propertyType: propertyType,
       tone: 'friendly',
       maxWords: 60,
     }
 
     generateAI(req, {
       onSuccess: (resp) => {
-        const generatedTitle =
-          resp.data?.generatedTitle || propertyInfo?.listingTitle || ''
+        const generatedTitle = resp.data?.generatedTitle || title || ''
         const generatedDescription =
-          resp.data?.generatedDescription ||
-          propertyInfo?.propertyDescription ||
-          ''
+          resp.data?.generatedDescription || description || ''
 
         updatePropertyInfo({
-          listingTitle: generatedTitle,
-          propertyDescription: generatedDescription,
+          title: generatedTitle,
+          description: generatedDescription,
         })
       },
     })
   }
-
-  // UI simplification toggles based on current property type
-  const pType = propertyInfo?.propertyType
-  const isHouseLike = pType === 'house'
-  const isApartment = pType === 'apartment'
-  const showBedrooms = true // All property types show bedrooms
-  const showBathrooms = true
-  const showFloors = isHouseLike
-  const showHouseDirection = isHouseLike
-  const showBalconyDirection = isApartment
-  const showDimensions = isHouseLike
 
   return (
     <div className={classNames(className)}>
@@ -184,7 +234,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             <Controller
               name='propertyType'
               control={control}
-              render={({ field, fieldState: { error } }) => (
+              render={({ fieldState: { error } }) => (
                 <div className='space-y-2'>
                   <SelectDropdown
                     label={
@@ -193,20 +243,16 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         <span className='text-destructive ml-1'>*</span>
                       </>
                     }
-                    value={field.value}
+                    value={propertyType?.toLowerCase()}
                     onValueChange={(value) => {
-                      field.onChange(value)
+                      // Convert lowercase to uppercase for PropertyType enum
+                      const upperValue = value.toUpperCase() as PropertyType
                       updatePropertyInfo({
-                        propertyType: value as
-                          | 'room'
-                          | 'apartment'
-                          | 'house'
-                          | 'office'
-                          | 'store',
+                        propertyType: upperValue,
                       })
                     }}
                     placeholder={tPlaceholders('selectPropertyType')}
-                    options={getPropertyTypeOptions(t, tCommon)}
+                    options={getPropertyTypeOptions(tCommon)}
                     error={
                       error?.message
                         ? tValidation(getValidationKey(error.message))
@@ -219,7 +265,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
             {/* Property Address */}
             <Controller
-              name='propertyAddress'
+              name='address'
               control={control}
               render={({ fieldState: { error } }) => (
                 <div className='space-y-3'>
@@ -263,7 +309,9 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     size='sm'
                     className='border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg w-full sm:w-auto'
                     onClick={() =>
-                      updatePropertyInfo({ coordinates: { lat: 0, lng: 0 } })
+                      updatePropertyInfo({
+                        address: { latitude: 0, longitude: 0 },
+                      })
                     }
                   >
                     <RotateCcw className='w-4 h-4 mr-1' />
@@ -274,11 +322,11 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
               {/* Google Map Picker */}
               <GoogleMapPicker
-                latitude={propertyInfo?.coordinates?.lat || 0}
-                longitude={propertyInfo?.coordinates?.lng || 0}
+                latitude={latitude || 0}
+                longitude={longitude || 0}
                 onLocationSelect={(lat, lng) => {
                   updatePropertyInfo({
-                    coordinates: { lat, lng },
+                    address: { latitude: lat, longitude: lng },
                   })
                 }}
               />
@@ -311,13 +359,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
               <Controller
                 name='area'
                 control={control}
-                render={({ field, fieldState: { error } }) => (
+                render={({ fieldState: { error } }) => (
                   <div className='space-y-2'>
                     <NumberField
                       label={tDetails('area')}
-                      value={field.value ?? 0}
+                      value={propertyInfo?.area ?? 0}
                       onChange={(v) => {
-                        field.onChange(v)
                         updatePropertyInfo({ area: v })
                       }}
                       placeholder={tPlaceholders('enterArea')}
@@ -336,13 +383,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
               <Controller
                 name='price'
                 control={control}
-                render={({ field, fieldState: { error } }) => (
+                render={({ fieldState: { error } }) => (
                   <div className='space-y-2'>
                     <NumberField
                       label={tDetails('price')}
-                      value={field.value ?? 0}
+                      value={propertyInfo?.price ?? 0}
                       onChange={(v) => {
-                        field.onChange(v)
                         updatePropertyInfo({ price: v })
                       }}
                       placeholder={tPlaceholders('enterPrice')}
@@ -358,13 +404,35 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   </div>
                 )}
               />
+              <Controller
+                name='priceUnit'
+                control={control}
+                render={({ fieldState: { error } }) => (
+                  <div className='space-y-2'>
+                    <SelectDropdown
+                      label={tDetails('priceUnit')}
+                      value={propertyInfo?.priceUnit}
+                      onValueChange={(v) => {
+                        updatePropertyInfo({ priceUnit: v as PriceUnit })
+                      }}
+                      placeholder={tPlaceholders('selectPriceUnit')}
+                      options={getPriceUnitOptions(tCommon)}
+                      error={
+                        error?.message
+                          ? tValidation(getValidationKey(error.message))
+                          : undefined
+                      }
+                    />
+                  </div>
+                )}
+              />
             </div>
 
             {/* Interior Condition */}
             <Controller
-              name='interiorCondition'
+              name='furnishing'
               control={control}
-              render={({ field, fieldState: { error } }) => (
+              render={({ fieldState: { error } }) => (
                 <div className='space-y-2'>
                   <SelectDropdown
                     label={
@@ -373,18 +441,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         <span className='text-destructive ml-1'>*</span>
                       </>
                     }
-                    value={field.value}
+                    value={furnishing}
                     onValueChange={(value) => {
-                      field.onChange(value)
                       updatePropertyInfo({
-                        interiorCondition: value as
-                          | 'furnished'
-                          | 'semi-furnished'
-                          | 'unfurnished',
+                        furnishing: value as FURNISHING,
                       })
                     }}
                     placeholder={tPlaceholders('selectInteriorCondition')}
-                    options={getInteriorConditionOptions(tDetails)}
+                    options={getInteriorConditionOptions(t)}
                     error={
                       error?.message
                         ? tValidation(getValidationKey(error.message))
@@ -396,107 +460,62 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             />
 
             {/* Rooms Section */}
-            {(showBedrooms || showBathrooms) && (
-              <div className='space-y-4'>
-                <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                  {tDetails('rooms')}
-                </h3>
+            <div className='space-y-4'>
+              <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                {tDetails('rooms')}
+              </h3>
 
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                  {showBedrooms && (
-                    <Controller
-                      name='bedrooms'
-                      control={control}
-                      render={({ field, fieldState: { error } }) => (
-                        <div className='space-y-2'>
-                          <NumberField
-                            label={tDetails('bedrooms')}
-                            value={field.value ?? 0}
-                            onChange={(v) => {
-                              field.onChange(v)
-                              updatePropertyInfo({ bedrooms: v })
-                            }}
-                            placeholder='0'
-                            min={0}
-                            step={1}
-                            error={
-                              error?.message
-                                ? tValidation(getValidationKey(error.message))
-                                : undefined
-                            }
-                          />
-                        </div>
-                      )}
-                    />
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                <Controller
+                  name='bedrooms'
+                  control={control}
+                  render={({ fieldState: { error } }) => (
+                    <div className='space-y-2'>
+                      <NumberField
+                        label={tDetails('bedrooms')}
+                        value={propertyInfo?.bedrooms ?? 0}
+                        onChange={(v) => {
+                          updatePropertyInfo({ bedrooms: v })
+                        }}
+                        placeholder='0'
+                        min={1}
+                        step={1}
+                        required
+                        error={
+                          error?.message
+                            ? tValidation(getValidationKey(error.message))
+                            : undefined
+                        }
+                      />
+                    </div>
                   )}
-                  {showBathrooms && (
-                    <Controller
-                      name='bathrooms'
-                      control={control}
-                      render={({ field, fieldState: { error } }) => (
-                        <div className='space-y-2'>
-                          <NumberField
-                            label={tDetails('bathrooms')}
-                            value={field.value ?? 0}
-                            onChange={(v) => {
-                              field.onChange(v)
-                              updatePropertyInfo({ bathrooms: v })
-                            }}
-                            placeholder='0'
-                            min={0}
-                            step={1}
-                            error={
-                              error?.message
-                                ? tValidation(getValidationKey(error.message))
-                                : undefined
-                            }
-                          />
-                        </div>
-                      )}
-                    />
+                />
+                <Controller
+                  name='bathrooms'
+                  control={control}
+                  render={({ fieldState: { error } }) => (
+                    <div className='space-y-2'>
+                      <NumberField
+                        label={tDetails('bathrooms')}
+                        value={propertyInfo?.bathrooms ?? 0}
+                        onChange={(v) => {
+                          updatePropertyInfo({ bathrooms: v })
+                        }}
+                        placeholder='0'
+                        min={1}
+                        step={1}
+                        required
+                        error={
+                          error?.message
+                            ? tValidation(getValidationKey(error.message))
+                            : undefined
+                        }
+                      />
+                    </div>
                   )}
-                </div>
+                />
               </div>
-            )}
-
-            {/* Floors */}
-            {showFloors && (
-              <NumberField
-                label={tDetails('floors')}
-                value={propertyInfo?.floors ?? 0}
-                onChange={(v) => updatePropertyInfo({ floors: v })}
-                placeholder='0'
-                min={0}
-                step={1}
-              />
-            )}
-
-            {/* Move-in Date */}
-            <Controller
-              name='moveInDate'
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <div className='space-y-3'>
-                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                    {tDetails('moveInDate')}
-                    <span className='text-destructive ml-1'>*</span>
-                  </label>
-                  <DatePicker
-                    value={field.value}
-                    onChange={(date) => {
-                      field.onChange(date)
-                      updatePropertyInfo({ moveInDate: date })
-                    }}
-                    placeholder={tPlaceholders('dateFormat')}
-                    error={
-                      error?.message
-                        ? tValidation(getValidationKey(error.message))
-                        : undefined
-                    }
-                  />
-                </div>
-              )}
-            />
+            </div>
 
             {/* Amenities (moved from AI Valuation) */}
             <div className='space-y-4'>
@@ -514,7 +533,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                       <label
                         key={amenity.key}
                         className={`flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-                          propertyInfo?.amenities?.includes(amenity.key)
+                          amenityIds?.includes(amenity.id)
                             ? amenity?.color
                             : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
                         }`}
@@ -525,20 +544,16 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         <input
                           type='checkbox'
                           className='w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 flex-shrink-0'
-                          checked={propertyInfo?.amenities?.includes(
-                            amenity.key,
-                          )}
+                          checked={amenityIds?.includes(amenity.id)}
                           onChange={(e) => {
-                            const currentAmenities =
-                              propertyInfo?.amenities || []
                             if (e.target.checked) {
                               updatePropertyInfo({
-                                amenities: [...currentAmenities, amenity.key],
+                                amenityIds: [...(amenityIds || []), amenity.id],
                               })
                             } else {
                               updatePropertyInfo({
-                                amenities: currentAmenities.filter(
-                                  (a) => a !== amenity.key,
+                                amenityIds: amenityIds?.filter(
+                                  (a) => a !== amenity.id,
                                 ),
                               })
                             }
@@ -577,7 +592,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <Controller
                   name='waterPrice'
                   control={control}
-                  render={({ field, fieldState: { error } }) => (
+                  render={({ fieldState: { error } }) => (
                     <div className='space-y-2'>
                       <SelectDropdown
                         label={
@@ -586,9 +601,8 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                             <span className='text-destructive ml-1'>*</span>
                           </>
                         }
-                        value={field.value}
+                        value={propertyInfo?.waterPrice}
                         onValueChange={(value) => {
-                          field.onChange(value)
                           updatePropertyInfo({
                             waterPrice: value as PriceType,
                           })
@@ -607,7 +621,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <Controller
                   name='electricityPrice'
                   control={control}
-                  render={({ field, fieldState: { error } }) => (
+                  render={({ fieldState: { error } }) => (
                     <div className='space-y-2'>
                       <SelectDropdown
                         label={
@@ -616,9 +630,8 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                             <span className='text-destructive ml-1'>*</span>
                           </>
                         }
-                        value={field.value}
+                        value={propertyInfo?.electricityPrice}
                         onValueChange={(value) => {
-                          field.onChange(value)
                           updatePropertyInfo({
                             electricityPrice: value as PriceType,
                           })
@@ -637,7 +650,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <Controller
                   name='internetPrice'
                   control={control}
-                  render={({ field, fieldState: { error } }) => (
+                  render={({ fieldState: { error } }) => (
                     <div className='space-y-2 sm:col-span-2 lg:col-span-1'>
                       <SelectDropdown
                         className='sm:col-span-2 lg:col-span-1'
@@ -647,9 +660,8 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                             <span className='text-destructive ml-1'>*</span>
                           </>
                         }
-                        value={field.value}
+                        value={propertyInfo?.internetPrice}
                         onValueChange={(value) => {
-                          field.onChange(value)
                           updatePropertyInfo({
                             internetPrice: value as PriceType,
                           })
@@ -669,208 +681,37 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             </div>
 
             {/* Structure & Direction */}
-            {(showHouseDirection || showBalconyDirection) && (
-              <div className='space-y-4'>
-                <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2'>
-                  <Navigation className='w-5 h-5 text-orange-500' />
-                  {tUtilities('structureDirection')}
-                </h3>
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                  {showHouseDirection && (
+            <div className='space-y-4'>
+              <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2'>
+                <Navigation className='w-5 h-5 text-orange-500' />
+                {tUtilities('structureDirection')}
+              </h3>
+              <Controller
+                name='direction'
+                control={control}
+                render={({ fieldState: { error } }) => (
+                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                     <SelectDropdown
-                      label={tUtilities('houseDirection')}
-                      value={propertyInfo?.houseDirection}
-                      onValueChange={(value) =>
-                        updatePropertyInfo({
-                          houseDirection: value as
-                            | 'north'
-                            | 'south'
-                            | 'east'
-                            | 'west'
-                            | 'northeast'
-                            | 'northwest'
-                            | 'southeast'
-                            | 'southwest',
-                        })
+                      label={
+                        <>
+                          {tUtilities('houseDirection')}
+                          <span className='text-destructive ml-1'>*</span>
+                        </>
                       }
+                      value={propertyInfo?.direction}
+                      onValueChange={(value) => {
+                        updatePropertyInfo({
+                          direction: value as Direction,
+                        })
+                      }}
                       placeholder={tPlaceholders('selectHouseDirection')}
                       options={getDirectionOptions(tUtilities)}
-                    />
-                  )}
-                  {showBalconyDirection && (
-                    <SelectDropdown
-                      label={tUtilities('balconyDirection')}
-                      value={propertyInfo?.balconyDirection}
-                      onValueChange={(value) =>
-                        updatePropertyInfo({
-                          balconyDirection: value as
-                            | 'north'
-                            | 'south'
-                            | 'east'
-                            | 'west'
-                            | 'northeast'
-                            | 'northwest'
-                            | 'southeast'
-                            | 'southwest',
-                        })
+                      error={
+                        error?.message
+                          ? tValidation(getValidationKey(error.message))
+                          : undefined
                       }
-                      placeholder={tPlaceholders('selectBalconyDirection')}
-                      options={getDirectionOptions(tUtilities)}
                     />
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Property Dimensions */}
-            {showDimensions && (
-              <div className='space-y-4'>
-                <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2'>
-                  <Ruler className='w-5 h-5 text-indigo-500' />
-                  {tUtilities('propertyDimensions')}
-                </h3>
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                  <NumberField
-                    label={tUtilities('alleyWidth')}
-                    value={propertyInfo?.alleyWidth ?? 0}
-                    onChange={(v) => updatePropertyInfo({ alleyWidth: v })}
-                    placeholder='0'
-                    suffix='m'
-                    min={0}
-                    step={0.1}
-                  />
-                  <NumberField
-                    label={tUtilities('frontageWidth')}
-                    value={propertyInfo?.frontageWidth ?? 0}
-                    onChange={(v) => updatePropertyInfo({ frontageWidth: v })}
-                    placeholder='0'
-                    suffix='m'
-                    min={0}
-                    step={0.1}
-                  />
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Contact Information Card */}
-        <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
-          <CardHeader className='pb-4'>
-            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
-              <div className='p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg'>
-                <User className='w-6 h-6 text-blue-600 dark:text-blue-400' />
-              </div>
-              {tContact('title')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className='space-y-4'>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-              <Controller
-                name='fullName'
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <div className='space-y-3'>
-                    <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                      {tContact('fullName')}
-                      <span className='text-destructive ml-1'>*</span>
-                    </label>
-                    <div className='relative group'>
-                      <User className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
-                      <input
-                        type='text'
-                        {...field}
-                        className={`w-full h-12 pl-12 pr-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
-                          error
-                            ? 'border-destructive dark:border-destructive'
-                            : 'border-gray-200 dark:border-gray-700'
-                        }`}
-                        placeholder={tPlaceholders('enterFullName')}
-                        onChange={(e) => {
-                          field.onChange(e)
-                          updatePropertyInfo({ fullName: e.target.value })
-                        }}
-                      />
-                    </div>
-                    {error && (
-                      <p className='text-xs text-destructive' role='alert'>
-                        {error.message
-                          ? tValidation(getValidationKey(error.message))
-                          : ''}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-              <Controller
-                name='email'
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <div className='space-y-3'>
-                    <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                      {tContact('email')}
-                      <span className='text-destructive ml-1'>*</span>
-                    </label>
-                    <div className='relative group'>
-                      <Mail className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
-                      <input
-                        type='email'
-                        {...field}
-                        className={`w-full h-12 pl-12 pr-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
-                          error
-                            ? 'border-destructive dark:border-destructive'
-                            : 'border-gray-200 dark:border-gray-700'
-                        }`}
-                        placeholder={tPlaceholders('enterEmail')}
-                        onChange={(e) => {
-                          field.onChange(e)
-                          updatePropertyInfo({ email: e.target.value })
-                        }}
-                      />
-                    </div>
-                    {error && (
-                      <p className='text-xs text-destructive' role='alert'>
-                        {error.message
-                          ? tValidation(getValidationKey(error.message))
-                          : ''}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-              <Controller
-                name='phoneNumber'
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <div className='space-y-3 sm:col-span-2 lg:col-span-1'>
-                    <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                      {tContact('phoneNumber')}
-                      <span className='text-destructive ml-1'>*</span>
-                    </label>
-                    <div className='relative group'>
-                      <Phone className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors' />
-                      <input
-                        type='tel'
-                        {...field}
-                        className={`w-full h-12 pl-12 pr-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
-                          error
-                            ? 'border-destructive dark:border-destructive'
-                            : 'border-gray-200 dark:border-gray-700'
-                        }`}
-                        placeholder={tPlaceholders('enterPhoneNumber')}
-                        onChange={(e) => {
-                          field.onChange(e)
-                          updatePropertyInfo({ phoneNumber: e.target.value })
-                        }}
-                      />
-                    </div>
-                    {error && (
-                      <p className='text-xs text-destructive' role='alert'>
-                        {error.message
-                          ? tValidation(getValidationKey(error.message))
-                          : ''}
-                      </p>
-                    )}
                   </div>
                 )}
               />
@@ -907,9 +748,9 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
           <CardContent className='space-y-6'>
             {/* Listing Title */}
             <Controller
-              name='listingTitle'
+              name='title'
               control={control}
-              render={({ field, fieldState: { error } }) => (
+              render={({ fieldState: { error } }) => (
                 <div className='space-y-3'>
                   <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
                     {tAI('listingTitle')}
@@ -917,7 +758,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   </label>
                   <input
                     type='text'
-                    {...field}
+                    value={title || ''}
                     className={`w-full h-12 px-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
                       error
                         ? 'border-destructive dark:border-destructive'
@@ -925,8 +766,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     }`}
                     placeholder={tPlaceholders('enterListingTitle')}
                     onChange={(e) => {
-                      field.onChange(e)
-                      updatePropertyInfo({ listingTitle: e.target.value })
+                      updatePropertyInfo({ title: e.target.value })
                     }}
                   />
                   {error && (
@@ -947,16 +787,16 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
             {/* Property Description */}
             <Controller
-              name='propertyDescription'
+              name='description'
               control={control}
-              render={({ field, fieldState: { error } }) => (
+              render={({ fieldState: { error } }) => (
                 <div className='space-y-3'>
                   <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
                     {tAI('propertyDescription')}
                     <span className='text-destructive ml-1'>*</span>
                   </label>
                   <textarea
-                    {...field}
+                    value={description || ''}
                     className={`w-full h-32 px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 resize-none ${
                       error
                         ? 'border-destructive dark:border-destructive'
@@ -964,9 +804,8 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     }`}
                     placeholder={tPlaceholders('enterPropertyDescription')}
                     onChange={(e) => {
-                      field.onChange(e)
                       updatePropertyInfo({
-                        propertyDescription: e.target.value,
+                        description: e.target.value,
                       })
                     }}
                   />

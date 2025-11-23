@@ -2,7 +2,7 @@ import React from 'react'
 import { Check } from 'lucide-react'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
-import type { PaymentProvider } from '@/api/types/memembership.type'
+import type { PaymentProvider } from '@/api/types/membership.type'
 
 interface PaymentMethodOptionProps {
   readonly provider: PaymentProvider

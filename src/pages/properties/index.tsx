@@ -1,19 +1,18 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
 import ResidentialPropertiesTemplate from '@/components/templates/residentialProperties'
 import { ListProvider } from '@/contexts/list/index.context'
-import { fetchListings } from '@/api/services/listing.service'
-import { PropertyCard } from '@/api/types/property.type'
 import type { GetServerSideProps } from 'next'
 import LocationProvider from '@/contexts/location'
 import { getFiltersFromQuery } from '@/utils/queryParams'
-import { ListFilters } from '@/contexts/list/index.type'
+import { ListFilters, ListFetcherResponse } from '@/contexts/list/index.type'
+import { ListingDetail } from '@/api/types'
 
 interface ResidentialPropertiesPageProps {
-  initialData: PropertyCard[]
+  initialData: ListingDetail[]
   initialFilters: Partial<ListFilters>
   initialPagination?: {
     total: number
@@ -29,12 +28,30 @@ const ResidentialPropertiesPage: NextPageWithLayout<
 > = ({ initialData, initialFilters, initialPagination }) => {
   const t = useTranslations('navigation')
 
+  const fetcher = useCallback(
+    async (
+      filters: ListFilters,
+    ): Promise<ListFetcherResponse<ListingDetail>> => {
+      console.log('Fetcher called with filters:', filters)
+
+      return {
+        data: initialData,
+        total: initialData.length,
+        page: filters.page ?? initialPagination?.page ?? 1,
+        totalPages: initialPagination?.totalPages ?? 0,
+        hasNext: initialPagination?.hasNext ?? false,
+        hasPrevious: initialPagination?.hasPrevious ?? false,
+      }
+    },
+    [initialData, initialPagination],
+  )
+
   return (
     <>
       <SeoHead title={t('properties')} description='Property search' />
       <div className='container mx-auto py-6 px-4 md:px-0'>
         <ListProvider
-          fetcher={fetchListings}
+          fetcher={fetcher}
           initialData={initialData}
           initialFilters={initialFilters}
           initialPagination={initialPagination}

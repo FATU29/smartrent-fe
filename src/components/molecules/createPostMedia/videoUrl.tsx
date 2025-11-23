@@ -17,11 +17,12 @@ import { toast } from 'sonner'
 const VideoUrl: React.FC = () => {
   const t = useTranslations('createPost.sections.media')
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
+
+  const videoUrl = propertyInfo?.assets?.video || ''
   const initial = useMemo(() => {
-    const url = propertyInfo.videoUrl || ''
-    const isBlob = url?.startsWith('blob:')
-    return isBlob ? '' : url
-  }, [propertyInfo.videoUrl])
+    const isBlob = videoUrl?.startsWith('blob:')
+    return isBlob ? '' : videoUrl
+  }, [videoUrl])
 
   const [url, setUrl] = useState<string>(initial)
   const [saving, setSaving] = useState(false)
@@ -29,15 +30,12 @@ const VideoUrl: React.FC = () => {
   // Helpers
   // Check if there's already an uploaded video (blob or http uploaded file)
   const hasUploadedVideo = Boolean(
-    propertyInfo.videoUrl &&
-      (propertyInfo.videoUrl.startsWith('blob:') ||
-        (propertyInfo.videoUrl.startsWith('http') &&
-          !isYouTube(propertyInfo.videoUrl))),
+    videoUrl &&
+      (videoUrl.startsWith('blob:') ||
+        (videoUrl.startsWith('http') && !isYouTube(videoUrl))),
   )
   // Check if there's an external video link (YouTube only)
-  const hasExternalVideo = Boolean(
-    propertyInfo.videoUrl && isYouTube(propertyInfo.videoUrl),
-  )
+  const hasExternalVideo = Boolean(videoUrl && isYouTube(videoUrl))
 
   const onSave = async () => {
     if (!url || url.trim().length === 0) return
@@ -51,7 +49,12 @@ const VideoUrl: React.FC = () => {
       setSaving(true)
       const res = await MediaService.saveExternal({ url: url.trim() })
       if (res?.success && res?.data) {
-        updatePropertyInfo({ videoUrl: res.data.url })
+        updatePropertyInfo({
+          assets: {
+            ...propertyInfo?.assets,
+            video: res.data.url,
+          },
+        })
         toast.success(t('video.external.success'))
       } else {
         toast.error(res?.message || t('video.external.error'))
@@ -64,7 +67,12 @@ const VideoUrl: React.FC = () => {
   }
 
   const handleRemove = () => {
-    updatePropertyInfo({ videoUrl: '' })
+    updatePropertyInfo({
+      assets: {
+        ...propertyInfo?.assets,
+        video: undefined,
+      },
+    })
     setUrl('')
   }
 
@@ -85,7 +93,7 @@ const VideoUrl: React.FC = () => {
           </div>
         ) : hasExternalVideo ? (
           <div className='space-y-3'>
-            <VideoPlayerFull src={propertyInfo.videoUrl!} aspectRatio='16/9' />
+            <VideoPlayerFull src={videoUrl} aspectRatio='16/9' />
             <Button variant='outline' onClick={handleRemove} className='w-full'>
               Xóa video
             </Button>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
-import { PropertyCard as PropertyCardType } from '@/api/types/property.type'
 import PropertyListContent from '@/components/molecules/propertyListContent'
 import PropertyFilterSidebar from '@/components/molecules/propertyFilterSidebar'
 import { Typography } from '@/components/atoms/typography'
@@ -14,16 +13,17 @@ import {
   SelectValue,
 } from '@/components/atoms/select'
 import { useListContext } from '@/contexts/list'
+import { ListingDetail } from '@/api/types'
 
 const ResidentialPropertiesTemplate: React.FC = () => {
   const t = useTranslations('propertiesPage')
-  const { pagination } = useListContext<PropertyCardType>()
+  const { pagination } = useListContext<ListingDetail>()
   const [emailNotification, setEmailNotification] = useState(false)
   const [sortBy, setSortBy] = useState('default')
 
-  const handleFavorite = (property: PropertyCardType, isFavorite: boolean) => {
+  const handleFavorite = (property: ListingDetail, isFavorite: boolean) => {
     // TODO: Implement favorite functionality
-    console.log('Favorite:', property.id, isFavorite)
+    console.log('Favorite:', property, isFavorite)
   }
 
   const handleSortChange = (value: string) => {

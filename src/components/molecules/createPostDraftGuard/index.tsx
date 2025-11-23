@@ -4,8 +4,6 @@ import { useTranslations } from 'next-intl'
 import { SaveDraftDialog } from '@/components/molecules/saveDraftDialog'
 import { useCreatePost } from '@/contexts/createPost'
 import { useAuth } from '@/hooks/useAuth'
-import { useSaveDraft } from '@/hooks/useCreatePost'
-import { transformPropertyInfoToDraft } from '@/utils/createPost/transformToDraft'
 import { toast } from 'sonner'
 
 interface CreatePostDraftGuardProps {
@@ -30,7 +28,6 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   const t = useTranslations('createPost.draftDialog')
   const { propertyInfo } = useCreatePost()
   const { user } = useAuth()
-  const saveDraftMutation = useSaveDraft()
 
   // State
   const [showDialog, setShowDialog] = useState(false)
@@ -45,25 +42,20 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   const hasUnsavedChanges = useCallback((): boolean => {
     if (!propertyInfo) return false
 
-    return !!(
-      propertyInfo.propertyType ||
-      propertyInfo.propertyAddress ||
-      propertyInfo.area ||
-      propertyInfo.price ||
-      propertyInfo.interiorCondition ||
+    // Check if any meaningful field has been filled
+    return (
+      propertyInfo.productType !== undefined ||
+      propertyInfo.address !== undefined ||
+      propertyInfo.area !== undefined ||
+      propertyInfo.price !== undefined ||
       propertyInfo.bedrooms !== undefined ||
       propertyInfo.bathrooms !== undefined ||
-      propertyInfo.moveInDate ||
-      propertyInfo.waterPrice ||
-      propertyInfo.electricityPrice ||
-      propertyInfo.internetPrice ||
-      propertyInfo.fullName ||
-      propertyInfo.email ||
-      propertyInfo.phoneNumber ||
-      propertyInfo.listingTitle ||
-      propertyInfo.propertyDescription ||
-      (propertyInfo.images && propertyInfo.images.length > 0) ||
-      propertyInfo.videoUrl
+      propertyInfo.amenityIds !== undefined ||
+      propertyInfo.assets !== undefined ||
+      propertyInfo.postDate !== undefined ||
+      propertyInfo.expiryDate !== undefined ||
+      propertyInfo.benefitsMembership !== undefined ||
+      propertyInfo.isDraft !== undefined
     )
   }, [propertyInfo])
 
@@ -119,27 +111,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       toast.error(t('loginRequired'))
       return
     }
-
-    const draftData = transformPropertyInfoToDraft(propertyInfo, user.userId)
-
-    saveDraftMutation.mutate(
-      { data: draftData },
-      {
-        onSuccess: () => {
-          toast.success(t('saveSuccess'))
-          proceedWithNavigation()
-        },
-        onError: (error: Error) => {
-          const errorMessage = error.message || t('saveFailed')
-          console.error('Error saving draft:', error)
-          toast.error(errorMessage)
-          // Keep dialog open and prevent navigation on error
-          shouldBlockRef.current = true
-          isNavigatingRef.current = false
-        },
-      },
-    )
-  }, [propertyInfo, user?.userId, saveDraftMutation, proceedWithNavigation, t])
+  }, [propertyInfo, user?.userId, proceedWithNavigation, t])
 
   const handleDiscard = useCallback(() => {
     setShowDialog(false)
@@ -271,7 +243,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
         onSave={saveDraft}
         onDiscard={handleDiscard}
         onCancel={handleCancel}
-        isSaving={saveDraftMutation.isPending}
+        isSaving={false}
       />
     </>
   )

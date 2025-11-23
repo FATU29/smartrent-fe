@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MembershipService } from '@/api/services'
-import type { PurchaseMembershipRequest } from '@/api/types/memembership.type'
+import type { PurchaseMembershipRequest } from '@/api/types/membership.type'
 
 /**
  * Hook to fetch all available membership packages

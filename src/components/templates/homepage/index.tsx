@@ -1,7 +1,6 @@
 import HomepageHeader from '@/components/molecules/homepageHeader'
 import HeroPromoCarousel from '@/components/organisms/heroPromoCarousel'
 import PropertyList from '@/components/organisms/propertyList'
-import { PropertyCard } from '@/api/types/property.type'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
 import { useState, useCallback } from 'react'
@@ -15,11 +14,12 @@ import { List } from '@/contexts/list'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
 import ClearFilterButton from '@/components/atoms/clearFilterButton'
 import type { VipTier } from '@/api/types/vip-tier.type'
-import type { GetPackagesResponse } from '@/api/types/memembership.type'
+import type { GetPackagesResponse } from '@/api/types/membership.type'
 import type { CityItem } from '@/components/organisms/locationBrowseSection/types'
+import { ListingDetail } from '@/api/types'
 
 interface HomepageTemplateProps {
-  onPropertyClick?: (property: PropertyCard) => void
+  onPropertyClick?: (property: ListingDetail) => void
   vipTiers?: VipTier[]
   membershipPackages?: GetPackagesResponse
   cities?: CityItem[]
@@ -34,7 +34,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   const router = useRouter()
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
 
-  const handlePropertyClick = (property: PropertyCard) => {
+  const handlePropertyClick = (property: ListingDetail) => {
     console.log('Property clicked:', property)
     onPropertyClick?.(property)
   }

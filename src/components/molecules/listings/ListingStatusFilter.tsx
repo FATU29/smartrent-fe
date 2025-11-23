@@ -1,34 +1,24 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
+import { PostStatus, POST_STATUS } from '@/api/types'
 
-export type ListingStatus =
-  | 'all'
-  | 'expired'
-  | 'expiring'
-  | 'active'
-  | 'pending'
-  | 'review'
-  | 'payment'
-  | 'rejected'
-  | 'archived'
-
-const STATUS_ORDER: ListingStatus[] = [
-  'all',
-  'expired',
-  'expiring',
-  'active',
-  'pending',
-  'review',
-  'payment',
-  'rejected',
-  'archived',
+const STATUS_ORDER: PostStatus[] = [
+  POST_STATUS.ALL,
+  POST_STATUS.EXPIRED,
+  POST_STATUS.NEAR_EXPIRED,
+  POST_STATUS.DISPLAYING,
+  POST_STATUS.PENDING_APPROVAL,
+  POST_STATUS.APPROVED,
+  POST_STATUS.PENDING_PAYMENT,
+  POST_STATUS.REJECTED,
+  POST_STATUS.VERIFIED,
 ]
 
 export interface ListingStatusFilterProps {
-  value: ListingStatus
-  counts?: Partial<Record<ListingStatus, number>>
-  onChange: (status: ListingStatus) => void
+  value: PostStatus
+  counts?: Partial<Record<PostStatus, number>>
+  onChange: (status: PostStatus) => void
   className?: string
 }
 
@@ -67,7 +57,7 @@ export const ListingStatusFilter: React.FC<ListingStatusFilterProps> = ({
               )}
             >
               <span>{t(`status.${status}`)}</span>
-              {((count ?? 0) > 0 || status === 'all') && (
+              {((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
                 <span
                   className={cn(
                     'min-w-5 rounded-full border px-1 text-[10px] leading-none py-1 flex items-center justify-center',

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import Image from 'next/image'
 import {
   Card,
@@ -10,94 +10,51 @@ import { Button } from '@/components/atoms/button'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { ImagePlus, Upload, Images } from 'lucide-react'
-import { MediaService } from '@/api/services'
-import { toast } from 'sonner'
 
 const MAX_IMAGES = 24
 
+// Local pending image type
+interface PendingImage {
+  file: File
+  previewUrl: string
+}
+
 const UploadImages: React.FC = () => {
   const t = useTranslations('createPost.sections.media')
-  const {
-    propertyInfo,
-    updatePropertyInfo,
-    setImageUploadProgress,
-    resetImageUploadProgress,
-  } = useCreatePost()
+  const { propertyInfo } = useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const handleFiles = async (files: FileList | null) => {
+  // Local state for pending images
+  const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
+
+  const uploadedImages = propertyInfo?.assets?.images || []
+  const totalImages = uploadedImages.length + pendingImages.length
+
+  const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return
-    const current = propertyInfo?.images || []
-    const remaining = Math.max(0, MAX_IMAGES - current.length)
+    const remaining = Math.max(0, MAX_IMAGES - totalImages)
     const slice = Array.from(files).slice(0, remaining)
 
     if (slice.length === 0) return
 
-    // Initialize global image upload progress
-    setImageUploadProgress({
-      isUploading: true,
-      progress: 0,
-      total: slice.length,
-      currentIndex: 0,
-      error: null,
-      fileName: '',
-    })
+    const newPending = slice.map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }))
 
-    let working = (propertyInfo?.images || []).slice()
-    for (let i = 0; i < slice.length; i++) {
-      const file = slice[i]
-      try {
-        setImageUploadProgress({
-          currentIndex: i + 1,
-          fileName: file.name,
-        })
-
-        const res = await MediaService.upload(
-          { file, mediaType: 'IMAGE' },
-          {
-            onUploadProgress: (e) => {
-              const filePercent = e.total ? e.loaded / e.total : 0
-              const overall = ((i + filePercent) / slice.length) * 100
-              setImageUploadProgress({ progress: overall })
-            },
-          },
-        )
-        if (res?.success && res?.data?.url) {
-          const item = {
-            id: String(res.data.mediaId ?? `${Date.now()}-${file.name}`),
-            url: res.data.url,
-            caption: file.name.replace(/\.[^.]+$/, ''),
-            isCover: false,
-          }
-          working = [...working, item]
-          updatePropertyInfo({ images: working })
-        } else {
-          const msg = res?.message || 'Không thể tải ảnh lên'
-          setImageUploadProgress({ error: msg, isUploading: false })
-          toast.error(msg)
-          break
-        }
-      } catch {
-        const msg = 'Không thể tải ảnh lên'
-        setImageUploadProgress({ error: msg, isUploading: false })
-        toast.error(msg)
-        break
-      }
-    }
-
-    // Complete progress
-    setImageUploadProgress({ progress: 100, isUploading: false })
-    // Auto-hide after short delay
-    setTimeout(() => {
-      resetImageUploadProgress()
-    }, 1200)
+    setPendingImages([...pendingImages, ...newPending])
   }
 
-  const removeImage = (id: string) => {
-    updatePropertyInfo({
-      images: (propertyInfo?.images || []).filter((i) => i.id !== id),
-    })
+  const removePendingImage = (index: number) => {
+    const updated = pendingImages.filter((_, i) => i !== index)
+    setPendingImages(updated)
   }
+
+  // Expose pending images for MediaStep
+  React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as any).__uploadPendingImages = pendingImages
+  }, [pendingImages])
 
   return (
     <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
@@ -153,44 +110,72 @@ const UploadImages: React.FC = () => {
               {t('uploaded.title')}
             </span>
             <span className='text-xs text-gray-500'>
-              {(propertyInfo?.images || []).length}/{MAX_IMAGES}
+              {totalImages}/{MAX_IMAGES}
             </span>
           </div>
           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5'>
-            {(propertyInfo?.images || []).map((img) => (
+            {/* Uploaded images from context */}
+            {uploadedImages.map((url, index) => (
               <div
-                key={img.id}
+                key={`uploaded-${index}`}
                 className={`group relative rounded-xl border bg-white dark:bg-gray-900 overflow-hidden ${
-                  img.isCover
+                  index === 0
                     ? 'border-yellow-400'
                     : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
-                {/* Image area with fixed aspect ratio */}
                 <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-800'>
-                  {/* Cover badge */}
-                  {img.isCover && (
+                  {index === 0 && (
                     <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-yellow-400 text-gray-900 font-medium shadow-sm'>
                       {t('uploaded.cover')}
                     </span>
                   )}
                   <Image
-                    src={img.url}
-                    alt={img.caption}
+                    src={url}
+                    alt={`Image ${index + 1}`}
                     fill
                     sizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
                     className='object-cover'
                   />
                 </div>
-                {/* Caption + actions */}
                 <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
-                  <p className='text-sm truncate mb-3'>{img.caption}</p>
+                  <p className='text-sm truncate mb-3'>
+                    {index === 0 ? t('uploaded.cover') : `Image ${index + 1}`}
+                  </p>
+                  <p className='text-xs text-green-600 dark:text-green-400'>
+                    {t('uploaded.success')}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {/* Pending images (not uploaded yet) */}
+            {pendingImages.map((img, index) => (
+              <div
+                key={`pending-${index}`}
+                className='group relative rounded-xl border border-blue-300 dark:border-blue-700 bg-white dark:bg-gray-900 overflow-hidden'
+              >
+                <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-800'>
+                  <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-blue-400 text-white font-medium shadow-sm'>
+                    {t('pending')}
+                  </span>
+                  <Image
+                    src={img.previewUrl}
+                    alt={`Pending ${index + 1}`}
+                    fill
+                    sizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
+                    className='object-cover'
+                  />
+                </div>
+                <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
+                  <p className='text-sm truncate mb-3'>
+                    {`Image ${uploadedImages.length + index + 1}`}
+                  </p>
                   <div className='grid grid-cols-1 gap-2'>
                     <Button
                       size='sm'
                       variant='destructive'
                       className='h-8 px-2 rounded-md w-full text-sm'
-                      onClick={() => removeImage(img.id)}
+                      onClick={() => removePendingImage(index)}
                     >
                       {t('uploaded.remove')}
                     </Button>

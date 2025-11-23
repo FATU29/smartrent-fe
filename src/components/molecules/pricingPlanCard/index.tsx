@@ -13,7 +13,7 @@ import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
-import { MembershipPackageLevel } from '@/api/types/memembership.type'
+import { MembershipPackageLevel } from '@/api/types/membership.type'
 import { PricingHeader } from './PricingHeader'
 import { PricingFeatures } from './PricingFeatures'
 import {

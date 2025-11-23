@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { useVipTiers } from '@/hooks/useVipTiers'
@@ -24,7 +25,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SelectPromotionDialog } from '@/components/molecules/createPostSections/SelectPromotionDialog'
-import type { BenefitType, UserBenefit } from '@/api/types/memembership.type'
+import type { BenefitType, UserBenefit } from '@/api/types/membership.type'
+import type { PackageSelection } from '@/api/types/property.type'
 
 interface PackageConfigSectionProps {
   className?: string
@@ -39,29 +41,71 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   className,
 }) => {
   const t = useTranslations('createPost.sections.packageConfig')
-  const { updatePropertyInfo } = useCreatePost()
+  const { propertyInfo, updatePropertyInfo } = useCreatePost()
+  const { setValue, trigger } = useFormContext()
 
   // Fetch VIP tiers using React Query
   const { data: vipTiers = [], isLoading, isError, error } = useVipTiers()
 
   const [selectedTierId, setSelectedTierId] = useState<number | null>(null)
   const [selectedDuration, setSelectedDuration] = useState<number>(10)
-  const [startDate, setStartDate] = useState<string>('')
+  // Initialize with today's date in ISO format (yyyy-MM-dd)
+  const [startDate, setStartDate] = useState<string>(
+    new Date().toISOString().split('T')[0],
+  )
   const [promoOpen, setPromoOpen] = useState(false)
+
+  const toISODate = (date: Date) => date.toISOString()
+  const addDays = (isoOrEmpty: string, days: number) => {
+    const base = isoOrEmpty ? new Date(isoOrEmpty) : new Date()
+    const next = new Date(base.getTime() + days * 24 * 60 * 60 * 1000)
+    return toISODate(next)
+  }
+
+  const updateVipPackageSelection = (args?: {
+    tierId?: number
+    durationDays?: number
+    startDate?: string
+  }) => {
+    const tierId = (args?.tierId ?? selectedTierId) as number
+    const durationDays = args?.durationDays ?? selectedDuration
+    const start = args?.startDate ?? (startDate || new Date().toISOString())
+    const expiry = addDays(start, durationDays)
+
+    const selection: PackageSelection = {
+      tierId,
+      // Temporary mapping: use duration as priceId surrogate (10|15|30)
+      priceId: durationDays,
+    }
+    updatePropertyInfo({
+      packageSelection: selection,
+      postDate: start,
+      expiryDate: expiry,
+    })
+  }
 
   // Auto-select first tier when data loads
   useEffect(() => {
     if (vipTiers.length > 0 && selectedTierId === null) {
       const firstTier = vipTiers[0]
       setSelectedTierId(firstTier.tierId)
-      updatePropertyInfo({
-        selectedPackageType: firstTier.tierCode,
-        selectedTierId: firstTier.tierId,
-        selectedDuration: 10,
-        packageStartDate: startDate,
+      // startDate is already initialized with today's date, use it directly
+      const effectiveStart = startDate
+
+      // Initialize selection with default duration and computed start date
+      updateVipPackageSelection({
+        tierId: firstTier.tierId,
+        durationDays: 10,
+        startDate: effectiveStart,
       })
+      // Ensure postDate is set in RHF for validation
+      setValue('postDate' as never, effectiveStart as never, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      trigger()
     }
-  }, [vipTiers, selectedTierId, updatePropertyInfo, startDate])
+  }, [vipTiers, selectedTierId, startDate, setValue, trigger])
 
   const selectedTier = vipTiers.find((t) => t.tierId === selectedTierId)
 
@@ -109,22 +153,16 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
     setSelectedTierId(tierId)
     // Reset duration to 10 days when switching tiers
     setSelectedDuration(10)
-    const tier = vipTiers.find((t) => t.tierId === tierId)
-    updatePropertyInfo({
-      selectedPackageType: tier?.tierCode,
-      selectedTierId: tierId,
-      selectedDuration: 10,
-      packageStartDate: startDate,
-    })
+    // Update VIP selection only; UI-only fields removed
+    trigger()
+    updateVipPackageSelection({ tierId, durationDays: 10 })
   }
 
   const handleDurationSelect = (days: number) => {
     setSelectedDuration(days)
-    updatePropertyInfo({
-      selectedPackageType: selectedTier?.tierCode,
-      selectedDuration: days,
-      packageStartDate: startDate,
-    })
+    // Update VIP selection only; UI-only fields removed
+    trigger()
+    updateVipPackageSelection({ durationDays: days })
   }
 
   const mapBenefitToTierCode = (type: BenefitType): string | undefined => {
@@ -147,15 +185,33 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
     if (tier) {
       setSelectedTierId(tier.tierId)
     }
+    // Default: membership promotion expires 30 days after start date
+    const start = startDate || new Date().toISOString()
+    const expiry = addDays(start, 30)
+
+    // For now, also set a simple selection for compatibility
+    const selection: PackageSelection = {
+      tierId: tier?.tierId || 0,
+      priceId: selectedDuration || 30,
+    }
+
     updatePropertyInfo({
-      selectedPackageType: tierCode,
-      selectedTierId: tier?.tierId,
-      selectedDuration: selectedDuration,
-      packageStartDate: startDate,
-      appliedPromotionBenefitId: benefit.userBenefitId,
-      appliedPromotionType: benefit.benefitType,
-      appliedPromotionLabel: benefit.benefitNameDisplay,
+      packageSelection: selection,
+      benefitsMembership: [
+        {
+          benefitId: benefit.userBenefitId,
+          membershipId: 0,
+        },
+      ],
+      postDate: start,
+      expiryDate: expiry,
     })
+    // Ensure form knows about start date
+    setValue('postDate' as never, start as never, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    trigger()
   }
 
   if (isLoading) {
@@ -304,8 +360,31 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
             <DatePicker
               value={startDate}
               onChange={(date) => {
-                setStartDate(date || '')
-                updatePropertyInfo({ packageStartDate: date || '' })
+                const newStart = date || ''
+                setStartDate(newStart)
+                // Sync postDate for validation and keep context dates updated
+                setValue('postDate' as never, newStart as never, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+                // Keep package selection dates and post/expiry in sync
+                const isMembershipSelected = Array.isArray(
+                  propertyInfo.benefitsMembership,
+                )
+                  ? propertyInfo.benefitsMembership.length > 0
+                  : false
+                if (isMembershipSelected) {
+                  const start = newStart || new Date().toISOString()
+                  const expiry = addDays(start, 30)
+                  updatePropertyInfo({
+                    // Keep simple selection intact; dates maintained separately
+                    postDate: start,
+                    expiryDate: expiry,
+                  })
+                } else if (selectedTierId && selectedTier) {
+                  updateVipPackageSelection()
+                }
+                trigger()
               }}
               placeholder={t('selectStartDate')}
             />

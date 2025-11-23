@@ -1,29 +1,25 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import HomepageTemplate from '@/components/templates/homepage'
-import {
-  getInitial,
-  fetchListings,
-  ListingService,
-} from '@/api/services/listing.service'
+import { ListingService } from '@/api/services/listing.service'
 import { MembershipService } from '@/api/services/membership.service'
 import { VipTierService } from '@/api/services/vip-tier.service'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
-import { PropertyCard } from '@/api/types/property.type'
 import { ListProvider } from '@/contexts/list/index.context'
 import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import LocationProvider from '@/contexts/location'
 import type { VipTier } from '@/api/types/vip-tier.type'
-import type { GetPackagesResponse } from '@/api/types/memembership.type'
+import type { GetPackagesResponse } from '@/api/types/membership.type'
 import { getFiltersFromQuery } from '@/utils/queryParams'
 import type { ListFilters } from '@/contexts/list/index.type'
 import { createServerAxiosInstance } from '@/configs/axios/axiosServer'
 import type { CityItem } from '@/components/organisms/locationBrowseSection/types'
+import { ListingDetail } from '@/api/types'
 
 interface HomeProps {
-  initialProperties: PropertyCard[]
+  initialProperties: ListingDetail[]
   vipTiers: VipTier[]
   membershipPackages: GetPackagesResponse
   initialFilters?: Partial<ListFilters>
@@ -39,10 +35,21 @@ const Home: NextPageWithLayout<HomeProps> = ({
 }) => {
   const router = useRouter()
 
-  const handlePropertyClick = (property: PropertyCard) => {
+  const handlePropertyClick = (property: ListingDetail) => {
     console.log('Property clicked:', property)
-    router.push(`/apartment-detail/123`)
+    router.push(`/listing-detail/${property.listingId}`)
   }
+
+  const fetchListings = useCallback(async () => {
+    return {
+      data: initialProperties,
+      total: initialProperties.length,
+      page: 1,
+      totalPages: 1,
+      hasNext: false,
+      hasPrevious: false,
+    }
+  }, [initialProperties])
 
   return (
     <>
@@ -130,7 +137,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       membershipPackagesResponse,
       provinceStatsResponse,
     ] = await Promise.all([
-      getInitial(),
+      ListingService.search({}),
       VipTierService.getActive(),
       MembershipService.getAllPackages(serverInstance),
       ListingService.getProvinceStats(

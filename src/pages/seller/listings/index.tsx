@@ -6,7 +6,7 @@ import { ListingsManagementTemplate } from '@/components/templates/listingsManag
 import { List } from '@/contexts/list'
 import LocationProvider from '@/contexts/location'
 import { useCallback } from 'react'
-import { MOCK_LISTINGS } from '@/components/templates/listingsManagementTemplate/index.constants'
+import { MOCK_LISTINGS } from '@/mock/ownerListing'
 
 const ListingsPage: NextPageWithLayout = () => {
   const t = useTranslations()

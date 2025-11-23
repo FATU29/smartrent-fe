@@ -8,7 +8,7 @@ import type {
   GetMyMembershipResponse,
   GetMembershipHistoryResponse,
   CancelMembershipResponse,
-} from '@/api/types/memembership.type'
+} from '@/api/types/membership.type'
 import { apiRequest } from '@/configs/axios/instance'
 import { AxiosInstance } from 'axios'
 

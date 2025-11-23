@@ -17,10 +17,11 @@ function isPublicPath(pathname: string) {
   // Exact match for root
   if (pathname === '/') return true
 
-  // Check if starts with /properties, /sellernet, or /auth
+  // Check if starts with /properties, /sellernet, /auth, or /listing-detail
   if (pathname.startsWith('/properties')) return true
   if (pathname.startsWith('/sellernet')) return true
   if (pathname.startsWith('/auth')) return true
+  if (pathname.startsWith('/listing-detail')) return true
 
   // Allow 404 page
   if (pathname === '/404') return true

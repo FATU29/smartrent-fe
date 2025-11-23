@@ -1,25 +1,25 @@
 import React from 'react'
 import PropertyCard from '@/components/molecules/propertyCard'
-import { PropertyCard as PropertyCardType } from '@/api/types/property.type'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { useListContext } from '@/contexts/list/useListContext'
+import { ListingDetail } from '@/api/types'
 
 interface PropertyListProps {
-  onPropertyClick?: (property: PropertyCardType) => void
+  onPropertyClick?: (property: ListingDetail) => void
 }
 
 const PropertyList: React.FC<PropertyListProps> = ({ onPropertyClick }) => {
   const t = useTranslations()
-  const { itemsData, isLoading } = useListContext<PropertyCardType>()
+  const { itemsData, isLoading } = useListContext<ListingDetail>()
 
   const handleFavorite = () => {}
 
-  const PropertyItem = (property: PropertyCardType) => (
+  const PropertyItem = (property: ListingDetail) => (
     <PropertyCard
-      key={property.id}
-      property={property}
+      key={property.listingId}
+      listing={property}
       onClick={onPropertyClick}
       onFavorite={handleFavorite}
     />

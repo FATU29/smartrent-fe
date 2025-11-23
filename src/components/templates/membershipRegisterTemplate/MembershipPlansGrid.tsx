@@ -4,7 +4,7 @@ import PricingPlanCard, {
 } from '@/components/molecules/pricingPlanCard'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
-import type { Membership } from '@/api/types/memembership.type'
+import type { Membership } from '@/api/types/membership.type'
 import { transformMembershipToPricingCard } from './utils'
 
 interface MembershipPlansGridProps {

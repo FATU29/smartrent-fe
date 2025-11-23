@@ -162,4 +162,10 @@ export const PATHS = {
     LISTING_STATS: '/v1/phone-click-details/listing/:listingId/stats',
     MY_LISTINGS: '/v1/phone-click-details/my-listings',
   },
+
+  // Exchange Rate endpoints
+  EXCHANGE_RATE: {
+    LATEST: '/v1/exchange-rates/latest',
+    VND_TO_USD: '/v1/exchange-rates/vnd-to-usd',
+  },
 }

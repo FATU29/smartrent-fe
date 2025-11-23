@@ -12,6 +12,12 @@
     "selectDate": "Select date",
     "filter": "Filter",
     "createPost": "Post Property",
+    "address": "Address",
+    "fullName": "Full Name",
+    "phoneNumber": "Phone Number",
+    "email": "Email",
+    "contactInformation": "Contact Information",
+    "notAvailable": "Not Available",
     "propertyTypes": {
       "0": "All",
       "1": "Room for Rent",
@@ -19,6 +25,10 @@
       "3": "House for Rent",
       "4": "Office for Rent",
       "5": "Store for Rent"
+    },
+    "priceUnits": {
+      "MONTH": "Month",
+      "YEAR": "Year"
     }
   },
   "location": {
@@ -30,6 +40,11 @@
     "enableTooltip": "Click to enable location tracking",
     "disableTooltip": "Click to disable location tracking",
     "coordinates": "Coordinates",
+    "mediaImagesOrYoutube": "Please add at least 4 images or 1 video",
+    "imagesRequired": "Please upload at least 4 photos if no video is provided. If you have a video, you can proceed without photos.",
+    "imagesTooMany": "You can upload up to 24 photos.",
+    "imageUrlInvalid": "Invalid image URL.",
+    "videoUrlInvalid": "Invalid video URL.",
     "permissionDenied": "Location permission denied. Please enable location access in both browser settings AND system settings, then restart your browser.",
     "positionUnavailable": "Location information unavailable. Please enable location services on your device.",
     "timeout": "Location request timed out. Please try again.",
@@ -93,6 +108,54 @@
       "otp": {
         "title": "Enter Verification Code",
         "description": "We've sent a 6-digit verification code to {contact}",
+        "membershipPage": {
+          "title": "Service Packages",
+          "subtitle": "Compare Membership packages and Post Boost vouchers to choose the optimal solution for your sales needs.",
+          "tabs": {
+            "membership": "Membership Packages",
+            "voucher": "Post Boost Vouchers"
+          },
+          "aria": {
+            "register": "Register service package",
+            "membershipTab": "Membership tab",
+            "voucherTab": "Post boost voucher tab"
+          }
+        },
+        "membershipPlans": {
+          "savingSuffix": "per month",
+          "basic": {
+            "name": "Basic Membership",
+            "description": "Suitable for new agents or small portfolios"
+          },
+          "standard": {
+            "name": "Standard Membership",
+            "description": "Suitable for professional agents with 10+ properties"
+          },
+          "premium": {
+            "name": "Premium Membership",
+            "description": "Suitable for agents with large portfolios and advertising budgets"
+          },
+          "groups": {
+            "monthlyPackage": "Monthly Package",
+            "utilities": "Utilities"
+          },
+          "features": {
+            "vipGold7": "VIP Gold Post (7 days display)",
+            "vipSilver7": "VIP Silver Post (7 days display)",
+            "1vipGold7": "1 VIP Gold Post (7 days display)",
+            "1vipSilver7": "1 VIP Silver Post (7 days display)",
+            "2vipSilver7": "2 VIP Silver Posts (7 days display)",
+            "15standard10": "15 Standard Posts (10 days display)",
+            "30standard10": "30 Standard Posts (10 days display)",
+            "50standard10": "50 Standard Posts (10 days display)",
+            "15pushStandard": "15 boosts for Standard Posts",
+            "30pushStandard": "30 boosts for Standard Posts",
+            "50pushStandard": "50 boosts for Standard Posts",
+            "imageCopyright": "Image copyright",
+            "scheduledPosting": "Scheduled posting",
+            "performanceReport": "Performance report"
+          }
+        },
         "digitLabel": "Digit {position}",
         "verifyButton": "Verify Code",
         "verifyingButton": "Verifying...",
@@ -333,47 +396,47 @@
         "description": "We've sent a 6-digit verification code to {contact}",
         "membershipPage": {
           "title": "Service Packages",
-          "subtitle": "Compare Membership packages and Boost voucher packages to choose the optimal solution for your sales needs.",
+          "subtitle": "Compare Membership packages and Post Boost vouchers to choose the optimal solution for your sales needs.",
           "tabs": {
-            "membership": "Membership Package",
-            "voucher": "Boost Voucher Package"
+            "membership": "Membership Packages",
+            "voucher": "Post Boost Vouchers"
           },
           "aria": {
             "register": "Register service package",
-            "membershipTab": "Membership package tab",
-            "voucherTab": "Boost voucher package tab"
+            "membershipTab": "Membership tab",
+            "voucherTab": "Post boost voucher tab"
           }
         },
         "membershipPlans": {
           "savingSuffix": "per month",
           "basic": {
             "name": "Basic Membership",
-            "description": "Suitable for new brokers or small portfolios"
+            "description": "Suitable for new agents or small portfolios"
           },
           "standard": {
             "name": "Standard Membership",
-            "description": "Suitable for professional brokers with portfolios of 10+ properties"
+            "description": "Suitable for professional agents with 10+ properties"
           },
           "premium": {
             "name": "Premium Membership",
-            "description": "Suitable for brokers with large portfolios and advertising budgets"
+            "description": "Suitable for agents with large portfolios and advertising budgets"
           },
           "groups": {
-            "monthlyPackage": "Monthly listing package",
+            "monthlyPackage": "Monthly Package",
             "utilities": "Utilities"
           },
           "features": {
-            "vipGold7": "VIP Gold Listing (display 7 days)",
-            "vipSilver7": "VIP Silver Listing (display 7 days)",
-            "1vipGold7": "1 VIP Gold Listing (display 7 days)",
-            "1vipSilver7": "1 VIP Silver Listing (display 7 days)",
-            "2vipSilver7": "2 VIP Silver Listings (display 7 days)",
-            "15standard10": "15 Standard Listings (display 10 days)",
-            "30standard10": "30 Standard Listings (display 10 days)",
-            "50standard10": "50 Standard Listings (display 10 days)",
-            "15pushStandard": "15 boosts for Standard Listings",
-            "30pushStandard": "30 boosts for Standard Listings",
-            "50pushStandard": "50 boosts for Standard Listings",
+            "vipGold7": "VIP Gold Post (7 days display)",
+            "vipSilver7": "VIP Silver Post (7 days display)",
+            "1vipGold7": "1 VIP Gold Post (7 days display)",
+            "1vipSilver7": "1 VIP Silver Post (7 days display)",
+            "2vipSilver7": "2 VIP Silver Posts (7 days display)",
+            "15standard10": "15 Standard Posts (10 days display)",
+            "30standard10": "30 Standard Posts (10 days display)",
+            "50standard10": "50 Standard Posts (10 days display)",
+            "15pushStandard": "15 boosts for Standard Posts",
+            "30pushStandard": "30 boosts for Standard Posts",
+            "50pushStandard": "50 boosts for Standard Posts",
             "imageCopyright": "Image copyright",
             "scheduledPosting": "Scheduled posting",
             "performanceReport": "Performance report"
@@ -596,6 +659,7 @@
     "next": "Next",
     "payment": "Payment",
     "uploadNow": "Upload now",
+    "createListing": "Create Listing",
     "completeCurrentStep": "Please complete this step before continuing",
     "validation": {
       "propertyTypeRequired": "Property type is required",
@@ -603,12 +667,22 @@
       "addressRequired": "Address is required",
       "areaRequired": "Area is required",
       "priceRequired": "Price is required",
-      "mediaImagesOrYoutube": "Add at least 3 images or a YouTube link",
+      "priceUnitRequired": "Price unit is required",
+      "priceUnitInvalid": "Invalid price unit",
+      "mediaImagesOrYoutube": "Please add at least 4 images or 1 video",
+      "imagesRequired": "Please upload at least 4 photos if no video is provided. If you have a video, you can proceed without photos.",
+      "imagesTooMany": "You can upload up to 24 photos.",
+      "imageUrlInvalid": "Invalid image URL.",
+      "videoUrlInvalid": "Invalid video URL.",
       "packageRequired": "Please select a package",
       "durationRequired": "Please select a duration",
       "startDateRequired": "Please select a start date",
       "listingTitleRequired": "Listing title is required",
+      "listingTitleMinLength": "Title must be at least 10 characters",
+      "listingTitleMaxLength": "Title cannot exceed 100 characters",
       "propertyDescriptionRequired": "Property description is required",
+      "propertyDescriptionMinLength": "Description must be at least 50 characters",
+      "propertyDescriptionMaxLength": "Description cannot exceed 2000 characters",
       "fullNameRequired": "Full name is required",
       "emailRequired": "Email is required",
       "emailInvalid": "Invalid email address",
@@ -619,7 +693,11 @@
       "internetPriceRequired": "Internet price is required",
       "interiorConditionRequired": "Interior condition is required",
       "bedroomsRequired": "Number of bedrooms is required",
+      "bedroomsMinimum": "Number of bedrooms must be at least 1",
       "bathroomsRequired": "Number of bathrooms is required",
+      "bathroomsMinimum": "Number of bathrooms must be at least 1",
+      "directionRequired": "House direction is required",
+      "directionInvalid": "Invalid house direction",
       "moveInDateRequired": "Move-in date is required"
     },
     "generateAutomatically": "Generate Automatically",
@@ -643,7 +721,8 @@
         "district": "District",
         "hcmc": "HCMC",
         "title": "Property Info",
-        "description": "Enter property information"
+        "description": "Enter property information",
+        "street": "Street"
       },
       "aiValuation": {
         "title": "AI Valuation",
@@ -709,8 +788,11 @@
         "summary": "Total amount",
         "selectedPackage": "Package type",
         "duration": "Duration",
-        "totalAmount": "Total amount",
-        "vatIncluded": "VAT included"
+        "totalAmount": "Total",
+        "vatIncluded": "VAT included",
+        "packagePrice": "Package price",
+        "priceBreakdown": "Price Breakdown",
+        "promotionApplied": "Promotion applied"
       },
       "orderSummary": {
         "title": "Order Summary",
@@ -748,7 +830,7 @@
           "hint": "Drag up to 24 images or...",
           "uploadFromDevice": "Upload From Device",
           "chooseFromLibrary": "Choose From Library",
-          "note": "Min 3 images · Up to 24 · Minimum size 100x100px · Max 15MB per image"
+          "note": "Minimum 4 images if no video · Maximum 24 · Minimum size 100x100px · Max 15MB per image"
         },
         "uploaded": {
           "title": "Uploaded Images",
@@ -843,6 +925,8 @@
         "title": "Property Information",
         "description": "Enter details about your real estate listing",
         "loading": "Loading...",
+        "noTitle": "No title",
+        "propertyCover": "Property cover image",
         "listingType": "Listing Type",
         "listingTypes": {
           "rent": "For Rent",
@@ -857,6 +941,10 @@
           "shop": "Shop",
           "land": "Land"
         },
+        "area": "Area",
+        "price": "Price",
+        "bedrooms": "Bedrooms",
+        "bathrooms": "Bathrooms",
         "propertyAddress": "Property Address",
         "addressPlaceholder": "Enter property address...",
         "addressHint": "Please enter accurate address for customers to easily find",
@@ -871,9 +959,7 @@
         "selectedLocation": "Selected Location",
         "zoom": "Zoom",
         "coordinates": "Coordinates",
-        "area": "Area",
         "areaPlaceholder": "Enter area (m²)",
-        "price": "Price",
         "pricePlaceholder": "Enter price (VND)",
         "interiorCondition": "Interior Condition",
         "interiorConditions": {
@@ -881,6 +967,13 @@
           "semiFurnished": "Semi Furnished",
           "unfurnished": "Unfurnished"
         },
+        "furnishing": {
+          "FULLY_FURNISHED": "Fully Furnished",
+          "SEMI_FURNISHED": "Semi Furnished",
+          "UNFURNISHED": "Unfurnished"
+        },
+        "street": "Street",
+        "streetPlaceholder": "Enter street...",
         "houseDirection": "House Direction",
         "houseDirections": {
           "north": "North",
@@ -957,6 +1050,7 @@
           }
         },
         "amenities": {
+          "title": "Amenities",
           "ac": "Air Conditioning",
           "fridge": "Refrigerator",
           "washingMachine": "Washing Machine",
@@ -989,6 +1083,7 @@
         "propertyTypes": {
           "apartment": "Apartment",
           "house": "House",
+          "room": "Room",
           "villa": "Villa",
           "studio": "Studio"
         },
@@ -1000,6 +1095,7 @@
         "propertyType": "Property Type",
         "area": "Area",
         "price": "Price",
+        "priceUnit": "Price Unit",
         "interiorCondition": "Interior Condition",
         "rooms": "Rooms",
         "moveInDate": "Move-in Date",
@@ -1019,6 +1115,7 @@
         }
       },
       "utilitiesStructure": {
+        "priceUnit": "Price Unit",
         "monthlyUtilities": "Monthly Utilities",
         "waterPrice": "Water Price",
         "electricityPrice": "Electricity Price",
@@ -1058,6 +1155,7 @@
           "selectPropertyType": "Select property type",
           "enterArea": "Enter area",
           "enterPrice": "Enter price",
+          "selectPriceUnit": "Select price unit",
           "selectInteriorCondition": "Select interior condition",
           "selectHouseDirection": "Select house direction",
           "selectBalconyDirection": "Select balcony direction",
@@ -1086,7 +1184,7 @@
         "description": "Use AI to create engaging content",
         "listingTitle": "Listing Title",
         "propertyDescription": "Property Description",
-        "titleLength": "Optimal length: 30-99 characters. Current: 60 characters",
+        "titleLength": "Optimal length: 30-99 characters",
         "descriptionHint": "AI description includes location benefits, surrounding amenities, and target audience",
         "addressReadOnlyHint": "This address is automatically generated from the Property Information section above",
         "amenitiesSyncHint": "Amenities are automatically synced with the Property Information section"
@@ -1779,9 +1877,11 @@
     "property": {
       "price": "Price Range",
       "pricePerSqm": "per m²",
-      "pricePerMonth": "/ month",
+      "pricePerMonth": "month",
+      "pricePerYear": "year",
       "area": "Area",
       "bedrooms": "Bedrooms",
+      "bedroomsAbbr": "BR",
       "bathrooms": "Bathrooms",
       "floors": "Floors",
       "frontWidth": "Front Width",
@@ -1791,8 +1891,10 @@
       "furnishing": "Furnishing",
       "views": "views",
       "posted": "Posted",
-      "description": "Description",
+      "description": "chartLabels",
       "amenities": "Amenities",
+      "newAddress": "New Address",
+      "legacyAddress": "Legacy Address",
       "smartPrice": {
         "title": "Smart Price Evaluation",
         "description": "AI compares market data to help you decide.",

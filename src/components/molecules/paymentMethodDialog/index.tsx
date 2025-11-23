@@ -9,7 +9,7 @@ import {
   DialogDescription,
 } from '@/components/atoms/dialog'
 import { Typography } from '@/components/atoms/typography'
-import { PaymentProvider } from '@/api/types/memembership.type'
+import { PaymentProvider } from '@/api/types/membership.type'
 import { PaymentMethodOption } from './PaymentMethodOption'
 
 interface PaymentMethodDialogProps {

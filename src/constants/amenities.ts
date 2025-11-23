@@ -22,6 +22,7 @@ import {
   Building2,
   GraduationCap,
   ShoppingCart,
+  Box,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -69,7 +70,7 @@ export const AMENITIES_CONFIG: readonly AmenityConfig[] = [
     code: 'fridge',
     translationKey: 'fridge',
     category: 'BASIC',
-    icon: SquareStack, // Alternative icon for refrigerator
+    icon: Box, // Box icon for refrigerator
   },
   {
     id: 3,
@@ -310,4 +311,16 @@ export const getAmenityWithTranslation = (
     ...amenity,
     translatedName: getAmenityTranslatedName(code, t),
   }
+}
+
+/**
+ * Get icon component for amenity by icon code
+ * @param iconCode - Icon code from API (e.g., 'ac', 'wifi', 'parking')
+ * @returns LucideIcon component or null if not found
+ */
+export const getAmenityIcon = (iconCode: string): LucideIcon | null => {
+  if (!iconCode) return null
+
+  const amenity = getAmenityByCode(iconCode.toLowerCase().trim())
+  return amenity?.icon ?? null
 }

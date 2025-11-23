@@ -12,6 +12,12 @@
     "selectDate": "Chọn ngày",
     "filter": "Lọc",
     "createPost": "Đăng tin",
+    "address": "Địa chỉ",
+    "fullName": "Họ và tên",
+    "phoneNumber": "Số điện thoại",
+    "email": "Email",
+    "contactInformation": "Thông tin liên hệ",
+    "notAvailable": "Chưa có",
     "propertyTypes": {
       "0": "Tất cả",
       "1": "Cho thuê phòng trọ",
@@ -19,6 +25,10 @@
       "3": "Cho thuê nhà nguyên căn",
       "4": "Cho thuê văn phòng",
       "5": "Cho thuê mặt bằng"
+    },
+    "priceUnits": {
+      "MONTH": "Tháng",
+      "YEAR": "Năm"
     }
   },
   "paymentStatusPage": {
@@ -73,6 +83,11 @@
     "enableTooltip": "Nhấp để bật theo dõi vị trí",
     "disableTooltip": "Nhấp để tắt theo dõi vị trí",
     "coordinates": "Tọa độ",
+    "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 4 ảnh hoặc 1 video",
+    "imagesRequired": "Vui lòng tải lên ít nhất 4 ảnh nếu không có video. Nếu bạn có video, bạn có thể tiếp tục mà không cần ảnh.",
+    "imagesTooMany": "Bạn có thể tải lên tối đa 24 ảnh.",
+    "imageUrlInvalid": "URL ảnh không hợp lệ.",
+    "videoUrlInvalid": "URL video không hợp lệ.",
     "permissionDenied": "Quyền truy cập vị trí bị từ chối. Vui lòng bật truy cập vị trí trong cài đặt trình duyệt VÀ cài đặt hệ thống, sau đó khởi động lại trình duyệt.",
     "positionUnavailable": "Thông tin vị trí không khả dụng. Vui lòng bật dịch vụ vị trí trên thiết bị của bạn.",
     "timeout": "Yêu cầu vị trí hết thời gian chờ. Vui lòng thử lại.",
@@ -136,6 +151,54 @@
       "otp": {
         "title": "Nhập Mã Xác Minh",
         "description": "Chúng tôi đã gửi mã xác minh 6 số tới {contact}",
+        "membershipPage": {
+          "title": "Gói dịch vụ",
+          "subtitle": "So sánh gói Hội viên và gói voucher Đẩy tin để chọn giải pháp tối ưu cho nhu cầu bán hàng.",
+          "tabs": {
+            "membership": "Gói Hội viên",
+            "voucher": "Gói voucher Đẩy tin"
+          },
+          "aria": {
+            "register": "Đăng ký gói dịch vụ",
+            "membershipTab": "Tab gói hội viên",
+            "voucherTab": "Tab gói voucher đẩy tin"
+          }
+        },
+        "membershipPlans": {
+          "savingSuffix": "mỗi tháng",
+          "basic": {
+            "name": "Hội viên Cơ bản",
+            "description": "Phù hợp với môi giới mới hoặc gói hàng nhỏ"
+          },
+          "standard": {
+            "name": "Hội viên Tiêu chuẩn",
+            "description": "Phù hợp với môi giới chuyên nghiệp có gói hàng từ 10 BDS"
+          },
+          "premium": {
+            "name": "Hội viên Cao cấp",
+            "description": "Phù hợp với môi giới có gói hàng và ngân sách quảng cáo lớn"
+          },
+          "groups": {
+            "monthlyPackage": "Gói tin hằng tháng",
+            "utilities": "Tiện ích"
+          },
+          "features": {
+            "vipGold7": "Tin VIP Vàng (hiển thị 7 ngày)",
+            "vipSilver7": "Tin VIP Bạc (hiển thị 7 ngày)",
+            "1vipGold7": "1 Tin VIP Vàng (hiển thị 7 ngày)",
+            "1vipSilver7": "1 Tin VIP Bạc (hiển thị 7 ngày)",
+            "2vipSilver7": "2 Tin VIP Bạc (hiển thị 7 ngày)",
+            "15standard10": "15 Tin Thường (hiển thị 10 ngày)",
+            "30standard10": "30 Tin Thường (hiển thị 10 ngày)",
+            "50standard10": "50 Tin Thường (hiển thị 10 ngày)",
+            "15pushStandard": "15 lượt đẩy cho Tin Thường",
+            "30pushStandard": "30 lượt đẩy cho Tin Thường",
+            "50pushStandard": "50 lượt đẩy cho Tin Thường",
+            "imageCopyright": "Bản quyền ảnh",
+            "scheduledPosting": "Hẹn giờ đăng tin",
+            "performanceReport": "Báo cáo hiệu suất"
+          }
+        },
         "digitLabel": "Số {position}",
         "verifyButton": "Xác Minh Mã",
         "verifyingButton": "Đang xác minh...",
@@ -640,6 +703,7 @@
     "next": "Tiếp theo",
     "payment": "Thanh toán",
     "uploadNow": "Tải tin lên ngay",
+    "createListing": "Tạo tin đăng",
     "completeCurrentStep": "Vui lòng hoàn thành bước này trước khi tiếp tục",
     "validation": {
       "propertyTypeRequired": "Loại bất động sản là bắt buộc",
@@ -647,12 +711,22 @@
       "addressRequired": "Địa chỉ là bắt buộc",
       "areaRequired": "Diện tích là bắt buộc",
       "priceRequired": "Giá là bắt buộc",
-      "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 3 ảnh hoặc 1 liên kết YouTube",
+      "priceUnitRequired": "Đơn vị giá là bắt buộc",
+      "priceUnitInvalid": "Đơn vị giá không hợp lệ",
+      "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 4 ảnh hoặc 1 video",
+      "imagesRequired": "Vui lòng tải ít nhất 4 ảnh nếu không có video. Nếu đã có video, có thể bỏ qua ảnh.",
+      "imagesTooMany": "Bạn có thể tải tối đa 24 ảnh.",
+      "imageUrlInvalid": "URL ảnh không hợp lệ.",
+      "videoUrlInvalid": "URL video không hợp lệ.",
       "packageRequired": "Vui lòng chọn gói đăng",
       "durationRequired": "Vui lòng chọn thời hạn",
       "startDateRequired": "Vui lòng chọn ngày bắt đầu",
       "listingTitleRequired": "Tiêu đề tin đăng là bắt buộc",
+      "listingTitleMinLength": "Tiêu đề phải có ít nhất 10 ký tự",
+      "listingTitleMaxLength": "Tiêu đề không được vượt quá 100 ký tự",
       "propertyDescriptionRequired": "Mô tả bất động sản là bắt buộc",
+      "propertyDescriptionMinLength": "Mô tả phải có ít nhất 50 ký tự",
+      "propertyDescriptionMaxLength": "Mô tả không được vượt quá 2000 ký tự",
       "fullNameRequired": "Họ và tên là bắt buộc",
       "emailRequired": "Email là bắt buộc",
       "emailInvalid": "Email không hợp lệ",
@@ -663,7 +737,11 @@
       "internetPriceRequired": "Giá internet là bắt buộc",
       "interiorConditionRequired": "Tình trạng nội thất là bắt buộc",
       "bedroomsRequired": "Số phòng ngủ là bắt buộc",
+      "bedroomsMinimum": "Số phòng ngủ phải ít nhất là 1",
       "bathroomsRequired": "Số phòng tắm là bắt buộc",
+      "bathroomsMinimum": "Số phòng tắm phải ít nhất là 1",
+      "directionRequired": "Hướng nhà là bắt buộc",
+      "directionInvalid": "Hướng nhà không hợp lệ",
       "moveInDateRequired": "Ngày chuyển vào là bắt buộc"
     },
     "generateAutomatically": "Tạo tự động",
@@ -687,7 +765,8 @@
         "district": "Quận",
         "hcmc": "TP.HCM",
         "title": "Thông tin Bất động sản",
-        "description": "Nhập thông tin bất động sản"
+        "description": "Nhập thông tin bất động sản",
+        "street": "Đường/Phố"
       },
       "aiValuation": {
         "title": "Định giá AI",
@@ -753,8 +832,11 @@
         "summary": "Tổng tiền",
         "selectedPackage": "Loại tin",
         "duration": "Thời hạn",
-        "totalAmount": "Tổng tiền",
-        "vatIncluded": "Đã bao gồm VAT"
+        "totalAmount": "Tổng cộng",
+        "vatIncluded": "Đã bao gồm VAT",
+        "packagePrice": "Giá gói",
+        "priceBreakdown": "Chi tiết thanh toán",
+        "promotionApplied": "Khuyến mãi được áp dụng"
       },
       "orderSummary": {
         "title": "Tóm tắt Đơn hàng",
@@ -792,7 +874,7 @@
           "hint": "Kéo tối đa 24 ảnh hoặc...",
           "uploadFromDevice": "Tải từ Thiết bị",
           "chooseFromLibrary": "Chọn từ Thư viện",
-          "note": "Tối thiểu 3 ảnh · Tối đa 24 · Kích thước tối thiểu 100x100px · Tối đa 15MB mỗi ảnh"
+          "note": "Tối thiểu 4 ảnh nếu không có video · Tối đa 24 · Kích thước tối thiểu 100x100px · Tối đa 15MB mỗi ảnh"
         },
         "uploaded": {
           "title": "Ảnh đã tải lên",
@@ -883,10 +965,14 @@
         "listingInfo": "Thông tin Tin đăng",
         "mapPreview": "Xem trước Bản đồ",
         "district": "Quận",
+        "street": "Đường/Phố",
+        "streetPlaceholder": "Nhập đường/phố bất động sản...",
         "hcmc": "TP.HCM",
         "title": "Thông tin Bất động sản",
         "description": "Nhập chi tiết về tin đăng bất động sản",
         "loading": "Đang tải...",
+        "noTitle": "Chưa có tiêu đề",
+        "propertyCover": "Ảnh bìa bất động sản",
         "listingType": "Loại tin đăng",
         "listingTypes": {
           "rent": "Cho thuê",
@@ -901,6 +987,10 @@
           "shop": "Cửa hàng",
           "land": "Đất"
         },
+        "area": "Diện tích",
+        "price": "Giá",
+        "bedrooms": "Phòng ngủ",
+        "bathrooms": "Phòng tắm",
         "propertyAddress": "Địa chỉ Bất động sản",
         "addressPlaceholder": "Nhập địa chỉ bất động sản...",
         "addressHint": "Vui lòng nhập địa chỉ chính xác để khách hàng dễ tìm",
@@ -968,15 +1058,18 @@
         "selectedLocation": "Vị trí đã chọn",
         "zoom": "Thu phóng",
         "coordinates": "Tọa độ",
-        "area": "Diện tích",
         "areaPlaceholder": "Nhập diện tích (m²)",
-        "price": "Giá",
         "pricePlaceholder": "Nhập giá (VND)",
         "interiorCondition": "Tình trạng nội thất",
         "interiorConditions": {
           "furnished": "Đầy đủ nội thất",
           "semiFurnished": "Bán nội thất",
           "unfurnished": "Không nội thất"
+        },
+        "furnishing": {
+          "FULLY_FURNISHED": "Đầy đủ nội thất",
+          "SEMI_FURNISHED": "Bán nội thất",
+          "UNFURNISHED": "Không nội thất"
         },
         "houseDirection": "Hướng nhà",
         "houseDirections": {
@@ -1001,6 +1094,7 @@
           "southwest": "Tây Nam"
         },
         "amenities": {
+          "title": "Tiện nghi Bất động sản",
           "ac": "Điều hòa",
           "fridge": "Tủ lạnh",
           "washingMachine": "Máy giặt",
@@ -1033,6 +1127,7 @@
         "propertyTypes": {
           "apartment": "Căn hộ",
           "house": "Nhà",
+          "room": "Phòng trọ",
           "villa": "Biệt thự",
           "studio": "Studio"
         },
@@ -1044,6 +1139,7 @@
         "propertyType": "Loại Bất động sản",
         "area": "Diện tích",
         "price": "Giá",
+        "priceUnit": "Đơn vị giá",
         "interiorCondition": "Tình trạng nội thất",
         "rooms": "Phòng",
         "moveInDate": "Ngày chuyển vào",
@@ -1063,6 +1159,7 @@
         }
       },
       "utilitiesStructure": {
+        "priceUnit": "Đơn vị giá",
         "monthlyUtilities": "Chi phí hàng tháng",
         "waterPrice": "Giá nước",
         "electricityPrice": "Giá điện",
@@ -1102,6 +1199,7 @@
           "selectPropertyType": "Chọn loại bất động sản",
           "enterArea": "Nhập diện tích",
           "enterPrice": "Nhập giá",
+          "selectPriceUnit": "Chọn đơn vị giá",
           "selectInteriorCondition": "Chọn tình trạng nội thất",
           "selectHouseDirection": "Chọn hướng nhà",
           "selectBalconyDirection": "Chọn hướng ban công",
@@ -1130,7 +1228,7 @@
         "description": "Dùng AI để tạo nội dung hấp dẫn",
         "listingTitle": "Tiêu đề Tin đăng",
         "propertyDescription": "Mô tả Bất động sản",
-        "titleLength": "Độ dài tối ưu: 30-99 ký tự. Hiện tại: 60 ký tự",
+        "titleLength": "Độ dài tối ưu: 30-99 ký tự",
         "descriptionHint": "Mô tả AI bao gồm lợi ích vị trí, tiện ích xung quanh và đối tượng mục tiêu",
         "addressReadOnlyHint": "Địa chỉ này được tự động tạo từ phần Thông tin Bất động sản bên trên",
         "amenitiesSyncHint": "Tiện nghi được đồng bộ tự động với phần Thông tin Bất động sản"
@@ -1823,9 +1921,11 @@
     "property": {
       "price": "Khoảng giá",
       "pricePerSqm": "tr/m²",
-      "pricePerMonth": "/ tháng",
+      "pricePerMonth": "tháng",
+      "pricePerYear": "năm",
       "area": "Diện tích",
       "bedrooms": "Phòng ngủ",
+      "bedroomsAbbr": "PN",
       "bathrooms": "Phòng tắm",
       "floors": "Số tầng",
       "frontWidth": "Mặt tiền",
@@ -1837,6 +1937,8 @@
       "posted": "Đăng",
       "description": "Mô tả",
       "amenities": "Tiện ích",
+      "newAddress": "Địa chỉ mới",
+      "legacyAddress": "Địa chỉ cũ",
       "smartPrice": {
         "title": "Đánh giá giá thông minh",
         "description": "AI so sánh dữ liệu thị trường để giúp bạn quyết định.",
@@ -1845,7 +1947,7 @@
       }
     },
     "sections": {
-      "features": "Đặc điểm bất động sản",
+      "features": "Tiện ích",
       "description": "Thông tin mô tả",
       "priceHistory": "Lịch sử giá bán nhà riêng tại {district}",
       "location": "Xem trên bản đồ",

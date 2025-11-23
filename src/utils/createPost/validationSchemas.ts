@@ -1,25 +1,22 @@
 import * as yup from 'yup'
-import { isYouTube } from '@/utils/video/url'
-import { EMAIL_REGEX } from '@/constants/regex'
 
-// Phone regex pattern (supports Vietnamese phone numbers with formatting)
-// Limited to prevent ReDoS: max length check should be done separately
-const PHONE_REGEX = /^[0-9+\-\s()]+$/
+// Note: Contact fields are handled outside of CreateListingRequest flow
 
-// Shared property info validation fields (used in both step 0 and combined schema)
+// Shared property info validation fields aligned with CreateListingRequest
 const getPropertyInfoFields = () => ({
   propertyType: yup
     .string()
     .required('propertyTypeRequired')
-    .oneOf(
-      ['room', 'apartment', 'house', 'office', 'store'],
-      'propertyTypeInvalid',
-    ),
-  propertyAddress: yup
-    .string()
-    .required('addressRequired')
-    .trim()
-    .min(1, 'addressRequired'),
+    .oneOf(['APARTMENT', 'HOUSE', 'ROOM', 'STUDIO'], 'propertyTypeInvalid'),
+  address: yup
+    .object()
+    .shape({
+      latitude: yup.number().required('addressRequired'),
+      longitude: yup.number().required('addressRequired'),
+      legacy: yup.mixed().optional(),
+      new: yup.mixed().optional(),
+    })
+    .required('addressRequired'),
   area: yup
     .number()
     .required('areaRequired')
@@ -30,33 +27,23 @@ const getPropertyInfoFields = () => ({
     .required('priceRequired')
     .positive('priceRequired')
     .min(1, 'priceRequired'),
+  priceUnit: yup
+    .string()
+    .required('priceUnitRequired')
+    .oneOf(['MONTH', 'YEAR'], 'priceUnitInvalid'),
   // AI Content
-  listingTitle: yup
+  title: yup
     .string()
     .required('listingTitleRequired')
     .trim()
-    .min(1, 'listingTitleRequired'),
-  propertyDescription: yup
+    .min(10, 'listingTitleMinLength')
+    .max(100, 'listingTitleMaxLength'),
+  description: yup
     .string()
     .required('propertyDescriptionRequired')
     .trim()
-    .min(1, 'propertyDescriptionRequired'),
-  // Contact Information
-  fullName: yup
-    .string()
-    .required('fullNameRequired')
-    .trim()
-    .min(1, 'fullNameRequired'),
-  email: yup
-    .string()
-    .required('emailRequired')
-    .matches(EMAIL_REGEX, 'emailInvalid')
-    .max(254, 'emailInvalid'), // RFC 5321 limit to prevent ReDoS
-  phoneNumber: yup
-    .string()
-    .required('phoneNumberRequired')
-    .matches(PHONE_REGEX, 'phoneNumberInvalid')
-    .max(20, 'phoneNumberInvalid'), // Reasonable limit to prevent ReDoS
+    .min(50, 'propertyDescriptionMinLength')
+    .max(2000, 'propertyDescriptionMaxLength'),
   // Utilities & Structure
   waterPrice: yup
     .string()
@@ -70,26 +57,39 @@ const getPropertyInfoFields = () => ({
     .string()
     .required('internetPriceRequired')
     .oneOf(['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE']),
-  // Property Details
-  interiorCondition: yup
+  furnishing: yup
     .string()
     .required('interiorConditionRequired')
-    .oneOf(['furnished', 'semi-furnished', 'unfurnished']),
+    .oneOf(
+      ['FULLY_FURNISHED', 'SEMI_FURNISHED', 'UNFURNISHED'],
+      'interiorConditionRequired',
+    ),
   bedrooms: yup
     .number()
     .required('bedroomsRequired')
     .integer('bedroomsRequired')
-    .min(0, 'bedroomsRequired'),
+    .min(1, 'bedroomsMinimum'),
   bathrooms: yup
     .number()
     .required('bathroomsRequired')
     .integer('bathroomsRequired')
-    .min(0, 'bathroomsRequired'),
-  moveInDate: yup
+    .min(1, 'bathroomsMinimum'),
+  direction: yup
     .string()
-    .required('moveInDateRequired')
-    .trim()
-    .min(1, 'moveInDateRequired'),
+    .required('directionRequired')
+    .oneOf(
+      [
+        'NORTH',
+        'SOUTH',
+        'EAST',
+        'WEST',
+        'NORTHEAST',
+        'NORTHWEST',
+        'SOUTHEAST',
+        'SOUTHWEST',
+      ],
+      'directionInvalid',
+    ),
 })
 
 // Step 0: Property Info Validation Schema
@@ -100,16 +100,38 @@ export const getPropertyInfoSchema = () => {
 // Step 2: Media Validation Schema
 export const getMediaSchema = () => {
   return yup.object().shape({
-    images: yup
-      .array()
-      .test('images-or-youtube', 'mediaImagesOrYoutube', function (images) {
-        const videoUrl = this.parent.videoUrl
-        const imageCount = images?.length || 0
-        const isYT = typeof videoUrl === 'string' && isYouTube(videoUrl)
-        // Accept if either at least 3 images or a YouTube link is provided
-        return imageCount >= 3 || isYT
+    assets: yup
+      .object()
+      .shape({
+        images: yup
+          .array()
+          .of(yup.string().url('imageUrlInvalid'))
+          .max(24, 'imagesTooMany')
+          .required('imagesRequired'),
+        // Accept both uploaded HTTP(S) URLs and temporary blob URLs during upload
+        video: yup
+          .string()
+          .optional()
+          .test('video-url', 'videoUrlInvalid', (val) => {
+            if (!val) return true
+            // Allow blob URLs or valid http/https URLs
+            if (val.startsWith('blob:')) return true
+            try {
+              const u = new URL(val)
+              return u.protocol === 'http:' || u.protocol === 'https:'
+            } catch {
+              return false
+            }
+          }),
+      })
+      .test('assets-required', 'imagesRequired', function (value) {
+        // Rule: if a video exists, pass; otherwise require >= 4 images
+        const hasVideo = !!value?.video && String(value.video).trim().length > 0
+        const imageCount = Array.isArray(value?.images)
+          ? value!.images!.length
+          : 0
+        return hasVideo || imageCount >= 4
       }),
-    videoUrl: yup.string().optional(),
   })
 }
 
@@ -118,27 +140,35 @@ export const getPackageConfigSchema = () => {
   return yup
     .object()
     .shape({
-      selectedMembershipPlanId: yup.string().optional(),
-      selectedVoucherPackageId: yup.string().optional(),
-      selectedPackageType: yup.string().optional(),
-      selectedDuration: yup
-        .number()
-        .required('durationRequired')
-        .positive('durationRequired')
-        .min(1, 'durationRequired'),
-      packageStartDate: yup
+      // Simplified: we only require a start date (postDate) and either a packageSelection or benefitsMembership
+      postDate: yup
         .string()
         .required('startDateRequired')
         .trim()
         .min(1, 'startDateRequired'),
+      packageSelection: yup
+        .object({
+          tierId: yup.number().required(),
+          priceId: yup.number().required(),
+        })
+        .optional(),
+      benefitsMembership: yup
+        .array()
+        .of(
+          yup.object({
+            benefitId: yup.number().required(),
+            membershipId: yup.number().required(),
+          }),
+        )
+        .optional(),
     })
     .test('package-required', 'packageRequired', function (value) {
-      // Require at least one package selection
-      return !!(
-        value?.selectedMembershipPlanId ||
-        value?.selectedVoucherPackageId ||
-        value?.selectedPackageType
-      )
+      // Require at least one selection: either VIP (packageSelection) or a membership benefit
+      const hasVip = !!value?.packageSelection
+      const hasBenefit = Array.isArray(value?.benefitsMembership)
+        ? value!.benefitsMembership!.length > 0
+        : false
+      return hasVip || hasBenefit
     })
 }
 
@@ -149,66 +179,55 @@ export const getCreatePostSchema = () => {
     .shape({
       // Step 0 - Property Info (reuse shared fields)
       ...getPropertyInfoFields(),
-      // Step 2 - Media
-      images: yup
-        .array()
-        .test('images-or-youtube', 'mediaImagesOrYoutube', function (images) {
-          const videoUrl = this.parent.videoUrl
-          const imageCount = images?.length || 0
-          const isYT = typeof videoUrl === 'string' && isYouTube(videoUrl)
-          return imageCount >= 3 || isYT
-        }),
-      videoUrl: yup.string().optional(),
       // Step 3 - Package Config
-      selectedMembershipPlanId: yup.string().optional(),
-      selectedVoucherPackageId: yup.string().optional(),
-      selectedPackageType: yup.string().optional(),
-      selectedDuration: yup
-        .number()
-        .required('durationRequired')
-        .positive('durationRequired')
-        .min(1, 'durationRequired'),
-      packageStartDate: yup
+      postDate: yup
         .string()
         .required('startDateRequired')
         .trim()
         .min(1, 'startDateRequired'),
+      packageSelection: yup
+        .object({
+          tierId: yup.number().required(),
+          priceId: yup.number().required(),
+        })
+        .optional(),
+      benefitsMembership: yup
+        .array()
+        .of(
+          yup.object({
+            benefitId: yup.number().required(),
+            membershipId: yup.number().required(),
+          }),
+        )
+        .optional(),
     })
     .test('package-required', 'packageRequired', function (value) {
-      return !!(
-        value?.selectedMembershipPlanId ||
-        value?.selectedVoucherPackageId ||
-        value?.selectedPackageType
-      )
+      const hasVip = !!value?.packageSelection
+      const hasBenefit = Array.isArray(value?.benefitsMembership)
+        ? value!.benefitsMembership!.length > 0
+        : false
+      return hasVip || hasBenefit
     })
 }
 
 // Field names for each step
 export const STEP_0_FIELDS = [
   'propertyType',
-  'propertyAddress',
+  'address',
   'area',
   'price',
-  'listingTitle',
-  'propertyDescription',
-  'fullName',
-  'email',
-  'phoneNumber',
+  'priceUnit',
+  'title',
+  'description',
   'waterPrice',
   'electricityPrice',
   'internetPrice',
-  'interiorCondition',
+  'furnishing',
   'bedrooms',
   'bathrooms',
-  'moveInDate',
+  'direction',
 ] as const
 
-export const STEP_2_FIELDS = ['images', 'videoUrl'] as const
+export const STEP_2_FIELDS = [] as const
 
-export const STEP_3_FIELDS = [
-  'selectedMembershipPlanId',
-  'selectedVoucherPackageId',
-  'selectedPackageType',
-  'selectedDuration',
-  'packageStartDate',
-] as const
+export const STEP_3_FIELDS = ['postDate'] as const

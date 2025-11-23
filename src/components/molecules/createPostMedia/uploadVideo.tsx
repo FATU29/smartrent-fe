@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { ENV } from '@/constants'
 import {
   Card,
@@ -27,11 +27,18 @@ const UploadVideo: React.FC = () => {
   const {
     propertyInfo,
     updatePropertyInfo,
-    setVideoUploadProgress,
+    startVideoUpload,
+    updateVideoUploadProgress,
+    setVideoUploadError,
+    resetVideoUploadProgress,
     videoUploadProgress,
   } = useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
+  // Local state for preview only; uploading state moved to context
+  const [showProgress, setShowProgress] = useState(false)
   const videoFileRef = useRef<File | null>(null)
+
+  const videoUrl = propertyInfo?.assets?.video || ''
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -55,107 +62,102 @@ const UploadVideo: React.FC = () => {
     }
 
     // Clean up previous object URL if exists
-    if (videoFileRef.current && propertyInfo.videoUrl?.startsWith('blob:')) {
-      URL.revokeObjectURL(propertyInfo.videoUrl)
+    if (videoFileRef.current && videoUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(videoUrl)
     }
 
     videoFileRef.current = file
-    const videoUrl = URL.createObjectURL(file)
-    updatePropertyInfo({ videoUrl })
-    // Auto-upload after selection
-    uploadVideo(file)
+    const blobUrl = URL.createObjectURL(file)
+    updatePropertyInfo({
+      assets: {
+        ...propertyInfo?.assets,
+        video: blobUrl,
+      },
+    })
+    // Do NOT auto-upload; wait for user to click explicit upload button
+    resetVideoUploadProgress()
+    setShowProgress(false)
   }
 
   const uploadVideo = async (file: File) => {
-    // Initialize upload progress
-    setVideoUploadProgress({
-      isUploading: true,
-      progress: 0,
-      fileName: file.name,
-      error: null,
-      uploadedUrl: null,
-    })
+    startVideoUpload(file.name)
+    setShowProgress(true)
 
     try {
-      // Upload directly to backend endpoint
       const response = await MediaService.upload(
         { file, mediaType: 'VIDEO' },
         {
-          onUploadProgress: (evt) => {
-            if (evt.total) {
-              const progress = Math.round((evt.loaded * 100) / evt.total)
-              setVideoUploadProgress({ progress })
-            }
+          onUploadProgress: (e) => {
+            if (!e.total) return
+            const pct = Math.round((e.loaded / e.total) * 100)
+            updateVideoUploadProgress(pct)
           },
         },
       )
 
       const uploadedUrl = response?.data?.url
-      setVideoUploadProgress({
-        isUploading: false,
-        progress: 100,
-        uploadedUrl,
-        error: null,
-      })
-
       if (uploadedUrl) {
-        if (propertyInfo.videoUrl?.startsWith('blob:')) {
-          URL.revokeObjectURL(propertyInfo.videoUrl)
+        if (videoUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(videoUrl)
         }
-        updatePropertyInfo({ videoUrl: uploadedUrl })
+        updatePropertyInfo({
+          assets: {
+            ...propertyInfo?.assets,
+            video: uploadedUrl,
+          },
+        })
       }
+      updateVideoUploadProgress(100)
+      setTimeout(() => {
+        resetVideoUploadProgress()
+        setShowProgress(false)
+      }, 600)
     } catch (error: unknown) {
-      // Upload failed
       const errorMessage =
         (error as { response?: { data?: { message?: string } } })?.response
           ?.data?.message ||
         (error as { message?: string })?.message ||
         t('video.upload.error') ||
         'Lỗi khi tải video lên'
-      setVideoUploadProgress({
-        isUploading: false,
-        progress: 0,
-        error: errorMessage,
-      })
+      setVideoUploadError(errorMessage)
     }
   }
 
   const handleRemoveVideo = () => {
-    if (videoFileRef.current && propertyInfo.videoUrl?.startsWith('blob:')) {
-      URL.revokeObjectURL(propertyInfo.videoUrl)
+    if (videoFileRef.current && videoUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(videoUrl)
       videoFileRef.current = null
     }
-    updatePropertyInfo({ videoUrl: '' })
+    updatePropertyInfo({
+      assets: {
+        ...propertyInfo?.assets,
+        video: undefined,
+      },
+    })
     if (inputRef.current) {
       inputRef.current.value = ''
     }
   }
 
-  const handleUploadClick = () => {
-    if (videoFileRef.current) {
-      uploadVideo(videoFileRef.current)
-    }
-  }
-
   // Check if videoUrl is a blob URL (from file upload)
-  const isBlobUrl = propertyInfo.videoUrl?.startsWith('blob:')
-  const hasPreviewVideo = Boolean(isBlobUrl && propertyInfo.videoUrl)
+  const isBlobUrl = videoUrl.startsWith('blob:')
+  const hasPreviewVideo = Boolean(isBlobUrl && videoUrl)
   const isUploadedUrl = Boolean(
-    propertyInfo.videoUrl &&
-      !propertyInfo.videoUrl.startsWith('blob:') &&
-      propertyInfo.videoUrl.startsWith('http') &&
-      !propertyInfo.videoUrl.includes('youtube.com') &&
-      !propertyInfo.videoUrl.includes('youtu.be') &&
-      !propertyInfo.videoUrl.includes('tiktok.com'),
+    videoUrl &&
+      !videoUrl.startsWith('blob:') &&
+      videoUrl.startsWith('http') &&
+      !videoUrl.includes('youtube.com') &&
+      !videoUrl.includes('youtu.be') &&
+      !videoUrl.includes('tiktok.com'),
   )
   const showUploadButton = hasPreviewVideo && !isUploadedUrl
 
   // Check if there's an external video link (disable upload)
   const hasExternalVideo = Boolean(
-    propertyInfo.videoUrl &&
-      (propertyInfo.videoUrl.includes('youtube.com') ||
-        propertyInfo.videoUrl.includes('youtu.be') ||
-        propertyInfo.videoUrl.includes('tiktok.com')),
+    videoUrl &&
+      (videoUrl.includes('youtube.com') ||
+        videoUrl.includes('youtu.be') ||
+        videoUrl.includes('tiktok.com')),
   )
 
   return (
@@ -201,7 +203,7 @@ const UploadVideo: React.FC = () => {
           <Card className='border-0 shadow-none p-0'>
             <div className='relative w-full rounded-lg overflow-hidden bg-black mb-3'>
               <video
-                src={propertyInfo.videoUrl}
+                src={videoUrl}
                 controls
                 className='w-full max-h-96 object-contain'
               />
@@ -218,7 +220,9 @@ const UploadVideo: React.FC = () => {
             {showUploadButton && (
               <Button
                 type='button'
-                onClick={handleUploadClick}
+                onClick={() =>
+                  videoFileRef.current && uploadVideo(videoFileRef.current)
+                }
                 className='w-full h-12 bg-primary hover:bg-primary/90'
                 disabled={videoUploadProgress.isUploading}
               >
@@ -236,6 +240,30 @@ const UploadVideo: React.FC = () => {
                 {t('video.upload.success') ||
                   'Video đã được tải lên thành công!'}
               </Typography>
+            )}
+            {showProgress && videoUploadProgress.isUploading && (
+              <div className='mt-4 w-full'>
+                <div className='h-2 rounded bg-gray-200 dark:bg-gray-700 overflow-hidden'>
+                  <div
+                    className='h-full bg-blue-500 dark:bg-blue-400 transition-all duration-200'
+                    style={{ width: `${videoUploadProgress.progress}%` }}
+                  />
+                </div>
+                <Typography
+                  variant='small'
+                  className='mt-2 text-xs text-gray-600 dark:text-gray-300 text-center'
+                >
+                  {videoUploadProgress.progress}%
+                </Typography>
+                {videoUploadProgress.error && (
+                  <Typography
+                    variant='small'
+                    className='mt-2 text-xs text-red-600 dark:text-red-400 text-center'
+                  >
+                    {videoUploadProgress.error}
+                  </Typography>
+                )}
+              </div>
             )}
           </Card>
         )}

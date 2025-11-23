@@ -1,0 +1,285 @@
+import { ListingDetail } from '@/api/types'
+
+export * from './pricingHistory'
+
+/**
+ * Mock data for detail post template
+ * Used for development and testing purposes
+ */
+export const mockListingDetail: ListingDetail = {
+  listingId: 1,
+  title: 'Căn hộ 2PN 2WC đẹp, view đẹp, nội thất đầy đủ tại Quận 1',
+  description: `Căn hộ cao cấp 2 phòng ngủ, 2 phòng tắm tại trung tâm Quận 1, Hồ Chí Minh. 
+  
+Đặc điểm nổi bật:
+- Diện tích: 65m², thiết kế hiện đại, thoáng mát
+- 2 phòng ngủ rộng rãi, 2 phòng tắm riêng biệt
+- Nội thất đầy đủ, sang trọng
+- View đẹp, hướng Đông Nam
+- Gần trung tâm thương mại, trường học, bệnh viện
+- An ninh 24/7, có bảo vệ
+- Tiện ích: hồ bơi, gym, sân chơi trẻ em
+
+Giá thuê: 15 triệu/tháng (đã bao gồm phí quản lý)
+Liên hệ ngay để được xem nhà!`,
+  assets: {
+    images: [
+      '/images/default-image.jpg',
+      '/images/example.png',
+      '/images/rental-auth-bg.jpg',
+      '/images/default-image.jpg',
+      '/images/example.png',
+    ],
+    video: undefined,
+  },
+  user: {
+    userId: 'user-123',
+    phoneCode: '+84',
+    phoneNumber: '912345678',
+    email: 'nguyenvana@example.com',
+    password: '',
+    firstName: 'Nguyễn',
+    lastName: 'Văn A',
+    idDocument: '123456789',
+    taxNumber: '987654321',
+    avatar: undefined,
+  },
+  postDate: new Date('2024-01-15'),
+  expiryDate: '2024-07-15',
+  listingType: 'RENT',
+  verified: true,
+  expired: false,
+  vipType: 'GOLD',
+  isDraft: false,
+  category: {
+    id: 1,
+    name: 'Căn hộ cho thuê',
+    slug: 'can-ho-cho-thue',
+    description: 'Căn hộ cho thuê',
+    type: 'RENT',
+    status: 1,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
+  productType: 'APARTMENT',
+  price: 15000000,
+  priceUnit: 'MONTH',
+  address: {
+    new: '123 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh',
+    legacy: '123 Nguyễn Huệ, P.Bến Nghé, Q.1, TP.HCM',
+    latitude: 10.7769,
+    longitude: 106.7009,
+  },
+  area: 65,
+  bedrooms: 2,
+  bathrooms: 2,
+  direction: 'SOUTHEAST',
+  furnishing: 'FULLY_FURNISHED',
+  propertyType: 'APARTMENT',
+  roomCapacity: 4,
+  waterPrice: 'SET_BY_OWNER',
+  electricityPrice: 'SET_BY_OWNER',
+  internetPrice: 'SET_BY_OWNER',
+  amenities: [
+    {
+      amenityId: 1,
+      name: 'Hồ bơi',
+      icon: 'swimming-pool',
+      description: 'Hồ bơi ngoài trời',
+      category: 'ENTERTAINMENT',
+      isActive: true,
+    },
+    {
+      amenityId: 2,
+      name: 'Phòng gym',
+      icon: 'gym',
+      description: 'Phòng tập thể dục',
+      category: 'ENTERTAINMENT',
+      isActive: true,
+    },
+    {
+      amenityId: 3,
+      name: 'Bảo vệ 24/7',
+      icon: 'security-guard',
+      description: 'An ninh 24 giờ',
+      category: 'SECURITY',
+      isActive: true,
+    },
+    {
+      amenityId: 4,
+      name: 'Thang máy',
+      icon: 'elevator',
+      description: 'Thang máy hiện đại',
+      category: 'CONVENIENCE',
+      isActive: true,
+    },
+    {
+      amenityId: 5,
+      name: 'Chỗ đậu xe',
+      icon: 'parking',
+      description: 'Bãi đậu xe',
+      category: 'CONVENIENCE',
+      isActive: true,
+    },
+    {
+      amenityId: 6,
+      name: 'Điều hòa',
+      icon: 'ac',
+      description: 'Điều hòa không khí',
+      category: 'BASIC',
+      isActive: true,
+    },
+    {
+      amenityId: 7,
+      name: 'Tủ lạnh',
+      icon: 'fridge',
+      description: 'Tủ lạnh',
+      category: 'BASIC',
+      isActive: true,
+    },
+    {
+      amenityId: 8,
+      name: 'Máy giặt',
+      icon: 'washing-machine',
+      description: 'Máy giặt',
+      category: 'BASIC',
+      isActive: true,
+    },
+  ],
+  priceType: 'NEGOTIABLE',
+  createdAt: '2024-01-15T10:00:00Z',
+  updatedAt: '2024-01-20T15:30:00Z',
+  locationPricing: {
+    wardPricing: {
+      locationType: 'WARD',
+      locationId: 1,
+      locationName: 'Phường Bến Nghé',
+      totalListings: 45,
+      averagePrice: 14000000,
+      minPrice: 10000000,
+      maxPrice: 20000000,
+      medianPrice: 14500000,
+      priceUnit: 'MONTH',
+      productType: 'APARTMENT',
+      averageArea: 60,
+      averagePricePerSqm: 233333,
+    },
+    districtPricing: {
+      locationType: 'DISTRICT',
+      locationId: 1,
+      totalListings: 500,
+      averagePrice: 13500000,
+      priceUnit: 'MONTH',
+    },
+    provincePricing: {
+      locationType: 'PROVINCE',
+      locationId: 1,
+      totalListings: 5000,
+      averagePrice: 12000000,
+      priceUnit: 'MONTH',
+    },
+    similarListingsInWard: [
+      {
+        listingId: 2,
+        title: 'Căn hộ 2PN view đẹp Quận 1',
+        price: 14000000,
+        priceUnit: 'MONTH',
+        area: 60,
+        pricePerSqm: 233333,
+        bedrooms: 2,
+        bathrooms: 2,
+        productType: 'APARTMENT',
+        vipType: 'SILVER',
+        verified: true,
+      },
+      {
+        listingId: 3,
+        title: 'Căn hộ 2PN nội thất đầy đủ',
+        price: 16000000,
+        priceUnit: 'MONTH',
+        area: 70,
+        pricePerSqm: 228571,
+        bedrooms: 2,
+        bathrooms: 2,
+        productType: 'APARTMENT',
+        vipType: 'GOLD',
+        verified: true,
+      },
+    ],
+    priceComparison: 'ABOVE_AVERAGE',
+    percentageDifferenceFromAverage: 7.14,
+  },
+}
+
+export const mockSimilarProperties: ListingDetail[] = [
+  {
+    ...mockListingDetail,
+    listingId: 2,
+    title: 'Căn hộ 2PN 2WC view đẹp tại Quận 1',
+    price: 14000000,
+    area: 60,
+    assets: {
+      images: ['/images/default-image.jpg', '/images/example.png'],
+    },
+  },
+  {
+    ...mockListingDetail,
+    listingId: 3,
+    title: 'Căn hộ 2PN nội thất cao cấp Quận 1',
+    price: 16000000,
+    area: 70,
+    assets: {
+      images: ['/images/rental-auth-bg.jpg', '/images/default-image.jpg'],
+    },
+  },
+  {
+    ...mockListingDetail,
+    listingId: 4,
+    title: 'Căn hộ 2PN gần trung tâm Quận 1',
+    price: 13500000,
+    area: 58,
+    assets: {
+      images: ['/images/example.png', '/images/rental-auth-bg.jpg'],
+    },
+  },
+]
+
+export const mockRecentlyViewed: ListingDetail[] = [
+  {
+    ...mockListingDetail,
+    listingId: 5,
+    title: 'Căn hộ 1PN giá tốt Quận 3',
+    price: 8000000,
+    area: 45,
+    bedrooms: 1,
+    bathrooms: 1,
+    assets: {
+      images: ['/images/default-image.jpg'],
+    },
+    address: {
+      new: '456 Đường Lê Văn Sỹ, Phường 12, Quận 3, Thành phố Hồ Chí Minh',
+      legacy: '456 Lê Văn Sỹ, P.12, Q.3, TP.HCM',
+      latitude: 10.7831,
+      longitude: 106.6954,
+    },
+  },
+  {
+    ...mockListingDetail,
+    listingId: 6,
+    title: 'Căn hộ studio hiện đại Quận 7',
+    price: 10000000,
+    area: 35,
+    bedrooms: 0,
+    bathrooms: 1,
+    productType: 'STUDIO',
+    assets: {
+      images: ['/images/example.png'],
+    },
+    address: {
+      new: '789 Đường Nguyễn Thị Thập, Phường Tân Phú, Quận 7, Thành phố Hồ Chí Minh',
+      legacy: '789 Nguyễn Thị Thập, P.Tân Phú, Q.7, TP.HCM',
+      latitude: 10.7297,
+      longitude: 106.7174,
+    },
+  },
+]

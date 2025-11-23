@@ -4,12 +4,12 @@ import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
 import { Card, CardContent } from '@/components/atoms/card'
 import { Avatar } from '@/components/atoms/avatar'
-import { Phone, ChevronRight, Sparkles } from 'lucide-react'
-import type { HostInfo } from '@/types/apartmentDetail.types'
+import { Phone } from 'lucide-react'
 import Image from 'next/image'
+import { UserApi } from '@/api/types'
 
 interface SellerContactProps {
-  host: HostInfo
+  host?: UserApi
   onCall?: () => void
   onChatZalo?: () => void
 }
@@ -21,6 +21,21 @@ const SellerContact: React.FC<SellerContactProps> = ({
 }) => {
   const t = useTranslations('apartmentDetail')
 
+  if (!host) {
+    return null
+  }
+
+  const {
+    firstName = '',
+    lastName = '',
+    phoneCode = '',
+    phoneNumber = '',
+    avatar,
+  } = host
+  const name = `${firstName} ${lastName}`.trim() || 'Người bán'
+  const phone = `${phoneCode} ${phoneNumber}`.trim()
+  const zaloLink = phone ? `https://zalo.me/${phoneCode}${phoneNumber}` : ''
+
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -31,8 +46,8 @@ const SellerContact: React.FC<SellerContactProps> = ({
   }
 
   const handleZaloClick = () => {
-    if (host.zaloLink) {
-      window.open(host.zaloLink, '_blank')
+    if (zaloLink) {
+      window.open(zaloLink, '_blank')
     }
     onChatZalo?.()
   }
@@ -43,36 +58,25 @@ const SellerContact: React.FC<SellerContactProps> = ({
         {/* Seller Info */}
         <div className='flex items-start gap-4'>
           <Avatar className='w-14 h-14 flex-shrink-0'>
-            {host.avatar ? (
+            {avatar ? (
               <Image
-                src={host.avatar}
-                alt={host.name}
+                src={avatar}
+                alt={name}
                 width={56}
                 height={56}
                 className='w-full h-full object-cover'
               />
             ) : (
               <div className='w-full h-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center text-lg font-bold'>
-                {getInitials(host.name)}
+                {getInitials(name)}
               </div>
             )}
           </Avatar>
 
           <div className='flex-1 min-w-0'>
             <Typography variant='h5' className='font-bold mb-1 truncate'>
-              {host.name}
+              {name}
             </Typography>
-            {host.totalListings && (
-              <Button
-                variant='link'
-                className='text-sm text-primary hover:underline p-0 h-auto flex items-center gap-1 group'
-              >
-                <Typography variant='small'>
-                  Xem thêm {host.totalListings} tin khác
-                </Typography>
-                <ChevronRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
-              </Button>
-            )}
           </div>
         </div>
 
@@ -97,31 +101,9 @@ const SellerContact: React.FC<SellerContactProps> = ({
             onClick={onCall}
           >
             <Phone className='w-5 h-5 mr-2' />
-            {host.maskedPhone} • {t('actions.showPhone')}
+            {phone} • {t('actions.showPhone')}
           </Button>
         </div>
-
-        {/* Professional Account Info */}
-        {host.isProfessional && host.professionalInfo && (
-          <div className='p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg space-y-3'>
-            <div className='flex items-start gap-2'>
-              <Sparkles className='w-5 h-5 text-primary flex-shrink-0 mt-0.5' />
-              <Typography
-                variant='small'
-                className='text-foreground leading-relaxed'
-              >
-                {host.professionalInfo}
-              </Typography>
-            </div>
-            <Button
-              variant='link'
-              className='text-primary hover:text-primary/80 p-0 h-auto font-semibold flex items-center gap-1 group'
-            >
-              <span>{t('seller.registerFree')}</span>
-              <ChevronRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
-            </Button>
-          </div>
-        )}
       </CardContent>
     </Card>
   )

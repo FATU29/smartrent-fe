@@ -6,7 +6,7 @@ import { Badge } from '@/components/atoms/badge'
 import type {
   Membership,
   MembershipPackageLevel,
-} from '@/api/types/memembership.type'
+} from '@/api/types/membership.type'
 import type { VipTier } from '@/api/types/vip-tier.type'
 import { useMembershipPackages } from '@/hooks/useMembership'
 import { useVipTiers } from '@/hooks/useVipTiers'

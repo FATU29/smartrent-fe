@@ -1,40 +1,45 @@
-export type PackageType =
-  | 'vip_diamond'
-  | 'vip_gold'
-  | 'vip_silver'
-  | 'standard'
-  | 'basic'
+export type PackageType = 'NORMAL' | 'SILVER' | 'GOLD' | 'DIAMOND'
 
 export interface PackageConfig {
   labelKey: string
   className: string
+  badgeLabel: string
+  color: string
+  icon: string
 }
 
 export const PACKAGE_CONFIG: Record<PackageType, PackageConfig> = {
-  vip_diamond: {
-    labelKey: 'components.packageBadge.vipDiamond',
+  NORMAL: {
+    labelKey: 'components.packageBadge.normal',
     className:
-      'bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-800',
+      'bg-gray-600 hover:bg-gray-700 text-white dark:bg-gray-700 dark:hover:bg-gray-800',
+    badgeLabel: 'Tin Thường',
+    color: 'gray',
+    icon: '📝',
   },
-  vip_gold: {
+  SILVER: {
+    labelKey: 'components.packageBadge.vipSilver',
+    className:
+      'bg-cyan-500 hover:bg-cyan-600 text-white dark:bg-cyan-600 dark:hover:bg-cyan-700',
+    badgeLabel: 'VIP BẠC',
+    color: 'blue',
+    icon: '⭐',
+  },
+  GOLD: {
     labelKey: 'components.packageBadge.vipGold',
     className:
       'bg-yellow-500 hover:bg-yellow-600 text-white dark:bg-yellow-600 dark:hover:bg-yellow-700',
+    badgeLabel: 'VIP VÀNG',
+    color: 'gold',
+    icon: '👑',
   },
-  vip_silver: {
-    labelKey: 'components.packageBadge.vipSilver',
+  DIAMOND: {
+    labelKey: 'components.packageBadge.vipDiamond',
     className:
-      'bg-gray-400 hover:bg-gray-500 text-white dark:bg-gray-500 dark:hover:bg-gray-600',
-  },
-  standard: {
-    labelKey: 'components.packageBadge.standard',
-    className:
-      'bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-700',
-  },
-  basic: {
-    labelKey: 'components.packageBadge.basic',
-    className:
-      'bg-gray-600 hover:bg-gray-700 text-white dark:bg-gray-700 dark:hover:bg-gray-800',
+      'bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-800',
+    badgeLabel: 'VIP KIM CƯƠNG',
+    color: 'red',
+    icon: '💎',
   },
 }
 
@@ -46,17 +51,15 @@ export const PACKAGE_BADGE_STYLES = {
 } as const
 
 export const PACKAGE_ICONS = {
-  vip_diamond: '💎',
-  vip_gold: '👑',
-  vip_silver: '⭐',
-  standard: '📄',
-  basic: '📝',
+  NORMAL: '�',
+  SILVER: '⭐',
+  GOLD: '�',
+  DIAMOND: '�',
 } as const
 
 export const PACKAGE_PRIORITIES = {
-  vip_diamond: 5,
-  vip_gold: 4,
-  vip_silver: 3,
-  standard: 2,
-  basic: 1,
+  NORMAL: 1,
+  SILVER: 2,
+  GOLD: 3,
+  DIAMOND: 4,
 } as const

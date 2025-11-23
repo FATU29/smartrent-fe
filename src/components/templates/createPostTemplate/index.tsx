@@ -33,8 +33,7 @@ import {
   STEP_2_FIELDS,
   STEP_3_FIELDS,
 } from '@/utils/createPost/validationSchemas'
-import type { PropertyInfo } from '@/contexts/createPost'
-import type { PriceType } from '@/api/types/property.type'
+import type { CreateListingRequest, PriceType } from '@/api/types/property.type'
 
 interface CreatePostTemplateProps {
   className?: string
@@ -46,188 +45,41 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const t = useTranslations('createPost')
   const tSteps = useTranslations('createPost.steps')
   const tValidation = useTranslations('createPost.validation')
-  const { propertyInfo, updatePropertyInfo } = useCreatePost()
+  const { propertyInfo } = useCreatePost()
   const [currentStep, setCurrentStep] = useState(0)
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const topRef = useRef<HTMLDivElement | null>(null)
 
   // Initialize react-hook-form with validation schema
   const validationSchema = getCreatePostSchema()
-  const form = useForm<Partial<PropertyInfo>>({
+  const form = useForm<Partial<CreateListingRequest>>({
     resolver: yupResolver(validationSchema) as unknown as Resolver<
-      Partial<PropertyInfo>
+      Partial<CreateListingRequest>
     >,
     defaultValues: {
-      propertyAddress: propertyInfo?.propertyAddress || '',
+      title: propertyInfo?.title || '',
+      description: propertyInfo?.description || '',
+      address: propertyInfo?.address,
       area: propertyInfo?.area || 0,
       price: propertyInfo?.price || 0,
-      listingTitle: propertyInfo?.listingTitle || '',
-      propertyDescription: propertyInfo?.propertyDescription || '',
-      fullName: propertyInfo?.fullName || '',
-      email: propertyInfo?.email || '',
-      phoneNumber: propertyInfo?.phoneNumber || '',
+      priceUnit: propertyInfo?.priceUnit,
+      propertyType: propertyInfo?.propertyType,
+      furnishing: propertyInfo?.furnishing,
+      bedrooms: propertyInfo?.bedrooms || 0,
+      bathrooms: propertyInfo?.bathrooms || 0,
+      direction: propertyInfo?.direction,
+      amenityIds: propertyInfo?.amenityIds || [],
       waterPrice: (propertyInfo?.waterPrice as PriceType) || undefined,
       electricityPrice:
         (propertyInfo?.electricityPrice as PriceType) || undefined,
       internetPrice: (propertyInfo?.internetPrice as PriceType) || undefined,
-      interiorCondition: propertyInfo?.interiorCondition || undefined,
-      bedrooms: propertyInfo?.bedrooms || 0,
-      bathrooms: propertyInfo?.bathrooms || 0,
-      moveInDate: propertyInfo?.moveInDate || '',
-      images: propertyInfo?.images || [],
-      videoUrl: propertyInfo?.videoUrl || '',
-      selectedMembershipPlanId: propertyInfo?.selectedMembershipPlanId || '',
-      selectedVoucherPackageId: propertyInfo?.selectedVoucherPackageId || '',
-      selectedPackageType: propertyInfo?.selectedPackageType || '',
-      selectedDuration: propertyInfo?.selectedDuration || 0,
-      packageStartDate: propertyInfo?.packageStartDate || '',
     },
-    mode: 'onChange', // Validate on change for all fields
-    reValidateMode: 'onChange', // Re-validate on change
+    mode: 'onTouched', // Validate only after field is touched/blurred
+    reValidateMode: 'onChange', // Re-validate on change after first validation
   })
 
-  const { trigger, formState, watch, setValue } = form
+  const { trigger, formState } = form
   const { errors } = formState
-
-  // Watch form values and sync with context
-  const watchedValues = watch()
-  const isSyncingRef = useRef(false)
-
-  // Sync form values to context when they change
-  useEffect(() => {
-    const subscription = watch((value, { name }) => {
-      if (name && !isSyncingRef.current) {
-        isSyncingRef.current = true
-        const fieldValue = value[name as keyof typeof value]
-        updatePropertyInfo({ [name]: fieldValue } as Partial<PropertyInfo>)
-        // Reset sync flag after a short delay
-        setTimeout(() => {
-          isSyncingRef.current = false
-        }, 0)
-      }
-    })
-    return () => subscription.unsubscribe()
-  }, [watch, updatePropertyInfo])
-
-  // Sync context values to form when they change (for external updates)
-  useEffect(() => {
-    if (isSyncingRef.current) return
-
-    const updates: Partial<PropertyInfo> = {}
-    let hasUpdates = false
-
-    if (propertyInfo?.propertyAddress !== watchedValues.propertyAddress) {
-      updates.propertyAddress = propertyInfo?.propertyAddress || ''
-      hasUpdates = true
-    }
-    if (propertyInfo?.area !== watchedValues.area) {
-      updates.area = propertyInfo?.area || 0
-      hasUpdates = true
-    }
-    if (propertyInfo?.price !== watchedValues.price) {
-      updates.price = propertyInfo?.price || 0
-      hasUpdates = true
-    }
-    if (propertyInfo?.listingTitle !== watchedValues.listingTitle) {
-      updates.listingTitle = propertyInfo?.listingTitle || ''
-      hasUpdates = true
-    }
-    if (
-      propertyInfo?.propertyDescription !== watchedValues.propertyDescription
-    ) {
-      updates.propertyDescription = propertyInfo?.propertyDescription || ''
-      hasUpdates = true
-    }
-    if (propertyInfo?.fullName !== watchedValues.fullName) {
-      updates.fullName = propertyInfo?.fullName || ''
-      hasUpdates = true
-    }
-    if (propertyInfo?.email !== watchedValues.email) {
-      updates.email = propertyInfo?.email || ''
-      hasUpdates = true
-    }
-    if (propertyInfo?.phoneNumber !== watchedValues.phoneNumber) {
-      updates.phoneNumber = propertyInfo?.phoneNumber || ''
-      hasUpdates = true
-    }
-    if (propertyInfo?.waterPrice !== watchedValues.waterPrice) {
-      updates.waterPrice = propertyInfo?.waterPrice || undefined
-      hasUpdates = true
-    }
-    if (propertyInfo?.electricityPrice !== watchedValues.electricityPrice) {
-      updates.electricityPrice = propertyInfo?.electricityPrice || undefined
-      hasUpdates = true
-    }
-    if (propertyInfo?.internetPrice !== watchedValues.internetPrice) {
-      updates.internetPrice = propertyInfo?.internetPrice || undefined
-      hasUpdates = true
-    }
-    if (propertyInfo?.interiorCondition !== watchedValues.interiorCondition) {
-      updates.interiorCondition = propertyInfo?.interiorCondition || undefined
-      hasUpdates = true
-    }
-    if (propertyInfo?.bedrooms !== watchedValues.bedrooms) {
-      updates.bedrooms = propertyInfo?.bedrooms || 0
-      hasUpdates = true
-    }
-    if (propertyInfo?.bathrooms !== watchedValues.bathrooms) {
-      updates.bathrooms = propertyInfo?.bathrooms || 0
-      hasUpdates = true
-    }
-    if (propertyInfo?.moveInDate !== watchedValues.moveInDate) {
-      updates.moveInDate = propertyInfo?.moveInDate || ''
-      hasUpdates = true
-    }
-    if (propertyInfo?.images !== watchedValues.images) {
-      updates.images = propertyInfo?.images || []
-      hasUpdates = true
-    }
-    if (propertyInfo?.videoUrl !== watchedValues.videoUrl) {
-      updates.videoUrl = propertyInfo?.videoUrl || ''
-      hasUpdates = true
-    }
-    if (
-      propertyInfo?.selectedMembershipPlanId !==
-      watchedValues.selectedMembershipPlanId
-    ) {
-      updates.selectedMembershipPlanId =
-        propertyInfo?.selectedMembershipPlanId || ''
-      hasUpdates = true
-    }
-    if (
-      propertyInfo?.selectedVoucherPackageId !==
-      watchedValues.selectedVoucherPackageId
-    ) {
-      updates.selectedVoucherPackageId =
-        propertyInfo?.selectedVoucherPackageId || ''
-      hasUpdates = true
-    }
-    if (
-      propertyInfo?.selectedPackageType !== watchedValues.selectedPackageType
-    ) {
-      updates.selectedPackageType = propertyInfo?.selectedPackageType || ''
-      hasUpdates = true
-    }
-    if (propertyInfo?.selectedDuration !== watchedValues.selectedDuration) {
-      updates.selectedDuration = propertyInfo?.selectedDuration || 0
-      hasUpdates = true
-    }
-    if (propertyInfo?.packageStartDate !== watchedValues.packageStartDate) {
-      updates.packageStartDate = propertyInfo?.packageStartDate || ''
-      hasUpdates = true
-    }
-
-    if (hasUpdates) {
-      isSyncingRef.current = true
-      Object.entries(updates).forEach(([key, value]) => {
-        setValue(key as keyof PropertyInfo, value as any, {
-          shouldValidate: false,
-        })
-      })
-      setTimeout(() => {
-        isSyncingRef.current = false
-      }, 0)
-    }
-  }, [propertyInfo, setValue, watchedValues])
 
   const scrollToTop = () => {
     // Scroll the anchor into view (handles inner scrollable containers)
@@ -267,30 +119,56 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         return true
     }
 
-    // Check if all required fields have errors
+    // Check if any required fields have validation errors
     const hasErrors = fieldsToCheck.some(
       (field) => errors[field as keyof typeof errors],
     )
 
-    // For step 3, also check package selection
+    if (hasErrors) return false
+
+    if (index === 0) {
+      const pi = propertyInfo as unknown as Record<string, unknown>
+      const address = pi?.address as
+        | { latitude?: number; longitude?: number }
+        | undefined
+      const hasAllRequiredFields =
+        !!pi?.propertyType &&
+        !!pi?.address &&
+        typeof pi?.address === 'object' &&
+        !!address?.latitude &&
+        !!address?.longitude &&
+        !!pi?.area &&
+        !!pi?.price &&
+        !!pi?.priceUnit &&
+        !!pi?.title &&
+        (pi?.title as string).trim().length >= 10 &&
+        (pi?.title as string).trim().length <= 100 &&
+        !!pi?.description &&
+        (pi?.description as string).trim().length >= 50 &&
+        (pi?.description as string).trim().length <= 2000 &&
+        !!pi?.waterPrice &&
+        !!pi?.electricityPrice &&
+        !!pi?.internetPrice &&
+        !!pi?.furnishing &&
+        typeof pi?.bedrooms === 'number' &&
+        pi?.bedrooms >= 1 &&
+        typeof pi?.bathrooms === 'number' &&
+        pi?.bathrooms >= 1 &&
+        !!pi?.direction
+
+      if (!hasAllRequiredFields) return false
+    }
     if (index === 3) {
-      const hasPackage =
-        !!propertyInfo?.selectedMembershipPlanId ||
-        !!propertyInfo?.selectedVoucherPackageId ||
-        !!propertyInfo?.selectedPackageType
-      if (!hasPackage) {
-        // If any package-related field is touched, validation should fail
-        const packageFieldsTouched =
-          errors.selectedMembershipPlanId ||
-          errors.selectedVoucherPackageId ||
-          errors.selectedPackageType
-        if (packageFieldsTouched || errors.root) {
-          return false
-        }
-      }
+      const pi = propertyInfo as unknown as Record<string, unknown>
+      const hasVip = !!pi?.packageSelection
+      const hasBenefit = Array.isArray(pi?.benefitsMembership)
+        ? (pi?.benefitsMembership as unknown[]).length > 0
+        : false
+      const hasStart = !!pi?.postDate
+      if (!(hasStart && (hasVip || hasBenefit))) return false
     }
 
-    return !hasErrors
+    return true
   }
 
   const allPreviousComplete = (targetIndex: number) => {
@@ -344,38 +222,39 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   ]
 
   const handleNext = async () => {
+    // Mark that user has attempted to submit
+    setAttemptedSubmit(true)
+
     // Always scroll to top when pressing Next
     scrollToTop()
 
+    // Special handling for Media step (step 2) - upload pending images
+    if (currentStep === 2) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const validateMediaStep = (window as any).__validateMediaStep
+      if (validateMediaStep) {
+        const success = await validateMediaStep()
+        if (!success) return // Stop if upload failed
+      }
+      // Proceed to next step after successful upload
+      setCurrentStep(currentStep + 1)
+      setAttemptedSubmit(false)
+      return
+    }
+
     // Validate all fields in current step
-    let fieldsToValidate: readonly string[] = []
     switch (currentStep) {
       case 0:
-        // Validate all fields in step 0
-        fieldsToValidate = STEP_0_FIELDS
-        break
-      case 2:
-        // Validate all fields in step 2
-        fieldsToValidate = STEP_2_FIELDS
-        break
       case 3:
-        // Validate all fields in step 3
-        fieldsToValidate = STEP_3_FIELDS
+        await trigger()
         break
       default:
         // Steps 1 and 4 don't require validation
         if (currentStep < progressSteps.length - 1) {
           setCurrentStep(currentStep + 1)
+          setAttemptedSubmit(false) // Reset for next step
         }
         return
-    }
-
-    // Trigger validation for all fields in current step
-    await trigger(fieldsToValidate as any)
-
-    // For step 3, also trigger full validation to ensure object-level test runs
-    if (currentStep === 3) {
-      await trigger()
     }
 
     // Check if step is complete after validation
@@ -386,6 +265,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
     // Otherwise proceed to next step
     if (currentStep < progressSteps.length - 1) {
       setCurrentStep(currentStep + 1)
+      setAttemptedSubmit(false) // Reset for next step
     }
   }
 
@@ -423,6 +303,9 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
   // Get current step errors from react-hook-form
   const getCurrentStepErrors = (): Array<{ key: string; message: string }> => {
+    // Only show errors after user has attempted to submit
+    if (!attemptedSubmit) return []
+
     const errorList: Array<{ key: string; message: string }> = []
     let fieldsToCheck: readonly string[] = []
 
@@ -440,13 +323,18 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         return []
     }
 
-    // Collect errors from form state
     fieldsToCheck.forEach((field) => {
       const fieldError = errors[field as keyof typeof errors]
       if (fieldError) {
         const message = fieldError.message || ''
         // Normalize validation key (strip prefix if exists)
         const validationKey = message.replace(/^createPost\.validation\./, '')
+
+        // Skip if validationKey is empty or still contains dots (invalid key)
+        if (!validationKey || validationKey.includes('.')) {
+          return
+        }
+
         // Translate validation key
         const translatedMessage = tValidation(validationKey)
 
@@ -459,22 +347,44 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
     // Check for package-required error (from schema test)
     if (currentStep === 3) {
-      const hasPackage =
-        !!propertyInfo?.selectedMembershipPlanId ||
-        !!propertyInfo?.selectedVoucherPackageId ||
-        !!propertyInfo?.selectedPackageType
-      if (!hasPackage) {
-        // Check if package fields are touched/validated
-        const packageFieldsTouched =
-          errors.selectedMembershipPlanId ||
-          errors.selectedVoucherPackageId ||
-          errors.selectedPackageType
-        if (packageFieldsTouched || errors.root) {
-          errorList.push({
-            key: 'package',
-            message: t('validation.packageRequired'),
-          })
-        }
+      const pi = propertyInfo as unknown as Record<string, unknown>
+      const hasVip = !!pi?.packageSelection
+      const hasBenefit = Array.isArray(pi?.benefitsMembership)
+        ? (pi?.benefitsMembership as unknown[]).length > 0
+        : false
+
+      // Always check postDate first - it's required regardless
+      if (!pi?.postDate || String(pi.postDate).trim().length === 0) {
+        errorList.push({
+          key: 'postDate',
+          message: t('validation.startDateRequired'),
+        })
+      }
+
+      // Then check if at least one package option is selected
+      if (!(hasVip || hasBenefit)) {
+        errorList.push({
+          key: 'package',
+          message: t('validation.packageRequired'),
+        })
+      }
+    }
+
+    // Step 2 (Media): Inline error like step 0 instead of toast
+    if (currentStep === 2) {
+      const pi = propertyInfo as unknown as Record<string, unknown>
+      const assets = pi?.['assets'] as unknown as
+        | { images?: unknown; video?: unknown }
+        | undefined
+      const images = (assets?.images as unknown[] | undefined) || []
+      const imagesCount = Array.isArray(images) ? images.length : 0
+      const videoVal = assets?.video as string | undefined
+      const hasVideo = !!videoVal && String(videoVal).trim().length > 0
+      if (!hasVideo && imagesCount < 4) {
+        errorList.push({
+          key: 'media',
+          message: t('validation.imagesRequired'),
+        })
       }
     }
 
@@ -558,7 +468,8 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
               {currentStep < progressSteps.length - 1 ? (
                 <Button
                   onClick={handleNext}
-                  className='w-full sm:w-auto order-1 sm:order-2 h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90'
+                  disabled={!canProceed}
+                  className='w-full sm:w-auto order-1 sm:order-2 h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
                 >
                   {t('next')}
                   <ArrowRight className='w-4 h-4 ml-2' />
@@ -566,19 +477,37 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
               ) : (
                 <Button
                   onClick={() => {
-                    // If promotion applied, proceed to upload immediately; otherwise start payment
-                    if (propertyInfo.appliedPromotionBenefitId) {
-                      console.log('Proceeding to upload with promotion...')
+                    const pi = propertyInfo as unknown as Record<
+                      string,
+                      unknown
+                    >
+                    const hasBenefit = Array.isArray(pi?.benefitsMembership)
+                      ? (pi?.benefitsMembership as unknown[]).length > 0
+                      : false
+                    // If membership benefit applied, create listing directly; otherwise start payment
+                    if (hasBenefit) {
+                      console.log(
+                        'Creating listing with membership benefit (no payment required)...',
+                      )
+                      // TODO: Call API to create listing directly
                     } else {
-                      console.log('Processing payment...')
+                      console.log('Redirecting to payment...')
+                      // TODO: Call API to create payment
                     }
                   }}
                   disabled={!canProceed}
                   className='w-full sm:w-auto order-1 sm:order-2 h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
                 >
                   <CreditCard className='w-4 h-4 mr-2' />
-                  {propertyInfo.appliedPromotionBenefitId
-                    ? t('uploadNow')
+                  {Array.isArray(
+                    (propertyInfo as unknown as Record<string, unknown>)
+                      ?.benefitsMembership,
+                  ) &&
+                  (
+                    (propertyInfo as unknown as Record<string, unknown>)
+                      ?.benefitsMembership as unknown[]
+                  ).length > 0
+                    ? t('createListing')
                     : t('payment')}
                 </Button>
               )}

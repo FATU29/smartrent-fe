@@ -1,27 +1,15 @@
-/**
- * Property Type Constants
- * Maps Vietnamese slugs to English property types
- * Note: name is kept for backward compatibility but should use translation via getPropertyTypeName()
- */
+export type PropertyType = 'APARTMENT' | 'HOUSE' | 'ROOM' | 'STUDIO'
 
 export interface PropertyTypeItem {
   id: number
   name: string // Deprecated: use translation via getPropertyTypeName() instead
   slug: string // Keep as-is, no translation needed
   description: string
-  value: 'ALL' | 'ROOM' | 'APARTMENT' | 'HOUSE' | 'OFFICE' | 'STORE' // Frontend values
-  apiValue: 'ROOM' | 'APARTMENT' | 'HOUSE' | 'OFFICE' // API supported values (STORE maps to OFFICE)
+  value: PropertyType // Frontend values
+  apiValue: PropertyType
 }
 
 export const PROPERTY_TYPES: PropertyTypeItem[] = [
-  {
-    id: 0,
-    name: 'Tất cả',
-    slug: 'tat-ca',
-    description: 'Tất cả loại bất động sản',
-    value: 'ALL',
-    apiValue: 'APARTMENT', // Default value, will be ignored in API when filtering
-  },
   {
     id: 1,
     name: 'Cho thuê phòng trọ',
@@ -48,19 +36,11 @@ export const PROPERTY_TYPES: PropertyTypeItem[] = [
   },
   {
     id: 4,
-    name: 'Cho thuê văn phòng',
-    slug: 'cho-thue-van-phong',
-    description: 'Văn phòng, mặt bằng kinh doanh',
-    value: 'OFFICE',
-    apiValue: 'OFFICE',
-  },
-  {
-    id: 5,
-    name: 'Cho thuê mặt bằng',
-    slug: 'cho-thue-mat-bang',
-    description: 'Mặt bằng kinh doanh, cửa hàng',
-    value: 'STORE',
-    apiValue: 'OFFICE', // Map STORE to OFFICE for API
+    name: 'Cho thuê studio',
+    slug: 'cho-thue-studio',
+    description: 'Studio, văn phòng, mặt bằng kinh doanh',
+    value: 'STUDIO',
+    apiValue: 'STUDIO',
   },
 ] as const
 
@@ -100,7 +80,7 @@ export const getPropertyTypeByApiValue = (
  */
 export const toApiPropertyType = (
   value: string,
-): 'ROOM' | 'APARTMENT' | 'HOUSE' | 'OFFICE' => {
+): 'ROOM' | 'APARTMENT' | 'HOUSE' | 'STUDIO' => {
   const type = getPropertyTypeByValue(value)
   return type?.apiValue || 'APARTMENT'
 }
@@ -111,16 +91,11 @@ export const toApiPropertyType = (
  */
 export const fromApiPropertyType = (
   apiValue: string,
-): 'ROOM' | 'APARTMENT' | 'HOUSE' | 'OFFICE' | 'STORE' => {
+): 'ROOM' | 'APARTMENT' | 'HOUSE' | 'STUDIO' => {
   const type = getPropertyTypeByApiValue(apiValue)
-  // If API returns OFFICE, it could be either OFFICE or STORE in frontend
-  // Default to OFFICE, but caller can check if needed
-  // Filter out 'ALL' as it's not a valid API response
+
   const value = type?.value
-  if (value && value !== 'ALL') {
-    return value
-  }
-  return 'APARTMENT'
+  return value || 'APARTMENT'
 }
 
 /**
