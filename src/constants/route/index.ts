@@ -47,7 +47,7 @@ export const PUBLIC_ROUTES = {
   HOME: '/',
   RESIDENTIAL_LIST: '/properties/residential',
   PROPERTIES_PREFIX: '/properties',
-  APARTMENT_DETAIL_PREFIX: '/apartment-detail', // dynamic [...slug]
+  APARTMENT_DETAIL_PREFIX: '/listing-detail', // dynamic [...slug]
   PAYMENT_STATUS: '/payment/status',
 } as const
 

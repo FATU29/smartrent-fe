@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/atoms/card'
-import { ImagePlus } from 'lucide-react'
+import { ImagePlus, Trash2 } from 'lucide-react'
 
 const MAX_IMAGES = 24
 
@@ -22,7 +22,7 @@ interface PendingImage {
 
 const CoverUpload: React.FC = () => {
   const t = useTranslations('createPost.sections.media.cover')
-  const { propertyInfo } = useCreatePost()
+  const { propertyInfo, updatePropertyInfo } = useCreatePost()
 
   // Local state for pending images (not uploaded yet)
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
@@ -65,6 +65,27 @@ const CoverUpload: React.FC = () => {
     ;(window as any).__coverPendingImages = pendingImages
   }, [pendingImages])
 
+  // Handle delete cover
+  const handleDeleteCover = () => {
+    // If there's a pending cover, remove it
+    if (pendingCover) {
+      URL.revokeObjectURL(pendingCover.previewUrl)
+      setPendingImages(pendingImages.filter((img) => !img.isCover))
+      return
+    }
+
+    // If there's an uploaded cover, remove the first image from assets
+    if (coverUrl && uploadedImages.length > 0) {
+      const newImages = uploadedImages.slice(1) // Remove first image
+      updatePropertyInfo({
+        assets: {
+          ...propertyInfo?.assets,
+          images: newImages,
+        },
+      })
+    }
+  }
+
   // Display cover: prefer uploaded, fallback to pending
   const displayCover = coverUrl || pendingCover?.previewUrl
 
@@ -91,9 +112,6 @@ const CoverUpload: React.FC = () => {
                 />
               </div>
               <div className='p-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2'>
-                <p className='text-sm truncate text-muted-foreground'>
-                  {pendingCover ? t('pending') : t('coverImage')}
-                </p>
                 <Button
                   size='sm'
                   className='rounded-md'
@@ -101,6 +119,15 @@ const CoverUpload: React.FC = () => {
                 >
                   <ImagePlus className='w-4 h-4 mr-2' />
                   {t('replaceCta')}
+                </Button>
+                <Button
+                  size='sm'
+                  variant='destructive'
+                  className='rounded-md'
+                  onClick={handleDeleteCover}
+                >
+                  <Trash2 className='w-4 h-4 mr-2' />
+                  {t('deleteCta')}
                 </Button>
               </div>
             </div>

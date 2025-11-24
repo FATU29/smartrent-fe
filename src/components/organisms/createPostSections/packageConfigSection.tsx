@@ -26,7 +26,8 @@ import {
 import { cn } from '@/lib/utils'
 import { SelectPromotionDialog } from '@/components/molecules/createPostSections/SelectPromotionDialog'
 import type { BenefitType, UserBenefit } from '@/api/types/membership.type'
-import type { PackageSelection } from '@/api/types/property.type'
+import type { DurationDays, VipType } from '@/api/types/property.type'
+import { Switch } from '@/components/atoms/switch'
 
 interface PackageConfigSectionProps {
   className?: string
@@ -44,6 +45,8 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
   const { setValue, trigger } = useFormContext()
 
+  console.log('propertyInfo', propertyInfo)
+
   // Fetch VIP tiers using React Query
   const { data: vipTiers = [], isLoading, isError, error } = useVipTiers()
 
@@ -55,32 +58,35 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   )
   const [promoOpen, setPromoOpen] = useState(false)
 
-  const toISODate = (date: Date) => date.toISOString()
-  const addDays = (isoOrEmpty: string, days: number) => {
-    const base = isoOrEmpty ? new Date(isoOrEmpty) : new Date()
-    const next = new Date(base.getTime() + days * 24 * 60 * 60 * 1000)
-    return toISODate(next)
-  }
-
   const updateVipPackageSelection = (args?: {
     tierId?: number
     durationDays?: number
     startDate?: string
   }) => {
     const tierId = (args?.tierId ?? selectedTierId) as number
-    const durationDays = args?.durationDays ?? selectedDuration
+    const durationDays = (args?.durationDays ??
+      selectedDuration) as DurationDays
     const start = args?.startDate ?? (startDate || new Date().toISOString())
-    const expiry = addDays(start, durationDays)
 
-    const selection: PackageSelection = {
-      tierId,
-      // Temporary mapping: use duration as priceId surrogate (10|15|30)
-      priceId: durationDays,
-    }
+    const tier = vipTiers.find((t) => t.tierId === tierId)
+
     updatePropertyInfo({
-      packageSelection: selection,
+      vipType: (tier?.tierCode as VipType) || undefined,
+      durationDays,
       postDate: start,
-      expiryDate: expiry,
+    })
+    // Sync with RHF for validation
+    setValue(
+      'vipType' as never,
+      (tier?.tierCode as never) ?? (undefined as never),
+      {
+        shouldValidate: true,
+        shouldDirty: true,
+      },
+    )
+    setValue('durationDays' as never, durationDays as never, {
+      shouldValidate: true,
+      shouldDirty: true,
     })
   }
 
@@ -100,6 +106,11 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       })
       // Ensure postDate is set in RHF for validation
       setValue('postDate' as never, effectiveStart as never, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      // Initialize durationDays for validation
+      setValue('durationDays' as never, 10 as never, {
         shouldValidate: true,
         shouldDirty: true,
       })
@@ -185,18 +196,8 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
     if (tier) {
       setSelectedTierId(tier.tierId)
     }
-    // Default: membership promotion expires 30 days after start date
     const start = startDate || new Date().toISOString()
-    const expiry = addDays(start, 30)
-
-    // For now, also set a simple selection for compatibility
-    const selection: PackageSelection = {
-      tierId: tier?.tierId || 0,
-      priceId: selectedDuration || 30,
-    }
-
     updatePropertyInfo({
-      packageSelection: selection,
       benefitsMembership: [
         {
           benefitId: benefit.userBenefitId,
@@ -204,7 +205,6 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         },
       ],
       postDate: start,
-      expiryDate: expiry,
     })
     // Ensure form knows about start date
     setValue('postDate' as never, start as never, {
@@ -367,7 +367,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                   shouldValidate: true,
                   shouldDirty: true,
                 })
-                // Keep package selection dates and post/expiry in sync
+                // Keep package selection (vipType/duration) and post date in sync
                 const isMembershipSelected = Array.isArray(
                   propertyInfo.benefitsMembership,
                 )
@@ -375,11 +375,8 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                   : false
                 if (isMembershipSelected) {
                   const start = newStart || new Date().toISOString()
-                  const expiry = addDays(start, 30)
                   updatePropertyInfo({
-                    // Keep simple selection intact; dates maintained separately
                     postDate: start,
-                    expiryDate: expiry,
                   })
                 } else if (selectedTierId && selectedTier) {
                   updateVipPackageSelection()
@@ -419,6 +416,29 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
           onOpenChange={setPromoOpen}
           onApply={handleApplyPromotion}
         />
+
+        {/* Use Membership Quota Toggle */}
+        <Card className='p-6'>
+          <CardContent className='flex items-center justify-between gap-4 p-0'>
+            <div>
+              <Typography className='font-medium text-sm'>
+                {t('useMembershipQuota')}
+              </Typography>
+              <Typography variant='muted' className='text-xs'>
+                {t('useMembershipQuotaDescription')}
+              </Typography>
+            </div>
+            <Switch
+              checked={!!propertyInfo.useMembershipQuota}
+              onCheckedChange={(checked) => {
+                updatePropertyInfo({ useMembershipQuota: checked })
+                setValue('useMembershipQuota' as never, checked as never, {
+                  shouldDirty: true,
+                })
+              }}
+            />
+          </CardContent>
+        </Card>
 
         {/* Summary - Flex Layout */}
         <Card className='flex flex-col lg:flex-row gap-6 p-6'>

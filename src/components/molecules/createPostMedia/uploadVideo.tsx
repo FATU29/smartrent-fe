@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { ENV } from '@/constants'
 import {
   Card,
@@ -10,7 +10,7 @@ import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
-import { Video, Upload, X, CloudUpload } from 'lucide-react'
+import { Video, Upload, X, CloudUpload, Loader2 } from 'lucide-react'
 import { MediaService } from '@/api/services'
 
 const MAX_VIDEO_SIZE_MB = ENV.MAX_VIDEO_SIZE_MB || 100
@@ -34,8 +34,6 @@ const UploadVideo: React.FC = () => {
     videoUploadProgress,
   } = useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
-  // Local state for preview only; uploading state moved to context
-  const [showProgress, setShowProgress] = useState(false)
   const videoFileRef = useRef<File | null>(null)
 
   const videoUrl = propertyInfo?.assets?.video || ''
@@ -76,12 +74,10 @@ const UploadVideo: React.FC = () => {
     })
     // Do NOT auto-upload; wait for user to click explicit upload button
     resetVideoUploadProgress()
-    setShowProgress(false)
   }
 
   const uploadVideo = async (file: File) => {
     startVideoUpload(file.name)
-    setShowProgress(true)
 
     try {
       const response = await MediaService.upload(
@@ -110,7 +106,6 @@ const UploadVideo: React.FC = () => {
       updateVideoUploadProgress(100)
       setTimeout(() => {
         resetVideoUploadProgress()
-        setShowProgress(false)
       }, 600)
     } catch (error: unknown) {
       const errorMessage =
@@ -218,19 +213,36 @@ const UploadVideo: React.FC = () => {
               </Button>
             </div>
             {showUploadButton && (
-              <Button
-                type='button'
-                onClick={() =>
-                  videoFileRef.current && uploadVideo(videoFileRef.current)
-                }
-                className='w-full h-12 bg-primary hover:bg-primary/90'
-                disabled={videoUploadProgress.isUploading}
-              >
-                <CloudUpload className='w-4 h-4 mr-2' />
-                {videoUploadProgress.isUploading
-                  ? t('video.upload.uploading') || 'Đang tải lên...'
-                  : t('video.upload.uploadButton') || 'Tải video lên'}
-              </Button>
+              <>
+                <Button
+                  type='button'
+                  onClick={() =>
+                    videoFileRef.current && uploadVideo(videoFileRef.current)
+                  }
+                  className='w-full h-12 bg-primary hover:bg-primary/90'
+                  disabled={videoUploadProgress.isUploading}
+                >
+                  {videoUploadProgress.isUploading ? (
+                    <>
+                      <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                      {t('video.upload.uploading') || 'Đang tải lên...'}
+                    </>
+                  ) : (
+                    <>
+                      <CloudUpload className='w-4 h-4 mr-2' />
+                      {t('video.upload.uploadButton') || 'Tải video lên'}
+                    </>
+                  )}
+                </Button>
+                {videoUploadProgress.error && (
+                  <Typography
+                    variant='small'
+                    className='mt-2 text-xs text-red-600 dark:text-red-400 text-center'
+                  >
+                    {videoUploadProgress.error}
+                  </Typography>
+                )}
+              </>
             )}
             {isUploadedUrl && (
               <Typography
@@ -240,30 +252,6 @@ const UploadVideo: React.FC = () => {
                 {t('video.upload.success') ||
                   'Video đã được tải lên thành công!'}
               </Typography>
-            )}
-            {showProgress && videoUploadProgress.isUploading && (
-              <div className='mt-4 w-full'>
-                <div className='h-2 rounded bg-gray-200 dark:bg-gray-700 overflow-hidden'>
-                  <div
-                    className='h-full bg-blue-500 dark:bg-blue-400 transition-all duration-200'
-                    style={{ width: `${videoUploadProgress.progress}%` }}
-                  />
-                </div>
-                <Typography
-                  variant='small'
-                  className='mt-2 text-xs text-gray-600 dark:text-gray-300 text-center'
-                >
-                  {videoUploadProgress.progress}%
-                </Typography>
-                {videoUploadProgress.error && (
-                  <Typography
-                    variant='small'
-                    className='mt-2 text-xs text-red-600 dark:text-red-400 text-center'
-                  >
-                    {videoUploadProgress.error}
-                  </Typography>
-                )}
-              </div>
             )}
           </Card>
         )}

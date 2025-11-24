@@ -16,7 +16,6 @@ const MOCK_USER: UserApi = {
   phoneCode: '+84',
   phoneNumber: '909123456',
   email: 'user@example.com',
-  password: 'mock-password',
   firstName: 'Nguyễn',
   lastName: 'Văn A',
   idDocument: '0123456789',

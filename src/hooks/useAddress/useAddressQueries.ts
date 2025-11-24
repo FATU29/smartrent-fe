@@ -40,6 +40,8 @@ export const addressKeys = {
     provinces: () => [...addressKeys.new.all, 'provinces'] as const,
     wards: (provinceCode?: string) =>
       [...addressKeys.new.all, 'wards', provinceCode] as const,
+    mergeHistory: (provinceCode?: string, wardCode?: string) =>
+      [...addressKeys.new.all, 'mergeHistory', provinceCode, wardCode] as const,
   },
 }
 
@@ -220,6 +222,28 @@ export const useNewWards = (provinceCode?: string, keyword?: string) => {
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 30, // 30 minutes (cache time)
     refetchOnMount: true,
+    refetchOnWindowFocus: false,
+  })
+}
+
+/**
+ * Query hook for merge history showing legacy addresses merged into new address
+ */
+export const useMergeHistory = (provinceCode?: string, wardCode?: string) => {
+  return useQuery({
+    queryKey: addressKeys.new.mergeHistory(provinceCode, wardCode),
+    queryFn: async () => {
+      if (!provinceCode || !wardCode) return null
+      const response = await AddressService.getMergeHistory(
+        provinceCode,
+        wardCode,
+      )
+      return response?.data || null
+    },
+    enabled: !!provinceCode && !!wardCode,
+    staleTime: 1000 * 60 * 10, // 10 minutes (more stable data)
+    gcTime: 1000 * 60 * 30, // 30 minutes (cache time)
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
   })
 }

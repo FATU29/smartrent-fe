@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent } from '@/components/atoms/dialog'
 import { useTranslations } from 'next-intl'
-import { ListFilters } from '@/contexts/list/index.type'
+import { ListingFilterRequest } from '@/api/types'
 import MobileFilterHeader from '@/components/atoms/mobileFilter/header'
 import MobileFilterActionBar from '@/components/atoms/mobileFilter/actionBar'
 import MobileFilterMainView from '@/components/molecules/mobileFilter/mainView'
@@ -9,70 +9,101 @@ import RangeView from '@/components/molecules/mobileFilter/rangeView'
 import SimpleListView from '@/components/molecules/mobileFilter/simpleListView'
 import OrientationView from '@/components/molecules/mobileFilter/orientationView'
 import AmenitiesView from '@/components/molecules/mobileFilter/amenitiesView'
-import AddressView from '@/components/molecules/mobileFilter/addressView'
-import { AddressFilterData } from '@/components/molecules/filterAddress'
+import PropertyTypeView from '@/components/molecules/mobileFilter/propertyTypeView'
+import { useListContext } from '@/contexts/list/useListContext'
+import AddressFilterView from '../mobileFilter/addressFilterView'
+import { useRouter } from 'next/router'
+import { pushQueryParams } from '@/utils/queryParams'
+import { PUBLIC_ROUTES } from '@/constants/route'
 
-// ResidentialFilterDialog
-// Reusable full-screen (mobile) or centered (desktop) dialog hosting the multi-step filter views.
-// Does not render its own trigger – parent controls open state.
 interface ResidentialFilterDialogProps {
-  value: ListFilters
-  onChange: (filters: ListFilters) => void
-  onClear: () => void
-  onSearch?: (q: string) => void // optional (mobile variant uses it alongside search input)
-  activeCount: number
   open: boolean
   onOpenChange: (open: boolean) => void
   title?: string
-  searchValue?: string
-  onApply?: (filters: ListFilters) => void
 }
 
 type ViewKey =
   | 'main'
+  | 'address'
+  | 'propertyType'
   | 'price'
   | 'area'
   | 'electricityPrice'
   | 'waterPrice'
   | 'internetPrice'
-  | 'orientation'
+  | 'direction'
   | 'amenities'
-  | 'address'
 
 const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
-  value,
-  onChange,
-  onClear,
-  onSearch,
   open,
   onOpenChange,
   title,
-  searchValue,
-  onApply,
 }) => {
   const t = useTranslations('residentialFilter')
+  const router = useRouter()
+  const { filters, updateFilters, resetFilters } = useListContext()
   const [view, setView] = useState<ViewKey>('main')
+  const [draft, setDraft] = useState<ListingFilterRequest>(filters)
 
   useEffect(() => {
-    if (open) setView('main')
+    if (open) {
+      setView('main')
+      setDraft(filters)
+    }
   }, [open])
 
+  const update = (partial: Partial<ListingFilterRequest>) => {
+    setDraft((prev) => ({ ...prev, ...partial }) as ListingFilterRequest)
+  }
+
   const apply = () => {
-    if (onApply) {
-      onApply(value)
-      return
-    }
-    onChange(value)
-    if (onSearch && searchValue !== undefined) onSearch(searchValue)
+    // Apply all draft filters and reset page to 1
+    updateFilters({ ...draft, page: 1 })
+
+    // Push query params to URL
+    const amenityIds = draft.amenityIds
+
+    pushQueryParams(
+      router,
+      {
+        categoryId: draft.categoryId ?? null,
+        productType: draft.productType ?? null,
+        keyword: draft.keyword || null,
+        minPrice: draft.minPrice ?? null,
+        maxPrice: draft.maxPrice ?? null,
+        minArea: draft.minArea ?? null,
+        maxArea: draft.maxArea ?? null,
+        minBedrooms: draft.minBedrooms ?? null,
+        maxBedrooms: draft.maxBedrooms ?? null,
+        bathrooms: draft.bathrooms ?? null,
+        verified: draft.verified || null,
+        direction: draft.direction ?? null,
+        electricityPrice: draft.electricityPrice ?? null,
+        waterPrice: draft.waterPrice ?? null,
+        internetPrice: draft.internetPrice ?? null,
+        amenityIds:
+          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
+        provinceId: draft.provinceId ?? null,
+        districtId: draft.districtId ?? null,
+        wardId: draft.wardId ?? null,
+        isLegacy: draft.isLegacy ?? null,
+        latitude: draft.latitude ?? null,
+        longitude: draft.longitude ?? null,
+        page: null,
+      },
+      {
+        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+        shallow: false,
+        scroll: true,
+      },
+    )
+
     onOpenChange(false)
   }
 
-  const update = (partial: Partial<ListFilters>) => {
-    onChange({ ...value, ...partial })
-  }
-
   const resetAndStay = () => {
-    onClear()
+    resetFilters()
+    setDraft({ keyword: '', size: filters.size, page: 1 })
   }
 
   const backToParent = () => setView('main')
@@ -84,11 +115,20 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
 
   const renderBody = () => {
     switch (view) {
+      case 'address':
+        return <AddressFilterView value={draft} onChange={update} />
+      case 'propertyType':
+        return (
+          <PropertyTypeView
+            value={draft.productType}
+            onChange={(v) => update({ productType: v })}
+          />
+        )
       case 'price':
         return (
           <RangeView
             type='price'
-            value={{ min: value.minPrice, max: value.maxPrice }}
+            value={{ min: draft.minPrice, max: draft.maxPrice }}
             onChange={({ min, max }) =>
               update({ minPrice: min, maxPrice: max })
             }
@@ -99,7 +139,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         return (
           <RangeView
             type='area'
-            value={{ min: value.minArea, max: value.maxArea }}
+            value={{ min: draft.minArea, max: draft.maxArea }}
             onChange={({ min, max }) => update({ minArea: min, maxArea: max })}
             unit='m²'
           />
@@ -108,7 +148,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         return (
           <SimpleListView
             type='electricityPrice'
-            value={value.electricityPrice}
+            value={draft.electricityPrice}
             onChange={(v) => update({ electricityPrice: v })}
           />
         )
@@ -116,7 +156,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         return (
           <SimpleListView
             type='waterPrice'
-            value={value.waterPrice}
+            value={draft.waterPrice}
             onChange={(v) => update({ waterPrice: v })}
           />
         )
@@ -124,59 +164,28 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         return (
           <SimpleListView
             type='internetPrice'
-            value={value.internetPrice}
+            value={draft.internetPrice}
             onChange={(v) => update({ internetPrice: v })}
           />
         )
-      case 'orientation':
+      case 'direction':
         return (
           <OrientationView
-            value={value.orientation as string | undefined}
-            onChange={(v: string | undefined) => update({ orientation: v })}
+            value={draft.direction}
+            onChange={(v) => update({ direction: v })}
           />
         )
       case 'amenities':
         return (
           <AmenitiesView
-            values={
-              (value.amenities || []) as Array<{ id: number; name?: string }>
-            }
-            onChange={(v) =>
-              update({ amenities: v as Array<{ id: number; name: string }> })
-            }
-          />
-        )
-      case 'address':
-        return (
-          <AddressView
-            value={{
-              province: value.province as string | undefined,
-              district: value.district as string | undefined,
-              ward: value.ward as string | undefined,
-              newProvinceCode: value.newProvinceCode as string | undefined,
-              newWardCode: value.newWardCode as string | undefined,
-              addressStructureType: value.addressStructureType,
-              searchAddress: value.searchAddress,
-              addressEdited: value.addressEdited,
-            }}
-            onChange={(addressData: Partial<AddressFilterData>) =>
-              update({
-                province: addressData.province,
-                district: addressData.district,
-                ward: addressData.ward,
-                newProvinceCode: addressData.newProvinceCode,
-                newWardCode: addressData.newWardCode,
-                addressStructureType: addressData.addressStructureType,
-                searchAddress: addressData.searchAddress,
-                addressEdited: addressData.addressEdited,
-              })
-            }
+            value={draft.amenityIds}
+            onChange={(v) => update({ amenityIds: v })}
           />
         )
       default:
         return (
           <MobileFilterMainView
-            filters={value}
+            filters={draft}
             onNavigate={(v) => setView(v as ViewKey)}
             onUpdate={update}
           />

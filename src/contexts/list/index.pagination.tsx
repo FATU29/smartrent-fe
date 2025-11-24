@@ -24,44 +24,31 @@ type ListPaginationProps = {
   maxVisiblePages?: number
 }
 
-const ListPagination = (props: ListPaginationProps) => {
-  const {
-    className,
-    showPerPageSelector = true,
-    showPageInfo = true,
-    showPageNumbers = true,
-    maxVisiblePages = 5,
-  } = props
-
-  const { filters, pagination, handleLoadNewPage, handleUpdateFilter } =
-    useListContext()
+const ListPagination = ({
+  className,
+  showPerPageSelector = true,
+  showPageInfo = true,
+  showPageNumbers = true,
+  maxVisiblePages = 5,
+}: ListPaginationProps) => {
+  const { filters, pagination, goToPage, updateFilters } = useListContext()
   const t = useTranslations('pagination')
 
-  const {
-    total,
-    page: currentPage,
-    totalPages,
-    hasNext,
-    hasPrevious,
-  } = pagination
+  const { currentPage, pageSize, totalCount, totalPages } = pagination
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
-      handleLoadNewPage(newPage)
+      goToPage(newPage)
     }
   }
 
-  const handlePerPageChange = (newPerPage: string) => {
-    handleUpdateFilter({
-      perPage: parseInt(newPerPage),
-      page: 1,
-    })
+  const handleSizeChange = (newSize: string) => {
+    updateFilters({ size: parseInt(newSize), page: 1 })
   }
 
   const getVisiblePages = () => {
     const pages: number[] = []
     const halfVisible = Math.floor(maxVisiblePages / 2)
-
     let startPage = Math.max(1, currentPage - halfVisible)
     let endPage = Math.min(totalPages, currentPage + halfVisible)
 
@@ -76,17 +63,16 @@ const ListPagination = (props: ListPaginationProps) => {
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i)
     }
-
     return pages
   }
 
   const visiblePages = getVisiblePages()
-  const startItem = (currentPage - 1) * filters.perPage + 1
-  const endItem = Math.min(currentPage * filters.perPage, total)
+  const startItem = (currentPage - 1) * pageSize + 1
+  const endItem = Math.min(currentPage * pageSize, totalCount)
+  const hasPrevious = currentPage > 1
+  const hasNext = currentPage < totalPages
 
-  if (totalPages <= 1 && !showPageInfo) {
-    return null
-  }
+  if (totalPages <= 1 && !showPageInfo) return null
 
   return (
     <div
@@ -95,22 +81,21 @@ const ListPagination = (props: ListPaginationProps) => {
         className,
       )}
     >
-      {/* Page Info - Hide on very small screens, show on sm+ */}
+      {/* Page Info */}
       {showPageInfo && (
         <div className='text-sm text-muted-foreground order-3 sm:order-1'>
           <span className='hidden sm:inline'>
-            {t('showing')} {startItem}-{endItem} {t('of')} {total}{' '}
+            {t('showing')} {startItem}-{endItem} {t('of')} {totalCount}{' '}
             {t('results')}
           </span>
           <span className='sm:hidden'>
-            {currentPage}/{totalPages} ({total})
+            {currentPage}/{totalPages} ({totalCount})
           </span>
         </div>
       )}
 
-      {/* Navigation Controls - Center on mobile, maintain position on desktop */}
+      {/* Navigation Controls */}
       <div className='flex items-center gap-1 order-1 sm:order-2'>
-        {/* First Page - Hidden on mobile when screen is very small */}
         <Button
           variant='outline'
           size='sm'
@@ -121,7 +106,6 @@ const ListPagination = (props: ListPaginationProps) => {
           <ChevronsLeft className='h-4 w-4' />
         </Button>
 
-        {/* Previous Page */}
         <Button
           variant='outline'
           size='sm'
@@ -132,17 +116,16 @@ const ListPagination = (props: ListPaginationProps) => {
           <ChevronLeft className='h-4 w-4' />
         </Button>
 
-        {/* Page Numbers - Simplified for mobile */}
         {showPageNumbers && (
           <>
-            {/* Mobile: Show only current page and total */}
+            {/* Mobile */}
             <div className='flex items-center gap-1 sm:hidden'>
               <span className='px-2 text-sm font-medium min-w-[60px] text-center'>
                 {currentPage} / {totalPages}
               </span>
             </div>
 
-            {/* Desktop: Show full pagination */}
+            {/* Desktop */}
             <div className='hidden sm:flex items-center gap-1'>
               {visiblePages[0] > 1 && (
                 <>
@@ -191,7 +174,6 @@ const ListPagination = (props: ListPaginationProps) => {
           </>
         )}
 
-        {/* Next Page */}
         <Button
           variant='outline'
           size='sm'
@@ -202,7 +184,6 @@ const ListPagination = (props: ListPaginationProps) => {
           <ChevronRight className='h-4 w-4' />
         </Button>
 
-        {/* Last Page - Hidden on mobile when screen is very small */}
         <Button
           variant='outline'
           size='sm'
@@ -214,15 +195,15 @@ const ListPagination = (props: ListPaginationProps) => {
         </Button>
       </div>
 
-      {/* Per Page Selector - Show on mobile, better mobile layout */}
+      {/* Per Page Selector */}
       {showPerPageSelector && (
         <div className='flex items-center gap-2 order-2 sm:order-3'>
           <span className='text-sm text-muted-foreground hidden sm:inline'>
             {t('show')}
           </span>
           <Select
-            value={filters.perPage.toString()}
-            onValueChange={handlePerPageChange}
+            value={(filters.size || '').toString()}
+            onValueChange={handleSizeChange}
           >
             <SelectTrigger className='w-16 sm:w-20'>
               <SelectValue />

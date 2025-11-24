@@ -7,5 +7,6 @@ export {
   useSearchStreets,
   useNewProvinces,
   useNewWards,
+  useMergeHistory,
   addressKeys,
 } from './useAddressQueries'

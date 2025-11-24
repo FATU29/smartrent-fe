@@ -13,10 +13,6 @@ export interface ListLoadMoreProps {
   onAfterLoad?: () => void | Promise<void>
 }
 
-/**
- * ListLoadMore - generic load-more button bound to List context.
- * Shows loading state and hides itself when there is no next page.
- */
 const ListLoadMore: React.FC<ListLoadMoreProps> = ({
   className,
   fullWidth = false,
@@ -26,19 +22,22 @@ const ListLoadMore: React.FC<ListLoadMoreProps> = ({
   labelLoadingKey = 'common.loading',
   onAfterLoad,
 }) => {
-  const { pagination, isLoading, handleLoadMore } = useListContext()
+  const { pagination, isLoading, loadMore } = useListContext()
   const t = useTranslations()
 
-  if (!pagination.hasNext) {
-    return null
+  const { currentPage, totalPages } = pagination
+
+  // Hide when on last page
+  if (currentPage >= totalPages) return null
+
+  const handleClick = async () => {
+    await loadMore()
+    if (onAfterLoad) await onAfterLoad()
   }
 
   return (
     <Button
-      onClick={async () => {
-        await handleLoadMore()
-        if (onAfterLoad) await onAfterLoad()
-      }}
+      onClick={handleClick}
       disabled={isLoading}
       variant={variant}
       size={size}

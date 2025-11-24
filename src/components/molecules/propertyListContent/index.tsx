@@ -21,15 +21,18 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
 }) => {
   const router = useRouter()
   const t = useTranslations('propertiesPage')
-  const { itemsData, isLoading, pagination, handleLoadMore } =
+  const { items, isLoading, pagination, loadMore } =
     useListContext<ListingDetail>()
   const isMobile = useIsMobile()
 
+  const { currentPage, totalPages } = pagination
+  const hasNext = currentPage < totalPages
+
   const handleLoadMoreCallback = useCallback(() => {
-    if (isMobile && pagination.hasNext && !isLoading) {
-      handleLoadMore()
+    if (isMobile && hasNext && !isLoading) {
+      loadMore()
     }
-  }, [isMobile, pagination.hasNext, isLoading, handleLoadMore])
+  }, [isMobile, hasNext, isLoading, loadMore])
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: handleLoadMoreCallback,
@@ -38,17 +41,23 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
     },
   })
 
-  const handlePropertyClick = (property: ListingDetail) => {
-    if (onPropertyClick) {
-      onPropertyClick(property)
-    } else {
-      router.push(`/listing-detail/${property.listingId}`)
-    }
-  }
+  const handlePropertyClick = useCallback(
+    (property: ListingDetail) => {
+      if (onPropertyClick) {
+        onPropertyClick(property)
+      } else {
+        router.push(`/listing-detail/${property.listingId}`)
+      }
+    },
+    [onPropertyClick, router],
+  )
 
-  const handleFavorite = (property: ListingDetail, isFavorite: boolean) => {
-    onFavorite?.(property, isFavorite)
-  }
+  const handleFavorite = useCallback(
+    (property: ListingDetail, isFavorite: boolean) => {
+      onFavorite?.(property, isFavorite)
+    },
+    [onFavorite],
+  )
 
   const PropertySkeleton = (
     <div className='space-y-4 md:space-y-6'>
@@ -71,18 +80,18 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
     </div>
   )
 
-  if (isLoading && itemsData.length === 0) {
+  if (isLoading && items.length === 0) {
     return PropertySkeleton
   }
 
-  if (itemsData.length === 0) {
+  if (items.length === 0) {
     return PropertyNotFound
   }
 
   return (
     <div className='space-y-4'>
       <div className='space-y-3 md:space-y-4'>
-        {itemsData.map((property) => (
+        {items.map((property) => (
           <PropertyCard
             key={property.listingId}
             listing={property}
@@ -94,7 +103,7 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
         ))}
 
         {/* Infinite Scroll Trigger - Mobile Only */}
-        {isMobile && pagination.hasNext && (
+        {isMobile && hasNext && (
           <div
             ref={loadMoreRef as React.RefObject<HTMLDivElement>}
             className='flex justify-center py-4'
@@ -109,7 +118,7 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
       </div>
 
       {/* Pagination - Desktop Only */}
-      {!isMobile && itemsData.length > 0 && (
+      {!isMobile && items.length > 0 && (
         <div className='mt-8'>
           <ListPagination />
         </div>

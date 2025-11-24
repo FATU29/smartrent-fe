@@ -47,6 +47,17 @@ export enum POST_STATUS {
   VERIFIED = 'VERIFIED',
 }
 
+export enum DURATIONDAYS {
+  DAYS_10 = 10,
+  DAYS_15 = 15,
+  DAYS_30 = 30,
+}
+
+export type DurationDays =
+  | DURATIONDAYS.DAYS_10
+  | DURATIONDAYS.DAYS_15
+  | DURATIONDAYS.DAYS_30
+
 export type PostStatus =
   | POST_STATUS.ALL
   | POST_STATUS.EXPIRED
@@ -254,10 +265,6 @@ export interface BenefitMembership {
   membershipId: number
 }
 
-export type PackageSelection = {
-  tierId: number
-  priceId: number
-}
 /**
  * Create listing request - Updated schema
  */
@@ -265,7 +272,6 @@ export interface CreateListingRequest {
   title?: string
   description?: string
   listingType?: ListingType
-  vipType?: VipType
   categoryId?: number
   productType?: PropertyType
   price?: number
@@ -281,14 +287,16 @@ export interface CreateListingRequest {
   amenityIds?: number[]
   assets?: ListingAssets
   postDate?: string | Date // startDate
-  expiryDate?: string | Date // endDate
   isDraft?: boolean
   waterPrice?: PriceType
   electricityPrice?: PriceType
   internetPrice?: PriceType
-  // New combined package selection (temporary simplified shape)
+
   benefitsMembership?: BenefitMembership[]
-  packageSelection?: PackageSelection
+
+  vipType?: VipType
+  durationDays?: DurationDays // endDate
+  useMembershipQuota?: boolean
 }
 
 /**
@@ -382,10 +390,10 @@ export interface ProvinceStatsItem {
   vipListings: number
 }
 
-export interface BaseListingFilter {
-  provinceId?: number
+export interface ListingFilterRequest {
+  provinceId?: number | string // number for legacy (63), string code for new (34)
   districtId?: number
-  wardId?: number
+  wardId?: number | string // number for legacy, string code for new
   longitude?: number
   latitude?: number
   isLegacy?: boolean
@@ -416,25 +424,20 @@ export interface BaseListingFilter {
 
   page?: number
   size?: number
-}
 
-export interface OwnerListingFilterRequest extends BaseListingFilter {
   status?: PostStatus
-}
 
-export interface ListingFilterRequest extends BaseListingFilter {
   userId?: string
-  status?: PostStatus
 }
 
-export interface ListingSearchResponse {
-  listings: ListingApi[]
+export interface ListingSearchResponse<T> {
+  listings: T[]
   pagination: Pagination
   filterCriteria?: Partial<ListingFilterRequest>
 }
 
-export interface ListingSearchApiResponse {
+export interface ListingSearchApiResponse<T> {
   code: string
   message: string | null
-  data: ListingSearchResponse
+  data: ListingSearchResponse<T>
 }

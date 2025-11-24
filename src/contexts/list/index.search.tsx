@@ -1,120 +1,93 @@
-import React, { useState, useEffect } from 'react'
-import { Search } from 'lucide-react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
+import { Search, X } from 'lucide-react'
 import { Input } from '@/components/atoms/input'
 import { Button } from '@/components/atoms/button'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useListContext } from './useListContext'
 import classNames from 'classnames'
+import { useTranslations } from 'next-intl'
 
 interface ListSearchProps {
   placeholder?: string
   debounceMs?: number
-  showButton?: boolean
-  buttonText?: string
-  autoSearch?: boolean
-  onSearch?: (searchTerm: string) => void
   className?: string
 }
 
 const ListSearch: React.FC<ListSearchProps> = ({
-  placeholder = 'Tìm kiếm...',
+  placeholder,
   debounceMs = 500,
-  showButton = false,
-  buttonText = 'Tìm kiếm',
-  autoSearch = true,
-  onSearch,
   className = '',
 }) => {
-  const { filters, handleUpdateFilter, isLoading } = useListContext()
-  const [searchTerm, setSearchTerm] = useState(
-    (filters.search as string | undefined) || '',
-  )
+  const t = useTranslations('common.listSearch')
+  const { filters, updateFilters, isLoading } = useListContext()
 
-  const debouncedSearchTerm = useDebounce(searchTerm, debounceMs)
+  // Local state for input value
+  const [inputValue, setInputValue] = useState(filters.keyword || '')
+  const debouncedValue = useDebounce(inputValue, debounceMs)
 
+  // Track if this is initial mount
+  const isInitialMount = useRef(true)
+  // Track latest filters to avoid stale closures without triggering re-runs
+  const filtersRef = useRef(filters)
+  filtersRef.current = filters
+
+  // Sync debounced value to context (skip on initial mount)
   useEffect(() => {
-    if (autoSearch && debouncedSearchTerm !== filters.search) {
-      handleUpdateFilter({ search: debouncedSearchTerm })
-      onSearch?.(debouncedSearchTerm || '')
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
     }
-  }, [
-    debouncedSearchTerm,
-    autoSearch,
-    filters.search,
-    handleUpdateFilter,
-    onSearch,
-  ])
+    // Only update if different from current filter
+    // Use ref to access latest filters without adding it to dependencies
+    if (debouncedValue !== filtersRef.current.keyword) {
+      updateFilters({ keyword: debouncedValue })
+    }
+  }, [debouncedValue, updateFilters])
 
-  const handleSearch = () => {
-    if (searchTerm !== filters.search) {
-      handleUpdateFilter({ search: searchTerm })
-      onSearch?.(searchTerm || '')
+  // Sync from context when filters change externally (e.g., reset)
+  useEffect(() => {
+    const keyword = filters.keyword || ''
+    if (keyword !== inputValue) {
+      setInputValue(keyword)
     }
-  }
+  }, [filters.keyword]) // Only depend on filters.keyword
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      if (!autoSearch) {
-        handleSearch()
-      }
-    }
-  }
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value)
+  }, [])
 
-  const handleClear = () => {
-    setSearchTerm('')
-    if (filters.search !== '') {
-      handleUpdateFilter({ search: '' })
-      onSearch?.('')
-    }
-  }
+  const handleClear = useCallback(() => {
+    setInputValue('')
+    updateFilters({ keyword: '' })
+  }, [updateFilters])
 
   return (
-    <div className={classNames(`flex items-center gap-2`, className)}>
-      <div className='relative flex-1'>
-        <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
-        <Input
-          type='text'
-          placeholder={placeholder}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={handleKeyPress}
-          className='pl-10 pr-10'
-          disabled={isLoading}
-        />
-        {searchTerm && (
-          <Button
-            type='button'
-            variant='ghost'
-            size='icon'
-            onClick={handleClear}
-            className='absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground hover:text-foreground'
-            disabled={isLoading}
-          >
-            ×
-          </Button>
-        )}
-      </div>
-
-      {showButton && (
+    <div className={classNames('relative flex-1', className)}>
+      <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+      <Input
+        type='text'
+        placeholder={placeholder || t('placeholder')}
+        value={inputValue}
+        onChange={handleChange}
+        className='pl-10 pr-10'
+        disabled={isLoading}
+      />
+      {inputValue && (
         <Button
           type='button'
-          onClick={handleSearch}
-          disabled={isLoading || (autoSearch && searchTerm === filters.search)}
-          className='whitespace-nowrap'
+          variant='ghost'
+          size='icon'
+          onClick={handleClear}
+          className='absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground hover:text-foreground'
+          disabled={isLoading}
         >
-          {isLoading ? (
-            <>
-              <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
-              Đang tìm...
-            </>
-          ) : (
-            <>
-              <Search className='mr-2 h-4 w-4' />
-              {buttonText}
-            </>
-          )}
+          <X className='h-4 w-4' />
         </Button>
+      )}
+      {isLoading && (
+        <div className='absolute right-10 top-1/2 -translate-y-1/2'>
+          <div className='h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent text-muted-foreground' />
+        </div>
       )}
     </div>
   )

@@ -140,18 +140,20 @@ export const getPackageConfigSchema = () => {
   return yup
     .object()
     .shape({
-      // Simplified: we only require a start date (postDate) and either a packageSelection or benefitsMembership
+      // Required: start date + duration + vipType OR membership benefit
       postDate: yup
         .string()
         .required('startDateRequired')
         .trim()
         .min(1, 'startDateRequired'),
-      packageSelection: yup
-        .object({
-          tierId: yup.number().required(),
-          priceId: yup.number().required(),
-        })
-        .optional(),
+      vipType: yup
+        .string()
+        .optional()
+        .oneOf(['NORMAL', 'SILVER', 'GOLD', 'DIAMOND'], 'vipTypeInvalid'),
+      durationDays: yup
+        .number()
+        .optional()
+        .oneOf([10, 15, 30], 'durationInvalid'),
       benefitsMembership: yup
         .array()
         .of(
@@ -163,8 +165,8 @@ export const getPackageConfigSchema = () => {
         .optional(),
     })
     .test('package-required', 'packageRequired', function (value) {
-      // Require at least one selection: either VIP (packageSelection) or a membership benefit
-      const hasVip = !!value?.packageSelection
+      // Require either VIP (vipType + durationDays) or a membership benefit
+      const hasVip = !!value?.vipType && !!value?.durationDays
       const hasBenefit = Array.isArray(value?.benefitsMembership)
         ? value!.benefitsMembership!.length > 0
         : false
@@ -185,12 +187,14 @@ export const getCreatePostSchema = () => {
         .required('startDateRequired')
         .trim()
         .min(1, 'startDateRequired'),
-      packageSelection: yup
-        .object({
-          tierId: yup.number().required(),
-          priceId: yup.number().required(),
-        })
-        .optional(),
+      vipType: yup
+        .string()
+        .optional()
+        .oneOf(['NORMAL', 'SILVER', 'GOLD', 'DIAMOND'], 'vipTypeInvalid'),
+      durationDays: yup
+        .number()
+        .optional()
+        .oneOf([10, 15, 30], 'durationInvalid'),
       benefitsMembership: yup
         .array()
         .of(
@@ -202,7 +206,7 @@ export const getCreatePostSchema = () => {
         .optional(),
     })
     .test('package-required', 'packageRequired', function (value) {
-      const hasVip = !!value?.packageSelection
+      const hasVip = !!value?.vipType && !!value?.durationDays
       const hasBenefit = Array.isArray(value?.benefitsMembership)
         ? value!.benefitsMembership!.length > 0
         : false

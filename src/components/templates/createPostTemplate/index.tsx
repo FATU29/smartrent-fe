@@ -34,6 +34,7 @@ import {
   STEP_3_FIELDS,
 } from '@/utils/createPost/validationSchemas'
 import type { CreateListingRequest, PriceType } from '@/api/types/property.type'
+import { toast } from 'sonner'
 
 interface CreatePostTemplateProps {
   className?: string
@@ -45,7 +46,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const t = useTranslations('createPost')
   const tSteps = useTranslations('createPost.steps')
   const tValidation = useTranslations('createPost.validation')
-  const { propertyInfo } = useCreatePost()
+  const { propertyInfo, videoUploadProgress } = useCreatePost()
   const [currentStep, setCurrentStep] = useState(0)
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const topRef = useRef<HTMLDivElement | null>(null)
@@ -160,7 +161,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
     }
     if (index === 3) {
       const pi = propertyInfo as unknown as Record<string, unknown>
-      const hasVip = !!pi?.packageSelection
+      const hasVip = !!pi?.vipType && !!pi?.durationDays
       const hasBenefit = Array.isArray(pi?.benefitsMembership)
         ? (pi?.benefitsMembership as unknown[]).length > 0
         : false
@@ -230,6 +231,15 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
     // Special handling for Media step (step 2) - upload pending images
     if (currentStep === 2) {
+      // Block if video is uploading
+      if (videoUploadProgress.isUploading) {
+        toast.error(
+          t('validation.videoUploadInProgress') ||
+            'Vui lòng đợi video tải lên hoàn tất trước khi tiếp tục',
+        )
+        return
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const validateMediaStep = (window as any).__validateMediaStep
       if (validateMediaStep) {
@@ -348,7 +358,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
     // Check for package-required error (from schema test)
     if (currentStep === 3) {
       const pi = propertyInfo as unknown as Record<string, unknown>
-      const hasVip = !!pi?.packageSelection
+      const hasVip = !!pi?.vipType && !!pi?.durationDays
       const hasBenefit = Array.isArray(pi?.benefitsMembership)
         ? (pi?.benefitsMembership as unknown[]).length > 0
         : false
@@ -484,10 +494,11 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
                     const hasBenefit = Array.isArray(pi?.benefitsMembership)
                       ? (pi?.benefitsMembership as unknown[]).length > 0
                       : false
-                    // If membership benefit applied, create listing directly; otherwise start payment
-                    if (hasBenefit) {
+                    const usingQuota = !!pi?.useMembershipQuota
+                    // If membership quota enabled OR benefit applied, create listing directly; otherwise start payment
+                    if (usingQuota || hasBenefit) {
                       console.log(
-                        'Creating listing with membership benefit (no payment required)...',
+                        'Creating listing with membership quota/benefit (no payment required)...',
                       )
                       // TODO: Call API to create listing directly
                     } else {
@@ -499,16 +510,19 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
                   className='w-full sm:w-auto order-1 sm:order-2 h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
                 >
                   <CreditCard className='w-4 h-4 mr-2' />
-                  {Array.isArray(
-                    (propertyInfo as unknown as Record<string, unknown>)
-                      ?.benefitsMembership,
-                  ) &&
-                  (
-                    (propertyInfo as unknown as Record<string, unknown>)
-                      ?.benefitsMembership as unknown[]
-                  ).length > 0
-                    ? t('createListing')
-                    : t('payment')}
+                  {(() => {
+                    const pi = propertyInfo as unknown as Record<
+                      string,
+                      unknown
+                    >
+                    const hasBenefit = Array.isArray(pi?.benefitsMembership)
+                      ? (pi?.benefitsMembership as unknown[]).length > 0
+                      : false
+                    const usingQuota = !!pi?.useMembershipQuota
+                    return usingQuota || hasBenefit
+                      ? t('createListing')
+                      : t('payment')
+                  })()}
                 </Button>
               )}
             </Card>

@@ -18,6 +18,10 @@
     "email": "Email",
     "contactInformation": "Thông tin liên hệ",
     "notAvailable": "Chưa có",
+    "listSearch": {
+      "placeholder": "Tìm kiếm...",
+      "searching": "Đang tìm..."
+    },
     "propertyTypes": {
       "0": "Tất cả",
       "1": "Cho thuê phòng trọ",
@@ -742,7 +746,8 @@
       "bathroomsMinimum": "Số phòng tắm phải ít nhất là 1",
       "directionRequired": "Hướng nhà là bắt buộc",
       "directionInvalid": "Hướng nhà không hợp lệ",
-      "moveInDateRequired": "Ngày chuyển vào là bắt buộc"
+      "moveInDateRequired": "Ngày chuyển vào là bắt buộc",
+      "videoUploadInProgress": "Vui lòng đợi video tải lên hoàn tất trước khi tiếp tục"
     },
     "generateAutomatically": "Tạo tự động",
     "continueToUpload": "Tiếp tục tải lên",
@@ -836,7 +841,11 @@
         "vatIncluded": "Đã bao gồm VAT",
         "packagePrice": "Giá gói",
         "priceBreakdown": "Chi tiết thanh toán",
-        "promotionApplied": "Khuyến mãi được áp dụng"
+        "promotionApplied": "Khuyến mãi được áp dụng",
+        "useMembershipQuota": "Dùng quota thành viên",
+        "useMembershipQuotaDescription": "Bật để đăng tin mà không thanh toán, sử dụng quota từ gói thành viên",
+        "usingMembershipQuota": "Quota Thành viên",
+        "freePosting": "Đăng tin miễn phí"
       },
       "orderSummary": {
         "title": "Tóm tắt Đơn hàng",
@@ -956,6 +965,7 @@
           "description": "Tải ảnh bìa sẽ hiển thị đầu tiên trong bộ sưu tập",
           "uploadCta": "Tải ảnh bìa",
           "replaceCta": "Thay ảnh bìa",
+          "deleteCta": "Xóa",
           "badge": "Ảnh bìa",
           "uploading": "Đang tải lên..."
         }
@@ -1045,7 +1055,21 @@
             "loadDistrictsFailed": "Không thể tải danh sách quận/huyện",
             "loadWardsFailed": "Không thể tải danh sách phường/xã",
             "convertMissingFields": "Vui lòng chọn đầy đủ thông tin địa chỉ",
-            "convertFailed": "Không thể chuyển đổi địa chỉ"
+            "convertFailed": "Không thể chuyển đổi địa chỉ",
+            "loadMergeHistoryFailed": "Không thể tải danh sách địa chỉ cũ"
+          },
+          "geocode": {
+            "success": "Đã tự động định vị địa chỉ trên bản đồ",
+            "failed": "Không thể tự động định vị địa chỉ"
+          },
+          "legacySelection": {
+            "label": "Chọn địa chỉ cũ (Tuỳ chọn)",
+            "description": "Địa chỉ mới này được gộp từ nhiều địa chỉ cũ. Vui lòng chọn địa chỉ phù hợp với bất động sản của bạn.",
+            "placeholder": "Chọn địa chỉ cũ...",
+            "searchPlaceholder": "Tìm kiếm địa chỉ cũ...",
+            "noResults": "Không tìm thấy địa chỉ cũ",
+            "loading": "Đang tải địa chỉ cũ...",
+            "format": "{province} - {district} - {ward}"
           }
         },
         "useMyLocation": "Sử dụng vị trí của tôi",
@@ -1548,6 +1572,13 @@
       "areaProject": "Khu vực & Dự án",
       "address": "Địa chỉ"
     },
+    "propertyType": {
+      "any": "Tất cả",
+      "apartment": "Căn hộ chung cư",
+      "house": "Nhà nguyên căn",
+      "room": "Phòng trọ",
+      "studio": "Căn hộ Studio"
+    },
     "area": {
       "any": "Tất cả",
       "min": "Diện tích tối thiểu",
@@ -1652,7 +1683,15 @@
       "clear": "Đặt lại",
       "apply": "Áp dụng",
       "add": "+ Thêm",
-      "added": "Đã chọn"
+      "added": "Đã chọn",
+      "structureToggle": {
+        "newTitle": "Địa chỉ mới ({count} tỉnh)",
+        "legacyTitle": "Địa chỉ cũ ({count} tỉnh)",
+        "newLevels": "2 cấp: Tỉnh/TP - Phường/Xã",
+        "legacyLevels": "3 cấp: Tỉnh/TP - Quận/Huyện - Phường/Xã",
+        "newDescription": "Địa chỉ mới ({count} tỉnh) chỉ có 2 cấp: Tỉnh/Thành phố → Phường/Xã",
+        "legacyDescription": "Địa chỉ cũ ({count} tỉnh) có 3 cấp: Tỉnh/TP - Quận/Huyện - Phường/Xã"
+      }
     },
     "address": {
       "title": "Địa chỉ",
@@ -1755,15 +1794,16 @@
         "totalMany": "{count} tin đăng"
       },
       "status": {
-        "all": "Tất cả",
-        "expired": "Hết hạn",
-        "expiring": "Sắp hết hạn",
-        "active": "Đang hiển thị",
-        "pending": "Chờ duyệt",
-        "review": "Đang duyệt",
-        "payment": "Chờ thanh toán",
-        "rejected": "Bị từ chối",
-        "archived": "Đã lưu trữ"
+        "ALL": "Tất cả",
+        "EXPIRED": "Hết hạn",
+        "NEAR_EXPIRED": "Sắp hết hạn",
+        "DISPLAYING": "Đang hiển thị",
+        "PENDING_APPROVAL": "Chờ duyệt",
+        "APPROVED": "Đang duyệt",
+        "PENDING_PAYMENT": "Chờ thanh toán",
+        "REJECTED": "Bị từ chối",
+        "VERIFIED": "Đã xác thực",
+        "ARCHIVED": "Đã lưu trữ"
       },
       "empty": {
         "title": "Chưa có tin đăng",

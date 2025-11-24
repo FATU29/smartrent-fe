@@ -20,14 +20,12 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
   const { open: openDialog, handleOpen, handleClose } = useDialog()
 
-  // Use React Query to fetch memberships
   const {
     data: memberships = [],
     isLoading: membershipLoading,
     error: membershipError,
   } = useMembershipPackages()
 
-  // Use mutation for purchasing
   const purchaseMutation = usePurchaseMembership()
 
   const handleSelectMethod = useCallback(
@@ -75,7 +73,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
     [handleOpen],
   )
 
-  // Show error state
   if (membershipError) {
     return (
       <div className='flex items-center justify-center py-12'>

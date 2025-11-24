@@ -3,24 +3,28 @@ import { useListContext } from './useListContext'
 import classNames from 'classnames'
 
 type ListContentProps<T = unknown> = {
-  Item: (item: T) => ReactNode
+  renderItem: (item: T, index: number) => ReactNode
   skeleton: ReactNode
-  notFound: ReactNode
+  emptyState: ReactNode
   className?: string
   gridClassName?: string
 }
 
-const ListContent = <T,>(props: ListContentProps<T>) => {
-  const { Item, skeleton, notFound, className, gridClassName } = props
+const ListContent = <T,>({
+  renderItem,
+  skeleton,
+  emptyState,
+  className,
+  gridClassName,
+}: ListContentProps<T>) => {
+  const { items, isLoading } = useListContext<T>()
 
-  const { itemsData, isLoading } = useListContext<T>()
-
-  if (isLoading) {
+  if (isLoading && items.length === 0) {
     return <>{skeleton}</>
   }
 
-  if (!itemsData || itemsData.length === 0) {
-    return <>{notFound}</>
+  if (!items || items.length === 0) {
+    return <>{emptyState}</>
   }
 
   return (
@@ -31,8 +35,8 @@ const ListContent = <T,>(props: ListContentProps<T>) => {
           gridClassName,
         )}
       >
-        {itemsData.map((item, index) => (
-          <div key={index}>{Item(item)}</div>
+        {items.map((item, index) => (
+          <div key={index}>{renderItem(item, index)}</div>
         ))}
       </div>
     </div>

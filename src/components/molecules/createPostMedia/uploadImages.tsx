@@ -155,9 +155,6 @@ const UploadImages: React.FC = () => {
                 className='group relative rounded-xl border border-blue-300 dark:border-blue-700 bg-white dark:bg-gray-900 overflow-hidden'
               >
                 <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-800'>
-                  <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-blue-400 text-white font-medium shadow-sm'>
-                    {t('pending')}
-                  </span>
                   <Image
                     src={img.previewUrl}
                     alt={`Pending ${index + 1}`}

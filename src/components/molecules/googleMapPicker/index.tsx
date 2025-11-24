@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useCallback } from 'react'
 import { MapPin } from 'lucide-react'
+import GoogleMapReact from 'google-map-react'
+import { ENV } from '@/constants/env'
 
 interface GoogleMapPickerProps {
   latitude?: number
   longitude?: number
   onLocationSelect: (lat: number, lng: number) => void
   className?: string
+  zoom?: number
 }
 
 const GoogleMapPicker: React.FC<GoogleMapPickerProps> = ({
@@ -13,102 +16,88 @@ const GoogleMapPicker: React.FC<GoogleMapPickerProps> = ({
   longitude = 106.660172,
   onLocationSelect,
   className = '',
+  zoom = 15,
 }) => {
-  const mapRef = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<google.maps.Map | null>(null)
-  const [marker, setMarker] = useState<google.maps.Marker | null>(null)
   const hasValidCoordinates = latitude !== 0 && longitude !== 0
+  const [markerPos, setMarkerPos] = useState({ lat: latitude, lng: longitude })
 
-  useEffect(() => {
-    if (!mapRef.current || !hasValidCoordinates) return
+  // Handle user click on map
+  const handleClick = useCallback(
+    (e: { lat: number; lng: number }) => {
+      if (e?.lat && e?.lng) {
+        setMarkerPos({ lat: e.lat, lng: e.lng })
+        onLocationSelect(e.lat, e.lng)
+      }
+    },
+    [onLocationSelect],
+  )
 
-    const initMap = () => {
-      const mapInstance = new google.maps.Map(mapRef.current!, {
-        center: { lat: latitude, lng: longitude },
-        zoom: 15,
-        mapTypeControl: true,
-        streetViewControl: false,
-        fullscreenControl: false,
-      })
-
-      const markerInstance = new google.maps.Marker({
-        position: { lat: latitude, lng: longitude },
-        map: mapInstance,
-        draggable: true,
-      })
-
-      mapInstance.addListener('click', (e: google.maps.MapMouseEvent) => {
-        const lat = e.latLng?.lat() || 0
-        const lng = e.latLng?.lng() || 0
-        markerInstance.setPosition({ lat, lng })
-        onLocationSelect(lat, lng)
-      })
-
-      markerInstance.addListener('dragend', () => {
-        const position = markerInstance.getPosition()
-        if (position) {
-          onLocationSelect(position.lat(), position.lng())
-        }
-      })
-
-      setMap(mapInstance)
-      setMarker(markerInstance)
+  // Sync external changes (e.g. "use my location")
+  React.useEffect(() => {
+    if (latitude && longitude) {
+      setMarkerPos({ lat: latitude, lng: longitude })
     }
+  }, [latitude, longitude])
 
-    if (!window.google) {
-      const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`
-      script.async = true
-      script.defer = true
-      script.onload = initMap
-      document.head.appendChild(script)
-    } else {
-      initMap()
-    }
-  }, [hasValidCoordinates])
+  const center = hasValidCoordinates
+    ? { lat: latitude, lng: longitude }
+    : markerPos
 
-  useEffect(() => {
-    if (marker && map) {
-      const newPosition = { lat: latitude, lng: longitude }
-      marker.setPosition(newPosition)
-      map.setCenter(newPosition)
-    }
-  }, [latitude, longitude, marker, map])
+  // Lightweight marker component (children of GoogleMapReact)
+  const Marker: React.FC<{ lat: number; lng: number }> = ({ lat, lng }) => (
+    <div className='relative -translate-x-1/2 -translate-y-1/2'>
+      <div className='w-5 h-5 rounded-full bg-blue-500 shadow ring-2 ring-white dark:ring-gray-800 flex items-center justify-center'>
+        <MapPin className='w-3 h-3 text-white' />
+      </div>
+      <div className='absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white dark:bg-gray-800 text-[10px] px-2 py-0.5 rounded shadow border border-gray-200 dark:border-gray-700'>
+        {lat?.toFixed(4)}, {lng?.toFixed(4)}
+      </div>
+    </div>
+  )
+
+  // Don't render if no valid API key
+  if (
+    !ENV.GOOGLE_MAP_KEY ||
+    ENV.GOOGLE_MAP_KEY === 'your_google_maps_api_key_here'
+  ) {
+    return (
+      <div className={className}>
+        <div className='relative w-full h-64 rounded-xl overflow-hidden border-2 border-red-200 dark:border-red-700 shadow-sm bg-red-50 dark:bg-red-900/20 flex items-center justify-center'>
+          <div className='text-center p-4'>
+            <MapPin className='w-8 h-8 mx-auto mb-2 text-red-500' />
+            <p className='text-sm font-medium text-red-700 dark:text-red-300'>
+              Google Maps API key missing
+            </p>
+            <p className='text-xs text-red-600 dark:text-red-400 mt-1'>
+              Set NEXT_PUBLIC_GOOGLE_MAP_KEY in .env
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={className}>
       {/* Map Display */}
-      {hasValidCoordinates ? (
-        <div className='space-y-3'>
-          {/* Google Maps */}
-          <div className='relative w-full h-64 rounded-xl overflow-hidden border-2 border-gray-200 dark:border-gray-700 shadow-sm'>
-            <div ref={mapRef} className='w-full h-full' />
-            <div className='absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 px-3 py-2 rounded-lg text-xs shadow-lg'>
-              <div className='flex items-center gap-2'>
-                <MapPin className='w-4 h-4 text-blue-500' />
-                <span className='text-gray-700 dark:text-gray-300 font-medium'>
-                  Click trên bản đồ để chọn vị trí
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        // Empty state - no coordinates yet
-        <div className='w-full h-64 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center relative'>
-          <div className='text-center space-y-4 p-6'>
-            <MapPin className='w-12 h-12 text-blue-500 mx-auto' />
-            <div>
-              <p className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                Chưa có vị trí
-              </p>
-              <p className='text-xs text-gray-500 dark:text-gray-400 mt-1'>
-                Nhập địa chỉ để hiển thị bản đồ
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className='relative w-full h-64 rounded-xl overflow-hidden border-2 border-gray-200 dark:border-gray-700 shadow-sm'>
+        <GoogleMapReact
+          bootstrapURLKeys={{ key: ENV.GOOGLE_MAP_KEY }}
+          defaultCenter={center}
+          center={center}
+          defaultZoom={zoom}
+          zoom={zoom}
+          yesIWantToUseGoogleMapApiInternals={false}
+          onClick={handleClick}
+          options={{
+            fullscreenControl: false,
+            streetViewControl: false,
+            mapTypeControl: true,
+          }}
+        >
+          <Marker lat={markerPos.lat} lng={markerPos.lng} />
+        </GoogleMapReact>
+      </div>
     </div>
   )
 }

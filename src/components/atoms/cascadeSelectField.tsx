@@ -24,7 +24,6 @@ interface CascadeSelectFieldProps {
   className?: string
 }
 
-// Atomic input-like select used in cascading location filter.
 const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
   label,
   placeholder,
@@ -47,6 +46,7 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
   )
 
   const CLEAR_VALUE = '__clear__'
+
   return (
     <div className={cn('space-y-1', className)}>
       <div className='text-sm font-medium'>{label}</div>
@@ -77,7 +77,7 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
               />
             </div>
           )}
-          <SelectItem value={CLEAR_VALUE}>{placeholder}</SelectItem>
+          {/* Không render option placeholder */}
           {filtered.map((opt) => (
             <SelectItem key={opt.id} value={opt.id}>
               {opt.label}

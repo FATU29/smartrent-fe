@@ -24,6 +24,7 @@ import {
   Ruler,
   MapPin,
   Sparkles,
+  Award,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import VideoPlayerFull from '@/components/molecules/videoPlayerFull'
@@ -50,22 +51,21 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
   const { data: vipTiers = [] } = useVipTiers()
   const { user } = useAuthContext()
 
-  // Resolve selected VIP tier from packageSelection (by tierId)
-  const selectedTier = vipTiers.find(
-    (t) => t.tierId === propertyInfo.packageSelection?.tierId,
-  )
+  // Resolve selected VIP tier from vipType
+  const selectedTier = vipTiers.find((t) => t.tierCode === propertyInfo.vipType)
 
   const packageName = selectedTier?.tierName || t('notSelected')
 
-  // Compute total price based on selected duration using API-provided tier pricing
+  // Compute total price based on durationDays using API-provided tier pricing
+  const usingMembershipQuota = !!propertyInfo.useMembershipQuota
   const usingPromotion = Array.isArray(propertyInfo.benefitsMembership)
     ? propertyInfo.benefitsMembership.length > 0
     : false
 
   // Price calculation - no VAT or discount
   const totalPrice = (() => {
-    const duration = propertyInfo.packageSelection?.priceId
-    if (usingPromotion) return 0
+    const duration = propertyInfo.durationDays
+    if (usingMembershipQuota || usingPromotion) return 0
     if (!selectedTier || !duration) return 0
     switch (duration) {
       case 10:
@@ -87,8 +87,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
   }
 
   const getEndDate = () => {
-    if (propertyInfo.expiryDate) return formatDate(propertyInfo.expiryDate)
-    const duration = propertyInfo.packageSelection?.priceId
+    const duration = propertyInfo.durationDays
     const postDate = propertyInfo.postDate
     if (!postDate || !duration) return 'N/A'
     const startDate = new Date(postDate)
@@ -411,17 +410,20 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                 }
                 variant='highlight'
               />
-              {usingPromotion && (
+              {(usingMembershipQuota || usingPromotion) && (
                 <>
                   <Separator />
                   <OrderSummaryRow
                     label={tCreatePost(
-                      'sections.packageConfig.promotionApplied',
+                      'sections.packageConfig.usingMembershipQuota',
                     )}
                     value={
-                      <Typography className='text-sm text-primary'>
-                        ✔
-                      </Typography>
+                      <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                        <Award className='w-4 h-4 text-primary' />
+                        <Typography className='text-sm text-primary font-medium'>
+                          {tCreatePost('sections.packageConfig.freePosting')}
+                        </Typography>
+                      </Card>
                     }
                   />
                 </>
@@ -429,7 +431,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
               <Separator />
               <OrderSummaryRow
                 label={tCreatePost('sections.packageConfig.duration')}
-                value={`${propertyInfo.packageSelection?.priceId || 0} ${tCreatePost('sections.packageConfig.days')}`}
+                value={`${propertyInfo.durationDays || 0} ${tCreatePost('sections.packageConfig.days')}`}
               />
               <Separator />
               <OrderSummaryRow

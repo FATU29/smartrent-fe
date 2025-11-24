@@ -152,6 +152,8 @@ export const PATHS = {
     // Conversion
     CONVERT_NEW_TO_LEGACY: '/v1/addresses/convert/new-to-legacy',
     CONVERT_LEGACY_TO_NEW: '/v1/addresses/convert/legacy-to-new',
+    // Merge history
+    MERGE_HISTORY: '/v1/addresses/merge-history',
   },
 
   // Phone Click Detail endpoints

@@ -1,11 +1,10 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import PricingPlanCard, {
   PricingPlanCardSkeleton,
 } from '@/components/molecules/pricingPlanCard'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import type { Membership } from '@/api/types/membership.type'
-import { transformMembershipToPricingCard } from './utils'
 
 interface MembershipPlansGridProps {
   readonly loading?: boolean
@@ -29,11 +28,6 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
     [onPlanSelect],
   )
 
-  const transformedPlans = useMemo(
-    () => memberships.map(transformMembershipToPricingCard),
-    [memberships],
-  )
-
   if (loading) {
     return (
       <span className='grid gap-6 sm:grid-cols-2 xl:grid-cols-3 auto-rows-fr'>
@@ -44,7 +38,11 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
     )
   }
 
-  if (transformedPlans.length === 0) {
+  const safeMemberships: readonly Membership[] = Array.isArray(memberships)
+    ? memberships
+    : (memberships as unknown as { items?: readonly Membership[] })?.items || []
+
+  if (safeMemberships.length === 0) {
     return (
       <span className='flex items-center justify-center py-12'>
         <Typography variant='muted'>{tPage('noPlansAvailable')}</Typography>
@@ -54,17 +52,11 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
 
   return (
     <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-3 auto-rows-fr'>
-      {transformedPlans.map((plan) => (
+      {safeMemberships.map((plan) => (
         <PricingPlanCard
-          key={plan.id}
-          name={plan.name}
-          description={plan.description}
-          price={plan.price}
-          discountPercent={plan.discountPercent}
-          featureGroups={plan.featureGroups}
-          isBestSeller={plan.isBestSeller}
-          packageLevel={plan.packageLevel}
-          onSelect={() => handlePlanSelect(plan.id)}
+          key={plan.membershipId}
+          membership={plan}
+          onSelect={() => handlePlanSelect(plan.membershipId)}
         />
       ))}
     </div>

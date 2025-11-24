@@ -15,10 +15,29 @@ interface VideoUploadProgressState {
   fileName?: string | null
 }
 
+interface FulltextAddress {
+  // UI selection codes (NEW address system)
+  newProvinceCode?: string
+  newWardCode?: string
+  // Selected legacy mapping id (when choosing from merge-history list)
+  legacyAddressId?: string
+  // Composed / editable address strings
+  propertyAddress?: string // canonical composed address used for submission preview
+  displayAddress?: string // address shown in UI (may diverge when edited)
+  fullAddressNew?: string // convenience mirror for AI / preview modules
+  propertyAddressEdited?: boolean // user manually edited display/property address; stop auto-composition
+}
+
 interface CreatePostContextType {
-  propertyInfo: Partial<CreateListingRequest>
+  propertyInfo: CreateListingRequest
+  fulltextAddress: FulltextAddress
+  // Update only API-facing listing fields
   updatePropertyInfo: (updates: Partial<CreateListingRequest>) => void
   resetPropertyInfo: () => void
+  // Update only UI/fulltext address fields
+  updateFulltextAddress: (updates: Partial<FulltextAddress>) => void
+  resetFulltextAddress: () => void
+  // Video upload state & handlers
   videoUploadProgress: VideoUploadProgressState
   startVideoUpload: (fileName?: string) => void
   updateVideoUploadProgress: (progress: number) => void
@@ -38,9 +57,9 @@ interface CreatePostProviderProps {
 export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   children,
 }) => {
-  const [propertyInfo, setPropertyInfo] = useState<
-    Partial<CreateListingRequest>
-  >({})
+  const [propertyInfo, setPropertyInfo] = useState<CreateListingRequest>({})
+  const [fulltextAddress, setFulltextAddress] = useState<FulltextAddress>({})
+
   const [videoUploadProgress, setVideoUploadProgress] =
     useState<VideoUploadProgressState>({
       isUploading: false,
@@ -57,7 +76,14 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
     setPropertyInfo({})
   }
 
-  // Video upload progress handlers
+  const updateFulltextAddress = (updates: Partial<FulltextAddress>) => {
+    setFulltextAddress((prev) => ({ ...prev, ...updates }))
+  }
+
+  const resetFulltextAddress = () => {
+    setFulltextAddress({})
+  }
+
   const startVideoUpload = (fileName?: string) => {
     setVideoUploadProgress({
       isUploading: true,
@@ -91,8 +117,11 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   const contextValue = useMemo(
     () => ({
       propertyInfo,
+      fulltextAddress,
       updatePropertyInfo,
       resetPropertyInfo,
+      updateFulltextAddress,
+      resetFulltextAddress,
       videoUploadProgress,
       startVideoUpload,
       updateVideoUploadProgress,
@@ -101,9 +130,12 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
     }),
     [
       propertyInfo,
+      fulltextAddress,
       videoUploadProgress,
       updatePropertyInfo,
       resetPropertyInfo,
+      updateFulltextAddress,
+      resetFulltextAddress,
       startVideoUpload,
       updateVideoUploadProgress,
       setVideoUploadError,

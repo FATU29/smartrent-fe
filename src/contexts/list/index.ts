@@ -13,8 +13,3 @@ export const List = {
 }
 
 export { useListContext } from './useListContext'
-export type {
-  ListFilters,
-  ListFetcherResponse,
-  ListContextType,
-} from './index.type'

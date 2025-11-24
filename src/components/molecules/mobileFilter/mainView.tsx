@@ -12,20 +12,20 @@ import {
   Droplets,
   Wifi,
   ShieldCheck,
-  Video,
   Camera,
   MapPin,
+  Home,
 } from 'lucide-react'
-import { ListFilters } from '@/contexts/list/index.type'
+import { ListingFilterRequest } from '@/api/types'
 
 // MobileFilterMainView
 // Acts as the hub view listing all available filter categories and quick toggle flags.
 // Delegates navigation upward via onNavigate(viewKey).
 // Shows lightweight summaries (ranges, counts, media flags) inline to reduce drill-ins.
 interface MobileFilterMainViewProps {
-  filters: ListFilters
+  filters: ListingFilterRequest
   onNavigate: (view: string) => void
-  onUpdate: (partial: Partial<ListFilters>) => void
+  onUpdate: (partial: Partial<ListingFilterRequest>) => void
 }
 
 const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
@@ -49,27 +49,21 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
       <div className='space-y-1'>
         <RadioRow
           label={
-            filters.provinceId ||
-            filters.districtId ||
-            filters.wardId ||
-            filters.provinceCode ||
-            filters.newWardCode ||
-            filters.searchAddress
+            filters.provinceId || filters.districtId || filters.wardId
               ? `${t('dropdowns.address')} (${t('address.added')})`
               : `${t('dropdowns.address')} (${t('address.add')})`
           }
           selected={
-            !!(
-              filters.provinceId ||
-              filters.districtId ||
-              filters.wardId ||
-              filters.provinceCode ||
-              filters.newWardCode ||
-              filters.searchAddress
-            )
+            !!(filters.provinceId || filters.districtId || filters.wardId)
           }
           onClick={() => onNavigate('address')}
           iconLeft={<MapPin className='h-4 w-4 text-muted-foreground' />}
+        />
+        <RadioRow
+          label={t('dropdowns.propertyType')}
+          selected={!!filters.productType}
+          onClick={() => onNavigate('propertyType')}
+          iconLeft={<Home className='h-4 w-4 text-muted-foreground' />}
         />
         <RadioRow
           label={`${t('dropdowns.priceRange')} (${formatRange(filters.minPrice, filters.maxPrice, 'VND')})`}
@@ -86,7 +80,7 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
         <RadioRow
           label={t('dropdowns.orientation')}
           selected={!!filters.direction}
-          onClick={() => onNavigate('orientation')}
+          onClick={() => onNavigate('direction')}
           iconLeft={<Compass className='h-4 w-4 text-muted-foreground' />}
         />
         <RadioRow
@@ -132,19 +126,6 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           title={t('toggles.location')}
         >
           <LocationToggleChip />
-        </ToggleSection>
-
-        <ToggleSection
-          icon={<Video className='h-4 w-4 text-muted-foreground' />}
-          title={t('dropdowns.media')}
-        >
-          <div className='flex gap-2 flex-wrap'>
-            <ToggleChip
-              label={t('media.video')}
-              active={!!filters.hasMedia}
-              onClick={() => onUpdate({ hasMedia: !filters.hasMedia })}
-            />
-          </div>
         </ToggleSection>
       </div>
     </div>

@@ -13,20 +13,16 @@ import TopInterestSection from '@/components/organisms/topInterestSection'
 import { List } from '@/contexts/list'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
 import ClearFilterButton from '@/components/atoms/clearFilterButton'
-import type { VipTier } from '@/api/types/vip-tier.type'
-import type { GetPackagesResponse } from '@/api/types/membership.type'
 import type { CityItem } from '@/components/organisms/locationBrowseSection/types'
 import { ListingDetail } from '@/api/types'
 
 interface HomepageTemplateProps {
-  onPropertyClick?: (property: ListingDetail) => void
-  vipTiers?: VipTier[]
-  membershipPackages?: GetPackagesResponse
+  initialProperties?: ListingDetail[]
   cities?: CityItem[]
 }
 
 const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
-  onPropertyClick,
+  initialProperties,
   cities,
 }) => {
   const t = useTranslations()
@@ -34,10 +30,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   const router = useRouter()
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
 
-  const handlePropertyClick = (property: ListingDetail) => {
-    console.log('Property clicked:', property)
-    onPropertyClick?.(property)
-  }
+  const hasNext = pagination.currentPage < pagination.totalPages
 
   const handleSelectCity = useCallback(
     (city: CityItem) => {
@@ -90,12 +83,12 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
             </section>
             <TopInterestSection />
 
-            <PropertyList onPropertyClick={handlePropertyClick} />
+            <PropertyList initialProperties={initialProperties} />
             <div className='mt-8 flex flex-col items-center gap-4'>
-              {pagination.hasNext && !hasLoadedOnce && (
+              {hasNext && !hasLoadedOnce && (
                 <List.LoadMore onAfterLoad={() => setHasLoadedOnce(true)} />
               )}
-              {(hasLoadedOnce || !pagination.hasNext) && (
+              {(hasLoadedOnce || !hasNext) && (
                 <Button
                   onClick={() => router.push(PUBLIC_ROUTES.RESIDENTIAL_LIST)}
                   className='px-6'
@@ -103,7 +96,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                   {t('common.loadMore')} ➜
                 </Button>
               )}
-              {!pagination.hasNext && !hasLoadedOnce && (
+              {!hasNext && !hasLoadedOnce && (
                 <span className='text-xs text-muted-foreground'>
                   {t('common.endOfResults')}
                 </span>

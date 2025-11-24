@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
 import PropertyListContent from '@/components/molecules/propertyListContent'
@@ -21,15 +21,18 @@ const ResidentialPropertiesTemplate: React.FC = () => {
   const [emailNotification, setEmailNotification] = useState(false)
   const [sortBy, setSortBy] = useState('default')
 
-  const handleFavorite = (property: ListingDetail, isFavorite: boolean) => {
-    // TODO: Implement favorite functionality
-    console.log('Favorite:', property, isFavorite)
-  }
+  const handleFavorite = useCallback(
+    (property: ListingDetail, isFavorite: boolean) => {
+      // TODO: Implement favorite functionality
+      console.log('Favorite:', property, isFavorite)
+    },
+    [],
+  )
 
-  const handleSortChange = (value: string) => {
+  const handleSortChange = useCallback((value: string) => {
     setSortBy(value)
     // TODO: Implement sort logic
-  }
+  }, [])
 
   return (
     <>
@@ -44,7 +47,7 @@ const ResidentialPropertiesTemplate: React.FC = () => {
         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
           <div className='space-y-2'>
             <Typography variant='p' className='text-muted-foreground'>
-              {t('listingCount', { count: pagination.total.toLocaleString() })}
+              {t('listingCount', { count: pagination.totalCount })}
             </Typography>
           </div>
 

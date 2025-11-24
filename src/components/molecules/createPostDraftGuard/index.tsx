@@ -53,7 +53,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       propertyInfo.amenityIds !== undefined ||
       propertyInfo.assets !== undefined ||
       propertyInfo.postDate !== undefined ||
-      propertyInfo.expiryDate !== undefined ||
+      propertyInfo.durationDays !== undefined ||
       propertyInfo.benefitsMembership !== undefined ||
       propertyInfo.isDraft !== undefined
     )

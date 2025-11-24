@@ -173,8 +173,8 @@ export class ListingService {
   static async search(
     request: ListingFilterRequest,
     instance?: AxiosInstance,
-  ): Promise<ApiResponse<ListingSearchApiResponse['data']>> {
-    const response = await apiRequest<ListingSearchApiResponse['data']>(
+  ): Promise<ApiResponse<ListingSearchApiResponse<ListingDetail>>> {
+    const response = await apiRequest<ListingSearchApiResponse<ListingDetail>>(
       {
         method: 'POST',
         url: PATHS.LISTING.SEARCH,

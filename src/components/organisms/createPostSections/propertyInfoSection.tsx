@@ -84,7 +84,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       })
     }
     if (propertyInfo.address) {
-      setValue('address', propertyInfo.address, { shouldValidate: true })
+      setValue('address', propertyInfo?.address, { shouldValidate: true })
     }
     if (propertyInfo.area) {
       setValue('area', propertyInfo.area, { shouldValidate: true })
@@ -322,8 +322,8 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
               {/* Google Map Picker */}
               <GoogleMapPicker
-                latitude={latitude || 0}
-                longitude={longitude || 0}
+                latitude={latitude || 10.762622}
+                longitude={longitude || 106.660172}
                 onLocationSelect={(lat, lng) => {
                   updatePropertyInfo({
                     address: { latitude: lat, longitude: lng },

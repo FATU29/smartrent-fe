@@ -23,6 +23,7 @@ import type {
   SearchNewAddressResponse,
   NewFullAddressResponse,
   AddressConversionResponse,
+  MergeHistoryData,
   HealthCheckResponse,
 } from '../types/address.type'
 
@@ -606,6 +607,25 @@ export class AddressService {
       method: 'GET',
       url: PATHS.ADDRESS.CONVERT_LEGACY_TO_NEW,
       params: { provinceId, districtId, wardId },
+    })
+  }
+
+  /**
+   * Get merge history for a new address showing all legacy addresses merged into it
+   * @param {string} provinceCode - New province code
+   * @param {string} wardCode - New ward code
+   * @returns {Promise<ApiResponse<MergeHistoryData>>} Promise resolving to merge history data
+   * @example
+   * const history = await AddressService.getMergeHistory('01', '00001')
+   */
+  static async getMergeHistory(
+    provinceCode: string,
+    wardCode: string,
+  ): Promise<ApiResponse<MergeHistoryData>> {
+    return apiRequest<MergeHistoryData>({
+      method: 'GET',
+      url: PATHS.ADDRESS.MERGE_HISTORY,
+      params: { provinceCode, wardCode },
     })
   }
 

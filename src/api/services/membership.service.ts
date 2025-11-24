@@ -31,7 +31,7 @@ export class MembershipService {
 
   static async getAllPackages(
     instance?: AxiosInstance,
-  ): Promise<ApiResponse<GetPackagesResponse>> {
+  ): Promise<ApiResponse<GetPackagesResponse> | any> {
     const response = await apiRequest<GetPackagesResponse>(
       {
         method: 'GET',

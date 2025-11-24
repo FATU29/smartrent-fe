@@ -450,3 +450,104 @@ export interface HealthCheckResponse {
   readonly message: string
   readonly data: string
 }
+
+/**
+ * Merge history - New address info
+ */
+export interface MergeHistoryNewAddress {
+  readonly province: {
+    readonly code: string
+    readonly name: string
+    readonly key?: string
+    readonly latitude?: number
+    readonly longitude?: number
+    readonly alias?: string
+    readonly short_name?: string
+  }
+  readonly ward: {
+    readonly code: string
+    readonly name: string
+    readonly type?: string
+    readonly key?: string
+    readonly latitude?: number
+    readonly longitude?: number
+    readonly alias?: string
+    readonly short_name?: string
+    readonly province_code?: string
+    readonly province_name?: string
+  }
+}
+
+/**
+ * Merge history - Legacy address info
+ */
+export interface MergeHistoryLegacyAddress {
+  readonly province: {
+    readonly id: number
+    readonly name: string
+    readonly shortName?: string
+    readonly code?: string
+    readonly key?: string
+  }
+  readonly district: {
+    readonly id: number
+    readonly name: string
+    readonly shortName?: string
+    readonly code?: string
+    readonly type?: string
+    readonly provinceCode?: string
+    readonly provinceName?: string
+  }
+  readonly ward: {
+    readonly id: number
+    readonly name: string
+    readonly shortName?: string
+    readonly code?: string
+    readonly type?: string
+    readonly provinceCode?: string
+    readonly provinceName?: string
+    readonly districtCode?: string
+    readonly districtName?: string
+  }
+  readonly street?: {
+    readonly id: number
+    readonly name: string
+    readonly nameEn?: string
+    readonly prefix?: string
+    readonly provinceId?: number
+    readonly provinceName?: string
+    readonly districtId?: number
+    readonly districtName?: string
+  }
+}
+
+/**
+ * Merge history - Legacy source item
+ */
+export interface MergeHistoryLegacySource {
+  readonly legacy_address: MergeHistoryLegacyAddress
+  readonly is_merged_province: boolean
+  readonly is_merged_ward: boolean
+  readonly is_divided_ward: boolean
+  readonly is_default: boolean
+  readonly merge_description: string
+}
+
+/**
+ * Merge history response data
+ */
+export interface MergeHistoryData {
+  readonly new_address: MergeHistoryNewAddress
+  readonly legacy_sources: readonly MergeHistoryLegacySource[]
+  readonly total_merged_count: number
+  readonly merge_note: string
+}
+
+/**
+ * Merge history API response
+ */
+export interface MergeHistoryResponse {
+  readonly code: string
+  readonly message: string
+  readonly data: MergeHistoryData
+}

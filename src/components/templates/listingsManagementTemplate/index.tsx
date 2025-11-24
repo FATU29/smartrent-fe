@@ -16,22 +16,24 @@ const ListingsWithPagination: React.FC<{ currentStatus: PostStatus }> = ({
   currentStatus,
 }) => {
   const {
-    itemsData: listings,
+    items: listings,
     isLoading,
     pagination,
-    handleLoadMore,
+    loadMore,
   } = useListContext<ListingOwnerDetail>()
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tSeller = useTranslations('seller.listingManagement')
+  const { currentPage, totalPages } = pagination
+  const hasNext = currentPage < totalPages
 
   console.log('ListingsWithPagination rendered for status:', currentStatus)
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: () => {
       console.log('Load more triggered for mobile')
-      if (isMobile && pagination.hasNext && !isLoading) {
-        handleLoadMore()
+      if (isMobile && hasNext && !isLoading) {
+        loadMore()
       }
     },
     options: {
@@ -109,7 +111,7 @@ const ListingsWithPagination: React.FC<{ currentStatus: PostStatus }> = ({
                 </div>
               )}
 
-              {pagination.hasNext && !isLoading && (
+              {hasNext && !isLoading && (
                 <List.LoadMore
                   className='w-full max-w-xs'
                   variant='outline'
@@ -124,7 +126,7 @@ const ListingsWithPagination: React.FC<{ currentStatus: PostStatus }> = ({
                 aria-hidden='true'
               />
 
-              {!pagination.hasNext && listings.length > 0 && (
+              {!hasNext && listings.length > 0 && (
                 <div className='text-center py-6 text-gray-500 text-sm'>
                   {tSeller('allListingsShown')}
                 </div>
@@ -204,8 +206,8 @@ const ToolbarWithBadge: React.FC<{
 }
 
 const FilterButtonBadge: React.FC = () => {
-  const { filters, activeCount } = useListContext()
-  const activeFiltersCount = activeCount || countActiveFilters(filters)
+  const { filters, activeFilterCount } = useListContext()
+  const activeFiltersCount = activeFilterCount || countActiveFilters(filters)
 
   if (activeFiltersCount === 0) return null
 
@@ -219,29 +221,13 @@ const FilterButtonBadge: React.FC = () => {
 const FilterDialogWrapper: React.FC<{
   open: boolean
   onOpenChange: (open: boolean) => void
-}> = ({ open, onOpenChange }) => {
-  const { filters, handleUpdateFilter, handleResetFilter, activeCount } =
-    useListContext()
+}> = ({ onOpenChange }) => {
   const t = useTranslations('seller.listingManagement')
-
-  const handleApply = (newFilters: typeof filters) => {
-    handleUpdateFilter(newFilters)
-    onOpenChange(false)
-  }
-
-  const handleClear = () => {
-    handleResetFilter()
-  }
 
   return (
     <ResidentialFilterDialog
-      value={filters}
-      onChange={handleUpdateFilter}
-      onClear={handleClear}
-      activeCount={activeCount || countActiveFilters(filters)}
-      open={open}
       onOpenChange={onOpenChange}
-      onApply={handleApply}
+      open
       title={t('filter.title')}
     />
   )

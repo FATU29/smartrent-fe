@@ -18,6 +18,10 @@
     "email": "Email",
     "contactInformation": "Contact Information",
     "notAvailable": "Not Available",
+    "listSearch": {
+      "placeholder": "Search...",
+      "searching": "Searching..."
+    },
     "propertyTypes": {
       "0": "All",
       "1": "Room for Rent",
@@ -698,7 +702,8 @@
       "bathroomsMinimum": "Number of bathrooms must be at least 1",
       "directionRequired": "House direction is required",
       "directionInvalid": "Invalid house direction",
-      "moveInDateRequired": "Move-in date is required"
+      "moveInDateRequired": "Move-in date is required",
+      "videoUploadInProgress": "Please wait for video to finish uploading before continuing"
     },
     "generateAutomatically": "Generate Automatically",
     "continueToUpload": "Continue to upload",
@@ -792,7 +797,11 @@
         "vatIncluded": "VAT included",
         "packagePrice": "Package price",
         "priceBreakdown": "Price Breakdown",
-        "promotionApplied": "Promotion applied"
+        "promotionApplied": "Promotion applied",
+        "useMembershipQuota": "Use membership quota",
+        "useMembershipQuotaDescription": "Enable to post without payment using your membership quota",
+        "usingMembershipQuota": "Membership Quota",
+        "freePosting": "Free Posting"
       },
       "orderSummary": {
         "title": "Order Summary",
@@ -912,6 +921,7 @@
           "description": "Upload a cover image that will be shown first in your gallery",
           "uploadCta": "Upload Cover",
           "replaceCta": "Replace Cover",
+          "deleteCta": "Delete",
           "badge": "Cover",
           "uploading": "Uploading..."
         }
@@ -1046,7 +1056,21 @@
             "loadDistrictsFailed": "Failed to load districts list",
             "loadWardsFailed": "Failed to load wards list",
             "convertMissingFields": "Please select complete address information",
-            "convertFailed": "Failed to convert address"
+            "convertFailed": "Failed to convert address",
+            "loadMergeHistoryFailed": "Failed to load legacy address options"
+          },
+          "geocode": {
+            "success": "Address automatically located on the map",
+            "failed": "Unable to automatically locate address"
+          },
+          "legacySelection": {
+            "label": "Select Legacy Address (Optional)",
+            "description": "This new address was merged from multiple legacy addresses. Select the one that matches your property.",
+            "placeholder": "Select legacy address...",
+            "searchPlaceholder": "Search legacy address...",
+            "noResults": "No legacy addresses found",
+            "loading": "Loading legacy addresses...",
+            "format": "{province} - {district} - {ward}"
           }
         },
         "amenities": {
@@ -1588,6 +1612,13 @@
       "areaProject": "Area & Project",
       "address": "Address"
     },
+    "propertyType": {
+      "any": "All",
+      "apartment": "Apartment",
+      "house": "House",
+      "room": "Room",
+      "studio": "Studio"
+    },
     "area": {
       "any": "All",
       "min": "Min area",
@@ -1692,7 +1723,15 @@
       "clear": "Clear",
       "apply": "Apply",
       "add": "+ Add",
-      "added": "Selected"
+      "added": "Selected",
+      "structureToggle": {
+        "newTitle": "New address ({count} provinces)",
+        "legacyTitle": "Legacy address ({count} provinces)",
+        "newLevels": "2 levels: Province/City - Ward",
+        "legacyLevels": "3 levels: Province/City - District - Ward",
+        "newDescription": "New address structure ({count} provinces) has 2 levels: Province/City → Ward",
+        "legacyDescription": "Legacy address structure ({count} provinces) has 3 levels: Province/City - District - Ward"
+      }
     },
     "address": {
       "title": "Address",
@@ -1711,15 +1750,16 @@
         "totalMany": "{count} listings"
       },
       "status": {
-        "all": "All",
-        "expired": "Expired",
-        "expiring": "Expiring",
-        "active": "Active",
-        "pending": "Pending",
-        "review": "In Review",
-        "payment": "Awaiting Payment",
-        "rejected": "Rejected",
-        "archived": "Archived"
+        "ALL": "All",
+        "EXPIRED": "Expired",
+        "NEAR_EXPIRED": "Expiring",
+        "DISPLAYING": "Active",
+        "PENDING_APPROVAL": "Pending",
+        "APPROVED": "In Review",
+        "PENDING_PAYMENT": "Awaiting Payment",
+        "REJECTED": "Rejected",
+        "VERIFIED": "Verified",
+        "ARCHIVED": "Archived"
       },
       "empty": {
         "title": "No listings yet",

@@ -69,7 +69,10 @@ const PricingGuideTemplate: React.FC<PricingGuideTemplateProps> = ({
       STANDARD: 2,
       ADVANCED: 3,
     }
-    return levelOrder[a.packageLevel] - levelOrder[b.packageLevel]
+    return (
+      levelOrder[a.packageLevel as MembershipPackageLevel] -
+      levelOrder[b.packageLevel as MembershipPackageLevel]
+    )
   })
 
   // Sort VIP tiers by level
