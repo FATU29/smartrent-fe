@@ -390,6 +390,14 @@ export interface ProvinceStatsItem {
   vipListings: number
 }
 
+export enum SortKey {
+  DEFAULT = 'DEFAULT',
+  PRICE_ASC = 'PRICE_ASC',
+  PRICE_DESC = 'PRICE_DESC',
+  NEWEST = 'NEWEST',
+  OLDEST = 'OLDEST',
+}
+
 export interface ListingFilterRequest {
   provinceId?: number | string // number for legacy (63), string code for new (34)
   districtId?: number
@@ -428,6 +436,8 @@ export interface ListingFilterRequest {
   status?: PostStatus
 
   userId?: string
+
+  sortBy?: SortKey
 }
 
 export interface ListingSearchResponse<T> {

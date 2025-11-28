@@ -188,6 +188,12 @@ export function getFiltersFromQuery(
   filters.page = parseNumberParam(query, 'page')
   filters.size = parseNumberParam(query, 'size')
 
+  // Sort
+  const sortByParam = parseStringParam(query, 'sortBy')
+  if (sortByParam) {
+    filters.sortBy = sortByParam as ListingFilterRequest['sortBy']
+  }
+
   // Remove undefined values
   return Object.fromEntries(
     Object.entries(filters).filter(([, v]) => v !== undefined),

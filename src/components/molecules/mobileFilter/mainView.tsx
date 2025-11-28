@@ -15,6 +15,7 @@ import {
   Camera,
   MapPin,
   Home,
+  Bed,
 } from 'lucide-react'
 import { ListingFilterRequest } from '@/api/types'
 
@@ -76,6 +77,12 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           selected={!!(filters.minArea || filters.maxArea)}
           onClick={() => onNavigate('area')}
           iconLeft={<Ruler className='h-4 w-4 text-muted-foreground' />}
+        />
+        <RadioRow
+          label={`${t('dropdowns.bedroomRange')} (${formatRange(filters.minBedrooms, filters.maxBedrooms)})`}
+          selected={!!(filters.minBedrooms || filters.maxBedrooms)}
+          onClick={() => onNavigate('bedroom')}
+          iconLeft={<Bed className='h-4 w-4 text-muted-foreground' />}
         />
         <RadioRow
           label={t('dropdowns.orientation')}

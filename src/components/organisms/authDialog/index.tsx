@@ -7,7 +7,12 @@ import React, {
   useMemo,
 } from 'react'
 import { NextPage } from 'next'
-import { Dialog, DialogContent, DialogTitle } from '@/components/atoms/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  VisuallyHidden,
+} from '@/components/atoms/dialog'
 import { Skeleton } from '@/components/atoms/skeleton'
 import ImageAtom from '@/components/atoms/imageAtom'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
@@ -61,8 +66,18 @@ const AuthDialog: NextPage<AuthDialogProps> = (props) => {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogTitle className='hidden'>Auth Dialog</DialogTitle>
       <DialogContent className='w-full overflow-y-auto h-dvh rounded-none md:rounded-xl md:h-[80vh] md:max-w-[60rem]'>
+        <VisuallyHidden>
+          <DialogTitle>
+            {authType === 'login'
+              ? 'Login'
+              : authType === 'register'
+                ? 'Register'
+                : authType === 'forgotPassword'
+                  ? 'Reset Password'
+                  : 'Authentication'}
+          </DialogTitle>
+        </VisuallyHidden>
         <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
           <div className='flex flex-col gap-8 md:flex-row md:gap-10'>
             <div className='flex justify-center items-center'>

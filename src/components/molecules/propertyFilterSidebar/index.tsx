@@ -1,10 +1,12 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/router'
 import { useListContext } from '@/contexts/list'
 import { Typography } from '@/components/atoms/typography'
 import { Checkbox } from '@/components/atoms/checkbox'
 import { Card } from '@/components/atoms/card'
-import { ListingFilterRequest } from '@/api/types'
+import { pushQueryParams } from '@/utils/queryParams'
+import { PUBLIC_ROUTES } from '@/constants/route'
 
 interface FilterOption {
   label: string
@@ -15,6 +17,7 @@ interface FilterOption {
 
 const PropertyFilterSidebar: React.FC = () => {
   const t = useTranslations('propertiesPage.filter')
+  const router = useRouter()
   const { filters, updateFilters } = useListContext()
 
   const priceOptions: FilterOption[] = [
@@ -58,55 +61,174 @@ const PropertyFilterSidebar: React.FC = () => {
 
   const bedroomOptions: FilterOption[] = [
     { label: t('bedroom.1'), value: '1', min: 1, max: 1 },
-    { label: t('bedroom.2'), value: '2', min: 2, max: 2 },
-    { label: t('bedroom.3'), value: '3', min: 3, max: 3 },
-    { label: t('bedroom.4'), value: '4', min: 4, max: 4 },
-    { label: t('bedroom.5plus'), value: '5plus', min: 5, max: undefined },
+    { label: t('bedroom.2to3'), value: '2to3', min: 2, max: 3 },
+    { label: t('bedroom.4to5'), value: '4to5', min: 4, max: 5 },
+    { label: t('bedroom.6plus'), value: '6plus', min: 6, max: undefined },
   ]
 
   const handlePriceChange = (option: FilterOption, checked: boolean) => {
-    if (checked) {
-      updateFilters({
-        minPrice: option.min,
-        maxPrice: option.max,
-      } as Partial<ListingFilterRequest>)
-    } else {
-      // Uncheck - clear price filter
-      updateFilters({
-        minPrice: undefined,
-        maxPrice: undefined,
-      } as Partial<ListingFilterRequest>)
-    }
+    const amenityIds = filters.amenityIds
+    const newFilters = checked
+      ? {
+          ...filters,
+          minPrice: option.min,
+          maxPrice: option.max,
+          page: 1,
+        }
+      : {
+          ...filters,
+          minPrice: undefined,
+          maxPrice: undefined,
+          page: 1,
+        }
+
+    updateFilters(newFilters)
+
+    pushQueryParams(
+      router,
+      {
+        categoryId: newFilters.categoryId ?? null,
+        productType: newFilters.productType ?? null,
+        keyword: newFilters.keyword || null,
+        minPrice: newFilters.minPrice ?? null,
+        maxPrice: newFilters.maxPrice ?? null,
+        minArea: newFilters.minArea ?? null,
+        maxArea: newFilters.maxArea ?? null,
+        minBedrooms: newFilters.minBedrooms ?? null,
+        maxBedrooms: newFilters.maxBedrooms ?? null,
+        bathrooms: newFilters.bathrooms ?? null,
+        verified: newFilters.verified || null,
+        direction: newFilters.direction ?? null,
+        electricityPrice: newFilters.electricityPrice ?? null,
+        waterPrice: newFilters.waterPrice ?? null,
+        internetPrice: newFilters.internetPrice ?? null,
+        amenityIds:
+          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
+        provinceId: newFilters.provinceId ?? null,
+        districtId: newFilters.districtId ?? null,
+        wardId: newFilters.wardId ?? null,
+        isLegacy: newFilters.isLegacy ?? null,
+        latitude: newFilters.latitude ?? null,
+        longitude: newFilters.longitude ?? null,
+        sortBy: newFilters.sortBy ?? null,
+        page: null,
+      },
+      {
+        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+        shallow: false,
+        scroll: true,
+      },
+    )
   }
 
   const handleAreaChange = (option: FilterOption, checked: boolean) => {
-    if (checked) {
-      updateFilters({
-        minArea: option.min,
-        maxArea: option.max,
-      } as Partial<ListingFilterRequest>)
-    } else {
-      // Uncheck - clear area filter
-      updateFilters({
-        minArea: undefined,
-        maxArea: undefined,
-      } as Partial<ListingFilterRequest>)
-    }
+    const amenityIds = filters.amenityIds
+    const newFilters = checked
+      ? {
+          ...filters,
+          minArea: option.min,
+          maxArea: option.max,
+          page: 1,
+        }
+      : {
+          ...filters,
+          minArea: undefined,
+          maxArea: undefined,
+          page: 1,
+        }
+
+    updateFilters(newFilters)
+
+    pushQueryParams(
+      router,
+      {
+        categoryId: newFilters.categoryId ?? null,
+        productType: newFilters.productType ?? null,
+        keyword: newFilters.keyword || null,
+        minPrice: newFilters.minPrice ?? null,
+        maxPrice: newFilters.maxPrice ?? null,
+        minArea: newFilters.minArea ?? null,
+        maxArea: newFilters.maxArea ?? null,
+        minBedrooms: newFilters.minBedrooms ?? null,
+        maxBedrooms: newFilters.maxBedrooms ?? null,
+        bathrooms: newFilters.bathrooms ?? null,
+        verified: newFilters.verified || null,
+        direction: newFilters.direction ?? null,
+        electricityPrice: newFilters.electricityPrice ?? null,
+        waterPrice: newFilters.waterPrice ?? null,
+        internetPrice: newFilters.internetPrice ?? null,
+        amenityIds:
+          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
+        provinceId: newFilters.provinceId ?? null,
+        districtId: newFilters.districtId ?? null,
+        wardId: newFilters.wardId ?? null,
+        isLegacy: newFilters.isLegacy ?? null,
+        latitude: newFilters.latitude ?? null,
+        longitude: newFilters.longitude ?? null,
+        sortBy: newFilters.sortBy ?? null,
+        page: null,
+      },
+      {
+        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+        shallow: false,
+        scroll: true,
+      },
+    )
   }
 
   const handleBedroomChange = (option: FilterOption, checked: boolean) => {
-    if (checked) {
-      updateFilters({
-        minBedrooms: option.min,
-        maxBedrooms: option.max,
-      } as Partial<ListingFilterRequest>)
-    } else {
-      // Uncheck - clear bedroom filter
-      updateFilters({
-        minBedrooms: undefined,
-        maxBedrooms: undefined,
-      } as Partial<ListingFilterRequest>)
-    }
+    const amenityIds = filters.amenityIds
+    const newFilters = checked
+      ? {
+          ...filters,
+          minBedrooms: option.min,
+          maxBedrooms: option.max,
+          page: 1,
+        }
+      : {
+          ...filters,
+          minBedrooms: undefined,
+          maxBedrooms: undefined,
+          page: 1,
+        }
+
+    updateFilters(newFilters)
+
+    pushQueryParams(
+      router,
+      {
+        categoryId: newFilters.categoryId ?? null,
+        productType: newFilters.productType ?? null,
+        keyword: newFilters.keyword || null,
+        minPrice: newFilters.minPrice ?? null,
+        maxPrice: newFilters.maxPrice ?? null,
+        minArea: newFilters.minArea ?? null,
+        maxArea: newFilters.maxArea ?? null,
+        minBedrooms: newFilters.minBedrooms ?? null,
+        maxBedrooms: newFilters.maxBedrooms ?? null,
+        bathrooms: newFilters.bathrooms ?? null,
+        verified: newFilters.verified || null,
+        direction: newFilters.direction ?? null,
+        electricityPrice: newFilters.electricityPrice ?? null,
+        waterPrice: newFilters.waterPrice ?? null,
+        internetPrice: newFilters.internetPrice ?? null,
+        amenityIds:
+          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
+        provinceId: newFilters.provinceId ?? null,
+        districtId: newFilters.districtId ?? null,
+        wardId: newFilters.wardId ?? null,
+        isLegacy: newFilters.isLegacy ?? null,
+        latitude: newFilters.latitude ?? null,
+        longitude: newFilters.longitude ?? null,
+        sortBy: newFilters.sortBy ?? null,
+        page: null,
+      },
+      {
+        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+        shallow: false,
+        scroll: true,
+      },
+    )
   }
 
   const isPriceSelected = (option: FilterOption) => {

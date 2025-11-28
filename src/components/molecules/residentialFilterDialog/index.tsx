@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Dialog, DialogContent } from '@/components/atoms/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  VisuallyHidden,
+} from '@/components/atoms/dialog'
 import { useTranslations } from 'next-intl'
 import { ListingFilterRequest } from '@/api/types'
 import MobileFilterHeader from '@/components/atoms/mobileFilter/header'
@@ -28,6 +33,7 @@ type ViewKey =
   | 'propertyType'
   | 'price'
   | 'area'
+  | 'bedroom'
   | 'electricityPrice'
   | 'waterPrice'
   | 'internetPrice'
@@ -57,10 +63,8 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   }
 
   const apply = () => {
-    // Apply all draft filters and reset page to 1
     updateFilters({ ...draft, page: 1 })
 
-    // Push query params to URL
     const amenityIds = draft.amenityIds
 
     pushQueryParams(
@@ -89,6 +93,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         isLegacy: draft.isLegacy ?? null,
         latitude: draft.latitude ?? null,
         longitude: draft.longitude ?? null,
+        sortBy: draft.sortBy ?? null,
         page: null,
       },
       {
@@ -142,6 +147,17 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
             value={{ min: draft.minArea, max: draft.maxArea }}
             onChange={({ min, max }) => update({ minArea: min, maxArea: max })}
             unit='m²'
+          />
+        )
+      case 'bedroom':
+        return (
+          <RangeView
+            type='bedroom'
+            value={{ min: draft.minBedrooms, max: draft.maxBedrooms }}
+            onChange={({ min, max }) =>
+              update({ minBedrooms: min, maxBedrooms: max })
+            }
+            unit=''
           />
         )
       case 'electricityPrice':
@@ -202,6 +218,9 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         showCloseButton={false}
         className='size-full md:h-[90vh] max-w-none md:max-w-[500px] rounded-none md:rounded-lg p-0 flex flex-col'
       >
+        <VisuallyHidden>
+          <DialogTitle>{title || t('actions.filter')}</DialogTitle>
+        </VisuallyHidden>
         <MobileFilterHeader
           title={title || t('actions.filter')}
           onClose={closeDialog}

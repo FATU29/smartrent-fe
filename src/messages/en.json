@@ -1601,6 +1601,7 @@
       "propertyType": "Property Type",
       "priceRange": "Price Range",
       "areaRange": "Area",
+      "bedroomRange": "Bedrooms",
       "frontage": "Frontage",
       "orientation": "Orientation",
       "moveInTime": "Move-in Time",
@@ -1639,6 +1640,13 @@
       "min": "Min frontage",
       "max": "Max frontage",
       "unit": "m"
+    },
+    "bedroom": {
+      "title": "Bedroom Range",
+      "any": "All",
+      "min": "Min bedrooms",
+      "max": "Max bedrooms",
+      "unit": "rooms"
     },
     "orientation": {
       "title": "House Direction",
@@ -2064,10 +2072,9 @@
       "bedroom": {
         "title": "Filter by number of bedrooms",
         "1": "1 bedroom",
-        "2": "2 bedrooms",
-        "3": "3 bedrooms",
-        "4": "4 bedrooms",
-        "5plus": "5+ bedrooms"
+        "2to3": "2 - 3 bedrooms",
+        "4to5": "4 - 5 bedrooms",
+        "6plus": "6+ bedrooms"
       }
     }
   },

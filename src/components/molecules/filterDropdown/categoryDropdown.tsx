@@ -11,32 +11,43 @@ import {
   DropdownMenuLabel,
 } from '@/components/atoms/dropdown-menu'
 import { ChevronDown, Home } from 'lucide-react'
-import { PROPERTY_TYPES } from '@/constants/common/propertyTypes'
+import { CATEGORIES, getCategoryName } from '@/constants/common/category'
 
-interface PropertyTypeDropdownProps {
-  value?: string
-  onChange: (value: string) => void
+interface CategoryDropdownProps {
+  value?: string // categoryId as string (e.g., "1", "2", or "all")
+  onChange: (value: string) => void // Returns categoryId as string or "all"
   className?: string
 }
 
-const PropertyTypeDropdown: React.FC<PropertyTypeDropdownProps> = ({
-  value = 'tat-ca', // Default to "Tất cả" slug
+const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
+  value,
   onChange,
   className = '',
 }) => {
   const t = useTranslations('homePage.filters.propertyType')
   const tCommon = useTranslations('common')
 
-  // Use PROPERTY_TYPES directly (already includes "Tất cả" as first item)
-  // Use translation for names, keep slugs as-is
-  const propertyTypes = PROPERTY_TYPES.map((type) => ({
-    value: type.slug, // Use slug for consistency (no translation)
-    label: tCommon(`propertyTypes.${type.id}`), // Use translation by id
-    icon: Home,
-  }))
+  // Add "Tất cả" option first, then map categories
+  const categoryOptions = [
+    {
+      value: 'all',
+      displayValue: tCommon('propertyTypes.0'), // "Tất cả" translation
+      label: tCommon('propertyTypes.0'), // "Tất cả" translation
+      icon: Home,
+    },
+    ...CATEGORIES.map((category) => ({
+      value: category.id.toString(), // Use category ID as string for onChange
+      displayValue: getCategoryName(category.id, tCommon), // Use translated category name
+      label: getCategoryName(category.id, tCommon), // Use translation by id
+      icon: Home,
+    })),
+  ]
 
   const selectedType =
-    propertyTypes.find((type) => type.value === value) || propertyTypes[0]
+    categoryOptions.find((opt) => opt.value === value) || categoryOptions[0]
+
+  // Display translated category name on UI
+  const displayText = selectedType.displayValue
 
   return (
     <DropdownMenu>
@@ -47,7 +58,7 @@ const PropertyTypeDropdown: React.FC<PropertyTypeDropdownProps> = ({
         >
           <selectedType.icon className='h-4 w-4' />
           <Typography variant='small' className='text-sm'>
-            {selectedType.label}
+            {displayText}
           </Typography>
           <ChevronDown className='h-3 w-3 opacity-50' />
         </Button>
@@ -57,7 +68,7 @@ const PropertyTypeDropdown: React.FC<PropertyTypeDropdownProps> = ({
           {t('title')}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {propertyTypes.map((type) => (
+        {categoryOptions.map((type) => (
           <DropdownMenuItem
             key={type.value}
             onClick={() => onChange(type.value)}
@@ -65,7 +76,7 @@ const PropertyTypeDropdown: React.FC<PropertyTypeDropdownProps> = ({
           >
             <type.icon className='h-4 w-4' />
             <Typography variant='small' className='text-sm'>
-              {type.label}
+              {type.displayValue}
             </Typography>
           </DropdownMenuItem>
         ))}
@@ -74,4 +85,4 @@ const PropertyTypeDropdown: React.FC<PropertyTypeDropdownProps> = ({
   )
 }
 
-export default PropertyTypeDropdown
+export default CategoryDropdown

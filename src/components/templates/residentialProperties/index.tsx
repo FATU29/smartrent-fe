@@ -5,13 +5,6 @@ import PropertyListContent from '@/components/molecules/propertyListContent'
 import PropertyFilterSidebar from '@/components/molecules/propertyFilterSidebar'
 import { Typography } from '@/components/atoms/typography'
 import { Switch } from '@/components/atoms/switch'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/atoms/select'
 import { useListContext } from '@/contexts/list'
 import { ListingDetail } from '@/api/types'
 
@@ -19,7 +12,6 @@ const ResidentialPropertiesTemplate: React.FC = () => {
   const t = useTranslations('propertiesPage')
   const { pagination } = useListContext<ListingDetail>()
   const [emailNotification, setEmailNotification] = useState(false)
-  const [sortBy, setSortBy] = useState('default')
 
   const handleFavorite = useCallback(
     (property: ListingDetail, isFavorite: boolean) => {
@@ -28,11 +20,6 @@ const ResidentialPropertiesTemplate: React.FC = () => {
     },
     [],
   )
-
-  const handleSortChange = useCallback((value: string) => {
-    setSortBy(value)
-    // TODO: Implement sort logic
-  }, [])
 
   return (
     <>
@@ -63,20 +50,6 @@ const ResidentialPropertiesTemplate: React.FC = () => {
                 {t('emailNotification')}
               </Typography>
             </div>
-
-            {/* Sort Dropdown */}
-            <Select value={sortBy} onValueChange={handleSortChange}>
-              <SelectTrigger className='w-[140px]'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='default'>{t('sort.default')}</SelectItem>
-                <SelectItem value='priceAsc'>{t('sort.priceAsc')}</SelectItem>
-                <SelectItem value='priceDesc'>{t('sort.priceDesc')}</SelectItem>
-                <SelectItem value='newest'>{t('sort.newest')}</SelectItem>
-                <SelectItem value='oldest'>{t('sort.oldest')}</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
       </header>

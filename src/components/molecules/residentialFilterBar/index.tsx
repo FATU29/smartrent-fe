@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
-import SearchInput from '@/components/molecules/searchInput'
 import {
-  PropertyTypeDropdown,
+  CategoryDropdown,
   PriceRangeDropdown,
 } from '@/components/molecules/filterDropdown'
 import AreaRangeDropdown from '@/components/molecules/areaRangeDropdown'
@@ -9,14 +8,22 @@ import { Button } from '@/components/atoms/button'
 import Switch from '@/components/atoms/switch'
 import { useTranslations } from 'next-intl'
 import { Filter, MapIcon, ShieldCheck } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/atoms/select'
 
 import { LocationSwitch } from '@/components/atoms'
 import { useRouter } from 'next/router'
 import { pushQueryParams } from '@/utils/queryParams'
 import { PUBLIC_ROUTES } from '@/constants/route'
-import { ListingFilterRequest } from '@/api/types'
+import { ListingFilterRequest, SortKey } from '@/api/types'
 import { useListContext } from '@/contexts/list/useListContext'
 import { List } from '@/contexts/list'
+import ListSearch from '@/contexts/list/index.search'
 
 interface ResidentialFilterBarProps {
   onOpenAdvanced?: () => void
@@ -27,6 +34,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
 }) => {
   const t = useTranslations('residentialFilter')
   const tActions = useTranslations('residentialFilter.actions')
+  const tSort = useTranslations('propertiesPage.sort')
   const router = useRouter()
 
   const { filters, updateFilters, resetFilters, activeFilterCount } =
@@ -61,6 +69,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
         isLegacy: filters.isLegacy ?? null,
         latitude: filters.latitude ?? null,
         longitude: filters.longitude ?? null,
+        sortBy: filters.sortBy ?? null,
         page: null,
       },
       {
@@ -69,6 +78,70 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
         scroll: true,
       },
     )
+  }
+
+  const handleReset = () => {
+    resetFilters()
+    pushQueryParams(
+      router,
+      {
+        categoryId: null,
+        productType: null,
+        keyword: null,
+        minPrice: null,
+        maxPrice: null,
+        minArea: null,
+        maxArea: null,
+        minBedrooms: null,
+        maxBedrooms: null,
+        bathrooms: null,
+        verified: null,
+        direction: null,
+        electricityPrice: null,
+        waterPrice: null,
+        internetPrice: null,
+        amenityIds: null,
+        provinceId: null,
+        districtId: null,
+        wardId: null,
+        isLegacy: null,
+        latitude: null,
+        longitude: null,
+        sortBy: null,
+        page: null,
+      },
+      {
+        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+        shallow: false,
+        scroll: true,
+      },
+    )
+  }
+
+  const handleSortChange = useCallback((value: string) => {
+    const sortKeyMap: Record<string, SortKey | undefined> = {
+      default: SortKey.DEFAULT,
+      priceAsc: SortKey.PRICE_ASC,
+      priceDesc: SortKey.PRICE_DESC,
+      newest: SortKey.NEWEST,
+      oldest: SortKey.OLDEST,
+    }
+    updateFilter({
+      sortBy: sortKeyMap[value] || SortKey.DEFAULT,
+      page: 1,
+    })
+  }, [])
+
+  const getSortValue = (): string => {
+    if (!filters.sortBy) return 'default'
+    const valueMap: Record<SortKey, string> = {
+      [SortKey.DEFAULT]: 'default',
+      [SortKey.PRICE_ASC]: 'priceAsc',
+      [SortKey.PRICE_DESC]: 'priceDesc',
+      [SortKey.NEWEST]: 'newest',
+      [SortKey.OLDEST]: 'oldest',
+    }
+    return valueMap[filters.sortBy] || 'default'
   }
 
   const updateFilter = (partial: Partial<ListingFilterRequest>) => {
@@ -122,7 +195,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
             variant='outline'
             className='h-9 px-4 flex-1'
             type='button'
-            onClick={resetFilters}
+            onClick={handleReset}
           >
             {tActions('clear')}
           </Button>
@@ -133,12 +206,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
       <div className='hidden md:block space-y-3'>
         <div className='flex flex-col md:flex-row gap-3 items-stretch'>
           <div className='flex-1 flex items-center gap-3'>
-            <SearchInput
-              value={filters.keyword || ''}
-              onChange={(val) => updateFilters({ keyword: val })}
-              placeholder={t('searchPlaceholder')}
-              className='flex-1'
-            />
+            <ListSearch />
             <Button variant='default' className='h-9 px-6' type='button'>
               <MapIcon className='h-4 w-4 mr-1' /> {t('actions.viewMap')}
             </Button>
@@ -160,14 +228,23 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
               </span>
             )}
           </Button>
-          <PropertyTypeDropdown
-            value={filters.productType || 'tat-ca'}
+          <Select value={getSortValue()} onValueChange={handleSortChange}>
+            <SelectTrigger className='h-9 w-[140px]'>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='default'>{tSort('default')}</SelectItem>
+              <SelectItem value='priceAsc'>{tSort('priceAsc')}</SelectItem>
+              <SelectItem value='priceDesc'>{tSort('priceDesc')}</SelectItem>
+              <SelectItem value='newest'>{tSort('newest')}</SelectItem>
+              <SelectItem value='oldest'>{tSort('oldest')}</SelectItem>
+            </SelectContent>
+          </Select>
+          <CategoryDropdown
+            value={filters.categoryId?.toString() || 'all'}
             onChange={(v) => {
               updateFilter({
-                productType:
-                  v === 'any'
-                    ? undefined
-                    : (v as ListingFilterRequest['productType']),
+                categoryId: v === 'all' ? undefined : Number(v),
                 page: 1,
               })
             }}
@@ -218,7 +295,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
             variant='outline'
             className='h-9 px-6'
             type='button'
-            onClick={resetFilters}
+            onClick={handleReset}
           >
             {tActions('clear')}
           </Button>

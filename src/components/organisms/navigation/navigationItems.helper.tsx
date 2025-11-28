@@ -1,9 +1,6 @@
 import { NavigationItemData } from '@/components/atoms/navigation-item'
 import { Home as HomeIcon, Building2, Users } from 'lucide-react'
-import {
-  PROPERTY_TYPES,
-  getPropertyTypeName,
-} from '@/constants/common/propertyTypes'
+import { CATEGORIES, getCategoryName } from '@/constants/common/category'
 
 export const getNavigationItems = (
   activeItem: string,
@@ -24,11 +21,11 @@ export const getNavigationItems = (
       href: '/properties',
       icon: <Building2 className='h-4 w-4' />,
       isActive: activeItem === 'properties',
-      children: PROPERTY_TYPES.map((type) => ({
-        id: type.slug,
-        label: getPropertyTypeName(type.id, tCommon), // Use translation by id
-        href: `/properties?category=${type.slug}`, // Keep slug as-is
-        isActive: activeItem === type.slug,
+      children: CATEGORIES.map((category) => ({
+        id: category.slug,
+        label: getCategoryName(category.id, tCommon), // Use translation by id
+        href: `/properties?categoryId=${category.id}`, // Use categoryId
+        isActive: activeItem === category.slug,
       })),
     },
     {

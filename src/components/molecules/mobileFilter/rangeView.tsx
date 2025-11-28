@@ -3,10 +3,10 @@ import { Slider } from '@/components/atoms/slider'
 import { useTranslations } from 'next-intl'
 
 // RangeView
-// Shared range slider view for price, area, and frontage.
+// Shared range slider view for price, area, frontage, and bedroom.
 // Converts full-range selection back to undefined to keep query params lean.
 interface RangeViewProps {
-  type: 'price' | 'area' | 'frontage'
+  type: 'price' | 'area' | 'frontage' | 'bedroom'
   value: { min?: number; max?: number }
   onChange: (value: { min?: number; max?: number }) => void
   unit?: string
@@ -16,6 +16,7 @@ const defaults = {
   price: { min: 0, max: 100_000_000 },
   area: { min: 0, max: 500 },
   frontage: { min: 0, max: 30 },
+  bedroom: { min: 1, max: 10 },
 }
 
 const RangeView: React.FC<RangeViewProps> = ({ type, value, onChange }) => {
@@ -104,7 +105,7 @@ const RangeView: React.FC<RangeViewProps> = ({ type, value, onChange }) => {
           value={internal}
           max={defaults[type].max}
           min={defaults[type].min}
-          step={type === 'price' ? 1_000_000 : 5}
+          step={type === 'price' ? 1_000_000 : type === 'bedroom' ? 1 : 5}
           onValueChange={(v) => setInternal(v as [number, number])}
           onValueCommit={(v) => apply(v as [number, number])}
         />

@@ -1561,6 +1561,7 @@
       "propertyType": "Loại nhà đất",
       "priceRange": "Khoảng giá",
       "areaRange": "Diện tích",
+      "bedroomRange": "Phòng ngủ",
       "frontage": "Mặt tiền",
       "orientation": "Hướng nhà",
       "moveInTime": "Thời gian vào ở",
@@ -1599,6 +1600,13 @@
       "min": "Mặt tiền tối thiểu",
       "max": "Mặt tiền tối đa",
       "unit": "m"
+    },
+    "bedroom": {
+      "title": "Khoảng phòng ngủ",
+      "any": "Tất cả",
+      "min": "Số phòng ngủ tối thiểu",
+      "max": "Số phòng ngủ tối đa",
+      "unit": "phòng"
     },
     "orientation": {
       "title": "Hướng nhà",
@@ -2108,10 +2116,9 @@
       "bedroom": {
         "title": "Lọc theo số phòng ngủ",
         "1": "1 phòng ngủ",
-        "2": "2 phòng ngủ",
-        "3": "3 phòng ngủ",
-        "4": "4 phòng ngủ",
-        "5plus": "5+ phòng ngủ"
+        "2to3": "2 - 3 phòng ngủ",
+        "4to5": "4 - 5 phòng ngủ",
+        "6plus": "6+ phòng ngủ"
       }
     }
   },

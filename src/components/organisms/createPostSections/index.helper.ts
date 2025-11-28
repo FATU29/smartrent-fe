@@ -4,16 +4,11 @@ export type Option = {
 }
 
 import {
-  PROPERTY_TYPES as PROPERTY_TYPES_CONST,
-  getPropertyTypeName,
-} from '@/constants/common/propertyTypes'
-
-import {
   AMENITIES_CONFIG,
   type AmenityConfig,
   type AmenityCategory as AmenityCategoryConfig,
 } from '@/constants/amenities'
-import { FURNISHING } from '@/api/types'
+import { FURNISHING, PropertyType } from '@/api/types'
 import type { LucideIcon } from 'lucide-react'
 
 export const PRICE_TYPE_OPTIONS = [
@@ -108,14 +103,25 @@ export const getDirectionOptions = (t: (key: string) => string): Option[] =>
     label: t(`directions.${k.toLowerCase()}`),
   }))
 
+// PropertyType options for createPost (productType field)
+const PROPERTY_TYPE_OPTIONS: Array<{
+  value: PropertyType
+  translationKey: string
+}> = [
+  { value: 'ROOM', translationKey: 'propertyTypes.1' },
+  { value: 'APARTMENT', translationKey: 'propertyTypes.2' },
+  { value: 'HOUSE', translationKey: 'propertyTypes.3' },
+  { value: 'STUDIO', translationKey: 'propertyTypes.4' },
+]
+
 // AI Valuation section helpers
 export const getAiPropertyTypeOptions = (
   t: (key: string) => string,
   tCommon: (key: string) => string,
 ): Option[] =>
-  PROPERTY_TYPES_CONST.map((type) => ({
+  PROPERTY_TYPE_OPTIONS.map((type) => ({
     value: type.value.toLowerCase(),
-    label: getPropertyTypeName(type.id, tCommon),
+    label: tCommon(type.translationKey),
   }))
 
 /**
@@ -142,7 +148,7 @@ export const getPriceUnitOptions = (t: (key: string) => string): Option[] => {
 }
 
 export const getPropertyTypeOptions = (t: (key: string) => string): Option[] =>
-  PROPERTY_TYPES_CONST.map((type) => ({
+  PROPERTY_TYPE_OPTIONS.map((type) => ({
     value: type.value.toLowerCase(),
-    label: getPropertyTypeName(type.id, t),
+    label: t(type.translationKey),
   }))
