@@ -116,19 +116,16 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
   // Helper functions for displaying additional fields
 
-  const getProductTypeIcon = () => {
-    switch (productType) {
-      case 'APARTMENT':
-        return Building2
-      case 'HOUSE':
-        return Home
-      case 'ROOM':
-      case 'STUDIO':
-        return Users
-      default:
-        return Home
-    }
+  const ProductTypeIconMap: Record<
+    string,
+    React.ComponentType<{ className?: string }>
+  > = {
+    APARTMENT: Building2,
+    HOUSE: Home,
+    ROOM: Users,
+    STUDIO: Users,
   }
+  const ProductTypeIcon = ProductTypeIconMap[productType || ''] || Home
 
   const getVipBadgeConfig = () => {
     if (!vipType || vipType === 'NORMAL') return null
@@ -160,7 +157,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   }
 
   const vipBadgeConfig = getVipBadgeConfig()
-  const ProductTypeIcon = getProductTypeIcon()
 
   const renderImageGallery = () => {
     if (!isTopLayout) return null
@@ -258,9 +254,12 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 }}
                 className={classNames(
                   'relative aspect-square overflow-hidden rounded border transition-all',
-                  currentImageIndex === idx
-                    ? 'border-primary ring-1 ring-primary/30 border-2'
-                    : 'border border-border hover:border-primary/50 opacity-75 hover:opacity-100',
+                  {
+                    'border-primary ring-1 ring-primary/30 border-2':
+                      currentImageIndex === idx,
+                    'border border-border hover:border-primary/50 opacity-75 hover:opacity-100':
+                      currentImageIndex !== idx,
+                  },
                 )}
               >
                 <ImageAtom
@@ -314,10 +313,10 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           size='sm'
           className={classNames(
             'absolute p-0 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 z-10',
-            isCompact
-              ? 'top-1 right-1 w-6 h-6'
-              : 'top-2 right-2 w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9',
             {
+              'top-1 right-1 w-6 h-6': isCompact,
+              'top-2 right-2 w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9':
+                !isCompact,
               'bg-destructive text-destructive-foreground hover:bg-destructive/90':
                 isFavorite,
               'text-foreground hover:text-destructive': !isFavorite,
@@ -410,14 +409,11 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
         {renderSingleImage()}
 
         <CardContent
-          className={classNames(
-            'flex-1 flex flex-col',
-            isCompact
-              ? isTopLayout
-                ? 'px-2.5 pb-2.5 space-y-1.5'
-                : 'p-2.5 space-y-1.5'
-              : 'p-3 sm:p-4 space-y-2 sm:space-y-3',
-          )}
+          className={classNames('flex-1 flex flex-col', {
+            'px-2.5 pb-2.5 space-y-1.5': isCompact && isTopLayout,
+            'p-2.5 space-y-1.5': isCompact && !isTopLayout,
+            'p-3 sm:p-4 space-y-2 sm:space-y-3': !isCompact,
+          })}
         >
           <div className='flex items-start justify-between gap-2'>
             <Typography
