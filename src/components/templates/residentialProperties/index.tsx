@@ -1,12 +1,19 @@
 import React, { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
+import dynamic from 'next/dynamic'
 import PropertyListContent from '@/components/molecules/propertyListContent'
+
+const ResidentialFilterResponsive = dynamic(
+  () => import('@/components/molecules/residentialFilterResponsive'),
+  {
+    ssr: false,
+  },
+)
 import PropertyFilterSidebar from '@/components/molecules/propertyFilterSidebar'
 import { Typography } from '@/components/atoms/typography'
 import { Switch } from '@/components/atoms/switch'
 import { useListContext } from '@/contexts/list'
-import { ListingDetail } from '@/api/types'
+import { ListingDetail } from '@/api/types/property.type'
 
 const ResidentialPropertiesTemplate: React.FC = () => {
   const t = useTranslations('propertiesPage')

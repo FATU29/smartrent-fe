@@ -34,7 +34,7 @@ import {
 import { ListingDetail } from '@/api/types'
 import { getAmenityIcon } from '@/constants/amenities'
 import { formatDate } from 'date-fns'
-import VideoPlayerFull from '../videoPlayerFull'
+import { isYouTube, toYouTubeEmbed } from '@/utils/video/url'
 import { formatByLocale } from '@/utils/currency/convert'
 import {
   getProductTypeTranslationKey,
@@ -170,10 +170,22 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
         {/* Main Image */}
         <div className='relative flex-1 aspect-[16/9] overflow-hidden rounded-md'>
           {assetsVideo ? (
-            <VideoPlayerFull
-              src={assetsVideo}
-              className='w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105'
-            />
+            isYouTube(assetsVideo) ? (
+              <div className='w-full h-full'>
+                <iframe
+                  src={toYouTubeEmbed(assetsVideo) || ''}
+                  className='w-full h-full'
+                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <video
+                src={assetsVideo}
+                controls
+                className='w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105'
+              />
+            )
           ) : (
             <ImageAtom
               src={mainImage || `${basePath}/images/default-image.jpg`}

@@ -47,6 +47,17 @@ export enum POST_STATUS {
   VERIFIED = 'VERIFIED',
 }
 
+export enum PAYMENT_PROVIDER {
+  VNPAY = 'VNPAY',
+  MOMO = 'MOMO',
+  PAYPAL = 'PAYPAL',
+}
+
+export type PaymentProvider =
+  | PAYMENT_PROVIDER.MOMO
+  | PAYMENT_PROVIDER.PAYPAL
+  | PAYMENT_PROVIDER.VNPAY
+
 export enum DURATIONDAYS {
   DAYS_10 = 10,
   DAYS_15 = 15,
@@ -220,9 +231,6 @@ export interface ListingListResponse {
   }
 }
 
-/**
- * Legacy address structure for listing (OLD - 63 provinces)
- */
 export interface ListingLegacyAddress {
   street?: string
   wardId: number
@@ -230,31 +238,17 @@ export interface ListingLegacyAddress {
   provinceId: number
 }
 
-/**
- * New address structure for listing (NEW - 34 provinces)
- */
 export interface ListingNewAddress {
-  provinceId: number
-  wardId: number
-  street?: string
+  provinceCode: string
+  wardCode: string
+  street: string
 }
 
-/**
- * Address structure with both legacy and new formats for listing
- */
 export interface ListingAddress {
   legacy?: ListingLegacyAddress
   new?: ListingNewAddress
   latitude: number
   longitude: number
-}
-
-/**
- * Assets for listing (images and video)
- */
-export interface ListingAssets {
-  video?: string
-  images?: string[] // index 0 is thumbnail
 }
 
 /**
@@ -285,18 +279,20 @@ export interface CreateListingRequest {
   propertyType?: PropertyType
   roomCapacity?: number
   amenityIds?: number[]
-  assets?: ListingAssets
+  mediaIds?: number[]
   postDate?: string | Date // startDate
   isDraft?: boolean
   waterPrice?: PriceType
   electricityPrice?: PriceType
   internetPrice?: PriceType
+  serviceFee?: PriceType
 
   benefitsMembership?: BenefitMembership[]
 
   vipType?: VipType
-  durationDays?: DurationDays // endDate
+  durationDays?: DurationDays
   useMembershipQuota?: boolean
+  paymentProvider?: PaymentProvider
 }
 
 /**
@@ -399,9 +395,9 @@ export enum SortKey {
 }
 
 export interface ListingFilterRequest {
-  provinceId?: number | string // number for legacy (63), string code for new (34)
+  provinceId?: number | string
   districtId?: number
-  wardId?: number | string // number for legacy, string code for new
+  wardId?: number | string
   longitude?: number
   latitude?: number
   isLegacy?: boolean
@@ -438,6 +434,8 @@ export interface ListingFilterRequest {
   userId?: string
 
   sortBy?: SortKey
+
+  serviceFee?: PriceType
 }
 
 export interface ListingSearchResponse<T> {

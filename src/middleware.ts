@@ -1,7 +1,6 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-// File extensions and paths to ignore in middleware
 const IGNORE_PATHS = [
   /^\/api\//,
   /^\/_next\//,
@@ -47,14 +46,6 @@ export function middleware(request: NextRequest) {
 
   const isAuthenticated = Boolean(accessToken)
 
-  // Debug logging
-  console.log('🔒 Middleware check:', {
-    pathname,
-    isAuthenticated,
-    hasAuthFlag: searchParams.get('auth') === 'login',
-    cookies: cookies.getAll().map((c) => c.name),
-  })
-
   if (!isAuthenticated) {
     // Redirect to the SAME URL but with a flag that the client will use to open the login dialog
     const url = nextUrl.clone()
@@ -70,7 +61,6 @@ export function middleware(request: NextRequest) {
       url.searchParams.set('returnUrl', returnUrl)
     }
 
-    console.log('🚫 Redirecting to:', url.toString())
     return NextResponse.redirect(url)
   }
 

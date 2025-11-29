@@ -37,6 +37,7 @@ type ViewKey =
   | 'electricityPrice'
   | 'waterPrice'
   | 'internetPrice'
+  | 'serviceFee'
   | 'direction'
   | 'amenities'
 
@@ -85,6 +86,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         electricityPrice: draft.electricityPrice ?? null,
         waterPrice: draft.waterPrice ?? null,
         internetPrice: draft.internetPrice ?? null,
+        serviceFee: draft.serviceFee ?? null,
         amenityIds:
           amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
         provinceId: draft.provinceId ?? null,
@@ -182,6 +184,14 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
             type='internetPrice'
             value={draft.internetPrice}
             onChange={(v) => update({ internetPrice: v })}
+          />
+        )
+      case 'serviceFee':
+        return (
+          <SimpleListView
+            type='serviceFee'
+            value={draft.serviceFee}
+            onChange={(v) => update({ serviceFee: v })}
           />
         )
       case 'direction':

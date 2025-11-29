@@ -45,80 +45,48 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
   const { setValue, trigger } = useFormContext()
 
-  console.log('propertyInfo', propertyInfo)
-
   // Fetch VIP tiers using React Query
   const { data: vipTiers = [], isLoading, isError, error } = useVipTiers()
 
-  const [selectedTierId, setSelectedTierId] = useState<number | null>(null)
-  const [selectedDuration, setSelectedDuration] = useState<number>(10)
-  // Initialize with today's date in ISO format (yyyy-MM-dd)
-  const [startDate, setStartDate] = useState<string>(
-    new Date().toISOString().split('T')[0],
-  )
   const [promoOpen, setPromoOpen] = useState(false)
 
-  const updateVipPackageSelection = (args?: {
-    tierId?: number
-    durationDays?: number
-    startDate?: string
-  }) => {
-    const tierId = (args?.tierId ?? selectedTierId) as number
-    const durationDays = (args?.durationDays ??
-      selectedDuration) as DurationDays
-    const start = args?.startDate ?? (startDate || new Date().toISOString())
+  // Derive state from propertyInfo
+  const selectedTier = vipTiers.find((t) => t.tierCode === propertyInfo.vipType)
+  const selectedTierId = selectedTier?.tierId ?? null
+  const selectedDuration = propertyInfo.durationDays ?? 10
+  const startDate = propertyInfo.postDate
+    ? typeof propertyInfo.postDate === 'string'
+      ? propertyInfo.postDate.split('T')[0]
+      : new Date(propertyInfo.postDate).toISOString().split('T')[0]
+    : new Date().toISOString().split('T')[0]
 
-    const tier = vipTiers.find((t) => t.tierId === tierId)
-
-    updatePropertyInfo({
-      vipType: (tier?.tierCode as VipType) || undefined,
-      durationDays,
-      postDate: start,
-    })
-    // Sync with RHF for validation
-    setValue(
-      'vipType' as never,
-      (tier?.tierCode as never) ?? (undefined as never),
-      {
-        shouldValidate: true,
-        shouldDirty: true,
-      },
-    )
-    setValue('durationDays' as never, durationDays as never, {
-      shouldValidate: true,
-      shouldDirty: true,
-    })
-  }
-
-  // Auto-select first tier when data loads
+  // Auto-select first tier when data loads and no tier is selected
   useEffect(() => {
-    if (vipTiers.length > 0 && selectedTierId === null) {
+    if (vipTiers.length > 0 && !propertyInfo.vipType) {
       const firstTier = vipTiers[0]
-      setSelectedTierId(firstTier.tierId)
-      // startDate is already initialized with today's date, use it directly
-      const effectiveStart = startDate
+      const defaultStartDate = new Date().toISOString().split('T')[0]
 
-      // Initialize selection with default duration and computed start date
-      updateVipPackageSelection({
-        tierId: firstTier.tierId,
+      updatePropertyInfo({
+        vipType: firstTier.tierCode as VipType,
         durationDays: 10,
-        startDate: effectiveStart,
+        postDate: defaultStartDate,
       })
-      // Ensure postDate is set in RHF for validation
-      setValue('postDate' as never, effectiveStart as never, {
+
+      setValue('vipType' as never, firstTier.tierCode as never, {
         shouldValidate: true,
         shouldDirty: true,
       })
-      // Initialize durationDays for validation
       setValue('durationDays' as never, 10 as never, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      setValue('postDate' as never, defaultStartDate as never, {
         shouldValidate: true,
         shouldDirty: true,
       })
       trigger()
     }
-  }, [vipTiers, selectedTierId, startDate, setValue, trigger])
-
-  const selectedTier = vipTiers.find((t) => t.tierId === selectedTierId)
+  }, [vipTiers, propertyInfo.vipType, updatePropertyInfo, setValue, trigger])
 
   // Get duration options for selected tier
   const getDurationOptions = (tier: VipTier | undefined): DurationOption[] => {
@@ -161,19 +129,42 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   }
 
   const handleTierSelect = (tierId: number) => {
-    setSelectedTierId(tierId)
-    // Reset duration to 10 days when switching tiers
-    setSelectedDuration(10)
-    // Update VIP selection only; UI-only fields removed
+    const tier = vipTiers.find((t) => t.tierId === tierId)
+    if (!tier) return
+
+    updatePropertyInfo({
+      vipType: tier.tierCode as VipType,
+      durationDays: 10, // Reset to 10 days when switching tiers
+    })
+
+    setValue('vipType' as never, tier.tierCode as never, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    setValue('durationDays' as never, 10 as never, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
     trigger()
-    updateVipPackageSelection({ tierId, durationDays: 10 })
+
+    setValue('vipType' as never, tier.tierCode as never, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    setValue('durationDays' as never, 10 as never, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    trigger()
   }
 
   const handleDurationSelect = (days: number) => {
-    setSelectedDuration(days)
-    // Update VIP selection only; UI-only fields removed
+    updatePropertyInfo({ durationDays: days as DurationDays })
+    setValue('durationDays', days, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
     trigger()
-    updateVipPackageSelection({ durationDays: days })
   }
 
   const mapBenefitToTierCode = (type: BenefitType): string | undefined => {
@@ -191,13 +182,14 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
 
   const handleApplyPromotion = (benefit: UserBenefit) => {
     const tierCode = mapBenefitToTierCode(benefit.benefitType as BenefitType)
-    // Try to match vip tier by code to set selectedTierId
-    const tier = vipTiers.find((t) => t.tierCode === tierCode)
-    if (tier) {
-      setSelectedTierId(tier.tierId)
-    }
-    const start = startDate || new Date().toISOString()
+    const start = propertyInfo.postDate
+      ? typeof propertyInfo.postDate === 'string'
+        ? propertyInfo.postDate
+        : new Date(propertyInfo.postDate).toISOString()
+      : new Date().toISOString()
+
     updatePropertyInfo({
+      vipType: tierCode as VipType | undefined,
       benefitsMembership: [
         {
           benefitId: benefit.userBenefitId,
@@ -206,7 +198,13 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       ],
       postDate: start,
     })
-    // Ensure form knows about start date
+
+    if (tierCode) {
+      setValue('vipType' as never, tierCode as never, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+    }
     setValue('postDate' as never, start as never, {
       shouldValidate: true,
       shouldDirty: true,
@@ -360,27 +358,14 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
             <DatePicker
               value={startDate}
               onChange={(date) => {
-                const newStart = date || ''
-                setStartDate(newStart)
-                // Sync postDate for validation and keep context dates updated
-                setValue('postDate' as never, newStart as never, {
+                const newStart = date || new Date().toISOString().split('T')[0]
+                const fullDate = new Date(newStart).toISOString()
+
+                updatePropertyInfo({ postDate: fullDate })
+                setValue('postDate' as never, fullDate as never, {
                   shouldValidate: true,
                   shouldDirty: true,
                 })
-                // Keep package selection (vipType/duration) and post date in sync
-                const isMembershipSelected = Array.isArray(
-                  propertyInfo.benefitsMembership,
-                )
-                  ? propertyInfo.benefitsMembership.length > 0
-                  : false
-                if (isMembershipSelected) {
-                  const start = newStart || new Date().toISOString()
-                  updatePropertyInfo({
-                    postDate: start,
-                  })
-                } else if (selectedTierId && selectedTier) {
-                  updateVipPackageSelection()
-                }
                 trigger()
               }}
               placeholder={t('selectStartDate')}
@@ -435,6 +420,16 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 setValue('useMembershipQuota' as never, checked as never, {
                   shouldDirty: true,
                 })
+
+                // When enabling membership quota, set duration to 30 days
+                if (checked) {
+                  updatePropertyInfo({ durationDays: 30 })
+                  setValue('durationDays' as never, 30 as never, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                  trigger()
+                }
               }}
             />
           </CardContent>

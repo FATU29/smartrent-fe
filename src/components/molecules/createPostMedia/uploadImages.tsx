@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import Image from 'next/image'
 import {
   Card,
@@ -9,25 +9,17 @@ import {
 import { Button } from '@/components/atoms/button'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
-import { ImagePlus, Upload, Images } from 'lucide-react'
+import { ImagePlus, Upload, Trash2 } from 'lucide-react'
 
 const MAX_IMAGES = 24
 
-// Local pending image type
-interface PendingImage {
-  file: File
-  previewUrl: string
-}
-
 const UploadImages: React.FC = () => {
   const t = useTranslations('createPost.sections.media')
-  const { propertyInfo } = useCreatePost()
+  const { mediaUrls, pendingImages, addPendingImages, removePendingImage } =
+    useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  // Local state for pending images
-  const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
-
-  const uploadedImages = propertyInfo?.assets?.images || []
+  const uploadedImages = mediaUrls?.images || []
   const totalImages = uploadedImages.length + pendingImages.length
 
   const handleFiles = (files: FileList | null) => {
@@ -42,19 +34,20 @@ const UploadImages: React.FC = () => {
       previewUrl: URL.createObjectURL(file),
     }))
 
-    setPendingImages([...pendingImages, ...newPending])
+    addPendingImages(newPending)
   }
 
-  const removePendingImage = (index: number) => {
-    const updated = pendingImages.filter((_, i) => i !== index)
-    setPendingImages(updated)
-  }
+  const handleRemovePendingImage = (index: number) => {
+    // Get non-cover pending images and find the actual index
+    const nonCoverPending = pendingImages.filter((img) => !img.isCover)
+    const targetImage = nonCoverPending[index]
+    if (!targetImage) return
 
-  // Expose pending images for MediaStep
-  React.useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(window as any).__uploadPendingImages = pendingImages
-  }, [pendingImages])
+    const actualIndex = pendingImages.findIndex((img) => img === targetImage)
+    if (actualIndex !== -1) {
+      removePendingImage(actualIndex)
+    }
+  }
 
   return (
     <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
@@ -84,10 +77,6 @@ const UploadImages: React.FC = () => {
             >
               <ImagePlus className='w-4 h-4 mr-2' />
               {t('dropzone.uploadFromDevice')}
-            </Button>
-            <Button variant='outline' className='rounded-lg w-full sm:w-auto'>
-              <Images className='w-4 h-4 mr-2' />
-              {t('dropzone.chooseFromLibrary')}
             </Button>
           </div>
           <input
@@ -149,37 +138,38 @@ const UploadImages: React.FC = () => {
               </div>
             ))}
             {/* Pending images (not uploaded yet) */}
-            {pendingImages.map((img, index) => (
-              <div
-                key={`pending-${index}`}
-                className='group relative rounded-xl border border-blue-300 dark:border-blue-700 bg-white dark:bg-gray-900 overflow-hidden'
-              >
-                <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-800'>
-                  <Image
-                    src={img.previewUrl}
-                    alt={`Pending ${index + 1}`}
-                    fill
-                    sizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
-                    className='object-cover'
-                  />
-                </div>
-                <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
-                  <p className='text-sm truncate mb-3'>
-                    {`Image ${uploadedImages.length + index + 1}`}
-                  </p>
-                  <div className='grid grid-cols-1 gap-2'>
+            {pendingImages
+              .filter((img) => !img.isCover)
+              .map((img, index) => (
+                <div
+                  key={`pending-${index}`}
+                  className='group relative rounded-xl border border-blue-300 dark:border-blue-700 bg-white dark:bg-gray-900 overflow-hidden'
+                >
+                  <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-800'>
+                    <Image
+                      src={img.previewUrl}
+                      alt={`Pending ${index + 1}`}
+                      fill
+                      sizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
+                      className='object-cover'
+                    />
+                  </div>
+                  <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
+                    <p className='text-sm truncate mb-3'>
+                      {`Image ${uploadedImages.length + index + 1}`}
+                    </p>
                     <Button
                       size='sm'
                       variant='destructive'
                       className='h-8 px-2 rounded-md w-full text-sm'
-                      onClick={() => removePendingImage(index)}
+                      onClick={() => handleRemovePendingImage(index)}
                     >
+                      <Trash2 className='w-4 h-4 mr-1' />
                       {t('uploaded.remove')}
                     </Button>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </CardContent>

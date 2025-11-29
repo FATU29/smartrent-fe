@@ -11,8 +11,15 @@ import LocationBrowseSection from '@/components/organisms/locationBrowseSection'
 import PromoFeaturesSection from '@/components/organisms/promoFeaturesSection'
 import TopInterestSection from '@/components/organisms/topInterestSection'
 import { List } from '@/contexts/list'
-import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
+import dynamic from 'next/dynamic'
 import ClearFilterButton from '@/components/atoms/clearFilterButton'
+
+const ResidentialFilterResponsive = dynamic(
+  () => import('@/components/molecules/residentialFilterResponsive'),
+  {
+    ssr: false,
+  },
+)
 import type { CityItem } from '@/components/organisms/locationBrowseSection/types'
 import { ListingDetail } from '@/api/types'
 

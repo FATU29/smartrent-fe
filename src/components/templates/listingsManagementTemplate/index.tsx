@@ -3,8 +3,15 @@ import { useTranslations } from 'next-intl'
 import { ListingStatusFilterResponsive } from '@/components/molecules/listings/ListingStatusFilterResponsive'
 import { ListingEmptyState } from '@/components/organisms/listings/ListingEmptyState'
 import { ListingToolbar } from '@/components/molecules/listings/ListingToolbar'
-import ResidentialFilterDialog from '@/components/molecules/residentialFilterDialog'
+import dynamic from 'next/dynamic'
 import { ListingsList } from '@/components/organisms/listings-list'
+
+const ResidentialFilterDialog = dynamic(
+  () => import('@/components/molecules/residentialFilterDialog'),
+  {
+    ssr: false,
+  },
+)
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { List, useListContext } from '@/contexts/list'
@@ -221,13 +228,13 @@ const FilterButtonBadge: React.FC = () => {
 const FilterDialogWrapper: React.FC<{
   open: boolean
   onOpenChange: (open: boolean) => void
-}> = ({ onOpenChange }) => {
+}> = ({ open, onOpenChange }) => {
   const t = useTranslations('seller.listingManagement')
 
   return (
     <ResidentialFilterDialog
       onOpenChange={onOpenChange}
-      open
+      open={open}
       title={t('filter.title')}
     />
   )

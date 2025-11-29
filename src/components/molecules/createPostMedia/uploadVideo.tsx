@@ -25,8 +25,9 @@ const ACCEPTED_VIDEO_TYPES = [
 const UploadVideo: React.FC = () => {
   const t = useTranslations('createPost.sections.media')
   const {
-    propertyInfo,
-    updatePropertyInfo,
+    mediaUrls,
+    updateMediaUrls,
+    updateMediaIds,
     startVideoUpload,
     updateVideoUploadProgress,
     setVideoUploadError,
@@ -36,7 +37,7 @@ const UploadVideo: React.FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const videoFileRef = useRef<File | null>(null)
 
-  const videoUrl = propertyInfo?.assets?.video || ''
+  const videoUrl = mediaUrls?.video || ''
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -66,12 +67,7 @@ const UploadVideo: React.FC = () => {
 
     videoFileRef.current = file
     const blobUrl = URL.createObjectURL(file)
-    updatePropertyInfo({
-      assets: {
-        ...propertyInfo?.assets,
-        video: blobUrl,
-      },
-    })
+    updateMediaUrls({ video: blobUrl })
     // Do NOT auto-upload; wait for user to click explicit upload button
     resetVideoUploadProgress()
   }
@@ -92,16 +88,19 @@ const UploadVideo: React.FC = () => {
       )
 
       const uploadedUrl = response?.data?.url
+      const mediaId = response?.data?.mediaId
       if (uploadedUrl) {
         if (videoUrl.startsWith('blob:')) {
           URL.revokeObjectURL(videoUrl)
         }
-        updatePropertyInfo({
-          assets: {
-            ...propertyInfo?.assets,
-            video: uploadedUrl,
-          },
-        })
+        updateMediaUrls({ video: uploadedUrl })
+        // Save video mediaId (index 0 in mediaIds array)
+        if (mediaId) {
+          const videoMediaId = Number(mediaId)
+          if (!isNaN(videoMediaId) && videoMediaId > 0) {
+            updateMediaIds({ videoMediaId })
+          }
+        }
       }
       updateVideoUploadProgress(100)
       setTimeout(() => {
@@ -123,37 +122,22 @@ const UploadVideo: React.FC = () => {
       URL.revokeObjectURL(videoUrl)
       videoFileRef.current = null
     }
-    updatePropertyInfo({
-      assets: {
-        ...propertyInfo?.assets,
-        video: undefined,
-      },
-    })
+    updateMediaUrls({ video: undefined })
+    // Clear video mediaId
+    updateMediaIds({ videoMediaId: undefined })
     if (inputRef.current) {
       inputRef.current.value = ''
     }
   }
 
-  // Check if videoUrl is a blob URL (from file upload)
+  // Determine video state
   const isBlobUrl = videoUrl.startsWith('blob:')
-  const hasPreviewVideo = Boolean(isBlobUrl && videoUrl)
-  const isUploadedUrl = Boolean(
-    videoUrl &&
-      !videoUrl.startsWith('blob:') &&
-      videoUrl.startsWith('http') &&
-      !videoUrl.includes('youtube.com') &&
-      !videoUrl.includes('youtu.be') &&
-      !videoUrl.includes('tiktok.com'),
-  )
-  const showUploadButton = hasPreviewVideo && !isUploadedUrl
-
-  // Check if there's an external video link (disable upload)
-  const hasExternalVideo = Boolean(
-    videoUrl &&
-      (videoUrl.includes('youtube.com') ||
-        videoUrl.includes('youtu.be') ||
-        videoUrl.includes('tiktok.com')),
-  )
+  const isYouTubeUrl =
+    videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')
+  const isExternalUrl = isYouTubeUrl || videoUrl.includes('tiktok.com')
+  const isUploadedUrl =
+    videoUrl && !isBlobUrl && !isExternalUrl && videoUrl.startsWith('http')
+  const showUploadButton = isBlobUrl && !isUploadedUrl
 
   return (
     <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
@@ -164,14 +148,14 @@ const UploadVideo: React.FC = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {hasExternalVideo ? (
+        {isExternalUrl ? (
           <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700'>
             <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>
               {t('video.external.uploadedNote') ||
                 'Bạn đã thêm link YouTube/TikTok. Xóa link để tải video lên.'}
             </p>
           </div>
-        ) : !hasPreviewVideo && !isUploadedUrl ? (
+        ) : !videoUrl ? (
           <>
             <input
               ref={inputRef}

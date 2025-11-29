@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect, useState } from 'react'
+import React, { useCallback, useMemo, useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
 import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
@@ -7,14 +7,15 @@ import { useTranslations } from 'next-intl'
 import ResidentialPropertiesTemplate from '@/components/templates/residentialProperties'
 import { ListProvider } from '@/contexts/list/index.context'
 import LocationProvider from '@/contexts/location'
-import { getFiltersFromQuery } from '@/utils/queryParams'
+import { getFiltersFromQuery, pushQueryParams } from '@/utils/queryParams'
 import {
   ListingDetail,
   ListingFilterRequest,
   ListingSearchApiResponse,
-} from '@/api/types'
+} from '@/api/types/property.type'
 import { generateMockProperties } from '@/mock/properties'
 import { DEFAULT_PAGE } from '@/contexts/list/index.type'
+import { PUBLIC_ROUTES } from '@/constants/route'
 
 const ResidentialPropertiesPage: NextPageWithLayout = () => {
   const t = useTranslations('navigation')
@@ -35,12 +36,12 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
   }, [router.isReady, router.query])
 
   const allMockData = useMemo(() => generateMockProperties(100), [])
+  const lastPushedFiltersRef = useRef<string>('')
 
   const fetcher = useCallback(
     async (
       filters: ListingFilterRequest,
     ): Promise<ListingSearchApiResponse<ListingDetail>> => {
-      // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 300))
 
       const pageSize = filters?.size || 10
@@ -117,6 +118,48 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
       const endIndex = startIndex + pageSize
       const paginatedData = filteredData.slice(startIndex, endIndex)
 
+      const filtersKey = JSON.stringify(filters)
+      if (lastPushedFiltersRef.current !== filtersKey) {
+        lastPushedFiltersRef.current = filtersKey
+        const amenityIds = filters.amenityIds
+        pushQueryParams(
+          router,
+          {
+            categoryId: filters.categoryId ?? null,
+            productType: filters.productType ?? null,
+            keyword: filters.keyword || null,
+            minPrice: filters.minPrice ?? null,
+            maxPrice: filters.maxPrice ?? null,
+            minArea: filters.minArea ?? null,
+            maxArea: filters.maxArea ?? null,
+            minBedrooms: filters.minBedrooms ?? null,
+            maxBedrooms: filters.maxBedrooms ?? null,
+            bathrooms: filters.bathrooms ?? null,
+            verified: filters.verified || null,
+            direction: filters.direction ?? null,
+            electricityPrice: filters.electricityPrice ?? null,
+            waterPrice: filters.waterPrice ?? null,
+            internetPrice: filters.internetPrice ?? null,
+            serviceFee: filters.serviceFee ?? null,
+            amenityIds:
+              amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
+            provinceId: filters.provinceId ?? null,
+            districtId: filters.districtId ?? null,
+            wardId: filters.wardId ?? null,
+            isLegacy: filters.isLegacy ?? null,
+            latitude: filters.latitude ?? null,
+            longitude: filters.longitude ?? null,
+            sortBy: filters.sortBy ?? null,
+            page: null,
+          },
+          {
+            pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+            shallow: false,
+            scroll: true,
+          },
+        )
+      }
+
       return {
         code: 'SUCCESS',
         message: null,
@@ -132,7 +175,7 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
         },
       }
     },
-    [], // Empty dependencies - allMockData is stable (memoized with empty deps)
+    [allMockData, router],
   )
 
   return (

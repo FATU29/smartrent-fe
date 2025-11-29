@@ -27,7 +27,6 @@ import {
   Award,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import VideoPlayerFull from '@/components/molecules/videoPlayerFull'
 import Image from 'next/image'
 import {
   getDirectionTranslationKey,
@@ -47,7 +46,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
   const tCommon = useTranslations('common')
   const tCreatePost = useTranslations('createPost')
   const tNormal = useTranslations()
-  const { propertyInfo } = useCreatePost()
+  const { propertyInfo, mediaUrls } = useCreatePost()
   const { data: vipTiers = [] } = useVipTiers()
   const { user } = useAuthContext()
 
@@ -122,29 +121,35 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
               </CardHeader>
               <CardContent className='space-y-4'>
                 {/* Media Section - Video or Cover Image - Fixed responsive */}
-                {(propertyInfo.assets?.video ||
-                  (propertyInfo.assets?.images &&
-                    propertyInfo.assets.images.length > 0)) && (
-                  <div
-                    className='relative w-full max-w-full rounded-lg overflow-hidden bg-muted'
-                    style={{
-                      aspectRatio: '16/9',
-                      maxHeight: '400px',
-                    }}
-                  >
-                    {propertyInfo.assets?.video ? (
-                      <VideoPlayerFull
-                        src={propertyInfo.assets.video}
-                        className='w-full h-full object-contain'
-                      />
-                    ) : propertyInfo.assets?.images?.[0] ? (
-                      <Image
-                        src={propertyInfo.assets.images[0]}
-                        alt={tCreatePost('sections.propertyInfo.propertyCover')}
-                        fill
-                        className='object-cover'
-                        sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                      />
+                {(mediaUrls?.video ||
+                  (mediaUrls?.images && mediaUrls.images.length > 0)) && (
+                  <div className='relative w-full max-w-full rounded-lg overflow-hidden bg-muted'>
+                    {mediaUrls?.video ? (
+                      <div className='relative w-full rounded-lg overflow-hidden bg-black'>
+                        <video
+                          src={mediaUrls.video}
+                          controls
+                          className='w-full max-h-96 object-contain'
+                        />
+                      </div>
+                    ) : mediaUrls?.images?.[0] ? (
+                      <div
+                        className='relative w-full'
+                        style={{
+                          aspectRatio: '16/9',
+                          maxHeight: '400px',
+                        }}
+                      >
+                        <Image
+                          src={mediaUrls.images[0]}
+                          alt={tCreatePost(
+                            'sections.propertyInfo.propertyCover',
+                          )}
+                          fill
+                          className='object-cover'
+                          sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                        />
+                      </div>
                     ) : null}
                   </div>
                 )}
@@ -323,28 +328,30 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                             ({propertyInfo.amenityIds.length})
                           </Typography>
                           <div className='flex flex-wrap gap-1'>
-                            {propertyInfo.amenityIds.slice(0, 6).map((id) => {
-                              const amenity = AMENITIES_CONFIG.find(
-                                (a) => a.id === id,
-                              )
-                              const IconComponent = amenity?.icon
-                              return (
-                                <Badge
-                                  key={id}
-                                  variant='secondary'
-                                  className='text-xs flex items-center gap-1'
-                                >
-                                  {IconComponent && (
-                                    <IconComponent className='w-3 h-3' />
-                                  )}
-                                  {amenity
-                                    ? tCreatePost(
-                                        `sections.propertyInfo.amenities.${amenity.translationKey}`,
-                                      )
-                                    : `ID: ${id}`}
-                                </Badge>
-                              )
-                            })}
+                            {propertyInfo.amenityIds
+                              .slice(0, 6)
+                              .map((id: number) => {
+                                const amenity = AMENITIES_CONFIG.find(
+                                  (a) => a.id === id,
+                                )
+                                const IconComponent = amenity?.icon
+                                return (
+                                  <Badge
+                                    key={id}
+                                    variant='secondary'
+                                    className='text-xs flex items-center gap-1'
+                                  >
+                                    {IconComponent && (
+                                      <IconComponent className='w-3 h-3' />
+                                    )}
+                                    {amenity
+                                      ? tCreatePost(
+                                          `sections.propertyInfo.amenities.${amenity.translationKey}`,
+                                        )
+                                      : `ID: ${id}`}
+                                  </Badge>
+                                )
+                              })}
                             {propertyInfo.amenityIds.length > 6 && (
                               <Badge variant='secondary' className='text-xs'>
                                 +{propertyInfo.amenityIds.length - 6}

@@ -10,6 +10,7 @@ import {
 } from '@/constants/amenities'
 import { FURNISHING, PropertyType } from '@/api/types'
 import type { LucideIcon } from 'lucide-react'
+import { CATEGORIES, getCategoryName } from '@/constants/common/category'
 
 export const PRICE_TYPE_OPTIONS = [
   'PROVIDER_RATE',
@@ -103,25 +104,27 @@ export const getDirectionOptions = (t: (key: string) => string): Option[] =>
     label: t(`directions.${k.toLowerCase()}`),
   }))
 
-// PropertyType options for createPost (productType field)
+// PropertyType options for createPost (propertyType field)
+// Maps PropertyType enum to translation keys in createPost.sections.propertyDetails.propertyTypes
 const PROPERTY_TYPE_OPTIONS: Array<{
   value: PropertyType
   translationKey: string
 }> = [
-  { value: 'ROOM', translationKey: 'propertyTypes.1' },
-  { value: 'APARTMENT', translationKey: 'propertyTypes.2' },
-  { value: 'HOUSE', translationKey: 'propertyTypes.3' },
-  { value: 'STUDIO', translationKey: 'propertyTypes.4' },
+  { value: 'ROOM', translationKey: 'room' },
+  { value: 'APARTMENT', translationKey: 'apartment' },
+  { value: 'HOUSE', translationKey: 'house' },
+  { value: 'STUDIO', translationKey: 'studio' },
 ]
 
 // AI Valuation section helpers
+// Uses propertyDetails translations for PropertyType enum
 export const getAiPropertyTypeOptions = (
   t: (key: string) => string,
-  tCommon: (key: string) => string,
+  tPropertyDetails: (key: string) => string,
 ): Option[] =>
   PROPERTY_TYPE_OPTIONS.map((type) => ({
     value: type.value.toLowerCase(),
-    label: tCommon(type.translationKey),
+    label: tPropertyDetails(`propertyTypes.${type.translationKey}`),
   }))
 
 /**
@@ -147,8 +150,29 @@ export const getPriceUnitOptions = (t: (key: string) => string): Option[] => {
   }))
 }
 
+/**
+ * Get PropertyType options for createPost form
+ * @param t - Translation function scoped to createPost.sections.propertyDetails
+ * @returns Array of PropertyType options (ROOM, APARTMENT, HOUSE, STUDIO)
+ */
 export const getPropertyTypeOptions = (t: (key: string) => string): Option[] =>
   PROPERTY_TYPE_OPTIONS.map((type) => ({
     value: type.value.toLowerCase(),
-    label: t(type.translationKey),
+    label: t(`propertyTypes.${type.translationKey}`),
   }))
+
+// Category options for createPost (categoryId field)
+export const getCategoryOptions = (t: (key: string) => string): Option[] => {
+  return CATEGORIES.map((category) => ({
+    value: category.id.toString(),
+    label: getCategoryName(category.id, t),
+  }))
+}
+
+// Tone options for AI generation
+export const getToneOptions = (t: (key: string) => string): Option[] => {
+  return [
+    { value: 'friendly', label: t('tone.friendly') },
+    { value: 'professionally', label: t('tone.professionally') },
+  ]
+}

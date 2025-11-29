@@ -2,28 +2,23 @@ import React, { useCallback } from 'react'
 import {
   CategoryDropdown,
   PriceRangeDropdown,
+  SortDropdown,
 } from '@/components/molecules/filterDropdown'
 import AreaRangeDropdown from '@/components/molecules/areaRangeDropdown'
 import { Button } from '@/components/atoms/button'
 import Switch from '@/components/atoms/switch'
 import { useTranslations } from 'next-intl'
 import { Filter, MapIcon, ShieldCheck } from 'lucide-react'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/atoms/select'
 
 import { LocationSwitch } from '@/components/atoms'
 import { useRouter } from 'next/router'
 import { pushQueryParams } from '@/utils/queryParams'
 import { PUBLIC_ROUTES } from '@/constants/route'
-import { ListingFilterRequest, SortKey } from '@/api/types'
+import { ListingFilterRequest, SortKey } from '@/api/types/property.type'
 import { useListContext } from '@/contexts/list/useListContext'
 import { List } from '@/contexts/list'
 import ListSearch from '@/contexts/list/index.search'
+import useLocation from '@/hooks/useLocation'
 
 interface ResidentialFilterBarProps {
   onOpenAdvanced?: () => void
@@ -34,11 +29,12 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
 }) => {
   const t = useTranslations('residentialFilter')
   const tActions = useTranslations('residentialFilter.actions')
-  const tSort = useTranslations('propertiesPage.sort')
   const router = useRouter()
 
   const { filters, updateFilters, resetFilters, activeFilterCount } =
-    useListContext<unknown>()
+    useListContext<ListingFilterRequest>()
+
+  const { disableLocation } = useLocation()
 
   const handleApply = () => {
     const amenityIds = filters.amenityIds
@@ -61,6 +57,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
         electricityPrice: filters.electricityPrice ?? null,
         waterPrice: filters.waterPrice ?? null,
         internetPrice: filters.internetPrice ?? null,
+        serviceFee: filters.serviceFee ?? null,
         amenityIds:
           amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
         provinceId: filters.provinceId ?? null,
@@ -100,6 +97,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
         electricityPrice: null,
         waterPrice: null,
         internetPrice: null,
+        serviceFee: null,
         amenityIds: null,
         provinceId: null,
         districtId: null,
@@ -118,41 +116,25 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
     )
   }
 
-  const handleSortChange = useCallback((value: string) => {
-    const sortKeyMap: Record<string, SortKey | undefined> = {
-      default: SortKey.DEFAULT,
-      priceAsc: SortKey.PRICE_ASC,
-      priceDesc: SortKey.PRICE_DESC,
-      newest: SortKey.NEWEST,
-      oldest: SortKey.OLDEST,
-    }
+  const handleSortChange = useCallback((value: SortKey) => {
     updateFilter({
-      sortBy: sortKeyMap[value] || SortKey.DEFAULT,
+      sortBy: value,
       page: 1,
     })
   }, [])
-
-  const getSortValue = (): string => {
-    if (!filters.sortBy) return 'default'
-    const valueMap: Record<SortKey, string> = {
-      [SortKey.DEFAULT]: 'default',
-      [SortKey.PRICE_ASC]: 'priceAsc',
-      [SortKey.PRICE_DESC]: 'priceDesc',
-      [SortKey.NEWEST]: 'newest',
-      [SortKey.OLDEST]: 'oldest',
-    }
-    return valueMap[filters.sortBy] || 'default'
-  }
 
   const updateFilter = (partial: Partial<ListingFilterRequest>) => {
     updateFilters(partial)
   }
 
   const handleLocationChange = useCallback(
-    (latitude: number | null, longitude: number | null) => {
+    (latitude?: number, longitude?: number) => {
+      if (!latitude || !longitude) {
+        disableLocation()
+      }
       updateFilter({
-        latitude: latitude ?? undefined,
-        longitude: longitude ?? undefined,
+        latitude: latitude,
+        longitude: longitude,
       })
     },
     [],
@@ -228,18 +210,10 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
               </span>
             )}
           </Button>
-          <Select value={getSortValue()} onValueChange={handleSortChange}>
-            <SelectTrigger className='h-9 w-[140px]'>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='default'>{tSort('default')}</SelectItem>
-              <SelectItem value='priceAsc'>{tSort('priceAsc')}</SelectItem>
-              <SelectItem value='priceDesc'>{tSort('priceDesc')}</SelectItem>
-              <SelectItem value='newest'>{tSort('newest')}</SelectItem>
-              <SelectItem value='oldest'>{tSort('oldest')}</SelectItem>
-            </SelectContent>
-          </Select>
+          <SortDropdown
+            value={filters.sortBy || SortKey.DEFAULT}
+            onChange={handleSortChange}
+          />
           <CategoryDropdown
             value={filters.categoryId?.toString() || 'all'}
             onChange={(v) => {
@@ -276,7 +250,13 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
               </span>
             </div>
             <div className='flex items-center gap-1'>
-              <LocationSwitch onLocationChange={handleLocationChange} />
+              <LocationSwitch
+                onLocationChange={handleLocationChange}
+                disabled={
+                  filters.latitude === undefined ||
+                  filters.longitude === undefined
+                }
+              />
             </div>
           </div>
         </div>

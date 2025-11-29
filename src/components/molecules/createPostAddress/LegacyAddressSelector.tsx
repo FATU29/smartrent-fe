@@ -4,7 +4,7 @@ import { useMergeHistory } from '@/hooks/useAddress'
 import Combobox from '@/components/atoms/combobox'
 import { toast } from 'sonner'
 import type { MergeHistoryLegacySource } from '@/api/types/address.type'
-import type { Option } from '../filterAddress/usePagedList'
+import { Option } from '@/components/organisms/createPostSections/index.helper'
 
 export interface LegacyAddressSelectorProps {
   provinceCode?: string

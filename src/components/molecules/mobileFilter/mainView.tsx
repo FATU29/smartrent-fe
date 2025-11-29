@@ -16,6 +16,7 @@ import {
   MapPin,
   Home,
   Bed,
+  Receipt,
 } from 'lucide-react'
 import { ListingFilterRequest } from '@/api/types'
 
@@ -107,6 +108,12 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           selected={!!filters.internetPrice}
           onClick={() => onNavigate('internetPrice')}
           iconLeft={<Wifi className='h-4 w-4 text-muted-foreground' />}
+        />
+        <RadioRow
+          label={t('dropdowns.serviceFee')}
+          selected={!!filters.serviceFee}
+          onClick={() => onNavigate('serviceFee')}
+          iconLeft={<Receipt className='h-4 w-4 text-muted-foreground' />}
         />
         <RadioRow
           label={`${t('amenities.title')} ${filters.amenityIds && filters.amenityIds.length > 0 ? `(${filters.amenityIds.length})` : ''}`}

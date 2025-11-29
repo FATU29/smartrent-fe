@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
@@ -13,23 +13,21 @@ import { ImagePlus, Trash2 } from 'lucide-react'
 
 const MAX_IMAGES = 24
 
-// Local state type for pending files
-interface PendingImage {
-  file: File
-  previewUrl: string
-  isCover: boolean
-}
-
 const CoverUpload: React.FC = () => {
   const t = useTranslations('createPost.sections.media.cover')
-  const { propertyInfo, updatePropertyInfo } = useCreatePost()
+  const {
+    mediaUrls,
+    updateMediaUrls,
+    updateMediaIds,
+    pendingImages,
+    addPendingImages,
+    removePendingImage,
+  } = useCreatePost()
 
-  // Local state for pending images (not uploaded yet)
-  const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  // Get cover from either uploaded (context) or pending (local)
-  const uploadedImages = propertyInfo?.assets?.images || []
+  // Get cover from either uploaded (context) or pending (context)
+  const uploadedImages = mediaUrls?.images || []
   const coverUrl = uploadedImages[0]
   const pendingCover = pendingImages.find((img) => img.isCover)
 
@@ -48,41 +46,37 @@ const CoverUpload: React.FC = () => {
     // Remove old pending cover if exists
     const existingNonCover = pendingImages.filter((img) => !img.isCover)
 
-    // Create new pending images
-    const newPending: PendingImage[] = slice.map((file, index) => ({
+    // Create new pending images (first file is cover)
+    const newPending = slice.map((file, index) => ({
       file,
       previewUrl: URL.createObjectURL(file),
-      isCover: index === 0, // First file is cover
+      isCover: index === 0,
     }))
 
-    setPendingImages([...newPending, ...existingNonCover].slice(0, MAX_IMAGES))
+    addPendingImages([...newPending, ...existingNonCover].slice(0, MAX_IMAGES))
   }
-
-  // Expose pending images for parent to upload
-  React.useEffect(() => {
-    // Store in window for MediaStep to access
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(window as any).__coverPendingImages = pendingImages
-  }, [pendingImages])
 
   // Handle delete cover
   const handleDeleteCover = () => {
     // If there's a pending cover, remove it
     if (pendingCover) {
-      URL.revokeObjectURL(pendingCover.previewUrl)
-      setPendingImages(pendingImages.filter((img) => !img.isCover))
+      const coverIndex = pendingImages.findIndex((img) => img.isCover)
+      if (coverIndex !== -1) {
+        removePendingImage(coverIndex, true)
+      }
       return
     }
 
-    // If there's an uploaded cover, remove the first image from assets
+    // If there's an uploaded cover, remove the first image
     if (coverUrl && uploadedImages.length > 0) {
       const newImages = uploadedImages.slice(1) // Remove first image
-      updatePropertyInfo({
-        assets: {
-          ...propertyInfo?.assets,
-          images: newImages,
-        },
-      })
+      updateMediaUrls({ images: newImages })
+
+      // If we removed the cover (first image), clear thumbnailMediaId
+      // The new first image will become the cover and its mediaId will be set when uploaded
+      if (newImages.length === 0) {
+        updateMediaIds({ thumbnailMediaId: undefined })
+      }
     }
   }
 
@@ -160,4 +154,3 @@ const CoverUpload: React.FC = () => {
 }
 
 export { CoverUpload }
-export type { PendingImage }

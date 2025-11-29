@@ -37,34 +37,58 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   className,
 }) => {
   const t = useTranslations('createPost.sections.aiValuation')
-  const tCommon = useTranslations('common')
   const tPropertyInfo = useTranslations('createPost.sections.propertyInfo')
-  const { propertyInfo } = useCreatePost()
+  const tPropertyDetails = useTranslations(
+    'createPost.sections.propertyDetails',
+  )
+  const tAddress = useTranslations('createPost.sections.propertyInfo.address')
+  const {
+    propertyInfo,
+    fulltextAddress,
+    composedNewAddress,
+    composedLegacyAddress,
+  } = useCreatePost()
   const [prediction, setPrediction] = useState<HousingPredictorResponse | null>(
     null,
   )
 
   const { data: newProvinces = [] } = useNewProvinces()
-  const { data: newWards = [] } = useNewWards(
-    propertyInfo?.address?.new?.provinceId
-      ? String(propertyInfo.address.new.provinceId)
-      : undefined,
-  )
+  const provinceCodeForWards =
+    fulltextAddress?.newProvinceCode ||
+    (propertyInfo?.address?.new?.provinceCode
+      ? String(propertyInfo.address.new.provinceCode)
+      : undefined)
+  const { data: newWards = [] } = useNewWards(provinceCodeForWards)
 
-  // Find selected address entities
+  // Find selected address entities for addressNames
   const selectedNewProvince = useMemo(() => {
-    const provinceId = propertyInfo?.address?.new?.provinceId
-    if (!provinceId) return undefined
-    return newProvinces.find((p) => p.code === String(provinceId))
-  }, [newProvinces, propertyInfo?.address?.new?.provinceId])
+    const provinceCode =
+      fulltextAddress?.newProvinceCode ||
+      (propertyInfo?.address?.new?.provinceCode
+        ? String(propertyInfo.address.new.provinceCode)
+        : undefined)
+    if (!provinceCode) return undefined
+    return newProvinces.find((p) => p.id === provinceCode)
+  }, [
+    newProvinces,
+    fulltextAddress?.newProvinceCode,
+    propertyInfo?.address?.new?.provinceCode,
+  ])
 
   const selectedNewWard = useMemo(() => {
-    const wardId = propertyInfo?.address?.new?.wardId
-    if (!wardId) return undefined
-    return newWards.find((w) => w.code === String(wardId))
-  }, [newWards, propertyInfo?.address?.new?.wardId])
+    const wardCode =
+      fulltextAddress?.newWardCode ||
+      (propertyInfo?.address?.new?.wardCode
+        ? String(propertyInfo.address.new.wardCode)
+        : undefined)
+    if (!wardCode) return undefined
+    return newWards.find((w) => w.code === wardCode)
+  }, [
+    newWards,
+    fulltextAddress?.newWardCode,
+    propertyInfo?.address?.new?.wardCode,
+  ])
 
-  // Extract address names
   const addressNames = useMemo(() => {
     if (!selectedNewProvince || !selectedNewWard) return null
 
@@ -117,20 +141,18 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
     })
   }
 
-  // Format price for display
   const formatPrice = (price: number) => {
     return formatByLocale(price, 'vi-VN')
   }
 
-  // Get property type label for display
   const propertyTypeLabel = useMemo(() => {
     if (!propertyInfo.propertyType) return ''
-    const options = getAiPropertyTypeOptions(t, tCommon)
+    const options = getAiPropertyTypeOptions(t, tPropertyDetails)
     const option = options.find(
       (opt) => opt.value === propertyInfo.propertyType?.toLowerCase(),
     )
     return option?.label || propertyInfo.propertyType
-  }, [propertyInfo.propertyType, t, tCommon])
+  }, [propertyInfo.propertyType, t, tPropertyDetails])
 
   const canPredict = !!predictionRequest
 
@@ -151,36 +173,50 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             </p>
           </CardHeader>
           <CardContent className='space-y-6'>
-            {/* Display Address (Read-only) */}
-            <div className='space-y-3'>
-              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
-                <MapPin className='w-4 h-4 text-blue-500' />
-                {tPropertyInfo('displayAddress')}
-              </label>
-              <div className='relative group'>
-                <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 z-10' />
-                <Input
-                  type='text'
-                  readOnly
-                  className='pl-12 bg-gray-50 dark:bg-gray-800/50 cursor-not-allowed'
-                  placeholder={tPropertyInfo('displayAddressPlaceholder')}
-                  value={
-                    (
-                      propertyInfo as unknown as {
-                        displayAddress?: string
-                        propertyAddress?: string
-                      }
-                    ).displayAddress ||
-                    (propertyInfo as unknown as { propertyAddress?: string })
-                      .propertyAddress ||
-                    ''
-                  }
-                />
+            {/* New Address (Read-only) */}
+            {composedNewAddress && (
+              <div className='space-y-3'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                  <MapPin className='w-4 h-4 text-blue-500' />
+                  {tPropertyInfo('displayAddress')} (
+                  {tAddress('structureType.newShort') || 'Mới'})
+                </label>
+                <div className='relative group'>
+                  <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 z-10' />
+                  <Input
+                    type='text'
+                    readOnly
+                    className='pl-12 bg-gray-50 dark:bg-gray-800/50 cursor-text'
+                    placeholder={tPropertyInfo('displayAddressPlaceholder')}
+                    value={composedNewAddress}
+                  />
+                </div>
               </div>
-              <p className='text-xs text-gray-500 dark:text-gray-400'>
-                {t('propertyInfo.addressReadOnlyHint')}
-              </p>
-            </div>
+            )}
+
+            {/* Legacy Address (Read-only) */}
+            {composedLegacyAddress && (
+              <div className='space-y-3'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                  <MapPin className='w-4 h-4 text-orange-500' />
+                  {tAddress('legacyAddress') ||
+                    'Địa chỉ hiển thị trên tin đăng (phiên bản cũ)'}
+                </label>
+                <div className='relative group'>
+                  <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 z-10' />
+                  <Input
+                    type='text'
+                    readOnly
+                    className='pl-12 bg-gray-50 dark:bg-gray-800/50 cursor-text'
+                    placeholder={
+                      tAddress('legacyAddressPlaceholder') ||
+                      'Địa chỉ cũ sẽ hiển thị ở đây'
+                    }
+                    value={composedLegacyAddress}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Main Layout: One row for Type + Area (applies on mobile) */}
             <div className='grid grid-cols-2 gap-3 w-full'>

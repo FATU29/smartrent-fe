@@ -710,6 +710,7 @@
     "createListing": "Tạo tin đăng",
     "completeCurrentStep": "Vui lòng hoàn thành bước này trước khi tiếp tục",
     "validation": {
+      "imagesUploadInProgress": "Vui lòng đợi quá trình tải ảnh hoàn tất trước khi tiếp tục",
       "propertyTypeRequired": "Loại bất động sản là bắt buộc",
       "propertyTypeInvalid": "Loại bất động sản không hợp lệ",
       "addressRequired": "Địa chỉ là bắt buộc",
@@ -739,6 +740,7 @@
       "waterPriceRequired": "Giá nước là bắt buộc",
       "electricityPriceRequired": "Giá điện là bắt buộc",
       "internetPriceRequired": "Giá internet là bắt buộc",
+      "serviceFeeRequired": "Phí dịch vụ là bắt buộc",
       "interiorConditionRequired": "Tình trạng nội thất là bắt buộc",
       "bedroomsRequired": "Số phòng ngủ là bắt buộc",
       "bedroomsMinimum": "Số phòng ngủ phải ít nhất là 1",
@@ -889,7 +891,20 @@
           "title": "Ảnh đã tải lên",
           "cover": "Ảnh bìa",
           "setCover": "Đặt làm bìa",
-          "remove": "Xóa"
+          "remove": "Xóa",
+          "success": "Đã tải lên thành công"
+        },
+        "upload": {
+          "button": "Tải lên {count} ảnh",
+          "uploading": "Đang tải lên...",
+          "success": "Tải lên ảnh thành công",
+          "failed": "Tải lên ảnh thất bại",
+          "noPendingImages": "Không có ảnh nào để tải lên",
+          "images": "ảnh"
+        },
+        "validation": {
+          "pendingImages": "Vui lòng tải lên các ảnh đang chờ trước khi tiếp tục",
+          "minImages": "Vui lòng tải lên ít nhất 4 ảnh (video là tùy chọn)"
         },
         "video": {
           "title": "Video (Tùy chọn)",
@@ -1025,7 +1040,8 @@
             "districts": "Đang tải quận/huyện...",
             "wards": "Đang tải phường/xã...",
             "streets": "Đang tải đường phố...",
-            "projects": "Đang tải dự án..."
+            "projects": "Đang tải dự án...",
+            "loadingMore": "Đang tải thêm..."
           },
           "placeholders": {
             "selectProvince": "Chọn tỉnh/thành phố",
@@ -1056,12 +1072,18 @@
             "loadWardsFailed": "Không thể tải danh sách phường/xã",
             "convertMissingFields": "Vui lòng chọn đầy đủ thông tin địa chỉ",
             "convertFailed": "Không thể chuyển đổi địa chỉ",
-            "loadMergeHistoryFailed": "Không thể tải danh sách địa chỉ cũ"
+            "loadMergeHistoryFailed": "Không thể tải danh sách địa chỉ cũ",
+            "legacyAddressRequired": "Vui lòng chọn địa chỉ cũ trước"
           },
           "geocode": {
             "success": "Đã tự động định vị địa chỉ trên bản đồ",
-            "failed": "Không thể tự động định vị địa chỉ"
+            "failed": "Không thể tự động định vị địa chỉ",
+            "loading": "Đang lấy tọa độ...",
+            "legacyButton": "Lấy tọa độ từ Google Map",
+            "legacyDescription": "Nhấn nút để lấy tọa độ (latitude, longitude) từ Google Map dựa trên địa chỉ cũ"
           },
+          "legacyAddress": "Địa chỉ hiển thị trên tin đăng (phiên bản cũ)",
+          "legacyAddressPlaceholder": "Địa chỉ cũ sẽ hiển thị ở đây",
           "legacySelection": {
             "label": "Chọn địa chỉ cũ (Tuỳ chọn)",
             "description": "Địa chỉ mới này được gộp từ nhiều địa chỉ cũ. Vui lòng chọn địa chỉ phù hợp với bất động sản của bạn.",
@@ -1090,6 +1112,7 @@
           "semiFurnished": "Bán nội thất",
           "unfurnished": "Không nội thất"
         },
+        "categoryType": "Loại danh mục",
         "furnishing": {
           "FULLY_FURNISHED": "Đầy đủ nội thất",
           "SEMI_FURNISHED": "Bán nội thất",
@@ -1188,6 +1211,7 @@
         "waterPrice": "Giá nước",
         "electricityPrice": "Giá điện",
         "internetPrice": "Giá internet",
+        "serviceFee": "Phí dịch vụ",
         "utilityOptions": {
           "provider": "Nhà cung cấp",
           "fixed": "Cố định",
@@ -1220,6 +1244,7 @@
         "dateFormat": "Định dạng: dd/mm/yyyy",
         "placeholders": {
           "selectListingType": "Chọn loại tin đăng",
+          "selectCategoryType": "Chọn loại danh mục",
           "selectPropertyType": "Chọn loại bất động sản",
           "enterArea": "Nhập diện tích",
           "enterPrice": "Nhập giá",
@@ -1230,6 +1255,7 @@
           "selectWaterPrice": "Chọn giá nước",
           "selectElectricityPrice": "Chọn giá điện",
           "selectInternetPrice": "Chọn giá internet",
+          "selectServiceFee": "Chọn phí dịch vụ",
           "enterFullName": "Nhập họ và tên",
           "enterEmail": "Nhập email",
           "enterPhoneNumber": "Nhập số điện thoại",
@@ -1255,7 +1281,12 @@
         "titleLength": "Độ dài tối ưu: 30-99 ký tự",
         "descriptionHint": "Mô tả AI bao gồm lợi ích vị trí, tiện ích xung quanh và đối tượng mục tiêu",
         "addressReadOnlyHint": "Địa chỉ này được tự động tạo từ phần Thông tin Bất động sản bên trên",
-        "amenitiesSyncHint": "Tiện nghi được đồng bộ tự động với phần Thông tin Bất động sản"
+        "amenitiesSyncHint": "Tiện nghi được đồng bộ tự động với phần Thông tin Bất động sản",
+        "selectTone": "Chọn giọng điệu",
+        "tone": {
+          "friendly": "Thân thiện",
+          "professionally": "Chuyên nghiệp"
+        }
       },
       "aiValuation": {
         "title": "Định giá AI",
@@ -1568,6 +1599,7 @@
       "electricityPrice": "Giá điện",
       "waterPrice": "Giá nước",
       "internetPrice": "Giá internet",
+      "serviceFee": "Phí dịch vụ",
       "amenities": "Tiện ích",
       "media": "Phương tiện",
       "areaProject": "Khu vực & Dự án",
@@ -1648,6 +1680,13 @@
         "any": "Tất cả",
         "negotiable": "Thỏa thuận",
         "owner": "Do chủ nhà quy định"
+      },
+      "serviceFee": {
+        "title": "Phí dịch vụ",
+        "any": "Tất cả",
+        "negotiable": "Thỏa thuận",
+        "owner": "Do chủ nhà quy định",
+        "provider": "Theo nhà cung cấp"
       }
     },
     "amenities": {
@@ -2078,6 +2117,7 @@
     "listingCount": "Hiện có {count} bất động sản.",
     "emailNotification": "Nhận email tin mới",
     "sort": {
+      "title": "Sắp xếp",
       "default": "Mặc định",
       "priceAsc": "Giá tăng dần",
       "priceDesc": "Giá giảm dần",

@@ -40,8 +40,11 @@ import {
   getAmenityItems,
   getPriceUnitOptions,
   getPropertyTypeOptions,
+  getCategoryOptions,
+  getToneOptions,
 } from './index.helper'
-import { getAmenityByCode } from '@/constants/amenities'
+import { getAmenityByCode, AMENITIES_CONFIG } from '@/constants/amenities'
+import { getCategoryById } from '@/constants/common/category'
 import { AddressInput } from '@/components/molecules/createPostAddress'
 import GoogleMapPicker from '@/components/molecules/googleMapPicker'
 import NumberField from '@/components/atoms/number-field'
@@ -74,10 +77,50 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
   const { control, setValue } = useFormContext<Partial<CreateListingRequest>>()
 
-  const { propertyInfo, updatePropertyInfo } = useCreatePost()
+  const {
+    propertyInfo,
+    updatePropertyInfo,
+    composedNewAddress,
+    composedLegacyAddress,
+  } = useCreatePost()
+
+  const {
+    coordinates,
+    requestLocation,
+    isLoading: locationLoading,
+  } = useLocationContext()
+
+  const { mutate: generateAI, isPending: aiLoading } =
+    useGenerateListingDescription()
+
+  const [aiTone, setAiTone] = React.useState<'friendly' | 'professionally'>(
+    'friendly',
+  )
+
+  const {
+    title,
+    description,
+    address,
+    categoryId,
+    propertyType,
+    furnishing,
+    amenityIds,
+  } = propertyInfo
+
+  const {
+    new: newAddress,
+    legacy: oldAddress,
+    latitude,
+    longitude,
+  } = address || {}
 
   React.useEffect(() => {
     // Sync all property info fields to react-hook-form
+    if (propertyInfo.categoryId) {
+      setValue('categoryId', propertyInfo.categoryId, {
+        shouldValidate: true,
+      })
+    }
     if (propertyInfo.propertyType) {
       setValue('propertyType', propertyInfo.propertyType, {
         shouldValidate: true,
@@ -116,6 +159,11 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         shouldValidate: true,
       })
     }
+    if (propertyInfo.serviceFee) {
+      setValue('serviceFee', propertyInfo.serviceFee, {
+        shouldValidate: true,
+      })
+    }
     if (propertyInfo.furnishing) {
       setValue('furnishing', propertyInfo.furnishing, { shouldValidate: true })
     }
@@ -129,22 +177,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       setValue('direction', propertyInfo.direction, { shouldValidate: true })
     }
   }, [propertyInfo, setValue])
-
-  const {
-    coordinates,
-    requestLocation,
-    isLoading: locationLoading,
-  } = useLocationContext()
-
-  const { title, description, address, propertyType, furnishing, amenityIds } =
-    propertyInfo
-
-  const {
-    new: newAddress,
-    legacy: oldAddress,
-    latitude,
-    longitude,
-  } = address || {}
 
   const handleUseMyLocation = async () => {
     const success = await requestLocation()
@@ -160,10 +192,8 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     }
   }
 
-  // Update coordinates when location context changes
   const prevCoordinatesRef = React.useRef(coordinates)
   React.useEffect(() => {
-    // Only update if coordinates actually changed (not just re-render)
     if (
       coordinates &&
       (prevCoordinatesRef.current?.latitude !== coordinates.latitude ||
@@ -180,25 +210,63 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       })
     }
   }, [coordinates, newAddress, oldAddress])
-  // Note: updatePropertyInfo intentionally excluded from deps to avoid loop
-
-  // AI generation using React Query
-  const { mutate: generateAI, isPending: aiLoading } =
-    useGenerateListingDescription()
 
   const handleGenerateAI = () => {
+    // Get category name from categoryId
+    const categoryItem = categoryId ? getCategoryById(categoryId) : null
+    const categoryName = categoryItem?.value || ''
+
+    // Convert amenityIds to amenity codes (string[])
+    const amenityCodes: string[] = []
+    if (amenityIds && amenityIds.length > 0) {
+      amenityIds.forEach((id) => {
+        const amenity = AMENITIES_CONFIG.find((a) => a.id === id)
+        if (amenity) {
+          amenityCodes.push(amenity.code)
+        }
+      })
+    }
+
+    // Build addressText object
+    const addressTextObj: { new: string; legacy?: string } = {
+      new: composedNewAddress || '',
+    }
+    if (composedLegacyAddress) {
+      addressTextObj.legacy = composedLegacyAddress
+    }
+
+    // Validate required fields before generating
+    if (
+      !propertyType ||
+      !furnishing ||
+      !propertyInfo?.direction ||
+      !propertyInfo?.waterPrice ||
+      !propertyInfo?.electricityPrice ||
+      !propertyInfo?.internetPrice ||
+      !propertyInfo?.serviceFee
+    ) {
+      return
+    }
+
     const req: ListingDescriptionRequest = {
-      title: title,
-      addressText: '',
-      bedrooms: propertyInfo?.bedrooms,
-      bathrooms: propertyInfo?.bathrooms,
-      area: propertyInfo?.area,
-      price: propertyInfo?.price,
-      priceUnit: 'MONTH',
-      furnishing: furnishing,
+      category: categoryName,
       propertyType: propertyType,
-      tone: 'friendly',
-      maxWords: 60,
+      price: propertyInfo?.price || 0,
+      priceUnit: propertyInfo?.priceUnit || 'MONTH',
+      addressText: addressTextObj,
+      area: propertyInfo?.area || 0,
+      bedrooms: propertyInfo?.bedrooms || 0,
+      bathrooms: propertyInfo?.bathrooms || 0,
+      direction: propertyInfo.direction,
+      furnishing: furnishing,
+      amenities: amenityCodes,
+      waterPrice: propertyInfo.waterPrice,
+      electricityPrice: propertyInfo.electricityPrice,
+      internetPrice: propertyInfo.internetPrice,
+      serviceFee: propertyInfo.serviceFee,
+      tone: aiTone,
+      maxWords: '60',
+      minWords: '30',
     }
 
     generateAI(req, {
@@ -230,6 +298,36 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent className='space-y-6'>
+            {/* Category Type */}
+            <Controller
+              name='categoryId'
+              control={control}
+              render={({ fieldState: { error } }) => (
+                <div className='space-y-2'>
+                  <SelectDropdown
+                    label={
+                      <>
+                        {t('categoryType')}
+                        <span className='text-destructive ml-1'>*</span>
+                      </>
+                    }
+                    value={categoryId?.toString()}
+                    onValueChange={(value) => {
+                      updatePropertyInfo({
+                        categoryId: Number(value),
+                      })
+                    }}
+                    placeholder={tPlaceholders('selectCategoryType')}
+                    options={getCategoryOptions(tCommon)}
+                    error={
+                      error?.message
+                        ? tValidation(getValidationKey(error.message))
+                        : undefined
+                    }
+                  />
+                </div>
+              )}
+            />
             {/* Property Type */}
             <Controller
               name='propertyType'
@@ -239,20 +337,19 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   <SelectDropdown
                     label={
                       <>
-                        {t('propertyType')}
+                        {tDetails('propertyType')}
                         <span className='text-destructive ml-1'>*</span>
                       </>
                     }
                     value={propertyType?.toLowerCase()}
                     onValueChange={(value) => {
-                      // Convert lowercase to uppercase for PropertyType enum
                       const upperValue = value.toUpperCase() as PropertyType
                       updatePropertyInfo({
                         propertyType: upperValue,
                       })
                     }}
                     placeholder={tPlaceholders('selectPropertyType')}
-                    options={getPropertyTypeOptions(tCommon)}
+                    options={getPropertyTypeOptions(tDetails)}
                     error={
                       error?.message
                         ? tValidation(getValidationKey(error.message))
@@ -588,7 +685,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <ZapIcon className='w-5 h-5 text-yellow-500' />
                 {tUtilities('monthlyUtilities')}
               </h3>
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
                 <Controller
                   name='waterPrice'
                   control={control}
@@ -651,9 +748,8 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   name='internetPrice'
                   control={control}
                   render={({ fieldState: { error } }) => (
-                    <div className='space-y-2 sm:col-span-2 lg:col-span-1'>
+                    <div className='space-y-2'>
                       <SelectDropdown
-                        className='sm:col-span-2 lg:col-span-1'
                         label={
                           <>
                             {tUtilities('internetPrice')}
@@ -668,6 +764,35 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         }}
                         placeholder={tPlaceholders('selectInternetPrice')}
                         options={getInternetOptions(tUtilities)}
+                        error={
+                          error?.message
+                            ? tValidation(getValidationKey(error.message))
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
+                />
+                <Controller
+                  name='serviceFee'
+                  control={control}
+                  render={({ fieldState: { error } }) => (
+                    <div className='space-y-2'>
+                      <SelectDropdown
+                        label={
+                          <>
+                            {tUtilities('serviceFee')}
+                            <span className='text-destructive ml-1'>*</span>
+                          </>
+                        }
+                        value={propertyInfo?.serviceFee}
+                        onValueChange={(value) => {
+                          updatePropertyInfo({
+                            serviceFee: value as PriceType,
+                          })
+                        }}
+                        placeholder={tPlaceholders('selectServiceFee')}
+                        options={getUtilityPriceOptions(tUtilities)}
                         error={
                           error?.message
                             ? tValidation(getValidationKey(error.message))
@@ -729,20 +854,31 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 </div>
                 {tAI('title')}
               </CardTitle>
-              <Button
-                variant='outline'
-                size='sm'
-                className='border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg w-full sm:w-auto'
-                onClick={handleGenerateAI}
-                disabled={aiLoading}
-              >
-                {aiLoading ? (
-                  <Loader2 className='w-4 h-4 mr-1 animate-spin' />
-                ) : (
-                  <Zap className='w-4 h-4 mr-1' />
-                )}
-                {t('generateAutomatically')}
-              </Button>
+              <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto'>
+                <SelectDropdown
+                  value={aiTone}
+                  onValueChange={(value) => {
+                    setAiTone(value as 'friendly' | 'professionally')
+                  }}
+                  placeholder={tAI('selectTone')}
+                  options={getToneOptions(tAI)}
+                  className='w-full sm:w-[180px]'
+                />
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg w-full sm:w-auto'
+                  onClick={handleGenerateAI}
+                  disabled={aiLoading}
+                >
+                  {aiLoading ? (
+                    <Loader2 className='w-4 h-4 mr-1 animate-spin' />
+                  ) : (
+                    <Zap className='w-4 h-4 mr-1' />
+                  )}
+                  {t('generateAutomatically')}
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent className='space-y-6'>

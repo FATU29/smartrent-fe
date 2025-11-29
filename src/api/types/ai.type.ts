@@ -1,17 +1,33 @@
-import type { PropertyType, Furnishing, PriceUnit } from './property.type'
+import type {
+  Furnishing,
+  Direction,
+  PriceType,
+  PriceUnit,
+  PropertyType,
+} from './property.type'
 
 export interface ListingDescriptionRequest {
-  title?: string
-  addressText?: string
-  bedrooms?: number
-  bathrooms?: number
-  area?: number
+  category?: string
+  propertyType?: PropertyType
   price?: number
   priceUnit?: PriceUnit
+  addressText?: {
+    new?: string
+    legacy?: string
+  }
+  area?: number
+  bedrooms?: number
+  bathrooms?: number
+  direction?: Direction
   furnishing?: Furnishing
-  propertyType?: PropertyType
-  tone?: string
-  maxWords?: number
+  amenities?: string[]
+  waterPrice?: PriceType
+  electricityPrice?: PriceType
+  internetPrice?: PriceType
+  serviceFee?: PriceType
+  tone?: 'friendly' | 'professionally'
+  maxWords?: string
+  minWords?: string
 }
 
 export interface ListingDescriptionResponse {

@@ -12,15 +12,6 @@ interface CreatePostDraftGuardProps {
 
 const NAVIGATION_CANCELLED_ERROR = 'Navigation cancelled by draft guard'
 
-/**
- * Component to guard against navigation away from create post page
- * Shows dialog to save draft when user tries to leave
- *
- * Flow:
- * 1. User tries to navigate/reload -> Dialog shows
- * 2. User clicks Save/Discard/Cancel -> Action executes
- * 3. Dialog closes -> Navigation proceeds (only after successful save or user confirmation)
- */
 export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   children,
 }) => {
@@ -51,7 +42,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       propertyInfo.bedrooms !== undefined ||
       propertyInfo.bathrooms !== undefined ||
       propertyInfo.amenityIds !== undefined ||
-      propertyInfo.assets !== undefined ||
+      propertyInfo.mediaIds !== undefined ||
       propertyInfo.postDate !== undefined ||
       propertyInfo.durationDays !== undefined ||
       propertyInfo.benefitsMembership !== undefined ||

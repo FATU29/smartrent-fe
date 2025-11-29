@@ -174,13 +174,38 @@ export function getFiltersFromQuery(
       internetPriceParam as ListingFilterRequest['internetPrice']
   }
 
-  // Location
-  filters.provinceId = parseNumberParam(query, 'provinceId')
-  filters.districtId = parseNumberParam(query, 'districtId')
-  filters.wardId = parseNumberParam(query, 'wardId')
+  const serviceFeeParam = parseStringParam(query, 'serviceFee')
+  if (serviceFeeParam) {
+    filters.serviceFee = serviceFeeParam as ListingFilterRequest['serviceFee']
+  }
 
-  // Legacy and coordinates
+  // Legacy and coordinates - parse isLegacy first to determine how to parse address IDs
   filters.isLegacy = parseBooleanParam(query, 'isLegacy')
+
+  // Location - parse based on isLegacy flag
+  const provinceIdParam = parseStringParam(query, 'provinceId')
+  if (provinceIdParam) {
+    // If isLegacy is explicitly true, parse as number; otherwise keep as string (for new address)
+    if (filters.isLegacy === true) {
+      filters.provinceId = Number(provinceIdParam)
+    } else {
+      // For new address or when isLegacy is not set, keep as string
+      filters.provinceId = provinceIdParam
+    }
+  }
+
+  filters.districtId = parseNumberParam(query, 'districtId')
+
+  const wardIdParam = parseStringParam(query, 'wardId')
+  if (wardIdParam) {
+    // If isLegacy is explicitly true, parse as number; otherwise keep as string (for new address)
+    if (filters.isLegacy === true) {
+      filters.wardId = Number(wardIdParam)
+    } else {
+      // For new address or when isLegacy is not set, keep as string
+      filters.wardId = wardIdParam
+    }
+  }
   filters.latitude = parseNumberParam(query, 'latitude')
   filters.longitude = parseNumberParam(query, 'longitude')
 

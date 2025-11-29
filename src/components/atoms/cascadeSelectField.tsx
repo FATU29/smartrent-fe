@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import {
   Select,
   SelectContent,
@@ -22,6 +22,10 @@ interface CascadeSelectFieldProps {
   onChange: (value: string) => void
   searchable?: boolean
   className?: string
+  onLoadMore?: () => void
+  hasMore?: boolean
+  isLoadingMore?: boolean
+  onSearchChange?: (value: string) => void
 }
 
 const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
@@ -33,19 +37,78 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
   onChange,
   searchable = false,
   className,
+  onLoadMore,
+  hasMore = false,
+  isLoadingMore = false,
+  onSearchChange,
 }) => {
   const [keyword, setKeyword] = useState('')
-  const filtered = useMemo(
-    () =>
-      !searchable || !keyword
-        ? options
-        : options.filter((o) =>
-            o.label.toLowerCase().includes(keyword.toLowerCase()),
-          ),
-    [keyword, options, searchable],
-  )
+
+  // If onSearchChange is provided, use it for API search; otherwise filter locally
+  const filtered = useMemo(() => {
+    if (!searchable || !keyword) return options
+    if (onSearchChange) {
+      // API search - return all options (filtering done by API)
+      return options
+    }
+    // Local search - filter options
+    return options.filter((o) =>
+      o.label.toLowerCase().includes(keyword.toLowerCase()),
+    )
+  }, [keyword, options, searchable, onSearchChange])
+
+  // Handle search input change
+  const handleSearchChange = (newKeyword: string) => {
+    setKeyword(newKeyword)
+    onSearchChange?.(newKeyword)
+  }
 
   const CLEAR_VALUE = '__clear__'
+  const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    if (!onLoadMore || !hasMore || isLoadingMore || !isOpen) return
+
+    let viewport: HTMLElement | null = null
+    let timeoutId: NodeJS.Timeout | null = null
+    let scrollHandler: (() => void) | null = null
+
+    // Find the scrollable viewport element in the portal
+    const findAndAttachScroll = () => {
+      viewport = document.querySelector(
+        '[data-radix-select-viewport]',
+      ) as HTMLElement
+      if (!viewport) {
+        // Retry after a short delay if not found
+        timeoutId = setTimeout(findAndAttachScroll, 50)
+        return
+      }
+
+      scrollHandler = () => {
+        if (!viewport) return
+        const scrollBottom =
+          viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight
+
+        // Load more when scrolled to within 50px of bottom
+        if (scrollBottom < 50 && hasMore && !isLoadingMore) {
+          onLoadMore()
+        }
+      }
+
+      viewport.addEventListener('scroll', scrollHandler)
+    }
+
+    findAndAttachScroll()
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+      if (viewport && scrollHandler) {
+        viewport.removeEventListener('scroll', scrollHandler)
+      }
+    }
+  }, [onLoadMore, hasMore, isLoadingMore, isOpen])
 
   return (
     <div className={cn('space-y-1', className)}>
@@ -56,6 +119,7 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
           if (v === CLEAR_VALUE) onChange('')
           else onChange(v)
         }}
+        onOpenChange={setIsOpen}
         disabled={disabled}
       >
         <SelectTrigger
@@ -73,16 +137,28 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
                 className='w-full text-sm px-2 py-1 border rounded-md bg-background'
                 placeholder={placeholder}
                 value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
               />
             </div>
           )}
           {/* Không render option placeholder */}
-          {filtered.map((opt) => (
-            <SelectItem key={opt.id} value={opt.id}>
-              {opt.label}
-            </SelectItem>
-          ))}
+          {filtered
+            .filter((opt) => opt.id !== undefined && opt.id !== null)
+            .map((opt, index) => (
+              <SelectItem key={opt.id || `option-${index}`} value={opt.id}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          {isLoadingMore && (
+            <div className='p-2 text-center text-sm text-muted-foreground'>
+              Đang tải...
+            </div>
+          )}
+          {hasMore && !isLoadingMore && (
+            <div className='p-2 text-center text-xs text-muted-foreground'>
+              Cuộn để tải thêm
+            </div>
+          )}
         </SelectContent>
       </Select>
     </div>

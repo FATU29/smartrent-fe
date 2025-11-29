@@ -57,6 +57,10 @@ const getPropertyInfoFields = () => ({
     .string()
     .required('internetPriceRequired')
     .oneOf(['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE']),
+  serviceFee: yup
+    .string()
+    .required('serviceFeeRequired')
+    .oneOf(['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE']),
   furnishing: yup
     .string()
     .required('interiorConditionRequired')
@@ -226,6 +230,7 @@ export const STEP_0_FIELDS = [
   'waterPrice',
   'electricityPrice',
   'internetPrice',
+  'serviceFee',
   'furnishing',
   'bedrooms',
   'bathrooms',

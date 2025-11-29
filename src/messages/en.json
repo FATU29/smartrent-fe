@@ -695,6 +695,9 @@
       "waterPriceRequired": "Water price is required",
       "electricityPriceRequired": "Electricity price is required",
       "internetPriceRequired": "Internet price is required",
+      "serviceFeeRequired": "Service fee is required",
+      "videoUploadInProgress": "Please wait for video upload to complete before continuing",
+      "imagesUploadInProgress": "Please wait for images upload to complete before continuing",
       "interiorConditionRequired": "Interior condition is required",
       "bedroomsRequired": "Number of bedrooms is required",
       "bedroomsMinimum": "Number of bedrooms must be at least 1",
@@ -702,8 +705,7 @@
       "bathroomsMinimum": "Number of bathrooms must be at least 1",
       "directionRequired": "House direction is required",
       "directionInvalid": "Invalid house direction",
-      "moveInDateRequired": "Move-in date is required",
-      "videoUploadInProgress": "Please wait for video to finish uploading before continuing"
+      "moveInDateRequired": "Move-in date is required"
     },
     "generateAutomatically": "Generate Automatically",
     "continueToUpload": "Continue to upload",
@@ -845,7 +847,20 @@
           "title": "Uploaded Images",
           "cover": "Cover",
           "setCover": "Set Cover",
-          "remove": "Remove"
+          "remove": "Remove",
+          "success": "Uploaded successfully"
+        },
+        "upload": {
+          "button": "Upload {count} images",
+          "uploading": "Uploading...",
+          "images": "images",
+          "success": "Images uploaded successfully",
+          "failed": "Failed to upload images",
+          "noPendingImages": "No images to upload"
+        },
+        "validation": {
+          "pendingImages": "Please upload pending images before continuing",
+          "minImages": "Please upload at least 4 images (video is optional)"
         },
         "video": {
           "title": "Video (Optional)",
@@ -927,6 +942,7 @@
         }
       },
       "propertyInfo": {
+        "categoryType": "Category Type",
         "generateAutomatically": "Generate Automatically",
         "listingInfo": "Listing Info",
         "mapPreview": "Map Preview",
@@ -1026,7 +1042,8 @@
             "districts": "Loading districts...",
             "wards": "Loading wards...",
             "streets": "Loading streets...",
-            "projects": "Loading projects..."
+            "projects": "Loading projects...",
+            "loadingMore": "Loading more..."
           },
           "placeholders": {
             "selectProvince": "Select province/city",
@@ -1057,12 +1074,18 @@
             "loadWardsFailed": "Failed to load wards list",
             "convertMissingFields": "Please select complete address information",
             "convertFailed": "Failed to convert address",
-            "loadMergeHistoryFailed": "Failed to load legacy address options"
+            "loadMergeHistoryFailed": "Failed to load legacy address options",
+            "legacyAddressRequired": "Please select a legacy address first"
           },
           "geocode": {
             "success": "Address automatically located on the map",
-            "failed": "Unable to automatically locate address"
+            "failed": "Unable to automatically locate address",
+            "loading": "Getting coordinates...",
+            "legacyButton": "Get coordinates from Google Map",
+            "legacyDescription": "Click button to get coordinates (latitude, longitude) from Google Map based on legacy address"
           },
+          "legacyAddress": "Display Address on Listing (Legacy Version)",
+          "legacyAddressPlaceholder": "Legacy address will be displayed here",
           "legacySelection": {
             "label": "Select Legacy Address (Optional)",
             "description": "This new address was merged from multiple legacy addresses. Select the one that matches your property.",
@@ -1144,6 +1167,7 @@
         "waterPrice": "Water Price",
         "electricityPrice": "Electricity Price",
         "internetPrice": "Internet Price",
+        "serviceFee": "Service Fee",
         "utilityOptions": {
           "provider": "Provider",
           "fixed": "Fixed",
@@ -1176,6 +1200,7 @@
         "dateFormat": "Format: dd/mm/yyyy",
         "placeholders": {
           "selectListingType": "Select listing type",
+          "selectCategoryType": "Select category type",
           "selectPropertyType": "Select property type",
           "enterArea": "Enter area",
           "enterPrice": "Enter price",
@@ -1186,6 +1211,7 @@
           "selectWaterPrice": "Select water price",
           "selectElectricityPrice": "Select electricity price",
           "selectInternetPrice": "Select internet price",
+          "selectServiceFee": "Select service fee",
           "enterFullName": "Enter full name",
           "enterEmail": "Enter email",
           "enterPhoneNumber": "Enter phone number",
@@ -1211,7 +1237,12 @@
         "titleLength": "Optimal length: 30-99 characters",
         "descriptionHint": "AI description includes location benefits, surrounding amenities, and target audience",
         "addressReadOnlyHint": "This address is automatically generated from the Property Information section above",
-        "amenitiesSyncHint": "Amenities are automatically synced with the Property Information section"
+        "amenitiesSyncHint": "Amenities are automatically synced with the Property Information section",
+        "selectTone": "Select tone",
+        "tone": {
+          "friendly": "Friendly",
+          "professionally": "Professional"
+        }
       },
       "aiValuation": {
         "title": "AI Valuation",
@@ -1608,6 +1639,7 @@
       "electricityPrice": "Electricity Price",
       "waterPrice": "Water Price",
       "internetPrice": "Internet Price",
+      "serviceFee": "Service Fee",
       "amenities": "Amenities",
       "media": "Media",
       "areaProject": "Area & Project",
@@ -1688,6 +1720,13 @@
         "any": "All",
         "negotiable": "Negotiable",
         "owner": "Set by owner"
+      },
+      "serviceFee": {
+        "title": "Service Fee",
+        "any": "All",
+        "negotiable": "Negotiable",
+        "owner": "Set by owner",
+        "provider": "Provider rate"
       }
     },
     "amenities": {
@@ -2034,6 +2073,7 @@
     "listingCount": "Currently {count} properties available.",
     "emailNotification": "Receive new email notifications",
     "sort": {
+      "title": "Sort by",
       "default": "Default",
       "priceAsc": "Price: Low to High",
       "priceDesc": "Price: High to Low",

@@ -125,6 +125,7 @@ export const PATHS = {
     SUGGEST: '/v1/addresses/suggest',
     NEARBY: '/v1/addresses/nearby',
     HEALTH: '/v1/addresses/health',
+    GEOCODE: '/v1/addresses/geocode',
     // Legacy structure (63 provinces)
     PROVINCES: '/v1/addresses/provinces',
     PROVINCE_BY_ID: '/v1/addresses/provinces/:provinceId',

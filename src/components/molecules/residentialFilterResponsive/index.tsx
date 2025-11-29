@@ -1,6 +1,19 @@
 import React, { useCallback } from 'react'
-import ResidentialFilterDialog from '@/components/molecules/residentialFilterDialog'
-import ResidentialFilterBar from '@/components/molecules/residentialFilterBar'
+import dynamic from 'next/dynamic'
+
+const ResidentialFilterDialog = dynamic(
+  () => import('@/components/molecules/residentialFilterDialog'),
+  {
+    ssr: false,
+  },
+)
+
+const ResidentialFilterBar = dynamic(
+  () => import('@/components/molecules/residentialFilterBar'),
+  {
+    ssr: false,
+  },
+)
 
 const ResidentialFilterResponsive: React.FC = () => {
   const [dialogOpen, setDialogOpen] = React.useState(false)
