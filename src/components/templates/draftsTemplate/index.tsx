@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { useTranslations } from 'next-intl'
 import { DraftCard } from '@/components/molecules/draftCard'
 import { DraftCardSkeleton } from '@/components/molecules/draftCard/DraftCardSkeleton'
@@ -16,19 +16,21 @@ interface DraftsTemplateProps {
 
 const DraftsList: React.FC = () => {
   const {
-    itemsData: drafts,
+    items: drafts,
     isLoading,
     pagination,
-    handleLoadMore,
+    loadMore,
   } = useListContext<Draft>()
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tDrafts = useTranslations('seller.drafts')
+  const { currentPage, totalPages } = pagination
+  const hasNext = currentPage < totalPages
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: () => {
-      if (isMobile && pagination.hasNext && !isLoading) {
-        handleLoadMore()
+      if (isMobile && hasNext && !isLoading) {
+        loadMore()
       }
     },
     options: {
@@ -82,7 +84,7 @@ const DraftsList: React.FC = () => {
             </div>
           )}
 
-          {pagination.hasNext && !isLoading && (
+          {hasNext && !isLoading && (
             <List.LoadMore
               className='w-full max-w-xs'
               variant='outline'
@@ -96,7 +98,7 @@ const DraftsList: React.FC = () => {
             aria-hidden='true'
           />
 
-          {!pagination.hasNext && drafts.length > 0 && (
+          {!hasNext && drafts.length > 0 && (
             <Typography
               variant='small'
               className='text-center py-6 text-muted-foreground'
@@ -115,57 +117,6 @@ export const DraftsTemplate: React.FC<DraftsTemplateProps> = ({
 }) => {
   const t = useTranslations('seller.drafts')
 
-  // Mock fetcher - will be replaced with real API call
-  const draftsFetcher = useCallback(async () => {
-    // TODO: Replace with real API call
-    const mockDrafts: Draft[] = [
-      {
-        id: 1,
-        title: 'Căn hộ 2PN tại Quận 1',
-        address: '123 Nguyễn Huệ, Quận 1, TP.HCM',
-        propertyType: 'APARTMENT',
-        price: 15000000,
-        area: 60,
-        bedrooms: 2,
-        bathrooms: 2,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        status: 'draft',
-      },
-      {
-        id: 2,
-        address: '456 Lê Lợi, Quận 3, TP.HCM',
-        propertyType: 'HOUSE',
-        price: 25000000,
-        area: 100,
-        bedrooms: 3,
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        updatedAt: new Date(Date.now() - 86400000).toISOString(),
-        status: 'draft',
-      },
-      {
-        id: 3,
-        title: 'Studio hiện đại',
-        price: 8000000,
-        area: 30,
-        bedrooms: 0,
-        bathrooms: 1,
-        createdAt: new Date(Date.now() - 172800000).toISOString(),
-        updatedAt: new Date(Date.now() - 172800000).toISOString(),
-        status: 'draft',
-      },
-    ]
-
-    return {
-      data: mockDrafts,
-      total: mockDrafts.length,
-      page: 1,
-      totalPages: 1,
-      hasNext: false,
-      hasPrevious: false,
-    }
-  }, [])
-
   return (
     <div className={cn('p-3 sm:p-4', className)}>
       <div className='mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6'>
@@ -176,7 +127,7 @@ export const DraftsTemplate: React.FC<DraftsTemplateProps> = ({
         </div>
 
         {/* Drafts List */}
-        <List.Provider fetcher={draftsFetcher} defaultPerPage={10}>
+        <List.Provider>
           <DraftsList />
         </List.Provider>
       </div>

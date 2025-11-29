@@ -2,12 +2,8 @@ import React from 'react'
 import { Check } from 'lucide-react'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
-import { PricingPlanFeatureGroup } from './index'
-import {
-  getContentStyles,
-  getFeatureGroupTitleStyles,
-  getFeatureItemStyles,
-} from './styles'
+import { getContentStyles, getFeatureItemStyles } from './styles'
+import type { MembershipBenefit } from '@/api/types/membership.type'
 
 interface FeatureIconProps {
   readonly active: boolean
@@ -29,7 +25,7 @@ const FeatureIcon: React.FC<FeatureIconProps> = ({ active }) => {
 }
 
 interface PricingFeaturesProps {
-  readonly featureGroups: readonly PricingPlanFeatureGroup[]
+  readonly benefits: readonly MembershipBenefit[]
   readonly compact: boolean
 }
 
@@ -39,44 +35,23 @@ interface PricingFeaturesProps {
  * Uses Typography atoms instead of raw HTML tags
  */
 export const PricingFeatures: React.FC<PricingFeaturesProps> = ({
-  featureGroups,
+  benefits,
   compact,
 }) => {
   return (
     <Typography as='div' className={getContentStyles(compact)}>
-      {featureGroups.map((group, gi) => (
-        <Typography key={gi} as='div' className='flex flex-col gap-3'>
-          {group.title && (
-            <Typography
-              variant='small'
-              as='p'
-              className={getFeatureGroupTitleStyles(compact)}
-            >
-              {group.title}
-            </Typography>
-          )}
-          <Typography as='div' className='flex flex-col gap-2'>
-            {group.features.map((f, fi) => (
-              <Typography
-                key={fi}
-                as='div'
-                className={getFeatureItemStyles(compact)}
-              >
-                <FeatureIcon active={f.active} />
-                <Typography
-                  as='span'
-                  className={cn(
-                    !f.active &&
-                      'text-muted-foreground line-through opacity-60',
-                  )}
-                >
-                  {f.label}
-                </Typography>
-              </Typography>
-            ))}
+      <Typography as='div' className='flex flex-col gap-2'>
+        {benefits.map((b, i) => (
+          <Typography
+            key={i}
+            as='div'
+            className={getFeatureItemStyles(compact)}
+          >
+            <FeatureIcon active={true} />
+            <Typography as='span'>{b.benefitNameDisplay || ''}</Typography>
           </Typography>
-        </Typography>
-      ))}
+        ))}
+      </Typography>
     </Typography>
   )
 }

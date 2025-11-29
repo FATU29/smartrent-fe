@@ -1,32 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MembershipService } from '@/api/services'
-import type { PurchaseMembershipRequest } from '@/api/types/memembership.type'
+import type { PurchaseMembershipRequest } from '@/api/types/membership.type'
 
-/**
- * Hook to fetch all available membership packages
- */
 export const useMembershipPackages = () => {
   return useQuery({
-    queryKey: ['memberships', 'packages'],
+    queryKey: ['memberships'],
     queryFn: async () => {
       const { data, success } = await MembershipService.getAllPackages()
       if (!success || !data) {
         throw new Error('Failed to fetch membership packages')
       }
-      // Sort by package level: BASIC -> STANDARD -> ADVANCED
-      const levelOrder = { BASIC: 1, STANDARD: 2, ADVANCED: 3 }
-      return data.sort(
-        (a, b) => levelOrder[a.packageLevel] - levelOrder[b.packageLevel],
-      )
+
+      return data?.data || []
     },
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
     gcTime: 10 * 60 * 1000, // Cache for 10 minutes
   })
 }
 
-/**
- * Hook to fetch a specific membership package by ID
- */
 export const useMembershipPackage = (membershipId: number | undefined) => {
   return useQuery({
     queryKey: ['memberships', 'package', membershipId],
@@ -45,9 +36,6 @@ export const useMembershipPackage = (membershipId: number | undefined) => {
   })
 }
 
-/**
- * Hook to fetch the current user's active membership
- */
 export const useMyMembership = (userId: string | undefined) => {
   return useQuery({
     queryKey: ['memberships', 'my', userId],
@@ -65,9 +53,6 @@ export const useMyMembership = (userId: string | undefined) => {
   })
 }
 
-/**
- * Hook to fetch user's membership history
- */
 export const useMembershipHistory = (userId: string | undefined) => {
   return useQuery({
     queryKey: ['memberships', 'history', userId],
@@ -86,9 +71,6 @@ export const useMembershipHistory = (userId: string | undefined) => {
   })
 }
 
-/**
- * Hook to purchase a membership package
- */
 export const usePurchaseMembership = () => {
   const queryClient = useQueryClient()
 

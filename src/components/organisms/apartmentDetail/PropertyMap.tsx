@@ -4,14 +4,18 @@ import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
 import { Card, CardContent } from '@/components/atoms/card'
 import { ExternalLink } from 'lucide-react'
-import type { LocationData } from '@/types/apartmentDetail.types'
 
 interface PropertyMapProps {
-  location?: LocationData
-  address?: string
+  location?: {
+    coordinates: {
+      latitude: number
+      longitude: number
+    }
+  }
+  address?: React.ReactNode
 }
 
-const PropertyMap: React.FC<PropertyMapProps> = ({ location }) => {
+const PropertyMap: React.FC<PropertyMapProps> = ({ location, address }) => {
   const t = useTranslations('apartmentDetail')
 
   if (!location?.coordinates) {
@@ -39,6 +43,8 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ location }) => {
           {t('map.openInGoogleMaps')}
         </Button>
       </div>
+
+      {address && <div className='space-y-2'>{address}</div>}
 
       {/* Map Embed */}
       <Card>

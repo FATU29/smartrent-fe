@@ -19,8 +19,17 @@ export interface DatePickerProps {
 }
 
 // Utility to convert ISO (yyyy-MM-dd) to Date & vice versa
-const parseIso = (v?: string) => (v ? new Date(v + 'T00:00:00') : undefined)
-const toIso = (d?: Date) => (d ? d.toISOString().split('T')[0] : undefined)
+const parseIso = (v?: string) => {
+  if (!v || v.trim().length === 0) return undefined
+  const date = new Date(v + 'T00:00:00')
+  // Check if date is valid
+  return isNaN(date.getTime()) ? undefined : date
+}
+const toIso = (d?: Date) => {
+  if (!d) return undefined
+  // Check if date is valid
+  return isNaN(d.getTime()) ? undefined : d.toISOString().split('T')[0]
+}
 
 export const DatePicker: React.FC<DatePickerProps> = ({
   value,
@@ -34,20 +43,25 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const [open, setOpen] = React.useState(false)
   const selectedDate = parseIso(value)
 
+  // Get today at midnight for min date comparison
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
   const [range, setRange] = React.useState<Range[]>([
     {
-      startDate: selectedDate || new Date(),
-      endDate: selectedDate || new Date(),
+      startDate: selectedDate || today,
+      endDate: selectedDate || today,
       key: 'selection',
     },
   ])
 
   React.useEffect(() => {
-    if (selectedDate) {
+    const parsed = parseIso(value)
+    if (parsed) {
       setRange([
         {
-          startDate: selectedDate,
-          endDate: selectedDate,
+          startDate: parsed,
+          endDate: parsed,
           key: 'selection',
         },
       ])
@@ -57,6 +71,15 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const handleSelect = (r: RangeKeyDict) => {
     const sel = r.selection
     if (sel.startDate) {
+      // Check if selected date is not in the past
+      const selectedDateOnly = new Date(sel.startDate)
+      selectedDateOnly.setHours(0, 0, 0, 0)
+
+      if (selectedDateOnly < today) {
+        // Don't allow selecting past dates
+        return
+      }
+
       onChange(toIso(sel.startDate))
       setRange([
         {
@@ -71,10 +94,12 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
   const reset = () => {
     onChange(undefined)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
     setRange([
       {
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: today,
+        endDate: today,
         key: 'selection',
       },
     ])
@@ -97,7 +122,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           )}
         >
           <CalendarIcon className='mr-2 h-4 w-4' />
-          {selectedDate
+          {selectedDate && !isNaN(selectedDate.getTime())
             ? format(selectedDate, 'dd/MM/yyyy')
             : placeholder || t('selectDate')}
         </Button>

@@ -1,7 +1,7 @@
-import { useTranslations } from 'next-intl'
+import { PRICE_UNIT_TRANSLATION_KEYS } from '@/utils/property'
 
 // Simple static rate fallback; in real usage fetch from API and cache.
-const DEFAULT_VND_PER_USD = 24000
+export const DEFAULT_VND_PER_USD = 24000
 
 export interface ConvertCurrencyOptions {
   /** Custom exchange rate (VND per 1 USD). Overrides default. */
@@ -48,110 +48,25 @@ export const formatVndToUsd = (
   }).format(usd)
 }
 
-/** React helper hook returning a formatter bound to current i18n locale and currency labels */
-export const useCurrencyConversion = () => {
-  const t = useTranslations('residentialFilter.currency')
-  return {
-    labelVnd: t('vnd'),
-    labelUsd: t('usd'),
-    vndToUsdNumber,
-    formatVndToUsd: (
-      vndAmount: number,
-      options?: Omit<ConvertCurrencyOptions, 'locale'>,
-    ) =>
-      formatVndToUsd(vndAmount, {
-        ...options,
-      }),
-  }
-}
-
-/**
- * Utility to produce a compact USD string like 1.2K USD from VND input.
- */
-export const formatVndToUsdCompact = (
-  vndAmount: number,
-  options: ConvertCurrencyOptions = {},
-): string => {
-  const { locale, vndPerUsd = DEFAULT_VND_PER_USD } = options
-  const usd = vndToUsdNumber(vndAmount, { vndPerUsd })
-  const compact = new Intl.NumberFormat(locale, {
-    notation: 'compact',
-    maximumFractionDigits: 1,
-  }).format(usd)
-  return `${compact} USD`
-}
-
-/**
- * Detect a VND formatted string (có chứa đ, ₫, VND hoặc số lớn > 10,000) và đổi sang USD formatted.
- * Nếu đầu vào là number coi như VND. Trả về chuỗi USD với ký hiệu $.
- */
-export const formatCurrencyAuto = (
-  input: number | string,
-  options: Omit<ConvertCurrencyOptions, 'locale'> & { locale?: string } = {},
-): string => {
-  const {
-    vndPerUsd = DEFAULT_VND_PER_USD,
-    maximumFractionDigits = 2,
-    minimumFractionDigits = 0,
-    locale,
-  } = options
-  let numeric: number | null = null
-  if (typeof input === 'number') {
-    numeric = input
-  } else if (typeof input === 'string') {
-    const cleaned = input
-      .replace(/[^0-9.,]/g, '')
-      .replace(/\.(?=\d{3}(?:\D|$))/g, '')
-      .replace(/,/g, '')
-    const parsed = Number.parseFloat(cleaned)
-    if (Number.isFinite(parsed)) numeric = parsed
-  }
-  if (!numeric || numeric <= 0) return '$0'
-  const usd = vndToUsdNumber(numeric, { vndPerUsd })
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits,
-    minimumFractionDigits,
-  }).format(usd)
-}
-
-export const formatCurrencyAutoCompact = (
-  input: number | string,
-  options: Omit<ConvertCurrencyOptions, 'locale'> & { locale?: string } = {},
-): string => {
-  const { vndPerUsd = DEFAULT_VND_PER_USD, locale } = options
-  let numeric: number | null = null
-  if (typeof input === 'number') numeric = input
-  else {
-    const cleaned = input
-      .replace(/[^0-9.,]/g, '')
-      .replace(/\.(?=\d{3}(?:\D|$))/g, '')
-      .replace(/,/g, '')
-    const parsed = Number.parseFloat(cleaned)
-    if (Number.isFinite(parsed)) numeric = parsed
-  }
-  if (!numeric || numeric <= 0) return '0 USD'
-  const usd = vndToUsdNumber(numeric, { vndPerUsd })
-  const compact = new Intl.NumberFormat(locale, {
-    notation: 'compact',
-    maximumFractionDigits: 1,
-  }).format(usd)
-  return `${compact} USD`
-}
-
 /** Locale aware: en => USD, else => VND (with ₫). Accept raw VND number. */
 export const formatByLocale = (
   vndAmount: number,
   locale: string | undefined,
   opts: Omit<ConvertCurrencyOptions, 'locale'> = {},
 ): string => {
+  // Normalize locale to handle 'en' or 'en-US' etc.
+  const normalizedLocale = locale?.toLowerCase().trim()
+  const isEnglish =
+    normalizedLocale === 'en' || normalizedLocale?.startsWith('en-')
+
   if (!Number.isFinite(vndAmount) || vndAmount <= 0) {
-    return locale?.startsWith('en') ? '$0' : '0 ₫'
+    return isEnglish ? '$0' : '0 ₫'
   }
-  if (locale?.startsWith('en')) {
-    return formatVndToUsd(vndAmount, opts)
+
+  if (isEnglish) {
+    return formatVndToUsd(vndAmount, { ...opts, locale: 'en-US' })
   }
+
   // Vietnamese or other: show VND grouping with ₫ suffix
   // Use non-breaking space so number and symbol stay together
   return new Intl.NumberFormat('vi-VN').format(vndAmount) + '\u00A0₫'
@@ -169,4 +84,64 @@ export const formatSavingByLocale = (
       : parseInt(value.replace(/[^0-9]/g, ''), 10)
   if (!Number.isFinite(num)) return ''
   return formatByLocale(num, locale, opts)
+}
+
+export const mapTranslationForPriceUnit = PRICE_UNIT_TRANSLATION_KEYS
+
+/**
+ * Format number to compact notation for chart display
+ * Vietnamese: 1tr (triệu), 1ty (tỷ)
+ * English: 1M (million), 1B (billion)
+ */
+export const formatCompactCurrency = (
+  amount: number,
+  locale: string | undefined,
+  opts?: Omit<ConvertCurrencyOptions, 'locale'>,
+): string => {
+  if (!Number.isFinite(amount) || amount <= 0) return '0'
+
+  const normalizedLocale = locale?.toLowerCase().trim()
+  const isEnglish =
+    normalizedLocale === 'en' || normalizedLocale?.startsWith('en-')
+
+  const formatCompact = (
+    value: number,
+    units: { threshold: number; divisor: number; suffix: string }[],
+    format: (n: number) => string,
+  ): string => {
+    for (const u of units) {
+      if (value >= u.threshold) {
+        const num = value / u.divisor
+        return format(num) + u.suffix
+      }
+    }
+    return String(Math.round(value))
+  }
+
+  if (!isEnglish) {
+    // Vietnamese compact: ty (billion), tr (million), k (thousand)
+    const vnUnits = [
+      { threshold: 1_000_000_000, divisor: 1_000_000_000, suffix: 'ty' },
+      { threshold: 1_000_000, divisor: 1_000_000, suffix: 'tr' },
+      { threshold: 1_000, divisor: 1_000, suffix: 'k' },
+    ]
+    return formatCompact(amount, vnUnits, (n) =>
+      n % 1 === 0 ? `${n}` : n.toFixed(1),
+    )
+  }
+
+  // English compact: convert to USD first, then B/M/K with $ prefix
+  const usdAmount = vndToUsdNumber(amount, opts)
+  const enUnits = [
+    { threshold: 1_000_000_000, divisor: 1_000_000_000, suffix: 'B' },
+    { threshold: 1_000_000, divisor: 1_000_000, suffix: 'M' },
+    { threshold: 1_000, divisor: 1_000, suffix: 'K' },
+  ]
+  const result = formatCompact(
+    usdAmount,
+    enUnits,
+    (n) => `$${n % 1 === 0 ? `${n}` : n.toFixed(1)}`,
+  )
+  // If below 1k, formatCompact returns rounded number without suffix; ensure it has $ prefix
+  return result.includes('$') ? result : `$${result}`
 }

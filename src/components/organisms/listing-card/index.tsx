@@ -1,7 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { Property } from '@/api/types/property.type'
 import { StatusBadge } from '@/components/atoms/status-badge'
 import { PackageBadge } from '@/components/atoms/package-badge'
 import { RankDisplay } from '@/components/atoms/rank-display'
@@ -15,11 +14,11 @@ import {
   LISTING_CARD_STYLES,
   LISTING_CARD_CONFIG,
   LISTING_CARD_ANIMATIONS,
-  getListingCardLogic,
 } from './index.constants'
+import { ListingOwnerDetail } from '@/api/types'
 
 export interface ListingCardProps {
-  property: Property
+  property: ListingOwnerDetail
   onEdit?: () => void
   onPromote?: () => void
   onRepost?: () => void
@@ -50,7 +49,35 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   className,
 }) => {
   const t = useTranslations('seller.listingManagement.card')
-  const logic = getListingCardLogic(property)
+
+  // Derived logic based on ListingOwnerDetail
+  const isExpired = property.expired || false
+  const hasVipPackage = property.vipType && property.vipType !== 'NORMAL'
+  const showRank = property.rankOfVipType > 0
+  const showPromoteButton = !hasVipPackage
+  const showRepostButton = isExpired
+
+  // VipType is already matching PackageType (NORMAL, SILVER, GOLD, DIAMOND)
+  const packageType = property.vipType
+
+  // Map PostStatus to StatusType
+  const getStatusType = (status?: string): string | undefined => {
+    if (!status) return undefined
+    const mapping: Record<string, string> = {
+      DISPLAYING: 'active',
+      EXPIRED: 'expired',
+      NEAR_EXPIRED: 'expiring',
+      PENDING_APPROVAL: 'pending',
+      APPROVED: 'review',
+      PENDING_PAYMENT: 'payment',
+      REJECTED: 'rejected',
+      VERIFIED: 'active',
+      ALL: 'active',
+    }
+    return mapping[status] || 'pending'
+  }
+
+  const statusType = getStatusType(property.status)
 
   return (
     <Card
@@ -65,7 +92,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           {/* Property Image */}
           <div className={LISTING_CARD_STYLES.imageContainer}>
             <Image
-              src={property.images?.[0] || LISTING_CARD_CONFIG.defaultImage}
+              src={
+                property.assets?.images?.[0] || LISTING_CARD_CONFIG.defaultImage
+              }
               alt={property.title}
               fill
               className={cn(
@@ -74,12 +103,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               )}
             />
             {/* Package Badge */}
-            {logic.hasPackage && (
+            {packageType && (
               <div className={LISTING_CARD_STYLES.packageBadgeContainer}>
-                <PackageBadge
-                  packageType={property.package_type!}
-                  showShimmer={property.package_type?.startsWith('vip_')}
-                />
+                <PackageBadge packageType={packageType} showShimmer={true} />
               </div>
             )}
           </div>
@@ -94,24 +120,30 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
                 {/* Address */}
                 <p className={LISTING_CARD_STYLES.address}>
-                  {property.property_type} • {property.address}
+                  {property.productType} •{' '}
+                  {property.address?.new || property.address?.legacy || 'N/A'}
                 </p>
 
                 {/* Property Info */}
                 <div className={LISTING_CARD_STYLES.propertyInfo}>
                   <span>
-                    {t('listingCode')}: {property.code || property.id}
+                    {t('listingCode')}: {property.listingId}
                   </span>
                   <span>
-                    {t('postedDate')}: {formatDate(property.posted_date)}
+                    {t('postedDate')}:{' '}
+                    {formatDate(
+                      property.postDate instanceof Date
+                        ? property.postDate.toISOString()
+                        : property.postDate,
+                    )}
                   </span>
                   <span>
-                    {t('expiryDate')}: {formatDate(property.expiry_date)}
+                    {t('expiryDate')}: {formatDate(property.expiryDate)}
                   </span>
                 </div>
 
                 {/* Status Messages */}
-                {logic.isExpired && (
+                {isExpired && (
                   <p className={LISTING_CARD_STYLES.expiredMessage}>
                     {t('expiredMessage')}
                   </p>
@@ -119,14 +151,16 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
                 {/* Verification and Rank */}
                 <div className={LISTING_CARD_STYLES.badgeContainer}>
-                  {logic.hasVerification && (
+                  {property.verified && (
                     <VerificationBadge
                       verified={property.verified}
                       type='verified'
                     />
                   )}
-                  {logic.showRank && property.rank && (
-                    <RankDisplay rank={property.rank} />
+                  {showRank && (
+                    <RankDisplay
+                      rank={{ page: 1, position: property.rankOfVipType }}
+                    />
                   )}
                 </div>
               </div>
@@ -135,19 +169,35 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               <div className={LISTING_CARD_STYLES.rightContent}>
                 {/* Status Badge */}
                 <div className={LISTING_CARD_STYLES.statusContainer}>
-                  {property.status && (
+                  {statusType && (
                     <StatusBadge
-                      status={property.status}
-                      animate={property.status === 'expiring'}
+                      status={
+                        statusType as
+                          | 'active'
+                          | 'expired'
+                          | 'expiring'
+                          | 'pending'
+                          | 'review'
+                          | 'payment'
+                          | 'rejected'
+                          | 'archived'
+                      }
+                      animate={statusType === 'expiring'}
                     />
                   )}
                 </div>
 
                 {/* Stats */}
-                {logic.hasStats && (
+                {(property.listingViews ||
+                  property.interested ||
+                  property.customers) && (
                   <div className={LISTING_CARD_STYLES.statsContainer}>
                     <StatsDisplay
-                      stats={property.stats!}
+                      stats={{
+                        views: property.listingViews || 0,
+                        contacts: property.interested || 0,
+                        customers: property.customers || 0,
+                      }}
                       animated={true}
                       compact={true}
                     />
@@ -169,8 +219,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               onActivityHistory={onActivityHistory}
               onTakeDown={onTakeDown}
               onDelete={onDelete}
-              showPromoteButton={logic.showPromoteButton}
-              showRepostButton={logic.showRepostButton}
+              showPromoteButton={showPromoteButton}
+              showRepostButton={showRepostButton}
             />
           </div>
           {/* Close layout wrapper */}

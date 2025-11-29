@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { useVipTiers } from '@/hooks/useVipTiers'
@@ -24,7 +25,9 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SelectPromotionDialog } from '@/components/molecules/createPostSections/SelectPromotionDialog'
-import type { BenefitType, UserBenefit } from '@/api/types/memembership.type'
+import type { BenefitType, UserBenefit } from '@/api/types/membership.type'
+import type { DurationDays, VipType } from '@/api/types/property.type'
+import { Switch } from '@/components/atoms/switch'
 
 interface PackageConfigSectionProps {
   className?: string
@@ -39,31 +42,51 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   className,
 }) => {
   const t = useTranslations('createPost.sections.packageConfig')
-  const { updatePropertyInfo } = useCreatePost()
+  const { propertyInfo, updatePropertyInfo } = useCreatePost()
+  const { setValue, trigger } = useFormContext()
 
   // Fetch VIP tiers using React Query
   const { data: vipTiers = [], isLoading, isError, error } = useVipTiers()
 
-  const [selectedTierId, setSelectedTierId] = useState<number | null>(null)
-  const [selectedDuration, setSelectedDuration] = useState<number>(10)
-  const [startDate, setStartDate] = useState<string>('')
   const [promoOpen, setPromoOpen] = useState(false)
 
-  // Auto-select first tier when data loads
-  useEffect(() => {
-    if (vipTiers.length > 0 && selectedTierId === null) {
-      const firstTier = vipTiers[0]
-      setSelectedTierId(firstTier.tierId)
-      updatePropertyInfo({
-        selectedPackageType: firstTier.tierCode,
-        selectedTierId: firstTier.tierId,
-        selectedDuration: 10,
-        packageStartDate: startDate,
-      })
-    }
-  }, [vipTiers, selectedTierId, updatePropertyInfo, startDate])
+  // Derive state from propertyInfo
+  const selectedTier = vipTiers.find((t) => t.tierCode === propertyInfo.vipType)
+  const selectedTierId = selectedTier?.tierId ?? null
+  const selectedDuration = propertyInfo.durationDays ?? 10
+  const startDate = propertyInfo.postDate
+    ? typeof propertyInfo.postDate === 'string'
+      ? propertyInfo.postDate.split('T')[0]
+      : new Date(propertyInfo.postDate).toISOString().split('T')[0]
+    : new Date().toISOString().split('T')[0]
 
-  const selectedTier = vipTiers.find((t) => t.tierId === selectedTierId)
+  // Auto-select first tier when data loads and no tier is selected
+  useEffect(() => {
+    if (vipTiers.length > 0 && !propertyInfo.vipType) {
+      const firstTier = vipTiers[0]
+      const defaultStartDate = new Date().toISOString().split('T')[0]
+
+      updatePropertyInfo({
+        vipType: firstTier.tierCode as VipType,
+        durationDays: 10,
+        postDate: defaultStartDate,
+      })
+
+      setValue('vipType' as never, firstTier.tierCode as never, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      setValue('durationDays' as never, 10 as never, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      setValue('postDate' as never, defaultStartDate as never, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      trigger()
+    }
+  }, [vipTiers, propertyInfo.vipType, updatePropertyInfo, setValue, trigger])
 
   // Get duration options for selected tier
   const getDurationOptions = (tier: VipTier | undefined): DurationOption[] => {
@@ -106,25 +129,42 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   }
 
   const handleTierSelect = (tierId: number) => {
-    setSelectedTierId(tierId)
-    // Reset duration to 10 days when switching tiers
-    setSelectedDuration(10)
     const tier = vipTiers.find((t) => t.tierId === tierId)
+    if (!tier) return
+
     updatePropertyInfo({
-      selectedPackageType: tier?.tierCode,
-      selectedTierId: tierId,
-      selectedDuration: 10,
-      packageStartDate: startDate,
+      vipType: tier.tierCode as VipType,
+      durationDays: 10, // Reset to 10 days when switching tiers
     })
+
+    setValue('vipType' as never, tier.tierCode as never, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    setValue('durationDays' as never, 10 as never, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    trigger()
+
+    setValue('vipType' as never, tier.tierCode as never, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    setValue('durationDays' as never, 10 as never, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    trigger()
   }
 
   const handleDurationSelect = (days: number) => {
-    setSelectedDuration(days)
-    updatePropertyInfo({
-      selectedPackageType: selectedTier?.tierCode,
-      selectedDuration: days,
-      packageStartDate: startDate,
+    updatePropertyInfo({ durationDays: days as DurationDays })
+    setValue('durationDays', days, {
+      shouldValidate: true,
+      shouldDirty: true,
     })
+    trigger()
   }
 
   const mapBenefitToTierCode = (type: BenefitType): string | undefined => {
@@ -142,20 +182,34 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
 
   const handleApplyPromotion = (benefit: UserBenefit) => {
     const tierCode = mapBenefitToTierCode(benefit.benefitType as BenefitType)
-    // Try to match vip tier by code to set selectedTierId
-    const tier = vipTiers.find((t) => t.tierCode === tierCode)
-    if (tier) {
-      setSelectedTierId(tier.tierId)
-    }
+    const start = propertyInfo.postDate
+      ? typeof propertyInfo.postDate === 'string'
+        ? propertyInfo.postDate
+        : new Date(propertyInfo.postDate).toISOString()
+      : new Date().toISOString()
+
     updatePropertyInfo({
-      selectedPackageType: tierCode,
-      selectedTierId: tier?.tierId,
-      selectedDuration: selectedDuration,
-      packageStartDate: startDate,
-      appliedPromotionBenefitId: benefit.userBenefitId,
-      appliedPromotionType: benefit.benefitType,
-      appliedPromotionLabel: benefit.benefitNameDisplay,
+      vipType: tierCode as VipType | undefined,
+      benefitsMembership: [
+        {
+          benefitId: benefit.userBenefitId,
+          membershipId: 0,
+        },
+      ],
+      postDate: start,
     })
+
+    if (tierCode) {
+      setValue('vipType' as never, tierCode as never, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+    }
+    setValue('postDate' as never, start as never, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    trigger()
   }
 
   if (isLoading) {
@@ -304,8 +358,15 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
             <DatePicker
               value={startDate}
               onChange={(date) => {
-                setStartDate(date || '')
-                updatePropertyInfo({ packageStartDate: date || '' })
+                const newStart = date || new Date().toISOString().split('T')[0]
+                const fullDate = new Date(newStart).toISOString()
+
+                updatePropertyInfo({ postDate: fullDate })
+                setValue('postDate' as never, fullDate as never, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+                trigger()
               }}
               placeholder={t('selectStartDate')}
             />
@@ -340,6 +401,39 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
           onOpenChange={setPromoOpen}
           onApply={handleApplyPromotion}
         />
+
+        {/* Use Membership Quota Toggle */}
+        <Card className='p-6'>
+          <CardContent className='flex items-center justify-between gap-4 p-0'>
+            <div>
+              <Typography className='font-medium text-sm'>
+                {t('useMembershipQuota')}
+              </Typography>
+              <Typography variant='muted' className='text-xs'>
+                {t('useMembershipQuotaDescription')}
+              </Typography>
+            </div>
+            <Switch
+              checked={!!propertyInfo.useMembershipQuota}
+              onCheckedChange={(checked) => {
+                updatePropertyInfo({ useMembershipQuota: checked })
+                setValue('useMembershipQuota' as never, checked as never, {
+                  shouldDirty: true,
+                })
+
+                // When enabling membership quota, set duration to 30 days
+                if (checked) {
+                  updatePropertyInfo({ durationDays: 30 })
+                  setValue('durationDays' as never, 30 as never, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                  trigger()
+                }
+              }}
+            />
+          </CardContent>
+        </Card>
 
         {/* Summary - Flex Layout */}
         <Card className='flex flex-col lg:flex-row gap-6 p-6'>

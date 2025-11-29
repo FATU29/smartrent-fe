@@ -20,8 +20,7 @@ function isPublicPath(pathname: string) {
   // Check if starts with /properties or /sellernet
   if (pathname.startsWith('/properties')) return true
   if (pathname.startsWith('/sellernet')) return true
-
-  return false
+  if (pathname.startsWith('/listing-detail')) return false
 }
 
 export function middleware(request: NextRequest) {

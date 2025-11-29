@@ -1,27 +1,33 @@
 import React from 'react'
 import PropertyCard from '@/components/molecules/propertyCard'
-import { PropertyCard as PropertyCardType } from '@/api/types/property.type'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Skeleton } from '@/components/atoms/skeleton'
-import { useListContext } from '@/contexts/list/useListContext'
+import { ListingDetail } from '@/api/types'
+import { useRouter } from 'next/navigation'
 
 interface PropertyListProps {
-  onPropertyClick?: (property: PropertyCardType) => void
+  initialProperties?: ListingDetail[]
 }
 
-const PropertyList: React.FC<PropertyListProps> = ({ onPropertyClick }) => {
+const PropertyList: React.FC<PropertyListProps> = ({
+  initialProperties = [],
+}) => {
   const t = useTranslations()
-  const { itemsData, isLoading } = useListContext<PropertyCardType>()
+  const router = useRouter()
 
   const handleFavorite = () => {}
 
-  const PropertyItem = (property: PropertyCardType) => (
+  const handleOnClick = (property: ListingDetail) => {
+    router.push(`/listing-detail/${property.listingId}`)
+  }
+
+  const PropertyItem = (property: ListingDetail) => (
     <PropertyCard
-      key={property.id}
-      property={property}
-      onClick={onPropertyClick}
+      key={property.listingId}
+      listing={property}
       onFavorite={handleFavorite}
+      onClick={() => handleOnClick(property)}
     />
   )
 
@@ -61,14 +67,14 @@ const PropertyList: React.FC<PropertyListProps> = ({ onPropertyClick }) => {
         variant='h2'
         className='text-lg md:text-xl lg:text-2xl font-bold mb-6'
       >
-        {t('homePage.property.listings')} ({itemsData.length})
+        {t('homePage.property.listings')} ({initialProperties.length})
       </Typography>
 
-      {itemsData.length === 0 && isLoading && PropertySkeleton}
-      {itemsData.length === 0 && !isLoading && PropertyNotFound}
-      {itemsData.length > 0 && (
+      {initialProperties.length === 0 && PropertySkeleton}
+      {initialProperties.length === 0 && PropertyNotFound}
+      {initialProperties.length > 0 && (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6'>
-          {itemsData.map((p) => PropertyItem(p))}
+          {initialProperties.map((p) => PropertyItem(p))}
         </div>
       )}
       <div className='mt-8' />

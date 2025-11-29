@@ -11,113 +11,153 @@ import {
   TooltipTrigger,
 } from '@/components/atoms/tooltip'
 import ImageAtom from '@/components/atoms/imageAtom'
-import { PropertyCard as PropertyCardType } from '@/api/types/property.type'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
 import { useTranslations } from 'next-intl'
-import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
-import { formatByLocale } from '@/utils/currency/convert'
 import {
   Heart,
   MapPin,
   Bed,
   Bath,
   Square,
-  Car,
-  Wifi,
-  Shield,
-  Eye,
-  Video,
   Star,
-  Navigation,
-  User,
   Phone,
   Camera,
+  Check,
+  Home,
+  Building2,
+  Users,
+  Compass,
+  Sofa,
+  Crown,
+  Sparkles,
 } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
+import { ListingDetail } from '@/api/types'
+import { getAmenityIcon } from '@/constants/amenities'
+import { formatDate } from 'date-fns'
+import { isYouTube, toYouTubeEmbed } from '@/utils/video/url'
+import { formatByLocale } from '@/utils/currency/convert'
+import {
+  getProductTypeTranslationKey,
+  getDirectionTranslationKey,
+  getFurnishingTranslationKey,
+} from '@/utils/property'
 
 interface PropertyCardProps {
-  property: PropertyCardType
-  onClick?: (property: PropertyCardType) => void
-  onFavorite?: (property: PropertyCardType, isFavorite: boolean) => void
+  listing: ListingDetail
+  onClick?: (listing: ListingDetail) => void
+  onFavorite?: (listing: ListingDetail, isFavorite: boolean) => void
   className?: string
   bottomContent?: React.ReactNode
-  // Optional user info for compact mode
-  userInfo?: {
-    name?: string
-    avatar?: string
-    postedDate?: string
-  }
-  // Image layout option for compact mode
   imageLayout?: 'left' | 'top'
-  // Contact info for compact mode
-  contactInfo?: {
-    phone?: string
-    phoneMasked?: string
-    onShowPhone?: () => void
-    isPhoneVisible?: boolean
-  }
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({
-  property,
-  onClick,
-  onFavorite,
-  className,
-  bottomContent,
-  userInfo,
-  imageLayout = 'left',
-  contactInfo,
-}) => {
+const PropertyCard: React.FC<PropertyCardProps> = (props) => {
+  const {
+    listing,
+    onClick,
+    onFavorite,
+    className,
+    bottomContent,
+    imageLayout = 'left',
+  } = props
+
+  const {
+    title,
+    description,
+    price,
+    priceUnit,
+    area,
+    bedrooms,
+    bathrooms,
+    verified,
+    user,
+    assets,
+    amenities,
+    address,
+    postDate,
+    productType,
+    listingType,
+    vipType,
+    furnishing,
+    direction,
+    roomCapacity,
+  } = listing
+
+  const { images: assetsImages, video: assetsVideo } = assets || {}
+
+  const { firstName, lastName, phoneNumber } = user || {}
+
+  const userName = `${firstName} ${lastName}`
+
+  const { new: newAddress, legacy: legacyAddress } = address || {}
+
   const t = useTranslations()
-  const { language } = useSwitchLanguage()
+  const tCreatePost = useTranslations()
   const [isFavorite, setIsFavorite] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  const renderPrice = (price: number, currency: string) => {
-    const isVnd = currency === 'VND'
-    if (isVnd) {
-      const formatted = formatByLocale(price, language)
-      return formatted + (language === 'vi' ? '/tháng' : '/month')
-    }
-    const intl = new Intl.NumberFormat(language === 'en' ? 'en-US' : 'vi-VN', {
-      style: 'currency',
-      currency,
-    }).format(price)
-    return intl + (language === 'vi' ? '/tháng' : '/month')
-  }
-
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    onClick?.(property)
+    onClick?.(listing)
   }
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     const newFavoriteState = !isFavorite
     setIsFavorite(newFavoriteState)
-    onFavorite?.(property, newFavoriteState)
+    onFavorite?.(listing, newFavoriteState)
   }
 
-  const getAmenityIcon = (amenity: string) => {
-    const lowerAmenity = amenity.toLowerCase()
-    if (lowerAmenity.includes('parking') || lowerAmenity.includes('garage'))
-      return <Car className='w-3 h-3' />
-    if (lowerAmenity.includes('wifi') || lowerAmenity.includes('internet'))
-      return <Wifi className='w-3 h-3' />
-    if (lowerAmenity.includes('security') || lowerAmenity.includes('safe'))
-      return <Shield className='w-3 h-3' />
-    return null
-  }
-
-  const fullAddress = `${property.address}, ${property.city}`
   const isCompact = className?.includes('compact')
   const isTopLayout = isCompact && imageLayout === 'top'
-  const images = property.images || []
-  const totalImages = images.length
-  const mainImage = images[currentImageIndex] || images[0]
-  const thumbnails = images.slice(0, 4) // Show max 4 thumbnails
+  const totalImages = assetsImages?.length || 0
+  const mainImage = assetsImages?.[0]
+  const thumbnails = assetsImages || []
 
-  // Render image gallery for top layout
+  // Helper functions for displaying additional fields
+
+  const ProductTypeIconMap: Record<
+    string,
+    React.ComponentType<{ className?: string }>
+  > = {
+    APARTMENT: Building2,
+    HOUSE: Home,
+    ROOM: Users,
+    STUDIO: Users,
+  }
+  const ProductTypeIcon = ProductTypeIconMap[productType || ''] || Home
+
+  const getVipBadgeConfig = () => {
+    if (!vipType || vipType === 'NORMAL') return null
+    const configs: Record<
+      string,
+      {
+        label: string
+        className: string
+        icon: React.ComponentType<{ className?: string }>
+      }
+    > = {
+      SILVER: {
+        label: 'VIP Silver',
+        className: 'bg-gray-500 text-white',
+        icon: Sparkles,
+      },
+      GOLD: {
+        label: 'VIP Gold',
+        className: 'bg-yellow-500 text-white',
+        icon: Crown,
+      },
+      DIAMOND: {
+        label: 'VIP Diamond',
+        className: 'bg-blue-500 text-white',
+        icon: Crown,
+      },
+    }
+    return configs[vipType]
+  }
+
+  const vipBadgeConfig = getVipBadgeConfig()
+
   const renderImageGallery = () => {
     if (!isTopLayout) return null
 
@@ -125,12 +165,32 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       <div className='flex gap-1.5'>
         {/* Main Image */}
         <div className='relative flex-1 aspect-[16/9] overflow-hidden rounded-md'>
-          <ImageAtom
-            src={mainImage || `${basePath}/images/default-image.jpg`}
-            defaultImage={DEFAULT_IMAGE}
-            alt={property.title}
-            className='w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105'
-          />
+          {assetsVideo ? (
+            isYouTube(assetsVideo) ? (
+              <div className='w-full h-full'>
+                <iframe
+                  src={toYouTubeEmbed(assetsVideo) || ''}
+                  className='w-full h-full'
+                  title={`video-${listing.listingId}`}
+                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <video
+                src={assetsVideo}
+                controls
+                className='w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105'
+              />
+            )
+          ) : (
+            <ImageAtom
+              src={mainImage || `${basePath}/images/default-image.jpg`}
+              defaultImage={DEFAULT_IMAGE}
+              alt={title}
+              className='w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105'
+            />
+          )}
 
           {/* Image Count Badge */}
           {totalImages > 0 && (
@@ -140,44 +200,45 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             </div>
           )}
 
-          {/* Favorite Button - Only show if no contact section */}
-          {!contactInfo && (
-            <Button
-              variant='ghost'
-              size='sm'
-              className={classNames(
-                'absolute top-1.5 right-1.5 w-6 h-6 p-0 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 z-10',
-                {
-                  'bg-destructive text-destructive-foreground hover:bg-destructive/90':
-                    isFavorite,
-                  'text-foreground hover:text-destructive': !isFavorite,
-                },
-              )}
-              onClick={handleFavoriteClick}
-            >
-              <Heart
-                className={classNames('w-3 h-3', {
-                  'fill-current': isFavorite,
-                })}
-              />
-            </Button>
-          )}
+          <Button
+            variant='ghost'
+            size='sm'
+            className={classNames(
+              'absolute top-1.5 right-1.5 w-6 h-6 p-0 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 z-10',
+              {
+                'bg-destructive text-destructive-foreground hover:bg-destructive/90':
+                  isFavorite,
+                'text-foreground hover:text-destructive': !isFavorite,
+              },
+            )}
+            onClick={handleFavoriteClick}
+          >
+            <Heart
+              className={classNames('w-3 h-3', {
+                'fill-current': isFavorite,
+              })}
+            />
+          </Button>
 
-          {/* Verified Badges */}
-          {(property.verified || property.virtual_tour) && (
-            <div className='absolute top-1.5 left-1.5 flex flex-col gap-0.5 z-10'>
-              {property.verified && (
-                <Badge className='bg-green-500 text-white text-[9px] px-1 py-0.5 rounded shadow-sm'>
-                  ✓
-                </Badge>
-              )}
-              {property.virtual_tour && (
-                <Badge className='bg-blue-500 text-white text-[9px] px-1 py-0.5 rounded shadow-sm flex items-center gap-0.5'>
-                  <Video className='w-2 h-2' />
-                </Badge>
-              )}
-            </div>
-          )}
+          {/* Badges - Top Left */}
+          <div className='absolute top-1.5 left-1.5 flex flex-col gap-0.5 z-10'>
+            {verified && (
+              <Badge className='bg-green-500 text-white text-[9px] px-1 py-0.5 rounded shadow-sm flex items-center justify-center'>
+                <Check className='w-2.5 h-2.5' />
+              </Badge>
+            )}
+            {vipBadgeConfig &&
+              (() => {
+                const VipIcon = vipBadgeConfig.icon
+                return (
+                  <Badge
+                    className={`${vipBadgeConfig.className} text-[9px] px-1 py-0.5 rounded shadow-sm flex items-center gap-0.5`}
+                  >
+                    <VipIcon className='w-2.5 h-2.5' />
+                  </Badge>
+                )
+              })()}
+          </div>
         </div>
 
         {/* Thumbnails */}
@@ -193,15 +254,18 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
                 }}
                 className={classNames(
                   'relative aspect-square overflow-hidden rounded border transition-all',
-                  currentImageIndex === idx
-                    ? 'border-primary ring-1 ring-primary/30 border-2'
-                    : 'border border-border hover:border-primary/50 opacity-75 hover:opacity-100',
+                  {
+                    'border-primary ring-1 ring-primary/30 border-2':
+                      currentImageIndex === idx,
+                    'border border-border hover:border-primary/50 opacity-75 hover:opacity-100':
+                      currentImageIndex !== idx,
+                  },
                 )}
               >
                 <ImageAtom
                   src={img || `${basePath}/images/default-image.jpg`}
                   defaultImage={DEFAULT_IMAGE}
-                  alt={`${property.title} ${idx + 1}`}
+                  alt={`${title} ${idx + 1}`}
                   className='w-full h-full object-cover'
                 />
               </button>
@@ -240,7 +304,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         <ImageAtom
           src={mainImage || `${basePath}/images/default-image.jpg`}
           defaultImage={DEFAULT_IMAGE}
-          alt={property.title}
+          alt={title}
           className='w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105'
         />
 
@@ -249,10 +313,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           size='sm'
           className={classNames(
             'absolute p-0 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 z-10',
-            isCompact
-              ? 'top-1 right-1 w-6 h-6'
-              : 'top-2 right-2 w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9',
             {
+              'top-1 right-1 w-6 h-6': isCompact,
+              'top-2 right-2 w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9':
+                !isCompact,
               'bg-destructive text-destructive-foreground hover:bg-destructive/90':
                 isFavorite,
               'text-foreground hover:text-destructive': !isFavorite,
@@ -270,40 +334,44 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           />
         </Button>
 
-        {(property.verified || property.virtual_tour) && (
-          <div
-            className={classNames(
-              'absolute flex flex-col gap-1 z-10',
-              isCompact
-                ? 'top-1 left-1 gap-0.5'
-                : 'top-2 left-2 sm:top-3 sm:left-3 gap-1 sm:gap-2',
-            )}
-          >
-            {property.verified && (
-              <Badge
-                className={classNames(
-                  'bg-green-500 text-white rounded-md shadow-sm',
-                  isCompact ? 'text-[10px] px-1 py-0.5' : 'text-xs px-2 py-1',
-                )}
-              >
-                ✓ {!isCompact && t('homePage.property.verified')}
-              </Badge>
-            )}
-            {property.virtual_tour && (
-              <Badge
-                className={classNames(
-                  'bg-blue-500 text-white rounded-md shadow-sm flex items-center gap-1',
-                  isCompact ? 'text-[10px] px-1 py-0.5' : 'text-xs px-2 py-1',
-                )}
-              >
-                <Video className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
-                {!isCompact && t('homePage.property.video')}
-              </Badge>
-            )}
-          </div>
-        )}
+        {/* Badges - Top Left */}
+        <div
+          className={classNames(
+            'absolute flex flex-col gap-1 z-10',
+            isCompact
+              ? 'top-1 left-1 gap-0.5'
+              : 'top-2 left-2 sm:top-3 sm:left-3 gap-1 sm:gap-2',
+          )}
+        >
+          {verified && (
+            <Badge
+              className={classNames(
+                'bg-green-500 text-white rounded-md shadow-sm flex items-center gap-0.5',
+                isCompact ? 'text-[10px] px-1 py-0.5' : 'text-xs px-2 py-1',
+              )}
+            >
+              <Check className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
+              {!isCompact && t('homePage.property.verified')}
+            </Badge>
+          )}
+          {vipBadgeConfig &&
+            (() => {
+              const VipIcon = vipBadgeConfig.icon
+              return (
+                <Badge
+                  className={classNames(
+                    `${vipBadgeConfig.className} rounded-md shadow-sm flex items-center gap-0.5`,
+                    isCompact ? 'text-[10px] px-1 py-0.5' : 'text-xs px-2 py-1',
+                  )}
+                >
+                  <VipIcon className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
+                  {!isCompact && vipBadgeConfig.label}
+                </Badge>
+              )
+            })()}
+        </div>
 
-        {property.featured && (
+        {amenities && amenities.length > 0 && (
           <Badge
             className={classNames(
               'absolute bg-yellow-500 text-white rounded-md shadow-sm flex items-center gap-1 z-10',
@@ -341,34 +409,76 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         {renderSingleImage()}
 
         <CardContent
-          className={classNames(
-            'flex-1 flex flex-col',
-            isCompact
-              ? isTopLayout
-                ? 'px-2.5 pb-2.5 space-y-1.5'
-                : 'p-2.5 space-y-1.5'
-              : 'p-3 sm:p-4 space-y-2 sm:space-y-3',
-          )}
+          className={classNames('flex-1 flex flex-col', {
+            'px-2.5 pb-2.5 space-y-1.5': isCompact && isTopLayout,
+            'p-2.5 space-y-1.5': isCompact && !isTopLayout,
+            'p-3 sm:p-4 space-y-2 sm:space-y-3': !isCompact,
+          })}
         >
-          <Typography
-            variant='h6'
-            className={classNames(
-              'text-foreground group-hover:text-primary transition-colors duration-200 leading-tight font-semibold',
-              isCompact
-                ? 'text-sm line-clamp-2 mb-0.5'
-                : 'text-sm sm:text-base line-clamp-2',
-            )}
-          >
-            {property.title}
-          </Typography>
+          <div className='flex items-start justify-between gap-2'>
+            <Typography
+              variant='h6'
+              className={classNames(
+                'text-foreground group-hover:text-primary transition-colors duration-200 leading-tight font-semibold flex-1',
+                isCompact
+                  ? 'text-sm line-clamp-2'
+                  : 'text-sm sm:text-base line-clamp-2',
+              )}
+            >
+              {title}
+            </Typography>
+            {/* Property Type & Listing Type Badges */}
+            <div className='flex items-center gap-1 flex-shrink-0'>
+              {productType && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge
+                      variant='secondary'
+                      className={classNames(
+                        'flex items-center gap-0.5',
+                        isCompact
+                          ? 'text-[9px] px-1 py-0'
+                          : 'text-[10px] px-1.5 py-0.5',
+                      )}
+                    >
+                      {ProductTypeIcon && (
+                        <ProductTypeIcon
+                          className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'}
+                        />
+                      )}
+                      {!isCompact &&
+                        tCreatePost(getProductTypeTranslationKey(productType))}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side='top' className='z-50'>
+                    <p>
+                      {tCreatePost(getProductTypeTranslationKey(productType)) ||
+                        productType}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              {listingType === 'SHARE' && (
+                <Badge
+                  variant='outline'
+                  className={classNames(
+                    'text-[9px] px-1 py-0 border-primary/30 text-primary',
+                    isCompact ? '' : 'text-[10px] px-1.5 py-0.5',
+                  )}
+                >
+                  Share
+                </Badge>
+              )}
+            </div>
+          </div>
 
           {/* Description - Only in compact mode */}
-          {isCompact && property.description && (
+          {isCompact && description && (
             <Typography
               variant='small'
               className='text-xs text-muted-foreground line-clamp-2 mb-0.5'
             >
-              {property.description}
+              {description}
             </Typography>
           )}
 
@@ -382,22 +492,31 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
                       isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3',
                     )}
                   />
-                  <span className='truncate'>{fullAddress}</span>
+                  <span className='truncate'>
+                    {newAddress}
+                    {legacyAddress && (
+                      <span className='text-muted-foreground/70'>
+                        {' '}
+                        • {legacyAddress}
+                      </span>
+                    )}
+                  </span>
                 </div>
               </TooltipTrigger>
               <TooltipContent side='top' className='max-w-xs z-50'>
-                <p className='break-words'>{fullAddress}</p>
+                <p className='break-words'>
+                  {newAddress}
+                  {legacyAddress && (
+                    <>
+                      <br />
+                      <span className='text-muted-foreground/70'>
+                        {legacyAddress}
+                      </span>
+                    </>
+                  )}
+                </p>
               </TooltipContent>
             </Tooltip>
-
-            {property.distance && !isCompact && (
-              <div className='flex items-center text-xs text-muted-foreground flex-shrink-0'>
-                <Navigation className='w-3 h-3 mr-1' />
-                <span>
-                  {property.distance} {t('homePage.property.distance')}
-                </span>
-              </div>
-            )}
           </div>
 
           <div className='flex items-center justify-between'>
@@ -408,129 +527,177 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
                 isCompact ? 'text-sm' : 'text-base sm:text-lg',
               )}
             >
-              {renderPrice(property.price, property.currency)}
+              {formatByLocale(price, priceUnit)}
             </Typography>
-            {property.area && !isCompact && (
+            {area && !isCompact && (
               <Typography
                 variant='small'
                 className='text-muted-foreground font-medium text-xs sm:text-sm'
               >
-                {property.area} {t('homePage.property.area')}
+                {area} {t('homePage.property.area')}
               </Typography>
             )}
           </div>
 
-          <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between flex-wrap gap-2'>
             <div
               className={classNames(
-                'flex items-center',
+                'flex items-center flex-wrap',
                 isCompact ? 'space-x-2' : 'space-x-2 sm:space-x-3 md:space-x-4',
               )}
             >
-              <div
-                className={classNames(
-                  'flex items-center text-muted-foreground',
-                  isCompact ? 'text-xs' : 'text-xs sm:text-sm',
-                )}
-              >
-                <Bed
+              {bedrooms !== undefined && (
+                <div
                   className={classNames(
-                    'mr-0.5',
-                    isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3 sm:w-4 sm:h-4',
-                  )}
-                />
-                <Typography
-                  variant='small'
-                  className={classNames(
-                    'font-medium',
+                    'flex items-center text-muted-foreground',
                     isCompact ? 'text-xs' : 'text-xs sm:text-sm',
                   )}
                 >
-                  {property.bedrooms}
-                </Typography>
-              </div>
-              <div
-                className={classNames(
-                  'flex items-center text-muted-foreground',
-                  isCompact ? 'text-xs' : 'text-xs sm:text-sm',
-                )}
-              >
-                <Bath
+                  <Bed
+                    className={classNames(
+                      'mr-0.5',
+                      isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3 sm:w-4 sm:h-4',
+                    )}
+                  />
+                  <Typography
+                    variant='small'
+                    className={classNames(
+                      'font-medium',
+                      isCompact ? 'text-xs' : 'text-xs sm:text-sm',
+                    )}
+                  >
+                    {bedrooms}
+                  </Typography>
+                </div>
+              )}
+              {bathrooms !== undefined && (
+                <div
                   className={classNames(
-                    'mr-0.5',
-                    isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3 sm:w-4 sm:h-4',
-                  )}
-                />
-                <Typography
-                  variant='small'
-                  className={classNames(
-                    'font-medium',
+                    'flex items-center text-muted-foreground',
                     isCompact ? 'text-xs' : 'text-xs sm:text-sm',
                   )}
                 >
-                  {property.bathrooms}
-                </Typography>
-              </div>
-              {!isCompact && property.area && (
+                  <Bath
+                    className={classNames(
+                      'mr-0.5',
+                      isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3 sm:w-4 sm:h-4',
+                    )}
+                  />
+                  <Typography
+                    variant='small'
+                    className={classNames(
+                      'font-medium',
+                      isCompact ? 'text-xs' : 'text-xs sm:text-sm',
+                    )}
+                  >
+                    {bathrooms}
+                  </Typography>
+                </div>
+              )}
+              {!isCompact && area && (
                 <div className='flex items-center text-xs sm:text-sm text-muted-foreground'>
                   <Square className='w-3 h-3 sm:w-4 sm:h-4 mr-1' />
                   <Typography
                     variant='small'
                     className='font-medium text-xs sm:text-sm'
                   >
-                    {property.area} {t('homePage.property.area')}
+                    {area} {t('homePage.property.area')}
+                  </Typography>
+                </div>
+              )}
+              {roomCapacity && listingType === 'SHARE' && (
+                <div
+                  className={classNames(
+                    'flex items-center text-muted-foreground',
+                    isCompact ? 'text-xs' : 'text-xs sm:text-sm',
+                  )}
+                >
+                  <Users
+                    className={classNames(
+                      'mr-0.5',
+                      isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3 sm:w-4 sm:h-4',
+                    )}
+                  />
+                  <Typography
+                    variant='small'
+                    className={classNames(
+                      'font-medium',
+                      isCompact ? 'text-xs' : 'text-xs sm:text-sm',
+                    )}
+                  >
+                    {roomCapacity}
                   </Typography>
                 </div>
               )}
             </div>
-
-            {!isCompact && (
-              <div className='flex items-center text-muted-foreground'>
-                <Eye className='w-3 h-3 sm:w-4 sm:h-4 mr-1' />
-                <Typography variant='small' className='text-xs sm:text-sm'>
-                  {property.views || 0}
-                </Typography>
-              </div>
-            )}
+            {/* Additional Info - Right Side */}
+            <div className='flex items-center gap-1.5 flex-wrap'>
+              {furnishing && !isCompact && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className='flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 hover:bg-muted transition-colors'>
+                      <Sofa className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
+                      <Typography
+                        variant='small'
+                        className='font-medium text-xs sm:text-sm'
+                      >
+                        {tCreatePost(getFurnishingTranslationKey(furnishing))}
+                      </Typography>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side='top' className='z-50'>
+                    <p>
+                      {t('apartmentDetail.property.furnishing')}:{' '}
+                      {tCreatePost(getFurnishingTranslationKey(furnishing))}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              {direction && !isCompact && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className='flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 hover:bg-muted transition-colors'>
+                      <Compass className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
+                      <Typography
+                        variant='small'
+                        className='font-medium text-xs sm:text-sm'
+                      >
+                        {tCreatePost(getDirectionTranslationKey(direction))}
+                      </Typography>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side='top' className='z-50'>
+                    <p>
+                      {t('apartmentDetail.property.direction')}:{' '}
+                      {tCreatePost(getDirectionTranslationKey(direction))}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
           </div>
 
           {/* User Info & Contact - Only in compact mode */}
-          {isCompact && (userInfo || contactInfo) && (
+          {isCompact && user && (
             <div className='flex items-center justify-between gap-2 mt-auto pt-1.5 border-t border-border'>
               {/* User Info */}
-              {userInfo && (
+              {user && (
                 <div className='flex items-center gap-1.5 flex-1 min-w-0'>
-                  <Avatar className='h-5 w-5 flex-shrink-0'>
-                    {userInfo.avatar ? (
-                      <AvatarImage
-                        src={userInfo.avatar}
-                        alt={userInfo.name || 'User'}
-                      />
-                    ) : (
-                      <AvatarFallback className='bg-primary/10 text-primary text-xs'>
-                        {userInfo.name ? (
-                          userInfo.name.charAt(0).toUpperCase()
-                        ) : (
-                          <User className='w-3 h-3' />
-                        )}
-                      </AvatarFallback>
-                    )}
-                  </Avatar>
                   <div className='flex-1 min-w-0'>
-                    {userInfo.name && (
+                    {userName && (
                       <Typography
                         variant='small'
                         className='text-xs font-medium truncate'
                       >
-                        {userInfo.name}
+                        {userName}
                       </Typography>
                     )}
-                    {userInfo.postedDate && (
+                    {postDate && (
                       <Typography
                         variant='small'
                         className='text-[10px] text-muted-foreground'
                       >
-                        {userInfo.postedDate}
+                        {formatDate(postDate, 'dd/MM/yyyy')}
                       </Typography>
                     )}
                   </div>
@@ -538,7 +705,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               )}
 
               {/* Contact Button */}
-              {contactInfo && (
+              {phoneNumber && (
                 <div className='flex items-center gap-1.5 flex-shrink-0'>
                   <Button
                     variant='default'
@@ -549,14 +716,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
                     )}
                     onClick={(e) => {
                       e.stopPropagation()
-                      contactInfo.onShowPhone?.()
                     }}
                   >
                     <Phone className='w-3 h-3 mr-1' />
-                    {contactInfo.isPhoneVisible && contactInfo.phone
-                      ? contactInfo.phone
-                      : contactInfo.phoneMasked ||
-                        t('homePage.property.showPhone')}
+                    {phoneNumber}
                   </Button>
                   <Button
                     variant='ghost'
@@ -585,53 +748,55 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             </div>
           )}
 
-          {!isCompact &&
-            property.amenities &&
-            property.amenities.length > 0 && (
-              <div className='flex items-start flex-wrap gap-1 mt-auto'>
-                {property.amenities.slice(0, 2).map((amenity, index) => (
+          {!isCompact && amenities && amenities.length > 0 && (
+            <div className='flex items-start flex-wrap gap-1 mt-auto'>
+              {amenities.slice(0, 2).map((amenity, index) => {
+                const IconComponent = getAmenityIcon(amenity.name)
+                return (
                   <Button
                     key={index}
                     variant='secondary'
                     size='sm'
                     className='h-6 px-3 py-0 text-xs rounded-full hover:bg-secondary/80 transition-colors duration-200 min-w-[80px] flex items-center justify-center'
                   >
-                    {getAmenityIcon(amenity)}
-                    <span className='ml-1 truncate'>{amenity}</span>
+                    {IconComponent ? (
+                      <IconComponent className='w-3 h-3' />
+                    ) : null}
+                    <span className='ml-1 truncate'>{amenity.name}</span>
                   </Button>
-                ))}
-                {property.amenities.length > 2 && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant='secondary'
-                        size='sm'
-                        className='h-6 px-3 py-0 text-xs rounded-full hover:bg-secondary/80 transition-colors duration-200 cursor-help min-w-[80px] flex items-center justify-center'
-                      >
-                        +{property.amenities.length - 2}{' '}
-                        {t('homePage.property.more')}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side='top' className='max-w-xs z-50'>
-                      <div className='space-y-1'>
-                        <Typography variant='small' className='font-medium'>
-                          {t('homePage.property.additionalAmenities')}:
+                )
+              })}
+              {amenities.length > 2 && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant='secondary'
+                      size='sm'
+                      className='h-6 px-3 py-0 text-xs rounded-full hover:bg-secondary/80 transition-colors duration-200 cursor-help min-w-[80px] flex items-center justify-center'
+                    >
+                      +{amenities.length - 2} {t('homePage.property.more')}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side='top' className='max-w-xs z-50'>
+                    <div className='space-y-1'>
+                      <Typography variant='small' className='font-medium'>
+                        {t('homePage.property.additionalAmenities')}:
+                      </Typography>
+                      {amenities.slice(2).map((amenity, index) => (
+                        <Typography
+                          key={index}
+                          variant='small'
+                          className='block'
+                        >
+                          • {amenity.name}
                         </Typography>
-                        {property.amenities.slice(2).map((amenity, index) => (
-                          <Typography
-                            key={index}
-                            variant='small'
-                            className='block'
-                          >
-                            • {amenity}
-                          </Typography>
-                        ))}
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-              </div>
-            )}
+                      ))}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </TooltipProvider>

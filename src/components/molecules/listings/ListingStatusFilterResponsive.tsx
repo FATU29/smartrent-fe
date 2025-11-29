@@ -9,34 +9,24 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/atoms/dropdown-menu'
+import { PostStatus, POST_STATUS } from '@/api/types'
 
-export type ListingStatus =
-  | 'all'
-  | 'expired'
-  | 'expiring'
-  | 'active'
-  | 'pending'
-  | 'review'
-  | 'payment'
-  | 'rejected'
-  | 'archived'
-
-const STATUS_ORDER: ListingStatus[] = [
-  'all',
-  'expired',
-  'expiring',
-  'active',
-  'pending',
-  'review',
-  'payment',
-  'rejected',
-  'archived',
+const STATUS_ORDER: PostStatus[] = [
+  POST_STATUS.ALL,
+  POST_STATUS.EXPIRED,
+  POST_STATUS.NEAR_EXPIRED,
+  POST_STATUS.DISPLAYING,
+  POST_STATUS.PENDING_APPROVAL,
+  POST_STATUS.APPROVED,
+  POST_STATUS.PENDING_PAYMENT,
+  POST_STATUS.REJECTED,
+  POST_STATUS.VERIFIED,
 ]
 
 export interface ListingStatusFilterResponsiveProps {
-  value: ListingStatus
-  counts?: Partial<Record<ListingStatus, number>>
-  onChange: (status: ListingStatus) => void
+  value: PostStatus
+  counts?: Partial<Record<PostStatus, number>>
+  onChange: (status: PostStatus) => void
   className?: string
 }
 
@@ -45,7 +35,8 @@ export const ListingStatusFilterResponsive: React.FC<
 > = ({ value, counts = {}, onChange, className }) => {
   const t = useTranslations('seller.listingManagement')
 
-  const activeStatus = STATUS_ORDER.find((status) => status === value) || 'all'
+  const activeStatus =
+    STATUS_ORDER.find((status) => status === value) || POST_STATUS.ALL
   const activeCount = counts[activeStatus] ?? 0
 
   return (
@@ -76,7 +67,7 @@ export const ListingStatusFilterResponsive: React.FC<
               )}
             >
               <span>{t(`status.${status}`)}</span>
-              {((count ?? 0) > 0 || status === 'all') && (
+              {((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
                 <span
                   className={cn(
                     'min-w-5 rounded-full border px-1 text-[10px] leading-none py-1 flex items-center justify-center',
@@ -133,7 +124,7 @@ export const ListingStatusFilterResponsive: React.FC<
                   )}
                 >
                   <span>{t(`status.${status}`)}</span>
-                  {((count ?? 0) > 0 || status === 'all') && (
+                  {((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
                     <span
                       className={cn(
                         'min-w-5 rounded-full border px-1.5 py-0.5 text-xs leading-none flex items-center justify-center',

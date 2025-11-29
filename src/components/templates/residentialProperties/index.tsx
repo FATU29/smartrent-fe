@@ -1,35 +1,32 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
-import { PropertyCard as PropertyCardType } from '@/api/types/property.type'
+import dynamic from 'next/dynamic'
 import PropertyListContent from '@/components/molecules/propertyListContent'
+
+const ResidentialFilterResponsive = dynamic(
+  () => import('@/components/molecules/residentialFilterResponsive'),
+  {
+    ssr: false,
+  },
+)
 import PropertyFilterSidebar from '@/components/molecules/propertyFilterSidebar'
 import { Typography } from '@/components/atoms/typography'
 import { Switch } from '@/components/atoms/switch'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/atoms/select'
 import { useListContext } from '@/contexts/list'
+import { ListingDetail } from '@/api/types/property.type'
 
 const ResidentialPropertiesTemplate: React.FC = () => {
   const t = useTranslations('propertiesPage')
-  const { pagination } = useListContext<PropertyCardType>()
+  const { pagination } = useListContext<ListingDetail>()
   const [emailNotification, setEmailNotification] = useState(false)
-  const [sortBy, setSortBy] = useState('default')
 
-  const handleFavorite = (property: PropertyCardType, isFavorite: boolean) => {
-    // TODO: Implement favorite functionality
-    console.log('Favorite:', property.id, isFavorite)
-  }
-
-  const handleSortChange = (value: string) => {
-    setSortBy(value)
-    // TODO: Implement sort logic
-  }
+  const handleFavorite = useCallback(
+    (property: ListingDetail, isFavorite: boolean) => {
+      // TODO: Implement favorite functionality
+      console.log('Favorite:', property, isFavorite)
+    },
+    [],
+  )
 
   return (
     <>
@@ -44,7 +41,7 @@ const ResidentialPropertiesTemplate: React.FC = () => {
         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
           <div className='space-y-2'>
             <Typography variant='p' className='text-muted-foreground'>
-              {t('listingCount', { count: pagination.total.toLocaleString() })}
+              {t('listingCount', { count: pagination.totalCount })}
             </Typography>
           </div>
 
@@ -60,20 +57,6 @@ const ResidentialPropertiesTemplate: React.FC = () => {
                 {t('emailNotification')}
               </Typography>
             </div>
-
-            {/* Sort Dropdown */}
-            <Select value={sortBy} onValueChange={handleSortChange}>
-              <SelectTrigger className='w-[140px]'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='default'>{t('sort.default')}</SelectItem>
-                <SelectItem value='priceAsc'>{t('sort.priceAsc')}</SelectItem>
-                <SelectItem value='priceDesc'>{t('sort.priceDesc')}</SelectItem>
-                <SelectItem value='newest'>{t('sort.newest')}</SelectItem>
-                <SelectItem value='oldest'>{t('sort.oldest')}</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
       </header>

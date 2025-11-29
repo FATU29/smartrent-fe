@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
@@ -9,79 +9,79 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/atoms/card'
-import { ImagePlus, Loader2 } from 'lucide-react'
-import { MediaService } from '@/api/services'
-import { toast } from 'sonner'
+import { ImagePlus, Trash2 } from 'lucide-react'
 
 const MAX_IMAGES = 24
 
 const CoverUpload: React.FC = () => {
   const t = useTranslations('createPost.sections.media.cover')
-  const { propertyInfo, updatePropertyInfo } = useCreatePost()
+  const {
+    mediaUrls,
+    updateMediaUrls,
+    updateMediaIds,
+    pendingImages,
+    addPendingImages,
+    removePendingImage,
+  } = useCreatePost()
+
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
 
-  const cover = propertyInfo?.images?.find((i) => i.isCover)
+  // Get cover from either uploaded (context) or pending (context)
+  const uploadedImages = mediaUrls?.images || []
+  const coverUrl = uploadedImages[0]
+  const pendingCover = pendingImages.find((img) => img.isCover)
 
-  const onPick = async (files: FileList | null) => {
+  const onPick = (files: FileList | null) => {
     if (!files || files.length === 0) return
 
     const picked = Array.from(files)
+    const remainingCapacity = Math.max(
+      0,
+      MAX_IMAGES - uploadedImages.length - pendingImages.length,
+    )
+    const slice = picked.slice(0, remainingCapacity)
 
-    const coverFile = picked[0]
+    if (slice.length === 0) return
 
-    // Upload cover first
-    setIsUploading(true)
-    try {
-      const res = await MediaService.upload({
-        file: coverFile,
-        mediaType: 'IMAGE',
-      })
-      if (!res?.success || !res?.data?.url) throw new Error('upload failed')
+    // Remove old pending cover if exists
+    const existingNonCover = pendingImages.filter((img) => !img.isCover)
 
-      const coverItem = {
-        id: String(res.data.mediaId ?? `${Date.now()}-cover-${coverFile.name}`),
-        url: res.data.url,
-        caption: coverFile.name.replace(/\.[^.]+$/, ''),
-        isCover: true,
+    // Create new pending images (first file is cover)
+    const newPending = slice.map((file, index) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+      isCover: index === 0,
+    }))
+
+    addPendingImages([...newPending, ...existingNonCover].slice(0, MAX_IMAGES))
+  }
+
+  // Handle delete cover
+  const handleDeleteCover = () => {
+    // If there's a pending cover, remove it
+    if (pendingCover) {
+      const coverIndex = pendingImages.findIndex((img) => img.isCover)
+      if (coverIndex !== -1) {
+        removePendingImage(coverIndex, true)
       }
+      return
+    }
 
-      // Existing images turned to non-cover
-      const existingNonCover =
-        propertyInfo?.images?.map((i) => ({
-          ...i,
-          isCover: false,
-        })) || []
+    // If there's an uploaded cover, remove the first image
+    if (coverUrl && uploadedImages.length > 0) {
+      const newImages = uploadedImages.slice(1) // Remove first image
+      updateMediaUrls({ images: newImages })
 
-      let workingList = [coverItem, ...existingNonCover]
-      updatePropertyInfo({ images: workingList.slice(0, MAX_IMAGES) })
-
-      // Upload extra files sequentially and append
-      const remainingCapacity = Math.max(0, MAX_IMAGES - workingList.length)
-      const extraFiles = picked.slice(1, 1 + remainingCapacity)
-      for (const file of extraFiles) {
-        try {
-          const r = await MediaService.upload({ file, mediaType: 'IMAGE' })
-          if (r?.success && r?.data?.url) {
-            const item = {
-              id: String(r.data.mediaId ?? `${Date.now()}-${file.name}`),
-              url: r.data.url,
-              caption: file.name.replace(/\.[^.]+$/, ''),
-              isCover: false,
-            }
-            workingList = [...workingList, item]
-            updatePropertyInfo({ images: workingList.slice(0, MAX_IMAGES) })
-          }
-        } catch {
-          // ignore single failure, optionally toast
-        }
+      // If we removed the cover (first image), clear thumbnailMediaId
+      // The new first image will become the cover and its mediaId will be set when uploaded
+      if (newImages.length === 0) {
+        updateMediaIds({ thumbnailMediaId: undefined })
       }
-    } catch {
-      toast.error('Không thể tải ảnh bìa')
-    } finally {
-      setIsUploading(false)
     }
   }
+
+  // Display cover: prefer uploaded, fallback to pending
+  const displayCover = coverUrl || pendingCover?.previewUrl
 
   return (
     <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
@@ -92,66 +92,51 @@ const CoverUpload: React.FC = () => {
       </CardHeader>
       <CardContent>
         <div className='mx-auto w-full max-w-xl'>
-          {cover ? (
+          {displayCover ? (
             <div className='relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900'>
               <div className='relative aspect-[4/3]'>
                 <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-yellow-400 text-gray-900 font-medium shadow-sm'>
                   {t('badge')}
                 </span>
-                {isUploading && (
-                  <div className='absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm'>
-                    <Loader2 className='w-8 h-8 text-white animate-spin' />
-                  </div>
-                )}
                 <Image
-                  src={cover.url}
-                  alt={cover.caption}
+                  src={displayCover}
+                  alt='Cover image'
                   fill
                   className='object-cover'
                 />
               </div>
               <div className='p-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2'>
-                <p className='text-sm truncate text-muted-foreground'>
-                  {cover.caption}
-                </p>
                 <Button
                   size='sm'
                   className='rounded-md'
                   onClick={() => inputRef.current?.click()}
-                  disabled={isUploading}
                 >
-                  {isUploading ? (
-                    <Loader2 className='w-4 h-4 mr-2 animate-spin' />
-                  ) : (
-                    <ImagePlus className='w-4 h-4 mr-2' />
-                  )}
+                  <ImagePlus className='w-4 h-4 mr-2' />
                   {t('replaceCta')}
+                </Button>
+                <Button
+                  size='sm'
+                  variant='destructive'
+                  className='rounded-md'
+                  onClick={handleDeleteCover}
+                >
+                  <Trash2 className='w-4 h-4 mr-2' />
+                  {t('deleteCta')}
                 </Button>
               </div>
             </div>
           ) : (
             <div className='rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 p-6 flex flex-col items-center justify-center text-center bg-white dark:bg-gray-900/50'>
-              {isUploading ? (
-                <div className='flex flex-col items-center gap-3'>
-                  <Loader2 className='w-8 h-8 text-blue-500 animate-spin' />
-                  <p className='text-sm text-gray-600 dark:text-gray-400'>
-                    {t('uploading')}
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <p className='text-sm text-gray-600 dark:text-gray-400'>
-                    {t('description')}
-                  </p>
-                  <Button
-                    className='mt-4 rounded-lg'
-                    onClick={() => inputRef.current?.click()}
-                  >
-                    <ImagePlus className='w-4 h-4 mr-2' />
-                    {t('uploadCta')}
-                  </Button>
-                </>
-              )}
+              <p className='text-sm text-gray-600 dark:text-gray-400'>
+                {t('description')}
+              </p>
+              <Button
+                className='mt-4 rounded-lg'
+                onClick={() => inputRef.current?.click()}
+              >
+                <ImagePlus className='w-4 h-4 mr-2' />
+                {t('uploadCta')}
+              </Button>
             </div>
           )}
         </div>

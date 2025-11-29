@@ -1,7 +1,6 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-// File extensions and paths to ignore in middleware
 const IGNORE_PATHS = [
   /^\/api\//,
   /^\/_next\//,
@@ -17,10 +16,11 @@ function isPublicPath(pathname: string) {
   // Exact match for root
   if (pathname === '/') return true
 
-  // Check if starts with /properties, /sellernet, or /auth
+  // Check if starts with /properties, /sellernet, /auth, or /listing-detail
   if (pathname.startsWith('/properties')) return true
   if (pathname.startsWith('/sellernet')) return true
   if (pathname.startsWith('/auth')) return true
+  if (pathname.startsWith('/listing-detail')) return true
 
   // Allow 404 page
   if (pathname === '/404') return true
@@ -46,14 +46,6 @@ export function middleware(request: NextRequest) {
 
   const isAuthenticated = Boolean(accessToken)
 
-  // Debug logging
-  console.log('🔒 Middleware check:', {
-    pathname,
-    isAuthenticated,
-    hasAuthFlag: searchParams.get('auth') === 'login',
-    cookies: cookies.getAll().map((c) => c.name),
-  })
-
   if (!isAuthenticated) {
     // Redirect to the SAME URL but with a flag that the client will use to open the login dialog
     const url = nextUrl.clone()
@@ -69,7 +61,6 @@ export function middleware(request: NextRequest) {
       url.searchParams.set('returnUrl', returnUrl)
     }
 
-    console.log('🚫 Redirecting to:', url.toString())
     return NextResponse.redirect(url)
   }
 

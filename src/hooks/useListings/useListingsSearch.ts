@@ -1,14 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { ListingService } from '@/api/services/listing.service'
-import type { ListingSearchRequest } from '@/api/types/property.type'
 import type { AxiosInstance } from 'axios'
+import { ListingFilterRequest } from '@/api/types'
 
 /**
  * Hook to search listings using the new search API
  * Uses React Query for caching and state management
  */
 export const useListingsSearch = (
-  request: ListingSearchRequest,
+  request: ListingFilterRequest,
   options?: {
     enabled?: boolean
     instance?: AxiosInstance

@@ -2,6 +2,7 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { useVipTiers } from '@/hooks/useVipTiers'
+import { useAuthContext } from '@/contexts/auth'
 import {
   Card,
   CardContent,
@@ -12,11 +13,27 @@ import {
 import { Separator } from '@/components/atoms/separator'
 import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
-import PropertyCard from '@/components/molecules/propertyCard'
-import { PropertyCard as PropertyCardType } from '@/api/types/property.type'
 import { OrderSummaryRow } from '@/components/molecules/orderSummary/orderSummaryRow'
-import { Calendar, Package, CreditCard } from 'lucide-react'
+import {
+  Calendar,
+  Package,
+  CreditCard,
+  Home,
+  Bed,
+  Bath,
+  Ruler,
+  MapPin,
+  Sparkles,
+  Award,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
+import {
+  getDirectionTranslationKey,
+  getFurnishingTranslationKey,
+  getProductTypeTranslationKey,
+} from '@/utils/property'
+import { AMENITIES_CONFIG } from '@/constants/amenities'
 
 interface OrderSummarySectionProps {
   className?: string
@@ -26,21 +43,28 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
   className,
 }) => {
   const t = useTranslations('createPost.sections.orderSummary')
-  const { propertyInfo } = useCreatePost()
+  const tCommon = useTranslations('common')
+  const tCreatePost = useTranslations('createPost')
+  const tNormal = useTranslations()
+  const { propertyInfo, mediaUrls } = useCreatePost()
   const { data: vipTiers = [] } = useVipTiers()
+  const { user } = useAuthContext()
 
-  // Resolve selected VIP tier from context selection (by id or code)
-  const selectedTier =
-    vipTiers.find((t) => t.tierId === propertyInfo.selectedTierId) ||
-    vipTiers.find((t) => t.tierCode === propertyInfo.selectedPackageType)
+  // Resolve selected VIP tier from vipType
+  const selectedTier = vipTiers.find((t) => t.tierCode === propertyInfo.vipType)
 
-  const packageName = selectedTier?.tierName || 'Chưa chọn'
+  const packageName = selectedTier?.tierName || t('notSelected')
 
-  // Compute total price based on selected duration using API-provided tier pricing
-  const usingPromotion = !!propertyInfo.appliedPromotionBenefitId
+  // Compute total price based on durationDays using API-provided tier pricing
+  const usingMembershipQuota = !!propertyInfo.useMembershipQuota
+  const usingPromotion = Array.isArray(propertyInfo.benefitsMembership)
+    ? propertyInfo.benefitsMembership.length > 0
+    : false
+
+  // Price calculation - no VAT or discount
   const totalPrice = (() => {
-    const duration = propertyInfo.selectedDuration
-    if (usingPromotion) return 0
+    const duration = propertyInfo.durationDays
+    if (usingMembershipQuota || usingPromotion) return 0
     if (!selectedTier || !duration) return 0
     switch (duration) {
       case 10:
@@ -54,38 +78,20 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
         return (selectedTier.pricePerDay || 0) * duration
     }
   })()
-  const vatAmount = totalPrice * 0.1
-  const finalTotal = totalPrice + vatAmount
 
-  // Create property object for PropertyCard
-  const propertyData: PropertyCardType = {
-    id: 'preview-property',
-    title: propertyInfo.listingTitle || 'Tiêu đề bất động sản chưa có',
-    description: propertyInfo.propertyDescription || '',
-    address: propertyInfo.propertyAddress || '',
-    city: '', // Not available in PropertyInfo yet
-    property_type: propertyInfo.propertyType || '',
-    bedrooms: propertyInfo.bedrooms || 0,
-    bathrooms: propertyInfo.bathrooms || 0,
-    price: propertyInfo.price || 0,
-    currency: 'VND',
-    images: propertyInfo.images?.map((img) => img.url) || [],
-    area: propertyInfo.area,
-    verified: false,
-    featured: false,
-  }
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Chưa chọn'
-    return new Date(dateString).toLocaleDateString('vi-VN')
+  const formatDate = (date?: string | Date) => {
+    if (!date) return t('notSelected')
+    const d = typeof date === 'string' ? new Date(date) : date
+    return d.toLocaleDateString('vi-VN')
   }
 
   const getEndDate = () => {
-    if (!propertyInfo.packageStartDate || !propertyInfo.selectedDuration)
-      return 'N/A'
-    const startDate = new Date(propertyInfo.packageStartDate)
+    const duration = propertyInfo.durationDays
+    const postDate = propertyInfo.postDate
+    if (!postDate || !duration) return 'N/A'
+    const startDate = new Date(postDate)
     const endDate = new Date(
-      startDate.getTime() + propertyInfo.selectedDuration * 24 * 60 * 60 * 1000,
+      startDate.getTime() + duration * 24 * 60 * 60 * 1000,
     )
     return endDate.toLocaleDateString('vi-VN')
   }
@@ -105,47 +111,305 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
         {/* Flex Layout: Left Content + Right Payment Summary */}
         <div className='flex flex-col lg:flex-row gap-6'>
           {/* Left Side - Main Content */}
-          <div className='flex-1 space-y-6'>
-            {/* Property Preview - Using existing PropertyCard component */}
-            <PropertyCard className='h-fit' property={propertyData} />
+          <div className='flex-1 space-y-6  md:w-[calc(100%-444px)]'>
+            {/* Property Preview with Media */}
+            <Card>
+              <CardHeader>
+                <CardTitle className='text-lg'>
+                  {tCreatePost('sections.propertyInfo.title')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='space-y-4'>
+                {/* Media Section - Video or Cover Image - Fixed responsive */}
+                {(mediaUrls?.video ||
+                  (mediaUrls?.images && mediaUrls.images.length > 0)) && (
+                  <div className='relative w-full max-w-full rounded-lg overflow-hidden bg-muted'>
+                    {mediaUrls?.video ? (
+                      <div className='relative w-full rounded-lg overflow-hidden bg-black'>
+                        <video
+                          src={mediaUrls.video}
+                          controls
+                          className='w-full max-h-96 object-contain'
+                        />
+                      </div>
+                    ) : mediaUrls?.images?.[0] ? (
+                      <div
+                        className='relative w-full'
+                        style={{
+                          aspectRatio: '16/9',
+                          maxHeight: '400px',
+                        }}
+                      >
+                        <Image
+                          src={mediaUrls.images[0]}
+                          alt={tCreatePost(
+                            'sections.propertyInfo.propertyCover',
+                          )}
+                          fill
+                          className='object-cover'
+                          sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+
+                {/* Property Details */}
+                <div className='space-y-3'>
+                  <Typography
+                    variant='h3'
+                    className='font-bold text-xl break-words'
+                  >
+                    {propertyInfo.title ||
+                      tCreatePost('sections.propertyInfo.noTitle')}
+                  </Typography>
+
+                  {propertyInfo.description && (
+                    <Typography
+                      variant='muted'
+                      className='text-sm line-clamp-3 break-words'
+                    >
+                      {propertyInfo.description}
+                    </Typography>
+                  )}
+
+                  <Separator />
+
+                  {/* Key Information Grid */}
+                  <div className='grid grid-cols-2 gap-3'>
+                    {propertyInfo.price && (
+                      <div className='flex items-center gap-2'>
+                        <CreditCard className='w-4 h-4 text-muted-foreground flex-shrink-0' />
+                        <div className='min-w-0'>
+                          <Typography variant='muted' className='text-xs'>
+                            {tCreatePost('sections.propertyInfo.price')}
+                          </Typography>
+                          <Typography className='font-semibold text-sm truncate'>
+                            {propertyInfo.price.toLocaleString('vi-VN')} đ
+                            {propertyInfo.priceUnit &&
+                              `/${propertyInfo.priceUnit}`}
+                          </Typography>
+                        </div>
+                      </div>
+                    )}
+
+                    {propertyInfo.area && (
+                      <div className='flex items-center gap-2'>
+                        <Ruler className='w-4 h-4 text-muted-foreground flex-shrink-0' />
+                        <div className='min-w-0'>
+                          <Typography variant='muted' className='text-xs'>
+                            {tCreatePost('sections.propertyInfo.area')}
+                          </Typography>
+                          <Typography className='font-semibold text-sm'>
+                            {propertyInfo.area} m²
+                          </Typography>
+                        </div>
+                      </div>
+                    )}
+
+                    {propertyInfo.bedrooms && (
+                      <div className='flex items-center gap-2'>
+                        <Bed className='w-4 h-4 text-muted-foreground flex-shrink-0' />
+                        <div className='min-w-0'>
+                          <Typography variant='muted' className='text-xs'>
+                            {tCreatePost('sections.propertyInfo.bedrooms')}
+                          </Typography>
+                          <Typography className='font-semibold text-sm'>
+                            {propertyInfo.bedrooms}
+                          </Typography>
+                        </div>
+                      </div>
+                    )}
+
+                    {propertyInfo.bathrooms && (
+                      <div className='flex items-center gap-2'>
+                        <Bath className='w-4 h-4 text-muted-foreground flex-shrink-0' />
+                        <div className='min-w-0'>
+                          <Typography variant='muted' className='text-xs'>
+                            {tCreatePost('sections.propertyInfo.bathrooms')}
+                          </Typography>
+                          <Typography className='font-semibold text-sm'>
+                            {propertyInfo.bathrooms}
+                          </Typography>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Address */}
+                  {((propertyInfo as unknown as { fullAddressNew?: string })
+                    .fullAddressNew ||
+                    propertyInfo.address?.legacy) && (
+                    <>
+                      <Separator />
+                      <div className='flex items-start gap-2'>
+                        <MapPin className='w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0' />
+                        <div className='min-w-0 flex-1 space-y-1'>
+                          {(
+                            propertyInfo as unknown as {
+                              fullAddressNew?: string
+                            }
+                          ).fullAddressNew && (
+                            <Typography className='text-sm break-words'>
+                              <span className='font-medium'>
+                                {tCreatePost(
+                                  'sections.propertyInfo.address.structureType.newShort',
+                                )}
+                                :
+                              </span>
+                              {
+                                (
+                                  propertyInfo as unknown as {
+                                    fullAddressNew?: string
+                                  }
+                                ).fullAddressNew
+                              }
+                            </Typography>
+                          )}
+                          {propertyInfo.address?.legacy && (
+                            <Typography className='text-xs text-muted-foreground break-words'>
+                              <span className='font-medium'>
+                                {tCreatePost(
+                                  'sections.propertyInfo.address.structureType.legacyShort',
+                                )}
+                                :
+                              </span>
+                              {String(propertyInfo.address.legacy)}
+                            </Typography>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Property Type & Direction */}
+                  <Separator />
+                  <div className='flex flex-wrap gap-2'>
+                    {propertyInfo.productType && (
+                      <Badge variant='secondary' className='gap-1'>
+                        <Home className='w-3 h-3' />
+                        {tNormal(
+                          getProductTypeTranslationKey(
+                            propertyInfo.productType,
+                          ),
+                        )}
+                      </Badge>
+                    )}
+                    {propertyInfo.direction && (
+                      <Badge variant='outline'>
+                        {tNormal(
+                          getDirectionTranslationKey(propertyInfo.direction),
+                        )}
+                      </Badge>
+                    )}
+                    {propertyInfo.furnishing && (
+                      <Badge variant='outline'>
+                        {tNormal(
+                          getFurnishingTranslationKey(propertyInfo.furnishing),
+                        )}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Amenities */}
+                  {propertyInfo.amenityIds &&
+                    propertyInfo.amenityIds.length > 0 && (
+                      <>
+                        <Separator />
+                        <div>
+                          <Typography
+                            variant='muted'
+                            className='text-xs mb-2 flex items-center gap-1'
+                          >
+                            <Sparkles className='w-3 h-3' />
+                            {tCreatePost(
+                              'sections.propertyInfo.amenities.title',
+                            )}{' '}
+                            ({propertyInfo.amenityIds.length})
+                          </Typography>
+                          <div className='flex flex-wrap gap-1'>
+                            {propertyInfo.amenityIds
+                              .slice(0, 6)
+                              .map((id: number) => {
+                                const amenity = AMENITIES_CONFIG.find(
+                                  (a) => a.id === id,
+                                )
+                                const IconComponent = amenity?.icon
+                                return (
+                                  <Badge
+                                    key={id}
+                                    variant='secondary'
+                                    className='text-xs flex items-center gap-1'
+                                  >
+                                    {IconComponent && (
+                                      <IconComponent className='w-3 h-3' />
+                                    )}
+                                    {amenity
+                                      ? tCreatePost(
+                                          `sections.propertyInfo.amenities.${amenity.translationKey}`,
+                                        )
+                                      : `ID: ${id}`}
+                                  </Badge>
+                                )
+                              })}
+                            {propertyInfo.amenityIds.length > 6 && (
+                              <Badge variant='secondary' className='text-xs'>
+                                +{propertyInfo.amenityIds.length - 6}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Contact Information */}
             <Card>
               <CardHeader>
-                <CardTitle className='text-lg'>{t('contactInfo')}</CardTitle>
+                <CardTitle className='text-lg'>
+                  {tCommon('contactInformation')}
+                </CardTitle>
               </CardHeader>
               <CardContent className='space-y-3'>
                 <OrderSummaryRow
-                  label={t('fullName')}
-                  value={propertyInfo.fullName || 'Chưa có'}
+                  label={tCommon('fullName')}
+                  value={
+                    user?.firstName && user?.lastName
+                      ? `${user.firstName} ${user.lastName}`
+                      : tCommon('notAvailable')
+                  }
                 />
                 <Separator />
                 <OrderSummaryRow
-                  label={t('email')}
-                  value={propertyInfo.email || 'Chưa có'}
+                  label={tCommon('email')}
+                  value={user?.email || tCommon('notAvailable')}
                 />
                 <Separator />
                 <OrderSummaryRow
-                  label={t('phone')}
-                  value={propertyInfo.phoneNumber || 'Chưa có'}
+                  label={tCommon('phoneNumber')}
+                  value={user?.phoneNumber || tCommon('notAvailable')}
                 />
               </CardContent>
             </Card>
           </div>
 
           {/* Right Side - Package & Payment Summary (Sticky) */}
-          <Card className='lg:w-[380px] xl:w-[420px] h-fit lg:sticky lg:top-6 space-y-0'>
+          <Card className='lg:w-[380px] xl:w-[420px] h-fit lg:sticky lg:top-[100px] space-y-0'>
             {/* Package Details */}
             <CardHeader className='pb-4'>
               <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
                 <Package className='w-5 h-5 text-primary' />
-                <CardTitle className='text-lg'>{t('packageDetails')}</CardTitle>
+                <CardTitle className='text-lg'>
+                  {tCreatePost('sections.orderSummary.packageDetails')}
+                </CardTitle>
               </Card>
             </CardHeader>
 
             <CardContent className='space-y-3 pb-6'>
               <OrderSummaryRow
-                label={t('packageType')}
+                label={tCreatePost('sections.packageConfig.selectedPackage')}
                 value={
                   <Badge variant='default' className='font-medium'>
                     {packageName}
@@ -153,39 +417,44 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                 }
                 variant='highlight'
               />
-              {usingPromotion && (
+              {(usingMembershipQuota || usingPromotion) && (
                 <>
                   <Separator />
                   <OrderSummaryRow
-                    label={t('promotionApplied')}
+                    label={tCreatePost(
+                      'sections.packageConfig.usingMembershipQuota',
+                    )}
                     value={
-                      <Typography className='text-sm text-primary'>
-                        {propertyInfo.appliedPromotionLabel || 'Promotion'}
-                      </Typography>
+                      <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                        <Award className='w-4 h-4 text-primary' />
+                        <Typography className='text-sm text-primary font-medium'>
+                          {tCreatePost('sections.packageConfig.freePosting')}
+                        </Typography>
+                      </Card>
                     }
                   />
                 </>
               )}
               <Separator />
               <OrderSummaryRow
-                label={t('duration')}
-                value={`${propertyInfo.selectedDuration || 0} ${t('days')}`}
+                label={tCreatePost('sections.packageConfig.duration')}
+                value={`${propertyInfo.durationDays || 0} ${tCreatePost('sections.packageConfig.days')}`}
               />
               <Separator />
               <OrderSummaryRow
-                label={t('startDate')}
+                label={tCreatePost('sections.packageConfig.startDate')}
                 value={
                   <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
                     <Calendar className='w-4 h-4 text-muted-foreground' />
                     <Typography className='text-sm'>
-                      {formatDate(propertyInfo.packageStartDate)}
+                      {formatDate(propertyInfo.postDate)}
                     </Typography>
                   </Card>
                 }
               />
               <Separator />
               <OrderSummaryRow
-                label={t('endDate')}
+                label={tCreatePost('sections.packageConfig.endDate')}
                 value={
                   <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
                     <Calendar className='w-4 h-4 text-muted-foreground' />
@@ -201,39 +470,24 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
             <CardHeader className='pt-6 pb-4'>
               <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
                 <CreditCard className='w-5 h-5 text-primary' />
-                <CardTitle className='text-lg'>{t('priceBreakdown')}</CardTitle>
+                <CardTitle className='text-lg'>
+                  {tCreatePost('sections.packageConfig.priceBreakdown')}
+                </CardTitle>
               </Card>
             </CardHeader>
 
             <CardContent className='space-y-3'>
               <OrderSummaryRow
-                label={t('packagePrice')}
+                label={tCreatePost('sections.packageConfig.packagePrice')}
                 value={`${totalPrice.toLocaleString('vi-VN')} đ`}
-              />
-              <Separator />
-              <OrderSummaryRow
-                label={t('vat10')}
-                value={`${vatAmount.toLocaleString('vi-VN')} đ`}
-              />
-              <Separator />
-              <OrderSummaryRow
-                label={t('discount')}
-                value={
-                  <Typography className='text-sm text-destructive'>
-                    - 0 đ
-                  </Typography>
-                }
               />
               <Separator className='my-4' />
               <OrderSummaryRow
-                label={t('totalAmount')}
+                label={tCreatePost('sections.packageConfig.totalAmount')}
                 value={
                   <Card className='text-right border-0 shadow-none p-0'>
                     <Typography className='text-2xl font-bold text-primary'>
-                      {finalTotal.toLocaleString('vi-VN')} đ
-                    </Typography>
-                    <Typography variant='muted' className='text-xs'>
-                      {t('vatIncluded')}
+                      {totalPrice.toLocaleString('vi-VN')} đ
                     </Typography>
                   </Card>
                 }
@@ -246,6 +500,5 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
     </Card>
   )
 }
-
 export { OrderSummarySection }
 export type { OrderSummarySectionProps }

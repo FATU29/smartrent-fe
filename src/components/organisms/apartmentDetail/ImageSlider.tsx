@@ -4,7 +4,7 @@ import { Button } from '@/components/atoms/button'
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
 import ImageAtom from '@/components/atoms/imageAtom'
 import { DEFAULT_IMAGE } from '@/constants'
-import { VideoPlayerFull } from '@/components/molecules'
+import { isYouTube, toYouTubeEmbed } from '@/utils/video/url'
 
 interface MediaItem {
   type: 'image' | 'video'
@@ -70,12 +70,21 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, videoTour }) => {
             alt={`${t('image')} ${currentIndex + 1}`}
             className='w-full h-full object-cover object-center'
           />
+        ) : isYouTube(currentMedia.src) ? (
+          <div className='w-full h-full'>
+            <iframe
+              src={toYouTubeEmbed(currentMedia.src) || ''}
+              className='w-full h-full'
+              allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+              allowFullScreen
+            />
+          </div>
         ) : (
-          <VideoPlayerFull
+          <video
             src={currentMedia.src}
             poster={currentMedia.thumbnail}
-            className='w-full h-full rounded-none'
-            aspectRatio='16/9'
+            controls
+            className='w-full h-full object-cover object-center rounded-none'
           />
         )}
 

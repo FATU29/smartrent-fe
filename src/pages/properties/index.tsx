@@ -1,43 +1,175 @@
-import React from 'react'
+import React, { useCallback, useMemo, useEffect, useState, useRef } from 'react'
+import { useRouter } from 'next/router'
 import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
 import ResidentialPropertiesTemplate from '@/components/templates/residentialProperties'
 import { ListProvider } from '@/contexts/list/index.context'
-import { fetchListings } from '@/api/services/listing.service'
-import { PropertyCard } from '@/api/types/property.type'
-import type { GetServerSideProps } from 'next'
 import LocationProvider from '@/contexts/location'
-import { getFiltersFromQuery } from '@/utils/queryParams'
-import { ListFilters } from '@/contexts/list/index.type'
+import { getFiltersFromQuery, pushQueryParams } from '@/utils/queryParams'
+import {
+  ListingDetail,
+  ListingFilterRequest,
+  ListingSearchApiResponse,
+} from '@/api/types/property.type'
+import { generateMockProperties } from '@/mock/properties'
+import { DEFAULT_PAGE } from '@/contexts/list/index.type'
+import { PUBLIC_ROUTES } from '@/constants/route'
 
-interface ResidentialPropertiesPageProps {
-  initialData: PropertyCard[]
-  initialFilters: Partial<ListFilters>
-  initialPagination?: {
-    total: number
-    page: number
-    totalPages: number
-    hasNext: boolean
-    hasPrevious: boolean
-  }
-}
-
-const ResidentialPropertiesPage: NextPageWithLayout<
-  ResidentialPropertiesPageProps
-> = ({ initialData, initialFilters, initialPagination }) => {
+const ResidentialPropertiesPage: NextPageWithLayout = () => {
   const t = useTranslations('navigation')
+  const router = useRouter()
+  const [initialFilters, setInitialFilters] = useState<
+    Partial<ListingFilterRequest>
+  >({})
+
+  useEffect(() => {
+    if (router.isReady) {
+      const parsed = getFiltersFromQuery(router.query)
+      const page = parsed.page !== undefined ? parsed.page : DEFAULT_PAGE
+      setInitialFilters({
+        ...parsed,
+        page,
+      })
+    }
+  }, [router.isReady, router.query])
+
+  const allMockData = useMemo(() => generateMockProperties(100), [])
+  const lastPushedFiltersRef = useRef<string>('')
+
+  const matchesFilters = useCallback(
+    (listing: ListingDetail, filters: ListingFilterRequest): boolean => {
+      if (filters?.productType && listing?.productType !== filters?.productType)
+        return false
+      if (filters?.minPrice && listing?.price < filters?.minPrice) return false
+      if (filters?.maxPrice && listing?.price > filters?.maxPrice) return false
+      if (filters?.minArea && (listing?.area ?? 0) < filters?.minArea)
+        return false
+      if (filters?.maxArea && (listing?.area ?? 0) > filters?.maxArea)
+        return false
+      if (
+        filters?.minBedrooms &&
+        (listing?.bedrooms ?? 0) < filters?.minBedrooms
+      )
+        return false
+      if (
+        filters?.maxBedrooms &&
+        (listing?.bedrooms ?? 0) > filters?.maxBedrooms
+      )
+        return false
+      if (filters?.bathrooms && listing?.bathrooms !== filters?.bathrooms)
+        return false
+      if (
+        filters?.verified !== undefined &&
+        listing?.verified !== filters?.verified
+      )
+        return false
+      if (filters?.keyword) {
+        const keyword = filters.keyword.toLowerCase()
+        const searchText =
+          `${listing?.title} ${listing?.description}`.toLowerCase()
+        if (!searchText.includes(keyword)) return false
+      }
+      return true
+    },
+    [],
+  )
+
+  const pushFiltersToQuery = useCallback(
+    (filters: ListingFilterRequest) => {
+      const filtersKey = JSON.stringify(filters)
+      if (lastPushedFiltersRef.current === filtersKey) return
+      lastPushedFiltersRef.current = filtersKey
+      const amenityIds = filters.amenityIds
+      pushQueryParams(
+        router,
+        {
+          categoryId: filters.categoryId ?? null,
+          productType: filters.productType ?? null,
+          keyword: filters.keyword || null,
+          minPrice: filters.minPrice ?? null,
+          maxPrice: filters.maxPrice ?? null,
+          minArea: filters.minArea ?? null,
+          maxArea: filters.maxArea ?? null,
+          minBedrooms: filters.minBedrooms ?? null,
+          maxBedrooms: filters.maxBedrooms ?? null,
+          bathrooms: filters.bathrooms ?? null,
+          verified: filters.verified || null,
+          direction: filters.direction ?? null,
+          electricityPrice: filters.electricityPrice ?? null,
+          waterPrice: filters.waterPrice ?? null,
+          internetPrice: filters.internetPrice ?? null,
+          serviceFee: filters.serviceFee ?? null,
+          amenityIds:
+            amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
+          provinceId: filters.provinceId ?? null,
+          districtId: filters.districtId ?? null,
+          wardId: filters.wardId ?? null,
+          isLegacy: filters.isLegacy ?? null,
+          latitude: filters.latitude ?? null,
+          longitude: filters.longitude ?? null,
+          sortBy: filters.sortBy ?? null,
+          page: null,
+        },
+        {
+          pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+          shallow: false,
+          scroll: true,
+        },
+      )
+    },
+    [router],
+  )
+
+  const fetcher = useCallback(
+    async (
+      filters: ListingFilterRequest,
+    ): Promise<ListingSearchApiResponse<ListingDetail>> => {
+      await new Promise((resolve) => setTimeout(resolve, 300))
+
+      const pageSize = filters?.size || 10
+      const currentPage = filters?.page || 1
+
+      const filteredData = allMockData.filter((listing) =>
+        matchesFilters(listing, filters),
+      )
+
+      // Pagination
+      const totalCount = filteredData.length
+      const totalPages = Math.ceil(totalCount / pageSize)
+      const startIndex = (currentPage - 1) * pageSize
+      const endIndex = startIndex + pageSize
+      const paginatedData = filteredData.slice(startIndex, endIndex)
+
+      pushFiltersToQuery(filters)
+
+      return {
+        code: 'SUCCESS',
+        message: null,
+        data: {
+          listings: paginatedData,
+          pagination: {
+            totalCount,
+            currentPage,
+            totalPages,
+            pageSize,
+          },
+          filterCriteria: filters,
+        },
+      }
+    },
+    [allMockData, matchesFilters, pushFiltersToQuery],
+  )
 
   return (
     <>
       <SeoHead title={t('properties')} description='Property search' />
       <div className='container mx-auto py-6 px-4 md:px-0'>
         <ListProvider
-          fetcher={fetchListings}
-          initialData={initialData}
+          fetcher={fetcher}
+          initialData={[]}
           initialFilters={initialFilters}
-          initialPagination={initialPagination}
         >
           <LocationProvider>
             <ResidentialPropertiesTemplate />
@@ -55,31 +187,3 @@ ResidentialPropertiesPage.getLayout = function getLayout(
 }
 
 export default ResidentialPropertiesPage
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  // Only parse query params, don't fetch data
-  // Data will be fetched client-side with skeleton loading
-  const parsed = getFiltersFromQuery(ctx.query)
-
-  // When page is not in query (null/undefined), it means filters were just applied
-  // In that case, reset to page 1
-  // When page is in query, use it (for pagination navigation)
-  const page = parsed.page !== undefined ? parsed.page : 1
-
-  return {
-    props: {
-      initialData: [], // Empty array - will be fetched client-side
-      initialFilters: {
-        ...parsed,
-        page, // Ensure page is set correctly
-      },
-      initialPagination: {
-        total: 0,
-        page,
-        totalPages: 0,
-        hasNext: false,
-        hasPrevious: false,
-      },
-    },
-  }
-}

@@ -8,7 +8,7 @@ import PricingGuideTemplate from '@/components/templates/pricingGuideTemplate'
 import { MembershipService } from '@/api/services/membership.service'
 import { VipTierService } from '@/api/services/vip-tier.service'
 import { createServerAxiosInstance } from '@/configs/axios/axiosServer'
-import type { Membership } from '@/api/types/memembership.type'
+import type { Membership } from '@/api/types/membership.type'
 import type { VipTier } from '@/api/types/vip-tier.type'
 
 interface PricingGuidePageProps {

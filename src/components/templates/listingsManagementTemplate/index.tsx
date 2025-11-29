@@ -1,40 +1,46 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import {
-  ListingStatus,
-  ListingStatusFilterResponsive,
-} from '@/components/molecules/listings/ListingStatusFilterResponsive'
+import { ListingStatusFilterResponsive } from '@/components/molecules/listings/ListingStatusFilterResponsive'
 import { ListingEmptyState } from '@/components/organisms/listings/ListingEmptyState'
 import { ListingToolbar } from '@/components/molecules/listings/ListingToolbar'
-import ResidentialFilterDialog from '@/components/molecules/residentialFilterDialog'
+import dynamic from 'next/dynamic'
 import { ListingsList } from '@/components/organisms/listings-list'
-import { MOCK_LISTINGS } from './index.constants'
-import { Property } from '@/api/types/property.type'
+
+const ResidentialFilterDialog = dynamic(
+  () => import('@/components/molecules/residentialFilterDialog'),
+  {
+    ssr: false,
+  },
+)
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { List, useListContext } from '@/contexts/list'
 import { countActiveFilters } from '@/utils/filters/countActiveFilters'
+import { ListingOwnerDetail, PostStatus, POST_STATUS } from '@/api/types'
+import { MOCK_LISTINGS } from '@/mock/ownerListing'
 
-const ListingsWithPagination: React.FC<{ currentStatus: ListingStatus }> = ({
+const ListingsWithPagination: React.FC<{ currentStatus: PostStatus }> = ({
   currentStatus,
 }) => {
   const {
-    itemsData: listings,
+    items: listings,
     isLoading,
     pagination,
-    handleLoadMore,
-  } = useListContext<Property>()
+    loadMore,
+  } = useListContext<ListingOwnerDetail>()
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tSeller = useTranslations('seller.listingManagement')
+  const { currentPage, totalPages } = pagination
+  const hasNext = currentPage < totalPages
 
   console.log('ListingsWithPagination rendered for status:', currentStatus)
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: () => {
       console.log('Load more triggered for mobile')
-      if (isMobile && pagination.hasNext && !isLoading) {
-        handleLoadMore()
+      if (isMobile && hasNext && !isLoading) {
+        loadMore()
       }
     },
     options: {
@@ -61,32 +67,38 @@ const ListingsWithPagination: React.FC<{ currentStatus: ListingStatus }> = ({
           <ListingsList
             listings={listings}
             onEditListing={(listing) =>
-              console.log('Edit listing:', listing.id)
+              console.log('Edit listing:', listing.listingId)
             }
             onPromoteListing={(listing) =>
-              console.log('Promote listing:', listing.id)
+              console.log('Promote listing:', listing.listingId)
             }
             onRepostListing={(listing) =>
-              console.log('Repost listing:', listing.id)
+              console.log('Repost listing:', listing.listingId)
             }
-            onViewReport={(listing) => console.log('View report:', listing.id)}
+            onViewReport={(listing) =>
+              console.log('View report:', listing.listingId)
+            }
             onRequestVerification={(listing) =>
-              console.log('Request verification:', listing.id)
+              console.log('Request verification:', listing.listingId)
             }
             onCopyListing={(listing) =>
-              console.log('Copy listing:', listing.id)
+              console.log('Copy listing:', listing.listingId)
             }
             onRequestContact={(listing) =>
-              console.log('Request contact:', listing.id)
+              console.log('Request contact:', listing.listingId)
             }
-            onShare={(listing) => console.log('Share listing:', listing.id)}
+            onShare={(listing) =>
+              console.log('Share listing:', listing.listingId)
+            }
             onActivityHistory={(listing) =>
-              console.log('Activity history:', listing.id)
+              console.log('Activity history:', listing.listingId)
             }
             onTakeDown={(listing) =>
-              console.log('Take down listing:', listing.id)
+              console.log('Take down listing:', listing.listingId)
             }
-            onDelete={(listing) => console.log('Delete listing:', listing.id)}
+            onDelete={(listing) =>
+              console.log('Delete listing:', listing.listingId)
+            }
           />
 
           {/* Desktop: Show Pagination */}
@@ -106,7 +118,7 @@ const ListingsWithPagination: React.FC<{ currentStatus: ListingStatus }> = ({
                 </div>
               )}
 
-              {pagination.hasNext && !isLoading && (
+              {hasNext && !isLoading && (
                 <List.LoadMore
                   className='w-full max-w-xs'
                   variant='outline'
@@ -121,7 +133,7 @@ const ListingsWithPagination: React.FC<{ currentStatus: ListingStatus }> = ({
                 aria-hidden='true'
               />
 
-              {!pagination.hasNext && listings.length > 0 && (
+              {!hasNext && listings.length > 0 && (
                 <div className='text-center py-6 text-gray-500 text-sm'>
                   {tSeller('allListingsShown')}
                 </div>
@@ -134,21 +146,6 @@ const ListingsWithPagination: React.FC<{ currentStatus: ListingStatus }> = ({
   )
 }
 
-const calculateCounts = () => {
-  console.log('Calculating counts from mock data')
-  return {
-    all: MOCK_LISTINGS.length,
-    expired: MOCK_LISTINGS.filter((item) => item.status === 'expired').length,
-    expiring: MOCK_LISTINGS.filter((item) => item.status === 'expiring').length,
-    active: MOCK_LISTINGS.filter((item) => item.status === 'active').length,
-    pending: MOCK_LISTINGS.filter((item) => item.status === 'pending').length,
-    review: MOCK_LISTINGS.filter((item) => item.status === 'review').length,
-    payment: MOCK_LISTINGS.filter((item) => item.status === 'payment').length,
-    rejected: MOCK_LISTINGS.filter((item) => item.status === 'rejected').length,
-    archived: MOCK_LISTINGS.filter((item) => item.status === 'archived').length,
-  }
-}
-
 export interface ListingsManagementTemplateProps {
   children?: React.ReactNode
 }
@@ -156,16 +153,23 @@ export interface ListingsManagementTemplateProps {
 export const ListingsManagementTemplate: React.FC<
   ListingsManagementTemplateProps
 > = ({ children }) => {
-  const [status, setStatus] = useState<ListingStatus>('all')
+  const [status, setStatus] = useState<PostStatus>(POST_STATUS.ALL)
   const [filterOpen, setFilterOpen] = useState(false)
 
-  console.log('ListingsManagementTemplate rendered with status:', status)
-  const counts = calculateCounts()
+  // Calculate counts for each status from MOCK_LISTINGS
+  const counts = useMemo(() => {
+    const statusCounts: Partial<Record<PostStatus, number>> = {
+      [POST_STATUS.ALL]: MOCK_LISTINGS.length,
+    }
 
-  const listings =
-    status === 'all'
-      ? MOCK_LISTINGS
-      : MOCK_LISTINGS.filter((item: Property) => item.status === status)
+    MOCK_LISTINGS.forEach((listing) => {
+      if (listing.status) {
+        statusCounts[listing.status] = (statusCounts[listing.status] || 0) + 1
+      }
+    })
+
+    return statusCounts
+  }, [])
 
   return (
     <div className='p-3 sm:p-4'>
@@ -180,7 +184,7 @@ export const ListingsManagementTemplate: React.FC<
         />
         {children}
         <ToolbarWithBadge
-          total={listings.length}
+          total={MOCK_LISTINGS.length}
           onFilterClick={() => {
             console.log('Filter clicked')
             setFilterOpen(true)
@@ -209,8 +213,8 @@ const ToolbarWithBadge: React.FC<{
 }
 
 const FilterButtonBadge: React.FC = () => {
-  const { filters, activeCount } = useListContext()
-  const activeFiltersCount = activeCount || countActiveFilters(filters)
+  const { filters, activeFilterCount } = useListContext()
+  const activeFiltersCount = activeFilterCount || countActiveFilters(filters)
 
   if (activeFiltersCount === 0) return null
 
@@ -225,28 +229,12 @@ const FilterDialogWrapper: React.FC<{
   open: boolean
   onOpenChange: (open: boolean) => void
 }> = ({ open, onOpenChange }) => {
-  const { filters, handleUpdateFilter, handleResetFilter, activeCount } =
-    useListContext()
   const t = useTranslations('seller.listingManagement')
-
-  const handleApply = (newFilters: typeof filters) => {
-    handleUpdateFilter(newFilters)
-    onOpenChange(false)
-  }
-
-  const handleClear = () => {
-    handleResetFilter()
-  }
 
   return (
     <ResidentialFilterDialog
-      value={filters}
-      onChange={handleUpdateFilter}
-      onClear={handleClear}
-      activeCount={activeCount || countActiveFilters(filters)}
-      open={open}
       onOpenChange={onOpenChange}
-      onApply={handleApply}
+      open={open}
       title={t('filter.title')}
     />
   )

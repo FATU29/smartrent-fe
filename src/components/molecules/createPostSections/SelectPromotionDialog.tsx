@@ -17,7 +17,7 @@ import type {
   BenefitType,
   GetMyMembershipResponse,
   UserBenefit,
-} from '@/api/types/memembership.type'
+} from '@/api/types/membership.type'
 import { useAuthStore } from '@/store/auth/index.store'
 
 interface SelectPromotionDialogProps {

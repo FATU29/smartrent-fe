@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
@@ -9,7 +9,7 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from '@/components/atoms/chart'
-import { TrendingUp, Info } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
 import {
   Area,
   AreaChart,
@@ -19,82 +19,166 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import type { PriceHistoryData } from '@/types/apartmentDetail.types'
+import { PriceHistory, PriceStatistics } from '@/api/types'
+import { formatByLocale, formatCompactCurrency } from '@/utils/currency/convert'
+import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 
 interface PriceHistoryChartProps {
-  priceHistory?: PriceHistoryData
-  district?: string
+  priceHistory?: PriceHistory[]
+  priceStatistics?: PriceStatistics | null
+  newAddress?: string
+  oldAddress?: string
 }
 
 const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
   priceHistory,
-  district,
+  priceStatistics,
+  newAddress,
+  oldAddress,
 }) => {
-  const t = useTranslations('apartmentDetail.priceHistory')
-  const [selectedTab, setSelectedTab] = useState<'buy' | 'rent'>('buy')
+  const t = useTranslations()
+  const { language } = useSwitchLanguage()
+  // Ensure locale is properly set and reactive to language changes
+  const locale = useMemo(() => language || 'vi', [language])
   const [selectedPeriod, setSelectedPeriod] = useState<
     '1year' | '2years' | '5years'
   >('1year')
 
+  // Transform PriceHistory[] to chart data and calculate statistics
+  const { chartData, statistics } = useMemo(() => {
+    // Check if priceHistory is an array and has data
+    if (
+      !priceHistory ||
+      !Array.isArray(priceHistory) ||
+      priceHistory.length === 0
+    ) {
+      return { chartData: [], statistics: null }
+    }
+
+    // Sort by date (oldest first)
+    const sorted = [...priceHistory].sort(
+      (a, b) =>
+        new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime(),
+    )
+
+    // Calculate statistics from priceHistory for chart data
+    const prices = sorted.map((item) => item.newPrice)
+    const overallAvg =
+      priceStatistics?.avgPrice ||
+      Math.round(prices.reduce((sum, price) => sum + price, 0) / prices.length)
+
+    // Transform to chart data format
+    const transformed = sorted.map((item) => ({
+      date: new Date(item.changedAt).toLocaleDateString('vi-VN', {
+        month: 'short',
+        year: 'numeric',
+      }),
+      price: item.newPrice,
+      average: overallAvg, // Add average to each data point
+      highest: item.newPrice,
+      lowest: item.newPrice,
+    }))
+
+    const currentPrice = sorted.at(-1)?.newPrice || 0
+    const firstPrice = sorted.at(0)?.newPrice || 0
+    const changePercentage =
+      firstPrice > 0
+        ? Math.round(((currentPrice - firstPrice) / firstPrice) * 100)
+        : 0
+
+    // Calculate highest/lowest for each date point (using rolling window)
+    const chartDataWithRange = transformed.map((item, index) => {
+      const windowStart = Math.max(0, index - 5)
+      const windowEnd = index + 1
+      const windowPrices = prices.slice(windowStart, windowEnd)
+      return {
+        ...item,
+        highest: Math.max(...windowPrices),
+        lowest: Math.min(...windowPrices),
+      }
+    })
+
+    // Use API statistics directly - no calculation needed
+    if (!priceStatistics) {
+      return { chartData: chartDataWithRange, statistics: null }
+    }
+
+    return {
+      chartData: chartDataWithRange,
+      statistics: {
+        current: currentPrice,
+        minPrice: priceStatistics.minPrice,
+        maxPrice: priceStatistics.maxPrice,
+        avgPrice: priceStatistics.avgPrice,
+        changePercentage,
+        totalChanges: priceStatistics.totalChanges,
+        priceIncreases: priceStatistics.priceIncreases,
+        priceDecreases: priceStatistics.priceDecreases,
+        pricePerSqm: currentPrice,
+      },
+    }
+  }, [priceHistory, priceStatistics, locale])
+
   if (
     !priceHistory ||
-    !priceHistory.chartData ||
-    priceHistory.chartData.length === 0
+    !Array.isArray(priceHistory) ||
+    priceHistory.length === 0 ||
+    !statistics
   ) {
     return null
   }
 
-  // Transform data for recharts
-  const chartData = priceHistory.chartData.map((d) => ({
-    date: d.date,
-    highest: d.highest || d.price,
-    average: d.price,
-    lowest: d.lowest || d.price,
-  }))
-
   // Chart config following shadcn pattern
   const chartConfig: ChartConfig = {
     highest: {
-      label: t('chartLabels.highest'),
+      label: t('apartmentDetail.priceHistory.chartLabels.highest'),
       color: '#e5e7eb',
     },
     average: {
-      label: t('chartLabels.average'),
+      label: t('apartmentDetail.priceHistory.chartLabels.average'),
       color: '#3b82f6',
     },
     lowest: {
-      label: t('chartLabels.lowest'),
+      label: t('apartmentDetail.priceHistory.chartLabels.lowest'),
       color: '#fbbf24',
     },
   }
 
   return (
-    <div className='space-y-6 py-8'>
-      <div className='flex items-center justify-between flex-wrap gap-4'>
+    <div className='space-y-6'>
+      <div className='space-y-3'>
         <Typography variant='h3' className='text-xl font-bold'>
-          {t('title', { district: district || 'Phường 16, Quận Gò Vấp' })}
+          {t('apartmentDetail.sections.priceHistory', {
+            district: newAddress || oldAddress || '',
+          })}
         </Typography>
-
-        <Tabs
-          value={selectedTab}
-          onValueChange={(value) => setSelectedTab(value as 'buy' | 'rent')}
-        >
-          <TabsList>
-            <TabsTrigger value='buy'>{t('tabs.buy')}</TabsTrigger>
-            <TabsTrigger value='rent'>{t('tabs.rent')}</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div>
+          {newAddress && (
+            <Typography variant='p' className='text-base text-muted-foreground'>
+              {t('apartmentDetail.property.newAddress')}: {newAddress}
+            </Typography>
+          )}
+          {oldAddress && (
+            <Typography variant='p' className='text-base text-muted-foreground'>
+              {t('apartmentDetail.property.legacyAddress')}: {oldAddress}
+            </Typography>
+          )}
+        </div>
       </div>
 
       {/* Stats Summary */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
         <Card>
           <CardContent className='p-4'>
-            <Typography variant='h2' className='text-3xl font-bold mb-1'>
-              {priceHistory.current} {t('statistics.priceUnit')}
+            <Typography
+              variant='h2'
+              className='text-xl sm:text-2xl font-bold mb-1 break-words'
+            >
+              {formatByLocale(statistics.current, locale)}{' '}
+              {t('apartmentDetail.priceHistory.statistics.priceUnit')}
             </Typography>
             <Typography variant='small' className='text-muted-foreground'>
-              {priceHistory.averagePrice.label}
+              {t('apartmentDetail.priceHistory.statistics.avgPrice')}
             </Typography>
           </CardContent>
         </Card>
@@ -107,12 +191,13 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 variant='h2'
                 className='text-3xl font-bold text-emerald-600'
               >
-                {priceHistory.changePercentage}%
+                {statistics.changePercentage > 0 ? '+' : ''}
+                {statistics.changePercentage}%
               </Typography>
             </div>
             <Typography variant='small' className='text-emerald-700'>
-              {t('increaseWithTime', {
-                period: t('period.1year'),
+              {t('apartmentDetail.priceHistory.increaseWithTime', {
+                period: t('apartmentDetail.priceHistory.period.1year'),
                 timeRange: 'T9/24 - T9/25',
               })}
             </Typography>
@@ -129,7 +214,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
               </div>
             </div>
             <Typography variant='small' className='text-blue-700'>
-              {priceHistory.highestPrice.label}
+              {t('apartmentDetail.priceHistory.chartLabels.highest')}
             </Typography>
           </CardContent>
         </Card>
@@ -143,9 +228,15 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
         }
       >
         <TabsList>
-          <TabsTrigger value='1year'>{t('period.1year')}</TabsTrigger>
-          <TabsTrigger value='2years'>{t('period.2years')}</TabsTrigger>
-          <TabsTrigger value='5years'>{t('period.5years')}</TabsTrigger>
+          <TabsTrigger value='1year'>
+            {t('apartmentDetail.priceHistory.period.1year')}
+          </TabsTrigger>
+          <TabsTrigger value='2years'>
+            {t('apartmentDetail.priceHistory.period.2years')}
+          </TabsTrigger>
+          <TabsTrigger value='5years'>
+            {t('apartmentDetail.priceHistory.period.5years')}
+          </TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -208,13 +299,30 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tickFormatter={(value) =>
-                    `${new Intl.NumberFormat('vi-VN').format(value)}`
-                  }
+                  tickFormatter={(value) => {
+                    return formatCompactCurrency(value, locale)
+                  }}
                 />
                 <Tooltip
                   cursor={false}
-                  content={<ChartTooltipContent indicator='dot' />}
+                  content={({ active, payload }) => {
+                    if (!active || !payload || payload.length === 0) return null
+                    return (
+                      <ChartTooltipContent
+                        indicator='dot'
+                        active={active}
+                        payload={payload.map((item) => ({
+                          color: item.color,
+                          dataKey: String(item.dataKey || ''),
+                          name: String(item.name || ''),
+                          value: formatByLocale(
+                            Number(item.value) || 0,
+                            locale,
+                          ),
+                        }))}
+                      />
+                    )
+                  }}
                 />
                 <Area
                   dataKey='lowest'
@@ -247,21 +355,27 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
       <div className='flex flex-wrap gap-4 text-sm'>
         <div className='flex items-center gap-2'>
           <Badge className='w-3 h-3 bg-gray-300 rounded-full p-0' />
-          <Typography variant='small'>{t('chartLabels.highest')}</Typography>
+          <Typography variant='small'>
+            {t('apartmentDetail.priceHistory.chartLabels.highest')}
+          </Typography>
         </div>
         <div className='flex items-center gap-2'>
           <Badge className='w-3 h-3 bg-blue-500 rounded-full p-0' />
-          <Typography variant='small'>{t('chartLabels.average')}</Typography>
+          <Typography variant='small'>
+            {t('apartmentDetail.priceHistory.chartLabels.average')}
+          </Typography>
         </div>
         <div className='flex items-center gap-2'>
           <Badge className='w-3 h-3 bg-yellow-400 rounded-full p-0' />
-          <Typography variant='small'>{t('chartLabels.lowest')}</Typography>
+          <Typography variant='small'>
+            {t('apartmentDetail.priceHistory.chartLabels.lowest')}
+          </Typography>
         </div>
         <div className='flex items-center gap-2'>
           <Badge className='w-3 h-3 bg-red-500 rounded-full p-0' />
           <Typography variant='small'>
-            {t('chartLabels.searching', {
-              price: priceHistory.pricePerSqm.toFixed(2),
+            {t('apartmentDetail.priceHistory.chartLabels.searching', {
+              price: formatByLocale(statistics.pricePerSqm, locale),
             })}
           </Typography>
         </div>
@@ -271,7 +385,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
       <Card className='bg-muted/50'>
         <CardContent className='p-4'>
           <Typography variant='h6' className='font-semibold mb-3'>
-            {t('statistics.title')}
+            {t('apartmentDetail.priceHistory.statistics.title')}
           </Typography>
           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
             <div>
@@ -279,10 +393,14 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 variant='small'
                 className='text-muted-foreground mb-1'
               >
-                {t('statistics.minPrice')}
+                {t('apartmentDetail.priceHistory.statistics.minPrice')}
               </Typography>
-              <Typography variant='p' className='font-bold text-lg'>
-                {priceHistory.minPrice} {t('statistics.priceUnit')}
+              <Typography
+                variant='p'
+                className='font-bold text-sm sm:text-base break-words'
+              >
+                {formatByLocale(statistics.minPrice, locale)}{' '}
+                {t('apartmentDetail.priceHistory.statistics.priceUnit')}
               </Typography>
             </div>
             <div>
@@ -290,10 +408,14 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 variant='small'
                 className='text-muted-foreground mb-1'
               >
-                {t('statistics.maxPrice')}
+                {t('apartmentDetail.priceHistory.statistics.maxPrice')}
               </Typography>
-              <Typography variant='p' className='font-bold text-lg'>
-                {priceHistory.maxPrice} {t('statistics.priceUnit')}
+              <Typography
+                variant='p'
+                className='font-bold text-sm sm:text-base break-words'
+              >
+                {formatByLocale(statistics.maxPrice, locale)}{' '}
+                {t('apartmentDetail.priceHistory.statistics.priceUnit')}
               </Typography>
             </div>
             <div>
@@ -301,10 +423,14 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 variant='small'
                 className='text-muted-foreground mb-1'
               >
-                {t('statistics.avgPrice')}
+                {t('apartmentDetail.priceHistory.statistics.avgPrice')}
               </Typography>
-              <Typography variant='p' className='font-bold text-lg'>
-                {priceHistory.avgPrice} {t('statistics.priceUnit')}
+              <Typography
+                variant='p'
+                className='font-bold text-sm sm:text-base break-words'
+              >
+                {formatByLocale(statistics.avgPrice, locale)}{' '}
+                {t('apartmentDetail.priceHistory.statistics.priceUnit')}
               </Typography>
             </div>
             <div>
@@ -312,10 +438,11 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 variant='small'
                 className='text-muted-foreground mb-1'
               >
-                {t('statistics.totalChanges')}
+                {t('apartmentDetail.priceHistory.statistics.totalChanges')}
               </Typography>
               <Typography variant='p' className='font-bold text-lg'>
-                {priceHistory.totalChanges} {t('statistics.times')}
+                {statistics.totalChanges}{' '}
+                {t('apartmentDetail.priceHistory.statistics.times')}
               </Typography>
             </div>
             <div>
@@ -323,13 +450,14 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 variant='small'
                 className='text-muted-foreground mb-1'
               >
-                {t('statistics.priceIncreases')}
+                {t('apartmentDetail.priceHistory.statistics.priceIncreases')}
               </Typography>
               <Typography
                 variant='p'
                 className='font-bold text-lg text-emerald-600'
               >
-                {priceHistory.priceIncreases} {t('statistics.times')}
+                {statistics.priceIncreases}{' '}
+                {t('apartmentDetail.priceHistory.statistics.times')}
               </Typography>
             </div>
             <div>
@@ -337,26 +465,17 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 variant='small'
                 className='text-muted-foreground mb-1'
               >
-                {t('statistics.priceDecreases')}
+                {t('apartmentDetail.priceHistory.statistics.priceDecreases')}
               </Typography>
               <Typography
                 variant='p'
                 className='font-bold text-lg text-red-600'
               >
-                {priceHistory.priceDecreases} {t('statistics.times')}
+                {statistics.priceDecreases}{' '}
+                {t('apartmentDetail.priceHistory.statistics.times')}
               </Typography>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Disclaimer */}
-      <Card className='bg-blue-50 border-blue-200'>
-        <CardContent className='flex gap-3 p-4'>
-          <Info className='w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5' />
-          <Typography variant='small' className='text-blue-900 leading-relaxed'>
-            {t('disclaimer')}
-          </Typography>
         </CardContent>
       </Card>
     </div>

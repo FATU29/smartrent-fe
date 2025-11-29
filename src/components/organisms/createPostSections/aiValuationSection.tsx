@@ -6,7 +6,6 @@ import {
   CardTitle,
 } from '@/components/atoms/card'
 import { Button } from '@/components/atoms/button'
-import SelectDropdown from '@/components/atoms/select-dropdown'
 import {
   BarChart3,
   RefreshCw,
@@ -18,21 +17,15 @@ import {
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
+import { Input } from '@/components/atoms/input'
 import { getAmenityByCode } from '@/constants/amenities'
 import { getAiPropertyTypeOptions, getAmenityItems } from './index.helper'
 import { useHousingPredictor } from '@/hooks/useAI'
 import {
-  extractAddressNames,
   buildHousingPredictorRequest,
   getAveragePrice,
 } from '@/utils/ai/housingPredictor'
-import {
-  useLegacyProvinces,
-  useLegacyDistricts,
-  useLegacyWards,
-  useNewProvinces,
-  useNewWards,
-} from '@/hooks/useAddress'
+import { useNewProvinces, useNewWards } from '@/hooks/useAddress'
 import { formatByLocale } from '@/utils/currency/convert'
 import type { HousingPredictorResponse } from '@/api/types/ai.type'
 
@@ -44,78 +37,68 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   className,
 }) => {
   const t = useTranslations('createPost.sections.aiValuation')
-  const tCommon = useTranslations('common')
-  const tAddress = useTranslations('createPost.sections.propertyInfo.address')
   const tPropertyInfo = useTranslations('createPost.sections.propertyInfo')
-  const { propertyInfo, updatePropertyInfo } = useCreatePost()
+  const tPropertyDetails = useTranslations(
+    'createPost.sections.propertyDetails',
+  )
+  const tAddress = useTranslations('createPost.sections.propertyInfo.address')
+  const {
+    propertyInfo,
+    fulltextAddress,
+    composedNewAddress,
+    composedLegacyAddress,
+  } = useCreatePost()
   const [prediction, setPrediction] = useState<HousingPredictorResponse | null>(
     null,
   )
 
-  // Address data hooks
-
-  const selectedLegacyProvinceId = useMemo(() => {
-    const id = parseInt(propertyInfo?.province || '0')
-    return id > 0 ? id : undefined
-  }, [propertyInfo?.province])
-
-  const selectedLegacyDistrictId = useMemo(() => {
-    const id = parseInt(propertyInfo?.district || '0')
-    return id > 0 ? id : undefined
-  }, [propertyInfo?.district])
-
-  const { data: legacyProvinces = [] } = useLegacyProvinces()
-  const { data: legacyDistricts = [] } = useLegacyDistricts(
-    selectedLegacyProvinceId,
-  )
-  const { data: legacyWards = [] } = useLegacyWards(selectedLegacyDistrictId)
   const { data: newProvinces = [] } = useNewProvinces()
-  const { data: newWards = [] } = useNewWards(propertyInfo?.newProvinceCode)
+  const provinceCodeForWards =
+    fulltextAddress?.newProvinceCode ||
+    (propertyInfo?.address?.new?.provinceCode
+      ? String(propertyInfo.address.new.provinceCode)
+      : undefined)
+  const { data: newWards = [] } = useNewWards(provinceCodeForWards)
 
-  // Find selected address entities
-  const selectedLegacyProvince = useMemo(() => {
-    return legacyProvinces.find(
-      (p) => p.provinceId === selectedLegacyProvinceId,
-    )
-  }, [legacyProvinces, selectedLegacyProvinceId])
-
-  const selectedLegacyDistrict = useMemo(() => {
-    return legacyDistricts.find(
-      (d) => d.districtId === selectedLegacyDistrictId,
-    )
-  }, [legacyDistricts, selectedLegacyDistrictId])
-
-  const selectedLegacyWard = useMemo(() => {
-    const wardId = parseInt(propertyInfo?.ward || '0')
-    return legacyWards.find((w) => w.wardId === wardId)
-  }, [legacyWards, propertyInfo?.ward])
-
+  // Find selected address entities for addressNames
   const selectedNewProvince = useMemo(() => {
-    return newProvinces.find((p) => p.code === propertyInfo?.newProvinceCode)
-  }, [newProvinces, propertyInfo?.newProvinceCode])
+    const provinceCode =
+      fulltextAddress?.newProvinceCode ||
+      (propertyInfo?.address?.new?.provinceCode
+        ? String(propertyInfo.address.new.provinceCode)
+        : undefined)
+    if (!provinceCode) return undefined
+    return newProvinces.find((p) => p.id === provinceCode)
+  }, [
+    newProvinces,
+    fulltextAddress?.newProvinceCode,
+    propertyInfo?.address?.new?.provinceCode,
+  ])
 
   const selectedNewWard = useMemo(() => {
-    return newWards.find((w) => w.code === propertyInfo?.newWardCode)
-  }, [newWards, propertyInfo?.newWardCode])
-
-  // Extract address names
-  const addressNames = useMemo(() => {
-    return extractAddressNames(
-      propertyInfo,
-      selectedLegacyProvince,
-      selectedLegacyDistrict,
-      selectedLegacyWard,
-      selectedNewProvince,
-      selectedNewWard,
-    )
+    const wardCode =
+      fulltextAddress?.newWardCode ||
+      (propertyInfo?.address?.new?.wardCode
+        ? String(propertyInfo.address.new.wardCode)
+        : undefined)
+    if (!wardCode) return undefined
+    return newWards.find((w) => w.code === wardCode)
   }, [
-    propertyInfo,
-    selectedLegacyProvince,
-    selectedLegacyDistrict,
-    selectedLegacyWard,
-    selectedNewProvince,
-    selectedNewWard,
+    newWards,
+    fulltextAddress?.newWardCode,
+    propertyInfo?.address?.new?.wardCode,
   ])
+
+  const addressNames = useMemo(() => {
+    if (!selectedNewProvince || !selectedNewWard) return null
+
+    return {
+      city: selectedNewProvince.name,
+      ward: selectedNewWard.name,
+      district: '',
+      street: propertyInfo,
+    }
+  }, [selectedNewProvince, selectedNewWard])
 
   // Housing predictor hook
   const {
@@ -130,69 +113,47 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
     return buildHousingPredictorRequest(propertyInfo, addressNames)
   }, [propertyInfo, addressNames])
 
-  // Track if we've attempted prediction for current request
-  const predictionRequestRef = React.useRef<string | null>(null)
-
   // Auto-predict when predictionRequest becomes available or changes
   useEffect(() => {
-    if (!predictionRequest) {
-      // Reset prediction when request becomes invalid
-      if (prediction) {
-        setPrediction(null)
-      }
-      predictionRequestRef.current = null
+    if (!predictionRequest || isPredicting) {
       return
     }
 
-    // Create a unique key for this request to avoid duplicate calls
-    const requestKey = JSON.stringify(predictionRequest)
-
-    // Only predict if:
-    // 1. We have a valid request
-    // 2. We haven't predicted for this exact request yet
-    // 3. We're not currently predicting
-    if (requestKey !== predictionRequestRef.current && !isPredicting) {
-      predictionRequestRef.current = requestKey
-      predictPrice(predictionRequest, {
-        onSuccess: (response) => {
-          if (response.code === '999999' && response.data) {
-            setPrediction(response.data)
-          } else {
-            // Reset ref on failure so we can retry
-            predictionRequestRef.current = null
-          }
-        },
-        onError: () => {
-          // Error handled by predictionError
-          predictionRequestRef.current = null
-        },
-      })
-    }
+    predictPrice(predictionRequest, {
+      onSuccess: (response) => {
+        if (response.code === '999999' && response.data) {
+          setPrediction(response.data)
+        }
+      },
+    })
   }, [predictionRequest, isPredicting, predictPrice])
 
   // Handle re-evaluate button
   const handleReevaluate = () => {
     if (!predictionRequest) return
-    // Reset ref to allow re-prediction
-    predictionRequestRef.current = null
     setPrediction(null)
     predictPrice(predictionRequest, {
       onSuccess: (response) => {
         if (response.code === '999999' && response.data) {
           setPrediction(response.data)
-          // Update ref to prevent duplicate calls
-          predictionRequestRef.current = JSON.stringify(predictionRequest)
         }
       },
     })
   }
 
-  // Format price for display
   const formatPrice = (price: number) => {
     return formatByLocale(price, 'vi-VN')
   }
 
-  // Check if we can predict
+  const propertyTypeLabel = useMemo(() => {
+    if (!propertyInfo.propertyType) return ''
+    const options = getAiPropertyTypeOptions(t, tPropertyDetails)
+    const option = options.find(
+      (opt) => opt.value === propertyInfo.propertyType?.toLowerCase(),
+    )
+    return option?.label || propertyInfo.propertyType
+  }, [propertyInfo.propertyType, t, tPropertyDetails])
+
   const canPredict = !!predictionRequest
 
   return (
@@ -212,92 +173,75 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             </p>
           </CardHeader>
           <CardContent className='space-y-6'>
-            {/* Address Structure Switch */}
-            <div className='space-y-3'>
-              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                {tAddress('structureType.label')}
-              </label>
-              <div className='flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg'>
-                <button
-                  type='button'
-                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                    propertyInfo?.addressStructureType === 'legacy'
-                      ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
-                  }`}
-                  onClick={() =>
-                    updatePropertyInfo({ addressStructureType: 'legacy' })
-                  }
-                >
-                  {tAddress('structureType.legacyShort')}
-                </button>
-                <button
-                  type='button'
-                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                    propertyInfo?.addressStructureType === 'new'
-                      ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
-                  }`}
-                  onClick={() =>
-                    updatePropertyInfo({ addressStructureType: 'new' })
-                  }
-                >
-                  {tAddress('structureType.newShort')}
-                </button>
+            {/* New Address (Read-only) */}
+            {composedNewAddress && (
+              <div className='space-y-3'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                  <MapPin className='w-4 h-4 text-blue-500' />
+                  {tPropertyInfo('displayAddress')} (
+                  {tAddress('structureType.newShort') || 'Mới'})
+                </label>
+                <div className='relative group'>
+                  <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 z-10' />
+                  <Input
+                    type='text'
+                    readOnly
+                    className='pl-12 bg-gray-50 dark:bg-gray-800/50 cursor-text'
+                    placeholder={tPropertyInfo('displayAddressPlaceholder')}
+                    value={composedNewAddress}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Display Address (Read-only) */}
-            <div className='space-y-3'>
-              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
-                <MapPin className='w-4 h-4 text-blue-500' />
-                {tPropertyInfo('displayAddress')}
-              </label>
-              <div className='relative group'>
-                <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400' />
-                <input
-                  type='text'
-                  readOnly
-                  className='w-full h-12 pl-12 pr-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 cursor-not-allowed transition-all duration-200'
-                  placeholder={tPropertyInfo('displayAddressPlaceholder')}
-                  value={propertyInfo?.propertyAddress || ''}
-                />
+            {/* Legacy Address (Read-only) */}
+            {composedLegacyAddress && (
+              <div className='space-y-3'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                  <MapPin className='w-4 h-4 text-orange-500' />
+                  {tAddress('legacyAddress') ||
+                    'Địa chỉ hiển thị trên tin đăng (phiên bản cũ)'}
+                </label>
+                <div className='relative group'>
+                  <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 z-10' />
+                  <Input
+                    type='text'
+                    readOnly
+                    className='pl-12 bg-gray-50 dark:bg-gray-800/50 cursor-text'
+                    placeholder={
+                      tAddress('legacyAddressPlaceholder') ||
+                      'Địa chỉ cũ sẽ hiển thị ở đây'
+                    }
+                    value={composedLegacyAddress}
+                  />
+                </div>
               </div>
-              <p className='text-xs text-gray-500 dark:text-gray-400'>
-                {t('propertyInfo.addressReadOnlyHint')}
-              </p>
-            </div>
+            )}
 
             {/* Main Layout: One row for Type + Area (applies on mobile) */}
             <div className='grid grid-cols-2 gap-3 w-full'>
-              <SelectDropdown
-                label={t('propertyInfo.type')}
-                value={propertyInfo.propertyType}
-                onValueChange={(value) =>
-                  updatePropertyInfo({
-                    propertyType: value as
-                      | 'room'
-                      | 'apartment'
-                      | 'house'
-                      | 'office'
-                      | 'store',
-                  })
-                }
-                options={getAiPropertyTypeOptions(t, tCommon)}
-                className='space-y-2'
-                disabled
-              />
+              <div className='space-y-2'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                  {t('propertyInfo.type')}
+                </label>
+                <Input
+                  type='text'
+                  value={propertyTypeLabel}
+                  readOnly
+                  placeholder={t('propertyInfo.type')}
+                />
+              </div>
               <div className='space-y-2'>
                 <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
                   {t('propertyInfo.area')}
                 </label>
                 <div className='relative'>
-                  <input
+                  <Input
                     type='text'
                     value={propertyInfo.area}
                     readOnly
                     placeholder='0'
-                    className='w-full h-12 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-base'
+                    className='pr-12'
                   />
                   <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400'>
                     m²
@@ -312,24 +256,22 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                 <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
                   {t('propertyInfo.bedrooms')}
                 </label>
-                <input
+                <Input
                   type='text'
                   value={propertyInfo.bedrooms}
                   readOnly
                   placeholder='0'
-                  className='w-full h-12 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-base'
                 />
               </div>
               <div className='space-y-2'>
                 <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
                   {t('propertyInfo.bathrooms')}
                 </label>
-                <input
+                <Input
                   type='text'
                   value={propertyInfo.bathrooms}
                   readOnly
                   placeholder='0'
-                  className='w-full h-12 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-base'
                 />
               </div>
             </div>
@@ -345,12 +287,16 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                   {getAmenityItems(tPropertyInfo).map((amenity) => {
                     const amenityConfig = getAmenityByCode(amenity.key)
                     const IconComponent = amenityConfig?.icon
+                    const hasAmenity =
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (propertyInfo as any).amenities?.includes(amenity.id) ||
+                      propertyInfo.amenityIds?.includes(amenity.id)
 
                     return (
                       <label
                         key={amenity.key}
                         className={`grid grid-cols-[auto,auto,1fr] items-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-colors duration-200 w-full min-w-0 min-h-12 ${
-                          propertyInfo.amenities?.includes(amenity.key)
+                          hasAmenity
                             ? amenity.color
                             : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
                         }`}
@@ -361,10 +307,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                         <input
                           type='checkbox'
                           className='w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 shrink-0'
-                          checked={
-                            propertyInfo.amenities?.includes(amenity.key) ||
-                            false
-                          }
+                          checked={hasAmenity}
                           disabled
                         />
                         <span className='text-sm font-medium whitespace-normal break-words leading-snug min-w-0'>

@@ -5,27 +5,26 @@ import {
   getAmenitiesByCategory,
   type AmenityCategory,
 } from '@/constants/amenities'
+import { ListingFilterRequest } from '@/api/types'
 
-// AmenitiesView
-// Multi-select amenity picker with full list grouped by category
 interface AmenitiesViewProps {
-  values?: { id: number; name?: string }[] // Array of amenity objects
-  onChange: (vals: { id: number; name?: string }[]) => void
+  value?: ListingFilterRequest['amenityIds']
+  onChange: (val: ListingFilterRequest['amenityIds']) => void
 }
 
 const AmenitiesView: React.FC<AmenitiesViewProps> = ({
-  values = [],
+  value = [],
   onChange,
 }) => {
   const t = useTranslations('createPost.sections.propertyInfo')
   const tFilter = useTranslations('residentialFilter')
 
-  const toggle = (id: number, name: string) => {
-    const isSelected = values.some((v) => v.id === id)
+  const toggle = (id: number) => {
+    const isSelected = value.includes(id)
     if (isSelected) {
-      onChange(values.filter((v) => v.id !== id))
+      onChange(value.filter((v) => v !== id))
     } else {
-      onChange([...values, { id, name }])
+      onChange([...value, id])
     }
   }
 
@@ -67,8 +66,8 @@ const AmenitiesView: React.FC<AmenitiesViewProps> = ({
                     <ToggleChip
                       key={amenity.id}
                       label={translatedName}
-                      active={values.some((v) => v.id === amenity.id)}
-                      onClick={() => toggle(amenity.id, translatedName)}
+                      active={value.includes(amenity.id)}
+                      onClick={() => toggle(amenity.id)}
                     />
                   )
                 })}
@@ -76,7 +75,7 @@ const AmenitiesView: React.FC<AmenitiesViewProps> = ({
             </div>
           )
         })}
-        {values.length > 0 && (
+        {value.length > 0 && (
           <button
             className='text-xs text-muted-foreground underline'
             type='button'
