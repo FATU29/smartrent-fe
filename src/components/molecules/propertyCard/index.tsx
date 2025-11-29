@@ -175,6 +175,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 <iframe
                   src={toYouTubeEmbed(assetsVideo) || ''}
                   className='w-full h-full'
+                  title={`video-${listing.listingId}`}
                   allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
                   allowFullScreen
                 />

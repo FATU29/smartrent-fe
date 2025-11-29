@@ -98,50 +98,50 @@ export const formatCompactCurrency = (
   locale: string | undefined,
   opts?: Omit<ConvertCurrencyOptions, 'locale'>,
 ): string => {
-  if (!Number.isFinite(amount) || amount <= 0) {
-    return '0'
-  }
+  if (!Number.isFinite(amount) || amount <= 0) return '0'
 
   const normalizedLocale = locale?.toLowerCase().trim()
   const isEnglish =
     normalizedLocale === 'en' || normalizedLocale?.startsWith('en-')
 
-  // For Vietnamese: use tr (triệu = million) and ty (tỷ = billion)
-  // 1 triệu = 1,000,000 VND
-  // 1 tỷ = 1,000,000,000 VND
-  if (!isEnglish) {
-    if (amount >= 1000000000) {
-      // Tỷ (billion)
-      const ty = amount / 1000000000
-      return ty % 1 === 0 ? `${ty}ty` : `${ty.toFixed(1)}ty`
-    } else if (amount >= 1000000) {
-      // Triệu (million)
-      const tr = amount / 1000000
-      return tr % 1 === 0 ? `${tr}tr` : `${tr.toFixed(1)}tr`
-    } else if (amount >= 1000) {
-      // Nghìn (thousand)
-      const nghin = amount / 1000
-      return nghin % 1 === 0 ? `${nghin}k` : `${nghin.toFixed(1)}k`
+  const formatCompact = (
+    value: number,
+    units: { threshold: number; divisor: number; suffix: string }[],
+    format: (n: number) => string,
+  ): string => {
+    for (const u of units) {
+      if (value >= u.threshold) {
+        const num = value / u.divisor
+        return format(num) + u.suffix
+      }
     }
-    return amount.toString()
+    return String(Math.round(value))
   }
 
-  // For English: use M (million) and B (billion)
-  // Convert VND to USD first for English
+  if (!isEnglish) {
+    // Vietnamese compact: ty (billion), tr (million), k (thousand)
+    const vnUnits = [
+      { threshold: 1_000_000_000, divisor: 1_000_000_000, suffix: 'ty' },
+      { threshold: 1_000_000, divisor: 1_000_000, suffix: 'tr' },
+      { threshold: 1_000, divisor: 1_000, suffix: 'k' },
+    ]
+    return formatCompact(amount, vnUnits, (n) =>
+      n % 1 === 0 ? `${n}` : n.toFixed(1),
+    )
+  }
+
+  // English compact: convert to USD first, then B/M/K with $ prefix
   const usdAmount = vndToUsdNumber(amount, opts)
-
-  if (usdAmount >= 1000000000) {
-    // Billion
-    const b = usdAmount / 1000000000
-    return b % 1 === 0 ? `$${b}B` : `$${b.toFixed(1)}B`
-  } else if (usdAmount >= 1000000) {
-    // Million
-    const m = usdAmount / 1000000
-    return m % 1 === 0 ? `$${m}M` : `$${m.toFixed(1)}M`
-  } else if (usdAmount >= 1000) {
-    // Thousand
-    const k = usdAmount / 1000
-    return k % 1 === 0 ? `$${k}K` : `$${k.toFixed(1)}K`
-  }
-  return `$${Math.round(usdAmount)}`
+  const enUnits = [
+    { threshold: 1_000_000_000, divisor: 1_000_000_000, suffix: 'B' },
+    { threshold: 1_000_000, divisor: 1_000_000, suffix: 'M' },
+    { threshold: 1_000, divisor: 1_000, suffix: 'K' },
+  ]
+  const result = formatCompact(
+    usdAmount,
+    enUnits,
+    (n) => `$${n % 1 === 0 ? `${n}` : n.toFixed(1)}`,
+  )
+  // If below 1k, formatCompact returns rounded number without suffix; ensure it has $ prefix
+  return result.includes('$') ? result : `$${result}`
 }

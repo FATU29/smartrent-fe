@@ -77,42 +77,47 @@ export const useCreatePostSteps = () => {
     setAttemptedSubmit(true)
     scrollToTop()
 
-    // Special handling for Media step (step 2)
-    if (currentStep === 2) {
+    const proceedNext = () => {
+      if (currentStep < TOTAL_STEPS - 1) {
+        setCurrentStep(currentStep + 1)
+        setAttemptedSubmit(false)
+      }
+    }
+
+    const handleMediaStep = async () => {
       if (videoUploadProgress.isUploading) {
         toast.error(
           t('validation.videoUploadInProgress') ||
             'Vui lòng đợi video tải lên hoàn tất trước khi tiếp tục',
         )
-        return
+        return false
       }
-
       if (imagesUploadProgress.isUploading) {
         toast.error(
           t('validation.imagesUploadInProgress') ||
             'Vui lòng đợi ảnh tải lên hoàn tất trước khi tiếp tục',
         )
-        return
+        return false
       }
-
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const validateMediaStep = (window as any).__validateMediaStep
       if (validateMediaStep) {
         const success = await validateMediaStep()
-        if (!success) return
+        if (!success) return false
       }
+      return true
+    }
 
-      setCurrentStep(currentStep + 1)
-      setAttemptedSubmit(false)
+    if (currentStep === 2) {
+      const ok = await handleMediaStep()
+      if (!ok) return
+      proceedNext()
       return
     }
 
     // Steps 1 and 4 don't require validation - proceed directly
     if (currentStep === 1 || currentStep === 4) {
-      if (currentStep < TOTAL_STEPS - 1) {
-        setCurrentStep(currentStep + 1)
-        setAttemptedSubmit(false)
-      }
+      proceedNext()
       return
     }
 
@@ -127,10 +132,7 @@ export const useCreatePostSteps = () => {
     }
 
     // Proceed to next step
-    if (currentStep < TOTAL_STEPS - 1) {
-      setCurrentStep(currentStep + 1)
-      setAttemptedSubmit(false)
-    }
+    proceedNext()
   }, [
     currentStep,
     scrollToTop,

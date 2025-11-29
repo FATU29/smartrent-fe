@@ -38,6 +38,90 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
   const allMockData = useMemo(() => generateMockProperties(100), [])
   const lastPushedFiltersRef = useRef<string>('')
 
+  const matchesFilters = useCallback(
+    (listing: ListingDetail, filters: ListingFilterRequest): boolean => {
+      if (filters?.productType && listing?.productType !== filters?.productType)
+        return false
+      if (filters?.minPrice && listing?.price < filters?.minPrice) return false
+      if (filters?.maxPrice && listing?.price > filters?.maxPrice) return false
+      if (filters?.minArea && (listing?.area ?? 0) < filters?.minArea)
+        return false
+      if (filters?.maxArea && (listing?.area ?? 0) > filters?.maxArea)
+        return false
+      if (
+        filters?.minBedrooms &&
+        (listing?.bedrooms ?? 0) < filters?.minBedrooms
+      )
+        return false
+      if (
+        filters?.maxBedrooms &&
+        (listing?.bedrooms ?? 0) > filters?.maxBedrooms
+      )
+        return false
+      if (filters?.bathrooms && listing?.bathrooms !== filters?.bathrooms)
+        return false
+      if (
+        filters?.verified !== undefined &&
+        listing?.verified !== filters?.verified
+      )
+        return false
+      if (filters?.keyword) {
+        const keyword = filters.keyword.toLowerCase()
+        const searchText =
+          `${listing?.title} ${listing?.description}`.toLowerCase()
+        if (!searchText.includes(keyword)) return false
+      }
+      return true
+    },
+    [],
+  )
+
+  const pushFiltersToQuery = useCallback(
+    (filters: ListingFilterRequest) => {
+      const filtersKey = JSON.stringify(filters)
+      if (lastPushedFiltersRef.current === filtersKey) return
+      lastPushedFiltersRef.current = filtersKey
+      const amenityIds = filters.amenityIds
+      pushQueryParams(
+        router,
+        {
+          categoryId: filters.categoryId ?? null,
+          productType: filters.productType ?? null,
+          keyword: filters.keyword || null,
+          minPrice: filters.minPrice ?? null,
+          maxPrice: filters.maxPrice ?? null,
+          minArea: filters.minArea ?? null,
+          maxArea: filters.maxArea ?? null,
+          minBedrooms: filters.minBedrooms ?? null,
+          maxBedrooms: filters.maxBedrooms ?? null,
+          bathrooms: filters.bathrooms ?? null,
+          verified: filters.verified || null,
+          direction: filters.direction ?? null,
+          electricityPrice: filters.electricityPrice ?? null,
+          waterPrice: filters.waterPrice ?? null,
+          internetPrice: filters.internetPrice ?? null,
+          serviceFee: filters.serviceFee ?? null,
+          amenityIds:
+            amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
+          provinceId: filters.provinceId ?? null,
+          districtId: filters.districtId ?? null,
+          wardId: filters.wardId ?? null,
+          isLegacy: filters.isLegacy ?? null,
+          latitude: filters.latitude ?? null,
+          longitude: filters.longitude ?? null,
+          sortBy: filters.sortBy ?? null,
+          page: null,
+        },
+        {
+          pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+          shallow: false,
+          scroll: true,
+        },
+      )
+    },
+    [router],
+  )
+
   const fetcher = useCallback(
     async (
       filters: ListingFilterRequest,
@@ -47,69 +131,9 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
       const pageSize = filters?.size || 10
       const currentPage = filters?.page || 1
 
-      const filteredData = allMockData.filter((listing) => {
-        if (
-          filters?.productType &&
-          listing?.productType !== filters?.productType
-        ) {
-          return false
-        }
-
-        // Price filter
-        if (filters?.minPrice && listing?.price < filters?.minPrice) {
-          return false
-        }
-        if (filters?.maxPrice && listing?.price > filters?.maxPrice) {
-          return false
-        }
-
-        // Area filter
-        if (filters?.minArea && (listing?.area ?? 0) < filters?.minArea) {
-          return false
-        }
-        if (filters?.maxArea && (listing?.area ?? 0) > filters?.maxArea) {
-          return false
-        }
-
-        // Bedrooms filter
-        if (
-          filters?.minBedrooms &&
-          (listing?.bedrooms ?? 0) < filters?.minBedrooms
-        ) {
-          return false
-        }
-        if (
-          filters?.maxBedrooms &&
-          (listing?.bedrooms ?? 0) > filters?.maxBedrooms
-        ) {
-          return false
-        }
-
-        // Bathrooms filter
-        if (filters?.bathrooms && listing?.bathrooms !== filters?.bathrooms) {
-          return false
-        }
-
-        // Verified filter
-        if (
-          filters?.verified !== undefined &&
-          listing?.verified !== filters?.verified
-        ) {
-          return false
-        }
-
-        // Keyword search
-        if (filters?.keyword) {
-          const keyword = filters?.keyword.toLowerCase()
-          const searchText =
-            `${listing?.title} ${listing?.description}`.toLowerCase()
-          if (!searchText.includes(keyword)) {
-            return false
-          }
-        }
-
-        return true
-      })
+      const filteredData = allMockData.filter((listing) =>
+        matchesFilters(listing, filters),
+      )
 
       // Pagination
       const totalCount = filteredData.length
@@ -118,47 +142,7 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
       const endIndex = startIndex + pageSize
       const paginatedData = filteredData.slice(startIndex, endIndex)
 
-      const filtersKey = JSON.stringify(filters)
-      if (lastPushedFiltersRef.current !== filtersKey) {
-        lastPushedFiltersRef.current = filtersKey
-        const amenityIds = filters.amenityIds
-        pushQueryParams(
-          router,
-          {
-            categoryId: filters.categoryId ?? null,
-            productType: filters.productType ?? null,
-            keyword: filters.keyword || null,
-            minPrice: filters.minPrice ?? null,
-            maxPrice: filters.maxPrice ?? null,
-            minArea: filters.minArea ?? null,
-            maxArea: filters.maxArea ?? null,
-            minBedrooms: filters.minBedrooms ?? null,
-            maxBedrooms: filters.maxBedrooms ?? null,
-            bathrooms: filters.bathrooms ?? null,
-            verified: filters.verified || null,
-            direction: filters.direction ?? null,
-            electricityPrice: filters.electricityPrice ?? null,
-            waterPrice: filters.waterPrice ?? null,
-            internetPrice: filters.internetPrice ?? null,
-            serviceFee: filters.serviceFee ?? null,
-            amenityIds:
-              amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
-            provinceId: filters.provinceId ?? null,
-            districtId: filters.districtId ?? null,
-            wardId: filters.wardId ?? null,
-            isLegacy: filters.isLegacy ?? null,
-            latitude: filters.latitude ?? null,
-            longitude: filters.longitude ?? null,
-            sortBy: filters.sortBy ?? null,
-            page: null,
-          },
-          {
-            pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
-            shallow: false,
-            scroll: true,
-          },
-        )
-      }
+      pushFiltersToQuery(filters)
 
       return {
         code: 'SUCCESS',
@@ -175,7 +159,7 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
         },
       }
     },
-    [allMockData, router],
+    [allMockData, matchesFilters, pushFiltersToQuery],
   )
 
   return (

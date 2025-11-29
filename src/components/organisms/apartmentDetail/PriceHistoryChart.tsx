@@ -79,8 +79,8 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
       lowest: item.newPrice,
     }))
 
-    const currentPrice = sorted[sorted.length - 1]?.newPrice || 0
-    const firstPrice = sorted[0]?.newPrice || 0
+    const currentPrice = sorted.at(-1)?.newPrice || 0
+    const firstPrice = sorted.at(0)?.newPrice || 0
     const changePercentage =
       firstPrice > 0
         ? Math.round(((currentPrice - firstPrice) / firstPrice) * 100)

@@ -80,16 +80,18 @@ const ListSearch: React.FC<ListSearchProps> = ({
   const showSearchButton = mode === 'manual' && inputValue !== filters.keyword
   const showClearButton =
     inputValue && (mode === 'debounce' || mode === 'manual')
-  const rightPadding = showSearchButton
-    ? 'pr-20'
-    : showClearButton
-      ? 'pr-10'
-      : 'pr-3'
-  const loadingRight = showSearchButton
-    ? 'right-16'
-    : showClearButton
-      ? 'right-10'
-      : 'right-3'
+  const getRightPadding = () => {
+    if (showSearchButton) return 'pr-20'
+    if (showClearButton) return 'pr-10'
+    return 'pr-3'
+  }
+  const getLoadingRight = () => {
+    if (showSearchButton) return 'right-16'
+    if (showClearButton) return 'right-10'
+    return 'right-3'
+  }
+  const rightPadding = getRightPadding()
+  const loadingRight = getLoadingRight()
 
   return (
     <div className={classNames('relative flex-1', className)}>
