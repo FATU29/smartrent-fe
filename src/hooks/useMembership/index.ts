@@ -48,8 +48,12 @@ export const useMyMembership = (userId: string | undefined) => {
       return data || null
     },
     enabled: !!userId,
-    staleTime: 2 * 60 * 1000, // Shorter cache for user-specific data
+    staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
+    refetchOnMount: false, // Prevent refetch on component mount if data exists
+    refetchOnReconnect: false, // Prevent refetch on reconnect
+    retry: 1, // Limit retry attempts
   })
 }
 

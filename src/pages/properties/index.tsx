@@ -1,7 +1,6 @@
 import React, { useCallback, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { GetServerSideProps } from 'next'
-import { AxiosError } from 'axios'
 import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
@@ -16,7 +15,6 @@ import {
   ListingSearchResponse,
 } from '@/api/types/property.type'
 import type { ApiResponse } from '@/configs/axios/types'
-import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@/contexts/list/index.type'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import { ListingService } from '@/api/services/listing.service'
 import {
@@ -46,12 +44,15 @@ const ResidentialPropertiesPage: NextPageWithLayout<
   const pushFiltersToQuery = useCallback(
     (filters: ListingFilterRequest) => {
       const filtersKey = JSON.stringify(filters)
-      if (lastPushedFiltersRef.current === filtersKey) return
+      if (lastPushedFiltersRef.current === filtersKey) {
+        return
+      }
       lastPushedFiltersRef.current = filtersKey
       const amenityIds = filters.amenityIds
       pushQueryParams(
         router,
         {
+          userId: filters.userId ?? null,
           categoryId: filters.categoryId ?? null,
           productType: filters.productType ?? null,
           keyword: filters.keyword || null,
@@ -77,8 +78,8 @@ const ResidentialPropertiesPage: NextPageWithLayout<
           latitude: filters.latitude ?? null,
           longitude: filters.longitude ?? null,
           sortBy: filters.sortBy ?? null,
-          page: filters.page ?? DEFAULT_PAGE,
-          size: filters.size ?? DEFAULT_PER_PAGE,
+          page: filters.page ?? null,
+          size: filters.size ?? null,
         },
         {
           pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
@@ -95,16 +96,12 @@ const ResidentialPropertiesPage: NextPageWithLayout<
     async (
       filters: ListingFilterRequest,
     ): Promise<ApiResponse<ListingSearchResponse<ListingDetail>>> => {
-      // Map frontend filters to backend request
       const backendRequest = mapFrontendToBackendRequest(filters)
 
-      // Call backend API
       const backendResponse = await ListingService.search(backendRequest)
 
-      // Push filters to URL
       pushFiltersToQuery(filters)
 
-      // Handle error case
       if (!backendResponse.success || !backendResponse.data) {
         return {
           code: backendResponse.code,
@@ -122,7 +119,6 @@ const ResidentialPropertiesPage: NextPageWithLayout<
         }
       }
 
-      // Map backend response to frontend format
       const frontendData = mapBackendToFrontendResponse(backendResponse.data)
 
       return {
@@ -168,36 +164,16 @@ export const getServerSideProps: GetServerSideProps<
     const serverInstance = createServerAxiosInstance()
 
     const parsedFilters = getFiltersFromQuery(context.query)
+
     const filters: Partial<ListingFilterRequest> = {
       ...parsedFilters,
-      page: parsedFilters.page ?? DEFAULT_PAGE,
-      size: parsedFilters.size ?? 20,
     }
 
-    console.log('[SSR Properties] Filters:', JSON.stringify(filters, null, 2))
-
     const backendRequest = mapFrontendToBackendRequest(filters)
-    console.log(
-      '[SSR Properties] Backend Request:',
-      JSON.stringify(backendRequest, null, 2),
-    )
 
     const response = await ListingService.search(backendRequest, serverInstance)
 
-    console.log('[SSR Properties] API Response:', {
-      success: response.success,
-      code: response.code,
-      dataExists: !!response?.data,
-      listingsCount: response.data?.listings?.length || 0,
-    })
-
     if (!response.success || !response.data) {
-      console.warn('[SSR Properties] API call failed or no data:', {
-        success: response.success,
-        code: response.code,
-        message: response.message,
-      })
-
       return {
         props: {
           initialData: [],
@@ -212,36 +188,17 @@ export const getServerSideProps: GetServerSideProps<
       }
     }
 
-    // Map backend response to frontend format
     const frontendData = mapBackendToFrontendResponse(response.data)
-
-    console.log('[SSR Properties] Success:', {
-      listingsCount: frontendData.listings.length,
-      totalCount: frontendData.pagination.totalCount,
-      currentPage: frontendData.pagination.currentPage,
-      totalPages: frontendData.pagination.totalPages,
-    })
 
     return {
       props: {
-        initialData: frontendData.listings,
-        initialPagination: frontendData.pagination,
+        initialData: frontendData?.listings,
+        initialPagination: frontendData?.pagination,
         initialFilters: filters,
       },
     }
   } catch (error) {
     console.error('[SSR Properties] Error fetching listings:', error)
-
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as AxiosError
-      console.error('[SSR Properties] API Error Details:', {
-        status: axiosError.response?.status,
-        statusText: axiosError.response?.statusText,
-        data: axiosError.response?.data,
-        url: axiosError.config?.url,
-        method: axiosError.config?.method,
-      })
-    }
 
     // Return empty data on error
     return {

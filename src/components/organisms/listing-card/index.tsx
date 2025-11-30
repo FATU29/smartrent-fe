@@ -15,7 +15,7 @@ import {
   LISTING_CARD_CONFIG,
   LISTING_CARD_ANIMATIONS,
 } from './index.constants'
-import { ListingOwnerDetail } from '@/api/types'
+import { ListingOwnerDetail, POST_STATUS, PostStatus } from '@/api/types'
 
 export interface ListingCardProps {
   property: ListingOwnerDetail
@@ -74,36 +74,42 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const firstImage = images?.[0]?.url
   const thumbnailImage = primaryImage || firstImage
 
-  // Extract address
   const { fullNewAddress: newAddress, fullAddress: legacyAddress } =
     address || {}
   const displayAddress = newAddress || legacyAddress || 'N/A'
 
-  // Derived logic based on ListingOwnerDetail
   const isExpired = expired || false
   const hasVipPackage = vipType && vipType !== 'NORMAL'
   const showRank = rankOfVipType > 0
   const showPromoteButton = !hasVipPackage
   const showRepostButton = isExpired
 
-  // VipType is already matching PackageType (NORMAL, SILVER, GOLD, DIAMOND)
   const packageType = vipType
 
-  // Map PostStatus to StatusType
-  const getStatusType = (status?: string): string | undefined => {
-    if (!status) return undefined
-    const mapping: Record<string, string> = {
-      DISPLAYING: 'active',
-      EXPIRED: 'expired',
-      NEAR_EXPIRED: 'expiring',
-      PENDING_APPROVAL: 'pending',
-      APPROVED: 'review',
-      PENDING_PAYMENT: 'payment',
-      REJECTED: 'rejected',
-      VERIFIED: 'active',
-      ALL: 'active',
-    }
-    return mapping[status] || 'pending'
+  type StatusBadgeType =
+    | 'active'
+    | 'expired'
+    | 'expiring'
+    | 'pending'
+    | 'review'
+    | 'payment'
+    | 'rejected'
+    | 'archived'
+
+  const statusMapping: Record<PostStatus, StatusBadgeType> = {
+    [POST_STATUS.ALL]: 'active',
+    [POST_STATUS.EXPIRED]: 'expired',
+    [POST_STATUS.EXPIRED_SOON]: 'expiring',
+    [POST_STATUS.DISPLAYING]: 'active',
+    [POST_STATUS.IN_REVIEW]: 'review',
+    [POST_STATUS.PENDING_PAYMENT]: 'payment',
+    [POST_STATUS.REJECTED]: 'rejected',
+    [POST_STATUS.VERIFIED]: 'active',
+  }
+
+  const getStatusType = (status?: PostStatus): StatusBadgeType | undefined => {
+    if (status === undefined || status === null) return undefined
+    return statusMapping[status]
   }
 
   const statusType = getStatusType(status)

@@ -45,7 +45,6 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       propertyInfo.mediaIds !== undefined ||
       propertyInfo.postDate !== undefined ||
       propertyInfo.durationDays !== undefined ||
-      propertyInfo.benefitsMembership !== undefined ||
       propertyInfo.isDraft !== undefined
     )
   }, [propertyInfo])

@@ -9,6 +9,7 @@ import { MapPin, Loader2 } from 'lucide-react'
 import { useNewProvinces, useNewWardsInfinite } from '@/hooks/useAddress'
 import { AddressService } from '@/api/services/address.service'
 import { LegacyAddressSelector } from './LegacyAddressSelector'
+import { useDebounce } from '@/hooks/useDebounce'
 import type { ListingAddress } from '@/api/types'
 
 export interface AddressInputProps {
@@ -23,10 +24,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   const tAddress = useTranslations('createPost.sections.propertyInfo.address')
   const tRoot = useTranslations('createPost.sections.propertyInfo')
 
-  // Init state hook
-  const [isGeocoding, setIsGeocoding] = useState(false)
-  const [wardSearchKeyword, setWardSearchKeyword] = useState<string>('')
-
   // Init context hook
   const {
     propertyInfo,
@@ -36,6 +33,16 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     updatePropertyInfo,
     updateFulltextAddress,
   } = useCreatePost()
+
+  // Init state hook
+  const [isGeocoding, setIsGeocoding] = useState(false)
+  const [wardSearchKeyword, setWardSearchKeyword] = useState<string>('')
+  const [streetInput, setStreetInput] = useState<string>(
+    propertyInfo?.address?.new?.street || '',
+  )
+
+  // Debounce street input to optimize performance
+  const debouncedStreet = useDebounce(streetInput, 500)
 
   // Extract province code to avoid unnecessary re-renders
   const provinceCode = useMemo(
@@ -72,7 +79,32 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     return street ? `${street}, ${legacyText}` : legacyText
   }, [propertyInfo?.address?.new?.street, fulltextAddress?.legacyAddressText])
 
-  // Init event handlers
+  // Update property info when debounced street value changes
+  useEffect(() => {
+    if (debouncedStreet !== propertyInfo?.address?.new?.street) {
+      const prev = propertyInfo.address
+      const nextAddress: ListingAddress = {
+        legacy: prev?.legacy,
+        new: {
+          provinceCode: (prev?.new?.provinceCode as string) || '',
+          wardCode: (prev?.new?.wardCode as string) || '',
+          street: debouncedStreet,
+        },
+        latitude: prev?.latitude ?? 0,
+        longitude: prev?.longitude ?? 0,
+      }
+      updatePropertyInfo({ address: nextAddress })
+    }
+  }, [debouncedStreet])
+
+  // Sync local state with external updates
+  useEffect(() => {
+    const currentStreet = propertyInfo?.address?.new?.street || ''
+    if (currentStreet !== streetInput) {
+      setStreetInput(currentStreet)
+    }
+  }, [propertyInfo?.address?.new?.street])
+
   const handleProvinceChange = (value: string) => {
     updateFulltextAddress({
       newProvinceCode: value,
@@ -80,13 +112,42 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       legacyAddressId: '',
       propertyAddressEdited: false,
     })
+
+    // Update property info address.new
+    const prev = propertyInfo.address
+    const nextAddress: ListingAddress = {
+      legacy: prev?.legacy,
+      new: {
+        provinceCode: value,
+        wardCode: '', // Reset ward when province changes
+        street: prev?.new?.street || '',
+      },
+      latitude: prev?.latitude ?? 0,
+      longitude: prev?.longitude ?? 0,
+    }
+    updatePropertyInfo({ address: nextAddress })
   }
 
   const handleWardChange = (value: string) => {
+    // Update UI state
     updateFulltextAddress({
       newWardCode: value,
       legacyAddressId: '',
     })
+
+    // Update property info address.new
+    const prev = propertyInfo.address
+    const nextAddress: ListingAddress = {
+      legacy: prev?.legacy,
+      new: {
+        provinceCode: prev?.new?.provinceCode as string,
+        wardCode: value,
+        street: prev?.new?.street || '',
+      },
+      latitude: prev?.latitude ?? 0,
+      longitude: prev?.longitude ?? 0,
+    }
+    updatePropertyInfo({ address: nextAddress })
   }
 
   const handleWardSearchChange = (value: string) => {
@@ -132,7 +193,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       const response = await AddressService.geocode(addressForGeocode)
 
       if (response?.data) {
-        const { latitude, longitude } = response.data
+        const { latitude, longitude } = response?.data
         const prev = propertyInfo.address
         updatePropertyInfo({
           address: {
@@ -290,20 +351,9 @@ export const AddressInput: React.FC<AddressInputProps> = ({
             placeholder={
               tRoot('streetPlaceholder') || 'Ví dụ: Số 1 Trần Hưng Đạo'
             }
-            value={propertyInfo?.address?.new?.street || ''}
+            value={streetInput}
             onChange={(e) => {
-              const prev = propertyInfo.address
-              const nextAddress: ListingAddress = {
-                legacy: prev?.legacy,
-                new: {
-                  provinceCode: prev?.new?.provinceCode as string,
-                  wardCode: prev?.new?.wardCode as string,
-                  street: e.target.value,
-                },
-                latitude: prev?.latitude ?? 0,
-                longitude: prev?.longitude ?? 0,
-              }
-              updatePropertyInfo({ address: nextAddress })
+              setStreetInput(e.target.value)
             }}
           />
         </div>

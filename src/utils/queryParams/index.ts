@@ -1,5 +1,4 @@
 import type { NextRouter } from 'next/router'
-import type { ParsedUrlQuery, ParsedUrlQueryInput } from 'querystring'
 import { ListingFilterRequest } from '@/api/types'
 
 export type PushQueryOptions = {
@@ -41,7 +40,7 @@ export function pushQueryParams(
     removeEmptyString = true,
   } = options || {}
 
-  const nextQuery: ParsedUrlQueryInput = { ...router.query }
+  const nextQuery = { ...router.query }
 
   for (const [key, raw] of Object.entries(params)) {
     const value = toQueryValue(raw)
@@ -69,7 +68,7 @@ export function pushQueryParams(
  * Helper to parse string query params
  */
 function parseStringParam(
-  query: ParsedUrlQuery,
+  query: Record<string, unknown>,
   key: string,
 ): string | undefined {
   return query[key] ? (query[key] as string) : undefined
@@ -79,7 +78,7 @@ function parseStringParam(
  * Helper to parse number query params
  */
 function parseNumberParam(
-  query: ParsedUrlQuery,
+  query: Record<string, unknown>,
   key: string,
 ): number | undefined {
   const value = parseStringParam(query, key)
@@ -90,7 +89,7 @@ function parseNumberParam(
  * Helper to parse boolean query params
  */
 function parseBooleanParam(
-  query: ParsedUrlQuery,
+  query: Record<string, unknown>,
   key: string,
 ): boolean | undefined {
   const value = parseStringParam(query, key)
@@ -99,11 +98,8 @@ function parseBooleanParam(
   return undefined
 }
 
-/**
- * Parse URL query params into ListingFilterRequest format
- */
 export function getFiltersFromQuery(
-  query: ParsedUrlQuery,
+  query: Record<string, unknown>,
 ): Partial<ListingFilterRequest> {
   const filters: Partial<ListingFilterRequest> = {}
 
@@ -206,10 +202,10 @@ export function getFiltersFromQuery(
       filters.wardId = wardIdParam
     }
   }
+
   filters.latitude = parseNumberParam(query, 'latitude')
   filters.longitude = parseNumberParam(query, 'longitude')
 
-  // Pagination
   filters.page = parseNumberParam(query, 'page')
   filters.size = parseNumberParam(query, 'size')
 
@@ -219,8 +215,12 @@ export function getFiltersFromQuery(
     filters.sortBy = sortByParam as ListingFilterRequest['sortBy']
   }
 
-  // Remove undefined values
-  return Object.fromEntries(
+  const userIdParam = parseStringParam(query, 'userId')
+  filters.userId = userIdParam
+
+  const cleanedFilters = Object.fromEntries(
     Object.entries(filters).filter(([, v]) => v !== undefined),
   ) as Partial<ListingFilterRequest>
+
+  return cleanedFilters
 }

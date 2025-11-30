@@ -67,11 +67,11 @@ export const validateStep3 = (
 ): boolean => {
   if (!propertyInfo) return false
 
-  const hasVip = !!propertyInfo.vipType && !!propertyInfo.durationDays
-  const hasBenefit = Array.isArray(propertyInfo.benefitsMembership)
-    ? propertyInfo.benefitsMembership.length > 0
+  const hasVip = !!propertyInfo?.vipType && !!propertyInfo?.durationDays
+  const hasBenefit = Array.isArray(propertyInfo?.benefitIds)
+    ? propertyInfo.benefitIds?.length > 0
     : false
-  const hasStart = !!propertyInfo.postDate
+  const hasStart = !!propertyInfo?.postDate
 
   return hasStart && (hasVip || hasBenefit)
 }

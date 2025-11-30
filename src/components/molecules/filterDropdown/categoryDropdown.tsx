@@ -31,8 +31,8 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
   const categoryOptions = [
     {
       value: 'all',
-      displayValue: tCommon('propertyTypes.0'), // "Tất cả" translation
-      label: tCommon('propertyTypes.0'), // "Tất cả" translation
+      displayValue: t('all'), // "Tất cả" / "All Types"
+      label: t('all'),
       icon: Home,
     },
     ...CATEGORIES.map((category) => ({

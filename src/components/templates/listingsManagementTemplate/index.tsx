@@ -149,47 +149,6 @@ export interface ListingsManagementTemplateProps {
   children?: React.ReactNode
 }
 
-export const ListingsManagementTemplate: React.FC<
-  ListingsManagementTemplateProps
-> = ({ children }) => {
-  const [status, setStatus] = useState<PostStatus>(POST_STATUS.ALL)
-  const [filterOpen, setFilterOpen] = useState(false)
-
-  // Calculate counts for each status from MOCK_LISTINGS
-  const counts = useMemo(() => {
-    const statusCounts: Partial<Record<PostStatus, number>> = {
-      [POST_STATUS.ALL]: 1,
-    }
-
-    return statusCounts
-  }, [])
-
-  return (
-    <div className='p-3 sm:p-4'>
-      <div className='mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6'>
-        <ListingStatusFilterResponsive
-          value={status}
-          counts={counts}
-          onChange={(newStatus) => {
-            console.log('Status filter changed:', newStatus)
-            setStatus(newStatus)
-          }}
-        />
-        {children}
-        <ToolbarWithBadge
-          total={1}
-          onFilterClick={() => {
-            console.log('Filter clicked')
-            setFilterOpen(true)
-          }}
-        />
-        <ListingsWithPagination currentStatus={status} />
-        <FilterDialogWrapper open={filterOpen} onOpenChange={setFilterOpen} />
-      </div>
-    </div>
-  )
-}
-
 const ToolbarWithBadge: React.FC<{
   total: number
   onFilterClick: () => void
@@ -230,5 +189,54 @@ const FilterDialogWrapper: React.FC<{
       open={open}
       title={t('filter.title')}
     />
+  )
+}
+
+export const ListingsManagementTemplate: React.FC<
+  ListingsManagementTemplateProps
+> = ({ children }) => {
+  const [status, setStatus] = useState<PostStatus>(POST_STATUS.ALL)
+  const [filterOpen, setFilterOpen] = useState(false)
+  const { items: listings } = useListContext<ListingOwnerDetail>()
+
+  // Calculate counts for each status from actual listings
+  const counts = useMemo(() => {
+    const statusCounts: Partial<Record<PostStatus, number>> = {
+      [POST_STATUS.ALL]: listings.length,
+    }
+
+    // Count listings by status
+    listings.forEach((listing) => {
+      if (listing.status) {
+        statusCounts[listing.status] = (statusCounts[listing.status] || 0) + 1
+      }
+    })
+
+    return statusCounts
+  }, [listings])
+
+  return (
+    <div className='p-3 sm:p-4'>
+      <div className='mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6'>
+        <ListingStatusFilterResponsive
+          value={status}
+          counts={counts}
+          onChange={(newStatus) => {
+            console.log('Status filter changed:', newStatus)
+            setStatus(newStatus)
+          }}
+        />
+        {children}
+        <ToolbarWithBadge
+          total={listings.length}
+          onFilterClick={() => {
+            console.log('Filter clicked')
+            setFilterOpen(true)
+          }}
+        />
+        <ListingsWithPagination currentStatus={status} />
+        <FilterDialogWrapper open={filterOpen} onOpenChange={setFilterOpen} />
+      </div>
+    </div>
   )
 }

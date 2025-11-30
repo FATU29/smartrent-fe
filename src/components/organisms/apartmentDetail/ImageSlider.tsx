@@ -41,8 +41,18 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
 
   if (sortedMedia.length === 0) {
     return (
-      <div className='w-full aspect-[16/10] bg-gray-200 rounded-xl flex items-center justify-center'>
-        <span className='text-gray-500 text-sm'>{t('noMediaAvailable')}</span>
+      <div className='relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-gray-900 shadow-lg'>
+        <ImageAtom
+          src={DEFAULT_IMAGE}
+          defaultImage={DEFAULT_IMAGE}
+          alt={t('noMediaAvailable')}
+          className='w-full h-full object-cover object-center'
+        />
+        <div className='absolute inset-0 bg-black/30 flex items-center justify-center'>
+          <span className='text-white text-sm font-medium bg-black/50 px-4 py-2 rounded-lg backdrop-blur-sm'>
+            {t('noMediaAvailable')}
+          </span>
+        </div>
       </div>
     )
   }

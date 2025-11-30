@@ -4,7 +4,7 @@ import * as yup from 'yup'
 
 // Shared property info validation fields aligned with CreateListingRequest
 const getPropertyInfoFields = () => ({
-  propertyType: yup
+  productType: yup
     .string()
     .required('propertyTypeRequired')
     .oneOf(['APARTMENT', 'HOUSE', 'ROOM', 'STUDIO'], 'propertyTypeInvalid'),
@@ -36,14 +36,12 @@ const getPropertyInfoFields = () => ({
     .string()
     .required('listingTitleRequired')
     .trim()
-    .min(10, 'listingTitleMinLength')
-    .max(100, 'listingTitleMaxLength'),
+    .min(30, 'listingTitleMinLength'),
   description: yup
     .string()
     .required('propertyDescriptionRequired')
     .trim()
-    .min(50, 'propertyDescriptionMinLength')
-    .max(2000, 'propertyDescriptionMaxLength'),
+    .min(70, 'propertyDescriptionMinLength'),
   // Utilities & Structure
   waterPrice: yup
     .string()

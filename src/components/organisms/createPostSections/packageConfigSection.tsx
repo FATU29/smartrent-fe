@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { useVipTiers } from '@/hooks/useVipTiers'
-import type { VipTier } from '@/api/types/vip-tier.type'
+import { useMyMembership } from '@/hooks/useMembership'
+import { useAuthStore } from '@/store/auth/index.store'
+import type { UserBenefit } from '@/api/types/membership.type'
+import type { DurationDays, VipType } from '@/api/types/property.type'
 import { Button } from '@/components/atoms/button'
 import { DatePicker } from '@/components/atoms'
 import {
@@ -15,6 +18,7 @@ import {
 } from '@/components/atoms/card'
 import { Label } from '@/components/atoms/label'
 import { Typography } from '@/components/atoms/typography'
+import { Switch } from '@/components/atoms/switch'
 import {
   Calendar,
   Tag,
@@ -24,10 +28,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { SelectPromotionDialog } from '@/components/molecules/createPostSections/SelectPromotionDialog'
-import type { BenefitType, UserBenefit } from '@/api/types/membership.type'
-import type { DurationDays, VipType } from '@/api/types/property.type'
-import { Switch } from '@/components/atoms/switch'
+import { SelectBenefitDialog } from '@/components/molecules/createPostSections/SelectPromotionDialog'
 
 interface PackageConfigSectionProps {
   className?: string
@@ -38,29 +39,56 @@ interface DurationOption {
   price: number
 }
 
+const TIER_ICONS: Record<string, string> = {
+  NORMAL: '📄',
+  SILVER: '🥈',
+  GOLD: '🥇',
+  DIAMOND: '💎',
+}
+
+const TIER_BACKGROUNDS: Record<string, string> = {
+  NORMAL: 'bg-gradient-to-br from-gray-400 to-gray-600',
+  SILVER: 'bg-gradient-to-br from-cyan-400 to-blue-500',
+  GOLD: 'bg-gradient-to-br from-yellow-400 to-orange-500',
+  DIAMOND: 'bg-gradient-to-br from-purple-500 to-pink-500',
+}
+
 const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   className,
 }) => {
   const t = useTranslations('createPost.sections.packageConfig')
   const { propertyInfo, updatePropertyInfo } = useCreatePost()
   const { setValue, trigger } = useFormContext()
+  const { user } = useAuthStore()
 
-  // Fetch VIP tiers using React Query
   const { data: vipTiers = [], isLoading, isError, error } = useVipTiers()
 
-  const [promoOpen, setPromoOpen] = useState(false)
+  const userId = useMemo(() => user?.userId, [user?.userId])
+  const { data: membership, isLoading: isMembershipLoading } =
+    useMyMembership(userId)
 
-  // Derive state from propertyInfo
-  const selectedTier = vipTiers.find((t) => t.tierCode === propertyInfo.vipType)
-  const selectedTierId = selectedTier?.tierId ?? null
+  const [benefitDialogOpen, setBenefitDialogOpen] = useState(false)
+
+  const useMembershipQuota = propertyInfo?.useMembershipQuota ?? false
+
+  const hasBenefits =
+    !!propertyInfo?.benefitIds && propertyInfo.benefitIds.length > 0
+  const useMembership = useMembershipQuota || hasBenefits
+
+  const selectedTier = useMemo(
+    () => vipTiers.find((t) => t.tierCode === propertyInfo.vipType),
+    [vipTiers, propertyInfo.vipType],
+  )
   const selectedDuration = propertyInfo.durationDays ?? 10
-  const startDate = propertyInfo.postDate
-    ? typeof propertyInfo.postDate === 'string'
+
+  const startDate = useMemo(() => {
+    if (!propertyInfo.postDate) return new Date().toISOString().split('T')[0]
+    return typeof propertyInfo.postDate === 'string'
       ? propertyInfo.postDate.split('T')[0]
       : new Date(propertyInfo.postDate).toISOString().split('T')[0]
-    : new Date().toISOString().split('T')[0]
+  }, [propertyInfo.postDate])
 
-  // Auto-select first tier when data loads and no tier is selected
+  // Initialize default values
   useEffect(() => {
     if (vipTiers.length > 0 && !propertyInfo.vipType) {
       const firstTier = vipTiers[0]
@@ -72,15 +100,15 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         postDate: defaultStartDate,
       })
 
-      setValue('vipType' as never, firstTier.tierCode as never, {
+      setValue('vipType', firstTier.tierCode, {
         shouldValidate: true,
         shouldDirty: true,
       })
-      setValue('durationDays' as never, 10 as never, {
+      setValue('durationDays', 10, {
         shouldValidate: true,
         shouldDirty: true,
       })
-      setValue('postDate' as never, defaultStartDate as never, {
+      setValue('postDate', defaultStartDate, {
         shouldValidate: true,
         shouldDirty: true,
       })
@@ -88,129 +116,116 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
     }
   }, [vipTiers, propertyInfo.vipType, updatePropertyInfo, setValue, trigger])
 
-  // Get duration options for selected tier
-  const getDurationOptions = (tier: VipTier | undefined): DurationOption[] => {
-    if (!tier) return []
+  const durationOptions = useMemo((): DurationOption[] => {
+    if (!selectedTier) return []
     return [
-      { days: 10, price: tier.price10Days },
-      { days: 15, price: tier.price15Days },
-      { days: 30, price: tier.price30Days },
+      { days: 10, price: selectedTier.price10Days },
+      { days: 15, price: selectedTier.price15Days },
+      { days: 30, price: selectedTier.price30Days },
     ]
-  }
+  }, [selectedTier])
 
-  const durationOptions = getDurationOptions(selectedTier)
-  const selectedDurationOption = durationOptions.find(
-    (d) => d.days === selectedDuration,
-  )
-  const totalPrice = selectedDurationOption?.price || 0
+  const totalPrice = useMemo(() => {
+    if (useMembership) return 0
+    const option = durationOptions.find((d) => d.days === selectedDuration)
+    return option?.price || 0
+  }, [useMembership, durationOptions, selectedDuration])
 
-  // Icon mapping for tier codes
-  const getTierIcon = (tierCode: string) => {
-    const icons: Record<string, string> = {
-      NORMAL: '📄',
-      SILVER: '🥈',
-      GOLD: '🥇',
-      DIAMOND: '💎',
-    }
-    return icons[tierCode] || '📄'
-  }
+  const handleTierSelect = useCallback(
+    (tierId: number) => {
+      const tier = vipTiers.find((t) => t.tierId === tierId)
+      if (!tier) return
 
-  // Icon background mapping
-  const getTierIconBg = (tierCode: string) => {
-    const backgrounds: Record<string, string> = {
-      NORMAL: 'bg-gradient-to-br from-gray-400 to-gray-600',
-      SILVER: 'bg-gradient-to-br from-cyan-400 to-blue-500',
-      GOLD: 'bg-gradient-to-br from-yellow-400 to-orange-500',
-      DIAMOND: 'bg-gradient-to-br from-purple-500 to-pink-500',
-    }
-    return (
-      backgrounds[tierCode] || 'bg-gradient-to-br from-gray-400 to-gray-600'
-    )
-  }
+      updatePropertyInfo({
+        vipType: tier.tierCode as VipType,
+        durationDays: 10,
+      })
 
-  const handleTierSelect = (tierId: number) => {
-    const tier = vipTiers.find((t) => t.tierId === tierId)
-    if (!tier) return
-
-    updatePropertyInfo({
-      vipType: tier.tierCode as VipType,
-      durationDays: 10, // Reset to 10 days when switching tiers
-    })
-
-    setValue('vipType' as never, tier.tierCode as never, {
-      shouldValidate: true,
-      shouldDirty: true,
-    })
-    setValue('durationDays' as never, 10 as never, {
-      shouldValidate: true,
-      shouldDirty: true,
-    })
-    trigger()
-
-    setValue('vipType' as never, tier.tierCode as never, {
-      shouldValidate: true,
-      shouldDirty: true,
-    })
-    setValue('durationDays' as never, 10 as never, {
-      shouldValidate: true,
-      shouldDirty: true,
-    })
-    trigger()
-  }
-
-  const handleDurationSelect = (days: number) => {
-    updatePropertyInfo({ durationDays: days as DurationDays })
-    setValue('durationDays', days, {
-      shouldValidate: true,
-      shouldDirty: true,
-    })
-    trigger()
-  }
-
-  const mapBenefitToTierCode = (type: BenefitType): string | undefined => {
-    switch (type) {
-      case 'POST_STANDARD':
-        return 'NORMAL'
-      case 'POST_SILVER':
-        return 'SILVER'
-      case 'POST_GOLD':
-        return 'GOLD'
-      default:
-        return undefined
-    }
-  }
-
-  const handleApplyPromotion = (benefit: UserBenefit) => {
-    const tierCode = mapBenefitToTierCode(benefit.benefitType as BenefitType)
-    const start = propertyInfo.postDate
-      ? typeof propertyInfo.postDate === 'string'
-        ? propertyInfo.postDate
-        : new Date(propertyInfo.postDate).toISOString()
-      : new Date().toISOString()
-
-    updatePropertyInfo({
-      vipType: tierCode as VipType | undefined,
-      benefitsMembership: [
-        {
-          benefitId: benefit.userBenefitId,
-          membershipId: 0,
-        },
-      ],
-      postDate: start,
-    })
-
-    if (tierCode) {
-      setValue('vipType' as never, tierCode as never, {
+      setValue('vipType', tier.tierCode, {
         shouldValidate: true,
         shouldDirty: true,
       })
-    }
-    setValue('postDate' as never, start as never, {
-      shouldValidate: true,
-      shouldDirty: true,
-    })
-    trigger()
-  }
+      setValue('durationDays', 10, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      trigger()
+    },
+    [vipTiers, updatePropertyInfo, setValue, trigger],
+  )
+
+  const handleDurationSelect = useCallback(
+    (days: number) => {
+      updatePropertyInfo({ durationDays: days as DurationDays })
+      setValue('durationDays', days, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      trigger()
+    },
+    [updatePropertyInfo, setValue, trigger],
+  )
+
+  const handleDateChange = useCallback(
+    (date?: string) => {
+      const newStart = date || new Date().toISOString().split('T')[0]
+      const fullDate = new Date(newStart).toISOString()
+
+      updatePropertyInfo({ postDate: fullDate })
+      setValue('postDate', fullDate, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      trigger()
+    },
+    [updatePropertyInfo, setValue, trigger],
+  )
+
+  const handleToggleMembershipQuota = useCallback(
+    (checked: boolean) => {
+      updatePropertyInfo({
+        useMembershipQuota: checked,
+        durationDays: checked ? 30 : 10,
+      })
+
+      setValue('useMembershipQuota', checked, { shouldDirty: true })
+      setValue('durationDays', checked ? 30 : 10, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+
+      if (!checked && hasBenefits) {
+        updatePropertyInfo({ benefitIds: [] })
+        setValue('benefitIds', [], { shouldDirty: true })
+      }
+      trigger()
+    },
+    [updatePropertyInfo, setValue, trigger],
+  )
+
+  const handleApplyBenefits = useCallback(
+    (benefits: UserBenefit[]) => {
+      const benefitIds = benefits.map((b) => b.userBenefitId)
+      // Selecting benefits implicitly enables quota-like behavior
+      updatePropertyInfo({
+        benefitIds,
+        useMembershipQuota: benefitIds.length > 0,
+        durationDays:
+          benefitIds.length > 0 ? 30 : (propertyInfo.durationDays ?? 10),
+      })
+      setValue('benefitIds', benefitIds, { shouldDirty: true })
+      setValue('useMembershipQuota', benefitIds.length > 0, {
+        shouldDirty: true,
+      })
+      if (benefitIds.length > 0) {
+        setValue('durationDays', 30, {
+          shouldValidate: true,
+          shouldDirty: true,
+        })
+      }
+    },
+    [updatePropertyInfo, setValue, propertyInfo.durationDays],
+  )
 
   if (isLoading) {
     return (
@@ -252,6 +267,24 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       </CardHeader>
 
       <CardContent className='px-0 space-y-6'>
+        {/* Use Membership Quota Toggle */}
+        <Card className='p-6'>
+          <CardContent className='flex items-center justify-between gap-4 p-0'>
+            <div>
+              <Typography className='font-medium text-sm'>
+                {t('useMembershipQuota')}
+              </Typography>
+              <Typography variant='muted' className='text-xs'>
+                {t('useMembershipQuotaDescription')}
+              </Typography>
+            </div>
+            <Switch
+              checked={useMembership}
+              onCheckedChange={handleToggleMembershipQuota}
+            />
+          </CardContent>
+        </Card>
+
         {/* Package Type Selection */}
         <Card>
           <CardHeader>
@@ -263,20 +296,22 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 key={tier.tierId}
                 variant='outline'
                 onClick={() => handleTierSelect(tier.tierId)}
+                disabled={useMembership}
                 className={cn(
                   'relative h-auto p-5 text-left transition-all hover:shadow-lg flex-col items-center sm:items-start',
-                  selectedTierId === tier.tierId &&
+                  selectedTier?.tierId === tier.tierId &&
                     'border-primary bg-primary/5 shadow-md',
+                  useMembership && 'opacity-50 cursor-not-allowed',
                 )}
               >
                 <Card
                   className={cn(
                     'w-12 h-12 rounded-lg flex items-center justify-center text-2xl mb-3 border-0',
-                    getTierIconBg(tier.tierCode),
+                    TIER_BACKGROUNDS[tier.tierCode] || TIER_BACKGROUNDS.NORMAL,
                   )}
                 >
                   <Typography as='span'>
-                    {getTierIcon(tier.tierCode)}
+                    {TIER_ICONS[tier.tierCode] || TIER_ICONS.NORMAL}
                   </Typography>
                 </Card>
                 <Typography
@@ -294,7 +329,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 <Typography className='font-bold text-lg mt-auto text-center sm:text-left w-full break-words'>
                   {tier.pricePerDay.toLocaleString('vi-VN')} đ/{t('perDay')}
                 </Typography>
-                {selectedTierId === tier.tierId && (
+                {selectedTier?.tierId === tier.tierId && (
                   <Card className='absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center border-0 p-0'>
                     <Check className='w-4 h-4 text-primary-foreground' />
                   </Card>
@@ -315,10 +350,12 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 key={option.days}
                 variant='outline'
                 onClick={() => handleDurationSelect(option.days)}
+                disabled={useMembership}
                 className={cn(
                   'relative h-auto p-4 text-left transition-all',
                   selectedDuration === option.days &&
                     'border-primary bg-primary/5',
+                  useMembership && 'opacity-50 cursor-not-allowed',
                 )}
               >
                 <Card className='flex items-center justify-between w-full border-0 shadow-none p-0 bg-transparent'>
@@ -327,7 +364,9 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                       {option.days} {t('days')}
                     </Typography>
                     <Typography variant='muted' className='text-sm'>
-                      {option.price.toLocaleString('vi-VN')} đ
+                      {useMembership
+                        ? t('freePosting')
+                        : `${option.price.toLocaleString('vi-VN')} đ`}
                     </Typography>
                   </CardContent>
                   <Card
@@ -351,23 +390,13 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         {/* Date Selection */}
         <Card className='grid grid-cols-1 sm:grid-cols-2 gap-6 p-6'>
           <CardContent className='space-y-2 p-0'>
-            <Label className='text-sm font-medium'>
+            <Label className='text-sm font-medium flex items-center gap-2'>
               <Calendar className='w-4 h-4' />
               {t('startDate')}
             </Label>
             <DatePicker
               value={startDate}
-              onChange={(date) => {
-                const newStart = date || new Date().toISOString().split('T')[0]
-                const fullDate = new Date(newStart).toISOString()
-
-                updatePropertyInfo({ postDate: fullDate })
-                setValue('postDate' as never, fullDate as never, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
-                trigger()
-              }}
+              onChange={handleDateChange}
               placeholder={t('selectStartDate')}
             />
             {startDate && (
@@ -382,62 +411,42 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
           </CardContent>
 
           <CardContent className='space-y-2 p-0'>
-            <Label className='text-sm font-medium'>
+            <Label className='text-sm font-medium flex items-center gap-2'>
               <Tag className='w-4 h-4' />
               {t('promotionCode')}
             </Label>
             <Button
               variant='link'
               className='text-sm text-primary hover:underline p-0 h-auto flex items-center gap-1'
-              onClick={() => setPromoOpen(true)}
+              onClick={() => setBenefitDialogOpen(true)}
+              disabled={isMembershipLoading || !membership}
             >
               {t('usePromotion')}
               <ChevronRight className='w-4 h-4' />
             </Button>
+            {propertyInfo.benefitIds && propertyInfo.benefitIds.length > 0 && (
+              <Typography variant='muted' className='text-xs'>
+                {t('promotionApplied')}: {propertyInfo.benefitIds.length}{' '}
+                {propertyInfo.benefitIds.length > 1 ? 'benefits' : 'benefit'}
+              </Typography>
+            )}
+            {!membership && !isMembershipLoading && (
+              <Typography variant='muted' className='text-xs text-orange-600'>
+                Bạn chưa có gói hội viên
+              </Typography>
+            )}
           </CardContent>
         </Card>
-        <SelectPromotionDialog
-          open={promoOpen}
-          onOpenChange={setPromoOpen}
-          onApply={handleApplyPromotion}
+
+        <SelectBenefitDialog
+          open={benefitDialogOpen}
+          onOpenChange={setBenefitDialogOpen}
+          onApply={handleApplyBenefits}
+          membershipData={membership}
         />
 
-        {/* Use Membership Quota Toggle */}
-        <Card className='p-6'>
-          <CardContent className='flex items-center justify-between gap-4 p-0'>
-            <div>
-              <Typography className='font-medium text-sm'>
-                {t('useMembershipQuota')}
-              </Typography>
-              <Typography variant='muted' className='text-xs'>
-                {t('useMembershipQuotaDescription')}
-              </Typography>
-            </div>
-            <Switch
-              checked={!!propertyInfo.useMembershipQuota}
-              onCheckedChange={(checked) => {
-                updatePropertyInfo({ useMembershipQuota: checked })
-                setValue('useMembershipQuota' as never, checked as never, {
-                  shouldDirty: true,
-                })
-
-                // When enabling membership quota, set duration to 30 days
-                if (checked) {
-                  updatePropertyInfo({ durationDays: 30 })
-                  setValue('durationDays' as never, 30 as never, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                  trigger()
-                }
-              }}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Summary - Flex Layout */}
+        {/* Summary */}
         <Card className='flex flex-col lg:flex-row gap-6 p-6'>
-          {/* Left Side - Package and Duration Info */}
           <Card className='flex-1 space-y-3 border-0 shadow-none p-0'>
             <Card className='flex justify-between border-0 shadow-none p-0'>
               <Typography variant='muted' className='text-sm'>
@@ -455,19 +464,37 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 {selectedDuration} {t('days')}
               </Typography>
             </Card>
+            {useMembership && (
+              <Card className='flex justify-between border-0 shadow-none p-0'>
+                <Typography variant='muted' className='text-sm'>
+                  {t('usingMembershipQuota')}:
+                </Typography>
+                <Typography className='font-medium text-sm text-green-600'>
+                  {t('freePosting')}
+                </Typography>
+              </Card>
+            )}
           </Card>
 
-          {/* Right Side - Total Price */}
           <Card className='lg:w-[280px] flex flex-col justify-center items-end max-md:items-start border-0 shadow-none p-0'>
             <Typography className='text-base font-semibold mb-2'>
               {t('totalAmount')}
             </Typography>
-            <Typography className='text-3xl font-bold text-primary'>
-              {totalPrice.toLocaleString('vi-VN')} đ
+            <Typography
+              className={cn(
+                'text-3xl font-bold',
+                useMembership ? 'text-green-600' : 'text-primary',
+              )}
+            >
+              {useMembership
+                ? t('freePosting')
+                : `${totalPrice.toLocaleString('vi-VN')} đ`}
             </Typography>
-            <Typography variant='muted' className='text-xs mt-1'>
-              {t('vatIncluded')}
-            </Typography>
+            {!useMembership && (
+              <Typography variant='muted' className='text-xs mt-1'>
+                {t('vatIncluded')}
+              </Typography>
+            )}
           </Card>
         </Card>
       </CardContent>

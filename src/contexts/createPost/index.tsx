@@ -111,7 +111,9 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
 }) => {
   const [propertyInfo, setPropertyInfo] = useState<
     Partial<CreateListingRequest>
-  >({})
+  >({
+    listingType: 'RENT' as any,
+  })
   const [fulltextAddress, setFulltextAddress] = useState<FulltextAddress>({})
   const [mediaIds, setMediaIds] = useState<MediaIds>({})
   const [mediaUrls, setMediaUrls] = useState<MediaUrls>({})

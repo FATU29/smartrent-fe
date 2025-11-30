@@ -1,8 +1,9 @@
 export const propertyTypeOptions = [
+  { value: 'room', label: 'Phòng trọ' },
   { value: 'apartment', label: 'Căn hộ' },
-  { value: 'house', label: 'Nhà riêng' },
-  { value: 'villa', label: 'Biệt thự' },
-  { value: 'studio', label: 'Studio' },
+  { value: 'house', label: 'Nhà' },
+  { value: 'office', label: 'Văn phòng' },
+  { value: 'store', label: 'Mặt bằng/Cửa hàng' },
 ]
 
 export const districtOptions = [

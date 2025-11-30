@@ -1,4 +1,39 @@
 {
+  "actions": {
+    "backHome": "Back to Home",
+    "retry": "Retry",
+    "refresh": "Refresh"
+  },
+  "errors": {
+    "missingRef": "Missing transaction reference.",
+    "loadFailed": "Failed to load transaction status."
+  },
+  "states": {
+    "completed": {
+      "title": "Payment Completed",
+      "desc": "Your payment was successful. Thank you!"
+    },
+    "pending": {
+      "title": "Payment Pending",
+      "desc": "Waiting for confirmation from the payment provider..."
+    },
+    "failed": {
+      "title": "Payment Failed",
+      "desc": "The payment was not successful. Please try again or use another method."
+    },
+    "cancelled": {
+      "title": "Payment Cancelled",
+      "desc": "The payment was cancelled before completion."
+    },
+    "refunded": {
+      "title": "Payment Refunded",
+      "desc": "This payment was refunded."
+    },
+    "unknown": {
+      "title": "Unknown Status",
+      "desc": "Unable to determine payment status."
+    }
+  },
   "common": {
     "or": "Or",
     "loading": "Loading...",
@@ -18,25 +53,50 @@
     "email": "Email",
     "contactInformation": "Contact Information",
     "notAvailable": "Not Available",
-    "listSearch": {
-      "placeholder": "Search...",
-      "searching": "Searching..."
-    },
-    "propertyTypes": {
-      "0": "All",
-      "1": "Room for Rent",
-      "2": "Apartment for Rent",
-      "3": "House for Rent",
-      "4": "Office for Rent",
-      "5": "Store for Rent"
+    "status": {
+      "ALL": "All",
+      "EXPIRED": "Expired",
+      "EXPIRED_SOON": "Expiring Soon",
+      "DISPLAYING": "Active",
+      "IN_REVIEW": "In Review",
+      "PENDING_PAYMENT": "Awaiting Payment",
+      "REJECTED": "Rejected",
+      "VERIFIED": "Verified",
+      "ARCHIVED": "Archived"
     },
     "priceUnits": {
       "MONTH": "Month",
       "YEAR": "Year"
-    }
+    },
+    "error": "Location error",
+    "enableTooltip": "Click to enable location tracking",
+    "disableTooltip": "Click to disable location tracking",
+    "coordinates": "Coordinates",
+    "mediaImagesOrYoutube": "Please add at least 4 images or 1 video",
+    "imagesRequired": "Please upload at least 4 photos if no video is provided. If you have a video, you can proceed without photos.",
+    "imagesTooMany": "You can upload up to 24 photos.",
+    "imageUrlInvalid": "Invalid image URL.",
+    "videoUrlInvalid": "Invalid video URL.",
+    "permissionDenied": "Location permission denied. Please enable location access in both browser settings AND system settings, then restart your browser.",
+    "positionUnavailable": "Location information unavailable. Please enable location services on your device.",
+    "timeout": "Location request timed out. Please try again.",
+    "unknownError": "An unknown error occurred while getting location.",
+    "notSupported": "Location not supported by your browser",
+    "listSearch": {
+      "placeholder": "Search by keyword"
+    },
+    "propertyTypes": {
+      "0": "All Types",
+      "1": "Room",
+      "2": "Apartment",
+      "3": "House",
+      "4": "Office",
+      "5": "Shop"
+    },
+    "checking": "Checking"
   },
   "location": {
-    "label": "Your Location",
+    "label": "Your location",
     "loading": "Getting location...",
     "enabled": "Location enabled",
     "disabled": "Enable location",
@@ -560,13 +620,11 @@
       "propertyType": {
         "title": "Property Type",
         "all": "All Types",
+        "room": "Room",
         "apartment": "Apartment",
-        "studio": "Studio",
-        "villa": "Villa",
         "house": "House",
-        "condo": "Condo",
-        "townhouse": "Townhouse",
-        "penthouse": "Penthouse"
+        "office": "Office",
+        "store": "Shop"
       },
       "priceRange": {
         "title": "Price Range",
@@ -665,6 +723,12 @@
     "uploadNow": "Upload now",
     "createListing": "Create Listing",
     "completeCurrentStep": "Please complete this step before continuing",
+    "submit": {
+      "errorTitle": "Submission Error",
+      "errorDescription": "An error occurred while submitting your listing. Please try again.",
+      "successTitle": "Listing Submitted",
+      "ok": "OK"
+    },
     "validation": {
       "propertyTypeRequired": "Property type is required",
       "propertyTypeInvalid": "Invalid property type",
@@ -682,10 +746,10 @@
       "durationRequired": "Please select a duration",
       "startDateRequired": "Please select a start date",
       "listingTitleRequired": "Listing title is required",
-      "listingTitleMinLength": "Title must be at least 10 characters",
+      "listingTitleMinLength": "Title must be at least 20 characters",
       "listingTitleMaxLength": "Title cannot exceed 100 characters",
       "propertyDescriptionRequired": "Property description is required",
-      "propertyDescriptionMinLength": "Description must be at least 50 characters",
+      "propertyDescriptionMinLength": "Description must be at least 60 characters",
       "propertyDescriptionMaxLength": "Description cannot exceed 2000 characters",
       "fullNameRequired": "Full name is required",
       "emailRequired": "Email is required",
@@ -781,14 +845,14 @@
         "startDate": "Start date",
         "selectStartDate": "Select start date",
         "endDate": "End date",
-        "promotionCode": "Promotion",
+        "promotionCode": "Benefit",
         "enterPromotionCode": "Post now",
         "apply": "Apply",
-        "usePromotion": "Use promotion",
-        "selectPromotion": "Select a promotion",
+        "usePromotion": "Use membership benefit",
+        "selectPromotion": "Select a benefit",
         "selectPromotionDesc": "Choose a free posting benefit from your membership",
-        "loadingPromotions": "Loading your promotions...",
-        "noPromotionAvailable": "No promotions available",
+        "loadingPromotions": "Loading your benefits...",
+        "noPromotionAvailable": "No benefits available",
         "applyPromotion": "Use",
         "remaining": "Remaining: {count}",
         "close": "Close",
@@ -799,11 +863,20 @@
         "vatIncluded": "VAT included",
         "packagePrice": "Package price",
         "priceBreakdown": "Price Breakdown",
-        "promotionApplied": "Promotion applied",
+        "promotionApplied": "Benefit applied",
         "useMembershipQuota": "Use membership quota",
         "useMembershipQuotaDescription": "Enable to post without payment using your membership quota",
         "usingMembershipQuota": "Membership Quota",
-        "freePosting": "Free Posting"
+        "freePosting": "Free Posting",
+        "benefit": {
+          "title": "Select Membership Benefits",
+          "description": "Choose one or more benefits to use for this posting",
+          "noBenefits": "No benefits available",
+          "error": "Failed to load benefits",
+          "remaining": "Remaining: {count}",
+          "cancel": "Cancel",
+          "apply": "Apply ({count})"
+        }
       },
       "orderSummary": {
         "title": "Order Summary",
@@ -965,7 +1038,8 @@
           "villa": "Villa",
           "office": "Office",
           "shop": "Shop",
-          "land": "Land"
+          "land": "Land",
+          "studio": "Studio"
         },
         "area": "Area",
         "price": "Price",
@@ -1128,10 +1202,11 @@
       },
       "propertyDetails": {
         "propertyTypes": {
+          "room": "Room",
           "apartment": "Apartment",
           "house": "House",
-          "room": "Room",
-          "villa": "Villa",
+          "office": "Office",
+          "store": "Shop",
           "studio": "Studio"
         },
         "interiorConditions": {
@@ -1281,10 +1356,11 @@
           "predicting": "Predicting...",
           "incompleteData": "Please fill in complete address, area and GPS coordinates information",
           "types": {
+            "room": "Room",
             "apartment": "Apartment",
             "house": "House",
-            "villa": "Villa",
-            "studio": "Studio"
+            "office": "Office",
+            "store": "Shop"
           },
           "districts": {
             "quan1": "District 1",
@@ -1799,14 +1875,21 @@
       "status": {
         "ALL": "All",
         "EXPIRED": "Expired",
-        "NEAR_EXPIRED": "Expiring",
+        "EXPIRED_SOON": "Expiring Soon",
         "DISPLAYING": "Active",
-        "PENDING_APPROVAL": "Pending",
-        "APPROVED": "In Review",
+        "IN_REVIEW": "In Review",
         "PENDING_PAYMENT": "Awaiting Payment",
         "REJECTED": "Rejected",
         "VERIFIED": "Verified",
         "ARCHIVED": "Archived"
+      },
+      "propertyTypes": {
+        "0": "All Types",
+        "1": "Room",
+        "2": "Apartment",
+        "3": "House",
+        "4": "Office",
+        "5": "Shop"
       },
       "empty": {
         "title": "No listings yet",

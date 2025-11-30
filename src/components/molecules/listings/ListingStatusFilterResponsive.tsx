@@ -10,18 +10,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/atoms/dropdown-menu'
 import { PostStatus, POST_STATUS } from '@/api/types'
+import {
+  STATUS_FILTER_WITH_ALL,
+  getPostStatusI18nKey,
+} from '@/constants/postStatus'
 
-const STATUS_ORDER: PostStatus[] = [
-  POST_STATUS.ALL,
-  POST_STATUS.EXPIRED,
-  POST_STATUS.NEAR_EXPIRED,
-  POST_STATUS.DISPLAYING,
-  POST_STATUS.PENDING_APPROVAL,
-  POST_STATUS.APPROVED,
-  POST_STATUS.PENDING_PAYMENT,
-  POST_STATUS.REJECTED,
-  POST_STATUS.VERIFIED,
-]
+// Use centralized ordered list (ALL + numeric sequence 1..7)
+const STATUS_ORDER: PostStatus[] = STATUS_FILTER_WITH_ALL
 
 export interface ListingStatusFilterResponsiveProps {
   value: PostStatus
@@ -66,7 +61,7 @@ export const ListingStatusFilterResponsive: React.FC<
                   : 'text-muted-foreground hover:text-foreground hover:bg-background/70',
               )}
             >
-              <span>{t(`status.${status}`)}</span>
+              <span>{t(`status.${getPostStatusI18nKey(status)}`)}</span>
               {((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
                 <span
                   className={cn(
@@ -96,7 +91,7 @@ export const ListingStatusFilterResponsive: React.FC<
             >
               <div className='flex items-center gap-2'>
                 <span className='text-sm font-medium'>
-                  {t(`status.${activeStatus}`)}
+                  {t(`status.${getPostStatusI18nKey(activeStatus)}`)}
                 </span>
                 {activeCount > 0 && (
                   <span className='min-w-5 rounded-full bg-primary/10 border border-primary/30 text-primary px-1.5 py-0.5 text-xs leading-none flex items-center justify-center'>
@@ -123,7 +118,7 @@ export const ListingStatusFilterResponsive: React.FC<
                     active && 'bg-accent/50 text-accent-foreground font-medium',
                   )}
                 >
-                  <span>{t(`status.${status}`)}</span>
+                  <span>{t(`status.${getPostStatusI18nKey(status)}`)}</span>
                   {((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
                     <span
                       className={cn(

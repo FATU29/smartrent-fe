@@ -61,7 +61,6 @@ export type {
   ListingLegacyAddress,
   ListingNewAddress,
   ListingAddress,
-  BenefitMembership,
   CreateListingRequest,
   CreateVipListingRequest,
   QuotaCheckResponse,

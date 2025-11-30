@@ -95,21 +95,22 @@ const SellerContact: React.FC<SellerContactProps> = ({ host, onChatZalo }) => {
         {/* Contact Buttons */}
         <div className='space-y-3'>
           <Button
-            className='w-full bg-white hover:bg-gray-50 text-foreground border-2 border-primary h-12 font-semibold'
+            className='w-full bg-white text-black border-2 border-primary h-12 font-semibold'
             onClick={handleZaloClick}
           >
             <Image
-              src='/svg/google.svg'
+              src='/svg/zalo.svg'
               alt='Zalo'
-              width={20}
-              height={20}
+              width={24}
+              height={24}
               className='mr-2'
+              color='white'
             />
             {t('actions.chatZalo')}
           </Button>
 
           <Button
-            className='w-full bg-primary hover:bg-primary/90 h-12 font-semibold'
+            className='w-full bg-primary h-12 font-semibold'
             onClick={handleCall}
           >
             <Phone className='w-5 h-5 mr-2' />

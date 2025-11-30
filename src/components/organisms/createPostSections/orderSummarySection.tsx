@@ -57,8 +57,8 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
 
   // Compute total price based on durationDays using API-provided tier pricing
   const usingMembershipQuota = !!propertyInfo.useMembershipQuota
-  const usingPromotion = Array.isArray(propertyInfo.benefitsMembership)
-    ? propertyInfo.benefitsMembership.length > 0
+  const usingPromotion = Array.isArray(propertyInfo?.benefitIds)
+    ? propertyInfo?.benefitIds?.length > 0
     : false
 
   // Price calculation - no VAT or discount

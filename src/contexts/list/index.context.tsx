@@ -34,13 +34,13 @@ export interface ListProviderProps<T = unknown> {
   initialPagination?: Pagination
 }
 
-// Helper functions
 const mergeFilters = (
   overrides: Partial<ListingFilterRequest> = {},
 ): ListingFilterRequest => ({
   ...DEFAULT_FILTERS,
   ...overrides,
-  page: overrides.page ?? DEFAULT_PAGE,
+
+  page: overrides.page !== undefined ? overrides.page : DEFAULT_PAGE,
 })
 
 const areFiltersEqual = (
@@ -93,9 +93,12 @@ const useListFilters = (
   initialFilters: Partial<ListingFilterRequest>,
   shouldAppendRef: React.MutableRefObject<boolean>,
 ) => {
-  const [filters, setFilters] = useState<ListingFilterRequest>(() =>
-    mergeFilters(initialFilters),
-  )
+  console.log('[useListFilters] initialFilters received:', initialFilters)
+  const [filters, setFilters] = useState<ListingFilterRequest>(() => {
+    const merged = mergeFilters(initialFilters)
+    console.log('[useListFilters] Merged filters:', merged)
+    return merged
+  })
 
   const updateFilters = useCallback(
     (newFilters: Partial<ListingFilterRequest>) => {
@@ -104,7 +107,9 @@ const useListFilters = (
         const updated = {
           ...prev,
           ...newFilters,
-          page: newFilters.page ?? DEFAULT_PAGE,
+          // Only reset to page 1 if page is explicitly set to undefined/null
+          // Otherwise preserve existing page or use the new page value
+          page: newFilters.page !== undefined ? newFilters.page : prev.page,
         }
         return areFiltersEqual(prev, updated) ? prev : updated
       })

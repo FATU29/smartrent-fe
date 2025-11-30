@@ -12,7 +12,6 @@ import {
   Zap,
   FileText,
   Send,
-  RotateCcw,
   Home,
   DollarSign,
   Zap as ZapIcon,
@@ -23,6 +22,7 @@ import {
 import { useTranslations } from 'next-intl'
 import { useFormContext, Controller } from 'react-hook-form'
 import { useCreatePost } from '@/contexts/createPost'
+import { useDebounce } from '@/hooks/useDebounce'
 import type {
   CreateListingRequest,
   Direction,
@@ -107,83 +107,114 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     amenityIds,
   } = propertyInfo
 
-  const {
-    new: newAddress,
-    legacy: oldAddress,
-    latitude,
-    longitude,
-  } = address || {}
+  // Local state for title and description with debouncing
+  const [titleInput, setTitleInput] = React.useState<string>(title || '')
+  const [descriptionInput, setDescriptionInput] = React.useState<string>(
+    description || '',
+  )
+
+  // Debounce title and description to optimize performance
+  const debouncedTitle = useDebounce(titleInput, 500)
+  const debouncedDescription = useDebounce(descriptionInput, 500)
+
+  const { latitude, longitude } = address || {}
+
+  // Update property info when debounced title changes
+  React.useEffect(() => {
+    if (debouncedTitle !== title) {
+      updatePropertyInfo({ title: debouncedTitle })
+    }
+  }, [debouncedTitle])
+
+  // Update property info when debounced description changes
+  React.useEffect(() => {
+    if (debouncedDescription !== description) {
+      updatePropertyInfo({ description: debouncedDescription })
+    }
+  }, [debouncedDescription])
+
+  // Sync local state with external updates (e.g., from AI generation)
+  React.useEffect(() => {
+    if (title !== titleInput) {
+      setTitleInput(title || '')
+    }
+  }, [title])
 
   React.useEffect(() => {
-    if (propertyInfo.categoryId) {
-      setValue('categoryId', propertyInfo.categoryId, {
+    if (description !== descriptionInput) {
+      setDescriptionInput(description || '')
+    }
+  }, [description])
+
+  React.useEffect(() => {
+    if (propertyInfo?.categoryId) {
+      setValue('categoryId', propertyInfo?.categoryId, {
         shouldValidate: true,
       })
     }
-    if (propertyInfo.productType) {
-      setValue('productType', propertyInfo.productType, {
+    if (propertyInfo?.productType) {
+      setValue('productType', propertyInfo?.productType, {
         shouldValidate: true,
       })
     }
-    if (propertyInfo.address) {
+    if (propertyInfo?.address) {
       setValue('address', propertyInfo?.address, { shouldValidate: true })
     }
     if (propertyInfo.area) {
-      setValue('area', propertyInfo.area, { shouldValidate: true })
+      setValue('area', propertyInfo?.area, { shouldValidate: true })
     }
-    if (propertyInfo.price) {
-      setValue('price', propertyInfo.price, { shouldValidate: true })
+    if (propertyInfo?.price) {
+      setValue('price', propertyInfo?.price, { shouldValidate: true })
     }
-    if (propertyInfo.priceUnit) {
-      setValue('priceUnit', propertyInfo.priceUnit, { shouldValidate: true })
+    if (propertyInfo?.priceUnit) {
+      setValue('priceUnit', propertyInfo?.priceUnit, { shouldValidate: true })
     }
-    if (propertyInfo.title) {
-      setValue('title', propertyInfo.title, { shouldValidate: true })
+    if (propertyInfo?.title) {
+      setValue('title', propertyInfo?.title, { shouldValidate: true })
     }
     if (propertyInfo.description) {
-      setValue('description', propertyInfo.description, {
+      setValue('description', propertyInfo?.description, {
         shouldValidate: true,
       })
     }
-    if (propertyInfo.waterPrice) {
-      setValue('waterPrice', propertyInfo.waterPrice, { shouldValidate: true })
+    if (propertyInfo?.waterPrice) {
+      setValue('waterPrice', propertyInfo?.waterPrice, { shouldValidate: true })
     }
-    if (propertyInfo.electricityPrice) {
-      setValue('electricityPrice', propertyInfo.electricityPrice, {
+    if (propertyInfo?.electricityPrice) {
+      setValue('electricityPrice', propertyInfo?.electricityPrice, {
         shouldValidate: true,
       })
     }
-    if (propertyInfo.internetPrice) {
-      setValue('internetPrice', propertyInfo.internetPrice, {
+    if (propertyInfo?.internetPrice) {
+      setValue('internetPrice', propertyInfo?.internetPrice, {
         shouldValidate: true,
       })
     }
-    if (propertyInfo.serviceFee) {
-      setValue('serviceFee', propertyInfo.serviceFee, {
+    if (propertyInfo?.serviceFee) {
+      setValue('serviceFee', propertyInfo?.serviceFee, {
         shouldValidate: true,
       })
     }
-    if (propertyInfo.furnishing) {
-      setValue('furnishing', propertyInfo.furnishing, { shouldValidate: true })
+    if (propertyInfo?.furnishing) {
+      setValue('furnishing', propertyInfo?.furnishing, { shouldValidate: true })
     }
-    if (propertyInfo.bedrooms) {
-      setValue('bedrooms', propertyInfo.bedrooms, { shouldValidate: true })
+    if (propertyInfo?.bedrooms) {
+      setValue('bedrooms', propertyInfo?.bedrooms, { shouldValidate: true })
     }
     if (propertyInfo.bathrooms) {
-      setValue('bathrooms', propertyInfo.bathrooms, { shouldValidate: true })
+      setValue('bathrooms', propertyInfo?.bathrooms, { shouldValidate: true })
     }
-    if (propertyInfo.direction) {
-      setValue('direction', propertyInfo.direction, { shouldValidate: true })
+    if (propertyInfo?.direction) {
+      setValue('direction', propertyInfo?.direction, { shouldValidate: true })
     }
   }, [propertyInfo, setValue])
 
   const handleUseMyLocation = async () => {
-    const success = await requestLocation()
-    if (success && coordinates) {
+    await requestLocation()
+    if (coordinates) {
       updatePropertyInfo({
         address: {
-          new: newAddress,
-          legacy: oldAddress,
+          ...propertyInfo.address,
           latitude: coordinates.latitude,
           longitude: coordinates.longitude,
         },
@@ -191,31 +222,10 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     }
   }
 
-  const prevCoordinatesRef = React.useRef(coordinates)
-  React.useEffect(() => {
-    if (
-      coordinates &&
-      (prevCoordinatesRef.current?.latitude !== coordinates.latitude ||
-        prevCoordinatesRef.current?.longitude !== coordinates.longitude)
-    ) {
-      prevCoordinatesRef.current = coordinates
-      updatePropertyInfo({
-        address: {
-          new: newAddress,
-          legacy: oldAddress,
-          latitude: coordinates.latitude,
-          longitude: coordinates.longitude,
-        },
-      })
-    }
-  }, [coordinates, newAddress, oldAddress])
-
   const handleGenerateAI = () => {
-    // Get category name from categoryId
     const categoryItem = categoryId ? getCategoryById(categoryId) : null
     const categoryName = categoryItem?.value || ''
 
-    // Convert amenityIds to amenity codes (string[])
     const amenityCodes: string[] = []
     if (amenityIds && amenityIds.length > 0) {
       amenityIds.forEach((id) => {
@@ -226,7 +236,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       })
     }
 
-    // Build addressText object
     const addressTextObj: { new: string; legacy?: string } = {
       new: composedNewAddress || '',
     }
@@ -234,15 +243,21 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       addressTextObj.legacy = composedLegacyAddress
     }
 
-    // Validate required fields before generating
     if (
+      !categoryName ||
       !productType ||
       !furnishing ||
       !propertyInfo?.direction ||
       !propertyInfo?.waterPrice ||
       !propertyInfo?.electricityPrice ||
       !propertyInfo?.internetPrice ||
-      !propertyInfo?.serviceFee
+      !propertyInfo?.serviceFee ||
+      !propertyInfo?.price ||
+      propertyInfo.price <= 0 ||
+      !propertyInfo?.priceUnit ||
+      !propertyInfo?.area ||
+      !propertyInfo?.bedrooms ||
+      !propertyInfo?.bathrooms
     ) {
       return
     }
@@ -250,12 +265,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     const req: ListingDescriptionRequest = {
       category: categoryName,
       propertyType: productType,
-      price: propertyInfo?.price || 0,
-      priceUnit: propertyInfo?.priceUnit || 'MONTH',
+      price: propertyInfo.price,
+      priceUnit: propertyInfo.priceUnit,
       addressText: addressTextObj,
-      area: propertyInfo?.area || 0,
-      bedrooms: propertyInfo?.bedrooms || 0,
-      bathrooms: propertyInfo?.bathrooms || 0,
+      area: propertyInfo.area,
+      bedrooms: propertyInfo.bedrooms,
+      bathrooms: propertyInfo.bathrooms,
       direction: propertyInfo.direction,
       furnishing: furnishing,
       amenities: amenityCodes,
@@ -264,8 +279,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       internetPrice: propertyInfo.internetPrice,
       serviceFee: propertyInfo.serviceFee,
       tone: aiTone,
-      maxWords: '60',
-      minWords: '30',
+      title: {
+        maxWords: '100',
+        minWords: '30',
+      },
+      description: {
+        maxWords: '1000',
+        minWords: '70',
+      },
     }
 
     generateAI(req, {
@@ -399,19 +420,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   >
                     <Send className='w-4 h-4 mr-1' />
                     {locationLoading ? t('loading') : t('useMyLocation')}
-                  </Button>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    className='border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg w-full sm:w-auto'
-                    onClick={() =>
-                      updatePropertyInfo({
-                        address: { latitude: 0, longitude: 0 },
-                      })
-                    }
-                  >
-                    <RotateCcw className='w-4 h-4 mr-1' />
-                    {t('reset')}
                   </Button>
                 </div>
               </div>
@@ -644,19 +652,22 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                           onChange={(e) => {
                             if (e.target.checked) {
                               updatePropertyInfo({
-                                amenityIds: [...(amenityIds || []), amenity.id],
+                                amenityIds: [
+                                  ...(amenityIds || []),
+                                  amenity?.id,
+                                ],
                               })
                             } else {
                               updatePropertyInfo({
                                 amenityIds: amenityIds?.filter(
-                                  (a) => a !== amenity.id,
+                                  (a) => a !== amenity?.id,
                                 ),
                               })
                             }
                           }}
                         />
                         <span className='text-sm font-medium'>
-                          {amenity.label}
+                          {amenity?.label}
                         </span>
                       </label>
                     )
@@ -893,7 +904,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   </label>
                   <input
                     type='text'
-                    value={title || ''}
+                    value={titleInput}
                     className={`w-full h-12 px-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
                       error
                         ? 'border-destructive dark:border-destructive'
@@ -901,7 +912,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     }`}
                     placeholder={tPlaceholders('enterListingTitle')}
                     onChange={(e) => {
-                      updatePropertyInfo({ title: e.target.value })
+                      setTitleInput(e.target.value)
                     }}
                   />
                   {error && (
@@ -931,7 +942,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     <span className='text-destructive ml-1'>*</span>
                   </label>
                   <textarea
-                    value={description || ''}
+                    value={descriptionInput}
                     className={`w-full h-32 px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 resize-none ${
                       error
                         ? 'border-destructive dark:border-destructive'
@@ -939,9 +950,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     }`}
                     placeholder={tPlaceholders('enterPropertyDescription')}
                     onChange={(e) => {
-                      updatePropertyInfo({
-                        description: e.target.value,
-                      })
+                      setDescriptionInput(e.target.value)
                     }}
                   />
                   {error && (

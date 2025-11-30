@@ -94,7 +94,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         id: 'gallery',
         component: <ImageSlider media={mediaItems} />,
         containerClassName: 'mb-8',
-        isVisible: mediaItems && mediaItems.length > 0,
+        isVisible: true,
       },
       {
         id: 'header',

@@ -34,16 +34,15 @@ export type AmenityCategory =
 export type PriceType = 'NEGOTIABLE' | 'SET_BY_OWNER' | 'PROVIDER_RATE'
 
 export enum POST_STATUS {
-  ALL = 'ALL',
+  ALL = '',
   // Trạng thái cụ thể
-  EXPIRED = 'EXPIRED', // Hết hạn
-  NEAR_EXPIRED = 'NEAR_EXPIRED', // Sắp hết hạn
-  DISPLAYING = 'DISPLAYING', // Đang hiển thị
-  PENDING_APPROVAL = 'PENDING_APPROVAL', // Chờ duyệt
-  APPROVED = 'APPROVED', // Đang duyệt (hoặc Đã duyệt, tùy ngữ cảnh)
-  PENDING_PAYMENT = 'PENDING_PAYMENT', // Chờ thanh toán
-  REJECTED = 'REJECTED', // Bị từ chối
-  VERIFIED = 'VERIFIED',
+  EXPIRED = 1, // Hết hạn
+  EXPIRED_SOON = 2, // Sắp hết hạn
+  DISPLAYING = 3, // Đang hiển thị
+  IN_REVIEW = 4, // Chờ duyệt
+  PENDING_PAYMENT = 5, // Đang duyệt (hoặc Đã duyệt, tùy ngữ cảnh)
+  REJECTED = 6, // Chờ thanh toán
+  VERIFIED = 7,
 }
 
 export enum PAYMENT_PROVIDER {
@@ -71,10 +70,9 @@ export type DurationDays =
 export type PostStatus =
   | POST_STATUS.ALL
   | POST_STATUS.EXPIRED
-  | POST_STATUS.NEAR_EXPIRED
+  | POST_STATUS.EXPIRED_SOON
   | POST_STATUS.DISPLAYING
-  | POST_STATUS.PENDING_APPROVAL
-  | POST_STATUS.APPROVED
+  | POST_STATUS.IN_REVIEW
   | POST_STATUS.PENDING_PAYMENT
   | POST_STATUS.REJECTED
   | POST_STATUS.VERIFIED
@@ -91,6 +89,13 @@ export type CategoryType = {
 }
 
 export type MediaType = 'IMAGE' | 'VIDEO'
+
+export enum LISTING_TYPE {
+  RENT = 'RENT',
+  SHARE = 'SHARE',
+}
+
+export type listingType = LISTING_TYPE.RENT | LISTING_TYPE.SHARE
 
 // Amenity interface
 export interface Amenity {
@@ -250,7 +255,7 @@ export interface ListingLegacyAddress {
 export interface ListingNewAddress {
   provinceCode: string
   wardCode: string
-  street: string
+  street?: string
 }
 
 export interface ListingAddress {
@@ -258,14 +263,6 @@ export interface ListingAddress {
   new?: ListingNewAddress
   latitude: number
   longitude: number
-}
-
-/**
- * Membership benefit association
- */
-export interface BenefitMembership {
-  benefitId: number
-  membershipId: number
 }
 
 /**
@@ -288,13 +285,14 @@ export interface CreateListingRequest {
   amenityIds?: number[]
   mediaIds?: number[]
   postDate?: string | Date // startDate
+  listingType?: listingType
   isDraft?: boolean
   waterPrice?: PriceType
   electricityPrice?: PriceType
   internetPrice?: PriceType
   serviceFee?: PriceType
 
-  benefitsMembership?: BenefitMembership[]
+  benefitIds?: number[]
 
   vipType?: VipType
   durationDays?: DurationDays
@@ -436,7 +434,6 @@ export interface ListingFilterRequest {
   status?: PostStatus
 
   userId?: string
-
   sortBy?: SortKey
 
   serviceFee?: PriceType
