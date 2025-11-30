@@ -16,7 +16,7 @@ import {
   ListingSearchResponse,
 } from '@/api/types/property.type'
 import type { ApiResponse } from '@/configs/axios/types'
-import { DEFAULT_PAGE } from '@/contexts/list/index.type'
+import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@/contexts/list/index.type'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import { ListingService } from '@/api/services/listing.service'
 import {
@@ -77,7 +77,8 @@ const ResidentialPropertiesPage: NextPageWithLayout<
           latitude: filters.latitude ?? null,
           longitude: filters.longitude ?? null,
           sortBy: filters.sortBy ?? null,
-          page: null,
+          page: filters.page ?? DEFAULT_PAGE,
+          size: filters.size ?? DEFAULT_PER_PAGE,
         },
         {
           pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
@@ -164,10 +165,8 @@ export const getServerSideProps: GetServerSideProps<
   ResidentialPropertiesPageProps
 > = async (context) => {
   try {
-    // Create server-side axios instance (no cookies needed - public API)
     const serverInstance = createServerAxiosInstance()
 
-    // Parse filters from query params
     const parsedFilters = getFiltersFromQuery(context.query)
     const filters: Partial<ListingFilterRequest> = {
       ...parsedFilters,
@@ -177,14 +176,12 @@ export const getServerSideProps: GetServerSideProps<
 
     console.log('[SSR Properties] Filters:', JSON.stringify(filters, null, 2))
 
-    // Map to backend request
     const backendRequest = mapFrontendToBackendRequest(filters)
     console.log(
       '[SSR Properties] Backend Request:',
       JSON.stringify(backendRequest, null, 2),
     )
 
-    // Fetch from API (public endpoint - no auth required)
     const response = await ListingService.search(backendRequest, serverInstance)
 
     console.log('[SSR Properties] API Response:', {
@@ -194,7 +191,6 @@ export const getServerSideProps: GetServerSideProps<
       listingsCount: response.data?.listings?.length || 0,
     })
 
-    // Handle error or empty response
     if (!response.success || !response.data) {
       console.warn('[SSR Properties] API call failed or no data:', {
         success: response.success,

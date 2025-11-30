@@ -41,7 +41,6 @@ const DefaultLogo: React.FC = () => (
 
 const AppHeader: React.FC<AppHeaderProps> = ({
   activeItem = 'home',
-
   onItemClick,
   logo,
   rightContent,

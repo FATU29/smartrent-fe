@@ -99,12 +99,10 @@ ListingDetail.getLayout = function getLayout(page: React.ReactNode) {
   return <MainLayout activeItem='properties'>{page}</MainLayout>
 }
 
-// Server-side render: fetch listing detail
 export async function getServerSideProps(context: {
   params?: { slug?: string[] }
 }) {
   const slugParts = context.params?.slug || []
-  // Expect URL like /listing-detail/123 or /listing-detail/123/some-title
   const idPart = slugParts[0]
   const listingId = idPart && /^\d+$/.test(idPart) ? Number(idPart) : null
 
@@ -116,7 +114,6 @@ export async function getServerSideProps(context: {
 
   const res = await ListingService.getById(listingId)
 
-  // If API fails, fall back to mock to keep page functional in dev
   const listing = res?.data || null
 
   if (!listing) {
