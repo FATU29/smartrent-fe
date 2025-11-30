@@ -20,7 +20,7 @@ export const useCreatePostForm = () => {
       area: propertyInfo?.area || 0,
       price: propertyInfo?.price || 0,
       priceUnit: propertyInfo?.priceUnit,
-      propertyType: propertyInfo?.propertyType,
+      productType: propertyInfo?.productType,
       furnishing: propertyInfo?.furnishing,
       bedrooms: propertyInfo?.bedrooms || 0,
       bathrooms: propertyInfo?.bathrooms || 0,

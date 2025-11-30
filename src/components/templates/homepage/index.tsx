@@ -42,7 +42,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   const handleSelectCity = useCallback(
     (city: CityItem) => {
       router.push({
-        pathname: PUBLIC_ROUTES.RESIDENTIAL_LIST,
+        pathname: PUBLIC_ROUTES.LISTING_LISTING,
         query: { city: city.name },
       })
     },
@@ -97,7 +97,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
               )}
               {(hasLoadedOnce || !hasNext) && (
                 <Button
-                  onClick={() => router.push(PUBLIC_ROUTES.RESIDENTIAL_LIST)}
+                  onClick={() => router.push(PUBLIC_ROUTES.LISTING_LISTING)}
                   className='px-6'
                 >
                   {t('common.loadMore')} ➜

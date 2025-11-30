@@ -71,25 +71,29 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     bathrooms,
     verified,
     user,
-    assets,
     amenities,
     address,
     postDate,
     productType,
-    listingType,
     vipType,
     furnishing,
     direction,
     roomCapacity,
+    media,
   } = listing
 
-  const { images: assetsImages, video: assetsVideo } = assets || {}
+  const images = media?.filter((m) => m.mediaType === 'IMAGE')
+  const video = media?.find((m) => m.mediaType === 'VIDEO')
 
   const { firstName, lastName, phoneNumber } = user || {}
+  const userName = firstName && lastName ? `${firstName} ${lastName}` : ''
 
-  const userName = `${firstName} ${lastName}`
+  const { fullNewAddress: newAddress, fullAddress: legacyAddress } =
+    address || {}
 
-  const { new: newAddress, legacy: legacyAddress } = address || {}
+  // Get primary image or first image
+  const assetsImages = images?.map((img) => img.url) || []
+  const assetsVideo = video?.url || null
 
   const t = useTranslations()
   const tCreatePost = useTranslations()
@@ -458,17 +462,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   </TooltipContent>
                 </Tooltip>
               )}
-              {listingType === 'SHARE' && (
-                <Badge
-                  variant='outline'
-                  className={classNames(
-                    'text-[9px] px-1 py-0 border-primary/30 text-primary',
-                    isCompact ? '' : 'text-[10px] px-1.5 py-0.5',
-                  )}
-                >
-                  Share
-                </Badge>
-              )}
             </div>
           </div>
 
@@ -605,7 +598,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   </Typography>
                 </div>
               )}
-              {roomCapacity && listingType === 'SHARE' && (
+              {roomCapacity && (
                 <div
                   className={classNames(
                     'flex items-center text-muted-foreground',

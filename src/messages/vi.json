@@ -2033,6 +2033,9 @@
         "score": "Điểm"
       }
     },
+    "links": {
+      "viewSellerListings": "Xem tất cả tin đăng của người bán"
+    },
     "sections": {
       "features": "Tiện ích",
       "description": "Thông tin mô tả",

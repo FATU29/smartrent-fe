@@ -17,7 +17,6 @@ import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { List, useListContext } from '@/contexts/list'
 import { countActiveFilters } from '@/utils/filters/countActiveFilters'
 import { ListingOwnerDetail, PostStatus, POST_STATUS } from '@/api/types'
-import { MOCK_LISTINGS } from '@/mock/ownerListing'
 
 const ListingsWithPagination: React.FC<{ currentStatus: PostStatus }> = ({
   currentStatus,
@@ -159,14 +158,8 @@ export const ListingsManagementTemplate: React.FC<
   // Calculate counts for each status from MOCK_LISTINGS
   const counts = useMemo(() => {
     const statusCounts: Partial<Record<PostStatus, number>> = {
-      [POST_STATUS.ALL]: MOCK_LISTINGS.length,
+      [POST_STATUS.ALL]: 1,
     }
-
-    MOCK_LISTINGS.forEach((listing) => {
-      if (listing.status) {
-        statusCounts[listing.status] = (statusCounts[listing.status] || 0) + 1
-      }
-    })
 
     return statusCounts
   }, [])
@@ -184,7 +177,7 @@ export const ListingsManagementTemplate: React.FC<
         />
         {children}
         <ToolbarWithBadge
-          total={MOCK_LISTINGS.length}
+          total={1}
           onFilterClick={() => {
             console.log('Filter clicked')
             setFilterOpen(true)

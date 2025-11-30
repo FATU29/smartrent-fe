@@ -6,20 +6,19 @@ import { Card, CardContent } from '@/components/atoms/card'
 import { Avatar } from '@/components/atoms/avatar'
 import { Phone } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { PUBLIC_ROUTES } from '@/constants/route'
 import { UserApi } from '@/api/types'
 
 interface SellerContactProps {
   host?: UserApi
-  onCall?: () => void
   onChatZalo?: () => void
 }
 
-const SellerContact: React.FC<SellerContactProps> = ({
-  host,
-  onCall,
-  onChatZalo,
-}) => {
+const SellerContact: React.FC<SellerContactProps> = ({ host, onChatZalo }) => {
   const t = useTranslations('apartmentDetail')
+
+  const [showPhone, setShowPhone] = React.useState(false)
 
   if (!host) {
     return null
@@ -35,6 +34,9 @@ const SellerContact: React.FC<SellerContactProps> = ({
   const name = `${firstName} ${lastName}`.trim() || 'Người bán'
   const phone = `${phoneCode} ${phoneNumber}`.trim()
   const zaloLink = phone ? `https://zalo.me/${phoneCode}${phoneNumber}` : ''
+  const sellerListingsUrl = `${PUBLIC_ROUTES.PROPERTIES_PREFIX}?userId=${encodeURIComponent(
+    host.userId || '',
+  )}`
 
   const getInitials = (name: string) => {
     return name
@@ -52,8 +54,12 @@ const SellerContact: React.FC<SellerContactProps> = ({
     onChatZalo?.()
   }
 
+  const handleCall = () => {
+    setShowPhone(true)
+  }
+
   return (
-    <Card className='sticky top-4'>
+    <Card className='w-full'>
       <CardContent className='p-6 space-y-6'>
         {/* Seller Info */}
         <div className='flex items-start gap-4'>
@@ -77,6 +83,12 @@ const SellerContact: React.FC<SellerContactProps> = ({
             <Typography variant='h5' className='font-bold mb-1 truncate'>
               {name}
             </Typography>
+            {/* Link to user's listings page */}
+            <Typography variant='small' className='text-primary'>
+              <Link href={sellerListingsUrl} className='hover:underline'>
+                {t('links.viewSellerListings')}
+              </Link>
+            </Typography>
           </div>
         </div>
 
@@ -98,10 +110,10 @@ const SellerContact: React.FC<SellerContactProps> = ({
 
           <Button
             className='w-full bg-primary hover:bg-primary/90 h-12 font-semibold'
-            onClick={onCall}
+            onClick={handleCall}
           >
             <Phone className='w-5 h-5 mr-2' />
-            {phone} • {t('actions.showPhone')}
+            {showPhone ? phone : t('actions.showPhone')}
           </Button>
         </div>
       </CardContent>

@@ -9,9 +9,10 @@ import {
 
 import type {
   ListingFilterRequest,
-  ListingSearchApiResponse,
+  ListingSearchResponse,
   Pagination,
 } from '@/api/types'
+import type { ApiResponse } from '@/configs/axios/types'
 import { countActiveFilters } from '@/utils/filters/countActiveFilters'
 
 import {
@@ -27,7 +28,7 @@ export interface ListProviderProps<T = unknown> {
   children: React.ReactNode
   fetcher?: (
     filters: ListingFilterRequest,
-  ) => Promise<ListingSearchApiResponse<T>>
+  ) => Promise<ApiResponse<ListingSearchResponse<T>>>
   initialData?: T[]
   initialFilters?: Partial<ListingFilterRequest>
   initialPagination?: Pagination
@@ -160,7 +161,9 @@ const useListFilters = (
 
 const useListFetch = <T,>(
   fetcher:
-    | ((filters: ListingFilterRequest) => Promise<ListingSearchApiResponse<T>>)
+    | ((
+        filters: ListingFilterRequest,
+      ) => Promise<ApiResponse<ListingSearchResponse<T>>>)
     | undefined,
   filters: ListingFilterRequest,
   hasInitialData: boolean,

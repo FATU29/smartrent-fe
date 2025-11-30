@@ -1,5 +1,7 @@
-import React, { useCallback, useMemo, useEffect, useState, useRef } from 'react'
+import React, { useCallback, useRef } from 'react'
 import { useRouter } from 'next/router'
+import { GetServerSideProps } from 'next'
+import { AxiosError } from 'axios'
 import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
@@ -11,70 +13,35 @@ import { getFiltersFromQuery, pushQueryParams } from '@/utils/queryParams'
 import {
   ListingDetail,
   ListingFilterRequest,
-  ListingSearchApiResponse,
+  ListingSearchResponse,
 } from '@/api/types/property.type'
-import { generateMockProperties } from '@/mock/properties'
+import type { ApiResponse } from '@/configs/axios/types'
 import { DEFAULT_PAGE } from '@/contexts/list/index.type'
 import { PUBLIC_ROUTES } from '@/constants/route'
+import { ListingService } from '@/api/services/listing.service'
+import {
+  mapFrontendToBackendRequest,
+  mapBackendToFrontendResponse,
+} from '@/utils/property/mapListingResponse'
+import { createServerAxiosInstance } from '@/configs/axios/axiosServer'
 
-const ResidentialPropertiesPage: NextPageWithLayout = () => {
+interface ResidentialPropertiesPageProps {
+  initialData: ListingDetail[]
+  initialPagination: {
+    totalCount: number
+    currentPage: number
+    pageSize: number
+    totalPages: number
+  }
+  initialFilters: Partial<ListingFilterRequest>
+}
+
+const ResidentialPropertiesPage: NextPageWithLayout<
+  ResidentialPropertiesPageProps
+> = ({ initialData, initialPagination, initialFilters }) => {
   const t = useTranslations('navigation')
   const router = useRouter()
-  const [initialFilters, setInitialFilters] = useState<
-    Partial<ListingFilterRequest>
-  >({})
-
-  useEffect(() => {
-    if (router.isReady) {
-      const parsed = getFiltersFromQuery(router.query)
-      const page = parsed.page !== undefined ? parsed.page : DEFAULT_PAGE
-      setInitialFilters({
-        ...parsed,
-        page,
-      })
-    }
-  }, [router.isReady, router.query])
-
-  const allMockData = useMemo(() => generateMockProperties(100), [])
   const lastPushedFiltersRef = useRef<string>('')
-
-  const matchesFilters = useCallback(
-    (listing: ListingDetail, filters: ListingFilterRequest): boolean => {
-      if (filters?.productType && listing?.productType !== filters?.productType)
-        return false
-      if (filters?.minPrice && listing?.price < filters?.minPrice) return false
-      if (filters?.maxPrice && listing?.price > filters?.maxPrice) return false
-      if (filters?.minArea && (listing?.area ?? 0) < filters?.minArea)
-        return false
-      if (filters?.maxArea && (listing?.area ?? 0) > filters?.maxArea)
-        return false
-      if (
-        filters?.minBedrooms &&
-        (listing?.bedrooms ?? 0) < filters?.minBedrooms
-      )
-        return false
-      if (
-        filters?.maxBedrooms &&
-        (listing?.bedrooms ?? 0) > filters?.maxBedrooms
-      )
-        return false
-      if (filters?.bathrooms && listing?.bathrooms !== filters?.bathrooms)
-        return false
-      if (
-        filters?.verified !== undefined &&
-        listing?.verified !== filters?.verified
-      )
-        return false
-      if (filters?.keyword) {
-        const keyword = filters.keyword.toLowerCase()
-        const searchText =
-          `${listing?.title} ${listing?.description}`.toLowerCase()
-        if (!searchText.includes(keyword)) return false
-      }
-      return true
-    },
-    [],
-  )
 
   const pushFiltersToQuery = useCallback(
     (filters: ListingFilterRequest) => {
@@ -122,44 +89,49 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
     [router],
   )
 
+  // Fetcher function for ListProvider - calls real API
   const fetcher = useCallback(
     async (
       filters: ListingFilterRequest,
-    ): Promise<ListingSearchApiResponse<ListingDetail>> => {
-      await new Promise((resolve) => setTimeout(resolve, 300))
+    ): Promise<ApiResponse<ListingSearchResponse<ListingDetail>>> => {
+      // Map frontend filters to backend request
+      const backendRequest = mapFrontendToBackendRequest(filters)
 
-      const pageSize = filters?.size || 10
-      const currentPage = filters?.page || 1
+      // Call backend API
+      const backendResponse = await ListingService.search(backendRequest)
 
-      const filteredData = allMockData.filter((listing) =>
-        matchesFilters(listing, filters),
-      )
-
-      // Pagination
-      const totalCount = filteredData.length
-      const totalPages = Math.ceil(totalCount / pageSize)
-      const startIndex = (currentPage - 1) * pageSize
-      const endIndex = startIndex + pageSize
-      const paginatedData = filteredData.slice(startIndex, endIndex)
-
+      // Push filters to URL
       pushFiltersToQuery(filters)
 
-      return {
-        code: 'SUCCESS',
-        message: null,
-        data: {
-          listings: paginatedData,
-          pagination: {
-            totalCount,
-            currentPage,
-            totalPages,
-            pageSize,
+      // Handle error case
+      if (!backendResponse.success || !backendResponse.data) {
+        return {
+          code: backendResponse.code,
+          message: backendResponse.message,
+          success: false,
+          data: {
+            listings: [],
+            pagination: {
+              totalCount: 0,
+              currentPage: filters.page || 0,
+              pageSize: filters.size || 20,
+              totalPages: 0,
+            },
           },
-          filterCriteria: filters,
-        },
+        }
+      }
+
+      // Map backend response to frontend format
+      const frontendData = mapBackendToFrontendResponse(backendResponse.data)
+
+      return {
+        code: backendResponse.code,
+        message: backendResponse.message,
+        success: true,
+        data: frontendData,
       }
     },
-    [allMockData, matchesFilters, pushFiltersToQuery],
+    [pushFiltersToQuery],
   )
 
   return (
@@ -168,8 +140,9 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
       <div className='container mx-auto py-6 px-4 md:px-0'>
         <ListProvider
           fetcher={fetcher}
-          initialData={[]}
+          initialData={initialData}
           initialFilters={initialFilters}
+          initialPagination={initialPagination}
         >
           <LocationProvider>
             <ResidentialPropertiesTemplate />
@@ -184,6 +157,110 @@ ResidentialPropertiesPage.getLayout = function getLayout(
   page: React.ReactNode,
 ) {
   return <MainLayout activeItem='properties'>{page}</MainLayout>
+}
+
+// Server-Side Props - Fetch initial data from API
+export const getServerSideProps: GetServerSideProps<
+  ResidentialPropertiesPageProps
+> = async (context) => {
+  try {
+    // Create server-side axios instance (no cookies needed - public API)
+    const serverInstance = createServerAxiosInstance()
+
+    // Parse filters from query params
+    const parsedFilters = getFiltersFromQuery(context.query)
+    const filters: Partial<ListingFilterRequest> = {
+      ...parsedFilters,
+      page: parsedFilters.page ?? DEFAULT_PAGE,
+      size: parsedFilters.size ?? 20,
+    }
+
+    console.log('[SSR Properties] Filters:', JSON.stringify(filters, null, 2))
+
+    // Map to backend request
+    const backendRequest = mapFrontendToBackendRequest(filters)
+    console.log(
+      '[SSR Properties] Backend Request:',
+      JSON.stringify(backendRequest, null, 2),
+    )
+
+    // Fetch from API (public endpoint - no auth required)
+    const response = await ListingService.search(backendRequest, serverInstance)
+
+    console.log('[SSR Properties] API Response:', {
+      success: response.success,
+      code: response.code,
+      dataExists: !!response?.data,
+      listingsCount: response.data?.listings?.length || 0,
+    })
+
+    // Handle error or empty response
+    if (!response.success || !response.data) {
+      console.warn('[SSR Properties] API call failed or no data:', {
+        success: response.success,
+        code: response.code,
+        message: response.message,
+      })
+
+      return {
+        props: {
+          initialData: [],
+          initialPagination: {
+            totalCount: 0,
+            currentPage: 0,
+            pageSize: 20,
+            totalPages: 0,
+          },
+          initialFilters: filters,
+        },
+      }
+    }
+
+    // Map backend response to frontend format
+    const frontendData = mapBackendToFrontendResponse(response.data)
+
+    console.log('[SSR Properties] Success:', {
+      listingsCount: frontendData.listings.length,
+      totalCount: frontendData.pagination.totalCount,
+      currentPage: frontendData.pagination.currentPage,
+      totalPages: frontendData.pagination.totalPages,
+    })
+
+    return {
+      props: {
+        initialData: frontendData.listings,
+        initialPagination: frontendData.pagination,
+        initialFilters: filters,
+      },
+    }
+  } catch (error) {
+    console.error('[SSR Properties] Error fetching listings:', error)
+
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as AxiosError
+      console.error('[SSR Properties] API Error Details:', {
+        status: axiosError.response?.status,
+        statusText: axiosError.response?.statusText,
+        data: axiosError.response?.data,
+        url: axiosError.config?.url,
+        method: axiosError.config?.method,
+      })
+    }
+
+    // Return empty data on error
+    return {
+      props: {
+        initialData: [],
+        initialPagination: {
+          totalCount: 0,
+          currentPage: 0,
+          pageSize: 20,
+          totalPages: 0,
+        },
+        initialFilters: {},
+      },
+    }
+  }
 }
 
 export default ResidentialPropertiesPage

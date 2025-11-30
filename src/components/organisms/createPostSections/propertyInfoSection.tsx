@@ -102,7 +102,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     description,
     address,
     categoryId,
-    propertyType,
+    productType,
     furnishing,
     amenityIds,
   } = propertyInfo
@@ -115,14 +115,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   } = address || {}
 
   React.useEffect(() => {
-    // Sync all property info fields to react-hook-form
     if (propertyInfo.categoryId) {
       setValue('categoryId', propertyInfo.categoryId, {
         shouldValidate: true,
       })
     }
-    if (propertyInfo.propertyType) {
-      setValue('propertyType', propertyInfo.propertyType, {
+    if (propertyInfo.productType) {
+      setValue('productType', propertyInfo.productType, {
         shouldValidate: true,
       })
     }
@@ -237,7 +236,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
     // Validate required fields before generating
     if (
-      !propertyType ||
+      !productType ||
       !furnishing ||
       !propertyInfo?.direction ||
       !propertyInfo?.waterPrice ||
@@ -250,7 +249,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
     const req: ListingDescriptionRequest = {
       category: categoryName,
-      propertyType: propertyType,
+      propertyType: productType,
       price: propertyInfo?.price || 0,
       priceUnit: propertyInfo?.priceUnit || 'MONTH',
       addressText: addressTextObj,
@@ -330,7 +329,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             />
             {/* Property Type */}
             <Controller
-              name='propertyType'
+              name='productType'
               control={control}
               render={({ fieldState: { error } }) => (
                 <div className='space-y-2'>
@@ -341,11 +340,11 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         <span className='text-destructive ml-1'>*</span>
                       </>
                     }
-                    value={propertyType?.toLowerCase()}
+                    value={productType?.toLowerCase()}
                     onValueChange={(value) => {
                       const upperValue = value.toUpperCase() as PropertyType
                       updatePropertyInfo({
-                        propertyType: upperValue,
+                        productType: upperValue,
                       })
                     }}
                     placeholder={tPlaceholders('selectPropertyType')}

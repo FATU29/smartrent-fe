@@ -35,7 +35,7 @@ export const validateStep0 = (
   const address = propertyInfo.address
   const hasAllRequiredFields =
     !!propertyInfo.categoryId &&
-    !!propertyInfo.propertyType &&
+    !!propertyInfo.productType &&
     !!propertyInfo.address &&
     !!address?.latitude &&
     !!address?.longitude &&

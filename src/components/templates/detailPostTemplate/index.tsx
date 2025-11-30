@@ -40,27 +40,21 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   listing,
   similarProperties,
   recentlyViewed,
-  onCall,
   onChatZalo,
   onSimilarPropertyClick,
 }) => {
   const t = useTranslations()
 
-  const { description, assets, user, amenities, address, listingId } =
+  const { description, media, user, amenities, address, listingId } =
     listing || {}
 
-  const { images: assetsImages, video: assetsVideo } = assets || {}
+  const mediaItems = media || []
 
   const { longitude, latitude } = address || {}
 
-  // Fetch pricing history and statistics
   const { data: pricingHistoryData, isLoading: isPricingHistoryLoading } =
     usePricingHistory(listingId)
   const { data: priceStatisticsData } = usePriceStatistics(listingId)
-
-  const handleCall = () => {
-    onCall?.()
-  }
 
   const handleChatZalo = () => {
     onChatZalo?.()
@@ -70,12 +64,11 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     onSimilarPropertyClick?.(property)
   }
 
-  // Create address ReactNode showing both new and old addresses
   const addressNode = useMemo(() => {
     if (!address) return null
 
-    const newAddress = address.new
-    const oldAddress = address.legacy
+    const newAddress = address.fullNewAddress
+    const oldAddress = address.fullAddress
 
     if (!newAddress && !oldAddress) return null
 
@@ -99,11 +92,9 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     () => [
       {
         id: 'gallery',
-        component: (
-          <ImageSlider images={assetsImages || []} videoTour={assetsVideo} />
-        ),
+        component: <ImageSlider media={mediaItems} />,
         containerClassName: 'mb-8',
-        isVisible: assetsImages && assetsImages.length > 0,
+        isVisible: mediaItems && mediaItems.length > 0,
       },
       {
         id: 'header',
@@ -143,8 +134,8 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
                 : mockPricingHistory
             }
             priceStatistics={priceStatisticsData}
-            newAddress={address?.new}
-            oldAddress={address?.legacy}
+            newAddress={address?.fullNewAddress}
+            oldAddress={address?.fullAddress}
           />
         ),
         containerClassName: 'mb-8',
@@ -199,8 +190,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
       pricingHistoryData,
       isPricingHistoryLoading,
       address,
-      assetsImages,
-      assetsVideo,
+      mediaItems,
       amenities,
       description,
     ],
@@ -229,14 +219,8 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
           </div>
 
           {/* Sidebar - Sticky */}
-          <div className='lg:col-span-4'>
-            <div className='sticky top-4'>
-              <SellerContact
-                host={user}
-                onCall={handleCall}
-                onChatZalo={handleChatZalo}
-              />
-            </div>
+          <div className='lg:col-span-4 lg:sticky lg:top-24 lg:self-start'>
+            <SellerContact host={user} onChatZalo={handleChatZalo} />
           </div>
         </div>
       </div>

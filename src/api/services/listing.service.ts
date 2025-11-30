@@ -13,8 +13,8 @@ import {
   CreateListingRequest,
   CreateVipListingRequest,
   ListingDetail,
-  ListingFilterRequest,
-  ListingSearchApiResponse,
+  ListingSearchApiRequest,
+  ListingSearchBackendResponse,
   ProvinceStatsItem,
   ProvinceStatsRequest,
   QuotaCheckResponse,
@@ -157,24 +157,19 @@ export class ListingService {
   /**
    * Search listings with comprehensive filters
    * POST /v1/listings/search
-   * @param {ListingSearchRequest} request - Search filters (all optional)
+   * @param {ListingSearchApiRequest} request - Backend API request format
    * @param {AxiosInstance} instance - Optional axios instance for server-side calls
-   * @returns {Promise<ApiResponse<ListingSearchResponse>>} Promise resolving to search results
+   * @returns {Promise<ApiResponse<ListingSearchBackendResponse>>} Raw backend response
    * @example
-   * const results = await ListingService.search({
-   *   provinceId: 1,
-   *   listingType: 'RENT',
-   *   minPrice: 5000000,
-   *   maxPrice: 15000000,
-   *   page: 0,
-   *   size: 20
-   * })
+   * const backendRequest = mapFrontendToBackendRequest(filters)
+   * const response = await ListingService.search(backendRequest)
+   * const mappedData = mapBackendToFrontendResponse(response.data)
    */
   static async search(
-    request: ListingFilterRequest,
+    request: ListingSearchApiRequest,
     instance?: AxiosInstance,
-  ): Promise<ApiResponse<ListingSearchApiResponse<ListingDetail>>> {
-    const response = await apiRequest<ListingSearchApiResponse<ListingDetail>>(
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    return apiRequest<ListingSearchBackendResponse>(
       {
         method: 'POST',
         url: PATHS.LISTING.SEARCH,
@@ -182,8 +177,6 @@ export class ListingService {
       },
       instance,
     )
-
-    return response
   }
 }
 

@@ -5,43 +5,33 @@ import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
 import ImageAtom from '@/components/atoms/imageAtom'
 import { DEFAULT_IMAGE } from '@/constants'
 import { isYouTube, toYouTubeEmbed } from '@/utils/video/url'
-
-interface MediaItem {
-  type: 'image' | 'video'
-  src: string
-  thumbnail?: string
-}
+import { MediaItem } from '@/api/types/property.type'
 
 interface ImageSliderProps {
-  images: string[]
-  videoTour?: string
+  media: MediaItem[]
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ images, videoTour }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
   const t = useTranslations('apartmentDetail.imageSlider')
+
+  const video = media.find((item) => item.mediaType === 'VIDEO' && item.url)
+  const images = media.filter((item) => item.mediaType === 'IMAGE' && item.url)
+
+  const thumbnailMedia = media.find(
+    (item) => item.mediaType === 'IMAGE' && item.isPrimary && item.url,
+  )
+
+  const sortedMedia = [video, thumbnailMedia, ...images].filter(Boolean)
+
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  // Create media items array
-  const mediaItems: MediaItem[] = [
-    ...images.map((img) => ({ type: 'image' as const, src: img })),
-    ...(videoTour
-      ? [
-          {
-            type: 'video' as const,
-            src: videoTour,
-            thumbnail: images[0] || DEFAULT_IMAGE,
-          },
-        ]
-      : []),
-  ]
-
   const nextMedia = () => {
-    setCurrentIndex((prev) => (prev + 1) % mediaItems.length)
+    setCurrentIndex((prev) => (prev + 1) % sortedMedia.length)
   }
 
   const prevMedia = () => {
     setCurrentIndex(
-      (prev) => (prev - 1 + mediaItems.length) % mediaItems.length,
+      (prev) => (prev - 1 + sortedMedia.length) % sortedMedia.length,
     )
   }
 
@@ -49,7 +39,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, videoTour }) => {
     setCurrentIndex(index)
   }
 
-  if (mediaItems.length === 0) {
+  if (sortedMedia.length === 0) {
     return (
       <div className='w-full aspect-[16/10] bg-gray-200 rounded-xl flex items-center justify-center'>
         <span className='text-gray-500 text-sm'>{t('noMediaAvailable')}</span>
@@ -57,39 +47,41 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, videoTour }) => {
     )
   }
 
-  const currentMedia = mediaItems[currentIndex]
+  const currentMedia = sortedMedia[currentIndex]
 
   return (
     <div className='space-y-4'>
       {/* Main Media Display */}
       <div className='relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-gray-900 shadow-lg'>
-        {currentMedia.type === 'image' ? (
+        {currentMedia?.mediaType === 'IMAGE' ? (
           <ImageAtom
-            src={currentMedia.src}
+            src={currentMedia.url}
             defaultImage={DEFAULT_IMAGE}
             alt={`${t('image')} ${currentIndex + 1}`}
             className='w-full h-full object-cover object-center'
           />
-        ) : isYouTube(currentMedia.src) ? (
-          <div className='w-full h-full'>
-            <iframe
-              src={toYouTubeEmbed(currentMedia.src) || ''}
-              className='w-full h-full'
-              allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-              allowFullScreen
+        ) : currentMedia?.mediaType === 'VIDEO' ? (
+          isYouTube(currentMedia.url) ? (
+            <div className='w-full h-full'>
+              <iframe
+                src={toYouTubeEmbed(currentMedia.url) || ''}
+                className='w-full h-full'
+                title={`video-${currentIndex + 1}`}
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                allowFullScreen
+              />
+            </div>
+          ) : (
+            <video
+              src={currentMedia.url}
+              controls
+              className='w-full h-full object-cover object-center rounded-none'
             />
-          </div>
-        ) : (
-          <video
-            src={currentMedia.src}
-            poster={currentMedia.thumbnail}
-            controls
-            className='w-full h-full object-cover object-center rounded-none'
-          />
-        )}
+          )
+        ) : null}
 
         {/* Navigation Arrows */}
-        {mediaItems.length > 1 && currentMedia.type === 'image' && (
+        {sortedMedia.length > 1 && (
           <>
             <Button
               variant='ghost'
@@ -111,14 +103,14 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, videoTour }) => {
         )}
 
         {/* Media Counter */}
-        {mediaItems.length > 1 && (
+        {sortedMedia.length > 1 && (
           <div className='absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs sm:text-sm backdrop-blur-sm font-medium z-10'>
-            {currentIndex + 1} {t('of')} {mediaItems.length}
+            {currentIndex + 1} {t('of')} {sortedMedia.length}
           </div>
         )}
 
         {/* Media Type Badge */}
-        {currentMedia.type === 'video' && (
+        {currentMedia?.mediaType === 'VIDEO' && (
           <div className='absolute top-4 left-4 bg-red-600 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 z-10'>
             <Play className='w-3 h-3' fill='currentColor' />
             {t('video')}
@@ -127,9 +119,9 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, videoTour }) => {
       </div>
 
       {/* Thumbnail List */}
-      {mediaItems.length > 1 && (
+      {sortedMedia.length > 1 && (
         <div className='flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400'>
-          {mediaItems.map((media, index) => (
+          {sortedMedia.map((item, index) => (
             <button
               key={index}
               className={`relative flex-shrink-0 w-20 h-16 sm:w-24 sm:h-18 md:w-28 md:h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
@@ -140,12 +132,12 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, videoTour }) => {
               onClick={() => selectMedia(index)}
             >
               <ImageAtom
-                src={media.type === 'video' ? media.thumbnail! : media.src}
+                src={item?.url || ''}
                 defaultImage={DEFAULT_IMAGE}
-                alt={`${media.type === 'video' ? t('video') : t('image')} ${index + 1}`}
+                alt={`${item?.mediaType === 'VIDEO' ? t('video') : t('image')} ${index + 1}`}
                 className='w-full h-full object-cover object-center'
               />
-              {media.type === 'video' && (
+              {item?.mediaType === 'VIDEO' && (
                 <div className='absolute inset-0 bg-black/40 flex items-center justify-center'>
                   <div className='bg-white/90 rounded-full p-1.5 sm:p-2'>
                     <Play

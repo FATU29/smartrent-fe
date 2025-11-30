@@ -62,8 +62,6 @@ export function createAuthRequestInterceptor(
     let accessToken = getAccessToken(cookies)
 
     if (accessToken && isTokenExpired(accessToken)) {
-      console.log('Access token expired, refreshing...')
-
       const refreshTokenValue = getRefreshToken()
       const newToken = await handleTokenRefresh(refreshTokenValue)
 

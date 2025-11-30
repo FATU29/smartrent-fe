@@ -34,10 +34,8 @@ export * from './vip-tier.type'
 export * from './exchange-rate.type'
 export * from './address.type'
 
-// Avoid duplicate type name collisions with payment.type's PaymentProvider
 export type {
   PropertyType,
-  ListingType,
   VipType,
   PriceUnit,
   Direction,
@@ -74,7 +72,8 @@ export type {
   ProvinceStatsItem,
   ListingFilterRequest,
   ListingSearchResponse,
-  ListingSearchApiResponse,
+  ListingSearchApiRequest,
+  ListingSearchBackendResponse,
 } from './property.type'
 export {
   PRICE_UNIT,

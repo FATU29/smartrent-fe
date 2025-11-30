@@ -45,10 +45,10 @@ export type SellernetRouteKey = keyof typeof SELLERNET_ROUTES
 // Public site routes (homepage, property browsing, etc.)
 export const PUBLIC_ROUTES = {
   HOME: '/',
-  RESIDENTIAL_LIST: '/properties/residential',
   PROPERTIES_PREFIX: '/properties',
   APARTMENT_DETAIL_PREFIX: '/listing-detail', // dynamic [...slug]
   PAYMENT_STATUS: '/payment/status',
+  LISTING_LISTING: '/properties',
 } as const
 
 export type PublicRouteKey = keyof typeof PUBLIC_ROUTES

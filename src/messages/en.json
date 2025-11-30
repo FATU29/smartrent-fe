@@ -1989,6 +1989,9 @@
         "score": "Score"
       }
     },
+    "links": {
+      "viewSellerListings": "View this seller's listings"
+    },
     "sections": {
       "features": "Property Features",
       "description": "Description",

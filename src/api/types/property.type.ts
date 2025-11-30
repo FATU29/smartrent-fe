@@ -2,7 +2,6 @@ import { Pagination } from './pagination.type'
 import { UserApi } from './user.type'
 
 export type PropertyType = 'APARTMENT' | 'HOUSE' | 'ROOM' | 'STUDIO'
-export type ListingType = 'RENT' | 'SHARE'
 export type VipType = 'NORMAL' | 'SILVER' | 'GOLD' | 'DIAMOND'
 export type PriceUnit = 'MONTH' | 'YEAR'
 export enum PRICE_UNIT {
@@ -91,6 +90,8 @@ export type CategoryType = {
   updated_at: string
 }
 
+export type MediaType = 'IMAGE' | 'VIDEO'
+
 // Amenity interface
 export interface Amenity {
   amenityId: number
@@ -156,18 +157,26 @@ export interface LocationPricing {
   percentageDifferenceFromAverage: number
 }
 
+export interface MediaItem {
+  mediaId: number
+  listingId: number
+  mediaType: MediaType
+  sourceType: string
+  url: string
+  isPrimary: boolean
+  sortOrder: number
+  status: PostStatus
+  createdAt: string
+}
+
 export interface ListingApi {
   listingId: number
   title: string
   description: string
-  assets: {
-    video?: string
-    images?: string[]
-  }
+  media: MediaItem[]
   user: UserApi
   postDate: Date
   expiryDate: string
-  listingType: ListingType
   verified?: boolean
   expired?: boolean
   vipType: VipType
@@ -177,8 +186,8 @@ export interface ListingApi {
   price: number
   priceUnit: PriceUnit
   address: {
-    legacy?: string
-    new: string
+    fullAddress?: string
+    fullNewAddress: string
     latitude: number
     longitude: number
   }
@@ -265,7 +274,6 @@ export interface BenefitMembership {
 export interface CreateListingRequest {
   title?: string
   description?: string
-  listingType?: ListingType
   categoryId?: number
   productType?: PropertyType
   price?: number
@@ -276,7 +284,6 @@ export interface CreateListingRequest {
   bathrooms?: number
   direction?: Direction
   furnishing?: Furnishing
-  propertyType?: PropertyType
   roomCapacity?: number
   amenityIds?: number[]
   mediaIds?: number[]
@@ -398,12 +405,9 @@ export interface ListingFilterRequest {
   provinceId?: number | string
   districtId?: number
   wardId?: number | string
-  longitude?: number
-  latitude?: number
   isLegacy?: boolean
 
   categoryId?: number
-  listingType?: ListingType
   vipType?: VipType
   productType?: PropertyType
 
@@ -436,16 +440,85 @@ export interface ListingFilterRequest {
   sortBy?: SortKey
 
   serviceFee?: PriceType
+
+  userLatitude?: number
+  userLongitude?: number
+
+  latitude?: number
+  longitude?: number
 }
 
+/**
+ * Backend API request for listing search
+ * Maps directly to backend ListingFilterRequest
+ */
+export interface ListingSearchApiRequest {
+  provinceId?: number | string
+  districtId?: number
+  wardId?: number | string
+  isLegacy?: boolean
+
+  categoryId?: number
+  vipType?: VipType
+  productType?: PropertyType
+
+  minPrice?: number
+  maxPrice?: number
+  minArea?: number
+  maxArea?: number
+  minBedrooms?: number
+  maxBedrooms?: number
+  bathrooms?: number
+  furnishing?: Furnishing
+  direction?: Direction
+  verified?: boolean
+
+  waterPrice?: PriceType
+  electricityPrice?: PriceType
+  internetPrice?: PriceType
+  serviceFee?: PriceType
+
+  amenityIds?: number[]
+
+  keyword?: string
+
+  // Backend uses these for pagination
+  page?: number
+  size?: number
+
+  status?: PostStatus
+  userId?: string
+  sortBy?: SortKey
+
+  // Location coordinates
+  userLatitude?: number
+  userLongitude?: number
+
+  longitude?: number
+  latitude?: number
+}
+
+/**
+ * Backend API response for listing search
+ * Maps directly to backend ListingListResponse structure
+ */
+export interface ListingSearchBackendResponse {
+  listings: ListingDetail[]
+  totalCount: number
+  currentPage: number
+  pageSize: number
+  totalPages: number
+  recommendations?: ListingDetail[]
+  filterCriteria?: Partial<ListingSearchApiRequest>
+}
+
+/**
+ * Frontend internal response format (keeps existing structure)
+ * Used with ApiResponse wrapper: ApiResponse<ListingSearchResponse<T>>
+ */
 export interface ListingSearchResponse<T> {
   listings: T[]
   pagination: Pagination
   filterCriteria?: Partial<ListingFilterRequest>
-}
-
-export interface ListingSearchApiResponse<T> {
-  code: string
-  message: string | null
-  data: ListingSearchResponse<T>
+  recommendations?: T[]
 }

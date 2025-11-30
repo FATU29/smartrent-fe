@@ -21,7 +21,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   const { title, address, price, priceUnit, area, bedrooms, bathrooms } =
     listing || {}
 
-  const { new: newAddress, legacy: oldAddress } = address || {}
+  const { fullNewAddress: newAddress, fullAddress: oldAddress } = address || {}
 
   return (
     <div className='space-y-4'>

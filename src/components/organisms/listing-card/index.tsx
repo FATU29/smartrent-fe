@@ -50,15 +50,44 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 }) => {
   const t = useTranslations('seller.listingManagement.card')
 
+  const {
+    title,
+    listingId,
+    postDate,
+    expiryDate,
+    productType,
+    expired,
+    verified,
+    vipType,
+    rankOfVipType,
+    status,
+    listingViews,
+    interested,
+    customers,
+    media,
+    address,
+  } = property
+
+  // Extract media URLs
+  const images = media?.filter((m) => m.mediaType === 'IMAGE')
+  const primaryImage = images?.find((img) => img.isPrimary)?.url
+  const firstImage = images?.[0]?.url
+  const thumbnailImage = primaryImage || firstImage
+
+  // Extract address
+  const { fullNewAddress: newAddress, fullAddress: legacyAddress } =
+    address || {}
+  const displayAddress = newAddress || legacyAddress || 'N/A'
+
   // Derived logic based on ListingOwnerDetail
-  const isExpired = property.expired || false
-  const hasVipPackage = property.vipType && property.vipType !== 'NORMAL'
-  const showRank = property.rankOfVipType > 0
+  const isExpired = expired || false
+  const hasVipPackage = vipType && vipType !== 'NORMAL'
+  const showRank = rankOfVipType > 0
   const showPromoteButton = !hasVipPackage
   const showRepostButton = isExpired
 
   // VipType is already matching PackageType (NORMAL, SILVER, GOLD, DIAMOND)
-  const packageType = property.vipType
+  const packageType = vipType
 
   // Map PostStatus to StatusType
   const getStatusType = (status?: string): string | undefined => {
@@ -77,7 +106,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     return mapping[status] || 'pending'
   }
 
-  const statusType = getStatusType(property.status)
+  const statusType = getStatusType(status)
 
   return (
     <Card
@@ -92,10 +121,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           {/* Property Image */}
           <div className={LISTING_CARD_STYLES.imageContainer}>
             <Image
-              src={
-                property.assets?.images?.[0] || LISTING_CARD_CONFIG.defaultImage
-              }
-              alt={property.title}
+              src={thumbnailImage || LISTING_CARD_CONFIG.defaultImage}
+              alt={title}
               fill
               className={cn(
                 LISTING_CARD_STYLES.image,
@@ -116,29 +143,28 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               {/* Left Content */}
               <div className={LISTING_CARD_STYLES.leftContent}>
                 {/* Title */}
-                <h3 className={LISTING_CARD_STYLES.title}>{property.title}</h3>
+                <h3 className={LISTING_CARD_STYLES.title}>{title}</h3>
 
                 {/* Address */}
                 <p className={LISTING_CARD_STYLES.address}>
-                  {property.productType} •{' '}
-                  {property.address?.new || property.address?.legacy || 'N/A'}
+                  {productType} • {displayAddress}
                 </p>
 
                 {/* Property Info */}
                 <div className={LISTING_CARD_STYLES.propertyInfo}>
                   <span>
-                    {t('listingCode')}: {property.listingId}
+                    {t('listingCode')}: {listingId}
                   </span>
                   <span>
                     {t('postedDate')}:{' '}
                     {formatDate(
-                      property.postDate instanceof Date
-                        ? property.postDate.toISOString()
-                        : property.postDate,
+                      postDate instanceof Date
+                        ? postDate.toISOString()
+                        : postDate,
                     )}
                   </span>
                   <span>
-                    {t('expiryDate')}: {formatDate(property.expiryDate)}
+                    {t('expiryDate')}: {formatDate(expiryDate)}
                   </span>
                 </div>
 
@@ -151,16 +177,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
                 {/* Verification and Rank */}
                 <div className={LISTING_CARD_STYLES.badgeContainer}>
-                  {property.verified && (
-                    <VerificationBadge
-                      verified={property.verified}
-                      type='verified'
-                    />
+                  {verified && (
+                    <VerificationBadge verified={verified} type='verified' />
                   )}
                   {showRank && (
-                    <RankDisplay
-                      rank={{ page: 1, position: property.rankOfVipType }}
-                    />
+                    <RankDisplay rank={{ page: 1, position: rankOfVipType }} />
                   )}
                 </div>
               </div>
@@ -188,15 +209,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 </div>
 
                 {/* Stats */}
-                {(property.listingViews ||
-                  property.interested ||
-                  property.customers) && (
+                {(listingViews || interested || customers) && (
                   <div className={LISTING_CARD_STYLES.statsContainer}>
                     <StatsDisplay
                       stats={{
-                        views: property.listingViews || 0,
-                        contacts: property.interested || 0,
-                        customers: property.customers || 0,
+                        views: listingViews || 0,
+                        contacts: interested || 0,
+                        customers: customers || 0,
                       }}
                       animated={true}
                       compact={true}

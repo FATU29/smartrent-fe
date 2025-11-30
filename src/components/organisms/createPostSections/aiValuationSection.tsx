@@ -146,13 +146,13 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   }
 
   const propertyTypeLabel = useMemo(() => {
-    if (!propertyInfo.propertyType) return ''
+    if (!propertyInfo.productType) return ''
     const options = getAiPropertyTypeOptions(t, tPropertyDetails)
     const option = options.find(
-      (opt) => opt.value === propertyInfo.propertyType?.toLowerCase(),
+      (opt) => opt.value === propertyInfo.productType?.toLowerCase(),
     )
-    return option?.label || propertyInfo.propertyType
-  }, [propertyInfo.propertyType, t, tPropertyDetails])
+    return option?.label || propertyInfo.productType
+  }, [propertyInfo.productType, t, tPropertyDetails])
 
   const canPredict = !!predictionRequest
 
