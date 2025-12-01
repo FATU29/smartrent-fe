@@ -26,7 +26,6 @@ const fetchMyListings = async (
 > => {
   const request = {
     ...filters,
-    listingStatus: filters.status as unknown as string,
   }
 
   const response = await ListingService.getMyListings(request)

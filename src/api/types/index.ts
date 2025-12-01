@@ -2,6 +2,7 @@ export * from './ai.type'
 export * from './api.type'
 export * from './auth.type'
 export * from './customer.type'
+export * from './draft.type'
 export * from './media.type'
 export {
   BenefitStatus,

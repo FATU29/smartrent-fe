@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import { DraftCard } from '@/components/molecules/draftCard'
 import { DraftCardSkeleton } from '@/components/molecules/draftCard/DraftCardSkeleton'
 import { DraftEmptyState } from '@/components/organisms/drafts/DraftEmptyState'
+import { DeleteDraftDialog } from '@/components/molecules/deleteDraftDialog'
 import { List, useListContext } from '@/contexts/list'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
+import { useDeleteDraft } from '@/hooks/useListings/useDeleteDraft'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
-import type { Draft } from '@/types/draft.types'
+import type { ListingOwnerDetail } from '@/api/types'
 
 interface DraftsTemplateProps {
   className?: string
@@ -20,12 +23,16 @@ const DraftsList: React.FC = () => {
     isLoading,
     pagination,
     loadMore,
-  } = useListContext<Draft>()
+  } = useListContext<ListingOwnerDetail>()
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tDrafts = useTranslations('seller.drafts')
+  const tDelete = useTranslations('seller.drafts.delete')
   const { currentPage, totalPages } = pagination
   const hasNext = currentPage < totalPages
+
+  const [draftToDelete, setDraftToDelete] = useState<number | null>(null)
+  const deleteMutation = useDeleteDraft()
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: () => {
@@ -38,6 +45,26 @@ const DraftsList: React.FC = () => {
     },
   })
 
+  const handleDeleteClick = useCallback((listingId: number) => {
+    setDraftToDelete(listingId)
+  }, [])
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (draftToDelete === null) return
+
+    try {
+      await deleteMutation.mutateAsync(String(draftToDelete))
+      toast.success(tDelete('success'))
+      setDraftToDelete(null)
+    } catch {
+      toast.error(tDelete('error'))
+    }
+  }, [draftToDelete, deleteMutation, tDelete])
+
+  const handleCancelDelete = useCallback(() => {
+    setDraftToDelete(null)
+  }, [])
+
   if (isLoading && drafts.length === 0) {
     return <DraftCardSkeleton count={3} />
   }
@@ -47,68 +74,87 @@ const DraftsList: React.FC = () => {
   }
 
   return (
-    <div className='space-y-4'>
-      {drafts.map((draft) => (
-        <DraftCard
-          key={draft.id}
-          draft={draft}
-          onEdit={() => {
-            // Navigate to edit draft (can be implemented later)
-            console.log('Edit draft:', draft.id)
-          }}
-          onDelete={() => {
-            // Delete draft (can be implemented later)
-            console.log('Delete draft:', draft.id)
-          }}
-        />
-      ))}
+    <>
+      <div className='space-y-4'>
+        {drafts.map((draft) => (
+          <DraftCard
+            key={draft.listingId}
+            draft={{
+              id: draft.listingId,
+              title: draft.title,
+              description: draft.description,
+              address: draft.address.fullNewAddress,
+              propertyType: draft.productType,
+              price: draft.price,
+              area: draft.area,
+              bedrooms: draft.bedrooms,
+              bathrooms: draft.bathrooms,
+              images: draft.media?.map((m) => m.url) || [],
+              createdAt: draft.createdAt,
+              updatedAt: draft.updatedAt,
+            }}
+            onEdit={() => {
+              // Navigate to edit draft (can be implemented later)
+              console.log('Edit draft:', draft.listingId)
+            }}
+            onDelete={() => handleDeleteClick(draft.listingId)}
+          />
+        ))}
 
-      {/* Desktop: Show Pagination */}
-      {!isMobile && (
-        <div className='mt-8 flex justify-center'>
-          <List.Pagination />
-        </div>
-      )}
+        {/* Desktop: Show Pagination */}
+        {!isMobile && (
+          <div className='mt-8 flex justify-center'>
+            <List.Pagination />
+          </div>
+        )}
 
-      {/* Mobile: Infinite scroll */}
-      {isMobile && (
-        <div className='mt-6 flex flex-col items-center gap-4'>
-          {isLoading && (
-            <div className='flex items-center justify-center py-4'>
+        {/* Mobile: Infinite scroll */}
+        {isMobile && (
+          <div className='mt-6 flex flex-col items-center gap-4'>
+            {isLoading && (
+              <div className='flex items-center justify-center py-4'>
+                <Typography
+                  variant='small'
+                  className='animate-pulse text-muted-foreground'
+                >
+                  {t('loadingMore')}
+                </Typography>
+              </div>
+            )}
+
+            {hasNext && !isLoading && (
+              <List.LoadMore
+                className='w-full max-w-xs'
+                variant='outline'
+                fullWidth={true}
+              />
+            )}
+
+            <div
+              ref={loadMoreRef as React.RefObject<HTMLDivElement>}
+              className='h-1 w-full'
+              aria-hidden='true'
+            />
+
+            {!hasNext && drafts.length > 0 && (
               <Typography
                 variant='small'
-                className='animate-pulse text-muted-foreground'
+                className='text-center py-6 text-muted-foreground'
               >
-                {t('loadingMore')}
+                {tDrafts('allDraftsShown')}
               </Typography>
-            </div>
-          )}
+            )}
+          </div>
+        )}
+      </div>
 
-          {hasNext && !isLoading && (
-            <List.LoadMore
-              className='w-full max-w-xs'
-              variant='outline'
-              fullWidth={true}
-            />
-          )}
-
-          <div
-            ref={loadMoreRef as React.RefObject<HTMLDivElement>}
-            className='h-1 w-full'
-            aria-hidden='true'
-          />
-
-          {!hasNext && drafts.length > 0 && (
-            <Typography
-              variant='small'
-              className='text-center py-6 text-muted-foreground'
-            >
-              {tDrafts('allDraftsShown')}
-            </Typography>
-          )}
-        </div>
-      )}
-    </div>
+      <DeleteDraftDialog
+        open={draftToDelete !== null}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        isDeleting={deleteMutation.isPending}
+      />
+    </>
   )
 }
 

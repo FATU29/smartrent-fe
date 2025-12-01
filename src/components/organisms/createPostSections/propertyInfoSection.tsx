@@ -241,13 +241,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       })
     }
 
-    const addressTextObj: { new: string; legacy?: string } = {
-      new: composedNewAddress || '',
-    }
-    if (composedLegacyAddress) {
-      addressTextObj.legacy = composedLegacyAddress
-    }
-
     if (
       !categoryName ||
       !productType ||
@@ -272,7 +265,10 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       propertyType: productType,
       price: propertyInfo.price,
       priceUnit: propertyInfo.priceUnit,
-      addressText: addressTextObj,
+      addressText: {
+        newAddress: composedNewAddress || '',
+        legacy: composedLegacyAddress,
+      },
       area: propertyInfo.area,
       bedrooms: propertyInfo.bedrooms,
       bathrooms: propertyInfo.bathrooms,
@@ -284,21 +280,16 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       internetPrice: propertyInfo.internetPrice,
       serviceFee: propertyInfo.serviceFee,
       tone: aiTone,
-      title: {
-        maxWords: '100',
-        minWords: '30',
-      },
-      description: {
-        maxWords: '1000',
-        minWords: '70',
-      },
+      titleMaxWords: 100,
+      titleMinWords: 30,
+      descriptionMaxWords: 1000,
+      descriptionMinWords: 70,
     }
 
     generateAI(req, {
       onSuccess: (resp) => {
-        const generatedTitle = resp.data?.generatedTitle || title || ''
-        const generatedDescription =
-          resp.data?.generatedDescription || description || ''
+        const generatedTitle = resp.data?.title || title || ''
+        const generatedDescription = resp.data?.description || description || ''
 
         updatePropertyInfo({
           title: generatedTitle,

@@ -1,36 +1,35 @@
 export interface ListingDescriptionRequest {
-  category: string
-  propertyType: string
-  price: number
-  priceUnit: string
-  addressText: {
-    new: string
+  category?: string
+  propertyType?: string
+  price?: number
+  priceUnit?: string
+  addressText?: {
+    newAddress?: string
     legacy?: string
   }
-  area: number
-  bedrooms: number
-  bathrooms: number
-  direction: string
-  furnishing: string
-  amenities: string[]
-  waterPrice: string
-  electricityPrice: string
-  internetPrice: string
-  serviceFee: string
+  area?: number
+  bedrooms?: number
+  bathrooms?: number
+  direction?: string
+  furnishing?: string
+  amenities?: string[]
+  waterPrice?: string
+  electricityPrice?: string
+  internetPrice?: string
+  serviceFee?: string
   tone: string
-  title: {
-    maxWords: string
-    minWords: string
-  }
-  description: {
-    maxWords: string
-    minWords: string
-  }
+  titleMaxWords?: number
+  titleMinWords?: number
+  descriptionMaxWords?: number
+  descriptionMinWords?: number
 }
 
+/**
+ * Backend AI listing description response - matches Java DTO exactly
+ */
 export interface ListingDescriptionResponse {
-  generatedDescription: string
-  generatedTitle?: string
+  title: string
+  description: string
 }
 
 // Housing Price Predictor Types

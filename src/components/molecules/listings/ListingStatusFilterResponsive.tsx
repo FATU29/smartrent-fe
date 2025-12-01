@@ -15,7 +15,6 @@ import {
   getPostStatusI18nKey,
 } from '@/constants/postStatus'
 
-// Use centralized ordered list (ALL + numeric sequence 1..7)
 const STATUS_ORDER: PostStatus[] = STATUS_FILTER_WITH_ALL
 
 export interface ListingStatusFilterResponsiveProps {

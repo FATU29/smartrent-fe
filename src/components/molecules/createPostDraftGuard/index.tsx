@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { SaveDraftDialog } from '@/components/molecules/saveDraftDialog'
 import { useCreatePost } from '@/contexts/createPost'
 import { useAuth } from '@/hooks/useAuth'
+import { useCreateDraft } from '@/hooks/useListings/useCreateDraft'
 import { toast } from 'sonner'
 
 interface CreatePostDraftGuardProps {
@@ -19,6 +20,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   const t = useTranslations('createPost.draftDialog')
   const { propertyInfo } = useCreatePost()
   const { user } = useAuth()
+  const { mutate: createDraft, isPending: isDraftSaving } = useCreateDraft()
 
   // State
   const [showDialog, setShowDialog] = useState(false)
@@ -101,7 +103,50 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       toast.error(t('loginRequired'))
       return
     }
-  }, [propertyInfo, user?.userId, proceedWithNavigation, t])
+
+    // Validate minimum required fields (new address type)
+    const hasNewAddress =
+      propertyInfo.address?.new?.provinceCode &&
+      propertyInfo.address?.new?.wardCode
+
+    if (!hasNewAddress && !propertyInfo.address?.legacy) {
+      toast.error(t('addressRequired'))
+      return
+    }
+
+    // Check basic required fields
+    if (!propertyInfo.categoryId || !propertyInfo.title) {
+      toast.error(t('requiredFieldsMissing'))
+      return
+    }
+
+    // Prepare draft payload
+    const draftPayload = {
+      ...propertyInfo,
+      isDraft: true,
+    }
+
+    // Call API to create draft
+    createDraft(draftPayload, {
+      onSuccess: (response) => {
+        if (response.success && response.data) {
+          toast.success(t('draftSaved'))
+          // Navigate to drafts page after success
+          shouldBlockRef.current = false
+          isNavigatingRef.current = true
+          router.push('/seller/drafts').then(() => {
+            isNavigatingRef.current = false
+          })
+        } else {
+          toast.error(response.message || t('saveFailed'))
+        }
+      },
+      onError: (error) => {
+        toast.error(t('saveFailed'))
+        console.error('Draft creation error:', error)
+      },
+    })
+  }, [propertyInfo, user?.userId, createDraft, t, router])
 
   const handleDiscard = useCallback(() => {
     setShowDialog(false)
@@ -233,7 +278,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
         onSave={saveDraft}
         onDiscard={handleDiscard}
         onCancel={handleCancel}
-        isSaving={false}
+        isSaving={isDraftSaving}
       />
     </>
   )

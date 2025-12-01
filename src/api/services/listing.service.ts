@@ -12,6 +12,10 @@ import { AxiosInstance } from 'axios'
 import {
   CreateListingRequest,
   CreateVipListingRequest,
+  DraftListingRequest,
+  DraftListingResponse,
+  PublishDraftRequest,
+  PublishDraftResponse,
   ListingDetail,
   ListingSearchApiRequest,
   ListingSearchBackendResponse,
@@ -81,6 +85,16 @@ export class ListingService {
     }>({
       method: 'POST',
       url: PATHS.LISTING.CREATE_VIP,
+      data,
+    })
+  }
+
+  static async createDraft(
+    data: CreateListingRequest,
+  ): Promise<ApiResponse<{ listingId: number; status: string }>> {
+    return apiRequest<{ listingId: number; status: string }>({
+      method: 'POST',
+      url: PATHS.LISTING.CREATE_DRAFT,
       data,
     })
   }
@@ -198,6 +212,105 @@ export class ListingService {
       instance,
     )
   }
+
+  /**
+   * Get current user's draft listings
+   * POST /v1/listings/my-drafts
+   */
+  static async getMyDrafts(
+    request: Partial<ListingFilterRequest>,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<MyListingsBackendResponse>> {
+    return apiRequest<MyListingsBackendResponse>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.MY_DRAFTS,
+        data: request,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Get a specific draft by ID
+   * GET /v1/listings/draft/:draftId
+   */
+  static async getDraft(
+    draftId: string | number,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<DraftListingResponse>> {
+    const url = PATHS.LISTING.GET_DRAFT.replace(':draftId', draftId.toString())
+    return apiRequest<DraftListingResponse>(
+      {
+        method: 'GET',
+        url,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Update a draft listing (auto-save)
+   * POST /v1/listings/draft/:draftId
+   */
+  static async updateDraft(
+    draftId: string | number,
+    data: Partial<DraftListingRequest>,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<DraftListingResponse>> {
+    const url = PATHS.LISTING.UPDATE_DRAFT.replace(
+      ':draftId',
+      draftId.toString(),
+    )
+    return apiRequest<DraftListingResponse>(
+      {
+        method: 'POST',
+        url,
+        data,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Publish a draft listing
+   * POST /v1/listings/draft/:draftId/publish
+   */
+  static async publishDraft(
+    draftId: string | number,
+    data: PublishDraftRequest,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<PublishDraftResponse>> {
+    const url = PATHS.LISTING.PUBLISH_DRAFT.replace(
+      ':draftId',
+      draftId.toString(),
+    )
+    return apiRequest<PublishDraftResponse>(
+      {
+        method: 'POST',
+        url,
+        data,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Delete a draft listing
+   * DELETE /v1/listings/draft/:draftId
+   */
+  static async deleteDraft(
+    draftId: string | number,
+  ): Promise<ApiResponse<null>> {
+    const url = PATHS.LISTING.DELETE_DRAFT.replace(
+      ':draftId',
+      draftId.toString(),
+    )
+    return apiRequest<null>({
+      method: 'DELETE',
+      url,
+    })
+  }
 }
 
 // ============= EXPORTS =============
@@ -206,6 +319,7 @@ export const {
   getById,
   create,
   createVip,
+  createDraft,
   update,
   delete: deleteListing,
   checkQuota,
@@ -213,4 +327,9 @@ export const {
   getProvinceStats,
   search,
   getMyListings,
+  getMyDrafts,
+  getDraft,
+  updateDraft,
+  publishDraft,
+  deleteDraft,
 } = ListingService

@@ -422,7 +422,6 @@ export interface ListingFilterRequest {
   isVerify?: boolean // alias for verified used by some endpoints
   expired?: boolean
   isDraft?: boolean
-  listingStatus?: string
   sortDirection?: 'ASC' | 'DESC'
 
   waterPrice?: PriceType
@@ -437,7 +436,6 @@ export interface ListingFilterRequest {
   size?: number
 
   status?: PostStatus
-
   userId?: string
   sortBy?: SortKey
 
@@ -448,6 +446,8 @@ export interface ListingFilterRequest {
 
   latitude?: number
   longitude?: number
+
+  listingStatus?: PostStatus
 }
 
 /**

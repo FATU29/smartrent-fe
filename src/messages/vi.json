@@ -783,7 +783,10 @@
       "saving": "Đang lưu...",
       "loginRequired": "Vui lòng đăng nhập để lưu bản nháp",
       "saveSuccess": "Lưu bản nháp thành công",
-      "saveFailed": "Lưu bản nháp thất bại. Vui lòng thử lại."
+      "saveFailed": "Lưu bản nháp thất bại. Vui lòng thử lại.",
+      "draftSaved": "Lưu bản nháp thành công! Đang chuyển tới trang nháp...",
+      "addressRequired": "Địa chỉ là bắt buộc để lưu bản nháp",
+      "requiredFieldsMissing": "Danh mục và tiêu đề là bắt buộc để lưu bản nháp"
     },
     "steps": {
       "propertyInfo": {
@@ -1976,6 +1979,14 @@
         "bedrooms": "phòng ngủ",
         "bathrooms": "phòng tắm",
         "edit": "Chỉnh sửa"
+      },
+      "delete": {
+        "confirmTitle": "Xóa bản nháp",
+        "confirmMessage": "Bạn có chắc chắn muốn xóa bản nháp này? Hành động này không thể hoàn tác.",
+        "cancel": "Hủy",
+        "confirm": "Xóa",
+        "success": "Đã xóa bản nháp thành công",
+        "error": "Không thể xóa bản nháp"
       }
     },
     "customers": {

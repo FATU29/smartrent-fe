@@ -1,5 +1,5 @@
 import React from 'react'
-import { Search, Filter, FileDown } from 'lucide-react'
+import { Search, Filter } from 'lucide-react'
 import { Button } from '@/components/atoms/button'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
@@ -9,7 +9,6 @@ interface ListingToolbarProps {
   total: number
   onSearch: (q: string) => void
   onFilterClick?: () => void
-  onExport?: () => void
   className?: string
   // Optional children to render inside the Filter button (e.g., count badge)
   filterButtonChildren?: React.ReactNode
@@ -19,7 +18,6 @@ export const ListingToolbar: React.FC<ListingToolbarProps> = ({
   total,
   onSearch,
   onFilterClick,
-  onExport,
   className,
   filterButtonChildren,
 }) => {
@@ -79,14 +77,6 @@ export const ListingToolbar: React.FC<ListingToolbarProps> = ({
               {t('filter')}
               {filterButtonChildren}
             </span>
-          </Button>
-          <Button
-            type='button'
-            variant='outline'
-            onClick={onExport}
-            className='gap-1.5'
-          >
-            <FileDown size={14} /> {t('export')}
           </Button>
         </div>
       </div>

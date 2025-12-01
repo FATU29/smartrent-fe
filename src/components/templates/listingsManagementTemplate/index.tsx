@@ -15,8 +15,12 @@ const ResidentialFilterDialog = dynamic(
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { List, useListContext } from '@/contexts/list'
-import { countActiveFilters } from '@/utils/filters/countActiveFilters'
-import { ListingOwnerDetail, PostStatus, POST_STATUS } from '@/api/types'
+import {
+  ListingOwnerDetail,
+  PostStatus,
+  POST_STATUS,
+  ListingFilterRequest,
+} from '@/api/types'
 
 const ListingsWithPagination: React.FC<{ currentStatus: PostStatus }> = ({
   currentStatus,
@@ -158,29 +162,15 @@ const ToolbarWithBadge: React.FC<{
       total={total}
       onSearch={(query) => console.log('Search:', query)}
       onFilterClick={onFilterClick}
-      onExport={() => console.log('Export clicked')}
-      filterButtonChildren={<FilterButtonBadge />}
     />
-  )
-}
-
-const FilterButtonBadge: React.FC = () => {
-  const { filters, activeFilterCount } = useListContext()
-  const activeFiltersCount = activeFilterCount || countActiveFilters(filters)
-
-  if (activeFiltersCount === 0) return null
-
-  return (
-    <span className='ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1.5 text-[10px] font-semibold text-primary'>
-      {activeFiltersCount}
-    </span>
   )
 }
 
 const FilterDialogWrapper: React.FC<{
   open: boolean
   onOpenChange: (open: boolean) => void
-}> = ({ open, onOpenChange }) => {
+  onApply: () => void
+}> = ({ open, onOpenChange, onApply }) => {
   const t = useTranslations('seller.listingManagement')
 
   return (
@@ -188,6 +178,7 @@ const FilterDialogWrapper: React.FC<{
       onOpenChange={onOpenChange}
       open={open}
       title={t('filter.title')}
+      onApply={onApply}
     />
   )
 }
@@ -197,18 +188,18 @@ export const ListingsManagementTemplate: React.FC<
 > = ({ children }) => {
   const [status, setStatus] = useState<PostStatus>(POST_STATUS.ALL)
   const [filterOpen, setFilterOpen] = useState(false)
-  const { items: listings } = useListContext<ListingOwnerDetail>()
+  const { items: listings, updateFilters } =
+    useListContext<ListingFilterRequest>()
 
-  // Calculate counts for each status from actual listings
   const counts = useMemo(() => {
     const statusCounts: Partial<Record<PostStatus, number>> = {
       [POST_STATUS.ALL]: listings.length,
     }
 
-    // Count listings by status
     listings.forEach((listing) => {
-      if (listing.status) {
-        statusCounts[listing.status] = (statusCounts[listing.status] || 0) + 1
+      if (listing.listingStatus) {
+        statusCounts[listing.listingStatus] =
+          (statusCounts[listing.listingStatus] || 0) + 1
       }
     })
 
@@ -222,20 +213,26 @@ export const ListingsManagementTemplate: React.FC<
           value={status}
           counts={counts}
           onChange={(newStatus) => {
-            console.log('Status filter changed:', newStatus)
             setStatus(newStatus)
+            updateFilters({
+              listingStatus:
+                newStatus === POST_STATUS.ALL ? undefined : newStatus,
+            })
           }}
         />
         {children}
         <ToolbarWithBadge
           total={listings.length}
           onFilterClick={() => {
-            console.log('Filter clicked')
             setFilterOpen(true)
           }}
         />
         <ListingsWithPagination currentStatus={status} />
-        <FilterDialogWrapper open={filterOpen} onOpenChange={setFilterOpen} />
+        <FilterDialogWrapper
+          open={filterOpen}
+          onOpenChange={setFilterOpen}
+          onApply={() => setFilterOpen(false)}
+        />
       </div>
     </div>
   )
