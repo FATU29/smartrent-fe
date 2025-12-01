@@ -44,7 +44,7 @@ import {
   getToneOptions,
 } from './index.helper'
 import { getAmenityByCode, AMENITIES_CONFIG } from '@/constants/amenities'
-import { getCategoryById } from '@/constants/common/category'
+import { useCategories } from '@/hooks/useCategories'
 import { AddressInput } from '@/components/molecules/createPostAddress'
 import GoogleMapPicker from '@/components/molecules/googleMapPicker'
 import NumberField from '@/components/atoms/number-field'
@@ -92,6 +92,9 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
   const { mutate: generateAI, isPending: aiLoading } =
     useGenerateListingDescription()
+
+  const { data: categoriesData } = useCategories()
+  const categories = categoriesData?.categories ?? []
 
   const [aiTone, setAiTone] = React.useState<'friendly' | 'professionally'>(
     'friendly',
@@ -223,8 +226,10 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   }
 
   const handleGenerateAI = () => {
-    const categoryItem = categoryId ? getCategoryById(categoryId) : null
-    const categoryName = categoryItem?.value || ''
+    const categoryItem = categoryId
+      ? categories.find((c) => c.categoryId === categoryId)
+      : null
+    const categoryName = categoryItem?.icon || ''
 
     const amenityCodes: string[] = []
     if (amenityIds && amenityIds.length > 0) {
@@ -338,7 +343,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                       })
                     }}
                     placeholder={tPlaceholders('selectCategoryType')}
-                    options={getCategoryOptions(tCommon)}
+                    options={getCategoryOptions(tCommon, categories)}
                     error={
                       error?.message
                         ? tValidation(getValidationKey(error.message))

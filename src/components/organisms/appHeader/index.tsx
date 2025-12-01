@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useAuthDialog } from '@/contexts/authDialog'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { useCategories } from '@/hooks/useCategories'
 
 export interface AppHeaderProps {
   activeItem?: string
@@ -51,13 +52,18 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   const { isAuthenticated } = useAuth()
   const { openAuth } = useAuthDialog()
   const router = useRouter()
+  const { data: categoriesData } = useCategories()
 
   useEffect(() => setActive(activeItem), [activeItem])
 
-  const items = useMemo(
-    () => getNavigationItems(active, t, tCommon),
-    [active, t, tCommon],
-  )
+  const items = useMemo(() => {
+    return getNavigationItems(
+      active,
+      t,
+      tCommon,
+      categoriesData?.categories ?? [],
+    )
+  }, [active, t, tCommon, categoriesData?.categories])
 
   const handleNavClick = (item: NavigationItemData) => {
     setActive(item.id)

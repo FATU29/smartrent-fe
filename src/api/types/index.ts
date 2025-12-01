@@ -73,6 +73,7 @@ export type {
   ListingSearchResponse,
   ListingSearchApiRequest,
   ListingSearchBackendResponse,
+  MyListingsBackendResponse,
 } from './property.type'
 export {
   PRICE_UNIT,

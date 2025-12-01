@@ -419,6 +419,11 @@ export interface ListingFilterRequest {
   furnishing?: Furnishing
   direction?: Direction
   verified?: boolean
+  isVerify?: boolean // alias for verified used by some endpoints
+  expired?: boolean
+  isDraft?: boolean
+  listingStatus?: string
+  sortDirection?: 'ASC' | 'DESC'
 
   waterPrice?: PriceType
   electricityPrice?: PriceType
@@ -507,6 +512,54 @@ export interface ListingSearchBackendResponse {
   totalPages: number
   recommendations?: ListingDetail[]
   filterCriteria?: Partial<ListingSearchApiRequest>
+}
+
+/**
+ * My Listings backend response item (owner-centric)
+ */
+export interface MyListingBackendItem {
+  listingId: number
+  title: string
+  user: {
+    userId: string
+    firstName?: string
+    lastName?: string
+    email?: string
+    contactPhoneNumber?: string
+    contactPhoneVerified?: boolean
+  }
+  verified?: boolean
+  vipType?: VipType
+  postSource?: string
+  transactionId?: string
+  media?: Array<{
+    mediaId: number
+    url: string
+    isPrimary?: boolean
+  }>
+  address?: {
+    addressId?: number
+    fullAddress?: string
+    fullNewAddress?: string
+    latitude?: number
+    longitude?: number
+  }
+  statistics?: {
+    viewCount?: number
+    contactCount?: number
+  }
+}
+
+/**
+ * My Listings backend envelope
+ */
+export interface MyListingsBackendResponse {
+  listings: MyListingBackendItem[]
+  totalCount: number
+  currentPage: number
+  pageSize: number
+  totalPages: number
+  statistics?: Record<string, number>
 }
 
 /**

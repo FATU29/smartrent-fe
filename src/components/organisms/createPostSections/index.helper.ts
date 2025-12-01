@@ -10,7 +10,8 @@ import {
 } from '@/constants/amenities'
 import { FURNISHING, PropertyType } from '@/api/types'
 import type { LucideIcon } from 'lucide-react'
-import { CATEGORIES, getCategoryName } from '@/constants/common/category'
+import { getCategoryName } from '@/constants/common/category'
+import type { CategoryApi } from '@/api/types/category.type'
 
 export const PRICE_TYPE_OPTIONS = [
   'PROVIDER_RATE',
@@ -162,10 +163,13 @@ export const getPropertyTypeOptions = (t: (key: string) => string): Option[] =>
   }))
 
 // Category options for createPost (categoryId field)
-export const getCategoryOptions = (t: (key: string) => string): Option[] => {
-  return CATEGORIES.map((category) => ({
-    value: category.id.toString(),
-    label: getCategoryName(category.id, t),
+export const getCategoryOptions = (
+  t: (key: string) => string,
+  categories: CategoryApi[] = [],
+): Option[] => {
+  return categories.map((category) => ({
+    value: category.categoryId.toString(),
+    label: getCategoryName(category.categoryId, t) || category.name,
   }))
 }
 

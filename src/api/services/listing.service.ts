@@ -15,6 +15,8 @@ import {
   ListingDetail,
   ListingSearchApiRequest,
   ListingSearchBackendResponse,
+  ListingFilterRequest,
+  MyListingsBackendResponse,
   ProvinceStatsItem,
   ProvinceStatsRequest,
   QuotaCheckResponse,
@@ -178,6 +180,24 @@ export class ListingService {
       instance,
     )
   }
+
+  /**
+   * Get current user's listings (owner dashboard)
+   * POST /v1/listings/my-listings
+   */
+  static async getMyListings(
+    request: Partial<ListingFilterRequest>,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<MyListingsBackendResponse>> {
+    return apiRequest<MyListingsBackendResponse>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.MY_LISTINGS,
+        data: request,
+      },
+      instance,
+    )
+  }
 }
 
 // ============= EXPORTS =============
@@ -192,4 +212,5 @@ export const {
   getByIdAdmin,
   getProvinceStats,
   search,
+  getMyListings,
 } = ListingService

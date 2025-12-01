@@ -1,4 +1,8 @@
 export const PATHS = {
+  // Category endpoints
+  CATEGORY: {
+    ACTIVE: '/v1/categories/active',
+  },
   // AI endpoints
   AI: {
     LISTING_DESCRIPTION: '/v1/ai/listing-description',
@@ -41,6 +45,7 @@ export const PATHS = {
   LISTING: {
     LIST: '/v1/listings',
     SEARCH: '/v1/listings/search',
+    MY_LISTINGS: '/v1/listings/my-listings',
     BY_ID: '/v1/listings/:id',
     CREATE: '/v1/listings',
     CREATE_VIP: '/v1/listings/vip',

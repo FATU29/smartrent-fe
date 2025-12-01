@@ -3,62 +3,58 @@ import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
 import { ListingsManagementTemplate } from '@/components/templates/listingsManagementTemplate'
-import { List } from '@/contexts/list'
+import { ListProvider } from '@/contexts/list/index.context'
 import LocationProvider from '@/contexts/location'
-import {
-  ListingFilterRequest,
-  ListingOwnerDetail,
-  ListingSearchResponse,
-} from '@/api/types'
-import { ApiResponse } from '@/configs/axios/types'
-import mockListingsData from '@/mock/listings'
+import { ListingFilterRequest, ListingOwnerDetail } from '@/api/types'
+import type { ApiResponse } from '@/configs/axios/types'
+import { ListingService } from '@/api/services/listing.service'
+import { mapMyListingsBackendToFrontend } from '@/utils/property/mapMyListingsResponse'
 
-// Mock fetcher function that simulates API call
-const mockListingsFetcher = async (
+// Real fetcher using POST /v1/listings/my-listings
+const fetchMyListings = async (
   filters: ListingFilterRequest,
-): Promise<ApiResponse<ListingSearchResponse<ListingOwnerDetail>>> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  // Filter listings based on status
-  let filteredListings = [...mockListingsData.listingOwnerDetails]
-
-  if (filters.status) {
-    filteredListings = filteredListings.filter(
-      (listing) => listing.status === filters.status,
-    )
+): Promise<
+  ApiResponse<{
+    listings: ListingOwnerDetail[]
+    pagination: {
+      totalCount: number
+      currentPage: number
+      pageSize: number
+      totalPages: number
+    }
+  }>
+> => {
+  const request = {
+    ...filters,
+    listingStatus: filters.status as unknown as string,
   }
 
-  // Filter by keyword
-  if (filters.keyword) {
-    const keyword = filters.keyword.toLowerCase()
-    filteredListings = filteredListings.filter(
-      (listing) =>
-        listing.title.toLowerCase().includes(keyword) ||
-        listing.description.toLowerCase().includes(keyword),
-    )
+  const response = await ListingService.getMyListings(request)
+
+  if (!response.success || !response.data) {
+    return {
+      code: response.code,
+      message: response.message,
+      success: false,
+      data: {
+        listings: [],
+        pagination: {
+          totalCount: 0,
+          currentPage: filters.page || 0,
+          pageSize: filters.size || 20,
+          totalPages: 0,
+        },
+      },
+    }
   }
 
-  // Apply pagination
-  const page = filters.page || 1
-  const size = filters.size || 10
-  const startIndex = (page - 1) * size
-  const endIndex = startIndex + size
-  const paginatedListings = filteredListings.slice(startIndex, endIndex)
+  const frontend = mapMyListingsBackendToFrontend(response.data)
 
   return {
-    code: '999999',
-    message: 'Success',
+    code: response.code,
+    message: response.message,
     success: true,
-    data: {
-      listings: paginatedListings,
-      pagination: {
-        currentPage: page,
-        pageSize: size,
-        totalCount: filteredListings.length,
-        totalPages: Math.ceil(filteredListings.length / size),
-      },
-    },
+    data: frontend,
   }
 }
 
@@ -69,20 +65,18 @@ const ListingsPage: NextPageWithLayout = () => {
     <>
       <SeoHead title={t('userMenu.listings')} noindex />
       <LocationProvider>
-        <List.Provider
-          fetcher={mockListingsFetcher}
-          initialData={mockListingsData.listingOwnerDetails}
+        <ListProvider
+          fetcher={fetchMyListings}
+          initialData={[]}
           initialPagination={{
-            currentPage: 1,
-            pageSize: 10,
-            totalCount: mockListingsData.listingOwnerDetails.length,
-            totalPages: Math.ceil(
-              mockListingsData.listingOwnerDetails.length / 10,
-            ),
+            currentPage: 0,
+            pageSize: 20,
+            totalCount: 0,
+            totalPages: 0,
           }}
         >
           <ListingsManagementTemplate />
-        </List.Provider>
+        </ListProvider>
       </LocationProvider>
     </>
   )
