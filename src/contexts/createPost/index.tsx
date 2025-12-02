@@ -85,6 +85,9 @@ interface CreatePostContextType {
   removePendingImage: (index: number, isCover?: boolean) => void
   clearPendingImages: () => void
   uploadPendingImages: () => Promise<Array<Partial<MediaItem>>>
+  // Submit success state
+  isSubmitSuccess: boolean
+  setIsSubmitSuccess: (value: boolean) => void
 }
 
 // Create Context
@@ -136,6 +139,8 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
     [],
   )
 
+  const [isSubmitSuccess, setIsSubmitSuccess] = useState<boolean>(false)
+
   const updatePropertyInfo = (updates: Partial<CreateListingRequest>) => {
     setPropertyInfo((prev) => ({ ...prev, ...updates }))
   }
@@ -153,11 +158,19 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   }
 
   const updateMedia = (updates: Partial<MediaItem>) => {
-    setMedia((prev) => [...prev, updates])
+    setMedia((prev) => {
+      // If updating VIDEO, replace existing video (only 1 video allowed)
+      if (updates.mediaType === 'VIDEO') {
+        return [...prev.filter((m) => m.mediaType !== 'VIDEO'), updates]
+      }
+      // For images, just add to the array
+      return [...prev, updates]
+    })
   }
 
   const resetMedia = () => {
-    setMedia([])
+    // Remove only VIDEO from media array (keep images)
+    setMedia((prev) => prev.filter((m) => m.mediaType !== 'VIDEO'))
   }
 
   const startVideoUpload = (fileName?: string) => {
@@ -401,6 +414,8 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       removePendingImage,
       clearPendingImages,
       uploadPendingImages,
+      isSubmitSuccess,
+      setIsSubmitSuccess,
     }),
     [
       propertyInfo,
@@ -411,6 +426,7 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       videoUploadProgress,
       imagesUploadProgress,
       pendingImagesState,
+      isSubmitSuccess,
     ],
   )
 

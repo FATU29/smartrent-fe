@@ -131,34 +131,42 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
       {/* Thumbnail List */}
       {sortedMedia.length > 1 && (
         <div className='flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400'>
-          {sortedMedia.map((item, index) => (
-            <button
-              key={index}
-              className={`relative flex-shrink-0 w-20 h-16 sm:w-24 sm:h-18 md:w-28 md:h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                index === currentIndex
-                  ? 'border-primary shadow-md ring-2 ring-primary/30'
-                  : 'border-gray-200 hover:border-primary/50 opacity-80 hover:opacity-100'
-              }`}
-              onClick={() => selectMedia(index)}
-            >
-              <ImageAtom
-                src={item?.url || ''}
-                defaultImage={DEFAULT_IMAGE}
-                alt={`${item?.mediaType === 'VIDEO' ? t('video') : t('image')} ${index + 1}`}
-                className='w-full h-full object-cover object-center'
-              />
-              {item?.mediaType === 'VIDEO' && (
-                <div className='absolute inset-0 bg-black/40 flex items-center justify-center'>
-                  <div className='bg-white/90 rounded-full p-1.5 sm:p-2'>
-                    <Play
-                      className='w-3 h-3 sm:w-4 sm:h-4 text-gray-900'
-                      fill='currentColor'
-                    />
+          {sortedMedia.map((item, index) => {
+            const isYouTubeVideo =
+              item?.mediaType === 'VIDEO' && isYouTube(item?.url || '')
+            const thumbnailSrc = isYouTubeVideo
+              ? DEFAULT_IMAGE
+              : item?.url || ''
+
+            return (
+              <button
+                key={index}
+                className={`relative flex-shrink-0 w-20 h-16 sm:w-24 sm:h-18 md:w-28 md:h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                  index === currentIndex
+                    ? 'border-primary shadow-md ring-2 ring-primary/30'
+                    : 'border-gray-200 hover:border-primary/50 opacity-80 hover:opacity-100'
+                }`}
+                onClick={() => selectMedia(index)}
+              >
+                <ImageAtom
+                  src={thumbnailSrc}
+                  defaultImage={DEFAULT_IMAGE}
+                  alt={`${item?.mediaType === 'VIDEO' ? t('video') : t('image')} ${index + 1}`}
+                  className='w-full h-full object-cover object-center'
+                />
+                {item?.mediaType === 'VIDEO' && (
+                  <div className='absolute inset-0 bg-black/40 flex items-center justify-center'>
+                    <div className='bg-white/90 rounded-full p-1.5 sm:p-2'>
+                      <Play
+                        className='w-3 h-3 sm:w-4 sm:h-4 text-gray-900'
+                        fill='currentColor'
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
-            </button>
-          ))}
+                )}
+              </button>
+            )
+          })}
         </div>
       )}
     </div>

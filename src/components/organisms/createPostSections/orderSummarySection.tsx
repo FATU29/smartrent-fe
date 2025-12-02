@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { useVipTiers } from '@/hooks/useVipTiers'
 import { useAuthContext } from '@/contexts/auth'
+import { useMyMembership } from '@/hooks/useMembership'
 import {
   Card,
   CardContent,
@@ -34,6 +35,7 @@ import {
   getProductTypeTranslationKey,
 } from '@/utils/property'
 import { AMENITIES_CONFIG } from '@/constants/amenities'
+import { toYouTubeEmbed } from '@/utils/video/url'
 
 interface OrderSummarySectionProps {
   className?: string
@@ -46,29 +48,47 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
   const tCommon = useTranslations('common')
   const tCreatePost = useTranslations('createPost')
   const tNormal = useTranslations()
-  const { propertyInfo, media } = useCreatePost()
+  const { propertyInfo, media, composedLegacyAddress, composedNewAddress } =
+    useCreatePost()
   const { data: vipTiers = [] } = useVipTiers()
   const { user } = useAuthContext()
+  const { data: myMembership } = useMyMembership(user?.userId)
 
-  // Extract video and images from media
-  const videoUrl = media.find((m) => m.mediaType === 'VIDEO')?.url
-  const imageUrls = media
-    .filter((m) => m.mediaType === 'IMAGE')
-    .sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0))
-    .map((m) => m.url)
-    .filter(Boolean) as string[]
-  const coverImage = imageUrls[0]
+  const video = media.find((m) => m.mediaType === 'VIDEO')
+  const videoUrl = video?.url
+  const isYouTubeVideo = video?.sourceType === 'YOUTUBE'
+  const embedUrl = videoUrl && isYouTubeVideo ? toYouTubeEmbed(videoUrl) : null
+
+  const coverImage = media.find(
+    (m) => m.mediaType === 'IMAGE' && m.isPrimary,
+  )?.url
 
   // Resolve selected VIP tier from vipType
   const selectedTier = vipTiers.find((t) => t.tierCode === propertyInfo.vipType)
 
-  const packageName = selectedTier?.tierName || t('notSelected')
-
-  // Compute total price based on durationDays using API-provided tier pricing
+  // Get benefit details when using membership quota or promotion
   const usingMembershipQuota = !!propertyInfo.useMembershipQuota
   const usingPromotion = Array.isArray(propertyInfo?.benefitIds)
     ? propertyInfo?.benefitIds?.length > 0
     : false
+
+  // Find the selected benefit from user's membership benefits
+  const selectedBenefit = React.useMemo(() => {
+    if (!myMembership?.benefits || !propertyInfo.benefitIds?.length) {
+      return null
+    }
+    // Get the first benefit ID from the selected benefits
+    const benefitId = propertyInfo.benefitIds[0]
+    // Find the matching user benefit
+    return (
+      myMembership.benefits.find((b) => b.userBenefitId === benefitId) || null
+    )
+  }, [myMembership, propertyInfo.benefitIds])
+
+  const packageName =
+    usingMembershipQuota || usingPromotion
+      ? selectedBenefit?.benefitNameDisplay || t('freePosting')
+      : selectedTier?.tierName || t('notSelected')
 
   // Price calculation - no VAT or discount
   const totalPrice = (() => {
@@ -135,18 +155,30 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                     {videoUrl ? (
                       // Video takes priority
                       <div className='relative w-full aspect-video bg-black rounded-lg overflow-hidden'>
-                        <video
-                          src={videoUrl}
-                          controls
-                          className='w-full h-full object-contain'
-                          preload='metadata'
-                        />
+                        {isYouTubeVideo && embedUrl ? (
+                          // YouTube video - use iframe
+                          <iframe
+                            src={embedUrl}
+                            title='YouTube video player'
+                            className='w-full h-full'
+                            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                            allowFullScreen
+                          />
+                        ) : (
+                          // Uploaded video - use video tag
+                          <video
+                            src={videoUrl}
+                            controls
+                            className='w-full h-full object-contain'
+                            preload='metadata'
+                          />
+                        )}
                       </div>
                     ) : (
                       // Fallback to cover image
                       <div className='relative w-full aspect-video'>
                         <Image
-                          src={coverImage}
+                          src={coverImage as string}
                           alt={tCreatePost(
                             'sections.propertyInfo.propertyCover',
                           )}
@@ -243,44 +275,32 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                   </div>
 
                   {/* Address */}
-                  {((propertyInfo as unknown as { fullAddressNew?: string })
-                    .fullAddressNew ||
-                    propertyInfo.address?.legacy) && (
+                  {(composedNewAddress || composedLegacyAddress) && (
                     <>
                       <Separator />
                       <div className='flex items-start gap-2'>
                         <MapPin className='w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0' />
                         <div className='min-w-0 flex-1 space-y-1'>
-                          {(
-                            propertyInfo as unknown as {
-                              fullAddressNew?: string
-                            }
-                          ).fullAddressNew && (
+                          {composedNewAddress && (
                             <Typography className='text-sm break-words'>
                               <span className='font-medium'>
                                 {tCreatePost(
                                   'sections.propertyInfo.address.structureType.newShort',
                                 )}
                                 :
-                              </span>
-                              {
-                                (
-                                  propertyInfo as unknown as {
-                                    fullAddressNew?: string
-                                  }
-                                ).fullAddressNew
-                              }
+                              </span>{' '}
+                              {composedNewAddress}
                             </Typography>
                           )}
-                          {propertyInfo.address?.legacy && (
+                          {composedLegacyAddress && (
                             <Typography className='text-xs text-muted-foreground break-words'>
                               <span className='font-medium'>
                                 {tCreatePost(
                                   'sections.propertyInfo.address.structureType.legacyShort',
                                 )}
                                 :
-                              </span>
-                              {String(propertyInfo.address.legacy)}
+                              </span>{' '}
+                              {composedLegacyAddress}
                             </Typography>
                           )}
                         </div>

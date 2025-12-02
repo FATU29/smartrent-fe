@@ -751,7 +751,7 @@
       "startDateRequired": "Vui lòng chọn ngày bắt đầu",
       "listingTitleRequired": "Tiêu đề tin đăng là bắt buộc",
       "listingTitleMinLength": "Tiêu đề phải có ít nhất 30 ký tự",
-      "listingTitleMaxLength": "Tiêu đề không được vượt quá 100 ký tự",
+      "listingTitleMaxLength": "Tiêu đề không được vượt quá 120 ký tự",
       "propertyDescriptionRequired": "Mô tả bất động sản là bắt buộc",
       "propertyDescriptionMinLength": "Mô tả phải có ít nhất 70 ký tự",
       "propertyDescriptionMaxLength": "Mô tả không được vượt quá 2000 ký tự",
@@ -1117,7 +1117,7 @@
             "failed": "Không thể tự động định vị địa chỉ",
             "loading": "Đang lấy tọa độ...",
             "legacyButton": "Lấy tọa độ từ Google Map",
-            "legacyDescription": "Nhấn nút để lấy tọa độ (latitude, longitude) từ Google Map dựa trên địa chỉ cũ"
+            "legacyDescription": "Nhấn nút để lấy tọa độ (vĩ độ, kinh độ) từ Google Map dựa trên địa chỉ cũ"
           },
           "legacyAddress": "Địa chỉ hiển thị trên tin đăng (phiên bản cũ)",
           "legacyAddressPlaceholder": "Địa chỉ cũ sẽ hiển thị ở đây",

@@ -42,7 +42,8 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
     form.formState.errors,
   )
 
-  const { propertyInfo } = useCreatePost()
+  const { propertyInfo, resetPropertyInfo, setIsSubmitSuccess } =
+    useCreatePost()
   const router = useRouter()
   const t = useTranslations('createPost.submit')
 
@@ -68,6 +69,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           setErrorOpen(true)
           return
         }
+        setIsSubmitSuccess(true)
         setSuccessTitle(t('successTitle'))
         setSuccessDesc(t('successDescription'))
         setSuccessOpen(true)
@@ -84,9 +86,11 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         return
       }
       if (data.paymentUrl) {
+        setIsSubmitSuccess(true)
         window.location.href = data.paymentUrl
         return
       }
+      setIsSubmitSuccess(true)
       await router.push(`/listing-detail/${data.listingId}`)
     } catch (err) {
       console.error('Submit error:', err)
@@ -141,6 +145,8 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
             okText={t('ok')}
             onOpenChange={setSuccessOpen}
             onOk={async () => {
+              setIsSubmitSuccess(true) // Set context flag before navigation
+              resetPropertyInfo() // Clear context before navigation
               await router.push('/seller/listings')
             }}
           />

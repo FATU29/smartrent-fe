@@ -33,12 +33,14 @@ const getPropertyInfoFields = () => ({
     .string()
     .required('listingTitleRequired')
     .trim()
-    .min(30, 'listingTitleMinLength'),
+    .min(30, 'listingTitleMinLength')
+    .max(120, 'listingTitleMaxLength'),
   description: yup
     .string()
     .required('propertyDescriptionRequired')
     .trim()
-    .min(70, 'propertyDescriptionMinLength'),
+    .min(70, 'propertyDescriptionMinLength')
+    .max(2000, 'propertyDescriptionMaxLength'),
   // Utilities & Structure
   waterPrice: yup
     .string()

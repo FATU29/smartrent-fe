@@ -331,9 +331,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
             provinceCode={provinceCode!}
             wardCode={fulltextAddress.newWardCode!}
             value={fulltextAddress?.legacyAddressId}
-            onValueChange={() => {
-              /* handled by onLegacySelect */
-            }}
             onLegacySelect={handleLegacySelect}
           />
         )}
@@ -424,10 +421,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
                 )}
               </Button>
             </div>
-            <p className='text-xs text-gray-500 dark:text-gray-400'>
-              {tAddress('geocode.legacyDescription') ||
-                'Nhấn nút để lấy tọa độ từ Google Map dựa trên địa chỉ cũ'}
-            </p>
           </div>
         )}
       </div>

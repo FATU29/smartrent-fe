@@ -18,7 +18,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
 }) => {
   const router = useRouter()
   const t = useTranslations('createPost.draftDialog')
-  const { propertyInfo } = useCreatePost()
+  const { propertyInfo, isSubmitSuccess } = useCreatePost()
   const { user } = useAuth()
   const { mutate: createDraft, isPending: isDraftSaving } = useCreateDraft()
 
@@ -30,6 +30,9 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   const blockedUrlRef = useRef<string | null>(null)
 
   const hasUnsavedChanges = useCallback((): boolean => {
+    // Don't block if submit was successful
+    if (isSubmitSuccess) return false
+
     if (!propertyInfo) return false
 
     const values = Object.values(propertyInfo)
@@ -37,7 +40,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
     if (allUndefined) return false
 
     return true
-  }, [propertyInfo])
+  }, [propertyInfo, isSubmitSuccess])
 
   useEffect(() => {
     shouldBlockRef.current = hasUnsavedChanges()

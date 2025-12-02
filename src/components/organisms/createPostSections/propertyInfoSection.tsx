@@ -280,9 +280,9 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       internetPrice: propertyInfo.internetPrice,
       serviceFee: propertyInfo.serviceFee,
       tone: aiTone,
-      titleMaxWords: 100,
+      titleMaxWords: 120,
       titleMinWords: 30,
-      descriptionMaxWords: 1000,
+      descriptionMaxWords: 2000,
       descriptionMinWords: 70,
     }
 
@@ -901,6 +901,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   <input
                     type='text'
                     value={titleInput}
+                    maxLength={120}
                     className={`w-full h-12 px-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
                       error
                         ? 'border-destructive dark:border-destructive'
@@ -919,9 +920,22 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     </p>
                   )}
                   {!error && (
-                    <p className='text-xs text-gray-500 dark:text-gray-400'>
-                      {tAI('titleLength')}
-                    </p>
+                    <div className='flex justify-between items-center'>
+                      <p className='text-xs text-gray-500 dark:text-gray-400'>
+                        {tAI('titleLength')}
+                      </p>
+                      <p
+                        className={`text-xs font-medium ${
+                          titleInput.length > 120
+                            ? 'text-destructive'
+                            : titleInput.length >= 30
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        {titleInput.length}/120
+                      </p>
+                    </div>
                   )}
                 </div>
               )}
@@ -939,6 +953,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   </label>
                   <textarea
                     value={descriptionInput}
+                    maxLength={2000}
                     className={`w-full h-32 px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 resize-none ${
                       error
                         ? 'border-destructive dark:border-destructive'
@@ -957,9 +972,22 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     </p>
                   )}
                   {!error && (
-                    <p className='text-xs text-gray-500 dark:text-gray-400'>
-                      {tAI('descriptionHint')}
-                    </p>
+                    <div className='flex justify-between items-center'>
+                      <p className='text-xs text-gray-500 dark:text-gray-400'>
+                        {tAI('descriptionHint')}
+                      </p>
+                      <p
+                        className={`text-xs font-medium ${
+                          descriptionInput.length > 2000
+                            ? 'text-destructive'
+                            : descriptionInput.length >= 70
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        {descriptionInput.length}/2000
+                      </p>
+                    </div>
                   )}
                 </div>
               )}

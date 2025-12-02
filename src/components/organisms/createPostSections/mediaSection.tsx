@@ -17,7 +17,7 @@ const MediaSection: React.FC<MediaSectionProps> = ({
   showHeader = true,
 }) => {
   const t = useTranslations('createPost.sections.media')
-  const { media } = useCreatePost()
+  const { media, videoUploadProgress } = useCreatePost()
 
   const coverImage = media.find(
     (img) => img.mediaType === 'IMAGE' && img.isPrimary === true,
@@ -31,11 +31,10 @@ const MediaSection: React.FC<MediaSectionProps> = ({
   const video = media.find((item) => item.mediaType === 'VIDEO')
   const hasVideo = !!video
 
-  // Show upload video if no video exists
-  // Show video URL input if no video exists
-  // Only one type can exist at a time
-  const showUploadVideo = !hasVideo
-  const showVideoUrl = !hasVideo
+  // Show upload video section when no video exists
+  const showUploadVideo = true // Always show the upload section
+  // Hide video URL input when video is uploading or already exists
+  const showVideoUrl = !hasVideo && !videoUploadProgress.isUploading
 
   return (
     <div className={className}>
@@ -52,11 +51,10 @@ const MediaSection: React.FC<MediaSectionProps> = ({
       <CoverUpload coverImage={coverImage} />
       <UploadImages images={otherImages} />
 
-      {/* Show video if exists */}
-      {hasVideo && <UploadVideo video={video} />}
+      {/* Video Upload Section - Always show, handles its own states */}
+      {showUploadVideo && <UploadVideo video={video} />}
 
-      {/* Show upload options only when no video exists */}
-      {showUploadVideo && <UploadVideo video={undefined} />}
+      {/* Show external video URL input only when no video exists and not uploading */}
       {showVideoUrl && <VideoUrl video={undefined} />}
 
       <PhotoGuidelines />

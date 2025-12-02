@@ -20,7 +20,7 @@ interface VideoUrlProps {
 
 const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
   const t = useTranslations('createPost.sections.media')
-  const { updateMedia } = useCreatePost()
+  const { updateMedia, resetMedia } = useCreatePost()
 
   const isExternalYouTubeVideo = video?.sourceType === 'EXTERNAL'
   const videoUrl = video?.url || ''
@@ -36,7 +36,8 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
   }, [videoUrl, isExternalYouTubeVideo])
 
   const isBlobUrl = videoUrl.startsWith('blob:')
-  const isUploadedVideo = videoUrl && !isExternalYouTubeVideo && !isBlobUrl
+  const isUploadedVideo =
+    video?.sourceType === 'UPLOADED' && videoUrl && !isBlobUrl
   const hasExternalVideo = videoUrl && isExternalYouTubeVideo
 
   const onSave = async () => {
@@ -56,6 +57,7 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
           mediaId: res.data.mediaId ? Number(res.data.mediaId) : undefined,
           mediaType: 'VIDEO',
           isPrimary: true,
+          sourceType: 'EXTERNAL',
         })
         toast.success(t('video.external.success'))
       } else {
@@ -70,6 +72,7 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
 
   const handleRemove = () => {
     setUrl('')
+    resetMedia()
   }
 
   return (

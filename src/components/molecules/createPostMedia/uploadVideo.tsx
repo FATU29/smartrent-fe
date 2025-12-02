@@ -11,7 +11,7 @@ import { Typography } from '@/components/atoms/typography'
 import { Progress } from '@/components/atoms/progress'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
-import { Video, Upload, X, CloudUpload, Loader2 } from 'lucide-react'
+import { Video, Upload, X, Loader2 } from 'lucide-react'
 import { MediaService } from '@/api/services'
 import type { MediaItem } from '@/api/types/property.type'
 
@@ -44,11 +44,10 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
 
   const videoUrl = video?.url || ''
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Validate file type
     if (!ACCEPTED_VIDEO_TYPES.includes(file.type)) {
       alert(
         t('video.upload.invalidType') || 'Định dạng video không được hỗ trợ',
@@ -56,7 +55,6 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
       return
     }
 
-    // Validate file size
     if (file.size > MAX_VIDEO_SIZE) {
       alert(
         t('video.upload.tooLarge', { maxSize: MAX_VIDEO_SIZE_MB }) ||
@@ -65,21 +63,19 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
       return
     }
 
-    // Clean up previous object URL if exists
     if (videoFileRef.current && videoUrl.startsWith('blob:')) {
       URL.revokeObjectURL(videoUrl)
     }
 
     videoFileRef.current = file
     const blobUrl = URL.createObjectURL(file)
-    // Store video as pending upload (use updateMedia to add to context)
     updateMedia({
       url: blobUrl,
       mediaType: 'VIDEO',
       isPrimary: true,
     })
-    // Do NOT auto-upload; wait for user to click explicit upload button
-    resetVideoUploadProgress()
+
+    await uploadVideo(file)
   }
 
   const uploadVideo = async (file: File) => {
@@ -103,12 +99,12 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
         if (videoUrl.startsWith('blob:')) {
           URL.revokeObjectURL(videoUrl)
         }
-        // Update video in context with uploaded URL
         updateMedia({
           url: uploadedUrl,
           mediaId: mediaId ? Number(mediaId) : undefined,
           mediaType: 'VIDEO',
           isPrimary: true,
+          sourceType: 'UPLOADED',
         })
       }
       updateVideoUploadProgress(100)
@@ -147,7 +143,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
   const isExternalVideo = video?.sourceType === 'EXTERNAL'
   const isUploadedVideo =
     video?.sourceType === 'UPLOADED' && videoUrl && !isBlobUrl
-  const showUploadButton = isBlobUrl && !isUploadedVideo
+  const showVideoPreview = videoUrl && (isBlobUrl || isUploadedVideo)
 
   return (
     <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
@@ -165,7 +161,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
                 'Bạn đã thêm link YouTube/TikTok. Xóa link để tải video lên.'}
             </p>
           </div>
-        ) : !videoUrl ? (
+        ) : !showVideoPreview ? (
           <>
             <input
               ref={inputRef}
@@ -173,15 +169,26 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
               accept='video/*'
               onChange={handleFileChange}
               className='hidden'
+              disabled={videoUploadProgress.isUploading}
             />
             <Button
               type='button'
               variant='outline'
               onClick={() => inputRef.current?.click()}
+              disabled={videoUploadProgress.isUploading}
               className='w-full h-12 sm:h-12 border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200'
             >
-              <Upload className='w-4 h-4 mr-2' />
-              {t('video.upload.button') || 'Chọn video để tải lên'}
+              {videoUploadProgress.isUploading ? (
+                <>
+                  <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                  {t('video.upload.uploading') || 'Đang tải lên...'}
+                </>
+              ) : (
+                <>
+                  <Upload className='w-4 h-4 mr-2' />
+                  {t('video.upload.button') || 'Chọn video để tải lên'}
+                </>
+              )}
             </Button>
             <p className='text-xs sm:text-sm text-gray-500 mt-2'>
               {t('video.upload.help', { maxSize: MAX_VIDEO_SIZE_MB }) ||
@@ -227,39 +234,18 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
               </div>
             )}
 
-            {showUploadButton && !videoUploadProgress.isUploading && (
-              <>
-                <Button
-                  type='button'
-                  onClick={() =>
-                    videoFileRef.current && uploadVideo(videoFileRef.current)
-                  }
-                  className='w-full h-12 bg-primary hover:bg-primary/90'
-                  disabled={videoUploadProgress.isUploading}
-                >
-                  {videoUploadProgress.isUploading ? (
-                    <>
-                      <Loader2 className='w-4 h-4 mr-2 animate-spin' />
-                      {t('video.upload.uploading') || 'Đang tải lên...'}
-                    </>
-                  ) : (
-                    <>
-                      <CloudUpload className='w-4 h-4 mr-2' />
-                      {t('video.upload.uploadButton') || 'Tải video lên'}
-                    </>
-                  )}
-                </Button>
-                {videoUploadProgress.error && (
-                  <Typography
-                    variant='small'
-                    className='mt-2 text-xs text-red-600 dark:text-red-400 text-center'
-                  >
-                    {videoUploadProgress.error}
-                  </Typography>
-                )}
-              </>
+            {/* Show error if upload failed */}
+            {videoUploadProgress.error && !videoUploadProgress.isUploading && (
+              <Typography
+                variant='small'
+                className='mt-2 text-xs text-red-600 dark:text-red-400 text-center'
+              >
+                {videoUploadProgress.error}
+              </Typography>
             )}
-            {isUploadedVideo && (
+
+            {/* Show success message when uploaded */}
+            {isUploadedVideo && !videoUploadProgress.isUploading && (
               <Typography
                 variant='small'
                 className='text-green-600 dark:text-green-400 text-center mt-2'

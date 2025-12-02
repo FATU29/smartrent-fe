@@ -91,12 +91,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const topProvinceIds = [1, 79, 48, 31, 92]
 
     const [initialProperties, provinceStatsResponse] = await Promise.all([
-      ListingService.search({}),
+      ListingService.search({
+        page: 1,
+        size: 10,
+        verified: true,
+      }),
       ListingService.getProvinceStats(
         {
           provinceIds: topProvinceIds,
-          verifiedOnly: false,
-          addressType: 'OLD',
+          provinceCodes: ['1', '79', '48', '31', '92'],
+          addressType: 'NEW',
         },
         serverInstance,
       ),

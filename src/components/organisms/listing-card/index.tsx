@@ -10,6 +10,7 @@ import { ListingCardActions } from '@/components/molecules/listingCardActions'
 import { Card, CardContent } from '@/components/atoms/card'
 import { cn } from '@/lib/utils'
 import { formatDate } from '@/utils/date/formatters'
+import { toYouTubeEmbed } from '@/utils/video/url'
 import {
   LISTING_CARD_STYLES,
   LISTING_CARD_CONFIG,
@@ -68,11 +69,19 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     address,
   } = property
 
-  // Extract media URLs
-  const images = media?.filter((m) => m.mediaType === 'IMAGE')
-  const primaryImage = images?.find((img) => img.isPrimary)?.url
-  const firstImage = images?.[0]?.url
-  const thumbnailImage = primaryImage || firstImage
+  // Priority: video -> coverImages
+  // Extract video first (isPrimary && mediaType === 'VIDEO')
+  const video = media?.find((m) => m.mediaType === 'VIDEO' && m.isPrimary)
+  const isYouTubeVideo = video?.sourceType === 'YOUTUBE'
+  const videoUrl = video?.url
+  const embedUrl = videoUrl && isYouTubeVideo ? toYouTubeEmbed(videoUrl) : null
+
+  // Extract cover image (isPrimary && mediaType === 'IMAGE')
+  const coverImage = media?.find((m) => m.mediaType === 'IMAGE' && m.isPrimary)
+  const coverImageUrl = coverImage?.url
+
+  // Fallback to first image if no primary cover
+  const fallbackImage = media?.find((m) => m.mediaType === 'IMAGE')?.url
 
   const { fullNewAddress: newAddress, fullAddress: legacyAddress } =
     address || {}
@@ -124,17 +133,44 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     >
       <CardContent className='px-4 sm:px-6'>
         <div className={LISTING_CARD_STYLES.layout}>
-          {/* Property Image */}
+          {/* Property Media - Priority: video -> coverImage */}
           <div className={LISTING_CARD_STYLES.imageContainer}>
-            <Image
-              src={thumbnailImage || LISTING_CARD_CONFIG.defaultImage}
-              alt={title}
-              fill
-              className={cn(
-                LISTING_CARD_STYLES.image,
-                LISTING_CARD_ANIMATIONS.imageHover,
-              )}
-            />
+            {videoUrl ? (
+              // Show video if available
+              isYouTubeVideo && embedUrl ? (
+                // YouTube video - use iframe
+                <iframe
+                  src={embedUrl}
+                  title={title}
+                  className='absolute inset-0 w-full h-full object-cover'
+                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                  allowFullScreen
+                />
+              ) : (
+                // Uploaded video - use video tag
+                <video
+                  src={videoUrl}
+                  className='absolute inset-0 w-full h-full object-cover'
+                  controls
+                  preload='metadata'
+                />
+              )
+            ) : (
+              // Fallback to cover image or first image
+              <Image
+                src={
+                  coverImageUrl ||
+                  fallbackImage ||
+                  LISTING_CARD_CONFIG.defaultImage
+                }
+                alt={title}
+                fill
+                className={cn(
+                  LISTING_CARD_STYLES.image,
+                  LISTING_CARD_ANIMATIONS.imageHover,
+                )}
+              />
+            )}
             {/* Package Badge */}
             {packageType && (
               <div className={LISTING_CARD_STYLES.packageBadgeContainer}>
