@@ -8,7 +8,7 @@ export const useDeleteDraft = () => {
     mutationFn: (draftId: string) => ListingService.deleteDraft(draftId),
     onSuccess: () => {
       // Invalidate drafts query to refresh the list
-      queryClient.invalidateQueries({ queryKey: ['drafts'] })
+      queryClient.invalidateQueries({ queryKey: ['my-drafts'] })
     },
   })
 }

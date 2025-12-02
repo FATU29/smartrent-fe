@@ -10,7 +10,6 @@ import {
 } from '@/constants/amenities'
 import { FURNISHING, PropertyType } from '@/api/types'
 import type { LucideIcon } from 'lucide-react'
-import { getCategoryName } from '@/constants/common/category'
 import type { CategoryApi } from '@/api/types/category.type'
 
 export const PRICE_TYPE_OPTIONS = [
@@ -128,11 +127,6 @@ export const getAiPropertyTypeOptions = (
     label: tPropertyDetails(`propertyTypes.${type.translationKey}`),
   }))
 
-/**
- * Get amenity items with translations for UI display
- * @param t - Translation function scoped to createPost.sections.propertyInfo
- * @returns Array of UI amenity items with translations and styling
- */
 export const getAmenityItems = (t: (key: string) => string): AmenityItem[] => {
   return AMENITIES_CONFIG.map((amenity) => ({
     id: amenity.id,
@@ -151,29 +145,22 @@ export const getPriceUnitOptions = (t: (key: string) => string): Option[] => {
   }))
 }
 
-/**
- * Get PropertyType options for createPost form
- * @param t - Translation function scoped to createPost.sections.propertyDetails
- * @returns Array of PropertyType options (ROOM, APARTMENT, HOUSE, STUDIO)
- */
 export const getPropertyTypeOptions = (t: (key: string) => string): Option[] =>
   PROPERTY_TYPE_OPTIONS.map((type) => ({
     value: type.value.toLowerCase(),
     label: t(`propertyTypes.${type.translationKey}`),
   }))
 
-// Category options for createPost (categoryId field)
 export const getCategoryOptions = (
   t: (key: string) => string,
   categories: CategoryApi[] = [],
 ): Option[] => {
   return categories.map((category) => ({
     value: category.categoryId.toString(),
-    label: getCategoryName(category.categoryId, t) || category.name,
+    label: category.name,
   }))
 }
 
-// Tone options for AI generation
 export const getToneOptions = (t: (key: string) => string): Option[] => {
   return [
     { value: 'friendly', label: t('tone.friendly') },

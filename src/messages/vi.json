@@ -728,7 +728,8 @@
       "errorTitle": "Lỗi tạo tin đăng",
       "errorDescription": "Đã xảy ra lỗi khi tạo tin đăng của bạn. Vui lòng thử lại.",
       "successTitle": "Tin đăng đã được tạo thành công!",
-      "ok": "OK"
+      "ok": "OK",
+      "successDescription": " Tin đăng của bạn đã được tạo thành công và đang chờ phê duyệt. Bạn sẽ nhận được thông báo khi tin đăng được phê duyệt và hiển thị trên trang web."
     },
     "validation": {
       "imagesUploadInProgress": "Vui lòng đợi quá trình tải ảnh hoàn tất trước khi tiếp tục",
@@ -740,10 +741,11 @@
       "priceUnitRequired": "Đơn vị giá là bắt buộc",
       "priceUnitInvalid": "Đơn vị giá không hợp lệ",
       "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 4 ảnh hoặc 1 video",
-      "imagesRequired": "Vui lòng tải ít nhất 4 ảnh nếu không có video. Nếu đã có video, có thể bỏ qua ảnh.",
-      "imagesTooMany": "Bạn có thể tải tối đa 24 ảnh.",
-      "imageUrlInvalid": "URL ảnh không hợp lệ.",
-      "videoUrlInvalid": "URL video không hợp lệ.",
+      "imagesRequired": "Vui lòng tải ít nhất 4 ảnh",
+      "imagesMinimum": "Cần ít nhất 4 ảnh",
+      "imagesTooMany": "Bạn có thể tải tối đa 24 ảnh",
+      "imageUrlInvalid": "URL ảnh không hợp lệ",
+      "videoUrlInvalid": "URL video không hợp lệ",
       "packageRequired": "Vui lòng chọn gói đăng",
       "durationRequired": "Vui lòng chọn thời hạn",
       "startDateRequired": "Vui lòng chọn ngày bắt đầu",
@@ -784,7 +786,7 @@
       "loginRequired": "Vui lòng đăng nhập để lưu bản nháp",
       "saveSuccess": "Lưu bản nháp thành công",
       "saveFailed": "Lưu bản nháp thất bại. Vui lòng thử lại.",
-      "draftSaved": "Lưu bản nháp thành công! Đang chuyển tới trang nháp...",
+      "draftSaved": "Lưu bản nháp thành công!",
       "addressRequired": "Địa chỉ là bắt buộc để lưu bản nháp",
       "requiredFieldsMissing": "Danh mục và tiêu đề là bắt buộc để lưu bản nháp"
     },
@@ -927,6 +929,7 @@
           "remove": "Xóa",
           "success": "Đã tải lên thành công"
         },
+        "uploadButton": "Tải phương tiện",
         "upload": {
           "button": "Tải lên {count} ảnh",
           "uploading": "Đang tải lên...",
@@ -1743,6 +1746,13 @@
     },
     "media": {
       "title": "Phương tiện",
+      "description": "Tải lên ảnh và video bất động sản của bạn",
+      "uploadButton": "Tải lên tất cả",
+      "uploading": "Đang tải lên...",
+      "uploadSuccess": "Tải phương tiện thành công",
+      "uploadFailed": "Không thể tải phương tiện",
+      "uploadRequired": "Vui lòng tải phương tiện trước khi tiếp tục",
+      "pendingImages": "ảnh chờ tải lên",
       "video": "Video",
       "threeSixty": "Hình 3D & 360°"
     },

@@ -14,7 +14,7 @@ const TOTAL_STEPS = 5
 
 export const useCreatePostSteps = () => {
   const t = useTranslations('createPost')
-  const { propertyInfo, mediaUrls, videoUploadProgress, imagesUploadProgress } =
+  const { propertyInfo, media, videoUploadProgress, imagesUploadProgress } =
     useCreatePost()
   const form = useCreatePostForm()
   const { trigger, formState } = form
@@ -53,14 +53,14 @@ export const useCreatePostSteps = () => {
         case 0:
           return validateStep0(propertyInfo)
         case 2:
-          return validateStep2(mediaUrls)
+          return validateStep2(media)
         case 3:
           return validateStep3(propertyInfo)
         default:
           return true
       }
     },
-    [errors, propertyInfo, mediaUrls],
+    [errors, propertyInfo, media],
   )
 
   const allPreviousComplete = useCallback(
@@ -84,33 +84,31 @@ export const useCreatePostSteps = () => {
       }
     }
 
-    const handleMediaStep = async () => {
+    // Handle media step validation - check if media is uploaded
+    if (currentStep === 2) {
       if (videoUploadProgress.isUploading) {
         toast.error(
           t('validation.videoUploadInProgress') ||
-            'Vui lòng đợi video tải lên hoàn tất trước khi tiếp tục',
+            'Please wait for video upload to complete before continuing',
         )
-        return false
+        return
       }
       if (imagesUploadProgress.isUploading) {
         toast.error(
           t('validation.imagesUploadInProgress') ||
-            'Vui lòng đợi ảnh tải lên hoàn tất trước khi tiếp tục',
+            'Please wait for images upload to complete before continuing',
         )
-        return false
+        return
       }
+
+      // Check validation via exposed window method
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const validateMediaStep = (window as any).__validateMediaStep
       if (validateMediaStep) {
         const success = await validateMediaStep()
-        if (!success) return false
+        if (!success) return
       }
-      return true
-    }
 
-    if (currentStep === 2) {
-      const ok = await handleMediaStep()
-      if (!ok) return
       proceedNext()
       return
     }

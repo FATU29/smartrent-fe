@@ -5,45 +5,24 @@ import { DraftCard } from '@/components/molecules/draftCard'
 import { DraftCardSkeleton } from '@/components/molecules/draftCard/DraftCardSkeleton'
 import { DraftEmptyState } from '@/components/organisms/drafts/DraftEmptyState'
 import { DeleteDraftDialog } from '@/components/molecules/deleteDraftDialog'
-import { List, useListContext } from '@/contexts/list'
-import { useIsMobile } from '@/hooks/useIsMobile'
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { useDeleteDraft } from '@/hooks/useListings/useDeleteDraft'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
-import type { ListingOwnerDetail } from '@/api/types'
+import type { DraftDetail } from '@/utils/property/mapDraftResponse'
 
 interface DraftsTemplateProps {
+  drafts: DraftDetail[]
+  isLoading: boolean
   className?: string
 }
 
-const DraftsList: React.FC = () => {
-  const {
-    items: drafts,
-    isLoading,
-    pagination,
-    loadMore,
-  } = useListContext<ListingOwnerDetail>()
-  const isMobile = useIsMobile()
-  const t = useTranslations('common')
-  const tDrafts = useTranslations('seller.drafts')
+const DraftsList: React.FC<{
+  drafts: DraftDetail[]
+  isLoading: boolean
+}> = ({ drafts, isLoading }) => {
   const tDelete = useTranslations('seller.drafts.delete')
-  const { currentPage, totalPages } = pagination
-  const hasNext = currentPage < totalPages
-
   const [draftToDelete, setDraftToDelete] = useState<number | null>(null)
   const deleteMutation = useDeleteDraft()
-
-  const { ref: loadMoreRef } = useIntersectionObserver({
-    onIntersect: () => {
-      if (isMobile && hasNext && !isLoading) {
-        loadMore()
-      }
-    },
-    options: {
-      rootMargin: '100px',
-    },
-  })
 
   const handleDeleteClick = useCallback((listingId: number) => {
     setDraftToDelete(listingId)
@@ -65,7 +44,7 @@ const DraftsList: React.FC = () => {
     setDraftToDelete(null)
   }, [])
 
-  if (isLoading && drafts.length === 0) {
+  if (isLoading) {
     return <DraftCardSkeleton count={3} />
   }
 
@@ -78,74 +57,29 @@ const DraftsList: React.FC = () => {
       <div className='space-y-4'>
         {drafts.map((draft) => (
           <DraftCard
-            key={draft.listingId}
+            key={draft.id}
             draft={{
-              id: draft.listingId,
+              id: draft.id,
               title: draft.title,
               description: draft.description,
-              address: draft.address.fullNewAddress,
+              address:
+                `${draft.address.street || ''} ${draft.address.wardCode || ''} ${draft.address.provinceCode || ''}`.trim(),
               propertyType: draft.productType,
               price: draft.price,
               area: draft.area,
               bedrooms: draft.bedrooms,
               bathrooms: draft.bathrooms,
-              images: draft.media?.map((m) => m.url) || [],
+              images: [], // Media IDs only, need to fetch separately or include URLs in backend
               createdAt: draft.createdAt,
               updatedAt: draft.updatedAt,
             }}
             onEdit={() => {
               // Navigate to edit draft (can be implemented later)
-              console.log('Edit draft:', draft.listingId)
+              console.log('Edit draft:', draft.id)
             }}
-            onDelete={() => handleDeleteClick(draft.listingId)}
+            onDelete={() => handleDeleteClick(draft.id)}
           />
         ))}
-
-        {/* Desktop: Show Pagination */}
-        {!isMobile && (
-          <div className='mt-8 flex justify-center'>
-            <List.Pagination />
-          </div>
-        )}
-
-        {/* Mobile: Infinite scroll */}
-        {isMobile && (
-          <div className='mt-6 flex flex-col items-center gap-4'>
-            {isLoading && (
-              <div className='flex items-center justify-center py-4'>
-                <Typography
-                  variant='small'
-                  className='animate-pulse text-muted-foreground'
-                >
-                  {t('loadingMore')}
-                </Typography>
-              </div>
-            )}
-
-            {hasNext && !isLoading && (
-              <List.LoadMore
-                className='w-full max-w-xs'
-                variant='outline'
-                fullWidth={true}
-              />
-            )}
-
-            <div
-              ref={loadMoreRef as React.RefObject<HTMLDivElement>}
-              className='h-1 w-full'
-              aria-hidden='true'
-            />
-
-            {!hasNext && drafts.length > 0 && (
-              <Typography
-                variant='small'
-                className='text-center py-6 text-muted-foreground'
-              >
-                {tDrafts('allDraftsShown')}
-              </Typography>
-            )}
-          </div>
-        )}
       </div>
 
       <DeleteDraftDialog
@@ -159,6 +93,8 @@ const DraftsList: React.FC = () => {
 }
 
 export const DraftsTemplate: React.FC<DraftsTemplateProps> = ({
+  drafts,
+  isLoading,
   className,
 }) => {
   const t = useTranslations('seller.drafts')
@@ -173,9 +109,7 @@ export const DraftsTemplate: React.FC<DraftsTemplateProps> = ({
         </div>
 
         {/* Drafts List */}
-        <List.Provider>
-          <DraftsList />
-        </List.Provider>
+        <DraftsList drafts={drafts} isLoading={isLoading} />
       </div>
     </div>
   )

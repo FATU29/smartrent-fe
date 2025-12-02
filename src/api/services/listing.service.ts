@@ -215,7 +215,7 @@ export class ListingService {
 
   /**
    * Get current user's draft listings
-   * POST /v1/listings/my-drafts
+   * GET /v1/listings/my-drafts
    */
   static async getMyDrafts(
     request: Partial<ListingFilterRequest>,
@@ -223,9 +223,9 @@ export class ListingService {
   ): Promise<ApiResponse<MyListingsBackendResponse>> {
     return apiRequest<MyListingsBackendResponse>(
       {
-        method: 'POST',
+        method: 'GET',
         url: PATHS.LISTING.MY_DRAFTS,
-        data: request,
+        params: request,
       },
       instance,
     )

@@ -55,7 +55,6 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
   const handleSubmit = async () => {
     try {
-      // If using membership quota or selected benefits, create standard listing (free flow)
       const useQuota =
         !!propertyInfo?.useMembershipQuota ||
         (!!propertyInfo?.benefitIds && propertyInfo.benefitIds.length > 0)

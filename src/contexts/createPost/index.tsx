@@ -8,7 +8,11 @@ import React, {
 } from 'react'
 import { useNewProvinces, useNewWards } from '@/hooks/useAddress'
 import { MediaService } from '@/api/services'
-import { CreateListingRequest } from '@/api/types/property.type'
+import {
+  CreateListingRequest,
+  MediaItem,
+  LISTING_TYPE,
+} from '@/api/types/property.type'
 
 // Context Type
 interface VideoUploadProgressState {
@@ -39,16 +43,6 @@ interface FulltextAddress {
   propertyAddressEdited?: boolean // user manually edited display/property address; stop auto-composition
 }
 
-interface MediaIds {
-  videoMediaId?: number // index 0 in mediaIds array
-  thumbnailMediaId?: number // index 1 in mediaIds array
-}
-
-interface MediaUrls {
-  video?: string // Video URL for UI display
-  images?: string[] // Image URLs for UI display
-}
-
 interface PendingImage {
   file: File
   previewUrl: string
@@ -62,21 +56,17 @@ interface CreatePostContextType {
   composedNewAddress: string
   composedLegacyAddress: string
   // Media IDs for submission
-  mediaIds: MediaIds
   // Media URLs for UI display
-  mediaUrls: MediaUrls
+  media: Partial<MediaItem>[]
   // Update only API-facing listing fields
   updatePropertyInfo: (updates: Partial<CreateListingRequest>) => void
   resetPropertyInfo: () => void
   // Update only UI/fulltext address fields
   updateFulltextAddress: (updates: Partial<FulltextAddress>) => void
   resetFulltextAddress: () => void
-  // Update media IDs
-  updateMediaIds: (updates: Partial<MediaIds>) => void
-  resetMediaIds: () => void
-  // Update media URLs
-  updateMediaUrls: (updates: Partial<MediaUrls>) => void
-  resetMediaUrls: () => void
+  // Update media
+  updateMedia: (updates: Partial<MediaItem>) => void
+  resetMedia: () => void
   // Video upload state & handlers
   videoUploadProgress: VideoUploadProgressState
   startVideoUpload: (fileName?: string) => void
@@ -94,7 +84,7 @@ interface CreatePostContextType {
   addPendingImages: (images: PendingImage[]) => void
   removePendingImage: (index: number, isCover?: boolean) => void
   clearPendingImages: () => void
-  uploadPendingImages: () => Promise<Array<{ url: string; mediaId?: string }>>
+  uploadPendingImages: () => Promise<Array<Partial<MediaItem>>>
 }
 
 // Create Context
@@ -112,11 +102,10 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   const [propertyInfo, setPropertyInfo] = useState<
     Partial<CreateListingRequest>
   >({
-    listingType: 'RENT' as any,
+    listingType: LISTING_TYPE.RENT,
   })
   const [fulltextAddress, setFulltextAddress] = useState<FulltextAddress>({})
-  const [mediaIds, setMediaIds] = useState<MediaIds>({})
-  const [mediaUrls, setMediaUrls] = useState<MediaUrls>({})
+  const [media, setMedia] = useState<Partial<MediaItem>[]>([])
 
   // Fetch provinces and wards for address composition
   const { data: newProvinces = [] } = useNewProvinces()
@@ -163,20 +152,12 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
     setFulltextAddress({})
   }
 
-  const updateMediaIds = (updates: Partial<MediaIds>) => {
-    setMediaIds((prev) => ({ ...prev, ...updates }))
+  const updateMedia = (updates: Partial<MediaItem>) => {
+    setMedia((prev) => [...prev, updates])
   }
 
-  const resetMediaIds = () => {
-    setMediaIds({})
-  }
-
-  const updateMediaUrls = (updates: Partial<MediaUrls>) => {
-    setMediaUrls((prev) => ({ ...prev, ...updates }))
-  }
-
-  const resetMediaUrls = () => {
-    setMediaUrls({})
+  const resetMedia = () => {
+    setMedia([])
   }
 
   const startVideoUpload = (fileName?: string) => {
@@ -265,34 +246,32 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
     setPendingImagesState([])
   }
 
-  const uploadPendingImages = async (): Promise<
-    Array<{ url: string; mediaId?: string }>
-  > => {
+  const uploadPendingImages = async (): Promise<Array<Partial<MediaItem>>> => {
     if (pendingImagesState.length === 0) return []
 
-    // Sort: cover images first, then others
-    const sortedPending = [
-      ...pendingImagesState.filter((img) => img.isCover),
-      ...pendingImagesState.filter((img) => !img.isCover),
-    ]
-
-    const uploaded: Array<{ url: string; mediaId?: string }> = []
+    const uploaded: Array<Partial<MediaItem>> = []
     let uploadedCount = 0
 
-    startImagesUpload(sortedPending.length)
+    startImagesUpload(pendingImagesState.length)
 
-    for (const pending of sortedPending) {
+    for (const pending of pendingImagesState) {
       try {
         const res = await MediaService.upload({
           file: pending.file,
           mediaType: 'IMAGE',
+          isPrimary: pending.isCover || false,
         })
+
         if (res?.success && res?.data?.url) {
-          const mediaId = res.data.mediaId
-          uploaded.push({
-            url: res.data.url,
-            mediaId: mediaId ? String(mediaId) : undefined,
-          })
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { status, ...restData } = res.data
+          const mediaItem: Partial<MediaItem> = {
+            ...restData,
+            mediaId: Number(res.data.mediaId),
+            isPrimary: pending.isCover || false,
+            mediaType: 'IMAGE',
+          }
+          uploaded.push(mediaItem)
           uploadedCount++
           updateImagesUploadProgress(uploadedCount)
         } else {
@@ -373,31 +352,26 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
     fulltextAddress?.displayAddress,
   ])
 
-  const buildMediaIdsArray = useMemo(() => {
-    const ids: number[] = []
-    if (mediaIds.videoMediaId) {
-      ids.push(mediaIds.videoMediaId)
-    }
-    if (mediaIds.thumbnailMediaId) {
-      ids.push(mediaIds.thumbnailMediaId)
-    }
-    return ids
-  }, [mediaIds.videoMediaId, mediaIds.thumbnailMediaId])
-
+  // Auto-sync mediaIds from media array to propertyInfo
   useEffect(() => {
-    if (buildMediaIdsArray.length > 0) {
+    const mediaIds = media
+      .filter((item) => item.mediaId !== undefined)
+      .map((item) => Number(item.mediaId))
+      .filter((id) => !isNaN(id) && id > 0)
+
+    // Only update if mediaIds have changed
+    const currentIds = propertyInfo.mediaIds || []
+    const hasChanged =
+      mediaIds.length !== currentIds.length ||
+      mediaIds.some((id, index) => id !== currentIds[index])
+
+    if (hasChanged) {
       setPropertyInfo((prev) => ({
         ...prev,
-        mediaIds: buildMediaIdsArray,
+        mediaIds,
       }))
-    } else {
-      setPropertyInfo((prev) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { mediaIds, ...rest } = prev
-        return rest
-      })
     }
-  }, [buildMediaIdsArray])
+  }, [media])
 
   const contextValue = useMemo(
     () => ({
@@ -405,16 +379,13 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       fulltextAddress,
       composedNewAddress,
       composedLegacyAddress,
-      mediaIds,
-      mediaUrls,
+      media,
       updatePropertyInfo,
       resetPropertyInfo,
       updateFulltextAddress,
       resetFulltextAddress,
-      updateMediaIds,
-      resetMediaIds,
-      updateMediaUrls,
-      resetMediaUrls,
+      updateMedia,
+      resetMedia,
       videoUploadProgress,
       startVideoUpload,
       updateVideoUploadProgress,
@@ -436,21 +407,10 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       fulltextAddress,
       composedNewAddress,
       composedLegacyAddress,
-      mediaIds,
-      mediaUrls,
+      media,
       videoUploadProgress,
-      updatePropertyInfo,
-      resetPropertyInfo,
-      updateFulltextAddress,
-      resetFulltextAddress,
-      updateMediaIds,
-      resetMediaIds,
-      updateMediaUrls,
-      resetMediaUrls,
-      startVideoUpload,
-      updateVideoUploadProgress,
-      setVideoUploadError,
-      resetVideoUploadProgress,
+      imagesUploadProgress,
+      pendingImagesState,
     ],
   )
 

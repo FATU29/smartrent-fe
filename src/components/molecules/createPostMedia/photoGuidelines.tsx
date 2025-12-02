@@ -6,21 +6,13 @@ import {
   CardTitle,
 } from '@/components/atoms/card'
 import { useTranslations } from 'next-intl'
-import {
-  Check,
-  X,
-  Info,
-  ChevronRight,
-  ChevronDown,
-  Camera,
-  RotateCcw,
-} from 'lucide-react'
+import { Check, X, Info, ChevronRight, ChevronDown, Camera } from 'lucide-react'
 
 const PhotoGuidelines: React.FC = () => {
   const t = useTranslations('createPost.sections.media')
   // Separate collapsibles for Normal Photos and 360° Photos
   const [openNormal, setOpenNormal] = useState(false)
-  const [open360, setOpen360] = useState(false)
+  // const [open360, setOpen360] = useState(false)
 
   return (
     <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
@@ -103,7 +95,7 @@ const PhotoGuidelines: React.FC = () => {
         </div>
 
         {/* 360 Photos collapsible */}
-        <div className='rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden'>
+        {/* <div className='rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden'>
           <button
             type='button'
             onClick={() => setOpen360((v) => !v)}
@@ -148,7 +140,7 @@ const PhotoGuidelines: React.FC = () => {
               </ul>
             </div>
           )}
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   )

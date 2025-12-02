@@ -68,17 +68,3 @@ export const getCategoryByValue = (value: string): CategoryItem | undefined => {
     (category) => category.value.toLowerCase() === value.toLowerCase(),
   )
 }
-
-/**
- * Get translated category name by id
- * Translation key: common.propertyTypes.{id}
- * @param id - Category id (1-5)
- * @param t - Translation function from useTranslations('common')
- * @returns Translated name
- */
-export const getCategoryName = (
-  id: number,
-  t: (key: string) => string,
-): string => {
-  return t(`propertyTypes.${id}`) || ''
-}

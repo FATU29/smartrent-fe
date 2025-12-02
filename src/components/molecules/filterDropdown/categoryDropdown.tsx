@@ -11,7 +11,6 @@ import {
   DropdownMenuLabel,
 } from '@/components/atoms/dropdown-menu'
 import { ChevronDown, Home } from 'lucide-react'
-import { getCategoryName } from '@/constants/common/category'
 import { useCategories } from '@/hooks/useCategories'
 
 interface CategoryDropdownProps {
@@ -26,7 +25,6 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
   className = '',
 }) => {
   const t = useTranslations('homePage.filters.propertyType')
-  const tCommon = useTranslations('common')
   const { data } = useCategories()
   const categories = data?.categories ?? []
 
@@ -40,9 +38,8 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
     },
     ...categories.map((category) => ({
       value: category.categoryId.toString(),
-      displayValue:
-        getCategoryName(category.categoryId, tCommon) || category.name,
-      label: getCategoryName(category.categoryId, tCommon) || category.name,
+      displayValue: category.name,
+      label: category.name,
       icon: Home,
     })),
   ]

@@ -46,9 +46,18 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
   const tCommon = useTranslations('common')
   const tCreatePost = useTranslations('createPost')
   const tNormal = useTranslations()
-  const { propertyInfo, mediaUrls } = useCreatePost()
+  const { propertyInfo, media } = useCreatePost()
   const { data: vipTiers = [] } = useVipTiers()
   const { user } = useAuthContext()
+
+  // Extract video and images from media
+  const videoUrl = media.find((m) => m.mediaType === 'VIDEO')?.url
+  const imageUrls = media
+    .filter((m) => m.mediaType === 'IMAGE')
+    .sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0))
+    .map((m) => m.url)
+    .filter(Boolean) as string[]
+  const coverImage = imageUrls[0]
 
   // Resolve selected VIP tier from vipType
   const selectedTier = vipTiers.find((t) => t.tierCode === propertyInfo.vipType)
@@ -120,37 +129,34 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                 </CardTitle>
               </CardHeader>
               <CardContent className='space-y-4'>
-                {/* Media Section - Video or Cover Image - Fixed responsive */}
-                {(mediaUrls?.video ||
-                  (mediaUrls?.images && mediaUrls.images.length > 0)) && (
-                  <div className='relative w-full max-w-full rounded-lg overflow-hidden bg-muted'>
-                    {mediaUrls?.video ? (
-                      <div className='relative w-full rounded-lg overflow-hidden bg-black'>
+                {/* Media Section - Video Priority or Cover Image - Responsive */}
+                {(videoUrl || coverImage) && (
+                  <div className='relative w-full rounded-lg overflow-hidden bg-muted'>
+                    {videoUrl ? (
+                      // Video takes priority
+                      <div className='relative w-full aspect-video bg-black rounded-lg overflow-hidden'>
                         <video
-                          src={mediaUrls.video}
+                          src={videoUrl}
                           controls
-                          className='w-full max-h-96 object-contain'
+                          className='w-full h-full object-contain'
+                          preload='metadata'
                         />
                       </div>
-                    ) : mediaUrls?.images?.[0] ? (
-                      <div
-                        className='relative w-full'
-                        style={{
-                          aspectRatio: '16/9',
-                          maxHeight: '400px',
-                        }}
-                      >
+                    ) : (
+                      // Fallback to cover image
+                      <div className='relative w-full aspect-video'>
                         <Image
-                          src={mediaUrls.images[0]}
+                          src={coverImage}
                           alt={tCreatePost(
                             'sections.propertyInfo.propertyCover',
                           )}
                           fill
                           className='object-cover'
-                          sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                          sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px'
+                          priority
                         />
                       </div>
-                    ) : null}
+                    )}
                   </div>
                 )}
 

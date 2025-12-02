@@ -22,41 +22,27 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   const { user } = useAuth()
   const { mutate: createDraft, isPending: isDraftSaving } = useCreateDraft()
 
-  // State
   const [showDialog, setShowDialog] = useState(false)
 
-  // Refs for navigation control
   const pendingNavigationRef = useRef<string | null>(null)
   const shouldBlockRef = useRef(false)
   const isNavigatingRef = useRef(false)
   const blockedUrlRef = useRef<string | null>(null)
 
-  // Check if there are unsaved changes
   const hasUnsavedChanges = useCallback((): boolean => {
     if (!propertyInfo) return false
 
-    // Check if any meaningful field has been filled
-    return (
-      propertyInfo.productType !== undefined ||
-      propertyInfo.address !== undefined ||
-      propertyInfo.area !== undefined ||
-      propertyInfo.price !== undefined ||
-      propertyInfo.bedrooms !== undefined ||
-      propertyInfo.bathrooms !== undefined ||
-      propertyInfo.amenityIds !== undefined ||
-      propertyInfo.mediaIds !== undefined ||
-      propertyInfo.postDate !== undefined ||
-      propertyInfo.durationDays !== undefined ||
-      propertyInfo.isDraft !== undefined
-    )
+    const values = Object.values(propertyInfo)
+    const allUndefined = values.some((value) => value === undefined)
+    if (allUndefined) return false
+
+    return true
   }, [propertyInfo])
 
-  // Update blocking state when changes occur
   useEffect(() => {
     shouldBlockRef.current = hasUnsavedChanges()
   }, [hasUnsavedChanges])
 
-  // Helper: Cancel navigation by emitting routeChangeError
   const cancelNavigation = useCallback(
     (url: string) => {
       const error = new Error(NAVIGATION_CANCELLED_ERROR)
@@ -75,27 +61,6 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
     },
     [cancelNavigation],
   )
-
-  // Navigate after draft is saved or user confirms discard/cancel
-  const proceedWithNavigation = useCallback(() => {
-    shouldBlockRef.current = false
-    isNavigatingRef.current = true
-    setShowDialog(false)
-
-    if (pendingNavigationRef.current) {
-      router
-        .push(pendingNavigationRef.current)
-        .then(() => {
-          pendingNavigationRef.current = null
-          isNavigatingRef.current = false
-        })
-        .catch(() => {
-          isNavigatingRef.current = false
-        })
-    } else {
-      window.location.reload()
-    }
-  }, [router])
 
   // Save draft and navigate on success
   const saveDraft = useCallback((): void => {
@@ -131,11 +96,13 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       onSuccess: (response) => {
         if (response.success && response.data) {
           toast.success(t('draftSaved'))
-          // Navigate to drafts page after success
+          // Navigate to the page user originally tried to go to
           shouldBlockRef.current = false
           isNavigatingRef.current = true
-          router.push('/seller/drafts').then(() => {
+          const targetUrl = pendingNavigationRef.current || '/seller/drafts'
+          router.push(targetUrl).then(() => {
             isNavigatingRef.current = false
+            pendingNavigationRef.current = null
           })
         } else {
           toast.error(response.message || t('saveFailed'))
@@ -148,17 +115,27 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
     })
   }, [propertyInfo, user?.userId, createDraft, t, router])
 
-  const handleDiscard = useCallback(() => {
-    setShowDialog(false)
-    pendingNavigationRef.current = null
-    blockedUrlRef.current = null
-    shouldBlockRef.current = false
-  }, [])
-
-  // Cancel and navigate immediately without saving
+  // Cancel dialog and navigate to the pending URL (user wants to leave)
   const handleCancel = useCallback(() => {
-    proceedWithNavigation()
-  }, [proceedWithNavigation])
+    shouldBlockRef.current = false
+    isNavigatingRef.current = true
+    setShowDialog(false)
+
+    if (pendingNavigationRef.current) {
+      router
+        .push(pendingNavigationRef.current)
+        .then(() => {
+          pendingNavigationRef.current = null
+          isNavigatingRef.current = false
+        })
+        .catch(() => {
+          isNavigatingRef.current = false
+        })
+    } else {
+      // If no pending URL, just close dialog and stay
+      isNavigatingRef.current = false
+    }
+  }, [router])
 
   // Handle browser reload/close tab (shows browser's default dialog)
   useEffect(() => {
@@ -276,7 +253,6 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       <SaveDraftDialog
         open={showDialog}
         onSave={saveDraft}
-        onDiscard={handleDiscard}
         onCancel={handleCancel}
         isSaving={isDraftSaving}
       />

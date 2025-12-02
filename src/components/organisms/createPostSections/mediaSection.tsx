@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import { useCreatePost } from '@/contexts/createPost'
 import { UploadImages } from '@/components/molecules/createPostMedia/uploadImages'
 import { CoverUpload } from '@/components/molecules/createPostMedia/coverUpload'
 import { UploadVideo } from '@/components/molecules/createPostMedia/uploadVideo'
@@ -16,6 +17,25 @@ const MediaSection: React.FC<MediaSectionProps> = ({
   showHeader = true,
 }) => {
   const t = useTranslations('createPost.sections.media')
+  const { media } = useCreatePost()
+
+  const coverImage = media.find(
+    (img) => img.mediaType === 'IMAGE' && img.isPrimary === true,
+  )
+
+  const otherImages = media.filter(
+    (img) => img.mediaType === 'IMAGE' && img.isPrimary === false,
+  )
+
+  // Video is always isPrimary and only 1 video allowed
+  const video = media.find((item) => item.mediaType === 'VIDEO')
+  const hasVideo = !!video
+
+  // Show upload video if no video exists
+  // Show video URL input if no video exists
+  // Only one type can exist at a time
+  const showUploadVideo = !hasVideo
+  const showVideoUrl = !hasVideo
 
   return (
     <div className={className}>
@@ -29,10 +49,16 @@ const MediaSection: React.FC<MediaSectionProps> = ({
           </p>
         </div>
       )}
-      <CoverUpload />
-      <UploadImages />
-      <UploadVideo />
-      <VideoUrl />
+      <CoverUpload coverImage={coverImage} />
+      <UploadImages images={otherImages} />
+
+      {/* Show video if exists */}
+      {hasVideo && <UploadVideo video={video} />}
+
+      {/* Show upload options only when no video exists */}
+      {showUploadVideo && <UploadVideo video={undefined} />}
+      {showVideoUrl && <VideoUrl video={undefined} />}
+
       <PhotoGuidelines />
     </div>
   )

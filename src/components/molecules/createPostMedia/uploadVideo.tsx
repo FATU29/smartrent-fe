@@ -8,10 +8,12 @@ import {
 } from '@/components/atoms/card'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
+import { Progress } from '@/components/atoms/progress'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { Video, Upload, X, CloudUpload, Loader2 } from 'lucide-react'
 import { MediaService } from '@/api/services'
+import type { MediaItem } from '@/api/types/property.type'
 
 const MAX_VIDEO_SIZE_MB = ENV.MAX_VIDEO_SIZE_MB || 100
 const MAX_VIDEO_SIZE = MAX_VIDEO_SIZE_MB * 1024 * 1024
@@ -22,12 +24,15 @@ const ACCEPTED_VIDEO_TYPES = [
   'video/quicktime',
 ]
 
-const UploadVideo: React.FC = () => {
+interface UploadVideoProps {
+  video?: Partial<MediaItem>
+}
+
+const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
   const t = useTranslations('createPost.sections.media')
   const {
-    mediaUrls,
-    updateMediaUrls,
-    updateMediaIds,
+    updateMedia,
+    resetMedia,
     startVideoUpload,
     updateVideoUploadProgress,
     setVideoUploadError,
@@ -37,7 +42,7 @@ const UploadVideo: React.FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const videoFileRef = useRef<File | null>(null)
 
-  const videoUrl = mediaUrls?.video || ''
+  const videoUrl = video?.url || ''
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -67,7 +72,12 @@ const UploadVideo: React.FC = () => {
 
     videoFileRef.current = file
     const blobUrl = URL.createObjectURL(file)
-    updateMediaUrls({ video: blobUrl })
+    // Store video as pending upload (use updateMedia to add to context)
+    updateMedia({
+      url: blobUrl,
+      mediaType: 'VIDEO',
+      isPrimary: true,
+    })
     // Do NOT auto-upload; wait for user to click explicit upload button
     resetVideoUploadProgress()
   }
@@ -77,7 +87,7 @@ const UploadVideo: React.FC = () => {
 
     try {
       const response = await MediaService.upload(
-        { file, mediaType: 'VIDEO' },
+        { file, mediaType: 'VIDEO', isPrimary: true },
         {
           onUploadProgress: (e) => {
             if (!e.total) return
@@ -93,14 +103,13 @@ const UploadVideo: React.FC = () => {
         if (videoUrl.startsWith('blob:')) {
           URL.revokeObjectURL(videoUrl)
         }
-        updateMediaUrls({ video: uploadedUrl })
-        // Save video mediaId (index 0 in mediaIds array)
-        if (mediaId) {
-          const videoMediaId = Number(mediaId)
-          if (!isNaN(videoMediaId) && videoMediaId > 0) {
-            updateMediaIds({ videoMediaId })
-          }
-        }
+        // Update video in context with uploaded URL
+        updateMedia({
+          url: uploadedUrl,
+          mediaId: mediaId ? Number(mediaId) : undefined,
+          mediaType: 'VIDEO',
+          isPrimary: true,
+        })
       }
       updateVideoUploadProgress(100)
       setTimeout(() => {
@@ -122,22 +131,23 @@ const UploadVideo: React.FC = () => {
       URL.revokeObjectURL(videoUrl)
       videoFileRef.current = null
     }
-    updateMediaUrls({ video: undefined })
-    // Clear video mediaId
-    updateMediaIds({ videoMediaId: undefined })
+
+    // Remove video from media context
+    resetMedia()
+
     if (inputRef.current) {
       inputRef.current.value = ''
     }
+
+    resetVideoUploadProgress()
   }
 
-  // Determine video state
+  // Determine video state based on sourceType and url
   const isBlobUrl = videoUrl.startsWith('blob:')
-  const isYouTubeUrl =
-    videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')
-  const isExternalUrl = isYouTubeUrl || videoUrl.includes('tiktok.com')
-  const isUploadedUrl =
-    videoUrl && !isBlobUrl && !isExternalUrl && videoUrl.startsWith('http')
-  const showUploadButton = isBlobUrl && !isUploadedUrl
+  const isExternalVideo = video?.sourceType === 'EXTERNAL'
+  const isUploadedVideo =
+    video?.sourceType === 'UPLOADED' && videoUrl && !isBlobUrl
+  const showUploadButton = isBlobUrl && !isUploadedVideo
 
   return (
     <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
@@ -148,7 +158,7 @@ const UploadVideo: React.FC = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {isExternalUrl ? (
+        {isExternalVideo ? (
           <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700'>
             <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>
               {t('video.external.uploadedNote') ||
@@ -186,17 +196,38 @@ const UploadVideo: React.FC = () => {
                 controls
                 className='w-full max-h-96 object-contain'
               />
+              {/* Disable delete button when uploading */}
               <Button
                 type='button'
                 variant='destructive'
                 size='sm'
                 onClick={handleRemoveVideo}
+                disabled={videoUploadProgress.isUploading}
                 className='absolute top-2 right-2'
               >
                 <X className='w-4 h-4' />
               </Button>
             </div>
-            {showUploadButton && (
+
+            {/* Show upload progress */}
+            {videoUploadProgress.isUploading && (
+              <div className='mb-3 space-y-2'>
+                <div className='flex items-center justify-between text-sm'>
+                  <span className='text-muted-foreground'>
+                    {t('video.upload.uploading') || 'Đang tải lên...'}
+                  </span>
+                  <span className='font-medium'>
+                    {videoUploadProgress.progress}%
+                  </span>
+                </div>
+                <Progress
+                  value={videoUploadProgress.progress}
+                  className='h-2'
+                />
+              </div>
+            )}
+
+            {showUploadButton && !videoUploadProgress.isUploading && (
               <>
                 <Button
                   type='button'
@@ -228,7 +259,7 @@ const UploadVideo: React.FC = () => {
                 )}
               </>
             )}
-            {isUploadedUrl && (
+            {isUploadedVideo && (
               <Typography
                 variant='small'
                 className='text-green-600 dark:text-green-400 text-center mt-2'

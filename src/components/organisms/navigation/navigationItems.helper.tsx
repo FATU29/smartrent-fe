@@ -1,6 +1,5 @@
 import { NavigationItemData } from '@/components/atoms/navigation-item'
 import { Home as HomeIcon, Building2, Users } from 'lucide-react'
-import { getCategoryName } from '@/constants/common/category'
 import type { CategoryApi } from '@/api/types/category.type'
 
 export const getNavigationItems = (
@@ -11,7 +10,7 @@ export const getNavigationItems = (
 ): NavigationItemData[] => {
   const categoryChildren = (categories ?? []).map((category) => ({
     id: category.slug,
-    label: getCategoryName(category.categoryId, tCommon) || category.name,
+    label: category.name,
     href: `/properties?categoryId=${category.categoryId}`,
     isActive: activeItem === category.slug,
   }))

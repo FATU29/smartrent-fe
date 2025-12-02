@@ -727,7 +727,8 @@
       "errorTitle": "Submission Error",
       "errorDescription": "An error occurred while submitting your listing. Please try again.",
       "successTitle": "Listing Submitted",
-      "ok": "OK"
+      "ok": "OK",
+      "successDescription": "Your listing has been successfully submitted. It is now pending approval. You will be notified once your listing is approved and visible on the website."
     },
     "validation": {
       "propertyTypeRequired": "Property type is required",
@@ -738,10 +739,11 @@
       "priceUnitRequired": "Price unit is required",
       "priceUnitInvalid": "Invalid price unit",
       "mediaImagesOrYoutube": "Please add at least 4 images or 1 video",
-      "imagesRequired": "Please upload at least 4 photos if no video is provided. If you have a video, you can proceed without photos.",
-      "imagesTooMany": "You can upload up to 24 photos.",
-      "imageUrlInvalid": "Invalid image URL.",
-      "videoUrlInvalid": "Invalid video URL.",
+      "imagesRequired": "Please upload at least 4 photos",
+      "imagesMinimum": "At least 4 photos are required",
+      "imagesTooMany": "You can upload up to 24 photos",
+      "imageUrlInvalid": "Invalid image URL",
+      "videoUrlInvalid": "Invalid video URL",
       "packageRequired": "Please select a package",
       "durationRequired": "Please select a duration",
       "startDateRequired": "Please select a start date",
@@ -783,7 +785,7 @@
       "loginRequired": "Please login to save draft",
       "saveSuccess": "Draft saved successfully",
       "saveFailed": "Failed to save draft. Please try again.",
-      "draftSaved": "Draft saved successfully! Redirecting to drafts...",
+      "draftSaved": "Draft saved successfully!",
       "addressRequired": "Address is required to save draft",
       "requiredFieldsMissing": "Category and title are required to save draft"
     },
@@ -934,6 +936,7 @@
           "failed": "Failed to upload images",
           "noPendingImages": "No images to upload"
         },
+        "uploadButton": "Upload Media",
         "validation": {
           "pendingImages": "Please upload pending images before continuing",
           "minImages": "Please upload at least 4 images (video is optional)"
@@ -1826,6 +1829,13 @@
     },
     "media": {
       "title": "Media",
+      "description": "Upload photos and videos of your property",
+      "uploadButton": "Upload All Media",
+      "uploading": "Uploading...",
+      "uploadSuccess": "Media uploaded successfully",
+      "uploadFailed": "Failed to upload media",
+      "uploadRequired": "Please upload media before proceeding",
+      "pendingImages": "images ready to upload",
       "video": "Video",
       "threeSixty": "3D & 360°"
     },
