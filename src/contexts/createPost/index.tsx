@@ -52,45 +52,34 @@ interface PendingImage {
 interface CreatePostContextType {
   propertyInfo: CreateListingRequest
   fulltextAddress: FulltextAddress
-  // Composed addresses
   composedNewAddress: string
   composedLegacyAddress: string
-  // Media IDs for submission
-  // Media URLs for UI display
   media: Partial<MediaItem>[]
-  // Update only API-facing listing fields
   updatePropertyInfo: (updates: Partial<CreateListingRequest>) => void
   resetPropertyInfo: () => void
-  // Update only UI/fulltext address fields
   updateFulltextAddress: (updates: Partial<FulltextAddress>) => void
   resetFulltextAddress: () => void
-  // Update media
   updateMedia: (updates: Partial<MediaItem>) => void
   resetMedia: () => void
-  // Video upload state & handlers
   videoUploadProgress: VideoUploadProgressState
   startVideoUpload: (fileName?: string) => void
   updateVideoUploadProgress: (progress: number) => void
   setVideoUploadError: (message: string) => void
   resetVideoUploadProgress: () => void
-  // Images upload state & handlers
   imagesUploadProgress: ImagesUploadProgressState
   startImagesUpload: (totalCount: number) => void
   updateImagesUploadProgress: (uploadedCount: number) => void
   setImagesUploadError: (message: string) => void
   resetImagesUploadProgress: () => void
-  // Pending images state
   pendingImages: PendingImage[]
   addPendingImages: (images: PendingImage[]) => void
   removePendingImage: (index: number, isCover?: boolean) => void
   clearPendingImages: () => void
   uploadPendingImages: () => Promise<Array<Partial<MediaItem>>>
-  // Submit success state
   isSubmitSuccess: boolean
   setIsSubmitSuccess: (value: boolean) => void
 }
 
-// Create Context
 const CreatePostContext = createContext<CreatePostContextType | undefined>(
   undefined,
 )
@@ -110,7 +99,6 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   const [fulltextAddress, setFulltextAddress] = useState<FulltextAddress>({})
   const [media, setMedia] = useState<Partial<MediaItem>[]>([])
 
-  // Fetch provinces and wards for address composition
   const { data: newProvinces = [] } = useNewProvinces()
   const provinceCodeForWards =
     fulltextAddress?.newProvinceCode ||
@@ -159,17 +147,14 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
 
   const updateMedia = (updates: Partial<MediaItem>) => {
     setMedia((prev) => {
-      // If updating VIDEO, replace existing video (only 1 video allowed)
       if (updates.mediaType === 'VIDEO') {
         return [...prev.filter((m) => m.mediaType !== 'VIDEO'), updates]
       }
-      // For images, just add to the array
       return [...prev, updates]
     })
   }
 
   const resetMedia = () => {
-    // Remove only VIDEO from media array (keep images)
     setMedia((prev) => prev.filter((m) => m.mediaType !== 'VIDEO'))
   }
 
@@ -365,14 +350,12 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
     fulltextAddress?.displayAddress,
   ])
 
-  // Auto-sync mediaIds from media array to propertyInfo
   useEffect(() => {
     const mediaIds = media
       .filter((item) => item.mediaId !== undefined)
       .map((item) => Number(item.mediaId))
       .filter((id) => !isNaN(id) && id > 0)
 
-    // Only update if mediaIds have changed
     const currentIds = propertyInfo.mediaIds || []
     const hasChanged =
       mediaIds.length !== currentIds.length ||

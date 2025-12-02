@@ -284,6 +284,19 @@ export const ListProvider = <T,>({
     shouldAppendRef,
   )
 
+  // Remove item callback for optimistic deletion
+  const removeItem = useCallback((id: string | number) => {
+    setItems((prev) =>
+      prev.filter((item) => {
+        const itemId =
+          typeof item === 'object' && item !== null && 'listingId' in item
+            ? (item as { listingId: string | number }).listingId
+            : id
+        return itemId !== id
+      }),
+    )
+  }, [])
+
   // Context value
   const value: ListContextType<T> = useMemo(
     () => ({
@@ -297,6 +310,7 @@ export const ListProvider = <T,>({
       loadMore,
       goToPage,
       setKeyword,
+      removeItem,
     }),
     [
       items,
@@ -309,6 +323,7 @@ export const ListProvider = <T,>({
       loadMore,
       goToPage,
       setKeyword,
+      removeItem,
     ],
   )
 

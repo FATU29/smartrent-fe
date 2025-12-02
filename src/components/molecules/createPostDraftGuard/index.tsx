@@ -35,9 +35,23 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
 
     if (!propertyInfo) return false
 
-    const values = Object.values(propertyInfo)
-    const allUndefined = values.some((value) => value === undefined)
-    if (allUndefined) return false
+    // Check if propertyInfo has any meaningful data
+    const hasAnyData = Object.entries(propertyInfo).some(([key, value]) => {
+      // Skip checking these meta fields
+      if (key === 'isDraft' || key === 'listingType') return false
+
+      // Check if value exists and is not empty
+      if (value === undefined || value === null) return false
+      if (typeof value === 'string' && value.trim() === '') return false
+      if (Array.isArray(value) && value.length === 0) return false
+      if (typeof value === 'object' && Object.keys(value).length === 0)
+        return false
+
+      return true
+    })
+
+    // Don't block if no meaningful data has been entered
+    if (!hasAnyData) return false
 
     return true
   }, [propertyInfo, isSubmitSuccess])

@@ -28,7 +28,7 @@ export const NotificationDialog: React.FC<NotificationDialogProps> = ({
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[480px]'>
+      <DialogContent className='w-[300px]'>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}

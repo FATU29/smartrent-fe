@@ -94,17 +94,26 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       const firstTier = vipTiers[0]
       const defaultStartDate = new Date().toISOString().split('T')[0]
 
+      const defaultDuration = useMembershipQuota ? 30 : 10
+
+      const startDateObj = new Date(defaultStartDate)
+      const expiryDateObj = new Date(
+        startDateObj.getTime() + defaultDuration * 24 * 60 * 60 * 1000,
+      )
+      const defaultExpiryDate = expiryDateObj.toISOString()
+
       updatePropertyInfo({
         vipType: firstTier.tierCode as VipType,
-        durationDays: 10,
+        durationDays: defaultDuration,
         postDate: defaultStartDate,
+        expiryDate: defaultExpiryDate,
       })
 
       setValue('vipType', firstTier.tierCode, {
         shouldValidate: true,
         shouldDirty: true,
       })
-      setValue('durationDays', 10, {
+      setValue('durationDays', defaultDuration, {
         shouldValidate: true,
         shouldDirty: true,
       })
@@ -112,9 +121,20 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         shouldValidate: true,
         shouldDirty: true,
       })
+      setValue('expiryDate', defaultExpiryDate, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
       trigger()
     }
-  }, [vipTiers, propertyInfo.vipType, updatePropertyInfo, setValue, trigger])
+  }, [
+    vipTiers,
+    propertyInfo.vipType,
+    updatePropertyInfo,
+    setValue,
+    trigger,
+    useMembershipQuota,
+  ])
 
   const durationOptions = useMemo((): DurationOption[] => {
     if (!selectedTier) return []
@@ -136,9 +156,17 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       const tier = vipTiers.find((t) => t.tierId === tierId)
       if (!tier) return
 
+      // Calculate expiry date with 10 days default duration
+      const startDateObj = new Date(startDate)
+      const expiryDateObj = new Date(
+        startDateObj.getTime() + 10 * 24 * 60 * 60 * 1000,
+      )
+      const expiryDate = expiryDateObj.toISOString()
+
       updatePropertyInfo({
         vipType: tier.tierCode as VipType,
         durationDays: 10,
+        expiryDate,
       })
 
       setValue('vipType', tier.tierCode, {
@@ -149,21 +177,39 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         shouldValidate: true,
         shouldDirty: true,
       })
-      trigger()
-    },
-    [vipTiers, updatePropertyInfo, setValue, trigger],
-  )
-
-  const handleDurationSelect = useCallback(
-    (days: number) => {
-      updatePropertyInfo({ durationDays: days as DurationDays })
-      setValue('durationDays', days, {
+      setValue('expiryDate', expiryDate, {
         shouldValidate: true,
         shouldDirty: true,
       })
       trigger()
     },
-    [updatePropertyInfo, setValue, trigger],
+    [vipTiers, updatePropertyInfo, setValue, trigger, startDate],
+  )
+
+  const handleDurationSelect = useCallback(
+    (days: number) => {
+      // Calculate new expiry date with the new duration
+      const startDateObj = new Date(startDate)
+      const expiryDateObj = new Date(
+        startDateObj.getTime() + days * 24 * 60 * 60 * 1000,
+      )
+      const expiryDate = expiryDateObj.toISOString()
+
+      updatePropertyInfo({
+        durationDays: days as DurationDays,
+        expiryDate,
+      })
+      setValue('durationDays', days, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      setValue('expiryDate', expiryDate, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      trigger()
+    },
+    [updatePropertyInfo, setValue, trigger, startDate],
   )
 
   const handleDateChange = useCallback(
@@ -171,25 +217,50 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       const newStart = date || new Date().toISOString().split('T')[0]
       const fullDate = new Date(newStart).toISOString()
 
-      updatePropertyInfo({ postDate: fullDate })
+      // Calculate expiry date based on start date + duration
+      const startDateObj = new Date(newStart)
+      const expiryDateObj = new Date(
+        startDateObj.getTime() + selectedDuration * 24 * 60 * 60 * 1000,
+      )
+      const expiryDate = expiryDateObj.toISOString()
+
+      updatePropertyInfo({ postDate: fullDate, expiryDate })
       setValue('postDate', fullDate, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      setValue('expiryDate', expiryDate, {
         shouldValidate: true,
         shouldDirty: true,
       })
       trigger()
     },
-    [updatePropertyInfo, setValue, trigger],
+    [updatePropertyInfo, setValue, trigger, selectedDuration],
   )
 
   const handleToggleMembershipQuota = useCallback(
     (checked: boolean) => {
+      const newDuration = checked ? 30 : 10
+
+      // Calculate new expiry date
+      const startDateObj = new Date(startDate)
+      const expiryDateObj = new Date(
+        startDateObj.getTime() + newDuration * 24 * 60 * 60 * 1000,
+      )
+      const expiryDate = expiryDateObj.toISOString()
+
       updatePropertyInfo({
         useMembershipQuota: checked,
-        durationDays: checked ? 30 : 10,
+        durationDays: newDuration,
+        expiryDate,
       })
 
       setValue('useMembershipQuota', checked, { shouldDirty: true })
-      setValue('durationDays', checked ? 30 : 10, {
+      setValue('durationDays', newDuration, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      setValue('expiryDate', expiryDate, {
         shouldValidate: true,
         shouldDirty: true,
       })
@@ -200,18 +271,28 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       }
       trigger()
     },
-    [updatePropertyInfo, setValue, trigger],
+    [updatePropertyInfo, setValue, trigger, startDate, hasBenefits],
   )
 
   const handleApplyBenefits = useCallback(
     (benefits: UserBenefit[]) => {
       const benefitIds = benefits.map((b) => b.userBenefitId)
+
+      // Calculate expiry date with 30 days duration when applying benefits
+      const startDateObj = new Date(startDate)
+      const expiryDateObj = new Date(
+        startDateObj.getTime() + 30 * 24 * 60 * 60 * 1000,
+      )
+      const expiryDate = expiryDateObj.toISOString()
+
       // Selecting benefits implicitly enables quota-like behavior
       updatePropertyInfo({
         benefitIds,
         useMembershipQuota: benefitIds.length > 0,
         durationDays:
           benefitIds.length > 0 ? 30 : (propertyInfo.durationDays ?? 10),
+        expiryDate:
+          benefitIds.length > 0 ? expiryDate : propertyInfo.expiryDate,
       })
       setValue('benefitIds', benefitIds, { shouldDirty: true })
       setValue('useMembershipQuota', benefitIds.length > 0, {
@@ -222,9 +303,19 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
           shouldValidate: true,
           shouldDirty: true,
         })
+        setValue('expiryDate', expiryDate, {
+          shouldValidate: true,
+          shouldDirty: true,
+        })
       }
     },
-    [updatePropertyInfo, setValue, propertyInfo.durationDays],
+    [
+      updatePropertyInfo,
+      setValue,
+      propertyInfo.durationDays,
+      propertyInfo.expiryDate,
+      startDate,
+    ],
   )
 
   if (isLoading) {

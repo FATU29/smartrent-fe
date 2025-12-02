@@ -63,16 +63,13 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
     (m) => m.mediaType === 'IMAGE' && m.isPrimary,
   )?.url
 
-  // Resolve selected VIP tier from vipType
   const selectedTier = vipTiers.find((t) => t.tierCode === propertyInfo.vipType)
 
-  // Get benefit details when using membership quota or promotion
   const usingMembershipQuota = !!propertyInfo.useMembershipQuota
   const usingPromotion = Array.isArray(propertyInfo?.benefitIds)
     ? propertyInfo?.benefitIds?.length > 0
     : false
 
-  // Find the selected benefit from user's membership benefits
   const selectedBenefit = React.useMemo(() => {
     if (!myMembership?.benefits || !propertyInfo.benefitIds?.length) {
       return null

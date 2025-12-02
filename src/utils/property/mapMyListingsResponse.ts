@@ -3,6 +3,7 @@ import {
   ListingSearchResponse,
   MyListingBackendItem,
   MyListingsBackendResponse,
+  POST_STATUS,
   VipType,
 } from '@/api/types/property.type'
 
@@ -12,23 +13,11 @@ import {
 export function mapMyListingItem(
   item: MyListingBackendItem,
 ): ListingOwnerDetail {
-  const media = (item.media || []).map((m, idx) => ({
-    mediaId: m.mediaId,
-    listingId: item.listingId,
-    mediaType: 'IMAGE' as const,
-    sourceType: 'EXTERNAL',
-    url: m.url,
-    isPrimary: m.isPrimary || idx === 0,
-    sortOrder: idx,
-    status: 3, // DISPLAYING (placeholder)
-    createdAt: new Date().toISOString(),
-  }))
-
   return {
     listingId: item.listingId,
     title: item.title,
     description: '',
-    media,
+    media: item.media || [],
     user: {
       userId: item.user?.userId || '',
       phoneCode: '',
@@ -79,7 +68,7 @@ export function mapMyListingItem(
     listingViews: item.statistics?.viewCount || 0,
     interested: item.statistics?.contactCount || 0,
     customers: 0,
-    status: 3, // DISPLAYING (placeholder)
+    listingStatus: POST_STATUS.IN_REVIEW,
     rankOfVipType: 0,
   }
 }

@@ -17,7 +17,7 @@ const MediaSection: React.FC<MediaSectionProps> = ({
   showHeader = true,
 }) => {
   const t = useTranslations('createPost.sections.media')
-  const { media, videoUploadProgress } = useCreatePost()
+  const { media } = useCreatePost()
 
   const coverImage = media.find(
     (img) => img.mediaType === 'IMAGE' && img.isPrimary === true,
@@ -27,14 +27,30 @@ const MediaSection: React.FC<MediaSectionProps> = ({
     (img) => img.mediaType === 'IMAGE' && img.isPrimary === false,
   )
 
-  // Video is always isPrimary and only 1 video allowed
-  const video = media.find((item) => item.mediaType === 'VIDEO')
-  const hasVideo = !!video
+  const video = media.find(
+    (item) =>
+      item.mediaType === 'VIDEO' &&
+      item.isPrimary === true &&
+      item.sourceType === 'YOUTUBE',
+  )
+  const hasVideoYoutube = !!video
 
-  // Show upload video section when no video exists
-  const showUploadVideo = true // Always show the upload section
-  // Hide video URL input when video is uploading or already exists
-  const showVideoUrl = !hasVideo && !videoUploadProgress.isUploading
+  const uploadedVideo = media.find(
+    (item) =>
+      item.mediaType === 'VIDEO' &&
+      item.isPrimary === true &&
+      item.sourceType === 'UPLOAD',
+  )
+  const hasUploadedVideo = !!uploadedVideo
+
+  // Only one video type can be present at a time
+  const hasAnyVideo = hasVideoYoutube || hasUploadedVideo
+
+  // Show upload video section only when no video exists
+  const showUploadVideo = !hasAnyVideo
+
+  // Show VideoUrl section only when no video exists OR when YouTube video exists
+  const showVideoUrl = !hasUploadedVideo
 
   return (
     <div className={className}>
@@ -51,11 +67,11 @@ const MediaSection: React.FC<MediaSectionProps> = ({
       <CoverUpload coverImage={coverImage} />
       <UploadImages images={otherImages} />
 
-      {/* Video Upload Section - Always show, handles its own states */}
-      {showUploadVideo && <UploadVideo video={video} />}
+      {/* Video Upload Section - Show when no video exists */}
+      {showUploadVideo && <UploadVideo video={undefined} />}
 
-      {/* Show external video URL input only when no video exists and not uploading */}
-      {showVideoUrl && <VideoUrl video={undefined} />}
+      {/* Video URL Section - Always show (handles YouTube display and input) */}
+      {showVideoUrl && <VideoUrl video={video || uploadedVideo} />}
 
       <PhotoGuidelines />
     </div>

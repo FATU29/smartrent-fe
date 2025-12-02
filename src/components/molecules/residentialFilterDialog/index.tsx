@@ -25,6 +25,7 @@ interface ResidentialFilterDialogProps {
   onOpenChange: (open: boolean) => void
   title?: string
   onApply?: () => void // Custom apply handler (e.g., navigate from homepage to /properties)
+  hideLocationFilter?: boolean // Hide address/location filters for seller page
 }
 
 type ViewKey =
@@ -46,6 +47,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   onOpenChange,
   title,
   onApply: onApplyProp,
+  hideLocationFilter = false,
 }) => {
   const t = useTranslations('residentialFilter')
   const router = useRouter()
@@ -185,6 +187,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
             filters={draft}
             onNavigate={(v) => setView(v as ViewKey)}
             onUpdate={update}
+            hideLocationFilter={hideLocationFilter}
           />
         )
     }

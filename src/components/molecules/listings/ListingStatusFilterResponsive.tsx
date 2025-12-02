@@ -22,11 +22,12 @@ export interface ListingStatusFilterResponsiveProps {
   counts?: Partial<Record<PostStatus, number>>
   onChange: (status: PostStatus) => void
   className?: string
+  hideCount?: boolean
 }
 
 export const ListingStatusFilterResponsive: React.FC<
   ListingStatusFilterResponsiveProps
-> = ({ value, counts = {}, onChange, className }) => {
+> = ({ value, counts = {}, onChange, className, hideCount = false }) => {
   const t = useTranslations('seller.listingManagement')
 
   const activeStatus =
@@ -61,18 +62,19 @@ export const ListingStatusFilterResponsive: React.FC<
               )}
             >
               <span>{t(`status.${getPostStatusI18nKey(status)}`)}</span>
-              {((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
-                <span
-                  className={cn(
-                    'min-w-5 rounded-full border px-1 text-[10px] leading-none py-1 flex items-center justify-center',
-                    active
-                      ? 'bg-primary/10 border-primary/30 text-primary'
-                      : 'bg-muted border-border/50 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/30',
-                  )}
-                >
-                  {count}
-                </span>
-              )}
+              {!hideCount &&
+                ((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
+                  <span
+                    className={cn(
+                      'min-w-5 rounded-full border px-1 text-[10px] leading-none py-1 flex items-center justify-center',
+                      active
+                        ? 'bg-primary/10 border-primary/30 text-primary'
+                        : 'bg-muted border-border/50 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/30',
+                    )}
+                  >
+                    {count}
+                  </span>
+                )}
               {active && (
                 <span className='pointer-events-none absolute inset-x-1 -bottom-px h-0.5 rounded-full bg-gradient-to-r from-primary/30 via-primary to-primary/30' />
               )}
@@ -92,7 +94,7 @@ export const ListingStatusFilterResponsive: React.FC<
                 <span className='text-sm font-medium'>
                   {t(`status.${getPostStatusI18nKey(activeStatus)}`)}
                 </span>
-                {activeCount > 0 && (
+                {!hideCount && activeCount > 0 && (
                   <span className='min-w-5 rounded-full bg-primary/10 border border-primary/30 text-primary px-1.5 py-0.5 text-xs leading-none flex items-center justify-center'>
                     {activeCount}
                   </span>
@@ -118,18 +120,19 @@ export const ListingStatusFilterResponsive: React.FC<
                   )}
                 >
                   <span>{t(`status.${getPostStatusI18nKey(status)}`)}</span>
-                  {((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
-                    <span
-                      className={cn(
-                        'min-w-5 rounded-full border px-1.5 py-0.5 text-xs leading-none flex items-center justify-center',
-                        active
-                          ? 'bg-primary/10 border-primary/30 text-primary'
-                          : 'bg-muted border-border/50 text-muted-foreground',
-                      )}
-                    >
-                      {count}
-                    </span>
-                  )}
+                  {!hideCount &&
+                    ((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
+                      <span
+                        className={cn(
+                          'min-w-5 rounded-full border px-1.5 py-0.5 text-xs leading-none flex items-center justify-center',
+                          active
+                            ? 'bg-primary/10 border-primary/30 text-primary'
+                            : 'bg-muted border-border/50 text-muted-foreground',
+                        )}
+                      >
+                        {count}
+                      </span>
+                    )}
                 </DropdownMenuItem>
               )
             })}

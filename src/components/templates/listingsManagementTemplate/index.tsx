@@ -1,10 +1,13 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { ListingStatusFilterResponsive } from '@/components/molecules/listings/ListingStatusFilterResponsive'
 import { ListingEmptyState } from '@/components/organisms/listings/ListingEmptyState'
 import { ListingToolbar } from '@/components/molecules/listings/ListingToolbar'
 import dynamic from 'next/dynamic'
 import { ListingsList } from '@/components/organisms/listings-list'
+import { useDeleteListing } from '@/hooks/useListings/useDeleteListing'
+import { toast } from 'sonner'
+import { DeleteListingDialog } from '@/components/molecules/deleteListingDialog'
 
 const ResidentialFilterDialog = dynamic(
   () => import('@/components/molecules/residentialFilterDialog'),
@@ -22,26 +25,27 @@ import {
   ListingFilterRequest,
 } from '@/api/types'
 
-const ListingsWithPagination: React.FC<{ currentStatus: PostStatus }> = ({
-  currentStatus,
-}) => {
+const ListingsWithPagination = () => {
   const {
     items: listings,
     isLoading,
     pagination,
     loadMore,
+    removeItem,
   } = useListContext<ListingOwnerDetail>()
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tSeller = useTranslations('seller.listingManagement')
   const { currentPage, totalPages } = pagination
   const hasNext = currentPage < totalPages
-
-  console.log('ListingsWithPagination rendered for status:', currentStatus)
+  const { updateFilters } = useListContext<ListingFilterRequest>()
+  const deleteMutation = useDeleteListing()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [selectedListingForDelete, setSelectedListingForDelete] =
+    useState<ListingOwnerDetail | null>(null)
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: () => {
-      console.log('Load more triggered for mobile')
       if (isMobile && hasNext && !isLoading) {
         loadMore()
       }
@@ -99,9 +103,40 @@ const ListingsWithPagination: React.FC<{ currentStatus: PostStatus }> = ({
             onTakeDown={(listing) =>
               console.log('Take down listing:', listing.listingId)
             }
-            onDelete={(listing) =>
-              console.log('Delete listing:', listing.listingId)
-            }
+            onDelete={(listing) => {
+              setSelectedListingForDelete(listing)
+              setDeleteDialogOpen(true)
+            }}
+          />
+
+          <DeleteListingDialog
+            listing={selectedListingForDelete}
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            onConfirm={(listing) => {
+              const id = listing.listingId
+              // Optimistic delete: remove from UI immediately
+              removeItem(id)
+              setSelectedListingForDelete(null)
+              setDeleteDialogOpen(false)
+
+              deleteMutation.mutate(
+                { id },
+                {
+                  onSuccess: () => {
+                    toast.success(tSeller('card.toast.deleteSuccess'))
+                  },
+                  onError: (err) => {
+                    toast.error(
+                      err.message || tSeller('card.toast.deleteError'),
+                    )
+
+                    updateFilters({ page: 1 })
+                  },
+                },
+              )
+            }}
+            isLoading={deleteMutation.isPending}
           />
 
           {/* Desktop: Show Pagination */}
@@ -157,10 +192,12 @@ const ToolbarWithBadge: React.FC<{
   total: number
   onFilterClick: () => void
 }> = ({ total, onFilterClick }) => {
+  const { updateFilters } = useListContext()
+
   return (
     <ListingToolbar
       total={total}
-      onSearch={(query) => console.log('Search:', query)}
+      onSearch={(query) => updateFilters({ keyword: query, page: 1 })}
       onFilterClick={onFilterClick}
     />
   )
@@ -179,6 +216,7 @@ const FilterDialogWrapper: React.FC<{
       open={open}
       title={t('filter.title')}
       onApply={onApply}
+      hideLocationFilter
     />
   )
 }
@@ -191,27 +229,11 @@ export const ListingsManagementTemplate: React.FC<
   const { items: listings, updateFilters } =
     useListContext<ListingFilterRequest>()
 
-  const counts = useMemo(() => {
-    const statusCounts: Partial<Record<PostStatus, number>> = {
-      [POST_STATUS.ALL]: listings.length,
-    }
-
-    listings.forEach((listing) => {
-      if (listing.listingStatus) {
-        statusCounts[listing.listingStatus] =
-          (statusCounts[listing.listingStatus] || 0) + 1
-      }
-    })
-
-    return statusCounts
-  }, [listings])
-
   return (
     <div className='p-3 sm:p-4'>
       <div className='mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6'>
         <ListingStatusFilterResponsive
           value={status}
-          counts={counts}
           onChange={(newStatus) => {
             setStatus(newStatus)
             updateFilters({
@@ -219,6 +241,7 @@ export const ListingsManagementTemplate: React.FC<
                 newStatus === POST_STATUS.ALL ? undefined : newStatus,
             })
           }}
+          hideCount
         />
         {children}
         <ToolbarWithBadge
@@ -227,7 +250,7 @@ export const ListingsManagementTemplate: React.FC<
             setFilterOpen(true)
           }}
         />
-        <ListingsWithPagination currentStatus={status} />
+        <ListingsWithPagination />
         <FilterDialogWrapper
           open={filterOpen}
           onOpenChange={setFilterOpen}

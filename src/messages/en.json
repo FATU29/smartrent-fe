@@ -131,13 +131,7 @@
       "rejected": "Rejected",
       "archived": "Archived"
     },
-    "packageBadge": {
-      "vipDiamond": "VIP Diamond",
-      "vipGold": "VIP Gold",
-      "vipSilver": "VIP Silver",
-      "standard": "Standard",
-      "basic": "Basic"
-    },
+
     "rankDisplay": {
       "page": "Page {page}",
       "position": "Rank {position}"
@@ -943,14 +937,14 @@
         },
         "video": {
           "title": "Video (Optional)",
-          "placeholder": "YouTube or TikTok URL...",
-          "help": "Support YouTube and TikTok to showcase your property more vividly",
+          "placeholder": "YouTube URL...",
+          "help": "Support YouTube to showcase your property more vividly",
           "external": {
             "save": "Save link",
             "saving": "Saving...",
             "success": "Video link saved",
             "error": "Failed to save video link",
-            "uploadedNote": "You have added a YouTube/TikTok link. Remove the link to upload a video."
+            "uploadedNote": "You have added a YouTube link. Remove the link to upload a video."
           },
           "upload": {
             "title": "Upload Video",
@@ -964,7 +958,7 @@
             "success": "Video uploaded successfully!",
             "retry": "Retry",
             "previewNote": "Preview video before uploading",
-            "uploadedNote": "You have uploaded a video. Remove the video to enter a YouTube/TikTok link."
+            "uploadedNote": "You have uploaded a video. Remove the video to enter a YouTube link."
           },
           "uploadedNote": "You have uploaded a video. Entering a new URL will replace the uploaded video."
         },
@@ -976,8 +970,8 @@
           "normalCount": "12-24 photos",
           "do": {
             "title": "DO",
-            "placeholder": "YouTube or TikTok URL...",
-            "help": "Supports YouTube and TikTok to better showcase your property",
+            "placeholder": "YouTube URL...",
+            "help": "Supports YouTube to better showcase your property",
             "external": {
               "save": "Save link",
               "saving": "Saving...",
@@ -1051,6 +1045,8 @@
         "price": "Price",
         "bedrooms": "Bedrooms",
         "bathrooms": "Bathrooms",
+        "mapNotSelected": "Location not selected",
+        "clickButtonToSelectLocation": "Click 'Use My Location' button to select your location on the map",
         "propertyAddress": "Property Address",
         "addressPlaceholder": "Enter property address...",
         "addressHint": "Please enter accurate address for customers to easily find",
@@ -1954,7 +1950,22 @@
         "listingCode": "Listing Code",
         "postedDate": "Posted Date",
         "expiryDate": "Expiry Date",
+        "postDate": "Post date",
+        "common": {
+          "notAvailable": "N/A"
+        },
         "expiredMessage": "This listing has expired",
+        "vipTypes": {
+          "NORMAL": "Standard",
+          "SILVER": "VIP Silver",
+          "GOLD": "VIP Gold",
+          "DIAMOND": "VIP Diamond"
+        },
+        "statistics": {
+          "views": "Views",
+          "contacts": "Contacts",
+          "customers": "Customers"
+        },
         "actions": {
           "edit": "Edit",
           "editFull": "Edit listing",
@@ -1970,6 +1981,16 @@
           "activityHistory": "Activity history",
           "takeDown": "Take down",
           "delete": "Delete"
+        },
+        "deleteConfirm": {
+          "title": "Delete Listing",
+          "description": "Are you sure you want to delete this listing? This action cannot be undone.",
+          "confirm": "Delete",
+          "cancel": "Cancel"
+        },
+        "toast": {
+          "deleteSuccess": "Listing deleted successfully",
+          "deleteError": "Failed to delete listing"
         }
       }
     },

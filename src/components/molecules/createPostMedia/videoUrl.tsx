@@ -22,7 +22,7 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
   const t = useTranslations('createPost.sections.media')
   const { updateMedia, resetMedia } = useCreatePost()
 
-  const isExternalYouTubeVideo = video?.sourceType === 'EXTERNAL'
+  const isExternalYouTubeVideo = video?.sourceType === 'YOUTUBE'
   const videoUrl = video?.url || ''
   const [url, setUrl] = useState<string>('')
   const [saving, setSaving] = useState(false)
@@ -37,7 +37,7 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
 
   const isBlobUrl = videoUrl.startsWith('blob:')
   const isUploadedVideo =
-    video?.sourceType === 'UPLOADED' && videoUrl && !isBlobUrl
+    video?.sourceType === 'UPLOAD' && videoUrl && !isBlobUrl
   const hasExternalVideo = videoUrl && isExternalYouTubeVideo
 
   const onSave = async () => {
@@ -50,14 +50,17 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
     }
     try {
       setSaving(true)
-      const res = await MediaService.saveExternal({ url: url.trim() })
+      const res = await MediaService.saveExternal({
+        url: url.trim(),
+        isPrimary: true,
+      })
       if (res?.success && res?.data) {
         updateMedia({
           url: res.data.url,
           mediaId: res.data.mediaId ? Number(res.data.mediaId) : undefined,
           mediaType: 'VIDEO',
           isPrimary: true,
-          sourceType: 'EXTERNAL',
+          sourceType: 'YOUTUBE',
         })
         toast.success(t('video.external.success'))
       } else {
@@ -87,7 +90,7 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
           <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700'>
             <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>
               {t('video.upload.uploadedNote') ||
-                'Bạn đã tải video lên. Xóa video để nhập link YouTube/TikTok.'}
+                'Bạn đã tải video lên. Xóa video để nhập link YouTube.'}
             </p>
           </div>
         ) : hasExternalVideo ? (

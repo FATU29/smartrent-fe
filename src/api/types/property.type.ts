@@ -220,8 +220,16 @@ export interface ListingOwnerDetail extends ListingApi {
   listingViews?: number
   interested?: number
   customers?: number
-  status?: PostStatus
+  listingStatus?: PostStatus
   rankOfVipType: number
+  durationDays?: number
+  statistics?: {
+    viewCount: number
+    contactCount: number
+    saveCount: number
+    reportCount: number
+    lastViewedAt: string | null
+  }
 }
 
 export interface ListingResponse {
@@ -285,6 +293,7 @@ export interface CreateListingRequest {
   amenityIds?: number[]
   mediaIds?: number[]
   postDate?: string | Date // startDate
+  expiryDate?: string | Date // calculated expiry date
   listingType?: listingType
   isDraft?: boolean
   waterPrice?: PriceType
@@ -532,11 +541,7 @@ export interface MyListingBackendItem {
   vipType?: VipType
   postSource?: string
   transactionId?: string
-  media?: Array<{
-    mediaId: number
-    url: string
-    isPrimary?: boolean
-  }>
+  media?: MediaItem[]
   address?: {
     addressId?: number
     fullAddress?: string

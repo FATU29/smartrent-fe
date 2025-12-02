@@ -10,8 +10,6 @@ interface ListingToolbarProps {
   onSearch: (q: string) => void
   onFilterClick?: () => void
   className?: string
-  // Optional children to render inside the Filter button (e.g., count badge)
-  filterButtonChildren?: React.ReactNode
 }
 
 export const ListingToolbar: React.FC<ListingToolbarProps> = ({
@@ -19,7 +17,6 @@ export const ListingToolbar: React.FC<ListingToolbarProps> = ({
   onSearch,
   onFilterClick,
   className,
-  filterButtonChildren,
 }) => {
   const t = useTranslations('seller.listingManagement.toolbar')
   const [value, setValue] = React.useState('')
@@ -75,12 +72,11 @@ export const ListingToolbar: React.FC<ListingToolbarProps> = ({
             <Filter size={14} />
             <span className='inline-flex items-center gap-1.5'>
               {t('filter')}
-              {filterButtonChildren}
             </span>
           </Button>
         </div>
       </div>
-      <div className='text-xs font-medium text-muted-foreground md:text-right'>
+      <div className='text-xs font-medium text-muted-foreground whitespace-nowrap'>
         {totalLabel}
       </div>
     </div>

@@ -75,7 +75,8 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     return message.replace(/^createPost\.validation\./, '')
   }
 
-  const { control, setValue } = useFormContext<Partial<CreateListingRequest>>()
+  const { control, setValue, trigger } =
+    useFormContext<Partial<CreateListingRequest>>()
 
   const {
     propertyInfo,
@@ -215,13 +216,24 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   const handleUseMyLocation = async () => {
     await requestLocation()
     if (coordinates) {
+      const currentAddress = propertyInfo?.address || {}
       updatePropertyInfo({
         address: {
-          ...propertyInfo.address,
+          ...currentAddress,
           latitude: coordinates.latitude,
           longitude: coordinates.longitude,
         },
       })
+      setValue(
+        'address',
+        {
+          ...currentAddress,
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
+        },
+        { shouldValidate: true, shouldDirty: true },
+      )
+      trigger('address')
     }
   }
 
@@ -400,46 +412,90 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             />
 
             {/* Map Preview */}
-            <div className='space-y-4'>
-              {/* Make header responsive: stack on mobile, inline on sm+ */}
-              <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
-                <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-normal break-words leading-snug'>
-                  {t('mapPreview')}
-                </h3>
-                <div className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto'>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    className='border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg w-full sm:w-auto'
-                    onClick={handleUseMyLocation}
-                    disabled={locationLoading}
-                  >
-                    <Send className='w-4 h-4 mr-1' />
-                    {locationLoading ? t('loading') : t('useMyLocation')}
-                  </Button>
+            <Controller
+              name='address'
+              control={control}
+              render={({ fieldState: { error } }) => (
+                <div className='space-y-4'>
+                  {/* Make header responsive: stack on mobile, inline on sm+ */}
+                  <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
+                    <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-normal break-words leading-snug'>
+                      {t('mapPreview')}
+                      <span className='text-destructive ml-1'>*</span>
+                    </h3>
+                    <div className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto'>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        className='border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg w-full sm:w-auto'
+                        onClick={handleUseMyLocation}
+                        disabled={locationLoading}
+                      >
+                        <Send className='w-4 h-4 mr-1' />
+                        {locationLoading ? t('loading') : t('useMyLocation')}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Google Map Picker - Only show if coordinates exist */}
+                  {latitude && longitude ? (
+                    <GoogleMapPicker
+                      latitude={latitude}
+                      longitude={longitude}
+                      onLocationSelect={(lat, lng) => {
+                        const currentAddress = propertyInfo?.address || {}
+                        updatePropertyInfo({
+                          address: {
+                            ...currentAddress,
+                            latitude: lat,
+                            longitude: lng,
+                          },
+                        })
+                        setValue(
+                          'address',
+                          {
+                            ...currentAddress,
+                            latitude: lat,
+                            longitude: lng,
+                          },
+                          { shouldValidate: true, shouldDirty: true },
+                        )
+                        trigger('address')
+                      }}
+                    />
+                  ) : (
+                    <div className='relative w-full h-64 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center'>
+                      <div className='text-center p-6'>
+                        <MapPin className='w-12 h-12 mx-auto mb-3 text-gray-400' />
+                        <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-2'>
+                          {t('mapNotSelected')}
+                        </p>
+                        <p className='text-xs text-gray-500 dark:text-gray-500'>
+                          {t('clickButtonToSelectLocation')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Validation Error Message */}
+                  {error?.message && (
+                    <p className='text-sm text-destructive flex items-center gap-1'>
+                      <MapPin className='w-4 h-4' />
+                      {tValidation(getValidationKey(error.message))}
+                    </p>
+                  )}
+
+                  <div className='text-xs text-gray-500 dark:text-gray-400 space-y-1'>
+                    <p>{t('dragMarker')}</p>
+                    <p>{t('searchAddresses')}</p>
+                    <p className='flex items-center gap-1'>
+                      <MapPin className='w-3 h-3' />
+                      {t('interactiveMap')}
+                    </p>
+                  </div>
                 </div>
-              </div>
-
-              {/* Google Map Picker */}
-              <GoogleMapPicker
-                latitude={latitude || 10.762622}
-                longitude={longitude || 106.660172}
-                onLocationSelect={(lat, lng) => {
-                  updatePropertyInfo({
-                    address: { latitude: lat, longitude: lng },
-                  })
-                }}
-              />
-
-              <div className='text-xs text-gray-500 dark:text-gray-400 space-y-1'>
-                <p>{t('dragMarker')}</p>
-                <p>{t('searchAddresses')}</p>
-                <p className='flex items-center gap-1'>
-                  <MapPin className='w-3 h-3' />
-                  {t('interactiveMap')}
-                </p>
-              </div>
-            </div>
+              )}
+            />
           </CardContent>
         </Card>
 
