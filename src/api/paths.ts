@@ -176,6 +176,7 @@ export const PATHS = {
     MY_CLICKS: '/v1/phone-click-details/my-clicks',
     LISTING_STATS: '/v1/phone-click-details/listing/:listingId/stats',
     MY_LISTINGS: '/v1/phone-click-details/my-listings',
+    SEARCH_MY_LISTINGS: '/v1/phone-click-details/my-listings/search',
   },
 
   // Exchange Rate endpoints

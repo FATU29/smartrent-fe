@@ -17,6 +17,7 @@ import {
   usePriceStatistics,
 } from '@/hooks/useListings/usePricingHistory'
 import { mockPricingHistory } from '@/mock'
+import { PhoneClickDetailService } from '@/api/services'
 
 export interface DetailPostTemplateProps {
   listing: ListingDetail
@@ -58,6 +59,17 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
 
   const handleChatZalo = () => {
     onChatZalo?.()
+  }
+
+  const handlePhoneClick = async () => {
+    if (!listingId) return
+
+    try {
+      await PhoneClickDetailService.trackClick({ listingId })
+    } catch (error) {
+      // Silent failure - don't block user experience
+      console.error('Failed to track phone click:', error)
+    }
   }
 
   const handleSimilarPropertyClick = (property: ListingDetail) => {
@@ -220,7 +232,11 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
 
           {/* Sidebar - Sticky */}
           <div className='lg:col-span-4 lg:sticky lg:top-24 lg:self-start'>
-            <SellerContact host={user} onChatZalo={handleChatZalo} />
+            <SellerContact
+              host={user}
+              onChatZalo={handleChatZalo}
+              onPhoneClick={handlePhoneClick}
+            />
           </div>
         </div>
       </div>

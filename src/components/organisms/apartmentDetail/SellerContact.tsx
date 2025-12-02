@@ -13,9 +13,14 @@ import { UserApi } from '@/api/types'
 interface SellerContactProps {
   host?: UserApi
   onChatZalo?: () => void
+  onPhoneClick?: () => void
 }
 
-const SellerContact: React.FC<SellerContactProps> = ({ host, onChatZalo }) => {
+const SellerContact: React.FC<SellerContactProps> = ({
+  host,
+  onChatZalo,
+  onPhoneClick,
+}) => {
   const t = useTranslations('apartmentDetail')
 
   const [showPhone, setShowPhone] = React.useState(false)
@@ -56,6 +61,7 @@ const SellerContact: React.FC<SellerContactProps> = ({ host, onChatZalo }) => {
 
   const handleCall = () => {
     setShowPhone(true)
+    onPhoneClick?.()
   }
 
   return (
