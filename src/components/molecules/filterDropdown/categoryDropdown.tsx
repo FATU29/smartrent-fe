@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
 } from '@/components/atoms/dropdown-menu'
 import { ChevronDown, Home } from 'lucide-react'
-import { CATEGORIES, getCategoryName } from '@/constants/common/category'
+import { useCategories } from '@/hooks/useCategories'
 
 interface CategoryDropdownProps {
   value?: string // categoryId as string (e.g., "1", "2", or "all")
@@ -25,20 +25,21 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
   className = '',
 }) => {
   const t = useTranslations('homePage.filters.propertyType')
-  const tCommon = useTranslations('common')
+  const { data } = useCategories()
+  const categories = data?.categories ?? []
 
   // Add "Tất cả" option first, then map categories
   const categoryOptions = [
     {
       value: 'all',
-      displayValue: tCommon('propertyTypes.0'), // "Tất cả" translation
-      label: tCommon('propertyTypes.0'), // "Tất cả" translation
+      displayValue: t('all'), // "Tất cả" / "All Types"
+      label: t('all'),
       icon: Home,
     },
-    ...CATEGORIES.map((category) => ({
-      value: category.id.toString(), // Use category ID as string for onChange
-      displayValue: getCategoryName(category.id, tCommon), // Use translated category name
-      label: getCategoryName(category.id, tCommon), // Use translation by id
+    ...categories.map((category) => ({
+      value: category.categoryId.toString(),
+      displayValue: category.name,
+      label: category.name,
       icon: Home,
     })),
   ]

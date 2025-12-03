@@ -49,7 +49,7 @@ export const ListingsList: React.FC<ListingsListProps> = ({
   }
 
   if (listings.length === 0) {
-    return null // Empty state is handled by parent component
+    return null
   }
 
   return (

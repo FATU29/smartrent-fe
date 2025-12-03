@@ -1,4 +1,4 @@
-import { ListingDetail } from '@/api/types'
+import { ListingDetail, POST_STATUS } from '@/api/types'
 
 export * from './pricingHistory'
 
@@ -22,16 +22,41 @@ export const mockListingDetail: ListingDetail = {
 
 Giá thuê: 15 triệu/tháng (đã bao gồm phí quản lý)
 Liên hệ ngay để được xem nhà!`,
-  assets: {
-    images: [
-      '/images/default-image.jpg',
-      '/images/example.png',
-      '/images/rental-auth-bg.jpg',
-      '/images/default-image.jpg',
-      '/images/example.png',
-    ],
-    video: undefined,
-  },
+  media: [
+    {
+      mediaId: 101,
+      listingId: 1,
+      mediaType: 'IMAGE',
+      sourceType: 'EXTERNAL',
+      url: '/images/default-image.jpg',
+      isPrimary: true,
+      sortOrder: 1,
+      status: POST_STATUS.DISPLAYING,
+      createdAt: '2024-01-15T10:00:00Z',
+    },
+    {
+      mediaId: 102,
+      listingId: 1,
+      mediaType: 'IMAGE',
+      sourceType: 'EXTERNAL',
+      url: '/images/example.png',
+      isPrimary: false,
+      sortOrder: 2,
+      status: POST_STATUS.DISPLAYING,
+      createdAt: '2024-01-15T10:00:00Z',
+    },
+    {
+      mediaId: 103,
+      listingId: 1,
+      mediaType: 'IMAGE',
+      sourceType: 'EXTERNAL',
+      url: '/images/rental-auth-bg.jpg',
+      isPrimary: false,
+      sortOrder: 3,
+      status: POST_STATUS.DISPLAYING,
+      createdAt: '2024-01-15T10:00:00Z',
+    },
+  ],
   user: {
     userId: 'user-123',
     phoneCode: '+84',
@@ -46,7 +71,6 @@ Liên hệ ngay để được xem nhà!`,
   },
   postDate: new Date('2024-01-15'),
   expiryDate: '2024-07-15',
-  listingType: 'RENT',
   verified: true,
   expired: false,
   vipType: 'GOLD',
@@ -65,8 +89,9 @@ Liên hệ ngay để được xem nhà!`,
   price: 15000000,
   priceUnit: 'MONTH',
   address: {
-    new: '123 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh',
-    legacy: '123 Nguyễn Huệ, P.Bến Nghé, Q.1, TP.HCM',
+    fullNewAddress:
+      '123 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh',
+    fullAddress: '123 Nguyễn Huệ, P.Bến Nghé, Q.1, TP.HCM',
     latitude: 10.7769,
     longitude: 106.7009,
   },
@@ -218,9 +243,30 @@ export const mockSimilarProperties: ListingDetail[] = [
     title: 'Căn hộ 2PN 2WC view đẹp tại Quận 1',
     price: 14000000,
     area: 60,
-    assets: {
-      images: ['/images/default-image.jpg', '/images/example.png'],
-    },
+    media: [
+      {
+        mediaId: 201,
+        listingId: 2,
+        mediaType: 'IMAGE',
+        sourceType: 'EXTERNAL',
+        url: '/images/default-image.jpg',
+        isPrimary: true,
+        sortOrder: 1,
+        status: POST_STATUS.DISPLAYING,
+        createdAt: '2024-01-15T10:00:00Z',
+      },
+      {
+        mediaId: 202,
+        listingId: 2,
+        mediaType: 'IMAGE',
+        sourceType: 'EXTERNAL',
+        url: '/images/example.png',
+        isPrimary: false,
+        sortOrder: 2,
+        status: POST_STATUS.DISPLAYING,
+        createdAt: '2024-01-15T10:00:00Z',
+      },
+    ],
   },
   {
     ...mockListingDetail,
@@ -228,9 +274,30 @@ export const mockSimilarProperties: ListingDetail[] = [
     title: 'Căn hộ 2PN nội thất cao cấp Quận 1',
     price: 16000000,
     area: 70,
-    assets: {
-      images: ['/images/rental-auth-bg.jpg', '/images/default-image.jpg'],
-    },
+    media: [
+      {
+        mediaId: 301,
+        listingId: 3,
+        mediaType: 'IMAGE',
+        sourceType: 'EXTERNAL',
+        url: '/images/rental-auth-bg.jpg',
+        isPrimary: true,
+        sortOrder: 1,
+        status: POST_STATUS.DISPLAYING,
+        createdAt: '2024-01-15T10:00:00Z',
+      },
+      {
+        mediaId: 302,
+        listingId: 3,
+        mediaType: 'IMAGE',
+        sourceType: 'EXTERNAL',
+        url: '/images/default-image.jpg',
+        isPrimary: false,
+        sortOrder: 2,
+        status: POST_STATUS.DISPLAYING,
+        createdAt: '2024-01-15T10:00:00Z',
+      },
+    ],
   },
   {
     ...mockListingDetail,
@@ -238,9 +305,30 @@ export const mockSimilarProperties: ListingDetail[] = [
     title: 'Căn hộ 2PN gần trung tâm Quận 1',
     price: 13500000,
     area: 58,
-    assets: {
-      images: ['/images/example.png', '/images/rental-auth-bg.jpg'],
-    },
+    media: [
+      {
+        mediaId: 401,
+        listingId: 4,
+        mediaType: 'IMAGE',
+        sourceType: 'EXTERNAL',
+        url: '/images/example.png',
+        isPrimary: true,
+        sortOrder: 1,
+        status: POST_STATUS.DISPLAYING,
+        createdAt: '2024-01-15T10:00:00Z',
+      },
+      {
+        mediaId: 402,
+        listingId: 4,
+        mediaType: 'IMAGE',
+        sourceType: 'EXTERNAL',
+        url: '/images/rental-auth-bg.jpg',
+        isPrimary: false,
+        sortOrder: 2,
+        status: POST_STATUS.DISPLAYING,
+        createdAt: '2024-01-15T10:00:00Z',
+      },
+    ],
   },
 ]
 
@@ -253,12 +341,23 @@ export const mockRecentlyViewed: ListingDetail[] = [
     area: 45,
     bedrooms: 1,
     bathrooms: 1,
-    assets: {
-      images: ['/images/default-image.jpg'],
-    },
+    media: [
+      {
+        mediaId: 501,
+        listingId: 5,
+        mediaType: 'IMAGE',
+        sourceType: 'EXTERNAL',
+        url: '/images/default-image.jpg',
+        isPrimary: true,
+        sortOrder: 1,
+        status: POST_STATUS.DISPLAYING,
+        createdAt: '2024-01-15T10:00:00Z',
+      },
+    ],
     address: {
-      new: '456 Đường Lê Văn Sỹ, Phường 12, Quận 3, Thành phố Hồ Chí Minh',
-      legacy: '456 Lê Văn Sỹ, P.12, Q.3, TP.HCM',
+      fullNewAddress:
+        '456 Đường Lê Văn Sỹ, Phường 12, Quận 3, Thành phố Hồ Chí Minh',
+      fullAddress: '456 Lê Văn Sỹ, P.12, Q.3, TP.HCM',
       latitude: 10.7831,
       longitude: 106.6954,
     },
@@ -272,12 +371,23 @@ export const mockRecentlyViewed: ListingDetail[] = [
     bedrooms: 0,
     bathrooms: 1,
     productType: 'STUDIO',
-    assets: {
-      images: ['/images/example.png'],
-    },
+    media: [
+      {
+        mediaId: 601,
+        listingId: 6,
+        mediaType: 'IMAGE',
+        sourceType: 'EXTERNAL',
+        url: '/images/example.png',
+        isPrimary: true,
+        sortOrder: 1,
+        status: POST_STATUS.DISPLAYING,
+        createdAt: '2024-01-15T10:00:00Z',
+      },
+    ],
     address: {
-      new: '789 Đường Nguyễn Thị Thập, Phường Tân Phú, Quận 7, Thành phố Hồ Chí Minh',
-      legacy: '789 Nguyễn Thị Thập, P.Tân Phú, Q.7, TP.HCM',
+      fullNewAddress:
+        '789 Đường Nguyễn Thị Thập, Phường Tân Phú, Quận 7, Thành phố Hồ Chí Minh',
+      fullAddress: '789 Nguyễn Thị Thập, P.Tân Phú, Q.7, TP.HCM',
       latitude: 10.7297,
       longitude: 106.7174,
     },

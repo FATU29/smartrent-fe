@@ -12,9 +12,15 @@ import { AxiosInstance } from 'axios'
 import {
   CreateListingRequest,
   CreateVipListingRequest,
+  DraftListingRequest,
+  DraftListingResponse,
+  PublishDraftRequest,
+  PublishDraftResponse,
   ListingDetail,
+  ListingSearchApiRequest,
+  ListingSearchBackendResponse,
   ListingFilterRequest,
-  ListingSearchApiResponse,
+  MyListingsBackendResponse,
   ProvinceStatsItem,
   ProvinceStatsRequest,
   QuotaCheckResponse,
@@ -79,6 +85,16 @@ export class ListingService {
     }>({
       method: 'POST',
       url: PATHS.LISTING.CREATE_VIP,
+      data,
+    })
+  }
+
+  static async createDraft(
+    data: CreateListingRequest,
+  ): Promise<ApiResponse<{ listingId: number; status: string }>> {
+    return apiRequest<{ listingId: number; status: string }>({
+      method: 'POST',
+      url: PATHS.LISTING.CREATE_DRAFT,
       data,
     })
   }
@@ -149,6 +165,7 @@ export class ListingService {
         method: 'POST',
         url: PATHS.LISTING.PROVINCE_STATS,
         data: request,
+        skipAuth: true, // Public API - không cần authentication
       },
       instance,
     )
@@ -157,33 +174,144 @@ export class ListingService {
   /**
    * Search listings with comprehensive filters
    * POST /v1/listings/search
-   * @param {ListingSearchRequest} request - Search filters (all optional)
+   * @param {ListingSearchApiRequest} request - Backend API request format
    * @param {AxiosInstance} instance - Optional axios instance for server-side calls
-   * @returns {Promise<ApiResponse<ListingSearchResponse>>} Promise resolving to search results
+   * @returns {Promise<ApiResponse<ListingSearchBackendResponse>>} Raw backend response
    * @example
-   * const results = await ListingService.search({
-   *   provinceId: 1,
-   *   listingType: 'RENT',
-   *   minPrice: 5000000,
-   *   maxPrice: 15000000,
-   *   page: 0,
-   *   size: 20
-   * })
+   * const backendRequest = mapFrontendToBackendRequest(filters)
+   * const response = await ListingService.search(backendRequest)
+   * const mappedData = mapBackendToFrontendResponse(response.data)
    */
   static async search(
-    request: ListingFilterRequest,
+    request: ListingSearchApiRequest,
     instance?: AxiosInstance,
-  ): Promise<ApiResponse<ListingSearchApiResponse<ListingDetail>>> {
-    const response = await apiRequest<ListingSearchApiResponse<ListingDetail>>(
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    return apiRequest<ListingSearchBackendResponse>(
       {
         method: 'POST',
         url: PATHS.LISTING.SEARCH,
         data: request,
+        skipAuth: true, // Public API - không cần authentication
       },
       instance,
     )
+  }
 
-    return response
+  /**
+   * Get current user's listings (owner dashboard)
+   * POST /v1/listings/my-listings
+   */
+  static async getMyListings(
+    request: Partial<ListingFilterRequest>,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<MyListingsBackendResponse>> {
+    return apiRequest<MyListingsBackendResponse>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.MY_LISTINGS,
+        data: request,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Get current user's draft listings
+   * GET /v1/listings/my-drafts
+   */
+  static async getMyDrafts(
+    request: Partial<ListingFilterRequest>,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<MyListingsBackendResponse>> {
+    return apiRequest<MyListingsBackendResponse>(
+      {
+        method: 'GET',
+        url: PATHS.LISTING.MY_DRAFTS,
+        params: request,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Get a specific draft by ID
+   * GET /v1/listings/draft/:draftId
+   */
+  static async getDraft(
+    draftId: string | number,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<DraftListingResponse>> {
+    const url = PATHS.LISTING.GET_DRAFT.replace(':draftId', draftId.toString())
+    return apiRequest<DraftListingResponse>(
+      {
+        method: 'GET',
+        url,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Update a draft listing (auto-save)
+   * POST /v1/listings/draft/:draftId
+   */
+  static async updateDraft(
+    draftId: string | number,
+    data: Partial<DraftListingRequest>,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<DraftListingResponse>> {
+    const url = PATHS.LISTING.UPDATE_DRAFT.replace(
+      ':draftId',
+      draftId.toString(),
+    )
+    return apiRequest<DraftListingResponse>(
+      {
+        method: 'POST',
+        url,
+        data,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Publish a draft listing
+   * POST /v1/listings/draft/:draftId/publish
+   */
+  static async publishDraft(
+    draftId: string | number,
+    data: PublishDraftRequest,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<PublishDraftResponse>> {
+    const url = PATHS.LISTING.PUBLISH_DRAFT.replace(
+      ':draftId',
+      draftId.toString(),
+    )
+    return apiRequest<PublishDraftResponse>(
+      {
+        method: 'POST',
+        url,
+        data,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Delete a draft listing
+   * DELETE /v1/listings/draft/:draftId
+   */
+  static async deleteDraft(
+    draftId: string | number,
+  ): Promise<ApiResponse<null>> {
+    const url = PATHS.LISTING.DELETE_DRAFT.replace(
+      ':draftId',
+      draftId.toString(),
+    )
+    return apiRequest<null>({
+      method: 'DELETE',
+      url,
+    })
   }
 }
 
@@ -193,10 +321,17 @@ export const {
   getById,
   create,
   createVip,
+  createDraft,
   update,
   delete: deleteListing,
   checkQuota,
   getByIdAdmin,
   getProvinceStats,
   search,
+  getMyListings,
+  getMyDrafts,
+  getDraft,
+  updateDraft,
+  publishDraft,
+  deleteDraft,
 } = ListingService

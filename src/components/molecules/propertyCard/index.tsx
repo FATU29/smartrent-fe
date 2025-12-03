@@ -20,7 +20,6 @@ import {
   Bath,
   Square,
   Star,
-  Phone,
   Camera,
   Check,
   Home,
@@ -71,25 +70,29 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     bathrooms,
     verified,
     user,
-    assets,
     amenities,
     address,
     postDate,
     productType,
-    listingType,
     vipType,
     furnishing,
     direction,
     roomCapacity,
+    media,
   } = listing
 
-  const { images: assetsImages, video: assetsVideo } = assets || {}
+  const images = media?.filter((m) => m.mediaType === 'IMAGE')
+  const video = media?.find((m) => m.mediaType === 'VIDEO')
 
-  const { firstName, lastName, phoneNumber } = user || {}
+  const { firstName, lastName } = user || {}
+  const userName = firstName && lastName ? `${firstName} ${lastName}` : ''
 
-  const userName = `${firstName} ${lastName}`
+  const { fullNewAddress: newAddress, fullAddress: legacyAddress } =
+    address || {}
 
-  const { new: newAddress, legacy: legacyAddress } = address || {}
+  // Get primary image or first image
+  const assetsImages = images?.map((img) => img.url) || []
+  const assetsVideo = video?.url || null
 
   const t = useTranslations()
   const tCreatePost = useTranslations()
@@ -161,11 +164,14 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   const renderImageGallery = () => {
     if (!isTopLayout) return null
 
+    // Use currentImageIndex to show the selected image
+    const displayImage = assetsImages?.[currentImageIndex] || mainImage
+
     return (
-      <div className='flex gap-1.5'>
+      <div className='flex gap-2'>
         {/* Main Image */}
-        <div className='relative flex-1 aspect-[16/9] overflow-hidden rounded-md'>
-          {assetsVideo ? (
+        <div className='relative flex-1 aspect-video overflow-hidden rounded-lg'>
+          {assetsVideo && currentImageIndex === 0 ? (
             isYouTube(assetsVideo) ? (
               <div className='w-full h-full'>
                 <iframe
@@ -180,23 +186,23 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               <video
                 src={assetsVideo}
                 controls
-                className='w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105'
+                className='w-full h-full object-cover object-center transition-transform duration-300 group-hover/card:scale-105'
               />
             )
           ) : (
             <ImageAtom
-              src={mainImage || `${basePath}/images/default-image.jpg`}
+              src={displayImage || `${basePath}/images/default-image.jpg`}
               defaultImage={DEFAULT_IMAGE}
               alt={title}
-              className='w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105'
+              className='w-full h-full object-cover object-center transition-all duration-300 group-hover/card:scale-105'
             />
           )}
 
           {/* Image Count Badge */}
           {totalImages > 0 && (
-            <div className='absolute bottom-1.5 left-1.5 flex items-center gap-0.5 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur-sm'>
-              <Camera className='w-2.5 h-2.5' />
-              <span>{totalImages}</span>
+            <div className='absolute bottom-2 left-2 flex items-center gap-1 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-sm'>
+              <Camera className='w-3.5 h-3.5' />
+              <span className='font-medium'>{totalImages}</span>
             </div>
           )}
 
@@ -204,7 +210,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             variant='ghost'
             size='sm'
             className={classNames(
-              'absolute top-1.5 right-1.5 w-6 h-6 p-0 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 z-10',
+              'absolute top-2 right-2 w-8 h-8 p-0 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 z-10',
               {
                 'bg-destructive text-destructive-foreground hover:bg-destructive/90':
                   isFavorite,
@@ -214,17 +220,20 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             onClick={handleFavoriteClick}
           >
             <Heart
-              className={classNames('w-3 h-3', {
+              className={classNames('w-4 h-4', {
                 'fill-current': isFavorite,
               })}
             />
           </Button>
 
           {/* Badges - Top Left */}
-          <div className='absolute top-1.5 left-1.5 flex flex-col gap-0.5 z-10'>
+          <div className='absolute top-2 left-2 flex flex-col gap-1 z-10'>
             {verified && (
-              <Badge className='bg-green-500 text-white text-[9px] px-1 py-0.5 rounded shadow-sm flex items-center justify-center'>
-                <Check className='w-2.5 h-2.5' />
+              <Badge className='bg-green-500 text-white text-xs px-2 py-1 rounded shadow-sm flex items-center gap-1'>
+                <Check className='w-3.5 h-3.5' />
+                <span className='font-medium'>
+                  {t('homePage.property.verified')}
+                </span>
               </Badge>
             )}
             {vipBadgeConfig &&
@@ -232,9 +241,10 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 const VipIcon = vipBadgeConfig.icon
                 return (
                   <Badge
-                    className={`${vipBadgeConfig.className} text-[9px] px-1 py-0.5 rounded shadow-sm flex items-center gap-0.5`}
+                    className={`${vipBadgeConfig.className} text-xs px-2 py-1 rounded shadow-sm flex items-center gap-1`}
                   >
-                    <VipIcon className='w-2.5 h-2.5' />
+                    <VipIcon className='w-3.5 h-3.5' />
+                    <span className='font-medium'>{vipBadgeConfig.label}</span>
                   </Badge>
                 )
               })()}
@@ -243,7 +253,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
         {/* Thumbnails */}
         {thumbnails.length > 1 && (
-          <div className='flex flex-col gap-1 w-12 md:w-14'>
+          <div className='flex flex-col gap-1.5 w-16 md:w-20'>
             {thumbnails.slice(0, 3).map((img, idx) => (
               <button
                 key={idx}
@@ -253,9 +263,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   setCurrentImageIndex(idx)
                 }}
                 className={classNames(
-                  'relative aspect-square overflow-hidden rounded border transition-all',
+                  'relative aspect-square overflow-hidden rounded-md border transition-all',
                   {
-                    'border-primary ring-1 ring-primary/30 border-2':
+                    'border-primary ring-2 ring-primary/30 border-2':
                       currentImageIndex === idx,
                     'border border-border hover:border-primary/50 opacity-75 hover:opacity-100':
                       currentImageIndex !== idx,
@@ -271,12 +281,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               </button>
             ))}
             {totalImages > 3 && (
-              <div className='relative aspect-square overflow-hidden rounded border border-border bg-muted flex items-center justify-center'>
+              <div className='relative aspect-square overflow-hidden rounded-md border border-border bg-muted flex items-center justify-center'>
                 <div className='text-center'>
-                  <Typography
-                    variant='small'
-                    className='text-[9px] font-medium'
-                  >
+                  <Typography variant='small' className='text-xs font-semibold'>
                     +{totalImages - 3}
                   </Typography>
                 </div>
@@ -305,7 +312,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           src={mainImage || `${basePath}/images/default-image.jpg`}
           defaultImage={DEFAULT_IMAGE}
           alt={title}
-          className='w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105'
+          className='w-full h-full object-cover object-center transition-transform duration-300 group-hover/card:scale-105'
         />
 
         <Button
@@ -392,7 +399,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     <TooltipProvider delayDuration={0}>
       <Card
         className={classNames(
-          'group cursor-pointer transition-all duration-300 overflow-hidden',
+          'group/card cursor-pointer transition-all duration-300 overflow-hidden',
           isCompact
             ? isTopLayout
               ? 'flex flex-col'
@@ -410,7 +417,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
         <CardContent
           className={classNames('flex-1 flex flex-col', {
-            'px-2.5 pb-2.5 space-y-1.5': isCompact && isTopLayout,
+            'px-3 pb-3 pt-2 space-y-2': isCompact && isTopLayout,
             'p-2.5 space-y-1.5': isCompact && !isTopLayout,
             'p-3 sm:p-4 space-y-2 sm:space-y-3': !isCompact,
           })}
@@ -419,9 +426,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             <Typography
               variant='h6'
               className={classNames(
-                'text-foreground group-hover:text-primary transition-colors duration-200 leading-tight font-semibold flex-1',
+                'text-foreground group-hover/card:text-primary transition-colors duration-200 leading-tight font-semibold flex-1',
                 isCompact
-                  ? 'text-sm line-clamp-2'
+                  ? 'text-base md:text-lg line-clamp-2'
                   : 'text-sm sm:text-base line-clamp-2',
               )}
             >
@@ -435,18 +442,18 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     <Badge
                       variant='secondary'
                       className={classNames(
-                        'flex items-center gap-0.5',
+                        'flex items-center gap-1',
                         isCompact
-                          ? 'text-[9px] px-1 py-0'
+                          ? 'text-xs px-2 py-0.5'
                           : 'text-[10px] px-1.5 py-0.5',
                       )}
                     >
                       {ProductTypeIcon && (
                         <ProductTypeIcon
-                          className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'}
+                          className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'}
                         />
                       )}
-                      {!isCompact &&
+                      {isCompact &&
                         tCreatePost(getProductTypeTranslationKey(productType))}
                     </Badge>
                   </TooltipTrigger>
@@ -458,17 +465,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   </TooltipContent>
                 </Tooltip>
               )}
-              {listingType === 'SHARE' && (
-                <Badge
-                  variant='outline'
-                  className={classNames(
-                    'text-[9px] px-1 py-0 border-primary/30 text-primary',
-                    isCompact ? '' : 'text-[10px] px-1.5 py-0.5',
-                  )}
-                >
-                  Share
-                </Badge>
-              )}
             </div>
           </div>
 
@@ -476,47 +472,49 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           {isCompact && description && (
             <Typography
               variant='small'
-              className='text-xs text-muted-foreground line-clamp-2 mb-0.5'
+              className='text-sm text-muted-foreground line-clamp-2'
             >
               {description}
             </Typography>
           )}
 
-          <div className='flex items-center justify-between gap-2'>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className='flex items-center text-xs sm:text-sm text-muted-foreground cursor-help flex-1 min-w-0'>
-                  <MapPin
+          <div className='flex items-start gap-2'>
+            <MapPin
+              className={classNames(
+                'flex-shrink-0 mt-0.5',
+                isCompact ? 'w-4 h-4' : 'w-3 h-3',
+              )}
+            />
+            <div className='flex-1 min-w-0'>
+              <ul className='list-disc list-inside space-y-1'>
+                {newAddress && (
+                  <li
                     className={classNames(
-                      'mr-0.5 flex-shrink-0',
-                      isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3',
+                      'text-foreground',
+                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
                     )}
-                  />
-                  <span className='truncate'>
-                    {newAddress}
-                    {legacyAddress && (
-                      <span className='text-muted-foreground/70'>
-                        {' '}
-                        • {legacyAddress}
-                      </span>
+                  >
+                    <span className='font-medium'>
+                      {t('apartmentDetail.address.new')}:
+                    </span>{' '}
+                    <span className='break-words'>{newAddress}</span>
+                  </li>
+                )}
+                {legacyAddress && (
+                  <li
+                    className={classNames(
+                      'text-muted-foreground',
+                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
                     )}
-                  </span>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side='top' className='max-w-xs z-50'>
-                <p className='break-words'>
-                  {newAddress}
-                  {legacyAddress && (
-                    <>
-                      <br />
-                      <span className='text-muted-foreground/70'>
-                        {legacyAddress}
-                      </span>
-                    </>
-                  )}
-                </p>
-              </TooltipContent>
-            </Tooltip>
+                  >
+                    <span className='font-medium'>
+                      {t('apartmentDetail.address.old')}:
+                    </span>{' '}
+                    <span className='break-words'>{legacyAddress}</span>
+                  </li>
+                )}
+              </ul>
+            </div>
           </div>
 
           <div className='flex items-center justify-between'>
@@ -524,7 +522,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               variant='h5'
               className={classNames(
                 'text-primary font-bold',
-                isCompact ? 'text-sm' : 'text-base sm:text-lg',
+                isCompact ? 'text-lg md:text-xl' : 'text-base sm:text-lg',
               )}
             >
               {formatByLocale(price, priceUnit)}
@@ -543,27 +541,27 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             <div
               className={classNames(
                 'flex items-center flex-wrap',
-                isCompact ? 'space-x-2' : 'space-x-2 sm:space-x-3 md:space-x-4',
+                isCompact ? 'gap-3' : 'space-x-2 sm:space-x-3 md:space-x-4',
               )}
             >
               {bedrooms !== undefined && (
                 <div
                   className={classNames(
                     'flex items-center text-muted-foreground',
-                    isCompact ? 'text-xs' : 'text-xs sm:text-sm',
+                    isCompact ? 'text-sm' : 'text-xs sm:text-sm',
                   )}
                 >
                   <Bed
                     className={classNames(
-                      'mr-0.5',
-                      isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3 sm:w-4 sm:h-4',
+                      'mr-1',
+                      isCompact ? 'w-4 h-4' : 'w-3 h-3 sm:w-4 sm:h-4',
                     )}
                   />
                   <Typography
                     variant='small'
                     className={classNames(
                       'font-medium',
-                      isCompact ? 'text-xs' : 'text-xs sm:text-sm',
+                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
                     )}
                   >
                     {bedrooms}
@@ -574,55 +572,68 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 <div
                   className={classNames(
                     'flex items-center text-muted-foreground',
-                    isCompact ? 'text-xs' : 'text-xs sm:text-sm',
+                    isCompact ? 'text-sm' : 'text-xs sm:text-sm',
                   )}
                 >
                   <Bath
                     className={classNames(
-                      'mr-0.5',
-                      isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3 sm:w-4 sm:h-4',
+                      'mr-1',
+                      isCompact ? 'w-4 h-4' : 'w-3 h-3 sm:w-4 sm:h-4',
                     )}
                   />
                   <Typography
                     variant='small'
                     className={classNames(
                       'font-medium',
-                      isCompact ? 'text-xs' : 'text-xs sm:text-sm',
+                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
                     )}
                   >
                     {bathrooms}
                   </Typography>
                 </div>
               )}
-              {!isCompact && area && (
-                <div className='flex items-center text-xs sm:text-sm text-muted-foreground'>
-                  <Square className='w-3 h-3 sm:w-4 sm:h-4 mr-1' />
-                  <Typography
-                    variant='small'
-                    className='font-medium text-xs sm:text-sm'
-                  >
-                    {area} {t('homePage.property.area')}
-                  </Typography>
-                </div>
-              )}
-              {roomCapacity && listingType === 'SHARE' && (
+              {area && (
                 <div
                   className={classNames(
                     'flex items-center text-muted-foreground',
-                    isCompact ? 'text-xs' : 'text-xs sm:text-sm',
+                    isCompact ? 'text-sm' : 'text-xs sm:text-sm',
                   )}
                 >
-                  <Users
+                  <Square
                     className={classNames(
-                      'mr-0.5',
-                      isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3 sm:w-4 sm:h-4',
+                      'mr-1',
+                      isCompact ? 'w-4 h-4' : 'w-3 h-3 sm:w-4 sm:h-4',
                     )}
                   />
                   <Typography
                     variant='small'
                     className={classNames(
                       'font-medium',
-                      isCompact ? 'text-xs' : 'text-xs sm:text-sm',
+                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
+                    )}
+                  >
+                    {area} m²
+                  </Typography>
+                </div>
+              )}
+              {roomCapacity && (
+                <div
+                  className={classNames(
+                    'flex items-center text-muted-foreground',
+                    isCompact ? 'text-sm' : 'text-xs sm:text-sm',
+                  )}
+                >
+                  <Users
+                    className={classNames(
+                      'mr-1',
+                      isCompact ? 'w-4 h-4' : 'w-3 h-3 sm:w-4 sm:h-4',
+                    )}
+                  />
+                  <Typography
+                    variant='small'
+                    className={classNames(
+                      'font-medium',
+                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
                     )}
                   >
                     {roomCapacity}
@@ -677,67 +688,30 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             </div>
           </div>
 
-          {/* User Info & Contact - Only in compact mode */}
+          {/* User Info & Contact - Only show user info in compact mode, no phone button */}
           {isCompact && user && (
-            <div className='flex items-center justify-between gap-2 mt-auto pt-1.5 border-t border-border'>
+            <div className='flex items-center justify-between gap-2 mt-auto pt-2 border-t border-border'>
               {/* User Info */}
-              {user && (
-                <div className='flex items-center gap-1.5 flex-1 min-w-0'>
-                  <div className='flex-1 min-w-0'>
-                    {userName && (
-                      <Typography
-                        variant='small'
-                        className='text-xs font-medium truncate'
-                      >
-                        {userName}
-                      </Typography>
-                    )}
-                    {postDate && (
-                      <Typography
-                        variant='small'
-                        className='text-[10px] text-muted-foreground'
-                      >
-                        {formatDate(postDate, 'dd/MM/yyyy')}
-                      </Typography>
-                    )}
-                  </div>
+              <div className='flex items-center gap-2 flex-1 min-w-0'>
+                <div className='flex-1 min-w-0'>
+                  {userName && (
+                    <Typography
+                      variant='small'
+                      className='text-sm font-medium truncate'
+                    >
+                      {userName}
+                    </Typography>
+                  )}
+                  {postDate && (
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground'
+                    >
+                      {formatDate(postDate, 'dd/MM/yyyy')}
+                    </Typography>
+                  )}
                 </div>
-              )}
-
-              {/* Contact Button */}
-              {phoneNumber && (
-                <div className='flex items-center gap-1.5 flex-shrink-0'>
-                  <Button
-                    variant='default'
-                    size='sm'
-                    className={classNames(
-                      'h-7 text-xs font-medium',
-                      isTopLayout ? 'px-2.5' : 'px-2',
-                    )}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                    }}
-                  >
-                    <Phone className='w-3 h-3 mr-1' />
-                    {phoneNumber}
-                  </Button>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='h-7 w-7 p-0'
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleFavoriteClick(e)
-                    }}
-                  >
-                    <Heart
-                      className={classNames('w-3.5 h-3.5', {
-                        'fill-current text-destructive': isFavorite,
-                      })}
-                    />
-                  </Button>
-                </div>
-              )}
+              </div>
             </div>
           )}
 

@@ -36,7 +36,9 @@ export function middleware(request: NextRequest) {
   if (isIgnoredPath(pathname)) return NextResponse.next()
 
   // Allow public routes
-  if (isPublicPath(pathname)) return NextResponse.next()
+  if (isPublicPath(pathname)) {
+    return NextResponse.next()
+  }
 
   // If already flagged to show auth dialog, let it pass to avoid loops
   if (searchParams.get('auth') === 'login') return NextResponse.next()

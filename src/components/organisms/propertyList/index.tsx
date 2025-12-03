@@ -7,14 +7,21 @@ import { ListingDetail } from '@/api/types'
 import { useRouter } from 'next/navigation'
 
 interface PropertyListProps {
-  initialProperties?: ListingDetail[]
+  listings?: ListingDetail[]
+  isLoading?: boolean
+  initialProperties?: ListingDetail[] // Keep for backward compatibility
 }
 
 const PropertyList: React.FC<PropertyListProps> = ({
+  listings,
+  isLoading = false,
   initialProperties = [],
 }) => {
   const t = useTranslations()
   const router = useRouter()
+
+  // Use listings prop if provided, otherwise fall back to initialProperties
+  const displayedProperties = listings || initialProperties
 
   const handleFavorite = () => {}
 
@@ -67,14 +74,15 @@ const PropertyList: React.FC<PropertyListProps> = ({
         variant='h2'
         className='text-lg md:text-xl lg:text-2xl font-bold mb-6'
       >
-        {t('homePage.property.listings')} ({initialProperties.length})
+        {t('homePage.property.listings')} (
+        {isLoading ? '...' : displayedProperties.length})
       </Typography>
 
-      {initialProperties.length === 0 && PropertySkeleton}
-      {initialProperties.length === 0 && PropertyNotFound}
-      {initialProperties.length > 0 && (
+      {isLoading && PropertySkeleton}
+      {!isLoading && displayedProperties.length === 0 && PropertyNotFound}
+      {!isLoading && displayedProperties.length > 0 && (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6'>
-          {initialProperties.map((p) => PropertyItem(p))}
+          {displayedProperties.map((p) => PropertyItem(p))}
         </div>
       )}
       <div className='mt-8' />

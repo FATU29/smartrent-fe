@@ -10,6 +10,8 @@ import { cookieManager } from '@/utils/cookies'
 import { VerificationAPI } from '@/api/types/verification.type'
 import { decodeToken } from '@/utils/decode-jwt'
 
+export { useAuthGuard, useForceLogout } from './useAuthGuard'
+
 export const useAuth = () => {
   const authState = useAuthStore()
   return authState
@@ -127,8 +129,11 @@ export const useLogout = () => {
   const logoutUser = useCallback(async () => {
     const accessToken = cookieManager.getAccessToken()
 
+    // If no access token, just clear local state and return
     if (!accessToken) {
-      return { success: false, message: 'No access token found' }
+      console.warn('[Logout] No access token found, clearing local state')
+      logout()
+      return { success: true, message: 'Logged out locally (no token found)' }
     }
 
     try {
@@ -137,6 +142,8 @@ export const useLogout = () => {
 
       if (!success) {
         setError(message)
+        // Still logout locally even if API call fails
+        logout()
         return result
       }
 
@@ -146,6 +153,7 @@ export const useLogout = () => {
       const errorMessage =
         error instanceof Error ? error.message : 'Logout failed'
       setError(errorMessage)
+      // Always logout locally regardless of API error
       logout()
       return { success: false, message: errorMessage }
     }

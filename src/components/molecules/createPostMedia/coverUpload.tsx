@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { useCreatePost } from '@/contexts/createPost'
 import { Button } from '@/components/atoms/button'
 import {
   Card,
@@ -10,78 +9,47 @@ import {
   CardTitle,
 } from '@/components/atoms/card'
 import { ImagePlus, Trash2 } from 'lucide-react'
+import type { MediaItem } from '@/api/types/property.type'
+import { useCreatePost } from '@/contexts/createPost'
 
-const MAX_IMAGES = 24
+interface CoverUploadProps {
+  coverImage?: Partial<MediaItem>
+}
 
-const CoverUpload: React.FC = () => {
+const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
   const t = useTranslations('createPost.sections.media.cover')
-  const {
-    mediaUrls,
-    updateMediaUrls,
-    updateMediaIds,
-    pendingImages,
-    addPendingImages,
-    removePendingImage,
-  } = useCreatePost()
-
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const { addPendingImages, removePendingImage, pendingImages } =
+    useCreatePost()
 
-  // Get cover from either uploaded (context) or pending (context)
-  const uploadedImages = mediaUrls?.images || []
-  const coverUrl = uploadedImages[0]
-  const pendingCover = pendingImages.find((img) => img.isCover)
-
-  const onPick = (files: FileList | null) => {
+  const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return
 
-    const picked = Array.from(files)
-    const remainingCapacity = Math.max(
-      0,
-      MAX_IMAGES - uploadedImages.length - pendingImages.length,
-    )
-    const slice = picked.slice(0, remainingCapacity)
+    const coverIndex = pendingImages.findIndex((img) => img.isCover)
+    if (coverIndex !== -1) {
+      removePendingImage(coverIndex, true)
+    }
 
-    if (slice.length === 0) return
-
-    // Remove old pending cover if exists
-    const existingNonCover = pendingImages.filter((img) => !img.isCover)
-
-    // Create new pending images (first file is cover)
-    const newPending = slice.map((file, index) => ({
-      file,
-      previewUrl: URL.createObjectURL(file),
-      isCover: index === 0,
-    }))
-
-    addPendingImages([...newPending, ...existingNonCover].slice(0, MAX_IMAGES))
+    const file = files[0]
+    const newPending = [
+      {
+        file,
+        previewUrl: URL.createObjectURL(file),
+        isCover: true,
+      },
+    ]
+    addPendingImages(newPending)
   }
 
-  // Handle delete cover
   const handleDeleteCover = () => {
-    // If there's a pending cover, remove it
-    if (pendingCover) {
-      const coverIndex = pendingImages.findIndex((img) => img.isCover)
-      if (coverIndex !== -1) {
-        removePendingImage(coverIndex, true)
-      }
-      return
-    }
-
-    // If there's an uploaded cover, remove the first image
-    if (coverUrl && uploadedImages.length > 0) {
-      const newImages = uploadedImages.slice(1) // Remove first image
-      updateMediaUrls({ images: newImages })
-
-      // If we removed the cover (first image), clear thumbnailMediaId
-      // The new first image will become the cover and its mediaId will be set when uploaded
-      if (newImages.length === 0) {
-        updateMediaIds({ thumbnailMediaId: undefined })
-      }
+    const coverIndex = pendingImages.findIndex((img) => img.isCover)
+    if (coverIndex !== -1) {
+      removePendingImage(coverIndex, true)
     }
   }
 
-  // Display cover: prefer uploaded, fallback to pending
-  const displayCover = coverUrl || pendingCover?.previewUrl
+  const pendingCover = pendingImages.find((img) => img.isCover)
+  const displayImage = pendingCover?.previewUrl || coverImage?.url
 
   return (
     <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
@@ -92,14 +60,14 @@ const CoverUpload: React.FC = () => {
       </CardHeader>
       <CardContent>
         <div className='mx-auto w-full max-w-xl'>
-          {displayCover ? (
+          {displayImage ? (
             <div className='relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900'>
               <div className='relative aspect-[4/3]'>
                 <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-yellow-400 text-gray-900 font-medium shadow-sm'>
                   {t('badge')}
                 </span>
                 <Image
-                  src={displayCover}
+                  src={displayImage}
                   alt='Cover image'
                   fill
                   className='object-cover'
@@ -144,9 +112,8 @@ const CoverUpload: React.FC = () => {
           ref={inputRef}
           type='file'
           accept='image/*'
-          multiple
           className='hidden'
-          onChange={(e) => onPick(e.target.files)}
+          onChange={(e) => handleFiles(e.target.files)}
         />
       </CardContent>
     </Card>

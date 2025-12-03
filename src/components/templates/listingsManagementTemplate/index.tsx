@@ -1,10 +1,13 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { ListingStatusFilterResponsive } from '@/components/molecules/listings/ListingStatusFilterResponsive'
 import { ListingEmptyState } from '@/components/organisms/listings/ListingEmptyState'
 import { ListingToolbar } from '@/components/molecules/listings/ListingToolbar'
 import dynamic from 'next/dynamic'
 import { ListingsList } from '@/components/organisms/listings-list'
+import { useDeleteListing } from '@/hooks/useListings/useDeleteListing'
+import { toast } from 'sonner'
+import { DeleteListingDialog } from '@/components/molecules/deleteListingDialog'
 
 const ResidentialFilterDialog = dynamic(
   () => import('@/components/molecules/residentialFilterDialog'),
@@ -15,30 +18,34 @@ const ResidentialFilterDialog = dynamic(
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { List, useListContext } from '@/contexts/list'
-import { countActiveFilters } from '@/utils/filters/countActiveFilters'
-import { ListingOwnerDetail, PostStatus, POST_STATUS } from '@/api/types'
-import { MOCK_LISTINGS } from '@/mock/ownerListing'
+import {
+  ListingOwnerDetail,
+  PostStatus,
+  POST_STATUS,
+  ListingFilterRequest,
+} from '@/api/types'
 
-const ListingsWithPagination: React.FC<{ currentStatus: PostStatus }> = ({
-  currentStatus,
-}) => {
+const ListingsWithPagination = () => {
   const {
     items: listings,
     isLoading,
     pagination,
     loadMore,
+    removeItem,
   } = useListContext<ListingOwnerDetail>()
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tSeller = useTranslations('seller.listingManagement')
   const { currentPage, totalPages } = pagination
   const hasNext = currentPage < totalPages
-
-  console.log('ListingsWithPagination rendered for status:', currentStatus)
+  const { updateFilters } = useListContext<ListingFilterRequest>()
+  const deleteMutation = useDeleteListing()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [selectedListingForDelete, setSelectedListingForDelete] =
+    useState<ListingOwnerDetail | null>(null)
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: () => {
-      console.log('Load more triggered for mobile')
       if (isMobile && hasNext && !isLoading) {
         loadMore()
       }
@@ -96,9 +103,40 @@ const ListingsWithPagination: React.FC<{ currentStatus: PostStatus }> = ({
             onTakeDown={(listing) =>
               console.log('Take down listing:', listing.listingId)
             }
-            onDelete={(listing) =>
-              console.log('Delete listing:', listing.listingId)
-            }
+            onDelete={(listing) => {
+              setSelectedListingForDelete(listing)
+              setDeleteDialogOpen(true)
+            }}
+          />
+
+          <DeleteListingDialog
+            listing={selectedListingForDelete}
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            onConfirm={(listing) => {
+              const id = listing.listingId
+              // Optimistic delete: remove from UI immediately
+              removeItem(id)
+              setSelectedListingForDelete(null)
+              setDeleteDialogOpen(false)
+
+              deleteMutation.mutate(
+                { id },
+                {
+                  onSuccess: () => {
+                    toast.success(tSeller('card.toast.deleteSuccess'))
+                  },
+                  onError: (err) => {
+                    toast.error(
+                      err.message || tSeller('card.toast.deleteError'),
+                    )
+
+                    updateFilters({ page: 1 })
+                  },
+                },
+              )
+            }}
+            isLoading={deleteMutation.isPending}
           />
 
           {/* Desktop: Show Pagination */}
@@ -150,85 +188,26 @@ export interface ListingsManagementTemplateProps {
   children?: React.ReactNode
 }
 
-export const ListingsManagementTemplate: React.FC<
-  ListingsManagementTemplateProps
-> = ({ children }) => {
-  const [status, setStatus] = useState<PostStatus>(POST_STATUS.ALL)
-  const [filterOpen, setFilterOpen] = useState(false)
-
-  // Calculate counts for each status from MOCK_LISTINGS
-  const counts = useMemo(() => {
-    const statusCounts: Partial<Record<PostStatus, number>> = {
-      [POST_STATUS.ALL]: MOCK_LISTINGS.length,
-    }
-
-    MOCK_LISTINGS.forEach((listing) => {
-      if (listing.status) {
-        statusCounts[listing.status] = (statusCounts[listing.status] || 0) + 1
-      }
-    })
-
-    return statusCounts
-  }, [])
-
-  return (
-    <div className='p-3 sm:p-4'>
-      <div className='mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6'>
-        <ListingStatusFilterResponsive
-          value={status}
-          counts={counts}
-          onChange={(newStatus) => {
-            console.log('Status filter changed:', newStatus)
-            setStatus(newStatus)
-          }}
-        />
-        {children}
-        <ToolbarWithBadge
-          total={MOCK_LISTINGS.length}
-          onFilterClick={() => {
-            console.log('Filter clicked')
-            setFilterOpen(true)
-          }}
-        />
-        <ListingsWithPagination currentStatus={status} />
-        <FilterDialogWrapper open={filterOpen} onOpenChange={setFilterOpen} />
-      </div>
-    </div>
-  )
-}
-
 const ToolbarWithBadge: React.FC<{
   total: number
   onFilterClick: () => void
 }> = ({ total, onFilterClick }) => {
+  const { updateFilters } = useListContext()
+
   return (
     <ListingToolbar
       total={total}
-      onSearch={(query) => console.log('Search:', query)}
+      onSearch={(query) => updateFilters({ keyword: query, page: 1 })}
       onFilterClick={onFilterClick}
-      onExport={() => console.log('Export clicked')}
-      filterButtonChildren={<FilterButtonBadge />}
     />
-  )
-}
-
-const FilterButtonBadge: React.FC = () => {
-  const { filters, activeFilterCount } = useListContext()
-  const activeFiltersCount = activeFilterCount || countActiveFilters(filters)
-
-  if (activeFiltersCount === 0) return null
-
-  return (
-    <span className='ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1.5 text-[10px] font-semibold text-primary'>
-      {activeFiltersCount}
-    </span>
   )
 }
 
 const FilterDialogWrapper: React.FC<{
   open: boolean
   onOpenChange: (open: boolean) => void
-}> = ({ open, onOpenChange }) => {
+  onApply: () => void
+}> = ({ open, onOpenChange, onApply }) => {
   const t = useTranslations('seller.listingManagement')
 
   return (
@@ -236,6 +215,48 @@ const FilterDialogWrapper: React.FC<{
       onOpenChange={onOpenChange}
       open={open}
       title={t('filter.title')}
+      onApply={onApply}
+      hideLocationFilter
     />
+  )
+}
+
+export const ListingsManagementTemplate: React.FC<
+  ListingsManagementTemplateProps
+> = ({ children }) => {
+  const [status, setStatus] = useState<PostStatus>(POST_STATUS.ALL)
+  const [filterOpen, setFilterOpen] = useState(false)
+  const { items: listings, updateFilters } =
+    useListContext<ListingFilterRequest>()
+
+  return (
+    <div className='p-3 sm:p-4'>
+      <div className='mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6'>
+        <ListingStatusFilterResponsive
+          value={status}
+          onChange={(newStatus) => {
+            setStatus(newStatus)
+            updateFilters({
+              listingStatus:
+                newStatus === POST_STATUS.ALL ? undefined : newStatus,
+            })
+          }}
+          hideCount
+        />
+        {children}
+        <ToolbarWithBadge
+          total={listings.length}
+          onFilterClick={() => {
+            setFilterOpen(true)
+          }}
+        />
+        <ListingsWithPagination />
+        <FilterDialogWrapper
+          open={filterOpen}
+          onOpenChange={setFilterOpen}
+          onApply={() => setFilterOpen(false)}
+        />
+      </div>
+    </div>
   )
 }

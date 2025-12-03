@@ -3,7 +3,7 @@ import {
   STEP_2_FIELDS,
   STEP_3_FIELDS,
 } from '@/utils/createPost/validationSchemas'
-import type { CreateListingRequest } from '@/api/types/property.type'
+import type { CreateListingRequest, MediaItem } from '@/api/types/property.type'
 import type { FieldErrors } from 'react-hook-form'
 
 export const getStepFields = (stepIndex: number): readonly string[] => {
@@ -35,7 +35,7 @@ export const validateStep0 = (
   const address = propertyInfo.address
   const hasAllRequiredFields =
     !!propertyInfo.categoryId &&
-    !!propertyInfo.propertyType &&
+    !!propertyInfo.productType &&
     !!propertyInfo.address &&
     !!address?.latitude &&
     !!address?.longitude &&
@@ -43,11 +43,9 @@ export const validateStep0 = (
     !!propertyInfo.price &&
     !!propertyInfo.priceUnit &&
     !!propertyInfo.title &&
-    propertyInfo.title.trim().length >= 10 &&
-    propertyInfo.title.trim().length <= 100 &&
+    propertyInfo.title.trim().length >= 30 &&
     !!propertyInfo.description &&
-    propertyInfo.description.trim().length >= 50 &&
-    propertyInfo.description.trim().length <= 2000 &&
+    propertyInfo.description.trim().length >= 70 &&
     !!propertyInfo.waterPrice &&
     !!propertyInfo.electricityPrice &&
     !!propertyInfo.internetPrice &&
@@ -67,11 +65,11 @@ export const validateStep3 = (
 ): boolean => {
   if (!propertyInfo) return false
 
-  const hasVip = !!propertyInfo.vipType && !!propertyInfo.durationDays
-  const hasBenefit = Array.isArray(propertyInfo.benefitsMembership)
-    ? propertyInfo.benefitsMembership.length > 0
+  const hasVip = !!propertyInfo?.vipType && !!propertyInfo?.durationDays
+  const hasBenefit = Array.isArray(propertyInfo?.benefitIds)
+    ? propertyInfo.benefitIds?.length > 0
     : false
-  const hasStart = !!propertyInfo.postDate
+  const hasStart = !!propertyInfo?.postDate
 
   return hasStart && (hasVip || hasBenefit)
 }
@@ -81,12 +79,26 @@ interface MediaUrls {
   images?: string[]
 }
 
-export const validateStep2 = (mediaUrls: MediaUrls | undefined): boolean => {
-  if (!mediaUrls) return false
+/**
+ * Validate Step 2 - Media
+ * Accepts either old MediaUrls format or new MediaItem[] format
+ */
+export const validateStep2 = (
+  media: MediaUrls | Partial<MediaItem>[] | undefined,
+): boolean => {
+  if (!media) return false
 
-  const images = mediaUrls.images || []
+  // Handle new format: MediaItem[]
+  if (Array.isArray(media)) {
+    const hasVideo = media.some((m) => m.mediaType === 'VIDEO')
+    const imagesCount = media.filter((m) => m.mediaType === 'IMAGE').length
+    return hasVideo || imagesCount >= 4
+  }
+
+  // Handle old format: MediaUrls
+  const images = media.images || []
   const imagesCount = Array.isArray(images) ? images.length : 0
-  const hasVideo = !!mediaUrls.video
+  const hasVideo = !!media.video
 
   return hasVideo || imagesCount >= 4
 }

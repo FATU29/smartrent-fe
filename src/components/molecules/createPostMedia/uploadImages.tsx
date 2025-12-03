@@ -10,17 +10,21 @@ import { Button } from '@/components/atoms/button'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { ImagePlus, Upload, Trash2 } from 'lucide-react'
+import type { MediaItem } from '@/api/types/property.type'
 
 const MAX_IMAGES = 24
 
-const UploadImages: React.FC = () => {
+interface UploadImagesProps {
+  images?: Partial<MediaItem>[]
+}
+
+const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
   const t = useTranslations('createPost.sections.media')
-  const { mediaUrls, pendingImages, addPendingImages, removePendingImage } =
+  const { pendingImages, addPendingImages, removePendingImage } =
     useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const uploadedImages = mediaUrls?.images || []
-  const totalImages = uploadedImages.length + pendingImages.length
+  const totalImages = images.length + pendingImages.length
 
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return
@@ -104,23 +108,14 @@ const UploadImages: React.FC = () => {
           </div>
           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5'>
             {/* Uploaded images from context */}
-            {uploadedImages.map((url, index) => (
+            {images.map((img, index) => (
               <div
                 key={`uploaded-${index}`}
-                className={`group relative rounded-xl border bg-white dark:bg-gray-900 overflow-hidden ${
-                  index === 0
-                    ? 'border-yellow-400'
-                    : 'border-gray-200 dark:border-gray-700'
-                }`}
+                className='group relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden'
               >
                 <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-800'>
-                  {index === 0 && (
-                    <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-yellow-400 text-gray-900 font-medium shadow-sm'>
-                      {t('uploaded.cover')}
-                    </span>
-                  )}
                   <Image
-                    src={url}
+                    src={img.url || ''}
                     alt={`Image ${index + 1}`}
                     fill
                     sizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
@@ -128,9 +123,7 @@ const UploadImages: React.FC = () => {
                   />
                 </div>
                 <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
-                  <p className='text-sm truncate mb-3'>
-                    {index === 0 ? t('uploaded.cover') : `Image ${index + 1}`}
-                  </p>
+                  <p className='text-sm truncate mb-3'>{`Image ${index + 1}`}</p>
                   <p className='text-xs text-green-600 dark:text-green-400'>
                     {t('uploaded.success')}
                   </p>
@@ -156,7 +149,7 @@ const UploadImages: React.FC = () => {
                   </div>
                   <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
                     <p className='text-sm truncate mb-3'>
-                      {`Image ${uploadedImages.length + index + 1}`}
+                      {`Image ${images.length + index + 1}`}
                     </p>
                     <Button
                       size='sm'

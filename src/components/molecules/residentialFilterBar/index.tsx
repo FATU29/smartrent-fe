@@ -12,20 +12,24 @@ import { Filter, MapIcon, ShieldCheck } from 'lucide-react'
 
 import { LocationSwitch } from '@/components/atoms'
 import { useRouter } from 'next/router'
-import { pushQueryParams } from '@/utils/queryParams'
-import { PUBLIC_ROUTES } from '@/constants/route'
 import { ListingFilterRequest, SortKey } from '@/api/types/property.type'
 import { useListContext } from '@/contexts/list/useListContext'
 import { List } from '@/contexts/list'
 import ListSearch from '@/contexts/list/index.search'
 import useLocation from '@/hooks/useLocation'
+import {
+  navigateToPropertiesWithFilters,
+  navigateToPropertiesWithClearedFilters,
+} from '@/utils/filters'
 
 interface ResidentialFilterBarProps {
   onOpenAdvanced?: () => void
+  onApply?: () => void // Custom apply handler (e.g., navigate from homepage to /properties)
 }
 
 const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
   onOpenAdvanced,
+  onApply,
 }) => {
   const t = useTranslations('residentialFilter')
   const tActions = useTranslations('residentialFilter.actions')
@@ -37,83 +41,23 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
   const { disableLocation } = useLocation()
 
   const handleApply = () => {
-    const amenityIds = filters.amenityIds
+    // If custom onApply handler is provided (e.g., from homepage), use it
+    if (onApply) {
+      onApply()
+      return
+    }
 
-    pushQueryParams(
-      router,
-      {
-        categoryId: filters.categoryId ?? null,
-        productType: filters.productType ?? null,
-        keyword: filters.keyword || null,
-        minPrice: filters.minPrice ?? null,
-        maxPrice: filters.maxPrice ?? null,
-        minArea: filters.minArea ?? null,
-        maxArea: filters.maxArea ?? null,
-        minBedrooms: filters.minBedrooms ?? null,
-        maxBedrooms: filters.maxBedrooms ?? null,
-        bathrooms: filters.bathrooms ?? null,
-        verified: filters.verified || null,
-        direction: filters.direction ?? null,
-        electricityPrice: filters.electricityPrice ?? null,
-        waterPrice: filters.waterPrice ?? null,
-        internetPrice: filters.internetPrice ?? null,
-        serviceFee: filters.serviceFee ?? null,
-        amenityIds:
-          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
-        provinceId: filters.provinceId ?? null,
-        districtId: filters.districtId ?? null,
-        wardId: filters.wardId ?? null,
-        isLegacy: filters.isLegacy ?? null,
-        latitude: filters.latitude ?? null,
-        longitude: filters.longitude ?? null,
-        sortBy: filters.sortBy ?? null,
-        page: null,
-      },
-      {
-        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
-        shallow: false,
-        scroll: true,
-      },
-    )
+    // Default behavior: Navigate to /properties with current filters
+    navigateToPropertiesWithFilters(router, filters)
   }
 
   const handleReset = () => {
     resetFilters()
-    pushQueryParams(
-      router,
-      {
-        categoryId: null,
-        productType: null,
-        keyword: null,
-        minPrice: null,
-        maxPrice: null,
-        minArea: null,
-        maxArea: null,
-        minBedrooms: null,
-        maxBedrooms: null,
-        bathrooms: null,
-        verified: null,
-        direction: null,
-        electricityPrice: null,
-        waterPrice: null,
-        internetPrice: null,
-        serviceFee: null,
-        amenityIds: null,
-        provinceId: null,
-        districtId: null,
-        wardId: null,
-        isLegacy: null,
-        latitude: null,
-        longitude: null,
-        sortBy: null,
-        page: null,
-      },
-      {
-        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
-        shallow: false,
-        scroll: true,
-      },
-    )
+
+    // Only navigate to /properties if NOT on homepage (no custom onApply handler)
+    if (!onApply) {
+      navigateToPropertiesWithClearedFilters(router)
+    }
   }
 
   const handleSortChange = useCallback((value: SortKey) => {
@@ -128,13 +72,13 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
   }
 
   const handleLocationChange = useCallback(
-    (latitude?: number, longitude?: number) => {
-      if (!latitude || !longitude) {
+    (userLatitude?: number, userLongitude?: number) => {
+      if (!userLatitude || !userLongitude) {
         disableLocation()
       }
       updateFilter({
-        latitude: latitude,
-        longitude: longitude,
+        userLatitude: userLatitude,
+        userLongitude: userLongitude,
       })
     },
     [],
@@ -156,9 +100,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
           >
             <Filter className='h-4 w-4' />
             {typeof activeFilterCount === 'number' && activeFilterCount > 0 && (
-              <span className='absolute -top-1 -right-1 bg-destructive text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full'>
-                {activeFilterCount}
-              </span>
+              <span className='absolute -top-0.5 -right-0.5 w-2 h-2 bg-destructive rounded-full' />
             )}
           </Button>
         </div>
@@ -205,9 +147,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
           >
             <Filter className='h-4 w-4 mr-1' /> {t('actions.filter')}
             {typeof activeFilterCount === 'number' && activeFilterCount > 0 && (
-              <span className='absolute -top-1 -right-1 bg-destructive text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full'>
-                {activeFilterCount}
-              </span>
+              <span className='absolute -top-0.5 -right-0.5 w-2 h-2 bg-destructive rounded-full' />
             )}
           </Button>
           <SortDropdown
@@ -253,8 +193,8 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
               <LocationSwitch
                 onLocationChange={handleLocationChange}
                 disabled={
-                  filters.latitude === undefined ||
-                  filters.longitude === undefined
+                  filters.userLatitude === undefined ||
+                  filters.userLongitude === undefined
                 }
               />
             </div>

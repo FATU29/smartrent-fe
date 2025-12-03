@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react'
+import React, { useMemo, useEffect, useState, useRef } from 'react'
 import {
   Card,
   CardContent,
@@ -25,7 +25,6 @@ import {
   buildHousingPredictorRequest,
   getAveragePrice,
 } from '@/utils/ai/housingPredictor'
-import { useNewProvinces, useNewWards } from '@/hooks/useAddress'
 import { formatByLocale } from '@/utils/currency/convert'
 import type { HousingPredictorResponse } from '@/api/types/ai.type'
 
@@ -42,83 +41,48 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
     'createPost.sections.propertyDetails',
   )
   const tAddress = useTranslations('createPost.sections.propertyInfo.address')
-  const {
-    propertyInfo,
-    fulltextAddress,
-    composedNewAddress,
-    composedLegacyAddress,
-  } = useCreatePost()
+  const { propertyInfo, composedLegacyAddress, composedNewAddress } =
+    useCreatePost()
   const [prediction, setPrediction] = useState<HousingPredictorResponse | null>(
     null,
   )
 
-  const { data: newProvinces = [] } = useNewProvinces()
-  const provinceCodeForWards =
-    fulltextAddress?.newProvinceCode ||
-    (propertyInfo?.address?.new?.provinceCode
-      ? String(propertyInfo.address.new.provinceCode)
-      : undefined)
-  const { data: newWards = [] } = useNewWards(provinceCodeForWards)
-
-  // Find selected address entities for addressNames
-  const selectedNewProvince = useMemo(() => {
-    const provinceCode =
-      fulltextAddress?.newProvinceCode ||
-      (propertyInfo?.address?.new?.provinceCode
-        ? String(propertyInfo.address.new.provinceCode)
-        : undefined)
-    if (!provinceCode) return undefined
-    return newProvinces.find((p) => p.id === provinceCode)
-  }, [
-    newProvinces,
-    fulltextAddress?.newProvinceCode,
-    propertyInfo?.address?.new?.provinceCode,
-  ])
-
-  const selectedNewWard = useMemo(() => {
-    const wardCode =
-      fulltextAddress?.newWardCode ||
-      (propertyInfo?.address?.new?.wardCode
-        ? String(propertyInfo.address.new.wardCode)
-        : undefined)
-    if (!wardCode) return undefined
-    return newWards.find((w) => w.code === wardCode)
-  }, [
-    newWards,
-    fulltextAddress?.newWardCode,
-    propertyInfo?.address?.new?.wardCode,
-  ])
-
-  const addressNames = useMemo(() => {
-    if (!selectedNewProvince || !selectedNewWard) return null
-
-    return {
-      city: selectedNewProvince.name,
-      ward: selectedNewWard.name,
-      district: '',
-      street: propertyInfo,
-    }
-  }, [selectedNewProvince, selectedNewWard])
-
-  // Housing predictor hook
   const {
     mutate: predictPrice,
     isPending: isPredicting,
     error: predictionError,
   } = useHousingPredictor()
 
-  // Build request
   const predictionRequest = useMemo(() => {
-    if (!addressNames) return null
-    return buildHousingPredictorRequest(propertyInfo, addressNames)
-  }, [propertyInfo, addressNames])
+    const [provinces, district, ward] = composedLegacyAddress.split(' - ')
+    if (!provinces || !district || !ward) return null
+    return buildHousingPredictorRequest(propertyInfo, {
+      city: provinces,
+      district,
+      ward,
+    })
+  }, [propertyInfo, composedLegacyAddress])
 
-  // Auto-predict when predictionRequest becomes available or changes
+  const requestKey = useMemo(() => {
+    return predictionRequest ? JSON.stringify(predictionRequest) : null
+  }, [predictionRequest])
+
+  // Track mount with a ref and ensure auto-call happens only once after mount
+  const mountedRef = useRef(false)
+  const didAutoCallRef = useRef(false)
+
+  // Mark as mounted
   useEffect(() => {
-    if (!predictionRequest || isPredicting) {
-      return
-    }
+    mountedRef.current = true
+  }, [])
 
+  // Only auto-call once after mount when request is ready
+  useEffect(() => {
+    if (!mountedRef.current) return
+    if (didAutoCallRef.current) return
+    if (!predictionRequest || isPredicting || prediction) return
+
+    didAutoCallRef.current = true
     predictPrice(predictionRequest, {
       onSuccess: (response) => {
         if (response.code === '999999' && response.data) {
@@ -126,12 +90,12 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
         }
       },
     })
-  }, [predictionRequest, isPredicting, predictPrice])
+  }, [predictionRequest, requestKey, isPredicting, prediction, predictPrice])
 
-  // Handle re-evaluate button
   const handleReevaluate = () => {
     if (!predictionRequest) return
     setPrediction(null)
+    didAutoCallRef.current = false
     predictPrice(predictionRequest, {
       onSuccess: (response) => {
         if (response.code === '999999' && response.data) {
@@ -146,13 +110,13 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   }
 
   const propertyTypeLabel = useMemo(() => {
-    if (!propertyInfo.propertyType) return ''
+    if (!propertyInfo.productType) return ''
     const options = getAiPropertyTypeOptions(t, tPropertyDetails)
     const option = options.find(
-      (opt) => opt.value === propertyInfo.propertyType?.toLowerCase(),
+      (opt) => opt.value === propertyInfo.productType?.toLowerCase(),
     )
-    return option?.label || propertyInfo.propertyType
-  }, [propertyInfo.propertyType, t, tPropertyDetails])
+    return option?.label || propertyInfo.productType
+  }, [propertyInfo.productType, t, tPropertyDetails])
 
   const canPredict = !!predictionRequest
 

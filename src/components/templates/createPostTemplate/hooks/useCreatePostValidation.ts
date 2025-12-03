@@ -17,7 +17,7 @@ export const useCreatePostValidation = (
 ) => {
   const t = useTranslations('createPost')
   const tValidation = useTranslations('createPost.validation')
-  const { propertyInfo, mediaUrls } = useCreatePost()
+  const { propertyInfo, media } = useCreatePost()
 
   const currentErrors = useMemo((): ValidationError[] => {
     if (!attemptedSubmit) return []
@@ -69,10 +69,11 @@ export const useCreatePostValidation = (
 
     // Step 2: Media validation
     if (currentStep === 2) {
-      const images = mediaUrls?.images || []
-      const imagesCount = Array.isArray(images) ? images.length : 0
-      const videoVal = mediaUrls?.video
-      const hasVideo = !!videoVal
+      const images = media.filter((m) => m.mediaType === 'IMAGE')
+      const imagesCount = images.length
+      const hasCover = images.some((m) => m.isPrimary === true)
+      const video = media.find((m) => m.mediaType === 'VIDEO')
+      const hasVideo = !!video
 
       if (!hasVideo && imagesCount < 4) {
         errorList.push({
@@ -80,10 +81,25 @@ export const useCreatePostValidation = (
           message: t('validation.imagesRequired'),
         })
       }
+
+      if (imagesCount > 0 && !hasCover) {
+        errorList.push({
+          key: 'coverImage',
+          message: t('validation.coverImageRequired'),
+        })
+      }
     }
 
     return errorList
-  }, [currentStep, attemptedSubmit, errors, propertyInfo, t, tValidation])
+  }, [
+    currentStep,
+    attemptedSubmit,
+    errors,
+    propertyInfo,
+    media,
+    t,
+    tValidation,
+  ])
 
   const canProceed = currentErrors.length === 0
 

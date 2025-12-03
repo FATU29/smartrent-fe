@@ -20,8 +20,8 @@ import {
   LocationError,
 } from './index.type'
 
-const GEOLOCATION_TIMEOUT = 15000
-const GEOLOCATION_MAX_AGE = 0
+const GEOLOCATION_TIMEOUT = 30000 // Increase to 30s for better GPS lock
+const GEOLOCATION_MAX_AGE = 5000 // Allow 5s cache for faster response
 const PERMISSION_DENIED_CODE = 1
 
 const LocationContext = createContext<LocationContextType | undefined>(

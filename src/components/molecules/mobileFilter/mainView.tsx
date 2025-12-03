@@ -20,20 +20,18 @@ import {
 } from 'lucide-react'
 import { ListingFilterRequest } from '@/api/types'
 
-// MobileFilterMainView
-// Acts as the hub view listing all available filter categories and quick toggle flags.
-// Delegates navigation upward via onNavigate(viewKey).
-// Shows lightweight summaries (ranges, counts, media flags) inline to reduce drill-ins.
 interface MobileFilterMainViewProps {
   filters: ListingFilterRequest
   onNavigate: (view: string) => void
   onUpdate: (partial: Partial<ListingFilterRequest>) => void
+  hideLocationFilter?: boolean
 }
 
 const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
   filters,
   onNavigate,
   onUpdate,
+  hideLocationFilter = false,
 }) => {
   const t = useTranslations('residentialFilter')
 
@@ -49,18 +47,20 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
   return (
     <div className='pb-20'>
       <div className='space-y-1'>
-        <RadioRow
-          label={
-            filters.provinceId || filters.districtId || filters.wardId
-              ? `${t('dropdowns.address')} (${t('address.added')})`
-              : `${t('dropdowns.address')} (${t('address.add')})`
-          }
-          selected={
-            !!(filters.provinceId || filters.districtId || filters.wardId)
-          }
-          onClick={() => onNavigate('address')}
-          iconLeft={<MapPin className='h-4 w-4 text-muted-foreground' />}
-        />
+        {
+          <RadioRow
+            label={
+              filters.provinceId || filters.districtId || filters.wardId
+                ? `${t('dropdowns.address')} (${t('address.added')})`
+                : `${t('dropdowns.address')} (${t('address.add')})`
+            }
+            selected={
+              !!(filters.provinceId || filters.districtId || filters.wardId)
+            }
+            onClick={() => onNavigate('address')}
+            iconLeft={<MapPin className='h-4 w-4 text-muted-foreground' />}
+          />
+        }
         <RadioRow
           label={t('dropdowns.propertyType')}
           selected={!!filters.productType}
@@ -135,12 +135,14 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           />
         </ToggleSection>
 
-        <ToggleSection
-          icon={<MapPin className='h-4 w-4 text-muted-foreground' />}
-          title={t('toggles.location')}
-        >
-          <LocationToggleChip />
-        </ToggleSection>
+        {!hideLocationFilter && (
+          <ToggleSection
+            icon={<MapPin className='h-4 w-4 text-muted-foreground' />}
+            title={t('toggles.location')}
+          >
+            <LocationToggleChip />
+          </ToggleSection>
+        )}
       </div>
     </div>
   )

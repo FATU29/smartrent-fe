@@ -32,7 +32,6 @@ const GoogleMapPicker: React.FC<GoogleMapPickerProps> = ({
     [onLocationSelect],
   )
 
-  // Sync external changes (e.g. "use my location")
   React.useEffect(() => {
     if (latitude && longitude) {
       setMarkerPos({ lat: latitude, lng: longitude })
@@ -43,7 +42,6 @@ const GoogleMapPicker: React.FC<GoogleMapPickerProps> = ({
     ? { lat: latitude, lng: longitude }
     : markerPos
 
-  // Lightweight marker component (children of GoogleMapReact)
   const Marker: React.FC<{ lat: number; lng: number }> = ({ lat, lng }) => (
     <div className='relative -translate-x-1/2 -translate-y-1/2'>
       <div className='w-5 h-5 rounded-full bg-blue-500 shadow ring-2 ring-white dark:ring-gray-800 flex items-center justify-center'>
@@ -55,7 +53,6 @@ const GoogleMapPicker: React.FC<GoogleMapPickerProps> = ({
     </div>
   )
 
-  // Don't render if no valid API key
   if (
     !ENV.GOOGLE_MAP_KEY ||
     ENV.GOOGLE_MAP_KEY === 'your_google_maps_api_key_here'

@@ -8,7 +8,13 @@ import { useCreatePostValidation } from './hooks/useCreatePostValidation'
 import { useCreatePostStepsConfig } from './utils/createPostSteps.config'
 import { ValidationErrors } from './components/ValidationErrors'
 import { NavigationButtons } from './components/NavigationButtons'
+import { ListingService } from '@/api/services/listing.service'
+import type { CreateVipListingRequest } from '@/api/types/property.type'
+import { useCreatePost } from '@/contexts/createPost'
+import { useRouter } from 'next/router'
 import { StepRenderer } from './components/StepRenderer'
+import { useTranslations } from 'next-intl'
+import NotificationDialog from '@/components/molecules/notifications/NotificationDialog'
 
 interface CreatePostTemplateProps {
   className?: string
@@ -36,8 +42,62 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
     form.formState.errors,
   )
 
-  const handleSubmit = () => {
-    // Submit logic is handled in NavigationButtons component
+  const { propertyInfo, resetPropertyInfo, setIsSubmitSuccess } =
+    useCreatePost()
+  const router = useRouter()
+  const t = useTranslations('createPost.submit')
+
+  const [successOpen, setSuccessOpen] = React.useState(false)
+  const [successTitle, setSuccessTitle] = React.useState<string>('')
+  const [successDesc, setSuccessDesc] = React.useState<string>('')
+  const [errorOpen, setErrorOpen] = React.useState(false)
+  const [errorTitle, setErrorTitle] = React.useState<string>('')
+  const [errorDesc, setErrorDesc] = React.useState<string>('')
+
+  const handleSubmit = async () => {
+    try {
+      const useQuota =
+        !!propertyInfo?.useMembershipQuota ||
+        (!!propertyInfo?.benefitIds && propertyInfo.benefitIds.length > 0)
+
+      if (useQuota) {
+        const { success, data, message } =
+          await ListingService.create(propertyInfo)
+        if (!success || !data) {
+          setErrorTitle(t('errorTitle'))
+          setErrorDesc(message || t('createFailed'))
+          setErrorOpen(true)
+          return
+        }
+        setIsSubmitSuccess(true)
+        setSuccessTitle(t('successTitle'))
+        setSuccessDesc(t('successDescription'))
+        setSuccessOpen(true)
+        return
+      }
+
+      const { success, data, message } = await ListingService.createVip(
+        propertyInfo as CreateVipListingRequest,
+      )
+      if (!success || !data) {
+        setErrorTitle(t('errorTitle'))
+        setErrorDesc(message || t('createVipFailed'))
+        setErrorOpen(true)
+        return
+      }
+      if (data.paymentUrl) {
+        setIsSubmitSuccess(true)
+        window.location.href = data.paymentUrl
+        return
+      }
+      setIsSubmitSuccess(true)
+      await router.push(`/listing-detail/${data.listingId}`)
+    } catch (err) {
+      console.error('Submit error:', err)
+      setErrorTitle(t('errorTitle'))
+      setErrorDesc(err instanceof Error ? err.message : t('unexpectedError'))
+      setErrorOpen(true)
+    }
   }
 
   return (
@@ -48,6 +108,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         <div ref={topRef} />
         <Card className='w-full mx-auto md:container md:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4 sm:py-6 lg:py-8 border-0 shadow-none p-0'>
           <HeaderModule />
+
           <Card className='mb-6 sm:mb-8 flex justify-center border-0 shadow-none p-0'>
             <ProgressSteps
               currentStep={currentStep}
@@ -69,11 +130,33 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
           <NavigationButtons
             currentStep={currentStep}
-            totalSteps={progressSteps.length}
+            totalSteps={progressSteps?.length}
             canProceed={canProceed}
             onBack={handleBack}
             onNext={handleNext}
             onSubmit={handleSubmit}
+          />
+
+          {/* Success Dialog */}
+          <NotificationDialog
+            open={successOpen}
+            title={successTitle}
+            description={successDesc}
+            okText={t('ok')}
+            onOpenChange={setSuccessOpen}
+            onOk={async () => {
+              setIsSubmitSuccess(true) // Set context flag before navigation
+              resetPropertyInfo() // Clear context before navigation
+              await router.push('/seller/listings')
+            }}
+          />
+          {/* Error Dialog */}
+          <NotificationDialog
+            open={errorOpen}
+            title={errorTitle}
+            description={errorDesc}
+            okText={t('ok')}
+            onOpenChange={setErrorOpen}
           />
         </Card>
       </Card>

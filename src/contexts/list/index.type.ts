@@ -33,4 +33,5 @@ export interface ListContextType<T = unknown> {
   loadMore: () => void
   goToPage: (page: number) => void
   setKeyword: (keyword: string) => void
+  removeItem: (id: string | number) => void
 }

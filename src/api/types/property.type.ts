@@ -2,7 +2,6 @@ import { Pagination } from './pagination.type'
 import { UserApi } from './user.type'
 
 export type PropertyType = 'APARTMENT' | 'HOUSE' | 'ROOM' | 'STUDIO'
-export type ListingType = 'RENT' | 'SHARE'
 export type VipType = 'NORMAL' | 'SILVER' | 'GOLD' | 'DIAMOND'
 export type PriceUnit = 'MONTH' | 'YEAR'
 export enum PRICE_UNIT {
@@ -35,16 +34,15 @@ export type AmenityCategory =
 export type PriceType = 'NEGOTIABLE' | 'SET_BY_OWNER' | 'PROVIDER_RATE'
 
 export enum POST_STATUS {
-  ALL = 'ALL',
+  ALL = '',
   // Trạng thái cụ thể
-  EXPIRED = 'EXPIRED', // Hết hạn
-  NEAR_EXPIRED = 'NEAR_EXPIRED', // Sắp hết hạn
-  DISPLAYING = 'DISPLAYING', // Đang hiển thị
-  PENDING_APPROVAL = 'PENDING_APPROVAL', // Chờ duyệt
-  APPROVED = 'APPROVED', // Đang duyệt (hoặc Đã duyệt, tùy ngữ cảnh)
-  PENDING_PAYMENT = 'PENDING_PAYMENT', // Chờ thanh toán
-  REJECTED = 'REJECTED', // Bị từ chối
-  VERIFIED = 'VERIFIED',
+  EXPIRED = 1, // Hết hạn
+  EXPIRED_SOON = 2, // Sắp hết hạn
+  DISPLAYING = 3, // Đang hiển thị
+  IN_REVIEW = 4, // Chờ duyệt
+  PENDING_PAYMENT = 5, // Đang duyệt (hoặc Đã duyệt, tùy ngữ cảnh)
+  REJECTED = 6, // Chờ thanh toán
+  VERIFIED = 7,
 }
 
 export enum PAYMENT_PROVIDER {
@@ -72,10 +70,9 @@ export type DurationDays =
 export type PostStatus =
   | POST_STATUS.ALL
   | POST_STATUS.EXPIRED
-  | POST_STATUS.NEAR_EXPIRED
+  | POST_STATUS.EXPIRED_SOON
   | POST_STATUS.DISPLAYING
-  | POST_STATUS.PENDING_APPROVAL
-  | POST_STATUS.APPROVED
+  | POST_STATUS.IN_REVIEW
   | POST_STATUS.PENDING_PAYMENT
   | POST_STATUS.REJECTED
   | POST_STATUS.VERIFIED
@@ -90,6 +87,15 @@ export type CategoryType = {
   created_at: string
   updated_at: string
 }
+
+export type MediaType = 'IMAGE' | 'VIDEO'
+
+export enum LISTING_TYPE {
+  RENT = 'RENT',
+  SHARE = 'SHARE',
+}
+
+export type listingType = LISTING_TYPE.RENT | LISTING_TYPE.SHARE
 
 // Amenity interface
 export interface Amenity {
@@ -156,18 +162,26 @@ export interface LocationPricing {
   percentageDifferenceFromAverage: number
 }
 
+export interface MediaItem {
+  mediaId: number
+  listingId: number
+  mediaType: MediaType
+  sourceType: string
+  url: string
+  isPrimary: boolean
+  sortOrder: number
+  status: PostStatus
+  createdAt: string
+}
+
 export interface ListingApi {
   listingId: number
   title: string
   description: string
-  assets: {
-    video?: string
-    images?: string[]
-  }
+  media: MediaItem[]
   user: UserApi
   postDate: Date
   expiryDate: string
-  listingType: ListingType
   verified?: boolean
   expired?: boolean
   vipType: VipType
@@ -177,8 +191,8 @@ export interface ListingApi {
   price: number
   priceUnit: PriceUnit
   address: {
-    legacy?: string
-    new: string
+    fullAddress?: string
+    fullNewAddress: string
     latitude: number
     longitude: number
   }
@@ -206,8 +220,16 @@ export interface ListingOwnerDetail extends ListingApi {
   listingViews?: number
   interested?: number
   customers?: number
-  status?: PostStatus
+  listingStatus?: PostStatus
   rankOfVipType: number
+  durationDays?: number
+  statistics?: {
+    viewCount: number
+    contactCount: number
+    saveCount: number
+    reportCount: number
+    lastViewedAt: string | null
+  }
 }
 
 export interface ListingResponse {
@@ -241,7 +263,7 @@ export interface ListingLegacyAddress {
 export interface ListingNewAddress {
   provinceCode: string
   wardCode: string
-  street: string
+  street?: string
 }
 
 export interface ListingAddress {
@@ -252,20 +274,11 @@ export interface ListingAddress {
 }
 
 /**
- * Membership benefit association
- */
-export interface BenefitMembership {
-  benefitId: number
-  membershipId: number
-}
-
-/**
  * Create listing request - Updated schema
  */
 export interface CreateListingRequest {
   title?: string
   description?: string
-  listingType?: ListingType
   categoryId?: number
   productType?: PropertyType
   price?: number
@@ -276,18 +289,19 @@ export interface CreateListingRequest {
   bathrooms?: number
   direction?: Direction
   furnishing?: Furnishing
-  propertyType?: PropertyType
   roomCapacity?: number
   amenityIds?: number[]
   mediaIds?: number[]
   postDate?: string | Date // startDate
+  expiryDate?: string | Date // calculated expiry date
+  listingType?: listingType
   isDraft?: boolean
   waterPrice?: PriceType
   electricityPrice?: PriceType
   internetPrice?: PriceType
   serviceFee?: PriceType
 
-  benefitsMembership?: BenefitMembership[]
+  benefitIds?: number[]
 
   vipType?: VipType
   durationDays?: DurationDays
@@ -398,12 +412,64 @@ export interface ListingFilterRequest {
   provinceId?: number | string
   districtId?: number
   wardId?: number | string
-  longitude?: number
-  latitude?: number
   isLegacy?: boolean
 
   categoryId?: number
-  listingType?: ListingType
+  vipType?: VipType
+  productType?: PropertyType
+
+  minPrice?: number
+  maxPrice?: number
+  minArea?: number
+  maxArea?: number
+  minBedrooms?: number
+  maxBedrooms?: number
+  bathrooms?: number
+  furnishing?: Furnishing
+  direction?: Direction
+  verified?: boolean
+  isVerify?: boolean // alias for verified used by some endpoints
+  expired?: boolean
+  isDraft?: boolean
+  sortDirection?: 'ASC' | 'DESC'
+
+  waterPrice?: PriceType
+  electricityPrice?: PriceType
+  internetPrice?: PriceType
+
+  amenityIds?: number[]
+
+  keyword?: string
+
+  page?: number
+  size?: number
+
+  status?: PostStatus
+  userId?: string
+  sortBy?: SortKey
+
+  serviceFee?: PriceType
+
+  userLatitude?: number
+  userLongitude?: number
+
+  latitude?: number
+  longitude?: number
+
+  listingStatus?: PostStatus
+}
+
+/**
+ * Backend API request for listing search
+ * Maps directly to backend ListingFilterRequest
+ */
+export interface ListingSearchApiRequest {
+  provinceId?: number | string
+  districtId?: number
+  wardId?: number | string
+  isLegacy?: boolean
+
+  categoryId?: number
   vipType?: VipType
   productType?: PropertyType
 
@@ -421,31 +487,93 @@ export interface ListingFilterRequest {
   waterPrice?: PriceType
   electricityPrice?: PriceType
   internetPrice?: PriceType
+  serviceFee?: PriceType
 
   amenityIds?: number[]
 
   keyword?: string
 
+  // Backend uses these for pagination
   page?: number
   size?: number
 
   status?: PostStatus
-
   userId?: string
-
   sortBy?: SortKey
 
-  serviceFee?: PriceType
+  // Location coordinates
+  userLatitude?: number
+  userLongitude?: number
+
+  longitude?: number
+  latitude?: number
 }
 
+/**
+ * Backend API response for listing search
+ * Maps directly to backend ListingListResponse structure
+ */
+export interface ListingSearchBackendResponse {
+  listings: ListingDetail[]
+  totalCount: number
+  currentPage: number
+  pageSize: number
+  totalPages: number
+  recommendations?: ListingDetail[]
+  filterCriteria?: Partial<ListingSearchApiRequest>
+}
+
+/**
+ * My Listings backend response item (owner-centric)
+ */
+export interface MyListingBackendItem {
+  listingId: number
+  title: string
+  user: {
+    userId: string
+    firstName?: string
+    lastName?: string
+    email?: string
+    contactPhoneNumber?: string
+    contactPhoneVerified?: boolean
+  }
+  verified?: boolean
+  vipType?: VipType
+  postSource?: string
+  transactionId?: string
+  media?: MediaItem[]
+  address?: {
+    addressId?: number
+    fullAddress?: string
+    fullNewAddress?: string
+    latitude?: number
+    longitude?: number
+  }
+  statistics?: {
+    viewCount?: number
+    contactCount?: number
+  }
+}
+
+/**
+ * My Listings backend envelope
+ */
+export interface MyListingsBackendResponse {
+  listings: MyListingBackendItem[]
+  totalCount: number
+  currentPage: number
+  pageSize: number
+  totalPages: number
+  statistics?: Record<string, number>
+}
+
+/**
+ * Frontend internal response format (keeps existing structure)
+ * Used with ApiResponse wrapper: ApiResponse<ListingSearchResponse<T>>
+ */
 export interface ListingSearchResponse<T> {
   listings: T[]
   pagination: Pagination
   filterCriteria?: Partial<ListingFilterRequest>
-}
-
-export interface ListingSearchApiResponse<T> {
-  code: string
-  message: string | null
-  data: ListingSearchResponse<T>
+  recommendations?: T[]
 }

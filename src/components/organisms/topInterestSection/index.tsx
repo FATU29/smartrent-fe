@@ -56,7 +56,7 @@ const TopInterestSection = () => {
           variant='ghost'
           size='sm'
           className='text-sm'
-          onClick={() => router.push(PUBLIC_ROUTES.RESIDENTIAL_LIST)}
+          onClick={() => router.push(PUBLIC_ROUTES.LISTING_LISTING)}
         >
           {t('viewAll')}
         </Button>
@@ -70,7 +70,7 @@ const TopInterestSection = () => {
             <button
               type='button'
               className='w-full text-left relative rounded-lg overflow-hidden group/card border bg-background shadow-sm hover:shadow-md transition-all'
-              onClick={() => router.push(PUBLIC_ROUTES.RESIDENTIAL_LIST)}
+              onClick={() => router.push(PUBLIC_ROUTES.LISTING_LISTING)}
             >
               <div className='relative h-40 sm:h-44 lg:h-48 w-full'>
                 <Image

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import { useCreatePost } from '@/contexts/createPost'
 import { UploadImages } from '@/components/molecules/createPostMedia/uploadImages'
 import { CoverUpload } from '@/components/molecules/createPostMedia/coverUpload'
 import { UploadVideo } from '@/components/molecules/createPostMedia/uploadVideo'
@@ -16,6 +17,37 @@ const MediaSection: React.FC<MediaSectionProps> = ({
   showHeader = true,
 }) => {
   const t = useTranslations('createPost.sections.media')
+  const { media } = useCreatePost()
+
+  const coverImage = media.find(
+    (img) => img.mediaType === 'IMAGE' && img.isPrimary === true,
+  )
+
+  const otherImages = media.filter(
+    (img) => img.mediaType === 'IMAGE' && img.isPrimary === false,
+  )
+
+  const video = media.find(
+    (item) =>
+      item.mediaType === 'VIDEO' &&
+      item.isPrimary === true &&
+      item.sourceType === 'YOUTUBE',
+  )
+  const hasVideoYoutube = !!video
+
+  const uploadedVideo = media.find(
+    (item) =>
+      item.mediaType === 'VIDEO' &&
+      item.isPrimary === true &&
+      (item.sourceType === 'UPLOAD' || item.sourceType === 'UPLOADED'),
+  )
+  const hasUploadedVideo = !!uploadedVideo
+
+  // Show upload video section only when no YouTube video exists
+  const showUploadVideo = !hasVideoYoutube
+
+  // Show VideoUrl section only when no uploaded video exists
+  const showVideoUrl = !hasUploadedVideo
 
   return (
     <div className={className}>
@@ -29,10 +61,15 @@ const MediaSection: React.FC<MediaSectionProps> = ({
           </p>
         </div>
       )}
-      <CoverUpload />
-      <UploadImages />
-      <UploadVideo />
-      <VideoUrl />
+      <CoverUpload coverImage={coverImage} />
+      <UploadImages images={otherImages} />
+
+      {/* Video Upload Section - Show when no video exists */}
+      {showUploadVideo && <UploadVideo video={uploadedVideo} />}
+
+      {/* Video URL Section - Always show (handles YouTube display and input) */}
+      {showVideoUrl && <VideoUrl video={video} />}
+
       <PhotoGuidelines />
     </div>
   )

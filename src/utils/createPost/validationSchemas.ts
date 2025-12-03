@@ -1,10 +1,8 @@
 import * as yup from 'yup'
 
-// Note: Contact fields are handled outside of CreateListingRequest flow
-
-// Shared property info validation fields aligned with CreateListingRequest
 const getPropertyInfoFields = () => ({
-  propertyType: yup
+  categoryId: yup.string().required('propertyTypeRequired'),
+  productType: yup
     .string()
     .required('propertyTypeRequired')
     .oneOf(['APARTMENT', 'HOUSE', 'ROOM', 'STUDIO'], 'propertyTypeInvalid'),
@@ -31,18 +29,17 @@ const getPropertyInfoFields = () => ({
     .string()
     .required('priceUnitRequired')
     .oneOf(['MONTH', 'YEAR'], 'priceUnitInvalid'),
-  // AI Content
   title: yup
     .string()
     .required('listingTitleRequired')
     .trim()
-    .min(10, 'listingTitleMinLength')
-    .max(100, 'listingTitleMaxLength'),
+    .min(30, 'listingTitleMinLength')
+    .max(120, 'listingTitleMaxLength'),
   description: yup
     .string()
     .required('propertyDescriptionRequired')
     .trim()
-    .min(50, 'propertyDescriptionMinLength')
+    .min(70, 'propertyDescriptionMinLength')
     .max(2000, 'propertyDescriptionMaxLength'),
   // Utilities & Structure
   waterPrice: yup
@@ -104,47 +101,32 @@ export const getPropertyInfoSchema = () => {
 // Step 2: Media Validation Schema
 export const getMediaSchema = () => {
   return yup.object().shape({
-    assets: yup
-      .object()
-      .shape({
-        images: yup
-          .array()
-          .of(yup.string().url('imageUrlInvalid'))
-          .max(24, 'imagesTooMany')
-          .required('imagesRequired'),
-        // Accept both uploaded HTTP(S) URLs and temporary blob URLs during upload
-        video: yup
-          .string()
-          .optional()
-          .test('video-url', 'videoUrlInvalid', (val) => {
-            if (!val) return true
-            // Allow blob URLs or valid http/https URLs
-            if (val.startsWith('blob:')) return true
-            try {
-              const u = new URL(val)
-              return u.protocol === 'http:' || u.protocol === 'https:'
-            } catch {
-              return false
-            }
-          }),
-      })
-      .test('assets-required', 'imagesRequired', function (value) {
-        // Rule: if a video exists, pass; otherwise require >= 4 images
-        const hasVideo = !!value?.video && String(value.video).trim().length > 0
-        const imageCount = Array.isArray(value?.images)
-          ? value!.images!.length
-          : 0
-        return hasVideo || imageCount >= 4
+    images: yup
+      .array()
+      .of(yup.string().url('imageUrlInvalid'))
+      .min(4, 'imagesMinimum')
+      .max(24, 'imagesTooMany')
+      .required('imagesRequired'),
+    video: yup
+      .string()
+      .optional()
+      .test('video-url', 'videoUrlInvalid', (val) => {
+        if (!val) return true
+        if (val.startsWith('blob:')) return true
+        try {
+          const u = new URL(val)
+          return u.protocol === 'http:' || u.protocol === 'https:'
+        } catch {
+          return false
+        }
       }),
   })
 }
 
-// Step 3: Package Config Validation Schema
 export const getPackageConfigSchema = () => {
   return yup
     .object()
     .shape({
-      // Required: start date + duration + vipType OR membership benefit
       postDate: yup
         .string()
         .required('startDateRequired')
@@ -169,7 +151,6 @@ export const getPackageConfigSchema = () => {
         .optional(),
     })
     .test('package-required', 'packageRequired', function (value) {
-      // Require either VIP (vipType + durationDays) or a membership benefit
       const hasVip = !!value?.vipType && !!value?.durationDays
       const hasBenefit = Array.isArray(value?.benefitsMembership)
         ? value!.benefitsMembership!.length > 0
@@ -218,7 +199,6 @@ export const getCreatePostSchema = () => {
     })
 }
 
-// Field names for each step
 export const STEP_0_FIELDS = [
   'propertyType',
   'address',

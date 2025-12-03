@@ -2,6 +2,7 @@ export * from './ai.type'
 export * from './api.type'
 export * from './auth.type'
 export * from './customer.type'
+export * from './draft.type'
 export * from './media.type'
 export {
   BenefitStatus,
@@ -34,10 +35,8 @@ export * from './vip-tier.type'
 export * from './exchange-rate.type'
 export * from './address.type'
 
-// Avoid duplicate type name collisions with payment.type's PaymentProvider
 export type {
   PropertyType,
-  ListingType,
   VipType,
   PriceUnit,
   Direction,
@@ -63,7 +62,6 @@ export type {
   ListingLegacyAddress,
   ListingNewAddress,
   ListingAddress,
-  BenefitMembership,
   CreateListingRequest,
   CreateVipListingRequest,
   QuotaCheckResponse,
@@ -74,7 +72,9 @@ export type {
   ProvinceStatsItem,
   ListingFilterRequest,
   ListingSearchResponse,
-  ListingSearchApiResponse,
+  ListingSearchApiRequest,
+  ListingSearchBackendResponse,
+  MyListingsBackendResponse,
 } from './property.type'
 export {
   PRICE_UNIT,

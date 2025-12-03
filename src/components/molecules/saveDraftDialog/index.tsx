@@ -13,7 +13,6 @@ import { Button } from '@/components/atoms/button'
 interface SaveDraftDialogProps {
   open: boolean
   onSave: () => void | Promise<void>
-  onDiscard: () => void
   onCancel: () => void
   isSaving?: boolean
 }
@@ -23,7 +22,6 @@ const DIALOG_MAX_WIDTH = 'sm:max-w-[425px]'
 export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
   open,
   onSave,
-  onDiscard,
   onCancel,
   isSaving = false,
 }) => {
@@ -54,14 +52,6 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <DialogFooter className='gap-2 sm:gap-0'>
-          <Button
-            variant='outline'
-            onClick={onDiscard}
-            disabled={isSaving}
-            className='sm:mr-auto'
-          >
-            {t('discard')}
-          </Button>
           <div className='flex gap-2'>
             <Button variant='outline' onClick={onCancel} disabled={isSaving}>
               {t('cancel')}

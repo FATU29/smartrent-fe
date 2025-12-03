@@ -17,6 +17,7 @@ export interface StatsDisplayProps {
   className?: string
   animated?: boolean
   compact?: boolean
+  hideZero?: boolean // when true, omit stat items with value 0 entirely
 }
 
 export const StatsDisplay: React.FC<StatsDisplayProps> = ({
@@ -24,8 +25,18 @@ export const StatsDisplay: React.FC<StatsDisplayProps> = ({
   className,
   animated = false,
   compact = false,
+  hideZero = false,
 }) => {
   const t = useTranslations()
+
+  // Determine which items to render (filter out zeros if requested)
+  const items = React.useMemo(
+    () =>
+      hideZero ? STATS_ITEMS.filter((i) => stats[i.key] > 0) : STATS_ITEMS,
+    [hideZero, stats.views, stats.contacts, stats.customers],
+  )
+
+  if (items.length === 0) return null
 
   return (
     <div
@@ -35,7 +46,7 @@ export const StatsDisplay: React.FC<StatsDisplayProps> = ({
         className,
       )}
     >
-      {STATS_ITEMS.map((item, index) => {
+      {items.map((item, index) => {
         const Icon = item.icon
         const value = stats[item.key]
         const displayValue = compact

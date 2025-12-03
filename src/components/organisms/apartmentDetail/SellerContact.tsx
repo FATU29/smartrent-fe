@@ -6,20 +6,24 @@ import { Card, CardContent } from '@/components/atoms/card'
 import { Avatar } from '@/components/atoms/avatar'
 import { Phone } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { PUBLIC_ROUTES } from '@/constants/route'
 import { UserApi } from '@/api/types'
 
 interface SellerContactProps {
   host?: UserApi
-  onCall?: () => void
   onChatZalo?: () => void
+  onPhoneClick?: () => void
 }
 
 const SellerContact: React.FC<SellerContactProps> = ({
   host,
-  onCall,
   onChatZalo,
+  onPhoneClick,
 }) => {
   const t = useTranslations('apartmentDetail')
+
+  const [showPhone, setShowPhone] = React.useState(false)
 
   if (!host) {
     return null
@@ -35,6 +39,9 @@ const SellerContact: React.FC<SellerContactProps> = ({
   const name = `${firstName} ${lastName}`.trim() || 'Người bán'
   const phone = `${phoneCode} ${phoneNumber}`.trim()
   const zaloLink = phone ? `https://zalo.me/${phoneCode}${phoneNumber}` : ''
+  const sellerListingsUrl = `${PUBLIC_ROUTES.PROPERTIES_PREFIX}?userId=${encodeURIComponent(
+    host.userId || '',
+  )}`
 
   const getInitials = (name: string) => {
     return name
@@ -52,8 +59,13 @@ const SellerContact: React.FC<SellerContactProps> = ({
     onChatZalo?.()
   }
 
+  const handleCall = () => {
+    setShowPhone(true)
+    onPhoneClick?.()
+  }
+
   return (
-    <Card className='sticky top-4'>
+    <Card className='w-full'>
       <CardContent className='p-6 space-y-6'>
         {/* Seller Info */}
         <div className='flex items-start gap-4'>
@@ -77,31 +89,38 @@ const SellerContact: React.FC<SellerContactProps> = ({
             <Typography variant='h5' className='font-bold mb-1 truncate'>
               {name}
             </Typography>
+            {/* Link to user's listings page */}
+            <Typography variant='small' className='text-primary'>
+              <Link href={sellerListingsUrl} className='hover:underline'>
+                {t('links.viewSellerListings')}
+              </Link>
+            </Typography>
           </div>
         </div>
 
         {/* Contact Buttons */}
         <div className='space-y-3'>
           <Button
-            className='w-full bg-white hover:bg-gray-50 text-foreground border-2 border-primary h-12 font-semibold'
+            className='hover:bg-blue-100 w-full bg-white text-black border-2 border-primary h-12 font-semibold'
             onClick={handleZaloClick}
           >
             <Image
-              src='/svg/google.svg'
+              src='/svg/zalo.svg'
               alt='Zalo'
-              width={20}
-              height={20}
+              width={24}
+              height={24}
               className='mr-2'
+              color='white'
             />
             {t('actions.chatZalo')}
           </Button>
 
           <Button
-            className='w-full bg-primary hover:bg-primary/90 h-12 font-semibold'
-            onClick={onCall}
+            className='w-full bg-primary h-12 font-semibold'
+            onClick={handleCall}
           >
             <Phone className='w-5 h-5 mr-2' />
-            {phone} • {t('actions.showPhone')}
+            {showPhone ? phone : t('actions.showPhone')}
           </Button>
         </div>
       </CardContent>

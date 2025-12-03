@@ -257,8 +257,7 @@ const Combobox: React.FC<ComboboxProps> = ({
         </PopoverTrigger>
         <PopoverContent
           className={cn(
-            'w-[var(--radix-popover-trigger-width)] p-0',
-            fullWidth && 'w-full',
+            'w-[300px] overflow-auto md:w-[var(--radix-popover-trigger-width)] p-0',
           )}
           align='start'
         >

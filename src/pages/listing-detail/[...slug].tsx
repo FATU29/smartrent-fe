@@ -5,11 +5,13 @@ import type { NextPageWithLayout } from '@/types/next-page'
 import DetailPostTemplate from '@/components/templates/detailPostTemplate'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import type { ListingDetail } from '@/api/types'
+import { ListingService } from '@/api/services'
 import {
   mockListingDetail,
   mockRecentlyViewed,
   mockSimilarProperties,
 } from '@/mock'
+import { PUBLIC_ROUTES } from '@/constants'
 
 // Auth dialog handled globally by AuthDialogProvider
 
@@ -37,17 +39,21 @@ const ListingDetail: NextPageWithLayout<ListingDetailProps> = (props) => {
     onSimilarPropertyClick,
   } = props
 
-  // Use mock data if props are not provided (for development/testing)
   const listingData = listing || mockListingDetail
   const similarPropertiesData = similarProperties || mockSimilarProperties
   const recentlyViewedData = recentlyViewed || mockRecentlyViewed
 
-  const { title, description, assets } = listingData || {}
-  const { images } = assets || {}
+  const { title, description, media } = listingData || {}
+  const images =
+    media
+      ?.filter((item) => item.mediaType === 'IMAGE')
+      .map((item) => item.url) || []
 
   const handleSimilarPropertyClick = useCallback(
     (property: ListingDetail) => {
-      router.push(`/listing-detail/${property.listingId}`)
+      router.push(
+        `${PUBLIC_ROUTES.APARTMENT_DETAIL_PREFIX}/${property?.listingId}`,
+      )
       onSimilarPropertyClick?.(property)
     },
     [router, onSimilarPropertyClick],
@@ -91,4 +97,32 @@ export default ListingDetail
 
 ListingDetail.getLayout = function getLayout(page: React.ReactNode) {
   return <MainLayout activeItem='properties'>{page}</MainLayout>
+}
+
+export async function getServerSideProps(context: {
+  params?: { slug?: string[] }
+}) {
+  const slugParts = context.params?.slug || []
+  const idPart = slugParts[0]
+  const listingId = idPart && /^\d+$/.test(idPart) ? Number(idPart) : null
+
+  if (!listingId) {
+    return {
+      notFound: true,
+    }
+  }
+
+  const res = await ListingService.getById(listingId)
+
+  const listing = res?.data || null
+
+  if (!listing) {
+    return { notFound: true }
+  }
+
+  return {
+    props: {
+      listing,
+    },
+  }
 }

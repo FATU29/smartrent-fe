@@ -106,7 +106,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
 
   return (
     <nav className={cn('hidden md:flex items-center space-x-1', className)}>
-      {items.map((item) => (
+      {items?.map((item) => (
         <div key={item.id} className='relative'>
           <Button
             variant='ghost'

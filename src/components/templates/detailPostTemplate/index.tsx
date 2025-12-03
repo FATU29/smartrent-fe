@@ -16,7 +16,9 @@ import {
   usePricingHistory,
   usePriceStatistics,
 } from '@/hooks/useListings/usePricingHistory'
+import { useSimilarProperties } from '@/hooks/useListings/useSimilarProperties'
 import { mockPricingHistory } from '@/mock'
+import { PhoneClickDetailService } from '@/api/services'
 
 export interface DetailPostTemplateProps {
   listing: ListingDetail
@@ -38,44 +40,78 @@ interface Section {
 
 const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   listing,
-  similarProperties,
   recentlyViewed,
-  onCall,
   onChatZalo,
   onSimilarPropertyClick,
 }) => {
   const t = useTranslations()
 
-  const { description, assets, user, amenities, address, listingId } =
-    listing || {}
+  const {
+    description,
+    media,
+    user,
+    amenities,
+    address,
+    listingId,
+    vipType,
+    locationPricing,
+  } = listing || {}
 
-  const { images: assetsImages, video: assetsVideo } = assets || {}
+  const mediaItems = media || []
 
   const { longitude, latitude } = address || {}
 
-  // Fetch pricing history and statistics
   const { data: pricingHistoryData, isLoading: isPricingHistoryLoading } =
     usePricingHistory(listingId)
   const { data: priceStatisticsData } = usePriceStatistics(listingId)
 
-  const handleCall = () => {
-    onCall?.()
-  }
+  // Fetch similar properties based on VIP type and location
+  const {
+    data: fetchedSimilarProperties,
+    isLoading: isLoadingSimilar,
+    isError: isErrorSimilar,
+  } = useSimilarProperties({
+    listingId,
+    vipType,
+    wardId: locationPricing?.wardPricing?.locationId,
+    districtId: locationPricing?.districtPricing?.locationId,
+    provinceId: locationPricing?.provincePricing?.locationId,
+    isLegacy: true, // Based on location pricing structure
+    enabled: !!listingId && !!vipType,
+    limit: 10,
+  })
+
+  // Use fetched similar properties if available, otherwise fallback to props
+  const similarPropertiesData = fetchedSimilarProperties || []
+  const shouldShowSimilarProperties =
+    isLoadingSimilar ||
+    (similarPropertiesData && similarPropertiesData.length > 0) ||
+    isErrorSimilar
 
   const handleChatZalo = () => {
     onChatZalo?.()
+  }
+
+  const handlePhoneClick = async () => {
+    if (!listingId) return
+
+    try {
+      await PhoneClickDetailService.trackClick({ listingId })
+    } catch (error) {
+      // Silent failure - don't block user experience
+      console.error('Failed to track phone click:', error)
+    }
   }
 
   const handleSimilarPropertyClick = (property: ListingDetail) => {
     onSimilarPropertyClick?.(property)
   }
 
-  // Create address ReactNode showing both new and old addresses
   const addressNode = useMemo(() => {
     if (!address) return null
 
-    const newAddress = address.new
-    const oldAddress = address.legacy
+    const newAddress = address.fullNewAddress
+    const oldAddress = address.fullAddress
 
     if (!newAddress && !oldAddress) return null
 
@@ -99,11 +135,9 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     () => [
       {
         id: 'gallery',
-        component: (
-          <ImageSlider images={assetsImages || []} videoTour={assetsVideo} />
-        ),
+        component: <ImageSlider media={mediaItems} />,
         containerClassName: 'mb-8',
-        isVisible: assetsImages && assetsImages.length > 0,
+        isVisible: true,
       },
       {
         id: 'header',
@@ -143,8 +177,8 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
                 : mockPricingHistory
             }
             priceStatistics={priceStatisticsData}
-            newAddress={address?.new}
-            oldAddress={address?.legacy}
+            newAddress={address?.fullNewAddress}
+            oldAddress={address?.fullAddress}
           />
         ),
         containerClassName: 'mb-8',
@@ -163,19 +197,22 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
           />
         ),
         containerClassName: 'mb-8',
+        isVisible: true,
       },
       {
         id: 'similarProperties',
         component: (
           <PropertyCarousel
-            listings={similarProperties || []}
+            listings={similarPropertiesData}
             title={t('apartmentDetail.sections.similarProperties')}
             onPropertyClick={handleSimilarPropertyClick}
+            isLoading={isLoadingSimilar}
+            showEmptyState={!isLoadingSimilar && !isErrorSimilar}
           />
         ),
         containerClassName: 'mb-8',
         order: 8,
-        isVisible: similarProperties && similarProperties.length > 0,
+        isVisible: shouldShowSimilarProperties,
       },
       {
         id: 'recentlyViewed',
@@ -192,15 +229,14 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     ],
     [
       listing,
-      similarProperties,
+      similarPropertiesData,
       recentlyViewed,
       t,
       addressNode,
       pricingHistoryData,
       isPricingHistoryLoading,
       address,
-      assetsImages,
-      assetsVideo,
+      mediaItems,
       amenities,
       description,
     ],
@@ -229,14 +265,12 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
           </div>
 
           {/* Sidebar - Sticky */}
-          <div className='lg:col-span-4'>
-            <div className='sticky top-4'>
-              <SellerContact
-                host={user}
-                onCall={handleCall}
-                onChatZalo={handleChatZalo}
-              />
-            </div>
+          <div className='lg:col-span-4 lg:sticky lg:top-24 lg:self-start'>
+            <SellerContact
+              host={user}
+              onChatZalo={handleChatZalo}
+              onPhoneClick={handlePhoneClick}
+            />
           </div>
         </div>
       </div>

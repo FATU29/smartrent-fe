@@ -18,13 +18,14 @@ import PropertyTypeView from '@/components/molecules/mobileFilter/propertyTypeVi
 import { useListContext } from '@/contexts/list/useListContext'
 import AddressFilterView from '../mobileFilter/addressFilterView'
 import { useRouter } from 'next/router'
-import { pushQueryParams } from '@/utils/queryParams'
-import { PUBLIC_ROUTES } from '@/constants/route'
+import { navigateToPropertiesWithFilters } from '@/utils/filters'
 
 interface ResidentialFilterDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   title?: string
+  onApply?: () => void // Custom apply handler (e.g., navigate from homepage to /properties)
+  hideLocationFilter?: boolean // Hide address/location filters for seller page
 }
 
 type ViewKey =
@@ -45,6 +46,8 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   open,
   onOpenChange,
   title,
+  onApply: onApplyProp,
+  hideLocationFilter = false,
 }) => {
   const t = useTranslations('residentialFilter')
   const router = useRouter()
@@ -66,45 +69,15 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   const apply = () => {
     updateFilters({ ...draft, page: 1 })
 
-    const amenityIds = draft.amenityIds
+    // If custom onApply handler is provided (e.g., from homepage), use it
+    if (onApplyProp) {
+      onApplyProp()
+      onOpenChange(false)
+      return
+    }
 
-    pushQueryParams(
-      router,
-      {
-        categoryId: draft.categoryId ?? null,
-        productType: draft.productType ?? null,
-        keyword: draft.keyword || null,
-        minPrice: draft.minPrice ?? null,
-        maxPrice: draft.maxPrice ?? null,
-        minArea: draft.minArea ?? null,
-        maxArea: draft.maxArea ?? null,
-        minBedrooms: draft.minBedrooms ?? null,
-        maxBedrooms: draft.maxBedrooms ?? null,
-        bathrooms: draft.bathrooms ?? null,
-        verified: draft.verified || null,
-        direction: draft.direction ?? null,
-        electricityPrice: draft.electricityPrice ?? null,
-        waterPrice: draft.waterPrice ?? null,
-        internetPrice: draft.internetPrice ?? null,
-        serviceFee: draft.serviceFee ?? null,
-        amenityIds:
-          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
-        provinceId: draft.provinceId ?? null,
-        districtId: draft.districtId ?? null,
-        wardId: draft.wardId ?? null,
-        isLegacy: draft.isLegacy ?? null,
-        latitude: draft.latitude ?? null,
-        longitude: draft.longitude ?? null,
-        sortBy: draft.sortBy ?? null,
-        page: null,
-      },
-      {
-        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
-        shallow: false,
-        scroll: true,
-      },
-    )
-
+    // Default behavior: Navigate to /properties with current filters
+    navigateToPropertiesWithFilters(router, draft)
     onOpenChange(false)
   }
 
@@ -214,6 +187,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
             filters={draft}
             onNavigate={(v) => setView(v as ViewKey)}
             onUpdate={update}
+            hideLocationFilter={hideLocationFilter}
           />
         )
     }

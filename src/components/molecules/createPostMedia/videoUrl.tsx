@@ -12,30 +12,33 @@ import { Link2 } from 'lucide-react'
 import { isYouTube, toYouTubeEmbed } from '@/utils/video/url'
 import { MediaService } from '@/api/services'
 import { toast } from 'sonner'
+import type { MediaItem } from '@/api/types/property.type'
 
-const VideoUrl: React.FC = () => {
+interface VideoUrlProps {
+  video?: Partial<MediaItem>
+}
+
+const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
   const t = useTranslations('createPost.sections.media')
-  const { mediaUrls, updateMediaUrls, updateMediaIds } = useCreatePost()
+  const { updateMedia, resetMedia } = useCreatePost()
 
-  const videoUrl = mediaUrls?.video || ''
+  const isExternalYouTubeVideo = video?.sourceType === 'YOUTUBE'
+  const videoUrl = video?.url || ''
   const [url, setUrl] = useState<string>('')
   const [saving, setSaving] = useState(false)
 
-  // Sync url state with videoUrl (only if not blob)
   React.useEffect(() => {
-    if (videoUrl && !videoUrl.startsWith('blob:')) {
+    if (videoUrl && isExternalYouTubeVideo) {
       setUrl(videoUrl)
     } else if (!videoUrl) {
       setUrl('')
     }
-  }, [videoUrl])
+  }, [videoUrl, isExternalYouTubeVideo])
 
-  // Determine video state
   const isBlobUrl = videoUrl.startsWith('blob:')
   const isUploadedVideo =
-    videoUrl &&
-    (isBlobUrl || (videoUrl.startsWith('http') && !isYouTube(videoUrl)))
-  const hasExternalVideo = videoUrl && isYouTube(videoUrl)
+    video?.sourceType === 'UPLOAD' && videoUrl && !isBlobUrl
+  const hasExternalVideo = videoUrl && isExternalYouTubeVideo
 
   const onSave = async () => {
     if (!url || url.trim().length === 0) return
@@ -47,17 +50,18 @@ const VideoUrl: React.FC = () => {
     }
     try {
       setSaving(true)
-      const res = await MediaService.saveExternal({ url: url.trim() })
+      const res = await MediaService.saveExternal({
+        url: url.trim(),
+        isPrimary: true,
+      })
       if (res?.success && res?.data) {
-        updateMediaUrls({ video: res.data.url })
-        // Save video mediaId (index 0 in mediaIds array) for external video
-        const mediaId = res.data.mediaId
-        if (mediaId) {
-          const videoMediaId = Number(mediaId)
-          if (!isNaN(videoMediaId) && videoMediaId > 0) {
-            updateMediaIds({ videoMediaId })
-          }
-        }
+        updateMedia({
+          url: res.data.url,
+          mediaId: res.data.mediaId ? Number(res.data.mediaId) : undefined,
+          mediaType: 'VIDEO',
+          isPrimary: true,
+          sourceType: 'YOUTUBE',
+        })
         toast.success(t('video.external.success'))
       } else {
         toast.error(res?.message || t('video.external.error'))
@@ -70,10 +74,8 @@ const VideoUrl: React.FC = () => {
   }
 
   const handleRemove = () => {
-    updateMediaUrls({ video: undefined })
-    // Clear video mediaId
-    updateMediaIds({ videoMediaId: undefined })
     setUrl('')
+    resetMedia()
   }
 
   return (
@@ -88,7 +90,7 @@ const VideoUrl: React.FC = () => {
           <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700'>
             <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>
               {t('video.upload.uploadedNote') ||
-                'Bạn đã tải video lên. Xóa video để nhập link YouTube/TikTok.'}
+                'Bạn đã tải video lên. Xóa video để nhập link YouTube.'}
             </p>
           </div>
         ) : hasExternalVideo ? (

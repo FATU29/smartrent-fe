@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { useVipTiers } from '@/hooks/useVipTiers'
 import { useAuthContext } from '@/contexts/auth'
+import { useMyMembership } from '@/hooks/useMembership'
 import {
   Card,
   CardContent,
@@ -34,6 +35,7 @@ import {
   getProductTypeTranslationKey,
 } from '@/utils/property'
 import { AMENITIES_CONFIG } from '@/constants/amenities'
+import { toYouTubeEmbed } from '@/utils/video/url'
 
 interface OrderSummarySectionProps {
   className?: string
@@ -46,20 +48,44 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
   const tCommon = useTranslations('common')
   const tCreatePost = useTranslations('createPost')
   const tNormal = useTranslations()
-  const { propertyInfo, mediaUrls } = useCreatePost()
+  const { propertyInfo, media, composedLegacyAddress, composedNewAddress } =
+    useCreatePost()
   const { data: vipTiers = [] } = useVipTiers()
   const { user } = useAuthContext()
+  const { data: myMembership } = useMyMembership(user?.userId)
 
-  // Resolve selected VIP tier from vipType
+  const video = media.find((m) => m.mediaType === 'VIDEO')
+  const videoUrl = video?.url
+  const isYouTubeVideo = video?.sourceType === 'YOUTUBE'
+  const embedUrl = videoUrl && isYouTubeVideo ? toYouTubeEmbed(videoUrl) : null
+
+  const coverImage = media.find(
+    (m) => m.mediaType === 'IMAGE' && m.isPrimary,
+  )?.url
+
   const selectedTier = vipTiers.find((t) => t.tierCode === propertyInfo.vipType)
 
-  const packageName = selectedTier?.tierName || t('notSelected')
-
-  // Compute total price based on durationDays using API-provided tier pricing
   const usingMembershipQuota = !!propertyInfo.useMembershipQuota
-  const usingPromotion = Array.isArray(propertyInfo.benefitsMembership)
-    ? propertyInfo.benefitsMembership.length > 0
+  const usingPromotion = Array.isArray(propertyInfo?.benefitIds)
+    ? propertyInfo?.benefitIds?.length > 0
     : false
+
+  const selectedBenefit = React.useMemo(() => {
+    if (!myMembership?.benefits || !propertyInfo.benefitIds?.length) {
+      return null
+    }
+    // Get the first benefit ID from the selected benefits
+    const benefitId = propertyInfo.benefitIds[0]
+    // Find the matching user benefit
+    return (
+      myMembership.benefits.find((b) => b.userBenefitId === benefitId) || null
+    )
+  }, [myMembership, propertyInfo.benefitIds])
+
+  const packageName =
+    usingMembershipQuota || usingPromotion
+      ? selectedBenefit?.benefitNameDisplay || t('freePosting')
+      : selectedTier?.tierName || t('notSelected')
 
   // Price calculation - no VAT or discount
   const totalPrice = (() => {
@@ -120,37 +146,46 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                 </CardTitle>
               </CardHeader>
               <CardContent className='space-y-4'>
-                {/* Media Section - Video or Cover Image - Fixed responsive */}
-                {(mediaUrls?.video ||
-                  (mediaUrls?.images && mediaUrls.images.length > 0)) && (
-                  <div className='relative w-full max-w-full rounded-lg overflow-hidden bg-muted'>
-                    {mediaUrls?.video ? (
-                      <div className='relative w-full rounded-lg overflow-hidden bg-black'>
-                        <video
-                          src={mediaUrls.video}
-                          controls
-                          className='w-full max-h-96 object-contain'
-                        />
+                {/* Media Section - Video Priority or Cover Image - Responsive */}
+                {(videoUrl || coverImage) && (
+                  <div className='relative w-full rounded-lg overflow-hidden bg-muted'>
+                    {videoUrl ? (
+                      // Video takes priority
+                      <div className='relative w-full aspect-video bg-black rounded-lg overflow-hidden'>
+                        {isYouTubeVideo && embedUrl ? (
+                          // YouTube video - use iframe
+                          <iframe
+                            src={embedUrl}
+                            title='YouTube video player'
+                            className='w-full h-full'
+                            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                            allowFullScreen
+                          />
+                        ) : (
+                          // Uploaded video - use video tag
+                          <video
+                            src={videoUrl}
+                            controls
+                            className='w-full h-full object-contain'
+                            preload='metadata'
+                          />
+                        )}
                       </div>
-                    ) : mediaUrls?.images?.[0] ? (
-                      <div
-                        className='relative w-full'
-                        style={{
-                          aspectRatio: '16/9',
-                          maxHeight: '400px',
-                        }}
-                      >
+                    ) : (
+                      // Fallback to cover image
+                      <div className='relative w-full aspect-video'>
                         <Image
-                          src={mediaUrls.images[0]}
+                          src={coverImage as string}
                           alt={tCreatePost(
                             'sections.propertyInfo.propertyCover',
                           )}
                           fill
                           className='object-cover'
-                          sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                          sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px'
+                          priority
                         />
                       </div>
-                    ) : null}
+                    )}
                   </div>
                 )}
 
@@ -237,44 +272,32 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                   </div>
 
                   {/* Address */}
-                  {((propertyInfo as unknown as { fullAddressNew?: string })
-                    .fullAddressNew ||
-                    propertyInfo.address?.legacy) && (
+                  {(composedNewAddress || composedLegacyAddress) && (
                     <>
                       <Separator />
                       <div className='flex items-start gap-2'>
                         <MapPin className='w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0' />
                         <div className='min-w-0 flex-1 space-y-1'>
-                          {(
-                            propertyInfo as unknown as {
-                              fullAddressNew?: string
-                            }
-                          ).fullAddressNew && (
+                          {composedNewAddress && (
                             <Typography className='text-sm break-words'>
                               <span className='font-medium'>
                                 {tCreatePost(
                                   'sections.propertyInfo.address.structureType.newShort',
                                 )}
                                 :
-                              </span>
-                              {
-                                (
-                                  propertyInfo as unknown as {
-                                    fullAddressNew?: string
-                                  }
-                                ).fullAddressNew
-                              }
+                              </span>{' '}
+                              {composedNewAddress}
                             </Typography>
                           )}
-                          {propertyInfo.address?.legacy && (
+                          {composedLegacyAddress && (
                             <Typography className='text-xs text-muted-foreground break-words'>
                               <span className='font-medium'>
                                 {tCreatePost(
                                   'sections.propertyInfo.address.structureType.legacyShort',
                                 )}
                                 :
-                              </span>
-                              {String(propertyInfo.address.legacy)}
+                              </span>{' '}
+                              {composedLegacyAddress}
                             </Typography>
                           )}
                         </div>
