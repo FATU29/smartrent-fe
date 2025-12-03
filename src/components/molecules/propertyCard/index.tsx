@@ -15,7 +15,6 @@ import { basePath, DEFAULT_IMAGE } from '@/constants'
 import { useTranslations } from 'next-intl'
 import {
   Heart,
-  MapPin,
   Bed,
   Bath,
   Square,
@@ -479,12 +478,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           )}
 
           <div className='flex items-start gap-2'>
-            <MapPin
-              className={classNames(
-                'flex-shrink-0 mt-0.5',
-                isCompact ? 'w-4 h-4' : 'w-3 h-3',
-              )}
-            />
             <div className='flex-1 min-w-0'>
               <ul className='list-disc list-inside space-y-1'>
                 {newAddress && (
