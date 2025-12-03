@@ -5,45 +5,58 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { PhoneClickDetailService } from '@/api/services'
-import {
-  transformToCustomers,
-  transformToListingsWithCustomers,
-} from '@/utils/phoneClickDetailTransform'
-import type { Customer, ListingWithCustomers } from '@/api/types/customer.type'
 import type { PhoneClickDetail } from '@/api/types/phone-click-detail.type'
 
 // Query keys
 export const phoneClickDetailKeys = {
   all: ['phoneClickDetails'] as const,
   myListings: () => [...phoneClickDetailKeys.all, 'myListings'] as const,
-  byListing: (listingId: string | number) =>
-    [...phoneClickDetailKeys.all, 'listing', listingId] as const,
+  byListing: (listingId: string | number, page?: number, size?: number) =>
+    [...phoneClickDetailKeys.all, 'listing', listingId, page, size] as const,
   myClicks: () => [...phoneClickDetailKeys.all, 'myClicks'] as const,
   stats: (listingId: string | number) =>
     [...phoneClickDetailKeys.all, 'stats', listingId] as const,
 }
 
-interface UseMyCustomersOptions {
-  initialData?: Customer[]
+interface UsePhoneClicksOptions {
+  initialData?: PhoneClickDetail[]
   enabled?: boolean
-}
-
-interface UseMyListingsOptions {
-  initialData?: ListingWithCustomers[]
-  enabled?: boolean
+  searchTitle?: string
+  page?: number
+  size?: number
 }
 
 /**
- * Query hook for fetching customers from phone clicks
- * Returns only customers data
+ * Query hook for fetching phone clicks - returns raw PhoneClickDetail[]
+ * Uses getMyListingsClicks for all data, searchMyListingsClicks for search
  */
-export const useMyCustomers = (options: UseMyCustomersOptions = {}) => {
-  const { initialData, enabled = true } = options
+export const useMyPhoneClicks = (options: UsePhoneClicksOptions = {}) => {
+  const {
+    initialData,
+    enabled = true,
+    searchTitle = '',
+    page = 1,
+    size = 100,
+  } = options
+
+  const hasSearch = searchTitle.trim().length > 0
 
   return useQuery({
-    queryKey: [...phoneClickDetailKeys.myListings(), 'customers'],
+    queryKey: [...phoneClickDetailKeys.myListings(), searchTitle, page, size],
     queryFn: async () => {
-      const response = await PhoneClickDetailService.getMyListingsClicks()
+      let response
+
+      if (hasSearch) {
+        // Use search API when there's a search query
+        response = await PhoneClickDetailService.searchMyListingsClicks({
+          title: searchTitle,
+          page,
+          size,
+        })
+      } else {
+        // Use regular API for getting all data
+        response = await PhoneClickDetailService.getMyListingsClicks(page, size)
+      }
 
       if (!response.data || response.code !== '999999') {
         throw new Error(
@@ -51,12 +64,8 @@ export const useMyCustomers = (options: UseMyCustomersOptions = {}) => {
         )
       }
 
-      const phoneClicks: PhoneClickDetail[] = response.data || []
-
-      // Transform to Customer format
-      const customers = transformToCustomers(phoneClicks)
-
-      return customers
+      // Response structure: { page, size, totalElements, totalPages, data: [...] }
+      return response.data.data || []
     },
     placeholderData: initialData,
     staleTime: 30 * 1000, // Consider data fresh for 30 seconds
@@ -66,17 +75,21 @@ export const useMyCustomers = (options: UseMyCustomersOptions = {}) => {
 }
 
 /**
- * Query hook for fetching listings from phone clicks
- * Returns only listings data
- * Only fetches when enabled (e.g., when listings tab is active)
+ * Query hook for fetching phone clicks by listing ID with pagination
  */
-export const useMyListings = (options: UseMyListingsOptions = {}) => {
-  const { initialData, enabled = false } = options
-
+export const usePhoneClicksByListing = (
+  listingId: string | number,
+  page: number = 1,
+  size: number = 10,
+) => {
   return useQuery({
-    queryKey: [...phoneClickDetailKeys.myListings(), 'listings'],
+    queryKey: phoneClickDetailKeys.byListing(listingId, page, size),
     queryFn: async () => {
-      const response = await PhoneClickDetailService.getMyListingsClicks()
+      const response = await PhoneClickDetailService.getByListing(
+        listingId,
+        page,
+        size,
+      )
 
       if (!response.data || response.code !== '999999') {
         throw new Error(
@@ -84,36 +97,7 @@ export const useMyListings = (options: UseMyListingsOptions = {}) => {
         )
       }
 
-      const phoneClicks: PhoneClickDetail[] = response.data || []
-
-      // Transform to ListingWithCustomers format
-      const listings = transformToListingsWithCustomers(phoneClicks)
-
-      return listings
-    },
-    placeholderData: initialData,
-    staleTime: 30 * 1000, // Consider data fresh for 30 seconds
-    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
-    enabled,
-  })
-}
-
-/**
- * Query hook for fetching phone clicks by listing ID
- */
-export const usePhoneClicksByListing = (listingId: string | number) => {
-  return useQuery({
-    queryKey: phoneClickDetailKeys.byListing(listingId),
-    queryFn: async () => {
-      const response = await PhoneClickDetailService.getByListing(listingId)
-
-      if (!response.data || response.code !== '999999') {
-        throw new Error(
-          response.message || 'Failed to fetch phone click details',
-        )
-      }
-
-      return response.data || []
+      return response.data.data || []
     },
     enabled: !!listingId,
     staleTime: 30 * 1000,

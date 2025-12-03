@@ -1,5 +1,11 @@
 import React from 'react'
-import { Dialog, DialogContent } from '@/components/atoms/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  VisuallyHidden,
+} from '@/components/atoms/dialog'
 import CustomerDetailPanel from '@/components/organisms/customerManagement/customerDetailPanel'
 import ListingDetailPanel from '@/components/organisms/customerManagement/listingDetailPanel'
 import { Customer, ListingWithCustomers } from '@/api/types/customer.type'
@@ -27,6 +33,16 @@ const MobileDetailDialog: React.FC<MobileDetailDialogProps> = ({
         className='h-screen max-w-full w-full p-0 rounded-none lg:hidden border-none'
         showCloseButton={true}
       >
+        <VisuallyHidden>
+          <DialogTitle>
+            {activeTab === 'customers' ? 'Customer Details' : 'Listing Details'}
+          </DialogTitle>
+          <DialogDescription>
+            {activeTab === 'customers'
+              ? 'View customer information and interactions'
+              : 'View listing information and customer interactions'}
+          </DialogDescription>
+        </VisuallyHidden>
         <div className='h-full overflow-hidden'>
           {activeTab === 'customers' && selectedCustomer ? (
             <CustomerDetailPanel customer={selectedCustomer} />

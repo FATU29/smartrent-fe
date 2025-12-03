@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -9,35 +9,36 @@ import { Button } from '@/components/atoms/button'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { Link2 } from 'lucide-react'
-import VideoPlayerFull from '@/components/molecules/videoPlayerFull'
-import { isYouTube } from '@/utils/video/url'
+import { isYouTube, toYouTubeEmbed } from '@/utils/video/url'
 import { MediaService } from '@/api/services'
 import { toast } from 'sonner'
+import type { MediaItem } from '@/api/types/property.type'
 
-const VideoUrl: React.FC = () => {
+interface VideoUrlProps {
+  video?: Partial<MediaItem>
+}
+
+const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
   const t = useTranslations('createPost.sections.media')
-  const { propertyInfo, updatePropertyInfo } = useCreatePost()
-  const initial = useMemo(() => {
-    const url = propertyInfo.videoUrl || ''
-    const isBlob = url?.startsWith('blob:')
-    return isBlob ? '' : url
-  }, [propertyInfo.videoUrl])
+  const { updateMedia, resetMedia } = useCreatePost()
 
-  const [url, setUrl] = useState<string>(initial)
+  const isExternalYouTubeVideo = video?.sourceType === 'YOUTUBE'
+  const videoUrl = video?.url || ''
+  const [url, setUrl] = useState<string>('')
   const [saving, setSaving] = useState(false)
 
-  // Helpers
-  // Check if there's already an uploaded video (blob or http uploaded file)
-  const hasUploadedVideo = Boolean(
-    propertyInfo.videoUrl &&
-      (propertyInfo.videoUrl.startsWith('blob:') ||
-        (propertyInfo.videoUrl.startsWith('http') &&
-          !isYouTube(propertyInfo.videoUrl))),
-  )
-  // Check if there's an external video link (YouTube only)
-  const hasExternalVideo = Boolean(
-    propertyInfo.videoUrl && isYouTube(propertyInfo.videoUrl),
-  )
+  React.useEffect(() => {
+    if (videoUrl && isExternalYouTubeVideo) {
+      setUrl(videoUrl)
+    } else if (!videoUrl) {
+      setUrl('')
+    }
+  }, [videoUrl, isExternalYouTubeVideo])
+
+  const isBlobUrl = videoUrl.startsWith('blob:')
+  const isUploadedVideo =
+    video?.sourceType === 'UPLOAD' && videoUrl && !isBlobUrl
+  const hasExternalVideo = videoUrl && isExternalYouTubeVideo
 
   const onSave = async () => {
     if (!url || url.trim().length === 0) return
@@ -49,9 +50,18 @@ const VideoUrl: React.FC = () => {
     }
     try {
       setSaving(true)
-      const res = await MediaService.saveExternal({ url: url.trim() })
+      const res = await MediaService.saveExternal({
+        url: url.trim(),
+        isPrimary: true,
+      })
       if (res?.success && res?.data) {
-        updatePropertyInfo({ videoUrl: res.data.url })
+        updateMedia({
+          url: res.data.url,
+          mediaId: res.data.mediaId ? Number(res.data.mediaId) : undefined,
+          mediaType: 'VIDEO',
+          isPrimary: true,
+          sourceType: 'YOUTUBE',
+        })
         toast.success(t('video.external.success'))
       } else {
         toast.error(res?.message || t('video.external.error'))
@@ -64,8 +74,8 @@ const VideoUrl: React.FC = () => {
   }
 
   const handleRemove = () => {
-    updatePropertyInfo({ videoUrl: '' })
     setUrl('')
+    resetMedia()
   }
 
   return (
@@ -76,16 +86,23 @@ const VideoUrl: React.FC = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {hasUploadedVideo ? (
+        {isUploadedVideo ? (
           <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700'>
             <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>
               {t('video.upload.uploadedNote') ||
-                'Bạn đã tải video lên. Xóa video để nhập link YouTube/TikTok.'}
+                'Bạn đã tải video lên. Xóa video để nhập link YouTube.'}
             </p>
           </div>
         ) : hasExternalVideo ? (
           <div className='space-y-3'>
-            <VideoPlayerFull src={propertyInfo.videoUrl!} aspectRatio='16/9' />
+            <div className='relative w-full aspect-video rounded-lg overflow-hidden bg-black'>
+              <iframe
+                src={toYouTubeEmbed(videoUrl) || ''}
+                className='w-full h-full'
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                allowFullScreen
+              />
+            </div>
             <Button variant='outline' onClick={handleRemove} className='w-full'>
               Xóa video
             </Button>
@@ -128,7 +145,14 @@ const VideoUrl: React.FC = () => {
             {/* Live preview when input is a YouTube URL */}
             {url && isYouTube(url) && (
               <div className='mt-3'>
-                <VideoPlayerFull src={url} aspectRatio='16/9' />
+                <div className='relative w-full aspect-video rounded-lg overflow-hidden bg-black'>
+                  <iframe
+                    src={toYouTubeEmbed(url) || ''}
+                    className='w-full h-full'
+                    allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                    allowFullScreen
+                  />
+                </div>
               </div>
             )}
           </>

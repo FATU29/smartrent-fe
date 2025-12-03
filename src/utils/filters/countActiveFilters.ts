@@ -1,36 +1,12 @@
-import type { ListFilters } from '@/contexts/list/index.type'
+import type { ListingFilterRequest } from '@/api/types'
 
-/**
- * Count active filters, excluding pagination and internal fields
- * Also respects address structure type to count only visible fields
- */
-export function countActiveFilters(filters: Partial<ListFilters>): number {
-  const isLegacyMode = filters.addressStructureType !== 'new'
-
+// Count active filters based strictly on canonical ListingFilterRequest fields
+export function countActiveFilters(
+  filters: Partial<ListingFilterRequest>,
+): number {
   return Object.entries(filters).filter(([key, value]) => {
-    // Exclude pagination and internal fields
-    if (
-      [
-        'search',
-        'page',
-        'perPage',
-        'addressStructureType',
-        'searchAddress',
-        'addressEdited',
-      ].includes(key)
-    ) {
-      return false
-    }
-
-    // Exclude opposite address structure fields so only visible ones count
-    if (isLegacyMode && ['newProvinceCode', 'newWardCode'].includes(key)) {
-      return false
-    }
-    if (!isLegacyMode && ['province', 'district', 'ward'].includes(key)) {
-      return false
-    }
-
-    // Standard counting rules
+    // Exclude pagination & keyword
+    if (['keyword', 'page', 'size'].includes(key)) return false
     if (Array.isArray(value)) return value.length > 0
     if (typeof value === 'boolean') return value
     return value !== undefined && value !== '' && value !== null

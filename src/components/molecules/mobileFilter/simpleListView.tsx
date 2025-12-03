@@ -1,14 +1,18 @@
 import React from 'react'
 import RadioRow from '@/components/atoms/mobileFilter/radioRow'
 import { useTranslations } from 'next-intl'
+import { ListingFilterRequest, PriceType } from '@/api/types'
 
-// SimpleListView
-// Generic radio list for enumerated single-value filters (utilities pricing responsibility).
-// 'any' option maps to undefined to simplify active filter counting & API payload.
+type UtilityPriceField =
+  | 'electricityPrice'
+  | 'waterPrice'
+  | 'internetPrice'
+  | 'serviceFee'
+
 interface SimpleListViewProps {
-  type: 'electricityPrice' | 'waterPrice' | 'internetPrice'
-  value?: string
-  onChange: (val?: string) => void
+  type: UtilityPriceField
+  value?: ListingFilterRequest[UtilityPriceField]
+  onChange: (val?: ListingFilterRequest[UtilityPriceField]) => void
 }
 
 const SimpleListView: React.FC<SimpleListViewProps> = ({
@@ -18,38 +22,38 @@ const SimpleListView: React.FC<SimpleListViewProps> = ({
 }) => {
   const t = useTranslations('residentialFilter')
 
-  const keyMap: Record<string, string[]> = {
-    electricityPrice: ['any', 'negotiable', 'owner', 'provider'],
-    waterPrice: ['any', 'negotiable', 'owner', 'provider'],
-    internetPrice: ['any', 'negotiable', 'owner'],
-  }
+  const options: Array<{ key: string; value?: PriceType }> = [
+    { key: 'negotiable', value: 'NEGOTIABLE' },
+    { key: 'owner', value: 'SET_BY_OWNER' },
+    { key: 'provider', value: 'PROVIDER_RATE' },
+  ]
 
   const titleKey: Record<string, string> = {
     electricityPrice: 'utilitiesPrice.electricity.title',
     waterPrice: 'utilitiesPrice.water.title',
     internetPrice: 'utilitiesPrice.internet.title',
+    serviceFee: 'utilitiesPrice.serviceFee.title',
   }
-
-  const prefix =
-    type === 'electricityPrice'
-      ? 'utilitiesPrice.electricity'
-      : type === 'waterPrice'
-        ? 'utilitiesPrice.water'
-        : 'utilitiesPrice.internet'
 
   return (
     <div className='pb-20'>
       <div className='text-sm font-medium p-4'>
         {t(titleKey[type] as string)}
       </div>
-      {keyMap[type].map((k) => (
-        <RadioRow
-          key={k}
-          label={t(`${prefix}.${k}` as string)}
-          selected={(value ?? 'any') === k}
-          onClick={() => onChange(k === 'any' ? undefined : k)}
-        />
-      ))}
+      {options.map((opt) => {
+        const baseKey =
+          type === 'serviceFee'
+            ? 'utilitiesPrice.serviceFee'
+            : `utilitiesPrice.${type === 'electricityPrice' ? 'electricity' : type === 'waterPrice' ? 'water' : 'internet'}`
+        return (
+          <RadioRow
+            key={opt.key}
+            label={t(`${baseKey}.${opt.key}` as string)}
+            selected={value === opt.value}
+            onClick={() => onChange(opt.value)}
+          />
+        )
+      })}
     </div>
   )
 }

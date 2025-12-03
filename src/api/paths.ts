@@ -1,4 +1,8 @@
 export const PATHS = {
+  // Category endpoints
+  CATEGORY: {
+    ACTIVE: '/v1/categories/active',
+  },
   // AI endpoints
   AI: {
     LISTING_DESCRIPTION: '/v1/ai/listing-description',
@@ -41,9 +45,17 @@ export const PATHS = {
   LISTING: {
     LIST: '/v1/listings',
     SEARCH: '/v1/listings/search',
+    MY_LISTINGS: '/v1/listings/my-listings',
+    MY_DRAFTS: '/v1/listings/my-drafts',
     BY_ID: '/v1/listings/:id',
     CREATE: '/v1/listings',
     CREATE_VIP: '/v1/listings/vip',
+    // Draft endpoints
+    CREATE_DRAFT: '/v1/listings/draft',
+    GET_DRAFT: '/v1/listings/draft/:draftId',
+    UPDATE_DRAFT: '/v1/listings/draft/:draftId',
+    DELETE_DRAFT: '/v1/listings/draft/:draftId',
+    PUBLISH_DRAFT: '/v1/listings/draft/:draftId/publish',
     UPDATE: '/v1/listings/:id',
     DELETE: '/v1/listings/:id',
     ADMIN_DETAIL: '/v1/listings/:id/admin',
@@ -125,6 +137,7 @@ export const PATHS = {
     SUGGEST: '/v1/addresses/suggest',
     NEARBY: '/v1/addresses/nearby',
     HEALTH: '/v1/addresses/health',
+    GEOCODE: '/v1/addresses/geocode',
     // Legacy structure (63 provinces)
     PROVINCES: '/v1/addresses/provinces',
     PROVINCE_BY_ID: '/v1/addresses/provinces/:provinceId',
@@ -152,6 +165,8 @@ export const PATHS = {
     // Conversion
     CONVERT_NEW_TO_LEGACY: '/v1/addresses/convert/new-to-legacy',
     CONVERT_LEGACY_TO_NEW: '/v1/addresses/convert/legacy-to-new',
+    // Merge history
+    MERGE_HISTORY: '/v1/addresses/merge-history',
   },
 
   // Phone Click Detail endpoints
@@ -161,5 +176,12 @@ export const PATHS = {
     MY_CLICKS: '/v1/phone-click-details/my-clicks',
     LISTING_STATS: '/v1/phone-click-details/listing/:listingId/stats',
     MY_LISTINGS: '/v1/phone-click-details/my-listings',
+    SEARCH_MY_LISTINGS: '/v1/phone-click-details/my-listings/search',
+  },
+
+  // Exchange Rate endpoints
+  EXCHANGE_RATE: {
+    LATEST: '/v1/exchange-rates/latest',
+    VND_TO_USD: '/v1/exchange-rates/vnd-to-usd',
   },
 }

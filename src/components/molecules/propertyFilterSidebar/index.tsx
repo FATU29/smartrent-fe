@@ -1,10 +1,12 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/router'
 import { useListContext } from '@/contexts/list'
-import { ListFilters } from '@/contexts/list/index.type'
 import { Typography } from '@/components/atoms/typography'
 import { Checkbox } from '@/components/atoms/checkbox'
 import { Card } from '@/components/atoms/card'
+import { pushQueryParams } from '@/utils/queryParams'
+import { PUBLIC_ROUTES } from '@/constants/route'
 
 interface FilterOption {
   label: string
@@ -15,11 +17,11 @@ interface FilterOption {
 
 const PropertyFilterSidebar: React.FC = () => {
   const t = useTranslations('propertiesPage.filter')
-  const { filters, handleUpdateFilter } = useListContext()
+  const router = useRouter()
+  const { filters, updateFilters } = useListContext()
 
   const priceOptions: FilterOption[] = [
-    { label: t('price.negotiable'), value: 'negotiable' },
-    { label: t('price.under1M'), value: 'under1M', max: 1000000 },
+    { label: t('price.under1M'), value: 'under1M', min: 0, max: 1000000 },
     { label: t('price.1to3M'), value: '1to3M', min: 1000000, max: 3000000 },
     { label: t('price.3to5M'), value: '3to5M', min: 3000000, max: 5000000 },
     { label: t('price.5to10M'), value: '5to10M', min: 5000000, max: 10000000 },
@@ -45,7 +47,7 @@ const PropertyFilterSidebar: React.FC = () => {
   ]
 
   const areaOptions: FilterOption[] = [
-    { label: t('area.under30'), value: 'under30', max: 30 },
+    { label: t('area.under30'), value: 'under30', min: 0, max: 30 },
     { label: t('area.30to50'), value: '30to50', min: 30, max: 50 },
     { label: t('area.50to80'), value: '50to80', min: 50, max: 80 },
     { label: t('area.80to100'), value: '80to100', min: 80, max: 100 },
@@ -58,61 +60,178 @@ const PropertyFilterSidebar: React.FC = () => {
   ]
 
   const bedroomOptions: FilterOption[] = [
-    { label: t('bedroom.1'), value: 1 },
-    { label: t('bedroom.2'), value: 2 },
-    { label: t('bedroom.3'), value: 3 },
-    { label: t('bedroom.4'), value: 4 },
-    { label: t('bedroom.5plus'), value: 5 },
+    { label: t('bedroom.1'), value: '1', min: 1, max: 1 },
+    { label: t('bedroom.2to3'), value: '2to3', min: 2, max: 3 },
+    { label: t('bedroom.4to5'), value: '4to5', min: 4, max: 5 },
+    { label: t('bedroom.6plus'), value: '6plus', min: 6, max: undefined },
   ]
 
   const handlePriceChange = (option: FilterOption, checked: boolean) => {
-    if (checked) {
-      handleUpdateFilter({
-        minPrice: option.min,
-        maxPrice: option.max,
-      } as Partial<ListFilters>)
-    } else {
-      // Uncheck - clear price filter
-      handleUpdateFilter({
-        minPrice: undefined,
-        maxPrice: undefined,
-      } as Partial<ListFilters>)
-    }
+    const amenityIds = filters.amenityIds
+    const newFilters = checked
+      ? {
+          ...filters,
+          minPrice: option.min,
+          maxPrice: option.max,
+          page: 1,
+        }
+      : {
+          ...filters,
+          minPrice: undefined,
+          maxPrice: undefined,
+          page: 1,
+        }
+
+    updateFilters(newFilters)
+
+    pushQueryParams(
+      router,
+      {
+        categoryId: newFilters.categoryId ?? null,
+        productType: newFilters.productType ?? null,
+        keyword: newFilters.keyword || null,
+        minPrice: newFilters.minPrice ?? null,
+        maxPrice: newFilters.maxPrice ?? null,
+        minArea: newFilters.minArea ?? null,
+        maxArea: newFilters.maxArea ?? null,
+        minBedrooms: newFilters.minBedrooms ?? null,
+        maxBedrooms: newFilters.maxBedrooms ?? null,
+        bathrooms: newFilters.bathrooms ?? null,
+        verified: newFilters.verified || null,
+        direction: newFilters.direction ?? null,
+        electricityPrice: newFilters.electricityPrice ?? null,
+        waterPrice: newFilters.waterPrice ?? null,
+        internetPrice: newFilters.internetPrice ?? null,
+        amenityIds:
+          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
+        provinceId: newFilters.provinceId ?? null,
+        districtId: newFilters.districtId ?? null,
+        wardId: newFilters.wardId ?? null,
+        isLegacy: newFilters.isLegacy ?? null,
+        latitude: newFilters.latitude ?? null,
+        longitude: newFilters.longitude ?? null,
+        sortBy: newFilters.sortBy ?? null,
+        page: null,
+      },
+      {
+        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+        shallow: false,
+        scroll: true,
+      },
+    )
   }
 
   const handleAreaChange = (option: FilterOption, checked: boolean) => {
-    if (checked) {
-      handleUpdateFilter({
-        minArea: option.min,
-        maxArea: option.max,
-      } as Partial<ListFilters>)
-    } else {
-      // Uncheck - clear area filter
-      handleUpdateFilter({
-        minArea: undefined,
-        maxArea: undefined,
-      } as Partial<ListFilters>)
-    }
+    const amenityIds = filters.amenityIds
+    const newFilters = checked
+      ? {
+          ...filters,
+          minArea: option.min,
+          maxArea: option.max,
+          page: 1,
+        }
+      : {
+          ...filters,
+          minArea: undefined,
+          maxArea: undefined,
+          page: 1,
+        }
+
+    updateFilters(newFilters)
+
+    pushQueryParams(
+      router,
+      {
+        categoryId: newFilters.categoryId ?? null,
+        productType: newFilters.productType ?? null,
+        keyword: newFilters.keyword || null,
+        minPrice: newFilters.minPrice ?? null,
+        maxPrice: newFilters.maxPrice ?? null,
+        minArea: newFilters.minArea ?? null,
+        maxArea: newFilters.maxArea ?? null,
+        minBedrooms: newFilters.minBedrooms ?? null,
+        maxBedrooms: newFilters.maxBedrooms ?? null,
+        bathrooms: newFilters.bathrooms ?? null,
+        verified: newFilters.verified || null,
+        direction: newFilters.direction ?? null,
+        electricityPrice: newFilters.electricityPrice ?? null,
+        waterPrice: newFilters.waterPrice ?? null,
+        internetPrice: newFilters.internetPrice ?? null,
+        amenityIds:
+          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
+        provinceId: newFilters.provinceId ?? null,
+        districtId: newFilters.districtId ?? null,
+        wardId: newFilters.wardId ?? null,
+        isLegacy: newFilters.isLegacy ?? null,
+        latitude: newFilters.latitude ?? null,
+        longitude: newFilters.longitude ?? null,
+        sortBy: newFilters.sortBy ?? null,
+        page: null,
+      },
+      {
+        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+        shallow: false,
+        scroll: true,
+      },
+    )
   }
 
-  const handleBedroomChange = (value: number, checked: boolean) => {
-    if (checked) {
-      handleUpdateFilter({
-        bedrooms: value,
-      } as Partial<ListFilters>)
-    } else {
-      // Uncheck - clear bedroom filter
-      handleUpdateFilter({
-        bedrooms: undefined,
-      } as Partial<ListFilters>)
-    }
+  const handleBedroomChange = (option: FilterOption, checked: boolean) => {
+    const amenityIds = filters.amenityIds
+    const newFilters = checked
+      ? {
+          ...filters,
+          minBedrooms: option.min,
+          maxBedrooms: option.max,
+          page: 1,
+        }
+      : {
+          ...filters,
+          minBedrooms: undefined,
+          maxBedrooms: undefined,
+          page: 1,
+        }
+
+    updateFilters(newFilters)
+
+    pushQueryParams(
+      router,
+      {
+        categoryId: newFilters.categoryId ?? null,
+        productType: newFilters.productType ?? null,
+        keyword: newFilters.keyword || null,
+        minPrice: newFilters.minPrice ?? null,
+        maxPrice: newFilters.maxPrice ?? null,
+        minArea: newFilters.minArea ?? null,
+        maxArea: newFilters.maxArea ?? null,
+        minBedrooms: newFilters.minBedrooms ?? null,
+        maxBedrooms: newFilters.maxBedrooms ?? null,
+        bathrooms: newFilters.bathrooms ?? null,
+        verified: newFilters.verified || null,
+        direction: newFilters.direction ?? null,
+        electricityPrice: newFilters.electricityPrice ?? null,
+        waterPrice: newFilters.waterPrice ?? null,
+        internetPrice: newFilters.internetPrice ?? null,
+        amenityIds:
+          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
+        provinceId: newFilters.provinceId ?? null,
+        districtId: newFilters.districtId ?? null,
+        wardId: newFilters.wardId ?? null,
+        isLegacy: newFilters.isLegacy ?? null,
+        latitude: newFilters.latitude ?? null,
+        longitude: newFilters.longitude ?? null,
+        sortBy: newFilters.sortBy ?? null,
+        page: null,
+      },
+      {
+        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
+        shallow: false,
+        scroll: true,
+      },
+    )
   }
 
   const isPriceSelected = (option: FilterOption) => {
-    if (option.value === 'negotiable') {
-      // Special handling for negotiable
-      return false
-    }
     return filters.minPrice === option.min && filters.maxPrice === option.max
   }
 
@@ -120,8 +239,10 @@ const PropertyFilterSidebar: React.FC = () => {
     return filters.minArea === option.min && filters.maxArea === option.max
   }
 
-  const isBedroomSelected = (value: number) => {
-    return filters.bedrooms === value
+  const isBedroomSelected = (option: FilterOption) => {
+    return (
+      filters.minBedrooms === option.min && filters.maxBedrooms === option.max
+    )
   }
 
   return (
@@ -188,12 +309,9 @@ const PropertyFilterSidebar: React.FC = () => {
               className='flex items-center gap-2 cursor-pointer hover:text-primary transition-colors'
             >
               <Checkbox
-                checked={isBedroomSelected(option.value as number)}
+                checked={isBedroomSelected(option)}
                 onCheckedChange={(checked) =>
-                  handleBedroomChange(
-                    option.value as number,
-                    checked as boolean,
-                  )
+                  handleBedroomChange(option, checked as boolean)
                 }
               />
               <Typography variant='small' className='text-sm'>

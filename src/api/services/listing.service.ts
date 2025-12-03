@@ -1,109 +1,40 @@
 /**
  * Listing Service
- * Handles all listing-related operations including CRUD, pricing, and quota management
+ * Handles all listing-related operations including CRUD and quota management
+ * Note: Pricing operations are handled by PricingService
  * @module api/services/listing
  */
 
-import {
-  PropertyCard,
-  Listing,
-  CreateListingRequest,
-  UpdateListingRequest,
-  CreateVipListingRequest,
-  QuotaCheckResponse,
-  UpdatePriceRequest,
-  PriceHistory,
-  PriceStatistics,
-  ProvinceStatsRequest,
-  ProvinceStatsItem,
-  ListingSearchRequest,
-  ListingSearchApiResponse,
-} from '@/api/types/property.type'
-import { ListFilters, ListFetcherResponse } from '@/contexts/list/index.type'
 import { apiRequest } from '@/configs/axios/instance'
 import type { ApiResponse } from '@/configs/axios/types'
 import { PATHS } from '@/api/paths'
 import { AxiosInstance } from 'axios'
-import { listFiltersToSearchRequest } from '@/utils/queryParams'
-
-// ============= HELPER FUNCTIONS =============
-
-const convertListingToPropertyCard = (listing: Listing): PropertyCard => {
-  return {
-    id: listing.listingId.toString(),
-    title: listing.title,
-    description: listing.description,
-    address: '',
-    city: '',
-    property_type: listing.productType,
-    bedrooms: listing.bedrooms || 0,
-    bathrooms: listing.bathrooms || 0,
-    price: listing.price,
-    currency: listing.priceUnit,
-    area: listing.area,
-    furnishing: listing.furnishing || '',
-    amenities: listing.amenities?.map((a) => a.name) || [],
-    verified: listing.verified,
-    featured: listing.vipType !== 'NORMAL',
-  }
-}
-
-export async function fetchListings(
-  filters: ListFilters,
-): Promise<ListFetcherResponse<PropertyCard>> {
-  try {
-    // Convert ListFilters to ListingSearchRequest format
-    const searchRequest = listFiltersToSearchRequest(filters)
-
-    // Call the new search API
-    const response = await ListingService.search(searchRequest)
-
-    if (!response.data || response.code !== '999999') {
-      throw new Error(response.message || 'Failed to fetch listings')
-    }
-
-    const searchData = response.data
-    const listings = searchData.listings || []
-
-    const properties = listings.map(convertListingToPropertyCard)
-
-    return {
-      data: properties,
-      total: searchData.totalCount || 0,
-      page: (searchData.currentPage || 0) + 1, // Convert 0-based to 1-based
-      totalPages: searchData.totalPages || 1,
-      hasNext:
-        searchData.currentPage !== undefined &&
-        searchData.totalPages !== undefined
-          ? searchData.currentPage + 1 < searchData.totalPages
-          : false,
-      hasPrevious:
-        searchData.currentPage !== undefined
-          ? searchData.currentPage > 0
-          : false,
-    }
-  } catch (error) {
-    console.error('Error fetching listings:', error)
-    return {
-      data: [],
-      total: 0,
-      page: filters.page || 1,
-      totalPages: 0,
-      hasNext: false,
-      hasPrevious: false,
-    }
-  }
-}
+import {
+  CreateListingRequest,
+  CreateVipListingRequest,
+  DraftListingRequest,
+  DraftListingResponse,
+  PublishDraftRequest,
+  PublishDraftResponse,
+  ListingDetail,
+  ListingSearchApiRequest,
+  ListingSearchBackendResponse,
+  ListingFilterRequest,
+  MyListingsBackendResponse,
+  ProvinceStatsItem,
+  ProvinceStatsRequest,
+  QuotaCheckResponse,
+} from '../types'
 
 // ============= LISTING SERVICE CLASS =============
 
 export class ListingService {
   static async getById(
     id: string | number,
-  ): Promise<ApiResponse<PropertyCard | null>> {
+  ): Promise<ApiResponse<ListingDetail | null>> {
     try {
       const url = PATHS.LISTING.BY_ID.replace(':id', id.toString())
-      const response = await apiRequest<Listing>({
+      const response = await apiRequest<ListingDetail>({
         method: 'GET',
         url,
       })
@@ -112,10 +43,7 @@ export class ListingService {
         return { ...response, data: null }
       }
 
-      return {
-        ...response,
-        data: convertListingToPropertyCard(response.data),
-      }
+      return response
     } catch (error) {
       console.error(`Error fetching listing ${id}:`, error)
       return {
@@ -161,9 +89,19 @@ export class ListingService {
     })
   }
 
+  static async createDraft(
+    data: CreateListingRequest,
+  ): Promise<ApiResponse<{ listingId: number; status: string }>> {
+    return apiRequest<{ listingId: number; status: string }>({
+      method: 'POST',
+      url: PATHS.LISTING.CREATE_DRAFT,
+      data,
+    })
+  }
+
   static async update(
     id: string | number,
-    data: UpdateListingRequest,
+    data: CreateListingRequest,
   ): Promise<ApiResponse<string>> {
     const url = PATHS.LISTING.UPDATE.replace(':id', id.toString())
     return apiRequest<string>({
@@ -192,153 +130,17 @@ export class ListingService {
     })
   }
 
-  static async updatePrice(
-    listingId: string | number,
-    data: UpdatePriceRequest,
-  ): Promise<ApiResponse<PriceHistory>> {
-    const url = PATHS.LISTING.UPDATE_PRICE.replace(
-      ':listingId',
-      listingId.toString(),
-    )
-    return apiRequest<PriceHistory>({
-      method: 'PUT',
-      url,
-      data,
-    })
-  }
-
-  static async getPricingHistory(
-    listingId: string | number,
-  ): Promise<ApiResponse<PriceHistory[]>> {
-    const url = PATHS.LISTING.PRICING_HISTORY.replace(
-      ':listingId',
-      listingId.toString(),
-    )
-    return apiRequest<PriceHistory[]>({
-      method: 'GET',
-      url,
-    })
-  }
-
-  static async getPricingHistoryByDateRange(
-    listingId: string | number,
-    startDate: string,
-    endDate: string,
-  ): Promise<ApiResponse<PriceHistory[]>> {
-    const url = PATHS.LISTING.PRICING_HISTORY_DATE_RANGE.replace(
-      ':listingId',
-      listingId.toString(),
-    )
-    return apiRequest<PriceHistory[]>({
-      method: 'GET',
-      url,
-      params: { startDate, endDate },
-    })
-  }
-
-  static async getPriceStatistics(
-    listingId: string | number,
-  ): Promise<ApiResponse<PriceStatistics>> {
-    const url = PATHS.LISTING.PRICE_STATISTICS.replace(
-      ':listingId',
-      listingId.toString(),
-    )
-    return apiRequest<PriceStatistics>({
-      method: 'GET',
-      url,
-    })
-  }
-
-  static async getCurrentPrice(
-    listingId: string | number,
-  ): Promise<ApiResponse<PriceHistory>> {
-    const url = PATHS.LISTING.CURRENT_PRICE.replace(
-      ':listingId',
-      listingId.toString(),
-    )
-    return apiRequest<PriceHistory>({
-      method: 'GET',
-      url,
-    })
-  }
-
-  static async getRecentPriceChanges(
-    daysBack: number = 7,
-  ): Promise<ApiResponse<number[]>> {
-    return apiRequest<number[]>({
-      method: 'GET',
-      url: PATHS.LISTING.RECENT_PRICE_CHANGES,
-      params: { daysBack },
-    })
-  }
-
   static async getByIdAdmin(
     id: string | number,
     adminId: string,
-  ): Promise<ApiResponse<Listing>> {
+  ): Promise<ApiResponse<ListingDetail>> {
     const url = PATHS.LISTING.ADMIN_DETAIL.replace(':id', id.toString())
-    return apiRequest<Listing>({
+    return apiRequest<ListingDetail>({
       method: 'GET',
       url,
       headers: {
         'X-Admin-Id': adminId,
       },
-    })
-  }
-
-  static async getInitial(): Promise<PropertyCard[]> {
-    const response = await fetchListings({
-      search: '',
-      perPage: 10,
-      page: 1,
-    })
-    return response.data
-  }
-
-  /**
-   * Save listing as draft
-   * Creates a new listing with minimal required fields for draft status
-   */
-  static async saveDraft(
-    data: Partial<CreateListingRequest>,
-  ): Promise<ApiResponse<{ listingId: number; status: string }>> {
-    // Ensure minimum required fields for draft
-    const draftData: CreateListingRequest = {
-      title: data.title || 'Draft',
-      description: data.description || '',
-      userId: data.userId || '',
-      listingType: data.listingType || 'RENT',
-      productType: data.productType || 'APARTMENT',
-      price: data.price || 0,
-      priceUnit: data.priceUnit || 'MONTH',
-      address: data.address || {
-        streetId: 0,
-        wardId: 0,
-        districtId: 0,
-        provinceId: 0,
-      },
-      ...data,
-    }
-
-    return apiRequest<{ listingId: number; status: string }>({
-      method: 'POST',
-      url: PATHS.LISTING.CREATE,
-      data: draftData,
-    })
-  }
-
-  /**
-   * Update existing listing as draft
-   */
-  static async updateDraft(
-    id: string | number,
-    data: Partial<UpdateListingRequest>,
-  ): Promise<ApiResponse<string>> {
-    const url = PATHS.LISTING.UPDATE.replace(':id', id.toString())
-    return apiRequest<string>({
-      method: 'PUT',
-      url,
-      data,
     })
   }
 
@@ -363,6 +165,7 @@ export class ListingService {
         method: 'POST',
         url: PATHS.LISTING.PROVINCE_STATS,
         data: request,
+        skipAuth: true, // Public API - không cần authentication
       },
       instance,
     )
@@ -371,33 +174,144 @@ export class ListingService {
   /**
    * Search listings with comprehensive filters
    * POST /v1/listings/search
-   * @param {ListingSearchRequest} request - Search filters (all optional)
+   * @param {ListingSearchApiRequest} request - Backend API request format
    * @param {AxiosInstance} instance - Optional axios instance for server-side calls
-   * @returns {Promise<ApiResponse<ListingSearchResponse>>} Promise resolving to search results
+   * @returns {Promise<ApiResponse<ListingSearchBackendResponse>>} Raw backend response
    * @example
-   * const results = await ListingService.search({
-   *   provinceId: 1,
-   *   listingType: 'RENT',
-   *   minPrice: 5000000,
-   *   maxPrice: 15000000,
-   *   page: 0,
-   *   size: 20
-   * })
+   * const backendRequest = mapFrontendToBackendRequest(filters)
+   * const response = await ListingService.search(backendRequest)
+   * const mappedData = mapBackendToFrontendResponse(response.data)
    */
   static async search(
-    request: ListingSearchRequest,
+    request: ListingSearchApiRequest,
     instance?: AxiosInstance,
-  ): Promise<ApiResponse<ListingSearchApiResponse['data']>> {
-    const response = await apiRequest<ListingSearchApiResponse['data']>(
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    return apiRequest<ListingSearchBackendResponse>(
       {
         method: 'POST',
         url: PATHS.LISTING.SEARCH,
         data: request,
+        skipAuth: true, // Public API - không cần authentication
       },
       instance,
     )
+  }
 
-    return response
+  /**
+   * Get current user's listings (owner dashboard)
+   * POST /v1/listings/my-listings
+   */
+  static async getMyListings(
+    request: Partial<ListingFilterRequest>,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<MyListingsBackendResponse>> {
+    return apiRequest<MyListingsBackendResponse>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.MY_LISTINGS,
+        data: request,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Get current user's draft listings
+   * GET /v1/listings/my-drafts
+   */
+  static async getMyDrafts(
+    request: Partial<ListingFilterRequest>,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<MyListingsBackendResponse>> {
+    return apiRequest<MyListingsBackendResponse>(
+      {
+        method: 'GET',
+        url: PATHS.LISTING.MY_DRAFTS,
+        params: request,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Get a specific draft by ID
+   * GET /v1/listings/draft/:draftId
+   */
+  static async getDraft(
+    draftId: string | number,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<DraftListingResponse>> {
+    const url = PATHS.LISTING.GET_DRAFT.replace(':draftId', draftId.toString())
+    return apiRequest<DraftListingResponse>(
+      {
+        method: 'GET',
+        url,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Update a draft listing (auto-save)
+   * POST /v1/listings/draft/:draftId
+   */
+  static async updateDraft(
+    draftId: string | number,
+    data: Partial<DraftListingRequest>,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<DraftListingResponse>> {
+    const url = PATHS.LISTING.UPDATE_DRAFT.replace(
+      ':draftId',
+      draftId.toString(),
+    )
+    return apiRequest<DraftListingResponse>(
+      {
+        method: 'POST',
+        url,
+        data,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Publish a draft listing
+   * POST /v1/listings/draft/:draftId/publish
+   */
+  static async publishDraft(
+    draftId: string | number,
+    data: PublishDraftRequest,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<PublishDraftResponse>> {
+    const url = PATHS.LISTING.PUBLISH_DRAFT.replace(
+      ':draftId',
+      draftId.toString(),
+    )
+    return apiRequest<PublishDraftResponse>(
+      {
+        method: 'POST',
+        url,
+        data,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Delete a draft listing
+   * DELETE /v1/listings/draft/:draftId
+   */
+  static async deleteDraft(
+    draftId: string | number,
+  ): Promise<ApiResponse<null>> {
+    const url = PATHS.LISTING.DELETE_DRAFT.replace(
+      ':draftId',
+      draftId.toString(),
+    )
+    return apiRequest<null>({
+      method: 'DELETE',
+      url,
+    })
   }
 }
 
@@ -407,17 +321,17 @@ export const {
   getById,
   create,
   createVip,
+  createDraft,
   update,
   delete: deleteListing,
   checkQuota,
-  updatePrice,
-  getPricingHistory,
-  getPricingHistoryByDateRange,
-  getPriceStatistics,
-  getCurrentPrice,
-  getRecentPriceChanges,
   getByIdAdmin,
-  getInitial,
   getProvinceStats,
   search,
+  getMyListings,
+  getMyDrafts,
+  getDraft,
+  updateDraft,
+  publishDraft,
+  deleteDraft,
 } = ListingService

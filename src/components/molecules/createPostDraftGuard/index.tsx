@@ -4,8 +4,7 @@ import { useTranslations } from 'next-intl'
 import { SaveDraftDialog } from '@/components/molecules/saveDraftDialog'
 import { useCreatePost } from '@/contexts/createPost'
 import { useAuth } from '@/hooks/useAuth'
-import { useSaveDraft } from '@/hooks/useCreatePost'
-import { transformPropertyInfoToDraft } from '@/utils/createPost/transformToDraft'
+import { useCreateDraft } from '@/hooks/useListings/useCreateDraft'
 import { toast } from 'sonner'
 
 interface CreatePostDraftGuardProps {
@@ -14,65 +13,53 @@ interface CreatePostDraftGuardProps {
 
 const NAVIGATION_CANCELLED_ERROR = 'Navigation cancelled by draft guard'
 
-/**
- * Component to guard against navigation away from create post page
- * Shows dialog to save draft when user tries to leave
- *
- * Flow:
- * 1. User tries to navigate/reload -> Dialog shows
- * 2. User clicks Save/Discard/Cancel -> Action executes
- * 3. Dialog closes -> Navigation proceeds (only after successful save or user confirmation)
- */
 export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   children,
 }) => {
   const router = useRouter()
   const t = useTranslations('createPost.draftDialog')
-  const { propertyInfo } = useCreatePost()
+  const { propertyInfo, isSubmitSuccess } = useCreatePost()
   const { user } = useAuth()
-  const saveDraftMutation = useSaveDraft()
+  const { mutate: createDraft, isPending: isDraftSaving } = useCreateDraft()
 
-  // State
   const [showDialog, setShowDialog] = useState(false)
 
-  // Refs for navigation control
   const pendingNavigationRef = useRef<string | null>(null)
   const shouldBlockRef = useRef(false)
   const isNavigatingRef = useRef(false)
   const blockedUrlRef = useRef<string | null>(null)
 
-  // Check if there are unsaved changes
   const hasUnsavedChanges = useCallback((): boolean => {
+    // Don't block if submit was successful
+    if (isSubmitSuccess) return false
+
     if (!propertyInfo) return false
 
-    return !!(
-      propertyInfo.propertyType ||
-      propertyInfo.propertyAddress ||
-      propertyInfo.area ||
-      propertyInfo.price ||
-      propertyInfo.interiorCondition ||
-      propertyInfo.bedrooms !== undefined ||
-      propertyInfo.bathrooms !== undefined ||
-      propertyInfo.moveInDate ||
-      propertyInfo.waterPrice ||
-      propertyInfo.electricityPrice ||
-      propertyInfo.internetPrice ||
-      propertyInfo.fullName ||
-      propertyInfo.email ||
-      propertyInfo.phoneNumber ||
-      propertyInfo.listingTitle ||
-      propertyInfo.propertyDescription ||
-      (propertyInfo.images && propertyInfo.images.length > 0) ||
-      propertyInfo.videoUrl
-    )
-  }, [propertyInfo])
+    // Check if propertyInfo has any meaningful data
+    const hasAnyData = Object.entries(propertyInfo).some(([key, value]) => {
+      // Skip checking these meta fields
+      if (key === 'isDraft' || key === 'listingType') return false
 
-  // Update blocking state when changes occur
+      // Check if value exists and is not empty
+      if (value === undefined || value === null) return false
+      if (typeof value === 'string' && value.trim() === '') return false
+      if (Array.isArray(value) && value.length === 0) return false
+      if (typeof value === 'object' && Object.keys(value).length === 0)
+        return false
+
+      return true
+    })
+
+    // Don't block if no meaningful data has been entered
+    if (!hasAnyData) return false
+
+    return true
+  }, [propertyInfo, isSubmitSuccess])
+
   useEffect(() => {
     shouldBlockRef.current = hasUnsavedChanges()
   }, [hasUnsavedChanges])
 
-  // Helper: Cancel navigation by emitting routeChangeError
   const cancelNavigation = useCallback(
     (url: string) => {
       const error = new Error(NAVIGATION_CANCELLED_ERROR)
@@ -92,8 +79,61 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
     [cancelNavigation],
   )
 
-  // Navigate after draft is saved or user confirms discard/cancel
-  const proceedWithNavigation = useCallback(() => {
+  // Save draft and navigate on success
+  const saveDraft = useCallback((): void => {
+    if (!user?.userId) {
+      toast.error(t('loginRequired'))
+      return
+    }
+
+    // Validate minimum required fields (new address type)
+    const hasNewAddress =
+      propertyInfo.address?.new?.provinceCode &&
+      propertyInfo.address?.new?.wardCode
+
+    if (!hasNewAddress && !propertyInfo.address?.legacy) {
+      toast.error(t('addressRequired'))
+      return
+    }
+
+    // Check basic required fields
+    if (!propertyInfo.categoryId || !propertyInfo.title) {
+      toast.error(t('requiredFieldsMissing'))
+      return
+    }
+
+    // Prepare draft payload
+    const draftPayload = {
+      ...propertyInfo,
+      isDraft: true,
+    }
+
+    // Call API to create draft
+    createDraft(draftPayload, {
+      onSuccess: (response) => {
+        if (response.success && response.data) {
+          toast.success(t('draftSaved'))
+          // Navigate to the page user originally tried to go to
+          shouldBlockRef.current = false
+          isNavigatingRef.current = true
+          const targetUrl = pendingNavigationRef.current || '/seller/drafts'
+          router.push(targetUrl).then(() => {
+            isNavigatingRef.current = false
+            pendingNavigationRef.current = null
+          })
+        } else {
+          toast.error(response.message || t('saveFailed'))
+        }
+      },
+      onError: (error) => {
+        toast.error(t('saveFailed'))
+        console.error('Draft creation error:', error)
+      },
+    })
+  }, [propertyInfo, user?.userId, createDraft, t, router])
+
+  // Cancel dialog and navigate to the pending URL (user wants to leave)
+  const handleCancel = useCallback(() => {
     shouldBlockRef.current = false
     isNavigatingRef.current = true
     setShowDialog(false)
@@ -109,49 +149,10 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
           isNavigatingRef.current = false
         })
     } else {
-      window.location.reload()
+      // If no pending URL, just close dialog and stay
+      isNavigatingRef.current = false
     }
   }, [router])
-
-  // Save draft and navigate on success
-  const saveDraft = useCallback((): void => {
-    if (!user?.userId) {
-      toast.error(t('loginRequired'))
-      return
-    }
-
-    const draftData = transformPropertyInfoToDraft(propertyInfo, user.userId)
-
-    saveDraftMutation.mutate(
-      { data: draftData },
-      {
-        onSuccess: () => {
-          toast.success(t('saveSuccess'))
-          proceedWithNavigation()
-        },
-        onError: (error: Error) => {
-          const errorMessage = error.message || t('saveFailed')
-          console.error('Error saving draft:', error)
-          toast.error(errorMessage)
-          // Keep dialog open and prevent navigation on error
-          shouldBlockRef.current = true
-          isNavigatingRef.current = false
-        },
-      },
-    )
-  }, [propertyInfo, user?.userId, saveDraftMutation, proceedWithNavigation, t])
-
-  const handleDiscard = useCallback(() => {
-    setShowDialog(false)
-    pendingNavigationRef.current = null
-    blockedUrlRef.current = null
-    shouldBlockRef.current = false
-  }, [])
-
-  // Cancel and navigate immediately without saving
-  const handleCancel = useCallback(() => {
-    proceedWithNavigation()
-  }, [proceedWithNavigation])
 
   // Handle browser reload/close tab (shows browser's default dialog)
   useEffect(() => {
@@ -269,9 +270,8 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       <SaveDraftDialog
         open={showDialog}
         onSave={saveDraft}
-        onDiscard={handleDiscard}
         onCancel={handleCancel}
-        isSaving={saveDraftMutation.isPending}
+        isSaving={isDraftSaving}
       />
     </>
   )

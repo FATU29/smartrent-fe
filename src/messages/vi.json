@@ -1,4 +1,39 @@
 {
+  "actions": {
+    "backHome": "Về trang chủ",
+    "retry": "Thử lại",
+    "refresh": "Tải lại"
+  },
+  "errors": {
+    "missingRef": "Thiếu mã giao dịch.",
+    "loadFailed": "Không tải được trạng thái giao dịch."
+  },
+  "states": {
+    "completed": {
+      "title": "Thanh toán thành công",
+      "desc": "Giao dịch của bạn đã hoàn tất. Cảm ơn bạn!"
+    },
+    "pending": {
+      "title": "Đang chờ xác nhận",
+      "desc": "Đang chờ xác nhận từ nhà cung cấp thanh toán..."
+    },
+    "failed": {
+      "title": "Thanh toán thất bại",
+      "desc": "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức khác."
+    },
+    "cancelled": {
+      "title": "Đã hủy thanh toán",
+      "desc": "Bạn đã hủy giao dịch trước khi hoàn tất."
+    },
+    "refunded": {
+      "title": "Đã hoàn tiền",
+      "desc": "Khoản thanh toán này đã được hoàn tiền."
+    },
+    "unknown": {
+      "title": "Trạng thái không xác định",
+      "desc": "Không thể xác định trạng thái thanh toán."
+    }
+  },
   "common": {
     "or": "Hoặc",
     "loading": "Đang tải...",
@@ -12,57 +47,53 @@
     "selectDate": "Chọn ngày",
     "filter": "Lọc",
     "createPost": "Đăng tin",
+    "address": "Địa chỉ",
+    "fullName": "Họ và tên",
+    "phoneNumber": "Số điện thoại",
+    "email": "Email",
+    "contactInformation": "Thông tin liên hệ",
+    "notAvailable": "Chưa có",
+    "coordinates": "Tọa độ",
+    "error": "Lỗi vị trí",
+    "enableTooltip": "Nhấp để bật theo dõi vị trí",
+    "disableTooltip": "Nhấp để tắt theo dõi vị trí",
+    "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 4 ảnh hoặc 1 video",
+    "imagesRequired": "Vui lòng tải lên ít nhất 4 ảnh nếu không có video. Nếu bạn có video, bạn có thể tiếp tục mà không cần ảnh.",
+    "imagesTooMany": "Bạn có thể tải lên tối đa 24 ảnh.",
+    "imageUrlInvalid": "URL ảnh không hợp lệ.",
+    "videoUrlInvalid": "URL video không hợp lệ.",
+    "permissionDenied": "Quyền truy cập vị trí bị từ chối. Vui lòng bật truy cập vị trí trong cài đặt trình duyệt VÀ cài đặt hệ thống, sau đó khởi động lại trình duyệt.",
+    "positionUnavailable": "Thông tin vị trí không khả dụng. Vui lòng bật dịch vụ vị trí trên thiết bị của bạn.",
+    "timeout": "Yêu cầu vị trí hết thời gian chờ. Vui lòng thử lại.",
+    "unknownError": "Đã xảy ra lỗi không xác định khi lấy vị trí.",
+    "notSupported": "Trình duyệt không hỗ trợ vị trí",
+    "priceUnits": {
+      "MONTH": "Tháng",
+      "YEAR": "Năm"
+    },
+    "listSearch": {
+      "placeholder": "Tìm kiếm bằng từ khóa"
+    },
+    "status": {
+      "ALL": "Tất cả",
+      "EXPIRED": "Hết hạn",
+      "EXPIRED_SOON": "Sắp hết hạn",
+      "DISPLAYING": "Đang hiển thị",
+      "IN_REVIEW": "Chờ duyệt",
+      "PENDING_PAYMENT": "Chờ thanh toán",
+      "REJECTED": "Bị từ chối",
+      "VERIFIED": "Đã xác thực",
+      "ARCHIVED": "Đã lưu trữ"
+    },
     "propertyTypes": {
-      "0": "Tất cả",
-      "1": "Cho thuê phòng trọ",
-      "2": "Cho thuê căn hộ",
-      "3": "Cho thuê nhà nguyên căn",
-      "4": "Cho thuê văn phòng",
-      "5": "Cho thuê mặt bằng"
-    }
-  },
-  "paymentStatusPage": {
-    "title": "Trạng thái thanh toán",
-    "subtitle": "Chúng tôi đang theo dõi giao dịch của bạn. Trang sẽ tự động cập nhật.",
-    "labels": {
-      "transactionRef": "Mã giao dịch",
-      "checking": "Đang kiểm tra"
+      "0": "Tất cả Loại",
+      "1": "Phòng trọ",
+      "2": "Căn hộ",
+      "3": "Nhà",
+      "4": "Văn phòng",
+      "5": "Mặt bằng/Cửa hàng"
     },
-    "actions": {
-      "backHome": "Về trang chủ",
-      "retry": "Thử lại",
-      "refresh": "Tải lại"
-    },
-    "errors": {
-      "missingRef": "Thiếu mã giao dịch.",
-      "loadFailed": "Không tải được trạng thái giao dịch."
-    },
-    "states": {
-      "completed": {
-        "title": "Thanh toán thành công",
-        "desc": "Giao dịch của bạn đã hoàn tất. Cảm ơn bạn!"
-      },
-      "pending": {
-        "title": "Đang chờ xác nhận",
-        "desc": "Đang chờ xác nhận từ nhà cung cấp thanh toán..."
-      },
-      "failed": {
-        "title": "Thanh toán thất bại",
-        "desc": "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức khác."
-      },
-      "cancelled": {
-        "title": "Đã hủy thanh toán",
-        "desc": "Bạn đã hủy giao dịch trước khi hoàn tất."
-      },
-      "refunded": {
-        "title": "Đã hoàn tiền",
-        "desc": "Khoản thanh toán này đã được hoàn tiền."
-      },
-      "unknown": {
-        "title": "Trạng thái không xác định",
-        "desc": "Không thể xác định trạng thái thanh toán."
-      }
-    }
+    "checking": "Đang kiểm tra"
   },
   "location": {
     "label": "Vị trí của bạn",
@@ -73,6 +104,11 @@
     "enableTooltip": "Nhấp để bật theo dõi vị trí",
     "disableTooltip": "Nhấp để tắt theo dõi vị trí",
     "coordinates": "Tọa độ",
+    "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 4 ảnh hoặc 1 video",
+    "imagesRequired": "Vui lòng tải lên ít nhất 4 ảnh nếu không có video. Nếu bạn có video, bạn có thể tiếp tục mà không cần ảnh.",
+    "imagesTooMany": "Bạn có thể tải lên tối đa 24 ảnh.",
+    "imageUrlInvalid": "URL ảnh không hợp lệ.",
+    "videoUrlInvalid": "URL video không hợp lệ.",
     "permissionDenied": "Quyền truy cập vị trí bị từ chối. Vui lòng bật truy cập vị trí trong cài đặt trình duyệt VÀ cài đặt hệ thống, sau đó khởi động lại trình duyệt.",
     "positionUnavailable": "Thông tin vị trí không khả dụng. Vui lòng bật dịch vụ vị trí trên thiết bị của bạn.",
     "timeout": "Yêu cầu vị trí hết thời gian chờ. Vui lòng thử lại.",
@@ -95,19 +131,13 @@
       "rejected": "Bị từ chối",
       "archived": "Đã lưu trữ"
     },
-    "packageBadge": {
-      "vipDiamond": "VIP Kim Cương",
-      "vipGold": "VIP Vàng",
-      "vipSilver": "VIP Bạc",
-      "standard": "Thường",
-      "basic": "Cơ bản"
-    },
+
     "rankDisplay": {
       "page": "Trang {page}",
       "position": "Đứng thứ {position}"
     },
     "verificationBadge": {
-      "verified": "Tin xác thực",
+      "verified": "Đã xác thực",
       "premium": "Nâng cấp tin",
       "boosted": "Đẩy tin"
     },
@@ -136,6 +166,54 @@
       "otp": {
         "title": "Nhập Mã Xác Minh",
         "description": "Chúng tôi đã gửi mã xác minh 6 số tới {contact}",
+        "membershipPage": {
+          "title": "Gói dịch vụ",
+          "subtitle": "So sánh gói Hội viên và gói voucher Đẩy tin để chọn giải pháp tối ưu cho nhu cầu bán hàng.",
+          "tabs": {
+            "membership": "Gói Hội viên",
+            "voucher": "Gói voucher Đẩy tin"
+          },
+          "aria": {
+            "register": "Đăng ký gói dịch vụ",
+            "membershipTab": "Tab gói hội viên",
+            "voucherTab": "Tab gói voucher đẩy tin"
+          }
+        },
+        "membershipPlans": {
+          "savingSuffix": "mỗi tháng",
+          "basic": {
+            "name": "Hội viên Cơ bản",
+            "description": "Phù hợp với môi giới mới hoặc gói hàng nhỏ"
+          },
+          "standard": {
+            "name": "Hội viên Tiêu chuẩn",
+            "description": "Phù hợp với môi giới chuyên nghiệp có gói hàng từ 10 BDS"
+          },
+          "premium": {
+            "name": "Hội viên Cao cấp",
+            "description": "Phù hợp với môi giới có gói hàng và ngân sách quảng cáo lớn"
+          },
+          "groups": {
+            "monthlyPackage": "Gói tin hằng tháng",
+            "utilities": "Tiện ích"
+          },
+          "features": {
+            "vipGold7": "Tin VIP Vàng (hiển thị 7 ngày)",
+            "vipSilver7": "Tin VIP Bạc (hiển thị 7 ngày)",
+            "1vipGold7": "1 Tin VIP Vàng (hiển thị 7 ngày)",
+            "1vipSilver7": "1 Tin VIP Bạc (hiển thị 7 ngày)",
+            "2vipSilver7": "2 Tin VIP Bạc (hiển thị 7 ngày)",
+            "15standard10": "15 Tin Thường (hiển thị 10 ngày)",
+            "30standard10": "30 Tin Thường (hiển thị 10 ngày)",
+            "50standard10": "50 Tin Thường (hiển thị 10 ngày)",
+            "15pushStandard": "15 lượt đẩy cho Tin Thường",
+            "30pushStandard": "30 lượt đẩy cho Tin Thường",
+            "50pushStandard": "50 lượt đẩy cho Tin Thường",
+            "imageCopyright": "Bản quyền ảnh",
+            "scheduledPosting": "Hẹn giờ đăng tin",
+            "performanceReport": "Báo cáo hiệu suất"
+          }
+        },
         "digitLabel": "Số {position}",
         "verifyButton": "Xác Minh Mã",
         "verifyingButton": "Đang xác minh...",
@@ -500,7 +578,14 @@
       "listingsSuffix": "tin đăng",
       "popularProjects": "Dự án nổi bật",
       "noData": "Hiện tại chưa có dữ liệu địa điểm",
-      "noDataDescription": "Vui lòng thử lại sau"
+      "noDataDescription": "Vui lòng thử lại sau",
+      "exploreButton": "Khám phá"
+    },
+    "vipSections": {
+      "diamond": "💎 Bất động sản Kim Cương",
+      "gold": "⭐ Bất động sản Vàng",
+      "silver": "🥈 Bất động sản Bạc",
+      "normal": "Bất động sản Thường"
     },
     "features": {
       "title": "Tại sao nên chọn chúng tôi",
@@ -537,13 +622,11 @@
       "propertyType": {
         "title": "Loại Bất động sản",
         "all": "Tất cả Loại",
+        "room": "Phòng trọ",
         "apartment": "Căn hộ",
-        "studio": "Studio",
-        "villa": "Biệt thự",
         "house": "Nhà",
-        "condo": "Condo",
-        "townhouse": "Nhà phố",
-        "penthouse": "Penthouse"
+        "office": "Văn phòng",
+        "store": "Mặt bằng/Cửa hàng"
       },
       "priceRange": {
         "title": "Khoảng Giá",
@@ -640,19 +723,39 @@
     "next": "Tiếp theo",
     "payment": "Thanh toán",
     "uploadNow": "Tải tin lên ngay",
+    "createListing": "Tạo tin đăng",
     "completeCurrentStep": "Vui lòng hoàn thành bước này trước khi tiếp tục",
+    "submit": {
+      "errorTitle": "Lỗi tạo tin đăng",
+      "errorDescription": "Đã xảy ra lỗi khi tạo tin đăng của bạn. Vui lòng thử lại.",
+      "successTitle": "Tin đăng đã được tạo thành công!",
+      "ok": "OK",
+      "successDescription": " Tin đăng của bạn đã được tạo thành công và đang chờ phê duyệt. Bạn sẽ nhận được thông báo khi tin đăng được phê duyệt và hiển thị trên trang web."
+    },
     "validation": {
+      "imagesUploadInProgress": "Vui lòng đợi quá trình tải ảnh hoàn tất trước khi tiếp tục",
       "propertyTypeRequired": "Loại bất động sản là bắt buộc",
       "propertyTypeInvalid": "Loại bất động sản không hợp lệ",
       "addressRequired": "Địa chỉ là bắt buộc",
       "areaRequired": "Diện tích là bắt buộc",
       "priceRequired": "Giá là bắt buộc",
-      "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 3 ảnh hoặc 1 liên kết YouTube",
+      "priceUnitRequired": "Đơn vị giá là bắt buộc",
+      "priceUnitInvalid": "Đơn vị giá không hợp lệ",
+      "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 4 ảnh hoặc 1 video",
+      "imagesRequired": "Vui lòng tải ít nhất 4 ảnh",
+      "imagesMinimum": "Cần ít nhất 4 ảnh",
+      "imagesTooMany": "Bạn có thể tải tối đa 24 ảnh",
+      "imageUrlInvalid": "URL ảnh không hợp lệ",
+      "videoUrlInvalid": "URL video không hợp lệ",
       "packageRequired": "Vui lòng chọn gói đăng",
       "durationRequired": "Vui lòng chọn thời hạn",
       "startDateRequired": "Vui lòng chọn ngày bắt đầu",
       "listingTitleRequired": "Tiêu đề tin đăng là bắt buộc",
+      "listingTitleMinLength": "Tiêu đề phải có ít nhất 30 ký tự",
+      "listingTitleMaxLength": "Tiêu đề không được vượt quá 120 ký tự",
       "propertyDescriptionRequired": "Mô tả bất động sản là bắt buộc",
+      "propertyDescriptionMinLength": "Mô tả phải có ít nhất 70 ký tự",
+      "propertyDescriptionMaxLength": "Mô tả không được vượt quá 2000 ký tự",
       "fullNameRequired": "Họ và tên là bắt buộc",
       "emailRequired": "Email là bắt buộc",
       "emailInvalid": "Email không hợp lệ",
@@ -661,10 +764,16 @@
       "waterPriceRequired": "Giá nước là bắt buộc",
       "electricityPriceRequired": "Giá điện là bắt buộc",
       "internetPriceRequired": "Giá internet là bắt buộc",
+      "serviceFeeRequired": "Phí dịch vụ là bắt buộc",
       "interiorConditionRequired": "Tình trạng nội thất là bắt buộc",
       "bedroomsRequired": "Số phòng ngủ là bắt buộc",
+      "bedroomsMinimum": "Số phòng ngủ phải ít nhất là 1",
       "bathroomsRequired": "Số phòng tắm là bắt buộc",
-      "moveInDateRequired": "Ngày chuyển vào là bắt buộc"
+      "bathroomsMinimum": "Số phòng tắm phải ít nhất là 1",
+      "directionRequired": "Hướng nhà là bắt buộc",
+      "directionInvalid": "Hướng nhà không hợp lệ",
+      "moveInDateRequired": "Ngày chuyển vào là bắt buộc",
+      "videoUploadInProgress": "Vui lòng đợi video tải lên hoàn tất trước khi tiếp tục"
     },
     "generateAutomatically": "Tạo tự động",
     "continueToUpload": "Tiếp tục tải lên",
@@ -677,7 +786,10 @@
       "saving": "Đang lưu...",
       "loginRequired": "Vui lòng đăng nhập để lưu bản nháp",
       "saveSuccess": "Lưu bản nháp thành công",
-      "saveFailed": "Lưu bản nháp thất bại. Vui lòng thử lại."
+      "saveFailed": "Lưu bản nháp thất bại. Vui lòng thử lại.",
+      "draftSaved": "Lưu bản nháp thành công!",
+      "addressRequired": "Địa chỉ là bắt buộc để lưu bản nháp",
+      "requiredFieldsMissing": "Danh mục và tiêu đề là bắt buộc để lưu bản nháp"
     },
     "steps": {
       "propertyInfo": {
@@ -687,7 +799,8 @@
         "district": "Quận",
         "hcmc": "TP.HCM",
         "title": "Thông tin Bất động sản",
-        "description": "Nhập thông tin bất động sản"
+        "description": "Nhập thông tin bất động sản",
+        "street": "Đường/Phố"
       },
       "aiValuation": {
         "title": "Định giá AI",
@@ -739,22 +852,38 @@
         "startDate": "Ngày bắt đầu",
         "selectStartDate": "Chọn ngày bắt đầu",
         "endDate": "Kết thúc ngày",
-        "promotionCode": "Khuyến mãi",
+        "promotionCode": "Quyền lợi",
         "enterPromotionCode": "Đăng ngay bây giờ",
         "apply": "Áp dụng",
-        "usePromotion": "Sử dụng khuyến mãi",
-        "selectPromotion": "Chọn khuyến mãi",
+        "usePromotion": "Sử dụng quyền lợi thành viên",
+        "selectPromotion": "Chọn quyền lợi",
         "selectPromotionDesc": "Chọn gói đăng tin miễn phí từ gói thành viên của bạn",
-        "loadingPromotions": "Đang tải khuyến mãi...",
-        "noPromotionAvailable": "Không có khuyến mãi khả dụng",
+        "loadingPromotions": "Đang tải quyền lợi...",
+        "noPromotionAvailable": "Không có quyền lợi khả dụng",
         "applyPromotion": "Dùng",
         "remaining": "Còn lại: {count}",
         "close": "Đóng",
         "summary": "Tổng tiền",
         "selectedPackage": "Loại tin",
         "duration": "Thời hạn",
-        "totalAmount": "Tổng tiền",
-        "vatIncluded": "Đã bao gồm VAT"
+        "totalAmount": "Tổng cộng",
+        "vatIncluded": "Đã bao gồm VAT",
+        "packagePrice": "Giá gói",
+        "priceBreakdown": "Chi tiết thanh toán",
+        "promotionApplied": "Quyền lợi được áp dụng",
+        "useMembershipQuota": "Dùng quota thành viên",
+        "useMembershipQuotaDescription": "Bật để đăng tin mà không thanh toán, sử dụng quota từ gói thành viên",
+        "usingMembershipQuota": "Quota Thành viên",
+        "freePosting": "Đăng tin miễn phí",
+        "benefit": {
+          "title": "Chọn Quyền lợi Thành viên",
+          "description": "Chọn một hoặc nhiều quyền lợi để sử dụng cho bài đăng này",
+          "noBenefits": "Không có quyền lợi khả dụng",
+          "error": "Không thể tải quyền lợi",
+          "remaining": "Còn lại: {count}",
+          "cancel": "Hủy",
+          "apply": "Áp dụng ({count})"
+        }
       },
       "orderSummary": {
         "title": "Tóm tắt Đơn hàng",
@@ -792,24 +921,38 @@
           "hint": "Kéo tối đa 24 ảnh hoặc...",
           "uploadFromDevice": "Tải từ Thiết bị",
           "chooseFromLibrary": "Chọn từ Thư viện",
-          "note": "Tối thiểu 3 ảnh · Tối đa 24 · Kích thước tối thiểu 100x100px · Tối đa 15MB mỗi ảnh"
+          "note": "Tối thiểu 4 ảnh nếu không có video · Tối đa 24 · Kích thước tối thiểu 100x100px · Tối đa 15MB mỗi ảnh"
         },
         "uploaded": {
           "title": "Ảnh đã tải lên",
           "cover": "Ảnh bìa",
           "setCover": "Đặt làm bìa",
-          "remove": "Xóa"
+          "remove": "Xóa",
+          "success": "Đã tải lên thành công"
+        },
+        "uploadButton": "Tải phương tiện",
+        "upload": {
+          "button": "Tải lên {count} ảnh",
+          "uploading": "Đang tải lên...",
+          "success": "Tải lên ảnh thành công",
+          "failed": "Tải lên ảnh thất bại",
+          "noPendingImages": "Không có ảnh nào để tải lên",
+          "images": "ảnh"
+        },
+        "validation": {
+          "pendingImages": "Vui lòng tải lên các ảnh đang chờ trước khi tiếp tục",
+          "minImages": "Vui lòng tải lên ít nhất 4 ảnh (video là tùy chọn)"
         },
         "video": {
           "title": "Video (Tùy chọn)",
-          "placeholder": "URL YouTube hoặc TikTok...",
-          "help": "Hỗ trợ YouTube và TikTok để trình bày bất động sản sinh động hơn",
+          "placeholder": "URL YouTube...",
+          "help": "Hỗ trợ YouTube để trình bày bất động sản sinh động hơn",
           "external": {
             "save": "Lưu liên kết",
             "saving": "Đang lưu...",
             "success": "Đã lưu liên kết video",
             "error": "Không thể lưu liên kết video",
-            "uploadedNote": "Bạn đã thêm link YouTube/TikTok. Xóa link để tải video lên."
+            "uploadedNote": "Bạn đã thêm link YouTube."
           },
           "upload": {
             "title": "Tải video lên",
@@ -823,7 +966,7 @@
             "success": "Tải video lên thành công!",
             "retry": "Thử lại",
             "previewNote": "Xem trước video trước khi tải lên",
-            "uploadedNote": "Bạn đã tải video lên. Xóa video để nhập link YouTube/TikTok."
+            "uploadedNote": "Bạn đã tải video lên."
           },
           "uploadedNote": "Bạn đã tải video lên. Nhập URL mới sẽ thay thế video đã tải."
         },
@@ -835,8 +978,8 @@
           "normalCount": "12-24 ảnh",
           "do": {
             "title": "NÊN",
-            "placeholder": "URL YouTube hoặc TikTok...",
-            "help": "Hỗ trợ YouTube và TikTok để trình bày bất động sản sinh động hơn",
+            "placeholder": "URL YouTube...",
+            "help": "Hỗ trợ YouTube để trình bày bất động sản sinh động hơn",
             "external": {
               "save": "Lưu liên kết",
               "saving": "Đang lưu...",
@@ -874,6 +1017,7 @@
           "description": "Tải ảnh bìa sẽ hiển thị đầu tiên trong bộ sưu tập",
           "uploadCta": "Tải ảnh bìa",
           "replaceCta": "Thay ảnh bìa",
+          "deleteCta": "Xóa",
           "badge": "Ảnh bìa",
           "uploading": "Đang tải lên..."
         }
@@ -883,10 +1027,14 @@
         "listingInfo": "Thông tin Tin đăng",
         "mapPreview": "Xem trước Bản đồ",
         "district": "Quận",
+        "street": "Đường/Phố",
+        "streetPlaceholder": "Nhập đường/phố bất động sản...",
         "hcmc": "TP.HCM",
         "title": "Thông tin Bất động sản",
         "description": "Nhập chi tiết về tin đăng bất động sản",
         "loading": "Đang tải...",
+        "noTitle": "Chưa có tiêu đề",
+        "propertyCover": "Ảnh bìa bất động sản",
         "listingType": "Loại tin đăng",
         "listingTypes": {
           "rent": "Cho thuê",
@@ -899,8 +1047,13 @@
           "villa": "Biệt thự",
           "office": "Văn phòng",
           "shop": "Cửa hàng",
-          "land": "Đất"
+          "land": "Đất",
+          "studio": "Studio"
         },
+        "area": "Diện tích",
+        "price": "Giá",
+        "bedrooms": "Phòng ngủ",
+        "bathrooms": "Phòng tắm",
         "propertyAddress": "Địa chỉ Bất động sản",
         "addressPlaceholder": "Nhập địa chỉ bất động sản...",
         "addressHint": "Vui lòng nhập địa chỉ chính xác để khách hàng dễ tìm",
@@ -925,7 +1078,8 @@
             "districts": "Đang tải quận/huyện...",
             "wards": "Đang tải phường/xã...",
             "streets": "Đang tải đường phố...",
-            "projects": "Đang tải dự án..."
+            "projects": "Đang tải dự án...",
+            "loadingMore": "Đang tải thêm..."
           },
           "placeholders": {
             "selectProvince": "Chọn tỉnh/thành phố",
@@ -955,7 +1109,27 @@
             "loadDistrictsFailed": "Không thể tải danh sách quận/huyện",
             "loadWardsFailed": "Không thể tải danh sách phường/xã",
             "convertMissingFields": "Vui lòng chọn đầy đủ thông tin địa chỉ",
-            "convertFailed": "Không thể chuyển đổi địa chỉ"
+            "convertFailed": "Không thể chuyển đổi địa chỉ",
+            "loadMergeHistoryFailed": "Không thể tải danh sách địa chỉ cũ",
+            "legacyAddressRequired": "Vui lòng chọn địa chỉ cũ trước"
+          },
+          "geocode": {
+            "success": "Đã tự động định vị địa chỉ trên bản đồ",
+            "failed": "Không thể tự động định vị địa chỉ",
+            "loading": "Đang lấy tọa độ...",
+            "legacyButton": "Lấy tọa độ từ Google Map",
+            "legacyDescription": "Nhấn nút để lấy tọa độ (vĩ độ, kinh độ) từ Google Map dựa trên địa chỉ cũ"
+          },
+          "legacyAddress": "Địa chỉ hiển thị trên tin đăng (phiên bản cũ)",
+          "legacyAddressPlaceholder": "Địa chỉ cũ sẽ hiển thị ở đây",
+          "legacySelection": {
+            "label": "Chọn địa chỉ cũ (Tuỳ chọn)",
+            "description": "Địa chỉ mới này được gộp từ nhiều địa chỉ cũ. Vui lòng chọn địa chỉ phù hợp với bất động sản của bạn.",
+            "placeholder": "Chọn địa chỉ cũ...",
+            "searchPlaceholder": "Tìm kiếm địa chỉ cũ...",
+            "noResults": "Không tìm thấy địa chỉ cũ",
+            "loading": "Đang tải địa chỉ cũ...",
+            "format": "{province} - {district} - {ward}"
           }
         },
         "useMyLocation": "Sử dụng vị trí của tôi",
@@ -968,15 +1142,19 @@
         "selectedLocation": "Vị trí đã chọn",
         "zoom": "Thu phóng",
         "coordinates": "Tọa độ",
-        "area": "Diện tích",
         "areaPlaceholder": "Nhập diện tích (m²)",
-        "price": "Giá",
         "pricePlaceholder": "Nhập giá (VND)",
         "interiorCondition": "Tình trạng nội thất",
         "interiorConditions": {
           "furnished": "Đầy đủ nội thất",
           "semiFurnished": "Bán nội thất",
           "unfurnished": "Không nội thất"
+        },
+        "categoryType": "Loại danh mục",
+        "furnishing": {
+          "FULLY_FURNISHED": "Đầy đủ nội thất",
+          "SEMI_FURNISHED": "Bán nội thất",
+          "UNFURNISHED": "Không nội thất"
         },
         "houseDirection": "Hướng nhà",
         "houseDirections": {
@@ -1000,7 +1178,10 @@
           "southeast": "Đông Nam",
           "southwest": "Tây Nam"
         },
+        "mapNotSelected": "Chưa chọn vị trí",
+        "clickButtonToSelectLocation": "Nhấn nút 'Sử dụng vị trí của tôi' để chọn vị trí trên bản đồ",
         "amenities": {
+          "title": "Tiện nghi Bất động sản",
           "ac": "Điều hòa",
           "fridge": "Tủ lạnh",
           "washingMachine": "Máy giặt",
@@ -1031,9 +1212,11 @@
       },
       "propertyDetails": {
         "propertyTypes": {
+          "room": "Phòng trọ",
           "apartment": "Căn hộ",
           "house": "Nhà",
-          "villa": "Biệt thự",
+          "office": "Văn phòng",
+          "store": "Mặt bằng/Cửa hàng",
           "studio": "Studio"
         },
         "interiorConditions": {
@@ -1044,6 +1227,7 @@
         "propertyType": "Loại Bất động sản",
         "area": "Diện tích",
         "price": "Giá",
+        "priceUnit": "Đơn vị giá",
         "interiorCondition": "Tình trạng nội thất",
         "rooms": "Phòng",
         "moveInDate": "Ngày chuyển vào",
@@ -1063,10 +1247,12 @@
         }
       },
       "utilitiesStructure": {
+        "priceUnit": "Đơn vị giá",
         "monthlyUtilities": "Chi phí hàng tháng",
         "waterPrice": "Giá nước",
         "electricityPrice": "Giá điện",
         "internetPrice": "Giá internet",
+        "serviceFee": "Phí dịch vụ",
         "utilityOptions": {
           "provider": "Nhà cung cấp",
           "fixed": "Cố định",
@@ -1099,15 +1285,18 @@
         "dateFormat": "Định dạng: dd/mm/yyyy",
         "placeholders": {
           "selectListingType": "Chọn loại tin đăng",
+          "selectCategoryType": "Chọn loại danh mục",
           "selectPropertyType": "Chọn loại bất động sản",
           "enterArea": "Nhập diện tích",
           "enterPrice": "Nhập giá",
+          "selectPriceUnit": "Chọn đơn vị giá",
           "selectInteriorCondition": "Chọn tình trạng nội thất",
           "selectHouseDirection": "Chọn hướng nhà",
           "selectBalconyDirection": "Chọn hướng ban công",
           "selectWaterPrice": "Chọn giá nước",
           "selectElectricityPrice": "Chọn giá điện",
           "selectInternetPrice": "Chọn giá internet",
+          "selectServiceFee": "Chọn phí dịch vụ",
           "enterFullName": "Nhập họ và tên",
           "enterEmail": "Nhập email",
           "enterPhoneNumber": "Nhập số điện thoại",
@@ -1130,10 +1319,15 @@
         "description": "Dùng AI để tạo nội dung hấp dẫn",
         "listingTitle": "Tiêu đề Tin đăng",
         "propertyDescription": "Mô tả Bất động sản",
-        "titleLength": "Độ dài tối ưu: 30-99 ký tự. Hiện tại: 60 ký tự",
+        "titleLength": "Độ dài tối ưu: 30-99 ký tự",
         "descriptionHint": "Mô tả AI bao gồm lợi ích vị trí, tiện ích xung quanh và đối tượng mục tiêu",
         "addressReadOnlyHint": "Địa chỉ này được tự động tạo từ phần Thông tin Bất động sản bên trên",
-        "amenitiesSyncHint": "Tiện nghi được đồng bộ tự động với phần Thông tin Bất động sản"
+        "amenitiesSyncHint": "Tiện nghi được đồng bộ tự động với phần Thông tin Bất động sản",
+        "selectTone": "Chọn giọng điệu",
+        "tone": {
+          "friendly": "Thân thiện",
+          "professionally": "Chuyên nghiệp"
+        }
       },
       "aiValuation": {
         "title": "Định giá AI",
@@ -1172,10 +1366,11 @@
           "predicting": "Đang dự đoán...",
           "incompleteData": "Vui lòng điền đầy đủ thông tin địa chỉ, diện tích và tọa độ GPS",
           "types": {
+            "room": "Phòng trọ",
             "apartment": "Căn hộ",
             "house": "Nhà",
-            "villa": "Biệt thự",
-            "studio": "Studio"
+            "office": "Văn phòng",
+            "store": "Mặt bằng/Cửa hàng"
           },
           "districts": {
             "quan1": "Quận 1",
@@ -1429,7 +1624,7 @@
       "back": "Quay lại"
     },
     "toggles": {
-      "verified": "Tin xác thực",
+      "verified": "Đã xác thực",
       "professionalBroker": "Môi giới chuyên nghiệp",
       "location": "Vị trí của bạn",
       "video": "Có video",
@@ -1439,16 +1634,25 @@
       "propertyType": "Loại nhà đất",
       "priceRange": "Khoảng giá",
       "areaRange": "Diện tích",
+      "bedroomRange": "Phòng ngủ",
       "frontage": "Mặt tiền",
       "orientation": "Hướng nhà",
       "moveInTime": "Thời gian vào ở",
       "electricityPrice": "Giá điện",
       "waterPrice": "Giá nước",
       "internetPrice": "Giá internet",
+      "serviceFee": "Phí dịch vụ",
       "amenities": "Tiện ích",
       "media": "Phương tiện",
       "areaProject": "Khu vực & Dự án",
       "address": "Địa chỉ"
+    },
+    "propertyType": {
+      "any": "Tất cả",
+      "apartment": "Căn hộ chung cư",
+      "house": "Nhà nguyên căn",
+      "room": "Phòng trọ",
+      "studio": "Căn hộ Studio"
     },
     "area": {
       "any": "Tất cả",
@@ -1470,6 +1674,13 @@
       "min": "Mặt tiền tối thiểu",
       "max": "Mặt tiền tối đa",
       "unit": "m"
+    },
+    "bedroom": {
+      "title": "Khoảng phòng ngủ",
+      "any": "Tất cả",
+      "min": "Số phòng ngủ tối thiểu",
+      "max": "Số phòng ngủ tối đa",
+      "unit": "phòng"
     },
     "orientation": {
       "title": "Hướng nhà",
@@ -1511,6 +1722,13 @@
         "any": "Tất cả",
         "negotiable": "Thỏa thuận",
         "owner": "Do chủ nhà quy định"
+      },
+      "serviceFee": {
+        "title": "Phí dịch vụ",
+        "any": "Tất cả",
+        "negotiable": "Thỏa thuận",
+        "owner": "Do chủ nhà quy định",
+        "provider": "Theo nhà cung cấp"
       }
     },
     "amenities": {
@@ -1531,6 +1749,13 @@
     },
     "media": {
       "title": "Phương tiện",
+      "description": "Tải lên ảnh và video bất động sản của bạn",
+      "uploadButton": "Tải lên tất cả",
+      "uploading": "Đang tải lên...",
+      "uploadSuccess": "Tải phương tiện thành công",
+      "uploadFailed": "Không thể tải phương tiện",
+      "uploadRequired": "Vui lòng tải phương tiện trước khi tiếp tục",
+      "pendingImages": "ảnh chờ tải lên",
       "video": "Video",
       "threeSixty": "Hình 3D & 360°"
     },
@@ -1554,7 +1779,15 @@
       "clear": "Đặt lại",
       "apply": "Áp dụng",
       "add": "+ Thêm",
-      "added": "Đã chọn"
+      "added": "Đã chọn",
+      "structureToggle": {
+        "newTitle": "Địa chỉ mới ({count} tỉnh)",
+        "legacyTitle": "Địa chỉ cũ ({count} tỉnh)",
+        "newLevels": "2 cấp: Tỉnh/TP - Phường/Xã",
+        "legacyLevels": "3 cấp: Tỉnh/TP - Quận/Huyện - Phường/Xã",
+        "newDescription": "Địa chỉ mới ({count} tỉnh) chỉ có 2 cấp: Tỉnh/Thành phố → Phường/Xã",
+        "legacyDescription": "Địa chỉ cũ ({count} tỉnh) có 3 cấp: Tỉnh/TP - Quận/Huyện - Phường/Xã"
+      }
     },
     "address": {
       "title": "Địa chỉ",
@@ -1657,15 +1890,23 @@
         "totalMany": "{count} tin đăng"
       },
       "status": {
-        "all": "Tất cả",
-        "expired": "Hết hạn",
-        "expiring": "Sắp hết hạn",
-        "active": "Đang hiển thị",
-        "pending": "Chờ duyệt",
-        "review": "Đang duyệt",
-        "payment": "Chờ thanh toán",
-        "rejected": "Bị từ chối",
-        "archived": "Đã lưu trữ"
+        "ALL": "Tất cả",
+        "EXPIRED": "Hết hạn",
+        "EXPIRED_SOON": "Sắp hết hạn",
+        "DISPLAYING": "Đang hiển thị",
+        "IN_REVIEW": "Chờ duyệt",
+        "PENDING_PAYMENT": "Chờ thanh toán",
+        "REJECTED": "Bị từ chối",
+        "VERIFIED": "Đã xác thực",
+        "ARCHIVED": "Đã lưu trữ"
+      },
+      "propertyTypes": {
+        "0": "Tất cả Loại",
+        "1": "Phòng trọ",
+        "2": "Căn hộ",
+        "3": "Nhà",
+        "4": "Văn phòng",
+        "5": "Mặt bằng/Cửa hàng"
       },
       "empty": {
         "title": "Chưa có tin đăng",
@@ -1717,7 +1958,22 @@
         "listingCode": "Mã tin",
         "postedDate": "Ngày đăng",
         "expiryDate": "Ngày hết hạn",
+        "postDate": "Ngày đăng",
+        "common": {
+          "notAvailable": "Không có"
+        },
         "expiredMessage": "Tin đăng này đã hết hạn",
+        "vipTypes": {
+          "NORMAL": "Tin thường",
+          "SILVER": "VIP Bạc",
+          "GOLD": "VIP Vàng",
+          "DIAMOND": "VIP Kim cương"
+        },
+        "statistics": {
+          "views": "Lượt xem",
+          "contacts": "Liên hệ",
+          "customers": "Khách hàng"
+        },
         "actions": {
           "edit": "Sửa",
           "editFull": "Sửa tin",
@@ -1733,6 +1989,16 @@
           "activityHistory": "Lịch sử hoạt động",
           "takeDown": "Hạ tin",
           "delete": "Xóa tin"
+        },
+        "deleteConfirm": {
+          "title": "Xóa Tin Đăng",
+          "description": "Bạn có chắc chắn muốn xóa tin đăng này? Hành động này không thể hoàn tác.",
+          "confirm": "Xóa",
+          "cancel": "Hủy"
+        },
+        "toast": {
+          "deleteSuccess": "Tin đăng đã được xóa thành công",
+          "deleteError": "Không thể xóa tin đăng"
         }
       }
     },
@@ -1751,6 +2017,14 @@
         "bedrooms": "phòng ngủ",
         "bathrooms": "phòng tắm",
         "edit": "Chỉnh sửa"
+      },
+      "delete": {
+        "confirmTitle": "Xóa bản nháp",
+        "confirmMessage": "Bạn có chắc chắn muốn xóa bản nháp này? Hành động này không thể hoàn tác.",
+        "cancel": "Hủy",
+        "confirm": "Xóa",
+        "success": "Đã xóa bản nháp thành công",
+        "error": "Không thể xóa bản nháp"
       }
     },
     "customers": {
@@ -1823,9 +2097,11 @@
     "property": {
       "price": "Khoảng giá",
       "pricePerSqm": "tr/m²",
-      "pricePerMonth": "/ tháng",
+      "pricePerMonth": "tháng",
+      "pricePerYear": "năm",
       "area": "Diện tích",
       "bedrooms": "Phòng ngủ",
+      "bedroomsAbbr": "PN",
       "bathrooms": "Phòng tắm",
       "floors": "Số tầng",
       "frontWidth": "Mặt tiền",
@@ -1837,6 +2113,8 @@
       "posted": "Đăng",
       "description": "Mô tả",
       "amenities": "Tiện ích",
+      "newAddress": "Địa chỉ mới",
+      "legacyAddress": "Địa chỉ cũ",
       "smartPrice": {
         "title": "Đánh giá giá thông minh",
         "description": "AI so sánh dữ liệu thị trường để giúp bạn quyết định.",
@@ -1844,8 +2122,15 @@
         "score": "Điểm"
       }
     },
+    "address": {
+      "new": "Địa chỉ mới",
+      "old": "Địa chỉ cũ"
+    },
+    "links": {
+      "viewSellerListings": "Xem tất cả tin đăng của người bán"
+    },
     "sections": {
-      "features": "Đặc điểm bất động sản",
+      "features": "Tiện ích",
       "description": "Thông tin mô tả",
       "priceHistory": "Lịch sử giá bán nhà riêng tại {district}",
       "location": "Xem trên bản đồ",
@@ -1928,6 +2213,7 @@
     "listingCount": "Hiện có {count} bất động sản.",
     "emailNotification": "Nhận email tin mới",
     "sort": {
+      "title": "Sắp xếp",
       "default": "Mặc định",
       "priceAsc": "Giá tăng dần",
       "priceDesc": "Giá giảm dần",
@@ -1966,10 +2252,9 @@
       "bedroom": {
         "title": "Lọc theo số phòng ngủ",
         "1": "1 phòng ngủ",
-        "2": "2 phòng ngủ",
-        "3": "3 phòng ngủ",
-        "4": "4 phòng ngủ",
-        "5plus": "5+ phòng ngủ"
+        "2to3": "2 - 3 phòng ngủ",
+        "4to5": "4 - 5 phòng ngủ",
+        "6plus": "6+ phòng ngủ"
       }
     }
   },
@@ -1984,6 +2269,49 @@
       "title": "Vui lòng đăng nhập",
       "description": "Bạn cần đăng nhập để truy cập trang này.",
       "loginButton": "Đăng nhập"
+    }
+  },
+  "paymentStatusPage": {
+    "title": "Trạng thái thanh toán",
+    "subtitle": "Chúng tôi đang theo dõi giao dịch của bạn. Trang này sẽ tự động cập nhật.",
+    "labels": {
+      "transactionRef": "Mã giao dịch",
+      "checking": "Đang kiểm tra"
+    },
+    "actions": {
+      "backHome": "Về trang chủ",
+      "retry": "Thử lại",
+      "refresh": "Tải lại"
+    },
+    "errors": {
+      "missingRef": "Thiếu mã giao dịch.",
+      "loadFailed": "Không tải được trạng thái giao dịch."
+    },
+    "states": {
+      "completed": {
+        "title": "Thanh toán thành công",
+        "desc": "Giao dịch của bạn đã hoàn tất. Cảm ơn bạn!"
+      },
+      "pending": {
+        "title": "Đang chờ xác nhận",
+        "desc": "Đang chờ xác nhận từ nhà cung cấp thanh toán..."
+      },
+      "failed": {
+        "title": "Thanh toán thất bại",
+        "desc": "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức khác."
+      },
+      "cancelled": {
+        "title": "Đã hủy thanh toán",
+        "desc": "Bạn đã hủy giao dịch trước khi hoàn tất."
+      },
+      "refunded": {
+        "title": "Đã hoàn tiền",
+        "desc": "Khoản thanh toán này đã được hoàn tiền."
+      },
+      "unknown": {
+        "title": "Trạng thái không xác định",
+        "desc": "Không thể xác định trạng thái thanh toán."
+      }
     }
   },
   "guides": {

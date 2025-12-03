@@ -41,10 +41,20 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const { validToken } = useValidToken()
 
+  // Initialize auth on mount/reload - check cookies sync with store
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         const tokens = getStoredTokens()
+
+        // If localStorage says authenticated but no cookies → logout
+        if (isAuthenticated && !tokens?.accessToken) {
+          console.warn('[Auth] Cookies missing on load, logging out...')
+          logout()
+          return
+        }
+
+        // If we have tokens, validate them
         if (tokens?.accessToken) {
           const result = await validToken(tokens.accessToken)
           if (result.success && 'data' in result && result.data?.valid) {

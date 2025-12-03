@@ -1,10 +1,8 @@
 import HomepageHeader from '@/components/molecules/homepageHeader'
 import HeroPromoCarousel from '@/components/organisms/heroPromoCarousel'
-import PropertyList from '@/components/organisms/propertyList'
-import { PropertyCard } from '@/api/types/property.type'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Button } from '@/components/atoms/button'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import { useListContext } from '@/contexts/list/useListContext'
@@ -12,42 +10,64 @@ import LocationBrowseSection from '@/components/organisms/locationBrowseSection'
 import PromoFeaturesSection from '@/components/organisms/promoFeaturesSection'
 import TopInterestSection from '@/components/organisms/topInterestSection'
 import { List } from '@/contexts/list'
-import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
+import dynamic from 'next/dynamic'
 import ClearFilterButton from '@/components/atoms/clearFilterButton'
-import type { VipTier } from '@/api/types/vip-tier.type'
-import type { GetPackagesResponse } from '@/api/types/memembership.type'
-import type { CityItem } from '@/components/organisms/locationBrowseSection/types'
+import { useRecommendedListingsByVip } from '@/hooks/useListings'
+import VipPropertySection from '@/components/organisms/vipPropertySection'
+
+const ResidentialFilterResponsive = dynamic(
+  () => import('@/components/molecules/residentialFilterResponsive'),
+  {
+    ssr: false,
+  },
+)
+import type { ProvinceStatsItem } from '@/api/types'
 
 interface HomepageTemplateProps {
-  onPropertyClick?: (property: PropertyCard) => void
-  vipTiers?: VipTier[]
-  membershipPackages?: GetPackagesResponse
-  cities?: CityItem[]
+  cities?: ProvinceStatsItem[]
 }
 
-const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
-  onPropertyClick,
-  cities,
-}) => {
+const HomepageTemplate: React.FC<HomepageTemplateProps> = ({ cities }) => {
   const t = useTranslations()
   const { pagination } = useListContext()
   const router = useRouter()
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
+  const clickCountRef = useRef(0)
 
-  const handlePropertyClick = (property: PropertyCard) => {
-    console.log('Property clicked:', property)
-    onPropertyClick?.(property)
-  }
+  const diamondListings = useRecommendedListingsByVip({
+    vipType: 'DIAMOND',
+    size: 4,
+  })
 
-  const handleSelectCity = useCallback(
-    (city: CityItem) => {
-      router.push({
-        pathname: PUBLIC_ROUTES.RESIDENTIAL_LIST,
-        query: { city: city.name },
-      })
-    },
-    [router],
-  )
+  const goldListings = useRecommendedListingsByVip({
+    vipType: 'GOLD',
+    size: 4,
+  })
+
+  const silverListings = useRecommendedListingsByVip({
+    vipType: 'SILVER',
+    size: 4,
+  })
+
+  const hasNext = pagination.currentPage < pagination.totalPages
+
+  // Track clicks and navigate to page 2 after 2 clicks
+  const handleLoadMoreClick = useCallback(() => {
+    clickCountRef.current += 1
+
+    if (clickCountRef.current >= 2) {
+      // After 2 clicks, navigate to list page with page=2
+      router.push(`${PUBLIC_ROUTES.LISTING_LISTING}?page=2`)
+    } else {
+      // First click - stay on homepage but could trigger more data load
+      router.push(PUBLIC_ROUTES.LISTING_LISTING)
+    }
+  }, [router])
+
+  // Handler for Apply button - navigate to properties page with filters
+  const handleFilterApply = useCallback(() => {
+    router.push(PUBLIC_ROUTES.LISTING_LISTING)
+  }, [router])
 
   return (
     <div className='w-full'>
@@ -79,7 +99,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                 </div>
                 <div className='backdrop-blur-sm bg-white/75 dark:bg-black/50 p-3 sm:p-4 rounded-xl shadow-lg ring-1 ring-white/40 dark:ring-white/10'>
                   <div className='flex flex-col gap-3'>
-                    <ResidentialFilterResponsive />
+                    <ResidentialFilterResponsive onApply={handleFilterApply} />
                     <div className='flex justify-between items-center'>
                       {/* ClearFilterButton is always present but hidden on homepage by default */}
                       <ClearFilterButton show={false} onClick={() => {}} />
@@ -90,20 +110,35 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
             </section>
             <TopInterestSection />
 
-            <PropertyList onPropertyClick={handlePropertyClick} />
+            {/* VIP Property Sections */}
+            <div className='space-y-8'>
+              <VipPropertySection
+                vipType='DIAMOND'
+                listings={diamondListings.listings}
+                isLoading={diamondListings.isLoading}
+              />
+              <VipPropertySection
+                vipType='GOLD'
+                listings={goldListings.listings}
+                isLoading={goldListings.isLoading}
+              />
+              <VipPropertySection
+                vipType='SILVER'
+                listings={silverListings.listings}
+                isLoading={silverListings.isLoading}
+              />
+            </div>
+
             <div className='mt-8 flex flex-col items-center gap-4'>
-              {pagination.hasNext && !hasLoadedOnce && (
+              {hasNext && !hasLoadedOnce && (
                 <List.LoadMore onAfterLoad={() => setHasLoadedOnce(true)} />
               )}
-              {(hasLoadedOnce || !pagination.hasNext) && (
-                <Button
-                  onClick={() => router.push(PUBLIC_ROUTES.RESIDENTIAL_LIST)}
-                  className='px-6'
-                >
+              {(hasLoadedOnce || !hasNext) && (
+                <Button onClick={handleLoadMoreClick} className='px-6'>
                   {t('common.loadMore')} ➜
                 </Button>
               )}
-              {!pagination.hasNext && !hasLoadedOnce && (
+              {!hasNext && !hasLoadedOnce && (
                 <span className='text-xs text-muted-foreground'>
                   {t('common.endOfResults')}
                 </span>
@@ -112,7 +147,6 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
             <LocationBrowseSection
               cities={cities}
               loading={cities === undefined}
-              onSelectCity={handleSelectCity}
             />
             <PromoFeaturesSection />
           </div>

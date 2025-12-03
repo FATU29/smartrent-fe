@@ -11,7 +11,14 @@ const nextConfig: NextConfig = {
           {
             protocol: 'https',
             hostname: IMAGE_REMOTE_HOST,
-            // pathname: '/media/**' // optional, for more strict matching
+          },
+          {
+            protocol: 'https',
+            hostname: 'res.cloudinary.com',
+          },
+          {
+            protocol: 'https',
+            hostname: 'imagedelivery.net',
           },
         ]
       : [],

@@ -13,7 +13,7 @@ import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
-import { MembershipPackageLevel } from '@/api/types/memembership.type'
+// MembershipPackageLevel is imported below with BenefitType
 import { PricingHeader } from './PricingHeader'
 import { PricingFeatures } from './PricingFeatures'
 import {
@@ -22,6 +22,8 @@ import {
   formatDiscountText,
 } from './translations'
 import { getCardStyles, getButtonStyles } from './styles'
+import type { Membership } from '@/api/types/membership.type'
+import { MembershipPackageLevel } from '@/api/types/membership.type'
 
 export const getMembershipLevelIcon = (
   level: MembershipPackageLevel,
@@ -41,28 +43,14 @@ export const getMembershipLevelIcon = (
   return iconMap[level]
 }
 
-export interface PricingPlanFeature {
+export interface PricingPlanBenefit {
   readonly label: string
   readonly active: boolean
   readonly hint?: string
 }
 
-export interface PricingPlanFeatureGroup {
-  readonly title?: string
-  readonly features: readonly PricingPlanFeature[]
-}
-
 export interface PricingPlanCardProps {
-  readonly name: string
-  readonly description?: string
-  readonly price: number | string
-  readonly pricePeriod?: string
-  readonly discountPercent?: number
-  readonly savingAmountText?: string
-  readonly featureGroups: readonly PricingPlanFeatureGroup[]
-  readonly ctaLabel?: string
-  readonly icon?: React.ReactNode
-  readonly packageLevel?: MembershipPackageLevel
+  readonly membership: Membership
   readonly isBestSeller?: boolean
   readonly onSelect?: () => void
   readonly className?: string
@@ -73,16 +61,7 @@ export interface PricingPlanCardProps {
 }
 
 const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
-  name,
-  description,
-  price,
-  pricePeriod,
-  discountPercent,
-  savingAmountText,
-  featureGroups,
-  ctaLabel,
-  icon,
-  packageLevel,
+  membership,
   isBestSeller = false,
   onSelect,
   className,
@@ -96,21 +75,12 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
   const locale = language
 
   const translations = getPricingTranslations(t)
-
-  const formattedPrice =
-    typeof price === 'number'
-      ? formatByLocale(price, locale)
-      : formatByLocale(
-          parseInt(String(price).replace(/[^0-9]/g, '')) || 0,
-          locale,
-        )
-
-  const resolvedPricePeriod = pricePeriod || getPricePeriodByLocale(locale)
-  const resolvedCta = ctaLabel || translations.buyNow
-  const discountText = formatDiscountText(discountPercent)
-
-  const resolvedIcon =
-    icon || (packageLevel && getMembershipLevelIcon(packageLevel))
+  // Directly use membership fields
+  const formattedPrice = formatByLocale(membership.originalPrice, locale)
+  const resolvedPricePeriod = getPricePeriodByLocale(locale)
+  const resolvedCta = translations.buyNow
+  const discountText = formatDiscountText(membership.discountPercentage)
+  const resolvedIcon = getMembershipLevelIcon(membership.packageLevel)
 
   return (
     <Card
@@ -122,12 +92,11 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
           isBestSeller={isBestSeller}
           bestSellerLabel={translations.bestSeller}
           icon={resolvedIcon}
-          name={name}
-          description={description}
+          name={membership.packageName}
+          description={membership.description}
           formattedPrice={formattedPrice}
           resolvedPricePeriod={resolvedPricePeriod}
           discountText={discountText}
-          savingAmountText={savingAmountText}
           saveUpToText={translations.saveUpTo}
           locale={locale}
           compact={compact}
@@ -135,7 +104,7 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
         />
       </CardHeader>
       <CardContent>
-        <PricingFeatures featureGroups={featureGroups} compact={compact} />
+        <PricingFeatures benefits={membership.benefits} compact={compact} />
       </CardContent>
       <CardFooter className={cn('mt-auto', compact ? 'pt-3' : 'pt-6')}>
         <Button

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Dialog, DialogContent } from '@/components/atoms/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  VisuallyHidden,
+} from '@/components/atoms/dialog'
 import { useTranslations } from 'next-intl'
-import { ListFilters } from '@/contexts/list/index.type'
+import { ListingFilterRequest } from '@/api/types'
 import MobileFilterHeader from '@/components/atoms/mobileFilter/header'
 import MobileFilterActionBar from '@/components/atoms/mobileFilter/actionBar'
 import MobileFilterMainView from '@/components/molecules/mobileFilter/mainView'
@@ -9,70 +14,76 @@ import RangeView from '@/components/molecules/mobileFilter/rangeView'
 import SimpleListView from '@/components/molecules/mobileFilter/simpleListView'
 import OrientationView from '@/components/molecules/mobileFilter/orientationView'
 import AmenitiesView from '@/components/molecules/mobileFilter/amenitiesView'
-import AddressView from '@/components/molecules/mobileFilter/addressView'
-import { AddressFilterData } from '@/components/molecules/filterAddress'
+import PropertyTypeView from '@/components/molecules/mobileFilter/propertyTypeView'
+import { useListContext } from '@/contexts/list/useListContext'
+import AddressFilterView from '../mobileFilter/addressFilterView'
+import { useRouter } from 'next/router'
+import { navigateToPropertiesWithFilters } from '@/utils/filters'
 
-// ResidentialFilterDialog
-// Reusable full-screen (mobile) or centered (desktop) dialog hosting the multi-step filter views.
-// Does not render its own trigger – parent controls open state.
 interface ResidentialFilterDialogProps {
-  value: ListFilters
-  onChange: (filters: ListFilters) => void
-  onClear: () => void
-  onSearch?: (q: string) => void // optional (mobile variant uses it alongside search input)
-  activeCount: number
   open: boolean
   onOpenChange: (open: boolean) => void
   title?: string
-  searchValue?: string
-  onApply?: (filters: ListFilters) => void
+  onApply?: () => void // Custom apply handler (e.g., navigate from homepage to /properties)
+  hideLocationFilter?: boolean // Hide address/location filters for seller page
 }
 
 type ViewKey =
   | 'main'
+  | 'address'
+  | 'propertyType'
   | 'price'
   | 'area'
+  | 'bedroom'
   | 'electricityPrice'
   | 'waterPrice'
   | 'internetPrice'
-  | 'orientation'
+  | 'serviceFee'
+  | 'direction'
   | 'amenities'
-  | 'address'
 
 const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
-  value,
-  onChange,
-  onClear,
-  onSearch,
   open,
   onOpenChange,
   title,
-  searchValue,
-  onApply,
+  onApply: onApplyProp,
+  hideLocationFilter = false,
 }) => {
   const t = useTranslations('residentialFilter')
+  const router = useRouter()
+  const { filters, updateFilters, resetFilters } = useListContext()
   const [view, setView] = useState<ViewKey>('main')
+  const [draft, setDraft] = useState<ListingFilterRequest>(filters)
 
   useEffect(() => {
-    if (open) setView('main')
+    if (open) {
+      setView('main')
+      setDraft(filters)
+    }
   }, [open])
 
+  const update = (partial: Partial<ListingFilterRequest>) => {
+    setDraft((prev) => ({ ...prev, ...partial }) as ListingFilterRequest)
+  }
+
   const apply = () => {
-    if (onApply) {
-      onApply(value)
+    updateFilters({ ...draft, page: 1 })
+
+    // If custom onApply handler is provided (e.g., from homepage), use it
+    if (onApplyProp) {
+      onApplyProp()
+      onOpenChange(false)
       return
     }
-    onChange(value)
-    if (onSearch && searchValue !== undefined) onSearch(searchValue)
+
+    // Default behavior: Navigate to /properties with current filters
+    navigateToPropertiesWithFilters(router, draft)
     onOpenChange(false)
   }
 
-  const update = (partial: Partial<ListFilters>) => {
-    onChange({ ...value, ...partial })
-  }
-
   const resetAndStay = () => {
-    onClear()
+    resetFilters()
+    setDraft({ keyword: '', size: filters.size, page: 1 })
   }
 
   const backToParent = () => setView('main')
@@ -84,11 +95,20 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
 
   const renderBody = () => {
     switch (view) {
+      case 'address':
+        return <AddressFilterView value={draft} onChange={update} />
+      case 'propertyType':
+        return (
+          <PropertyTypeView
+            value={draft.productType}
+            onChange={(v) => update({ productType: v })}
+          />
+        )
       case 'price':
         return (
           <RangeView
             type='price'
-            value={{ min: value.minPrice, max: value.maxPrice }}
+            value={{ min: draft.minPrice, max: draft.maxPrice }}
             onChange={({ min, max }) =>
               update({ minPrice: min, maxPrice: max })
             }
@@ -99,16 +119,27 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         return (
           <RangeView
             type='area'
-            value={{ min: value.minArea, max: value.maxArea }}
+            value={{ min: draft.minArea, max: draft.maxArea }}
             onChange={({ min, max }) => update({ minArea: min, maxArea: max })}
             unit='m²'
+          />
+        )
+      case 'bedroom':
+        return (
+          <RangeView
+            type='bedroom'
+            value={{ min: draft.minBedrooms, max: draft.maxBedrooms }}
+            onChange={({ min, max }) =>
+              update({ minBedrooms: min, maxBedrooms: max })
+            }
+            unit=''
           />
         )
       case 'electricityPrice':
         return (
           <SimpleListView
             type='electricityPrice'
-            value={value.electricityPrice}
+            value={draft.electricityPrice}
             onChange={(v) => update({ electricityPrice: v })}
           />
         )
@@ -116,7 +147,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         return (
           <SimpleListView
             type='waterPrice'
-            value={value.waterPrice}
+            value={draft.waterPrice}
             onChange={(v) => update({ waterPrice: v })}
           />
         )
@@ -124,61 +155,39 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         return (
           <SimpleListView
             type='internetPrice'
-            value={value.internetPrice}
+            value={draft.internetPrice}
             onChange={(v) => update({ internetPrice: v })}
           />
         )
-      case 'orientation':
+      case 'serviceFee':
+        return (
+          <SimpleListView
+            type='serviceFee'
+            value={draft.serviceFee}
+            onChange={(v) => update({ serviceFee: v })}
+          />
+        )
+      case 'direction':
         return (
           <OrientationView
-            value={value.orientation as string | undefined}
-            onChange={(v: string | undefined) => update({ orientation: v })}
+            value={draft.direction}
+            onChange={(v) => update({ direction: v })}
           />
         )
       case 'amenities':
         return (
           <AmenitiesView
-            values={
-              (value.amenities || []) as Array<{ id: number; name?: string }>
-            }
-            onChange={(v) =>
-              update({ amenities: v as Array<{ id: number; name: string }> })
-            }
-          />
-        )
-      case 'address':
-        return (
-          <AddressView
-            value={{
-              province: value.province as string | undefined,
-              district: value.district as string | undefined,
-              ward: value.ward as string | undefined,
-              newProvinceCode: value.newProvinceCode as string | undefined,
-              newWardCode: value.newWardCode as string | undefined,
-              addressStructureType: value.addressStructureType,
-              searchAddress: value.searchAddress,
-              addressEdited: value.addressEdited,
-            }}
-            onChange={(addressData: Partial<AddressFilterData>) =>
-              update({
-                province: addressData.province,
-                district: addressData.district,
-                ward: addressData.ward,
-                newProvinceCode: addressData.newProvinceCode,
-                newWardCode: addressData.newWardCode,
-                addressStructureType: addressData.addressStructureType,
-                searchAddress: addressData.searchAddress,
-                addressEdited: addressData.addressEdited,
-              })
-            }
+            value={draft.amenityIds}
+            onChange={(v) => update({ amenityIds: v })}
           />
         )
       default:
         return (
           <MobileFilterMainView
-            filters={value}
+            filters={draft}
             onNavigate={(v) => setView(v as ViewKey)}
             onUpdate={update}
+            hideLocationFilter={hideLocationFilter}
           />
         )
     }
@@ -193,6 +202,9 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
         showCloseButton={false}
         className='size-full md:h-[90vh] max-w-none md:max-w-[500px] rounded-none md:rounded-lg p-0 flex flex-col'
       >
+        <VisuallyHidden>
+          <DialogTitle>{title || t('actions.filter')}</DialogTitle>
+        </VisuallyHidden>
         <MobileFilterHeader
           title={title || t('actions.filter')}
           onClose={closeDialog}

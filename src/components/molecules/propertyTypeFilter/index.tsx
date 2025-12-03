@@ -18,13 +18,11 @@ const PropertyTypeFilter: React.FC<PropertyTypeFilterProps> = ({
 
   const propertyTypes = [
     { value: 'any', label: t('all') },
+    { value: 'room', label: t('room') },
     { value: 'apartment', label: t('apartment') },
-    { value: 'studio', label: t('studio') },
-    { value: 'villa', label: t('villa') },
     { value: 'house', label: t('house') },
-    { value: 'condo', label: t('condo') },
-    { value: 'townhouse', label: t('townhouse') },
-    { value: 'penthouse', label: t('penthouse') },
+    { value: 'office', label: t('office') },
+    { value: 'store', label: t('store') },
   ]
 
   return (

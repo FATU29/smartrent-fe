@@ -18,6 +18,7 @@ import { fontVariables } from '@/theme/fonts'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import AuthRouteGate from '@/components/utility/AuthRouteGate'
+import ErrorBoundary from '@/components/atoms/errorBoundary'
 
 const messages = {
   vi,
@@ -62,8 +63,10 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
 
 export default function App(props: AppPropsWithLayout) {
   return (
-    <SwitchLanguageProvider>
-      <AppContent {...props} />
-    </SwitchLanguageProvider>
+    <ErrorBoundary>
+      <SwitchLanguageProvider>
+        <AppContent {...props} />
+      </SwitchLanguageProvider>
+    </ErrorBoundary>
   )
 }

@@ -4,230 +4,412 @@ import React, {
   useState,
   ReactNode,
   useMemo,
+  useEffect,
 } from 'react'
-import type { VipTierCode } from '@/api/types/vip-tier.type'
-import type { PriceType } from '@/api/types/property.type'
-
-// Property Information Types
-export interface PropertyInfo {
-  // Basic Info
-  propertyAddress: string
-  searchAddress: string
-  coordinates: {
-    lat: number
-    lng: number
-  }
-
-  // Property Details
-  propertyType: 'room' | 'apartment' | 'house' | 'office' | 'store' // Match PROPERTY_TYPES (excluding 'ALL')
-  area: number
-  price: number
-  interiorCondition: 'furnished' | 'semi-furnished' | 'unfurnished'
-  bedrooms: number
-  bathrooms: number
-  floors: number
-  moveInDate: string
-
-  // Utilities & Structure
-  waterPrice: PriceType
-  electricityPrice: PriceType
-  internetPrice: PriceType
-  houseDirection:
-    | 'north'
-    | 'south'
-    | 'east'
-    | 'west'
-    | 'northeast'
-    | 'northwest'
-    | 'southeast'
-    | 'southwest'
-  balconyDirection:
-    | 'north'
-    | 'south'
-    | 'east'
-    | 'west'
-    | 'northeast'
-    | 'northwest'
-    | 'southeast'
-    | 'southwest'
-  alleyWidth: number
-  frontageWidth: number
-
-  // Contact Information
-  fullName: string
-  email: string
-  phoneNumber: string
-
-  // AI Content
-  listingTitle: string
-  propertyDescription: string
-
-  // Amenities
-  amenities: string[]
-
-  // District and Ward (Legacy structure - 63 provinces)
-  province?: string
-  district: string
-  ward: string
-
-  // Street and Project (Legacy)
-  streetId?: string
-  projectId?: string
-
-  // New structure (34 provinces)
-  newProvinceCode?: string
-  newWardCode?: string
-
-  // Address structure type
-  addressStructureType?: 'legacy' | 'new'
-
-  // Address input mode
-  addressMode?: 'structured' | 'freeText'
-
-  // Whether user manually edited display address (to stop auto-overwrite)
-  propertyAddressEdited?: boolean
-
-  // Media
-  images: MediaItem[]
-  videoUrl: string
-
-  // Package & Configuration
-  selectedMembershipPlanId?: string
-  selectedVoucherPackageId?: string
-  selectedPackageType?: VipTierCode | string // VIP tier code (NORMAL, SILVER, GOLD, DIAMOND)
-  selectedTierId?: number // VIP tier ID from API
-  selectedDuration?: number // Duration in days (10, 15, 30)
-  packageStartDate?: string
-
-  // Applied promotion from membership benefits (free posting)
-  appliedPromotionBenefitId?: number
-  appliedPromotionType?: string
-  appliedPromotionLabel?: string
-}
-
-export interface MediaItem {
-  id: string
-  url: string
-  caption: string
-  isCover: boolean
-}
-
-export interface VideoUploadProgress {
-  isUploading: boolean
-  progress: number
-  fileName: string
-  error: string | null
-  uploadedUrl: string | null
-}
-
-export interface ImageUploadProgress {
-  isUploading: boolean
-  progress: number // 0-100 total across all selected images
-  currentIndex: number // 1-based index of the file being uploaded
-  total: number
-  fileName?: string
-  error: string | null
-}
+import { useNewProvinces, useNewWards } from '@/hooks/useAddress'
+import { MediaService } from '@/api/services'
+import {
+  CreateListingRequest,
+  MediaItem,
+  LISTING_TYPE,
+} from '@/api/types/property.type'
 
 // Context Type
-interface CreatePostContextType {
-  propertyInfo: Partial<PropertyInfo>
-  updatePropertyInfo: (updates: Partial<PropertyInfo>) => void
-  resetPropertyInfo: () => void
-  videoUploadProgress: VideoUploadProgress
-  setVideoUploadProgress: (progress: Partial<VideoUploadProgress>) => void
-  resetVideoUploadProgress: () => void
-  imageUploadProgress: ImageUploadProgress
-  setImageUploadProgress: (progress: Partial<ImageUploadProgress>) => void
-  resetImageUploadProgress: () => void
+interface VideoUploadProgressState {
+  isUploading: boolean
+  progress: number // 0-100
+  error?: string | null
+  fileName?: string | null
 }
 
-// Create Context
+interface ImagesUploadProgressState {
+  isUploading: boolean
+  uploadedCount: number
+  totalCount: number
+  error?: string | null
+}
+
+interface FulltextAddress {
+  newProvinceCode?: string
+  newWardCode?: string
+  // Selected legacy mapping id (when choosing from merge-history list)
+  legacyAddressId?: string
+  // Legacy address text for display and geocoding
+  legacyAddressText?: string
+  // Composed / editable address strings
+  propertyAddress?: string // canonical composed address used for submission preview
+  displayAddress?: string // address shown in UI (may diverge when edited)
+  fullAddressNew?: string // convenience mirror for AI / preview modules
+  propertyAddressEdited?: boolean // user manually edited display/property address; stop auto-composition
+}
+
+interface PendingImage {
+  file: File
+  previewUrl: string
+  isCover?: boolean
+}
+
+interface CreatePostContextType {
+  propertyInfo: CreateListingRequest
+  fulltextAddress: FulltextAddress
+  composedNewAddress: string
+  composedLegacyAddress: string
+  media: Partial<MediaItem>[]
+  updatePropertyInfo: (updates: Partial<CreateListingRequest>) => void
+  resetPropertyInfo: () => void
+  updateFulltextAddress: (updates: Partial<FulltextAddress>) => void
+  resetFulltextAddress: () => void
+  updateMedia: (updates: Partial<MediaItem>) => void
+  resetMedia: () => void
+  videoUploadProgress: VideoUploadProgressState
+  startVideoUpload: (fileName?: string) => void
+  updateVideoUploadProgress: (progress: number) => void
+  setVideoUploadError: (message: string) => void
+  resetVideoUploadProgress: () => void
+  imagesUploadProgress: ImagesUploadProgressState
+  startImagesUpload: (totalCount: number) => void
+  updateImagesUploadProgress: (uploadedCount: number) => void
+  setImagesUploadError: (message: string) => void
+  resetImagesUploadProgress: () => void
+  pendingImages: PendingImage[]
+  addPendingImages: (images: PendingImage[]) => void
+  removePendingImage: (index: number, isCover?: boolean) => void
+  clearPendingImages: () => void
+  uploadPendingImages: () => Promise<Array<Partial<MediaItem>>>
+  isSubmitSuccess: boolean
+  setIsSubmitSuccess: (value: boolean) => void
+}
+
 const CreatePostContext = createContext<CreatePostContextType | undefined>(
   undefined,
 )
 
-// Provider Component
 interface CreatePostProviderProps {
   children: ReactNode
-}
-
-const defaultVideoUploadProgress: VideoUploadProgress = {
-  isUploading: false,
-  progress: 0,
-  fileName: '',
-  error: null,
-  uploadedUrl: null,
-}
-
-const defaultImageUploadProgress: ImageUploadProgress = {
-  isUploading: false,
-  progress: 0,
-  currentIndex: 0,
-  total: 0,
-  fileName: '',
-  error: null,
 }
 
 export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   children,
 }) => {
-  const [propertyInfo, setPropertyInfo] = useState<Partial<PropertyInfo>>({
-    amenities: [],
+  const [propertyInfo, setPropertyInfo] = useState<
+    Partial<CreateListingRequest>
+  >({
+    listingType: LISTING_TYPE.RENT,
   })
-  const [videoUploadProgress, setVideoUploadProgressState] =
-    useState<VideoUploadProgress>(defaultVideoUploadProgress)
-  const [imageUploadProgress, setImageUploadProgressState] =
-    useState<ImageUploadProgress>(defaultImageUploadProgress)
+  const [fulltextAddress, setFulltextAddress] = useState<FulltextAddress>({})
+  const [media, setMedia] = useState<Partial<MediaItem>[]>([])
 
-  const updatePropertyInfo = (updates: Partial<PropertyInfo>) => {
+  const { data: newProvinces = [] } = useNewProvinces()
+  const provinceCodeForWards =
+    fulltextAddress?.newProvinceCode ||
+    (propertyInfo?.address?.new?.provinceCode
+      ? String(propertyInfo.address.new.provinceCode)
+      : undefined)
+  const { data: newWards = [] } = useNewWards(provinceCodeForWards)
+
+  const [videoUploadProgress, setVideoUploadProgress] =
+    useState<VideoUploadProgressState>({
+      isUploading: false,
+      progress: 0,
+      error: null,
+      fileName: null,
+    })
+
+  const [imagesUploadProgress, setImagesUploadProgress] =
+    useState<ImagesUploadProgressState>({
+      isUploading: false,
+      uploadedCount: 0,
+      totalCount: 0,
+      error: null,
+    })
+
+  const [pendingImagesState, setPendingImagesState] = useState<PendingImage[]>(
+    [],
+  )
+
+  const [isSubmitSuccess, setIsSubmitSuccess] = useState<boolean>(false)
+
+  const updatePropertyInfo = (updates: Partial<CreateListingRequest>) => {
     setPropertyInfo((prev) => ({ ...prev, ...updates }))
   }
 
   const resetPropertyInfo = () => {
-    setPropertyInfo({
-      amenities: [],
+    setPropertyInfo({})
+  }
+
+  const updateFulltextAddress = (updates: Partial<FulltextAddress>) => {
+    setFulltextAddress((prev) => ({ ...prev, ...updates }))
+  }
+
+  const resetFulltextAddress = () => {
+    setFulltextAddress({})
+  }
+
+  const updateMedia = (updates: Partial<MediaItem>) => {
+    setMedia((prev) => {
+      if (updates.mediaType === 'VIDEO') {
+        return [...prev.filter((m) => m.mediaType !== 'VIDEO'), updates]
+      }
+      return [...prev, updates]
     })
   }
 
-  const setVideoUploadProgress = (progress: Partial<VideoUploadProgress>) => {
-    setVideoUploadProgressState((prev) => ({ ...prev, ...progress }))
+  const resetMedia = () => {
+    setMedia((prev) => prev.filter((m) => m.mediaType !== 'VIDEO'))
+  }
+
+  const startVideoUpload = (fileName?: string) => {
+    setVideoUploadProgress({
+      isUploading: true,
+      progress: 0,
+      error: null,
+      fileName: fileName || null,
+    })
+  }
+
+  const updateVideoUploadProgress = (progress: number) => {
+    setVideoUploadProgress((prev) => ({ ...prev, progress }))
+  }
+
+  const setVideoUploadError = (message: string) => {
+    setVideoUploadProgress((prev) => ({
+      ...prev,
+      isUploading: false,
+      error: message,
+    }))
   }
 
   const resetVideoUploadProgress = () => {
-    setVideoUploadProgressState(defaultVideoUploadProgress)
+    setVideoUploadProgress({
+      isUploading: false,
+      progress: 0,
+      error: null,
+      fileName: null,
+    })
   }
 
-  const setImageUploadProgress = (progress: Partial<ImageUploadProgress>) => {
-    setImageUploadProgressState((prev) => ({ ...prev, ...progress }))
+  const startImagesUpload = (totalCount: number) => {
+    setImagesUploadProgress({
+      isUploading: true,
+      uploadedCount: 0,
+      totalCount,
+      error: null,
+    })
   }
 
-  const resetImageUploadProgress = () => {
-    setImageUploadProgressState(defaultImageUploadProgress)
+  const updateImagesUploadProgress = (uploadedCount: number) => {
+    setImagesUploadProgress((prev) => ({
+      ...prev,
+      uploadedCount,
+    }))
   }
+
+  const setImagesUploadError = (message: string) => {
+    setImagesUploadProgress((prev) => ({
+      ...prev,
+      isUploading: false,
+      error: message,
+    }))
+  }
+
+  const resetImagesUploadProgress = () => {
+    setImagesUploadProgress({
+      isUploading: false,
+      uploadedCount: 0,
+      totalCount: 0,
+      error: null,
+    })
+  }
+
+  const addPendingImages = (images: PendingImage[]) => {
+    setPendingImagesState((prev) => [...prev, ...images])
+  }
+
+  const removePendingImage = (index: number, isCover?: boolean) => {
+    setPendingImagesState((prev) => {
+      if (isCover) {
+        const coverIndex = prev.findIndex((img) => img.isCover)
+        if (coverIndex !== -1) {
+          URL.revokeObjectURL(prev[coverIndex].previewUrl)
+          return prev.filter((_, i) => i !== coverIndex)
+        }
+      }
+      URL.revokeObjectURL(prev[index].previewUrl)
+      return prev.filter((_, i) => i !== index)
+    })
+  }
+
+  const clearPendingImages = () => {
+    pendingImagesState.forEach((img) => URL.revokeObjectURL(img.previewUrl))
+    setPendingImagesState([])
+  }
+
+  const uploadPendingImages = async (): Promise<Array<Partial<MediaItem>>> => {
+    if (pendingImagesState.length === 0) return []
+
+    const uploaded: Array<Partial<MediaItem>> = []
+    let uploadedCount = 0
+
+    startImagesUpload(pendingImagesState.length)
+
+    for (const pending of pendingImagesState) {
+      try {
+        const res = await MediaService.upload({
+          file: pending.file,
+          mediaType: 'IMAGE',
+          isPrimary: pending.isCover || false,
+        })
+
+        if (res?.success && res?.data?.url) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { status, ...restData } = res.data
+          const mediaItem: Partial<MediaItem> = {
+            ...restData,
+            mediaId: Number(res.data.mediaId),
+            isPrimary: pending.isCover || false,
+            mediaType: 'IMAGE',
+          }
+          uploaded.push(mediaItem)
+          uploadedCount++
+          updateImagesUploadProgress(uploadedCount)
+        } else {
+          throw new Error('Upload failed')
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : `Failed to upload ${pending.file.name}`
+        setImagesUploadError(errorMessage)
+        throw new Error(errorMessage)
+      }
+    }
+
+    return uploaded
+  }
+
+  const composedNewAddress = useMemo(() => {
+    const parts: string[] = []
+    const street = propertyInfo?.address?.new?.street?.trim()
+    if (street) parts.push(street)
+
+    const wardCode =
+      fulltextAddress?.newWardCode ||
+      (propertyInfo?.address?.new?.wardCode
+        ? String(propertyInfo.address.new.wardCode)
+        : undefined)
+    const ward = newWards.find((w) => w.code === wardCode)
+    if (ward?.name) parts.push(ward.name)
+
+    const provinceCode =
+      fulltextAddress?.newProvinceCode ||
+      (propertyInfo?.address?.new?.provinceCode
+        ? String(propertyInfo.address.new.provinceCode)
+        : undefined)
+    const province = newProvinces.find((p) => p.id === provinceCode)
+    if (province?.name) parts.push(province.name)
+
+    return parts.join(', ')
+  }, [
+    propertyInfo?.address?.new?.street,
+    propertyInfo?.address?.new?.wardCode,
+    propertyInfo?.address?.new?.provinceCode,
+    fulltextAddress?.newWardCode,
+    fulltextAddress?.newProvinceCode,
+    newWards,
+    newProvinces,
+  ])
+
+  const legacyAddressText = fulltextAddress?.legacyAddressText || ''
+  const composedLegacyAddress = useMemo(() => {
+    if (!legacyAddressText) return ''
+    const street = propertyInfo?.address?.new?.street?.trim()
+    if (street) {
+      return `${street}, ${legacyAddressText}`
+    }
+    return legacyAddressText
+  }, [propertyInfo?.address?.new?.street, legacyAddressText])
+
+  useEffect(() => {
+    if (fulltextAddress?.propertyAddressEdited) return
+
+    if (
+      composedNewAddress &&
+      composedNewAddress !== fulltextAddress?.displayAddress
+    ) {
+      setFulltextAddress((prev) => ({
+        ...prev,
+        displayAddress: composedNewAddress,
+        propertyAddress: composedNewAddress,
+        fullAddressNew: composedNewAddress,
+      }))
+    }
+  }, [
+    composedNewAddress,
+    fulltextAddress?.propertyAddressEdited,
+    fulltextAddress?.displayAddress,
+  ])
+
+  useEffect(() => {
+    const mediaIds = media
+      .filter((item) => item.mediaId !== undefined)
+      .map((item) => Number(item.mediaId))
+      .filter((id) => !isNaN(id) && id > 0)
+
+    const currentIds = propertyInfo.mediaIds || []
+    const hasChanged =
+      mediaIds.length !== currentIds.length ||
+      mediaIds.some((id, index) => id !== currentIds[index])
+
+    if (hasChanged) {
+      setPropertyInfo((prev) => ({
+        ...prev,
+        mediaIds,
+      }))
+    }
+  }, [media])
 
   const contextValue = useMemo(
     () => ({
       propertyInfo,
+      fulltextAddress,
+      composedNewAddress,
+      composedLegacyAddress,
+      media,
       updatePropertyInfo,
       resetPropertyInfo,
+      updateFulltextAddress,
+      resetFulltextAddress,
+      updateMedia,
+      resetMedia,
       videoUploadProgress,
-      setVideoUploadProgress,
+      startVideoUpload,
+      updateVideoUploadProgress,
+      setVideoUploadError,
       resetVideoUploadProgress,
-      imageUploadProgress,
-      setImageUploadProgress,
-      resetImageUploadProgress,
+      imagesUploadProgress,
+      startImagesUpload,
+      updateImagesUploadProgress,
+      setImagesUploadError,
+      resetImagesUploadProgress,
+      pendingImages: pendingImagesState,
+      addPendingImages,
+      removePendingImage,
+      clearPendingImages,
+      uploadPendingImages,
+      isSubmitSuccess,
+      setIsSubmitSuccess,
     }),
     [
       propertyInfo,
-      updatePropertyInfo,
-      resetPropertyInfo,
+      fulltextAddress,
+      composedNewAddress,
+      composedLegacyAddress,
+      media,
       videoUploadProgress,
-      setVideoUploadProgress,
-      resetVideoUploadProgress,
-      imageUploadProgress,
-      setImageUploadProgress,
-      resetImageUploadProgress,
+      imagesUploadProgress,
+      pendingImagesState,
+      isSubmitSuccess,
     ],
   )
 

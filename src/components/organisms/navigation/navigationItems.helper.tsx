@@ -1,15 +1,19 @@
 import { NavigationItemData } from '@/components/atoms/navigation-item'
 import { Home as HomeIcon, Building2, Users } from 'lucide-react'
-import {
-  PROPERTY_TYPES,
-  getPropertyTypeName,
-} from '@/constants/common/propertyTypes'
+import type { CategoryApi } from '@/api/types/category.type'
 
 export const getNavigationItems = (
   activeItem: string,
   t: (key: string) => string,
   tCommon: (key: string) => string, // Translation function for 'common' namespace
+  categories?: CategoryApi[],
 ): NavigationItemData[] => {
+  const categoryChildren = (categories ?? []).map((category) => ({
+    id: category.slug,
+    label: category.name,
+    href: `/properties?categoryId=${category.categoryId}`,
+    isActive: activeItem === category.slug,
+  }))
   return [
     {
       id: 'home',
@@ -24,12 +28,7 @@ export const getNavigationItems = (
       href: '/properties',
       icon: <Building2 className='h-4 w-4' />,
       isActive: activeItem === 'properties',
-      children: PROPERTY_TYPES.map((type) => ({
-        id: type.slug,
-        label: getPropertyTypeName(type.id, tCommon), // Use translation by id
-        href: `/properties?category=${type.slug}`, // Keep slug as-is
-        isActive: activeItem === type.slug,
-      })),
+      children: categoryChildren,
     },
     {
       id: 'tenants',

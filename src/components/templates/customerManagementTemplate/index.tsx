@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Tabs, TabsContent } from '@/components/atoms/tabs'
 import { SearchInput } from '@/components/atoms/search-input'
@@ -14,25 +14,26 @@ import TabHeader from '@/components/molecules/customerManagement/tabHeader'
 import CustomerList from '@/components/molecules/customerManagement/customerList'
 import ListingList from '@/components/molecules/customerManagement/listingList'
 import CustomerManagementSkeleton from '@/components/molecules/customerManagement/customerManagementSkeleton'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { useCustomerManagement } from './hooks/useCustomerManagement'
+import { Loader2 } from 'lucide-react'
 
-interface CustomerManagementTemplateProps {
-  initialCustomers?: Customer[]
-}
-
-const CustomerManagementTemplate: React.FC<CustomerManagementTemplateProps> = ({
-  initialCustomers = [],
-}) => {
+const CustomerManagementTemplate: React.FC = () => {
   const t = useTranslations('seller.customers')
   const { language } = useSwitchLanguage()
   const { isMobile, dialogOpen, openDialog, setDialogOpen } =
     useMobileCustomerDialog()
 
+  // Local search query state
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Debounce search query to avoid too many API calls
+  const debouncedSearchQuery = useDebounce(searchQuery, 500)
+
   const {
     activeTab,
     setActiveTab,
-    searchQuery,
-    setSearchQuery,
     selectedCustomer,
     setSelectedCustomer,
     selectedListing,
@@ -42,10 +43,27 @@ const CustomerManagementTemplate: React.FC<CustomerManagementTemplateProps> = ({
     filteredListings,
     totalCustomers,
     totalListings,
-  } = useCustomerManagement(!!isMobile, initialCustomers)
+    loadMore,
+    hasMore,
+    isFetchingMore,
+  } = useCustomerManagement({
+    isMobile: !!isMobile,
+    searchTitle: debouncedSearchQuery,
+  })
 
-  // Show skeleton on initial load for customers tab (when no initial data)
-  if (isLoading && activeTab === 'customers' && initialCustomers.length === 0) {
+  const { ref: loadMoreRef } = useIntersectionObserver({
+    onIntersect: () => {
+      if (hasMore && !isFetchingMore) {
+        loadMore()
+      }
+    },
+    options: {
+      threshold: 0.1,
+    },
+  })
+
+  // Show skeleton on initial load
+  if (isLoading && activeTab === 'customers') {
     return <CustomerManagementSkeleton />
   }
 
@@ -102,6 +120,18 @@ const CustomerManagementTemplate: React.FC<CustomerManagementTemplateProps> = ({
                 isLoading={isLoading && activeTab === 'customers'}
                 onCustomerSelect={handleCustomerSelect}
               />
+
+              {/* Infinite scroll trigger */}
+              {hasMore && activeTab === 'customers' && (
+                <div
+                  ref={loadMoreRef as React.RefObject<HTMLDivElement>}
+                  className='flex justify-center py-4'
+                >
+                  {isFetchingMore && (
+                    <Loader2 className='h-6 w-6 animate-spin text-primary' />
+                  )}
+                </div>
+              )}
             </TabsContent>
 
             {/* Listings Tab */}
@@ -116,6 +146,18 @@ const CustomerManagementTemplate: React.FC<CustomerManagementTemplateProps> = ({
                 language={language}
                 onListingSelect={handleListingSelect}
               />
+
+              {/* Infinite scroll trigger */}
+              {hasMore && activeTab === 'listings' && (
+                <div
+                  ref={loadMoreRef as React.RefObject<HTMLDivElement>}
+                  className='flex justify-center py-4'
+                >
+                  {isFetchingMore && (
+                    <Loader2 className='h-6 w-6 animate-spin text-primary' />
+                  )}
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>

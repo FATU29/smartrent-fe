@@ -7,16 +7,18 @@ import {
   CardTitle,
 } from '@/components/atoms/card'
 import { Typography } from '@/components/atoms/typography'
-import { PriceHistoryPoint } from '@/types/apartmentDetail.types'
 import { formatByLocale } from '@/utils/currency/convert'
 import { formatDate } from '@/utils/date/formatters'
+import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
+import type { PriceHistory } from '@/api/types'
 
 interface PriceHistoryProps {
-  priceHistory: PriceHistoryPoint[]
+  priceHistory: PriceHistory[]
 }
 
 const PriceHistory: React.FC<PriceHistoryProps> = ({ priceHistory }) => {
   const t = useTranslations('apartmentDetail.priceHistory')
+  const { language: locale } = useSwitchLanguage()
 
   return (
     <Card className='w-full'>
@@ -36,13 +38,15 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ priceHistory }) => {
                 variant='small'
                 className='text-muted-foreground font-medium'
               >
-                {entry.date.includes('/') ? entry.date : formatDate(entry.date)}
+                {entry.changedAt.includes('/')
+                  ? entry.changedAt
+                  : formatDate(entry.changedAt)}
               </Typography>
               <Typography
                 variant='small'
                 className='font-semibold text-foreground'
               >
-                {formatByLocale(entry.price, 'vi-VN')}
+                {formatByLocale(entry.newPrice, locale)}
               </Typography>
             </div>
           ))}

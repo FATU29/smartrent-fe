@@ -1,23 +1,23 @@
 import React from 'react'
-import { Property } from '@/api/types/property.type'
 import { ListingCard } from '@/components/organisms/listing-card'
 import { cn } from '@/lib/utils'
 import { LISTINGS_LIST_STYLES, LISTINGS_LIST_CONFIG } from './index.constants'
 import { ListingCardSkeleton } from '../listing-card/ListingCardSkeleton'
+import { ListingOwnerDetail } from '@/api/types'
 
 export interface ListingsListProps {
-  listings: Property[]
-  onEditListing?: (listing: Property) => void
-  onPromoteListing?: (listing: Property) => void
-  onRepostListing?: (listing: Property) => void
-  onViewReport?: (listing: Property) => void
-  onRequestVerification?: (listing: Property) => void
-  onCopyListing?: (listing: Property) => void
-  onRequestContact?: (listing: Property) => void
-  onShare?: (listing: Property) => void
-  onActivityHistory?: (listing: Property) => void
-  onTakeDown?: (listing: Property) => void
-  onDelete?: (listing: Property) => void
+  listings: ListingOwnerDetail[]
+  onEditListing?: (listing: ListingOwnerDetail) => void
+  onPromoteListing?: (listing: ListingOwnerDetail) => void
+  onRepostListing?: (listing: ListingOwnerDetail) => void
+  onViewReport?: (listing: ListingOwnerDetail) => void
+  onRequestVerification?: (listing: ListingOwnerDetail) => void
+  onCopyListing?: (listing: ListingOwnerDetail) => void
+  onRequestContact?: (listing: ListingOwnerDetail) => void
+  onShare?: (listing: ListingOwnerDetail) => void
+  onActivityHistory?: (listing: ListingOwnerDetail) => void
+  onTakeDown?: (listing: ListingOwnerDetail) => void
+  onDelete?: (listing: ListingOwnerDetail) => void
   loading?: boolean
   skeletonCount?: number
   className?: string
@@ -49,14 +49,14 @@ export const ListingsList: React.FC<ListingsListProps> = ({
   }
 
   if (listings.length === 0) {
-    return null // Empty state is handled by parent component
+    return null
   }
 
   return (
     <div className={cn(LISTINGS_LIST_STYLES.container, className)}>
       {listings.map((listing) => (
         <ListingCard
-          key={`${LISTINGS_LIST_CONFIG.itemKeyPrefix}${listing.id}`}
+          key={`${LISTINGS_LIST_CONFIG.itemKeyPrefix}${listing.listingId}`}
           property={listing}
           onEdit={() => onEditListing?.(listing)}
           onPromote={() => onPromoteListing?.(listing)}

@@ -2,35 +2,12 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
-import {
-  DollarSign,
-  Building,
-  Square,
-  ArrowRightLeft,
-  Bed,
-  Car,
-  Bath,
-  FileText,
-} from 'lucide-react'
-import type { PropertyFeature } from '@/types/apartmentDetail.types'
+import { Amenity } from '@/api/types'
+import { getAmenityIcon } from '@/constants/amenities'
 
 interface PropertyFeaturesProps {
-  features?: PropertyFeature[]
+  features?: Amenity[]
   title?: string
-}
-
-const getFeatureIcon = (iconName: string) => {
-  const iconMap: Record<string, React.ReactNode> = {
-    money: <DollarSign className='w-5 h-5' />,
-    building: <Building className='w-5 h-5' />,
-    area: <Square className='w-5 h-5' />,
-    width: <ArrowRightLeft className='w-5 h-5' />,
-    bed: <Bed className='w-5 h-5' />,
-    road: <Car className='w-5 h-5' />,
-    bath: <Bath className='w-5 h-5' />,
-    document: <FileText className='w-5 h-5' />,
-  }
-  return iconMap[iconName] || <Square className='w-5 h-5' />
 }
 
 const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({
@@ -57,17 +34,22 @@ const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({
           >
             <CardContent className='flex items-start gap-4 p-4'>
               <div className='flex-shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary'>
-                {getFeatureIcon(feature.icon)}
+                {(() => {
+                  const IconComponent = getAmenityIcon(feature.icon)
+                  return IconComponent ? (
+                    <IconComponent className='w-5 h-5' />
+                  ) : null
+                })()}
               </div>
               <div className='flex-1 min-w-0'>
                 <Typography
                   variant='small'
                   className='text-muted-foreground mb-1 block'
                 >
-                  {feature.label}
+                  {feature.name}
                 </Typography>
                 <Typography variant='p' className='font-semibold truncate'>
-                  {feature.value}
+                  {feature.description}
                 </Typography>
               </div>
             </CardContent>

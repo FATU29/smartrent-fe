@@ -1,5 +1,3 @@
-import { Property } from '@/api/types/property.type'
-
 export const LISTING_CARD_STYLES = {
   container:
     'bg-background border border-border rounded-lg p-3 sm:p-4 hover:shadow-md transition-all duration-200 hover:border-primary/20',
@@ -36,26 +34,6 @@ export const LISTING_CARD_CONFIG = {
   imageAspectRatio: 'aspect-[4/3] sm:aspect-[4/3]',
   maxTitleLines: 2,
 } as const
-
-export interface ListingCardLogic {
-  isExpired: boolean
-  showRank: boolean
-  showPromoteButton: boolean
-  showRepostButton: boolean
-  hasPackage: boolean
-  hasVerification: boolean
-  hasStats: boolean
-}
-
-export const getListingCardLogic = (property: Property): ListingCardLogic => ({
-  isExpired: property.status === 'expired',
-  showRank: property.status === 'active' && !!property.rank,
-  showPromoteButton: property.status === 'active',
-  showRepostButton: property.status === 'expired',
-  hasPackage: !!property.package_type,
-  hasVerification: !!property.verified,
-  hasStats: !!property.stats,
-})
 
 export const LISTING_CARD_ANIMATIONS = {
   hover: 'hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200',

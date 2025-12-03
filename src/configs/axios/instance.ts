@@ -8,7 +8,30 @@ export async function apiRequest<T = unknown>(
   instance: AxiosInstance = instanceClientAxios,
 ): Promise<ApiResponse<T>> {
   try {
+    // Log API request details (useful for debugging)
+    const isServer = typeof window === 'undefined'
+    if (isServer) {
+      console.log('[API Request]:', {
+        method: config.method?.toUpperCase(),
+        url: config.url,
+        baseURL: instance.defaults.baseURL,
+        fullURL: `${instance.defaults.baseURL}${config.url}`,
+        hasData: !!config.data,
+        hasParams: !!config.params,
+      })
+    }
+
     const response = await instance(config)
+
+    if (isServer) {
+      console.log('[API Response]:', {
+        url: config.url,
+        status: response.status,
+        code: response.data?.code,
+        success: true,
+      })
+    }
+
     return {
       ...response.data,
       success: true,

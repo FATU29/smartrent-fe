@@ -4,16 +4,17 @@
  */
 
 /**
- * Phone click detail response from API
+ * Phone click detail response from API (with listingTitle)
  */
 export interface PhoneClickDetail {
   readonly id: number
   readonly listingId: number
+  readonly listingTitle?: string
   readonly userId: string
   readonly userFirstName: string
   readonly userLastName: string
   readonly userEmail: string
-  readonly userContactPhone: string | null
+  readonly userContactPhone?: string | null
   readonly userContactPhoneVerified: boolean
   readonly clickedAt: string
   readonly ipAddress: string
@@ -60,4 +61,28 @@ export interface PhoneClickStatsResponse {
   readonly code: string
   readonly message: string | null
   readonly data: PhoneClickStats
+}
+
+/**
+ * Request parameters for searching phone clicks by listing title
+ */
+export interface SearchPhoneClicksRequest {
+  readonly title: string
+  readonly page?: number
+  readonly size?: number
+}
+
+/**
+ * Paginated response for phone click details
+ */
+export interface PhoneClickDetailPageResponse {
+  readonly code: string
+  readonly message: string | null
+  readonly data: {
+    readonly page: number
+    readonly size: number
+    readonly totalElements: number
+    readonly totalPages: number
+    readonly data: readonly PhoneClickDetail[]
+  }
 }

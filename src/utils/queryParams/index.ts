@@ -1,11 +1,5 @@
 import type { NextRouter } from 'next/router'
-import type { ParsedUrlQuery, ParsedUrlQueryInput } from 'querystring'
-import type { ListFilters } from '@/contexts/list/index.type'
-import type { ListingSearchRequest } from '@/api/types/property.type'
-import {
-  toApiPropertyType,
-  getPropertyTypeBySlug,
-} from '@/constants/common/propertyTypes'
+import { ListingFilterRequest } from '@/api/types'
 
 export type PushQueryOptions = {
   shallow?: boolean
@@ -23,157 +17,6 @@ function toQueryValue(value: unknown): string | undefined {
   if (Array.isArray(value)) return value.map(String).join(',')
   if (typeof value === 'object') return undefined
   return String(value as Primitive)
-}
-
-/**
- * Helper to parse string query params
- */
-function parseStringParam(
-  query: ParsedUrlQuery,
-  key: string,
-): string | undefined {
-  return query[key] ? (query[key] as string) : undefined
-}
-
-/**
- * Helper to parse number query params
- */
-function parseNumberParam(
-  query: ParsedUrlQuery,
-  key: string,
-): number | undefined {
-  return query[key] ? Number(query[key]) : undefined
-}
-
-/**
- * Helper to parse boolean query params
- */
-function parseBooleanParam(
-  query: ParsedUrlQuery,
-  key: string,
-): boolean | undefined {
-  return query[key] === 'true' ? true : undefined
-}
-
-/**
- * Parse basic property filters
- * Uses API keys directly (keyword, productType, amenityIds, etc.)
- */
-function parseBasicFilters(query: ParsedUrlQuery): Partial<ListFilters> {
-  const filters: Partial<ListFilters> = {}
-
-  // Property type - map 'category' (slug) to 'productType' (API key)
-  const categoryParam = parseStringParam(query, 'category')
-  const productTypeParam = parseStringParam(query, 'productType')
-  if (productTypeParam) {
-    filters.productType = productTypeParam
-  } else if (categoryParam) {
-    filters.productType = categoryParam
-  }
-
-  // Search - use API key 'keyword'
-  const keywordParam = parseStringParam(query, 'keyword')
-  if (keywordParam) {
-    filters.keyword = keywordParam
-  }
-
-  // Price range
-  filters.minPrice = parseNumberParam(query, 'minPrice')
-  filters.maxPrice = parseNumberParam(query, 'maxPrice')
-
-  // Area range
-  filters.minArea = parseNumberParam(query, 'minArea')
-  filters.maxArea = parseNumberParam(query, 'maxArea')
-
-  // Rooms
-  filters.bedrooms = parseNumberParam(query, 'bedrooms')
-  filters.bathrooms = parseNumberParam(query, 'bathrooms')
-
-  // Amenities - use API key 'amenityIds'
-  const amenityIdsParam = query.amenityIds
-  if (amenityIdsParam) {
-    const ids = (amenityIdsParam as string)
-      .split(',')
-      .map((id) => Number(id))
-      .filter((id) => !isNaN(id))
-    if (ids.length > 0) {
-      filters.amenityIds = ids
-    }
-  }
-
-  // Pagination
-  filters.page = parseNumberParam(query, 'page')
-
-  return filters
-}
-
-/**
- * Parse boolean feature filters
- * Uses API keys directly (hasMedia, verified, etc.)
- */
-function parseFeatureFilters(query: ParsedUrlQuery): Partial<ListFilters> {
-  return {
-    verified: parseBooleanParam(query, 'verified'),
-    hasMedia: parseBooleanParam(query, 'hasMedia'),
-  }
-}
-
-/**
- * Parse utility price filters
- * Uses API keys directly (direction, etc.)
- */
-function parseUtilityFilters(query: ParsedUrlQuery): Partial<ListFilters> {
-  return {
-    direction: parseStringParam(query, 'direction'),
-    electricityPrice: parseStringParam(query, 'electricityPrice'),
-    waterPrice: parseStringParam(query, 'waterPrice'),
-    internetPrice: parseStringParam(query, 'internetPrice'),
-  }
-}
-
-/**
- * Parse address filters
- * Uses API keys directly (provinceId, districtId, wardId, provinceCode, etc.)
- */
-function parseAddressFilters(query: ParsedUrlQuery): Partial<ListFilters> {
-  const filters: Partial<ListFilters> = {}
-
-  // Location IDs (numbers)
-  filters.provinceId = parseNumberParam(query, 'provinceId')
-  filters.districtId = parseNumberParam(query, 'districtId')
-  filters.wardId = parseNumberParam(query, 'wardId')
-  filters.streetId = parseNumberParam(query, 'streetId')
-
-  // Location codes (strings)
-  filters.provinceCode = parseStringParam(query, 'provinceCode')
-  filters.newWardCode = parseStringParam(query, 'newWardCode')
-
-  // Structure type flag
-  if (query.addressType === 'legacy' || query.addressType === 'new') {
-    filters.addressStructureType = query.addressType as 'legacy' | 'new'
-  }
-
-  return filters
-}
-
-/**
- * Parse URL query params into ListFilters format
- * Split into smaller functions to reduce complexity
- */
-export function getFiltersFromQuery(
-  query: ParsedUrlQuery,
-): Partial<ListFilters> {
-  const merged: Partial<ListFilters> = {
-    ...parseBasicFilters(query),
-    ...parseFeatureFilters(query),
-    ...parseUtilityFilters(query),
-    ...parseAddressFilters(query),
-  }
-
-  // Remove undefined values so callers get a clean, serializable object
-  return Object.fromEntries(
-    Object.entries(merged).filter(([, v]) => v !== undefined),
-  ) as Partial<ListFilters>
 }
 
 /**
@@ -197,7 +40,7 @@ export function pushQueryParams(
     removeEmptyString = true,
   } = options || {}
 
-  const nextQuery: ParsedUrlQueryInput = { ...router.query }
+  const nextQuery = { ...router.query }
 
   for (const [key, raw] of Object.entries(params)) {
     const value = toQueryValue(raw)
@@ -222,179 +65,172 @@ export function pushQueryParams(
 }
 
 /**
- * Convert ListFilters to ListingSearchRequest (API format)
- * Maps frontend filter format to backend API request format
- *
- * NOTE: Some filters from ListFilters are NOT supported by the API:
- * - electricityPrice, waterPrice, internetPrice -> NOT supported (property fields, not search filters)
+ * Helper to parse string query params
  */
-export function listFiltersToSearchRequest(
-  filters: Partial<ListFilters>,
-): ListingSearchRequest {
-  const request: ListingSearchRequest = {}
+function parseStringParam(
+  query: Record<string, unknown>,
+  key: string,
+): string | undefined {
+  return query[key] ? (query[key] as string) : undefined
+}
 
-  // User & Ownership Filters
-  if (filters.verified !== undefined) {
-    request.verified = filters.verified
+/**
+ * Helper to parse number query params
+ */
+function parseNumberParam(
+  query: Record<string, unknown>,
+  key: string,
+): number | undefined {
+  const value = parseStringParam(query, key)
+  return value ? Number(value) : undefined
+}
+
+/**
+ * Helper to parse boolean query params
+ */
+function parseBooleanParam(
+  query: Record<string, unknown>,
+  key: string,
+): boolean | undefined {
+  const value = parseStringParam(query, key)
+  if (value === 'true') return true
+  if (value === 'false') return false
+  return undefined
+}
+
+export function getFiltersFromQuery(
+  query: Record<string, unknown>,
+): Partial<ListingFilterRequest> {
+  const filters: Partial<ListingFilterRequest> = {}
+
+  // Category
+  filters.categoryId = parseNumberParam(query, 'categoryId')
+
+  // Property type
+  const productTypeParam = parseStringParam(query, 'productType')
+  if (productTypeParam) {
+    filters.productType =
+      productTypeParam as ListingFilterRequest['productType']
   }
 
-  // Location Filters - API keys
-  if (filters.provinceId !== undefined) {
-    request.provinceId = filters.provinceId
+  // Search keyword
+  const keywordParam = parseStringParam(query, 'keyword')
+  if (keywordParam) {
+    filters.keyword = keywordParam
   }
 
-  if (filters.districtId !== undefined) {
-    request.districtId = filters.districtId
+  // Price range
+  filters.minPrice = parseNumberParam(query, 'minPrice')
+  filters.maxPrice = parseNumberParam(query, 'maxPrice')
+
+  // Area range
+  filters.minArea = parseNumberParam(query, 'minArea')
+  filters.maxArea = parseNumberParam(query, 'maxArea')
+
+  // Bedrooms and bathrooms
+  filters.minBedrooms = parseNumberParam(query, 'minBedrooms')
+  filters.maxBedrooms = parseNumberParam(query, 'maxBedrooms')
+  filters.bathrooms = parseNumberParam(query, 'bathrooms')
+
+  // Amenities
+  const amenityIdsParam = query.amenityIds
+  if (amenityIdsParam) {
+    const amenityIds =
+      typeof amenityIdsParam === 'string'
+        ? amenityIdsParam.split(',').map(Number).filter(Boolean)
+        : []
+    if (amenityIds.length > 0) {
+      filters.amenityIds = amenityIds
+    }
   }
 
-  if (filters.wardId !== undefined) {
-    request.wardId = filters.wardId
+  // Features
+  filters.verified = parseBooleanParam(query, 'verified')
+
+  // Utilities
+  const directionParam = parseStringParam(query, 'direction')
+  if (directionParam) {
+    filters.direction = directionParam as ListingFilterRequest['direction']
   }
 
-  if (filters.provinceCode) {
-    request.provinceCode = filters.provinceCode
+  const electricityPriceParam = parseStringParam(query, 'electricityPrice')
+  if (electricityPriceParam) {
+    filters.electricityPrice =
+      electricityPriceParam as ListingFilterRequest['electricityPrice']
   }
 
-  if (filters.newWardCode) {
-    request.newWardCode = filters.newWardCode
+  const waterPriceParam = parseStringParam(query, 'waterPrice')
+  if (waterPriceParam) {
+    filters.waterPrice = waterPriceParam as ListingFilterRequest['waterPrice']
   }
 
-  if (filters.streetId !== undefined) {
-    request.streetId = filters.streetId
+  const internetPriceParam = parseStringParam(query, 'internetPrice')
+  if (internetPriceParam) {
+    filters.internetPrice =
+      internetPriceParam as ListingFilterRequest['internetPrice']
   }
 
-  // Category & Type Filters
-  if (filters.productType) {
-    // Check if it's a slug first
-    const typeBySlug = getPropertyTypeBySlug(filters.productType)
-    if (typeBySlug) {
-      // Skip "ALL" option - don't filter by productType
-      if (typeBySlug.value !== 'ALL') {
-        request.productType = typeBySlug.apiValue
-      }
+  const serviceFeeParam = parseStringParam(query, 'serviceFee')
+  if (serviceFeeParam) {
+    filters.serviceFee = serviceFeeParam as ListingFilterRequest['serviceFee']
+  }
+
+  // Legacy and coordinates - parse isLegacy first to determine how to parse address IDs
+  filters.isLegacy = parseBooleanParam(query, 'isLegacy')
+
+  // Location - parse based on isLegacy flag
+  const provinceIdParam = parseStringParam(query, 'provinceId')
+  if (provinceIdParam) {
+    // If isLegacy is explicitly true, parse as number; otherwise keep as string (for new address)
+    if (filters.isLegacy === true) {
+      filters.provinceId = Number(provinceIdParam)
     } else {
-      // Otherwise, convert value to API format
-      // Skip "ALL" or "all" values
-      if (
-        filters.productType.toLowerCase() !== 'all' &&
-        filters.productType.toLowerCase() !== 'tat-ca'
-      ) {
-        request.productType = toApiPropertyType(filters.productType)
-      }
+      // For new address or when isLegacy is not set, keep as string
+      filters.provinceId = provinceIdParam
     }
   }
 
-  // Property Specs Filters
-  if (filters.minPrice !== undefined) {
-    request.minPrice = filters.minPrice
-  }
+  filters.districtId = parseNumberParam(query, 'districtId')
 
-  if (filters.maxPrice !== undefined) {
-    request.maxPrice = filters.maxPrice
-  }
-
-  if (filters.minArea !== undefined) {
-    request.minArea = filters.minArea
-  }
-
-  if (filters.maxArea !== undefined) {
-    request.maxArea = filters.maxArea
-  }
-
-  if (filters.bedrooms !== undefined) {
-    request.bedrooms = filters.bedrooms
-  }
-
-  if (filters.bathrooms !== undefined) {
-    request.bathrooms = filters.bathrooms
-  }
-
-  // Direction
-  if (filters.direction) {
-    const upperDirection = filters.direction.toUpperCase()
-    const validDirections = [
-      'NORTH',
-      'SOUTH',
-      'EAST',
-      'WEST',
-      'NORTHEAST',
-      'NORTHWEST',
-      'SOUTHEAST',
-      'SOUTHWEST',
-    ]
-    if (validDirections.includes(upperDirection)) {
-      request.direction = upperDirection as
-        | 'NORTH'
-        | 'SOUTH'
-        | 'EAST'
-        | 'WEST'
-        | 'NORTHEAST'
-        | 'NORTHWEST'
-        | 'SOUTHEAST'
-        | 'SOUTHWEST'
+  const wardIdParam = parseStringParam(query, 'wardId')
+  if (wardIdParam) {
+    // If isLegacy is explicitly true, parse as number; otherwise keep as string (for new address)
+    if (filters.isLegacy === true) {
+      filters.wardId = Number(wardIdParam)
+    } else {
+      // For new address or when isLegacy is not set, keep as string
+      filters.wardId = wardIdParam
     }
   }
 
-  // Furnishing (if available in filters)
-  const filtersWithFurnishing = filters as Partial<ListFilters> & {
-    furnishing?: string
-  }
-  if (filtersWithFurnishing.furnishing) {
-    const upperFurnishing = filtersWithFurnishing.furnishing.toUpperCase()
-    if (
-      ['FULLY_FURNISHED', 'SEMI_FURNISHED', 'UNFURNISHED'].includes(
-        upperFurnishing,
-      )
-    ) {
-      request.furnishing = upperFurnishing as
-        | 'FULLY_FURNISHED'
-        | 'SEMI_FURNISHED'
-        | 'UNFURNISHED'
-    }
+  // filters.latitude = parseNumberParam(query, 'latitude')
+  // filters.longitude = parseNumberParam(query, 'longitude')
+
+  filters.page = parseNumberParam(query, 'page')
+  filters.size = parseNumberParam(query, 'size')
+
+  // Sort
+  const sortByParam = parseStringParam(query, 'sortBy')
+  if (sortByParam) {
+    filters.sortBy = sortByParam as ListingFilterRequest['sortBy']
   }
 
-  // Listing Type (if available in filters)
-  const filtersWithListingType = filters as Partial<ListFilters> & {
-    listingType?: string
-  }
-  if (filtersWithListingType.listingType) {
-    const upperListingType = filtersWithListingType.listingType.toUpperCase()
-    if (['RENT', 'SALE', 'SHARE'].includes(upperListingType)) {
-      request.listingType = upperListingType as 'RENT' | 'SALE' | 'SHARE'
-    }
+  const userIdParam = parseStringParam(query, 'userId')
+  filters.userId = userIdParam
+
+  const userLongitudeParam = parseStringParam(query, 'userLongitude')
+  if (userLongitudeParam) {
+    filters.userLongitude = Number(userLongitudeParam)
   }
 
-  // Amenities & Media Filters
-  if (filters.amenityIds && filters.amenityIds.length > 0) {
-    request.amenityIds = filters.amenityIds
-    request.amenityMatchMode = 'ALL'
+  const userLatitudeParam = parseStringParam(query, 'userLatitude')
+  if (userLatitudeParam) {
+    filters.userLatitude = Number(userLatitudeParam)
   }
 
-  if (filters.hasMedia !== undefined) {
-    request.hasMedia = filters.hasMedia
-  }
+  const cleanedFilters = Object.fromEntries(
+    Object.entries(filters).filter(([, v]) => v !== undefined),
+  ) as Partial<ListingFilterRequest>
 
-  // Content Search
-  if (filters.keyword) {
-    request.keyword = filters.keyword
-  }
-
-  // Pagination & Sorting
-  if (filters.page !== undefined) {
-    // Convert 1-based page to 0-based for API
-    request.page = filters.page > 0 ? filters.page - 1 : 0
-  }
-
-  if (filters.perPage !== undefined) {
-    request.size = filters.perPage
-  }
-
-  // Default sorting
-  request.sortBy = 'postDate'
-  request.sortDirection = 'DESC'
-
-  // Default exclude expired for public search
-  request.excludeExpired = true
-
-  return request
+  return cleanedFilters
 }

@@ -18,7 +18,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/atoms/popover'
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 
 export interface ComboboxOption {
   value: string
@@ -131,19 +130,62 @@ const Combobox: React.FC<ComboboxProps> = ({
     [onValueChange],
   )
 
-  // Filter out disabled options for Command
   const availableOptions = React.useMemo(() => {
     return options.filter((opt) => !opt.disabled)
   }, [options])
 
-  const { ref: sentryRef } = useIntersectionObserver({
-    onIntersect: () => {
-      if (open && onLoadMore && hasMore && !isLoadingMore && !loading) {
-        onLoadMore()
+  // Refs for intersection observer
+  const commandListRef = React.useRef<HTMLDivElement>(null)
+  const sentryRef = React.useRef<HTMLDivElement>(null)
+
+  // Stable callback for load more
+  const handleLoadMore = React.useCallback(() => {
+    if (hasMore && !isLoadingMore && onLoadMore && open) {
+      onLoadMore()
+    }
+  }, [hasMore, isLoadingMore, onLoadMore, open])
+
+  // Setup intersection observer for load more
+  React.useEffect(() => {
+    if (!open || !onLoadMore) {
+      return
+    }
+
+    let observer: IntersectionObserver | null = null
+
+    // Wait for DOM to be ready
+    const timeoutId = setTimeout(() => {
+      if (!sentryRef.current || !commandListRef.current) {
+        return
       }
-    },
-    options: { rootMargin: '150px' },
-  })
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          const [entry] = entries
+          if (entry.isIntersecting) {
+            handleLoadMore()
+          }
+        },
+        {
+          root: commandListRef.current,
+          rootMargin: '100px',
+          threshold: 0.1,
+        },
+      )
+
+      observer.observe(sentryRef.current)
+    }, 0)
+
+    return () => {
+      clearTimeout(timeoutId)
+      if (observer) {
+        if (sentryRef.current) {
+          observer.unobserve(sentryRef.current)
+        }
+        observer.disconnect()
+      }
+    }
+  }, [handleLoadMore, onLoadMore, open])
 
   return (
     <div className={cn('space-y-2', fullWidth && 'w-full', className)}>
@@ -215,8 +257,7 @@ const Combobox: React.FC<ComboboxProps> = ({
         </PopoverTrigger>
         <PopoverContent
           className={cn(
-            'w-[var(--radix-popover-trigger-width)] p-0',
-            fullWidth && 'w-full',
+            'w-[300px] overflow-auto md:w-[var(--radix-popover-trigger-width)] p-0',
           )}
           align='start'
         >
@@ -228,7 +269,7 @@ const Combobox: React.FC<ComboboxProps> = ({
                 onValueChange={(val) => onSearchChange?.(val)}
               />
             )}
-            <CommandList>
+            <CommandList ref={commandListRef}>
               <CommandEmpty>
                 {searchable
                   ? emptyText || 'No results found.'
@@ -254,16 +295,13 @@ const Combobox: React.FC<ComboboxProps> = ({
                   </CommandItem>
                 ))}
               </CommandGroup>
-              {onLoadMore && (
+              {/* Load more sentry - always render when hasMore and onLoadMore exist */}
+              {onLoadMore && hasMore && (
                 <div
-                  ref={sentryRef as unknown as React.RefObject<HTMLDivElement>}
-                  className='px-3 py-2 text-center text-xs text-gray-500'
+                  ref={sentryRef}
+                  className='px-3 py-2 text-center text-xs text-gray-500 min-h-[20px]'
                 >
-                  {hasMore
-                    ? (isLoadingMore &&
-                        (loadingMoreText || 'Loading more...')) ||
-                      ''
-                    : ''}
+                  {isLoadingMore && (loadingMoreText || 'Loading more...')}
                 </div>
               )}
             </CommandList>

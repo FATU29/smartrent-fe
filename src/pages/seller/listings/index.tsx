@@ -3,33 +3,79 @@ import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
 import { ListingsManagementTemplate } from '@/components/templates/listingsManagementTemplate'
-import { List } from '@/contexts/list'
+import { ListProvider } from '@/contexts/list/index.context'
 import LocationProvider from '@/contexts/location'
-import { useCallback } from 'react'
-import { MOCK_LISTINGS } from '@/components/templates/listingsManagementTemplate/index.constants'
+import { ListingFilterRequest, ListingOwnerDetail } from '@/api/types'
+import type { ApiResponse } from '@/configs/axios/types'
+import { ListingService } from '@/api/services/listing.service'
+import { mapMyListingsBackendToFrontend } from '@/utils/property/mapMyListingsResponse'
+
+// Real fetcher using POST /v1/listings/my-listings
+const fetchMyListings = async (
+  filters: ListingFilterRequest,
+): Promise<
+  ApiResponse<{
+    listings: ListingOwnerDetail[]
+    pagination: {
+      totalCount: number
+      currentPage: number
+      pageSize: number
+      totalPages: number
+    }
+  }>
+> => {
+  const request = {
+    ...filters,
+  }
+
+  const response = await ListingService.getMyListings(request)
+
+  if (!response.success || !response.data) {
+    return {
+      code: response.code,
+      message: response.message,
+      success: false,
+      data: {
+        listings: [],
+        pagination: {
+          totalCount: 0,
+          currentPage: filters.page || 0,
+          pageSize: filters.size || 20,
+          totalPages: 0,
+        },
+      },
+    }
+  }
+
+  const frontend = mapMyListingsBackendToFrontend(response.data)
+
+  return {
+    code: response.code,
+    message: response.message,
+    success: true,
+    data: frontend,
+  }
+}
 
 const ListingsPage: NextPageWithLayout = () => {
   const t = useTranslations()
-
-  const listingsFetcher = useCallback(async () => {
-    console.log('Simple fetcher called')
-    return {
-      data: MOCK_LISTINGS,
-      total: MOCK_LISTINGS.length,
-      page: 1,
-      totalPages: 1,
-      hasNext: false,
-      hasPrevious: false,
-    }
-  }, [])
 
   return (
     <>
       <SeoHead title={t('userMenu.listings')} noindex />
       <LocationProvider>
-        <List.Provider fetcher={listingsFetcher} defaultPerPage={5}>
+        <ListProvider
+          fetcher={fetchMyListings}
+          initialData={[]}
+          initialPagination={{
+            currentPage: 0,
+            pageSize: 20,
+            totalCount: 0,
+            totalPages: 0,
+          }}
+        >
           <ListingsManagementTemplate />
-        </List.Provider>
+        </ListProvider>
       </LocationProvider>
     </>
   )

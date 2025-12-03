@@ -1,144 +1,43 @@
-import React from 'react'
-import ResidentialFilterBar, {
-  ResidentialFilterBarRef,
-} from '@/components/molecules/residentialFilterBar'
-import ResidentialFilterDialog from '@/components/molecules/residentialFilterDialog'
-import { ListFilters } from '@/contexts/list/index.type'
-import { useListContext } from '@/contexts/list/useListContext'
-import { useLocation } from '@/hooks/useLocation'
-import { countActiveFilters } from '@/utils/filters/countActiveFilters'
+import React, { useCallback } from 'react'
+import dynamic from 'next/dynamic'
+
+const ResidentialFilterDialog = dynamic(
+  () => import('@/components/molecules/residentialFilterDialog'),
+  {
+    ssr: false,
+  },
+)
+
+const ResidentialFilterBar = dynamic(
+  () => import('@/components/molecules/residentialFilterBar'),
+  {
+    ssr: false,
+  },
+)
 
 interface ResidentialFilterResponsiveProps {
-  showClearButton?: boolean // default: true
-  onClear?: () => void // if provided, enables clear button
+  onApply?: () => void // Custom apply handler (e.g., navigate from homepage to /properties)
 }
 
 const ResidentialFilterResponsive: React.FC<
   ResidentialFilterResponsiveProps
-> = ({ showClearButton = true, onClear }) => {
-  const { filters, handleUpdateFilter, activeCount, handleResetFilter } =
-    useListContext<unknown>()
-  const { disableLocation, isEnabled: isLocationEnabled } = useLocation()
+> = ({ onApply }) => {
   const [dialogOpen, setDialogOpen] = React.useState(false)
-  const filterBarRef = React.useRef<ResidentialFilterBarRef | null>(null)
-  const [pendingDraft, setPendingDraft] = React.useState<ListFilters | null>(
-    filters as ListFilters,
-  )
-  const handlePendingChange = React.useCallback(
-    (partial: Partial<ListFilters>) => {
-      setPendingDraft((prev) => ({
-        ...(prev || (filters as ListFilters)),
-        ...partial,
-      }))
-    },
-    [filters],
-  )
 
-  // Internal only – parent no longer triggers apply externally.
-
-  const handleClear = () => {
-    // Reset provider filters and location
-    handleResetFilter()
-    disableLocation()
-
-    // Immediately reset pending draft so dialog/bar UI reflects cleared state
-    const cleared: ListFilters = {
-      keyword: '', // Use API key
-      perPage: filters.perPage,
-      page: 1,
-    } as ListFilters
-    setPendingDraft(cleared)
-
-    // Reset the bar's pending state via ref
-    // Only reset fields that are supported by API search request - use API keys
-    filterBarRef.current?.setPending({
-      keyword: '', // API key
-      productType: undefined, // API key
-      minPrice: undefined,
-      maxPrice: undefined,
-      minArea: undefined,
-      maxArea: undefined,
-      bedrooms: undefined,
-      bathrooms: undefined,
-      amenityIds: [], // API key
-      verified: false,
-      direction: undefined, // API key
-      hasMedia: false, // API key
-      // Location filters (supported by API) - use API keys
-      provinceId: undefined, // API key
-      districtId: undefined, // API key
-      wardId: undefined, // API key
-      provinceCode: undefined, // API key
-      newWardCode: undefined,
-      streetId: undefined, // API key (number)
-      // UI-only fields (not in API but needed for UI state)
-      addressStructureType: undefined,
-      searchAddress: undefined,
-      addressEdited: undefined,
-      // Note: electricityPrice, waterPrice, internetPrice are kept in UI but not sent to API
-      electricityPrice: undefined,
-      waterPrice: undefined,
-      internetPrice: undefined,
-    })
-  }
-
-  const openDialogWithPending = () => {
-    // Get current pending values from the filter bar
-    const pending = filterBarRef.current?.getPending()
-    setPendingDraft({ ...(filters as ListFilters), ...(pending || {}) })
-    setDialogOpen(true)
-  }
-
-  const handleApplyFromDialog = (draft: ListFilters) => {
-    // Set pending state in bar and trigger apply to push all params to URL
-    // Don't call handleUpdateFilter here - triggerApply will navigate and URL will trigger re-fetch
-    // This prevents duplicate API calls
-    filterBarRef.current?.setPending(draft)
-    filterBarRef.current?.triggerApply()
-
-    setDialogOpen(false)
-  }
-
-  const handleDialogChange = (f: ListFilters) => {
-    setPendingDraft(f)
-    filterBarRef.current?.setPending(f)
-  }
-
-  const handleClearButton = onClear || handleClear
+  const openDialog = useCallback(() => setDialogOpen(true), [])
 
   return (
     <div className='w-full'>
       <div className='flex flex-col w-full'>
         <div className='flex-1'>
-          <ResidentialFilterBar
-            ref={filterBarRef}
-            onFiltersChange={(f) =>
-              handleUpdateFilter(f as Partial<ListFilters>)
-            }
-            onSearch={(q) => handleUpdateFilter({ keyword: q })} // Use API key
-            onPendingChange={handlePendingChange}
-            onClear={onClear || showClearButton ? handleClearButton : undefined}
-            value={filters}
-            activeCount={
-              (pendingDraft ? countActiveFilters(pendingDraft) : activeCount) +
-              (isLocationEnabled ? 1 : 0)
-            }
-            onOpenAdvanced={openDialogWithPending}
-          />
+          <ResidentialFilterBar onOpenAdvanced={openDialog} onApply={onApply} />
         </div>
       </div>
       <ResidentialFilterDialog
-        value={(pendingDraft as ListFilters) || (filters as ListFilters)}
-        onChange={handleDialogChange}
-        onClear={handleClearButton}
-        activeCount={
-          (pendingDraft ? countActiveFilters(pendingDraft) : activeCount) +
-          (isLocationEnabled ? 1 : 0)
-        }
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        onApply={handleApplyFromDialog}
         title={undefined}
+        onApply={onApply}
       />
     </div>
   )

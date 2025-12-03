@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { MapPin, MapPinOff, Loader2, AlertCircle } from 'lucide-react'
 import { useLocation } from '@/hooks/useLocation'
 import { Switch } from '@/components/atoms/switch'
@@ -14,24 +14,35 @@ import { useTranslations } from 'next-intl'
 interface LocationSwitchProps {
   showCoordinates?: boolean
   className?: string
-  onLocationChange?: (latitude: number | null, longitude: number | null) => void
+  onLocationChange?: (latitude?: number, longitude?: number) => void
+  disabled?: boolean
 }
 
 export const LocationSwitch: React.FC<LocationSwitchProps> = ({
   showCoordinates = false,
   className,
   onLocationChange,
+  disabled = false,
 }) => {
   const t = useTranslations('location')
-  const { coordinates, isEnabled, toggleLocation, isLoading, error } =
-    useLocation()
+  const {
+    coordinates,
+    isEnabled,
+    toggleLocation,
+    isLoading,
+    error,
+    disableLocation,
+  } = useLocation()
 
   React.useEffect(() => {
     if (onLocationChange) {
       if (coordinates) {
-        onLocationChange(coordinates.latitude, coordinates.longitude)
+        onLocationChange(
+          Number(coordinates.latitude),
+          Number(coordinates.longitude),
+        )
       } else {
-        onLocationChange(null, null)
+        onLocationChange(undefined, undefined)
       }
     }
   }, [coordinates, onLocationChange])
@@ -72,11 +83,17 @@ export const LocationSwitch: React.FC<LocationSwitchProps> = ({
     await toggleLocation()
   }
 
+  useEffect(() => {
+    if (disabled) {
+      disableLocation()
+    }
+  }, [disabled])
+
   return (
     <div className={cn('flex items-center gap-3', className)}>
       <div className='flex items-center gap-2'>
         <Switch
-          checked={isEnabled}
+          checked={isEnabled && !disabled}
           onCheckedChange={handleToggle}
           disabled={isLoading}
         />

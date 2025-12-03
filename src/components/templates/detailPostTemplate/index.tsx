@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   ImageSlider,
@@ -9,172 +9,250 @@ import {
   SellerContact,
   PropertyCarousel,
   PropertyMap,
-  PropertyMetadata,
 } from '@/components/organisms/apartmentDetail'
+import { Typography } from '@/components/atoms/typography'
+import { ListingDetail } from '@/api/types'
 import {
-  ApartmentDetail,
-  SimilarProperty,
-  mockApartmentDetail,
-  mockSimilarProperties,
-  mockRecentlyViewed,
-} from '@/types/apartmentDetail.types'
+  usePricingHistory,
+  usePriceStatistics,
+} from '@/hooks/useListings/usePricingHistory'
+import { useSimilarProperties } from '@/hooks/useListings/useSimilarProperties'
+import { mockPricingHistory } from '@/mock'
+import { PhoneClickDetailService } from '@/api/services'
 
 export interface DetailPostTemplateProps {
-  apartment?: ApartmentDetail
-  similarProperties?: SimilarProperty[]
-  recentlyViewed?: SimilarProperty[]
+  listing: ListingDetail
+  similarProperties?: ListingDetail[]
+  recentlyViewed?: ListingDetail[]
   onExport?: () => void
   onCall?: () => void
   onChatZalo?: () => void
   onPlayVideo?: () => void
-  onSimilarPropertyClick?: (property: SimilarProperty) => void
+  onSimilarPropertyClick?: (listing: ListingDetail) => void
 }
 
 interface Section {
   id: string
   component: React.ReactNode
   containerClassName?: string
-  order: number
+  isVisible?: boolean
 }
 
 const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
-  apartment = mockApartmentDetail,
-  similarProperties = mockSimilarProperties,
-  recentlyViewed = mockRecentlyViewed,
-  onCall,
+  listing,
+  recentlyViewed,
   onChatZalo,
   onSimilarPropertyClick,
 }) => {
-  const t = useTranslations('apartmentDetail')
-  const [mounted, setMounted] = useState(false)
+  const t = useTranslations()
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const {
+    description,
+    media,
+    user,
+    amenities,
+    address,
+    listingId,
+    vipType,
+    locationPricing,
+  } = listing || {}
 
-  const handleCall = () => {
-    onCall?.()
-  }
+  const mediaItems = media || []
+
+  const { longitude, latitude } = address || {}
+
+  const { data: pricingHistoryData, isLoading: isPricingHistoryLoading } =
+    usePricingHistory(listingId)
+  const { data: priceStatisticsData } = usePriceStatistics(listingId)
+
+  // Fetch similar properties based on VIP type and location
+  const {
+    data: fetchedSimilarProperties,
+    isLoading: isLoadingSimilar,
+    isError: isErrorSimilar,
+  } = useSimilarProperties({
+    listingId,
+    vipType,
+    wardId: locationPricing?.wardPricing?.locationId,
+    districtId: locationPricing?.districtPricing?.locationId,
+    provinceId: locationPricing?.provincePricing?.locationId,
+    isLegacy: true, // Based on location pricing structure
+    enabled: !!listingId && !!vipType,
+    limit: 10,
+  })
+
+  // Use fetched similar properties if available, otherwise fallback to props
+  const similarPropertiesData = fetchedSimilarProperties || []
+  const shouldShowSimilarProperties =
+    isLoadingSimilar ||
+    (similarPropertiesData && similarPropertiesData.length > 0) ||
+    isErrorSimilar
 
   const handleChatZalo = () => {
     onChatZalo?.()
   }
 
-  const handleSimilarPropertyClick = (property: SimilarProperty) => {
+  const handlePhoneClick = async () => {
+    if (!listingId) return
+
+    try {
+      await PhoneClickDetailService.trackClick({ listingId })
+    } catch (error) {
+      // Silent failure - don't block user experience
+      console.error('Failed to track phone click:', error)
+    }
+  }
+
+  const handleSimilarPropertyClick = (property: ListingDetail) => {
     onSimilarPropertyClick?.(property)
   }
 
-  // Debug: Log apartment data
-  console.log('🏠 DetailPostTemplate - apartment:', apartment)
-  console.log(
-    '💰 DetailPostTemplate - priceHistoryData:',
-    apartment.priceHistoryData,
-  )
+  const addressNode = useMemo(() => {
+    if (!address) return null
 
-  // Define sections using renderSection array pattern
+    const newAddress = address.fullNewAddress
+    const oldAddress = address.fullAddress
+
+    if (!newAddress && !oldAddress) return null
+
+    return (
+      <div className='space-y-1'>
+        {newAddress && (
+          <Typography variant='p' className='text-base'>
+            {newAddress}
+          </Typography>
+        )}
+        {oldAddress && (
+          <Typography variant='small' className='text-muted-foreground'>
+            {oldAddress}
+          </Typography>
+        )}
+      </div>
+    )
+  }, [address])
+
   const sections: Section[] = useMemo(
     () => [
       {
         id: 'gallery',
-        component: <ImageSlider images={apartment.images || []} />,
+        component: <ImageSlider media={mediaItems} />,
         containerClassName: 'mb-8',
-        order: 1,
+        isVisible: true,
       },
       {
         id: 'header',
-        component: <PropertyHeader apartment={apartment} />,
+        component: <PropertyHeader listing={listing} />,
         containerClassName: 'mb-6',
-        order: 2,
+        isVisible: true,
       },
       {
         id: 'features',
         component: (
           <PropertyFeatures
-            features={apartment.features}
-            title={t('sections.features')}
+            features={amenities}
+            title={t('apartmentDetail.sections.features')}
           />
         ),
         containerClassName: 'mb-8',
-        order: 3,
+        isVisible: amenities && amenities.length > 0,
       },
       {
         id: 'description',
         component: (
           <PropertyDescription
-            description={apartment.fullDescription}
-            title={t('sections.description')}
+            description={description}
+            title={t('apartmentDetail.sections.description')}
           />
         ),
         containerClassName: 'mb-8',
-        order: 4,
+        isVisible: true,
       },
       {
         id: 'priceHistory',
         component: (
           <PriceHistoryChart
-            priceHistory={apartment.priceHistoryData}
-            district={apartment.breadcrumb?.district}
+            priceHistory={
+              Array.isArray(pricingHistoryData)
+                ? pricingHistoryData
+                : mockPricingHistory
+            }
+            priceStatistics={priceStatisticsData}
+            newAddress={address?.fullNewAddress}
+            oldAddress={address?.fullAddress}
           />
         ),
         containerClassName: 'mb-8',
-        order: 5,
+        isVisible: mockPricingHistory && mockPricingHistory.length > 0,
       },
       {
         id: 'map',
         component: (
           <PropertyMap
-            location={apartment.location}
-            address={apartment.address}
+            location={
+              longitude && latitude
+                ? { coordinates: { latitude, longitude } }
+                : undefined
+            }
+            address={addressNode}
           />
         ),
         containerClassName: 'mb-8',
-        order: 6,
-      },
-      {
-        id: 'metadata',
-        component: <PropertyMetadata metadata={apartment.metadata} />,
-        containerClassName: 'mb-12',
-        order: 7,
+        isVisible: true,
       },
       {
         id: 'similarProperties',
         component: (
           <PropertyCarousel
-            properties={similarProperties}
-            title={t('sections.similarProperties')}
+            listings={similarPropertiesData}
+            title={t('apartmentDetail.sections.similarProperties')}
             onPropertyClick={handleSimilarPropertyClick}
+            isLoading={isLoadingSimilar}
+            showEmptyState={!isLoadingSimilar && !isErrorSimilar}
           />
         ),
         containerClassName: 'mb-8',
         order: 8,
+        isVisible: shouldShowSimilarProperties,
       },
       {
         id: 'recentlyViewed',
         component: (
           <PropertyCarousel
-            properties={recentlyViewed}
-            title={t('sections.recentlyViewed')}
+            listings={recentlyViewed || []}
+            title={t('apartmentDetail.sections.recentlyViewed')}
             onPropertyClick={handleSimilarPropertyClick}
           />
         ),
         containerClassName: 'mb-8',
-        order: 9,
+        isVisible: recentlyViewed && recentlyViewed.length > 0,
       },
     ],
-    [apartment, similarProperties, recentlyViewed, t],
+    [
+      listing,
+      similarPropertiesData,
+      recentlyViewed,
+      t,
+      addressNode,
+      pricingHistoryData,
+      isPricingHistoryLoading,
+      address,
+      mediaItems,
+      amenities,
+      description,
+    ],
   )
 
   // Render sections function
   const renderSection = (section: Section) => {
     return (
-      <div key={section.id} className={section.containerClassName}>
-        {section.component}
-      </div>
+      <>
+        {section.isVisible && (
+          <div key={section.id} className={section.containerClassName}>
+            {section.component}
+          </div>
+        )}
+      </>
     )
-  }
-
-  if (!mounted) {
-    return null
   }
 
   return (
@@ -183,18 +261,16 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start'>
           {/* Main Content - Left Column */}
           <div className='lg:col-span-8 space-y-0'>
-            {sections.sort((a, b) => a.order - b.order).map(renderSection)}
+            {sections?.map(renderSection)}
           </div>
 
           {/* Sidebar - Sticky */}
-          <div className='lg:col-span-4'>
-            <div className='sticky top-4'>
-              <SellerContact
-                host={apartment.host}
-                onCall={handleCall}
-                onChatZalo={handleChatZalo}
-              />
-            </div>
+          <div className='lg:col-span-4 lg:sticky lg:top-24 lg:self-start'>
+            <SellerContact
+              host={user}
+              onChatZalo={handleChatZalo}
+              onPhoneClick={handlePhoneClick}
+            />
           </div>
         </div>
       </div>

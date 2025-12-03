@@ -1,53 +1,64 @@
 import React from 'react'
 import { Typography } from '@/components/atoms/typography'
+import { Card, CardContent } from '@/components/atoms/card'
 import Carousel from '@/components/atoms/carousel'
 import PropertyCard from '@/components/molecules/propertyCard'
-import type { SimilarProperty } from '@/types/apartmentDetail.types'
-import type { PropertyCard as PropertyCardType } from '@/api/types/property.type'
+import type { ListingDetail } from '@/api/types/property.type'
 
 interface PropertyCarouselProps {
-  properties: SimilarProperty[]
+  listings: ListingDetail[]
   title: string
-  onPropertyClick?: (property: SimilarProperty) => void
+  onPropertyClick?: (listing: ListingDetail) => void
+  isLoading?: boolean
+  showEmptyState?: boolean
 }
 
-const convertToPropertyCard = (
-  property: SimilarProperty,
-): PropertyCardType => ({
-  id: property.id,
-  title: property.title,
-  description: property.title,
-  property_type: 'apartment',
-  address: property.district,
-  city: property.city,
-  price: property.price,
-  currency: 'VND',
-  area: property.area,
-  bedrooms: property.bedrooms || 0,
-  bathrooms: property.bathrooms || 0,
-  images: property.images,
-  verified: property.verified || false,
-  virtual_tour: undefined,
-  featured: property.isVip || false,
-  views: 0,
-  amenities: [],
-  distance: undefined,
-})
+const PropertyCarouselSkeleton: React.FC = () => (
+  <div className='space-y-6'>
+    <div className='h-8 w-64 bg-gray-200 rounded animate-pulse' />
+    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+      {[1, 2, 3].map((i) => (
+        <Card key={i} className='overflow-hidden'>
+          <div className='aspect-[4/3] bg-gray-200 animate-pulse' />
+          <CardContent className='p-4 space-y-3'>
+            <div className='h-6 bg-gray-200 rounded animate-pulse' />
+            <div className='h-4 bg-gray-200 rounded animate-pulse w-3/4' />
+            <div className='h-4 bg-gray-200 rounded animate-pulse w-1/2' />
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  </div>
+)
 
-const PropertyCarousel: React.FC<PropertyCarouselProps> = ({
-  properties,
-  title,
-  onPropertyClick,
-}) => {
-  if (!properties || properties.length === 0) {
-    return null
+const PropertyCarouselEmpty: React.FC<{ title: string }> = ({ title }) => (
+  <div className='space-y-6'>
+    <Typography variant='h3' className='text-2xl font-bold'>
+      {title}
+    </Typography>
+    <Card>
+      <CardContent className='p-8 text-center'>
+        <Typography variant='p' className='text-muted-foreground'>
+          Không tìm thấy bất động sản phù hợp
+        </Typography>
+      </CardContent>
+    </Card>
+  </div>
+)
+
+const PropertyCarousel: React.FC<PropertyCarouselProps> = (props) => {
+  const { listings, title, onPropertyClick, isLoading, showEmptyState } = props
+
+  if (isLoading) {
+    return <PropertyCarouselSkeleton />
   }
 
-  const handleClick = (propertyCard: PropertyCardType) => {
-    const originalProperty = properties.find((p) => p.id === propertyCard.id)
-    if (originalProperty) {
-      onPropertyClick?.(originalProperty)
-    }
+  if (showEmptyState && (!listings || listings.length === 0)) {
+    return <PropertyCarouselEmpty title={title} />
+  }
+
+  if (!listings || listings.length === 0) {
+    return null
   }
 
   return (
@@ -65,21 +76,21 @@ const PropertyCarousel: React.FC<PropertyCarouselProps> = ({
         loop={false}
         className='relative'
       >
-        {properties.map((property) => (
+        {listings.map((listing) => (
           <Carousel.Item
-            key={property.id}
+            key={listing.listingId}
             className='min-w-0 flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4 first:pl-0'
           >
             <PropertyCard
-              property={convertToPropertyCard(property)}
-              onClick={handleClick}
+              listing={listing}
+              onClick={onPropertyClick}
               className='h-full'
             />
           </Carousel.Item>
         ))}
 
         {/* Navigation Buttons - Always visible */}
-        {properties.length > 3 && (
+        {listings.length > 3 && (
           <>
             <Carousel.Prev className='h-10 w-10 shadow-lg hover:bg-gray-50 -left-5' />
             <Carousel.Next className='h-10 w-10 shadow-lg hover:bg-gray-50 -right-5' />

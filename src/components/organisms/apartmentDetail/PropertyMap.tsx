@@ -1,17 +1,37 @@
 import React from 'react'
+import GoogleMapReact from 'google-map-react'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
 import { Card, CardContent } from '@/components/atoms/card'
 import { ExternalLink } from 'lucide-react'
-import type { LocationData } from '@/types/apartmentDetail.types'
 
 interface PropertyMapProps {
-  location?: LocationData
-  address?: string
+  location?: {
+    coordinates: {
+      latitude: number
+      longitude: number
+    }
+  }
+  address?: React.ReactNode
+  readOnly?: boolean
 }
 
-const PropertyMap: React.FC<PropertyMapProps> = ({ location }) => {
+const Marker: React.FC<{ lat: number; lng: number }> = () => (
+  <div
+    style={{
+      transform: 'translate(-50%, -100%)',
+      background: '#ef4444',
+      borderRadius: '9999px',
+      width: 20,
+      height: 20,
+      border: '3px solid white',
+      boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+    }}
+  />
+)
+
+const PropertyMap: React.FC<PropertyMapProps> = ({ location, address }) => {
   const t = useTranslations('apartmentDetail')
 
   if (!location?.coordinates) {
@@ -19,9 +39,25 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ location }) => {
   }
 
   const { latitude, longitude } = location.coordinates
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY
 
   const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`
-  const embedUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.8!2d${longitude}!3d${latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM!5e0!3m2!1sen!2s!4v1234567890!5m2!1sen!2s`
+
+  const defaultCenter = {
+    lat: latitude,
+    lng: longitude,
+  }
+
+  const mapOptions = {
+    zoomControl: true,
+    mapTypeControl: false,
+    scaleControl: false,
+    streetViewControl: true,
+    rotateControl: false,
+    fullscreenControl: false,
+    disableDefaultUI: false,
+    gestureHandling: 'cooperative' as const,
+  }
 
   return (
     <div className='space-y-4'>
@@ -40,19 +76,20 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ location }) => {
         </Button>
       </div>
 
-      {/* Map Embed */}
+      {address && <div className='space-y-2'>{address}</div>}
+
+      {/* Interactive Google Map */}
       <Card>
         <CardContent className='relative w-full aspect-[16/9] p-0 overflow-hidden rounded-lg'>
-          <iframe
-            src={embedUrl}
-            width='100%'
-            height='100%'
-            style={{ border: 0 }}
-            allowFullScreen
-            loading='lazy'
-            referrerPolicy='no-referrer-when-downgrade'
-            title='Property Location Map'
-          />
+          <GoogleMapReact
+            bootstrapURLKeys={apiKey ? { key: apiKey } : undefined}
+            defaultCenter={defaultCenter}
+            defaultZoom={15}
+            options={mapOptions}
+            yesIWantToUseGoogleMapApiInternals
+          >
+            <Marker lat={latitude} lng={longitude} />
+          </GoogleMapReact>
         </CardContent>
       </Card>
     </div>

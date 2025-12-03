@@ -9,43 +9,29 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/atoms/dropdown-menu'
+import { PostStatus, POST_STATUS } from '@/api/types'
+import {
+  STATUS_FILTER_WITH_ALL,
+  getPostStatusI18nKey,
+} from '@/constants/postStatus'
 
-export type ListingStatus =
-  | 'all'
-  | 'expired'
-  | 'expiring'
-  | 'active'
-  | 'pending'
-  | 'review'
-  | 'payment'
-  | 'rejected'
-  | 'archived'
-
-const STATUS_ORDER: ListingStatus[] = [
-  'all',
-  'expired',
-  'expiring',
-  'active',
-  'pending',
-  'review',
-  'payment',
-  'rejected',
-  'archived',
-]
+const STATUS_ORDER: PostStatus[] = STATUS_FILTER_WITH_ALL
 
 export interface ListingStatusFilterResponsiveProps {
-  value: ListingStatus
-  counts?: Partial<Record<ListingStatus, number>>
-  onChange: (status: ListingStatus) => void
+  value: PostStatus
+  counts?: Partial<Record<PostStatus, number>>
+  onChange: (status: PostStatus) => void
   className?: string
+  hideCount?: boolean
 }
 
 export const ListingStatusFilterResponsive: React.FC<
   ListingStatusFilterResponsiveProps
-> = ({ value, counts = {}, onChange, className }) => {
+> = ({ value, counts = {}, onChange, className, hideCount = false }) => {
   const t = useTranslations('seller.listingManagement')
 
-  const activeStatus = STATUS_ORDER.find((status) => status === value) || 'all'
+  const activeStatus =
+    STATUS_ORDER.find((status) => status === value) || POST_STATUS.ALL
   const activeCount = counts[activeStatus] ?? 0
 
   return (
@@ -75,19 +61,20 @@ export const ListingStatusFilterResponsive: React.FC<
                   : 'text-muted-foreground hover:text-foreground hover:bg-background/70',
               )}
             >
-              <span>{t(`status.${status}`)}</span>
-              {((count ?? 0) > 0 || status === 'all') && (
-                <span
-                  className={cn(
-                    'min-w-5 rounded-full border px-1 text-[10px] leading-none py-1 flex items-center justify-center',
-                    active
-                      ? 'bg-primary/10 border-primary/30 text-primary'
-                      : 'bg-muted border-border/50 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/30',
-                  )}
-                >
-                  {count}
-                </span>
-              )}
+              <span>{t(`status.${getPostStatusI18nKey(status)}`)}</span>
+              {!hideCount &&
+                ((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
+                  <span
+                    className={cn(
+                      'min-w-5 rounded-full border px-1 text-[10px] leading-none py-1 flex items-center justify-center',
+                      active
+                        ? 'bg-primary/10 border-primary/30 text-primary'
+                        : 'bg-muted border-border/50 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/30',
+                    )}
+                  >
+                    {count}
+                  </span>
+                )}
               {active && (
                 <span className='pointer-events-none absolute inset-x-1 -bottom-px h-0.5 rounded-full bg-gradient-to-r from-primary/30 via-primary to-primary/30' />
               )}
@@ -105,9 +92,9 @@ export const ListingStatusFilterResponsive: React.FC<
             >
               <div className='flex items-center gap-2'>
                 <span className='text-sm font-medium'>
-                  {t(`status.${activeStatus}`)}
+                  {t(`status.${getPostStatusI18nKey(activeStatus)}`)}
                 </span>
-                {activeCount > 0 && (
+                {!hideCount && activeCount > 0 && (
                   <span className='min-w-5 rounded-full bg-primary/10 border border-primary/30 text-primary px-1.5 py-0.5 text-xs leading-none flex items-center justify-center'>
                     {activeCount}
                   </span>
@@ -132,19 +119,20 @@ export const ListingStatusFilterResponsive: React.FC<
                     active && 'bg-accent/50 text-accent-foreground font-medium',
                   )}
                 >
-                  <span>{t(`status.${status}`)}</span>
-                  {((count ?? 0) > 0 || status === 'all') && (
-                    <span
-                      className={cn(
-                        'min-w-5 rounded-full border px-1.5 py-0.5 text-xs leading-none flex items-center justify-center',
-                        active
-                          ? 'bg-primary/10 border-primary/30 text-primary'
-                          : 'bg-muted border-border/50 text-muted-foreground',
-                      )}
-                    >
-                      {count}
-                    </span>
-                  )}
+                  <span>{t(`status.${getPostStatusI18nKey(status)}`)}</span>
+                  {!hideCount &&
+                    ((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
+                      <span
+                        className={cn(
+                          'min-w-5 rounded-full border px-1.5 py-0.5 text-xs leading-none flex items-center justify-center',
+                          active
+                            ? 'bg-primary/10 border-primary/30 text-primary'
+                            : 'bg-muted border-border/50 text-muted-foreground',
+                        )}
+                      >
+                        {count}
+                      </span>
+                    )}
                 </DropdownMenuItem>
               )
             })}

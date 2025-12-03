@@ -1,26 +1,39 @@
-import type { PropertyType, Furnishing, PriceUnit } from './property.type'
-
 export interface ListingDescriptionRequest {
-  title?: string
-  addressText?: string
+  category?: string
+  propertyType?: string
+  price?: number
+  priceUnit?: string
+  addressText?: {
+    newAddress?: string
+    legacy?: string
+  }
+  area?: number
   bedrooms?: number
   bathrooms?: number
-  area?: number
-  price?: number
-  priceUnit?: PriceUnit
-  furnishing?: Furnishing
-  propertyType?: PropertyType
-  tone?: string
-  maxWords?: number
+  direction?: string
+  furnishing?: string
+  amenities?: string[]
+  waterPrice?: string
+  electricityPrice?: string
+  internetPrice?: string
+  serviceFee?: string
+  tone: string
+  titleMaxWords?: number
+  titleMinWords?: number
+  descriptionMaxWords?: number
+  descriptionMinWords?: number
 }
 
+/**
+ * Backend AI listing description response - matches Java DTO exactly
+ */
 export interface ListingDescriptionResponse {
-  generatedDescription: string
-  generatedTitle?: string
+  title: string
+  description: string
 }
 
 // Housing Price Predictor Types
-export type HousingPropertyType = 'House' | 'Apartment' | 'Villa' | 'Townhouse'
+export type HousingPropertyType = 'APARTMENT' | 'HOUSE' | 'ROOM' | 'STUDIO'
 
 export interface HousingPredictorRequest {
   city: string
