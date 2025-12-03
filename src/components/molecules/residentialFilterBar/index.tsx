@@ -53,7 +53,11 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
 
   const handleReset = () => {
     resetFilters()
-    navigateToPropertiesWithClearedFilters(router)
+
+    // Only navigate to /properties if NOT on homepage (no custom onApply handler)
+    if (!onApply) {
+      navigateToPropertiesWithClearedFilters(router)
+    }
   }
 
   const handleSortChange = useCallback((value: SortKey) => {

@@ -75,8 +75,8 @@ const ResidentialPropertiesPage: NextPageWithLayout<
           districtId: filters.districtId ?? null,
           wardId: filters.wardId ?? null,
           isLegacy: filters.isLegacy ?? null,
-          latitude: filters.latitude ?? null,
-          longitude: filters.longitude ?? null,
+          userLongitude: filters.userLongitude ?? null,
+          userLatitude: filters.userLatitude ?? null,
           sortBy: filters.sortBy ?? null,
           page: filters.page ?? null,
           size: filters.size ?? null,
@@ -91,7 +91,6 @@ const ResidentialPropertiesPage: NextPageWithLayout<
     [router],
   )
 
-  // Fetcher function for ListProvider - calls real API
   const fetcher = useCallback(
     async (
       filters: ListingFilterRequest,
@@ -200,7 +199,6 @@ export const getServerSideProps: GetServerSideProps<
   } catch (error) {
     console.error('[SSR Properties] Error fetching listings:', error)
 
-    // Return empty data on error
     return {
       props: {
         initialData: [],

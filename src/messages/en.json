@@ -577,7 +577,14 @@
       "listingsSuffix": "listings",
       "popularProjects": "Featured projects",
       "noData": "No location data available",
-      "noDataDescription": "Please try again later"
+      "noDataDescription": "Please try again later",
+      "exploreButton": "Explore"
+    },
+    "vipSections": {
+      "diamond": "💎 Diamond Premium Properties",
+      "gold": "⭐ Gold Featured Properties",
+      "silver": "🥈 Silver Quality Properties",
+      "normal": "Standard Properties"
     },
     "features": {
       "title": "Why Choose Us",
@@ -2113,6 +2120,10 @@
         "button": "AI Price Evaluation",
         "score": "Score"
       }
+    },
+    "address": {
+      "new": "New Address",
+      "old": "Old Address"
     },
     "links": {
       "viewSellerListings": "View this seller's listings"

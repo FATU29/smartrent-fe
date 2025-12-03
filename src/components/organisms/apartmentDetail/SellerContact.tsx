@@ -101,7 +101,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
         {/* Contact Buttons */}
         <div className='space-y-3'>
           <Button
-            className='w-full bg-white text-black border-2 border-primary h-12 font-semibold'
+            className='hover:bg-blue-100 w-full bg-white text-black border-2 border-primary h-12 font-semibold'
             onClick={handleZaloClick}
           >
             <Image

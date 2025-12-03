@@ -41,7 +41,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
 
   if (sortedMedia.length === 0) {
     return (
-      <div className='relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-gray-900 shadow-lg'>
+      <div className='group relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-gray-900 shadow-lg'>
         <ImageAtom
           src={DEFAULT_IMAGE}
           defaultImage={DEFAULT_IMAGE}
@@ -96,7 +96,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             <Button
               variant='ghost'
               size='icon'
-              className='absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 backdrop-blur-sm rounded-full shadow-lg h-10 w-10 transition-all duration-200 z-10'
+              className='absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 backdrop-blur-sm rounded-full shadow-lg h-10 w-10 transition-all duration-200 z-10 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'
               onClick={prevMedia}
             >
               <ChevronLeft className='w-5 h-5' />
@@ -104,7 +104,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             <Button
               variant='ghost'
               size='icon'
-              className='absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 backdrop-blur-sm rounded-full shadow-lg h-10 w-10 transition-all duration-200 z-10'
+              className='absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 backdrop-blur-sm rounded-full shadow-lg h-10 w-10 transition-all duration-200 z-10 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'
               onClick={nextMedia}
             >
               <ChevronRight className='w-5 h-5' />
@@ -114,7 +114,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
 
         {/* Media Counter */}
         {sortedMedia.length > 1 && (
-          <div className='absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs sm:text-sm backdrop-blur-sm font-medium z-10'>
+          <div className='absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs sm:text-sm backdrop-blur-sm font-medium z-10 opacity-0 group-hover:opacity-100'>
             {currentIndex + 1} {t('of')} {sortedMedia.length}
           </div>
         )}

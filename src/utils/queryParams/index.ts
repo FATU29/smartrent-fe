@@ -203,8 +203,8 @@ export function getFiltersFromQuery(
     }
   }
 
-  filters.latitude = parseNumberParam(query, 'latitude')
-  filters.longitude = parseNumberParam(query, 'longitude')
+  // filters.latitude = parseNumberParam(query, 'latitude')
+  // filters.longitude = parseNumberParam(query, 'longitude')
 
   filters.page = parseNumberParam(query, 'page')
   filters.size = parseNumberParam(query, 'size')
@@ -217,6 +217,16 @@ export function getFiltersFromQuery(
 
   const userIdParam = parseStringParam(query, 'userId')
   filters.userId = userIdParam
+
+  const userLongitudeParam = parseStringParam(query, 'userLongitude')
+  if (userLongitudeParam) {
+    filters.userLongitude = Number(userLongitudeParam)
+  }
+
+  const userLatitudeParam = parseStringParam(query, 'userLatitude')
+  if (userLatitudeParam) {
+    filters.userLatitude = Number(userLatitudeParam)
+  }
 
   const cleanedFilters = Object.fromEntries(
     Object.entries(filters).filter(([, v]) => v !== undefined),

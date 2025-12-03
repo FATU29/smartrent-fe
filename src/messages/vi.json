@@ -578,7 +578,14 @@
       "listingsSuffix": "tin đăng",
       "popularProjects": "Dự án nổi bật",
       "noData": "Hiện tại chưa có dữ liệu địa điểm",
-      "noDataDescription": "Vui lòng thử lại sau"
+      "noDataDescription": "Vui lòng thử lại sau",
+      "exploreButton": "Khám phá"
+    },
+    "vipSections": {
+      "diamond": "💎 Bất động sản Kim Cương",
+      "gold": "⭐ Bất động sản Vàng",
+      "silver": "🥈 Bất động sản Bạc",
+      "normal": "Bất động sản Thường"
     },
     "features": {
       "title": "Tại sao nên chọn chúng tôi",
@@ -2114,6 +2121,10 @@
         "button": "Đánh giá giá AI",
         "score": "Điểm"
       }
+    },
+    "address": {
+      "new": "Địa chỉ mới",
+      "old": "Địa chỉ cũ"
     },
     "links": {
       "viewSellerListings": "Xem tất cả tin đăng của người bán"

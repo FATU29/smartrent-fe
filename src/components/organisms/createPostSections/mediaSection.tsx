@@ -39,17 +39,14 @@ const MediaSection: React.FC<MediaSectionProps> = ({
     (item) =>
       item.mediaType === 'VIDEO' &&
       item.isPrimary === true &&
-      item.sourceType === 'UPLOAD',
+      (item.sourceType === 'UPLOAD' || item.sourceType === 'UPLOADED'),
   )
   const hasUploadedVideo = !!uploadedVideo
 
-  // Only one video type can be present at a time
-  const hasAnyVideo = hasVideoYoutube || hasUploadedVideo
+  // Show upload video section only when no YouTube video exists
+  const showUploadVideo = !hasVideoYoutube
 
-  // Show upload video section only when no video exists
-  const showUploadVideo = !hasAnyVideo
-
-  // Show VideoUrl section only when no video exists OR when YouTube video exists
+  // Show VideoUrl section only when no uploaded video exists
   const showVideoUrl = !hasUploadedVideo
 
   return (
@@ -68,10 +65,10 @@ const MediaSection: React.FC<MediaSectionProps> = ({
       <UploadImages images={otherImages} />
 
       {/* Video Upload Section - Show when no video exists */}
-      {showUploadVideo && <UploadVideo video={undefined} />}
+      {showUploadVideo && <UploadVideo video={uploadedVideo} />}
 
       {/* Video URL Section - Always show (handles YouTube display and input) */}
-      {showVideoUrl && <VideoUrl video={video || uploadedVideo} />}
+      {showVideoUrl && <VideoUrl video={video} />}
 
       <PhotoGuidelines />
     </div>

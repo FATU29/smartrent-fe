@@ -165,6 +165,7 @@ export class ListingService {
         method: 'POST',
         url: PATHS.LISTING.PROVINCE_STATS,
         data: request,
+        skipAuth: true, // Public API - không cần authentication
       },
       instance,
     )
@@ -190,6 +191,7 @@ export class ListingService {
         method: 'POST',
         url: PATHS.LISTING.SEARCH,
         data: request,
+        skipAuth: true, // Public API - không cần authentication
       },
       instance,
     )

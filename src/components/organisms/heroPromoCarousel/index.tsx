@@ -70,7 +70,7 @@ const HeroPromoCarousel: React.FC<{ onCTAClick?: (id: string) => void }> = ({
                   <Button
                     variant='secondary'
                     size='sm'
-                    className='backdrop-blur-sm bg-white/85 text-foreground hover:bg-white'
+                    className='backdrop-blur-sm'
                     onClick={() => onCTAClick?.(s.id)}
                   >
                     {s.cta}

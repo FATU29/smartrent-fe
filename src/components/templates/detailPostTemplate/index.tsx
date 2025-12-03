@@ -16,6 +16,7 @@ import {
   usePricingHistory,
   usePriceStatistics,
 } from '@/hooks/useListings/usePricingHistory'
+import { useSimilarProperties } from '@/hooks/useListings/useSimilarProperties'
 import { mockPricingHistory } from '@/mock'
 import { PhoneClickDetailService } from '@/api/services'
 
@@ -39,15 +40,22 @@ interface Section {
 
 const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   listing,
-  similarProperties,
   recentlyViewed,
   onChatZalo,
   onSimilarPropertyClick,
 }) => {
   const t = useTranslations()
 
-  const { description, media, user, amenities, address, listingId } =
-    listing || {}
+  const {
+    description,
+    media,
+    user,
+    amenities,
+    address,
+    listingId,
+    vipType,
+    locationPricing,
+  } = listing || {}
 
   const mediaItems = media || []
 
@@ -56,6 +64,29 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   const { data: pricingHistoryData, isLoading: isPricingHistoryLoading } =
     usePricingHistory(listingId)
   const { data: priceStatisticsData } = usePriceStatistics(listingId)
+
+  // Fetch similar properties based on VIP type and location
+  const {
+    data: fetchedSimilarProperties,
+    isLoading: isLoadingSimilar,
+    isError: isErrorSimilar,
+  } = useSimilarProperties({
+    listingId,
+    vipType,
+    wardId: locationPricing?.wardPricing?.locationId,
+    districtId: locationPricing?.districtPricing?.locationId,
+    provinceId: locationPricing?.provincePricing?.locationId,
+    isLegacy: true, // Based on location pricing structure
+    enabled: !!listingId && !!vipType,
+    limit: 10,
+  })
+
+  // Use fetched similar properties if available, otherwise fallback to props
+  const similarPropertiesData = fetchedSimilarProperties || []
+  const shouldShowSimilarProperties =
+    isLoadingSimilar ||
+    (similarPropertiesData && similarPropertiesData.length > 0) ||
+    isErrorSimilar
 
   const handleChatZalo = () => {
     onChatZalo?.()
@@ -166,19 +197,22 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
           />
         ),
         containerClassName: 'mb-8',
+        isVisible: true,
       },
       {
         id: 'similarProperties',
         component: (
           <PropertyCarousel
-            listings={similarProperties || []}
+            listings={similarPropertiesData}
             title={t('apartmentDetail.sections.similarProperties')}
             onPropertyClick={handleSimilarPropertyClick}
+            isLoading={isLoadingSimilar}
+            showEmptyState={!isLoadingSimilar && !isErrorSimilar}
           />
         ),
         containerClassName: 'mb-8',
         order: 8,
-        isVisible: similarProperties && similarProperties.length > 0,
+        isVisible: shouldShowSimilarProperties,
       },
       {
         id: 'recentlyViewed',
@@ -195,7 +229,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     ],
     [
       listing,
-      similarProperties,
+      similarPropertiesData,
       recentlyViewed,
       t,
       addressNode,

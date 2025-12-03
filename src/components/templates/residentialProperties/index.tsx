@@ -22,7 +22,6 @@ const ResidentialPropertiesTemplate: React.FC = () => {
 
   const handleFavorite = useCallback(
     (property: ListingDetail, isFavorite: boolean) => {
-      // TODO: Implement favorite functionality
       console.log('Favorite:', property, isFavorite)
     },
     [],
