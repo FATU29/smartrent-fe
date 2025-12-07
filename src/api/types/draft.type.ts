@@ -1,7 +1,19 @@
 /**
  * Draft Listing API Types
- * Based on backend API specification
+ * Based on backend API specification - Updated 2025-12-07
  */
+
+import {
+  Amenity,
+  MediaItem,
+  Direction,
+  Furnishing,
+  PropertyType,
+  VipType,
+  PriceUnit,
+  listingType,
+  PriceType,
+} from './property.type'
 
 /**
  * Request DTO for creating/updating draft listings
@@ -11,14 +23,14 @@ export interface DraftListingRequest {
   // Core Information
   title?: string
   description?: string
-  listingType?: 'RENT' | 'SALE' | 'SHARE'
-  vipType?: 'NORMAL' | 'SILVER' | 'GOLD' | 'DIAMOND'
+  listingType?: listingType
+  vipType?: VipType
   categoryId?: number
-  productType?: 'ROOM' | 'APARTMENT' | 'HOUSE' | 'OFFICE' | 'STUDIO'
+  productType?: PropertyType
 
   // Pricing
   price?: number
-  priceUnit?: 'MONTH' | 'DAY' | 'YEAR'
+  priceUnit?: PriceUnit
 
   // Address
   address?: {
@@ -43,15 +55,15 @@ export interface DraftListingRequest {
   area?: number
   bedrooms?: number
   bathrooms?: number
-  direction?: string
-  furnishing?: 'FULLY_FURNISHED' | 'SEMI_FURNISHED' | 'UNFURNISHED'
+  direction?: Direction
+  furnishing?: Furnishing
   roomCapacity?: number
 
   // Utility Costs
-  waterPrice?: string
-  electricityPrice?: string
-  internetPrice?: string
-  serviceFee?: string
+  waterPrice?: PriceType
+  electricityPrice?: PriceType
+  internetPrice?: PriceType
+  serviceFee?: PriceType
 
   // Related IDs
   amenityIds?: number[]
@@ -59,60 +71,79 @@ export interface DraftListingRequest {
 }
 
 /**
+ * Draft address nested object in response
+ */
+export interface DraftAddressResponse {
+  addressId: number | null
+  fullAddress: string | null
+  fullNewAddress: string | null
+  latitude: number
+  longitude: number
+  addressType: 'OLD' | 'NEW'
+
+  // Legacy address fields
+  legacyProvinceId: number | null
+  legacyProvinceName: string | null
+  legacyDistrictId: number | null
+  legacyDistrictName: string | null
+  legacyWardId: number | null
+  legacyWardName: string | null
+  legacyStreet: string | null
+
+  // New address fields
+  newProvinceCode: string | null
+  newProvinceName: string | null
+  newWardCode: string | null
+  newWardName: string | null
+  newStreet: string | null
+
+  // Common fields
+  streetId: number | null
+  streetName: string | null
+  projectId: number | null
+  projectName: string | null
+}
+
+/**
  * Response DTO for draft listing operations
+ * This matches the new backend response structure with nested objects
  */
 export interface DraftListingResponse {
   draftId: number
   userId: string
 
   // Core Information
-  title?: string
-  description?: string
-  listingType?: 'RENT' | 'SALE' | 'SHARE'
-  vipType?: 'NORMAL' | 'SILVER' | 'GOLD' | 'DIAMOND'
-  categoryId?: number
-  productType?: 'ROOM' | 'APARTMENT' | 'HOUSE' | 'OFFICE' | 'STUDIO'
+  title: string
+  description: string
+  listingType: listingType
+  vipType: VipType | null
+  categoryId: number
+  productType: PropertyType
 
   // Pricing
-  price?: number
-  priceUnit?: 'MONTH' | 'DAY' | 'YEAR'
+  price: number
+  priceUnit: PriceUnit
 
-  // Address Information
-  addressType?: 'OLD' | 'NEW'
-
-  // Legacy address fields
-  provinceId?: number
-  districtId?: number
-  wardId?: number
-
-  // New address fields
-  provinceCode?: string
-  wardCode?: string
-
-  // Common address fields
-  street?: string
-  streetId?: number
-  projectId?: number
-  latitude?: number
-  longitude?: number
+  // Address - Now a nested object
+  address: DraftAddressResponse
 
   // Property Specifications
-  area?: number
-  bedrooms?: number
-  bathrooms?: number
-  direction?: string
-  furnishing?: string
-  roomCapacity?: number
+  area: number
+  bedrooms: number
+  bathrooms: number
+  direction: Direction
+  furnishing: Furnishing
+  roomCapacity: number | null
 
   // Utility Costs
-  waterPrice?: string
-  electricityPrice?: string
-  internetPrice?: string
-  serviceFee?: string
+  waterPrice: PriceType
+  electricityPrice: PriceType
+  internetPrice: PriceType
+  serviceFee: PriceType
 
-  // Related IDs
-  amenityIds?: number[]
-  mediaIds?: number[]
+  // Related data - Now full objects, not just IDs
+  amenities: Amenity[]
+  media: MediaItem[] | null
 
   // Timestamps
   createdAt: string

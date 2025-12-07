@@ -2,19 +2,29 @@ import React from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { RankDisplay } from '@/components/atoms/rank-display'
-import { StatsDisplay } from '@/components/atoms/stats-display'
 import { VerificationBadge } from '@/components/atoms/verification-badge'
 import { Badge } from '@/components/atoms/badge'
+import { Typography } from '@/components/atoms/typography'
 import { ListingCardActions } from '@/components/molecules/listingCardActions'
 import { Card, CardContent } from '@/components/atoms/card'
 import { cn } from '@/lib/utils'
 import { toISO, formatISO } from '@/utils/date/safe'
-import {
-  LISTING_CARD_STYLES,
-  LISTING_CARD_CONFIG,
-  LISTING_CARD_ANIMATIONS,
-} from './index.constants'
+import { formatByLocale } from '@/utils/currency/convert'
+import { getPriceUnitTranslationKey } from '@/utils/property'
+import { useLanguage } from '@/hooks/useLanguage'
 import { ListingOwnerDetail } from '@/api/types'
+import {
+  MapPin,
+  Calendar,
+  DollarSign,
+  Maximize2,
+  Bed,
+  Bath,
+  Eye,
+  Phone,
+  Users,
+} from 'lucide-react'
+import { DEFAULT_IMAGE } from '@/constants/common'
 
 export interface ListingCardProps {
   property: ListingOwnerDetail
@@ -49,6 +59,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 }) => {
   const t = useTranslations('seller.listingManagement.card')
   const tNot = useTranslations()
+  const { language } = useLanguage()
 
   const {
     title,
@@ -67,6 +78,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     statistics,
     media,
     address,
+    price,
+    priceUnit,
   } = property
 
   const calculatedExpiryDate = React.useMemo(() => {
@@ -105,149 +118,372 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const showPromoteButton = !hasVipPackage
   const showRepostButton = isExpired
 
-  // Human readable dates
   const postISO = toISO(postDate)
   const postDisplay = formatISO(postISO)
   const expiryISO = calculatedExpiryDate || toISO(expiryDate)
   const expiryDisplay =
     formatISO(expiryISO) || t('common.notAvailable', { default: 'N/A' })
 
+  const hasImage = coverImageUrl !== undefined && coverImageUrl !== null
+  const imageUrl = hasImage ? coverImageUrl : DEFAULT_IMAGE
+
   return (
     <Card
       className={cn(
-        LISTING_CARD_STYLES.container,
-        LISTING_CARD_ANIMATIONS.hover,
+        'group hover:shadow-xl hover:border-primary/50 transition-all duration-300 overflow-hidden',
         className,
       )}
     >
-      <CardContent className='px-4 sm:px-6'>
-        <div className={LISTING_CARD_STYLES.layout}>
-          {/* Property Media - Cover image only (no video for seller/listings page) */}
-          <div className={LISTING_CARD_STYLES.imageContainer}>
+      <CardContent className='p-0'>
+        <div className='flex flex-col sm:flex-row sm:items-start'>
+          <div className='relative w-full aspect-square sm:w-56 shrink-0 bg-gradient-to-br from-muted/50 to-muted'>
+            <Image
+              src={imageUrl}
+              alt={title}
+              fill
+              className={cn(
+                'object-cover transition-all duration-300',
+                hasImage && 'group-hover:scale-105',
+              )}
+              unoptimized={!hasImage}
+            />
+
+            <div className='absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/20' />
+
             {/* VIP Type Badge */}
             {vipType && vipType !== 'NORMAL' && (
-              <div className='absolute top-2 left-2 z-10'>
+              <div className='absolute top-3 left-3'>
                 <Badge
                   variant='default'
-                  className='bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold px-3 py-1 shadow-lg'
+                  className='backdrop-blur-md bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold shadow-lg border-yellow-600'
                 >
                   {t(`vipTypes.${vipType}`)}
                 </Badge>
               </div>
             )}
 
-            {/* Cover Image Only */}
-            <Image
-              src={coverImageUrl || LISTING_CARD_CONFIG.defaultImage}
-              alt={title}
-              fill
-              className={cn(
-                LISTING_CARD_STYLES.image,
-                LISTING_CARD_ANIMATIONS.imageHover,
-              )}
-            />
+            {/* Status Badge - Show expired or verified */}
+            <div className='absolute top-3 right-3'>
+              {isExpired ? (
+                <Badge className='backdrop-blur-md bg-red-500 text-white border-red-600 shadow-md font-medium hover:bg-red-600'>
+                  {t('status.expired')}
+                </Badge>
+              ) : verified ? (
+                <Badge className='backdrop-blur-md bg-green-500 text-white border-green-600 shadow-md font-medium hover:bg-green-600'>
+                  {t('status.active')}
+                </Badge>
+              ) : null}
+            </div>
           </div>
 
-          {/* Property Details */}
-          <div className={LISTING_CARD_STYLES.contentContainer}>
-            <div className={LISTING_CARD_STYLES.contentLayout}>
-              {/* Left Content */}
-              <div className={LISTING_CARD_STYLES.leftContent}>
-                {/* Title */}
-                <h3 className={LISTING_CARD_STYLES.title}>{title}</h3>
+          {/* Content Section - Enhanced alignment */}
+          <div className='flex-1 min-w-0 flex flex-col p-5 sm:p-6 text-base'>
+            {/* Title & Badges */}
+            <div className='space-y-2 mb-4'>
+              <Typography
+                variant='h4'
+                className='line-clamp-2 group-hover:text-primary transition-colors leading-tight text-lg sm:text-xl'
+              >
+                {title}
+              </Typography>
 
-                {/* Address */}
-                <p className={LISTING_CARD_STYLES.address}>{productType}</p>
+              <div className='flex items-center gap-2 flex-wrap'>
+                {productType && (
+                  <Badge variant='secondary' className='font-medium'>
+                    {productType}
+                  </Badge>
+                )}
+                {verified && (
+                  <VerificationBadge verified={verified} type='verified' />
+                )}
+                {showRank && (
+                  <RankDisplay rank={{ page: 1, position: rankOfVipType }} />
+                )}
+              </div>
+            </div>
 
-                {/* Address List - Show both new and legacy */}
-                <ul className='list-disc pl-5 text-sm text-gray-600 mb-2'>
-                  {newAddress && (
-                    <li>
-                      {tNot('apartmentDetail.property.newAddress', {
-                        default: 'New Address',
-                      })}
-                      : {newAddress}
-                    </li>
-                  )}
-                  {legacyAddress && (
-                    <li>
-                      {tNot('apartmentDetail.property.legacyAddress', {
-                        default: 'Legacy Address',
-                      })}
-                      : {legacyAddress}
-                    </li>
-                  )}
-                  {!newAddress && !legacyAddress && <li>N/A</li>}
-                </ul>
+            {/* Addresses - Full text display with better styling */}
+            {(newAddress || legacyAddress) && (
+              <div className='space-y-2 mb-4'>
+                {newAddress && (
+                  <div className='flex items-start gap-2.5 p-3 rounded-lg bg-primary/5 border border-primary/10'>
+                    <MapPin className='w-5 h-5 mt-0.5 shrink-0 text-primary' />
+                    <div className='flex-1 min-w-0'>
+                      <Typography
+                        variant='small'
+                        className='text-xs text-muted-foreground mb-0.5'
+                      >
+                        {tNot('apartmentDetail.property.newAddress')}
+                      </Typography>
+                      <Typography
+                        variant='small'
+                        className='text-foreground font-medium leading-relaxed'
+                        title={newAddress}
+                      >
+                        {newAddress}
+                      </Typography>
+                    </div>
+                  </div>
+                )}
+                {legacyAddress && (
+                  <div className='flex items-start gap-2.5 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900'>
+                    <MapPin className='w-5 h-5 mt-0.5 shrink-0 text-blue-600 dark:text-blue-400' />
+                    <div className='flex-1 min-w-0'>
+                      <Typography
+                        variant='small'
+                        className='text-xs text-muted-foreground mb-0.5'
+                      >
+                        {tNot('apartmentDetail.property.legacyAddress')}
+                      </Typography>
+                      <Typography
+                        variant='small'
+                        className='text-foreground font-medium leading-relaxed'
+                        title={legacyAddress}
+                      >
+                        {legacyAddress}
+                      </Typography>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
-                {/* Property Info */}
-                <div className={LISTING_CARD_STYLES.propertyInfo}>
-                  <span>
-                    {t('listingCode')}: {listingId}
-                  </span>
-                  {postDisplay && (
-                    <span>
-                      {t('postDate')}: {postDisplay}
-                    </span>
-                  )}
-                  <span>
-                    {t('expiryDate')}: {expiryDisplay}
-                  </span>
+            {/* Property Specs - Column layout on mobile, grid on desktop */}
+            <div className='flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5'>
+              {price && (
+                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-primary/10 border border-primary/20 transition-all hover:bg-primary/15'>
+                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-primary/20'>
+                    <DollarSign className='w-5 h-5 text-primary' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground mb-0.5'
+                    >
+                      {t('price')}
+                    </Typography>
+                    <div className='flex items-baseline gap-1'>
+                      <Typography
+                        variant='small'
+                        className='font-bold text-primary truncate text-sm sm:text-base'
+                      >
+                        {typeof price === 'number' && price > 0
+                          ? formatByLocale(price, language)
+                          : new Intl.NumberFormat('vi-VN').format(price || 0) +
+                            '\u00A0₫'}
+                      </Typography>
+                      {priceUnit && (
+                        <Typography
+                          variant='small'
+                          className='text-xs sm:text-sm text-muted-foreground'
+                        >
+                          /{tNot(getPriceUnitTranslationKey(priceUnit))}
+                        </Typography>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {property.area && (
+                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 transition-all hover:bg-blue-100 dark:hover:bg-blue-950/50'>
+                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900'>
+                    <Maximize2 className='w-5 h-5 text-blue-600 dark:text-blue-400' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground mb-0.5'
+                    >
+                      {t('area')}
+                    </Typography>
+                    <Typography
+                      variant='small'
+                      className='font-bold truncate text-blue-700 dark:text-blue-400 text-sm sm:text-base'
+                    >
+                      {property.area} m²
+                    </Typography>
+                  </div>
+                </div>
+              )}
+
+              {property.bedrooms !== undefined && property.bedrooms > 0 && (
+                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900 transition-all hover:bg-purple-100 dark:hover:bg-purple-950/50'>
+                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900'>
+                    <Bed className='w-5 h-5 text-purple-600 dark:text-purple-400' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground mb-0.5'
+                    >
+                      {t('bedrooms')}
+                    </Typography>
+                    <Typography
+                      variant='small'
+                      className='font-bold truncate text-purple-700 dark:text-purple-400 text-sm sm:text-base'
+                    >
+                      {property.bedrooms}
+                    </Typography>
+                  </div>
+                </div>
+              )}
+
+              {property.bathrooms !== undefined && property.bathrooms > 0 && (
+                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-200 dark:border-cyan-900 transition-all hover:bg-cyan-100 dark:hover:bg-cyan-950/50'>
+                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-cyan-100 dark:bg-cyan-900'>
+                    <Bath className='w-5 h-5 text-cyan-600 dark:text-cyan-400' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground mb-0.5'
+                    >
+                      {t('bathrooms')}
+                    </Typography>
+                    <Typography
+                      variant='small'
+                      className='font-bold truncate text-cyan-700 dark:text-cyan-400 text-sm sm:text-base'
+                    >
+                      {property.bathrooms}
+                    </Typography>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Listing Info & Statistics - Better alignment */}
+            <div className='space-y-3 mb-4'>
+              {/* Listing Code and Dates */}
+              <div className='flex flex-wrap items-center gap-2 text-sm sm:text-base'>
+                <div className='flex items-center gap-1.5'>
+                  <Typography variant='small' className='text-muted-foreground'>
+                    {t('listingCode')}:
+                  </Typography>
+                  <Typography variant='small' className='font-semibold'>
+                    {listingId}
+                  </Typography>
                 </div>
 
-                {/* Status Messages */}
-                {isExpired && (
-                  <p className={LISTING_CARD_STYLES.expiredMessage}>
-                    {t('expiredMessage')}
-                  </p>
+                {postDisplay && (
+                  <>
+                    <span className='text-muted-foreground'>•</span>
+                    <div className='flex items-center gap-1.5'>
+                      <Calendar className='w-3.5 h-3.5 text-muted-foreground' />
+                      <Typography
+                        variant='small'
+                        className='text-muted-foreground'
+                      >
+                        {t('postDate')}:
+                      </Typography>
+                      <Typography variant='small' className='font-semibold'>
+                        {postDisplay}
+                      </Typography>
+                    </div>
+                  </>
                 )}
 
-                {/* Verification and Rank */}
-                <div className={LISTING_CARD_STYLES.badgeContainer}>
-                  {verified && (
-                    <VerificationBadge verified={verified} type='verified' />
-                  )}
-                  {showRank && (
-                    <RankDisplay rank={{ page: 1, position: rankOfVipType }} />
-                  )}
+                <span className='text-muted-foreground'>•</span>
+                <div className='flex items-center gap-1.5'>
+                  <Calendar className='w-3.5 h-3.5 text-muted-foreground' />
+                  <Typography variant='small' className='text-muted-foreground'>
+                    {t('expiryDate')}:
+                  </Typography>
+                  <Typography variant='small' className='font-semibold'>
+                    {expiryDisplay}
+                  </Typography>
                 </div>
               </div>
 
-              {/* Right Content - Status + Stats */}
-              <div className={LISTING_CARD_STYLES.rightContent}>
-                {/* Stats */}
-                <div className={LISTING_CARD_STYLES.statsContainer}>
-                  <StatsDisplay
-                    stats={{
-                      views: viewCount,
-                      contacts: contactCount,
-                      customers: customerCount,
-                    }}
-                    animated
-                    compact
-                  />
+              {/* Statistics */}
+              <div className='flex items-center gap-4 p-3 rounded-lg bg-gradient-to-br from-muted/30 to-muted/50 border border-muted'>
+                <div className='flex items-center gap-1.5'>
+                  <Eye className='w-4 h-4 text-blue-600 dark:text-blue-400' />
+                  <div className='flex flex-col'>
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground leading-none'
+                    >
+                      {t('views')}
+                    </Typography>
+                    <Typography
+                      variant='small'
+                      className='font-bold leading-tight text-sm sm:text-base'
+                    >
+                      {viewCount.toLocaleString()}
+                    </Typography>
+                  </div>
+                </div>
+
+                <div className='flex items-center gap-1.5'>
+                  <Phone className='w-4 h-4 text-green-600 dark:text-green-400' />
+                  <div className='flex flex-col'>
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground leading-none'
+                    >
+                      {t('contacts')}
+                    </Typography>
+                    <Typography
+                      variant='small'
+                      className='font-bold leading-tight text-sm sm:text-base'
+                    >
+                      {contactCount.toLocaleString()}
+                    </Typography>
+                  </div>
+                </div>
+
+                <div className='flex items-center gap-1.5'>
+                  <Users className='w-4 h-4 text-purple-600 dark:text-purple-400' />
+                  <div className='flex flex-col'>
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground leading-none'
+                    >
+                      {t('customers')}
+                    </Typography>
+                    <Typography
+                      variant='small'
+                      className='font-bold leading-tight text-sm sm:text-base'
+                    >
+                      {customerCount.toLocaleString()}
+                    </Typography>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Actions */}
-            <ListingCardActions
-              onEdit={onEdit}
-              onPromote={onPromote}
-              onRepost={onRepost}
-              onViewReport={onViewReport}
-              onRequestVerification={onRequestVerification}
-              onCopyListing={onCopyListing}
-              onRequestContact={onRequestContact}
-              onShare={onShare}
-              onActivityHistory={onActivityHistory}
-              onTakeDown={onTakeDown}
-              onDelete={onDelete}
-              showPromoteButton={showPromoteButton}
-              showRepostButton={showRepostButton}
-            />
+            {/* Status Messages */}
+            {isExpired && (
+              <div className='mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900'>
+                <Typography
+                  variant='small'
+                  className='text-red-700 dark:text-red-400 font-medium'
+                >
+                  {t('expiredMessage')}
+                </Typography>
+              </div>
+            )}
+
+            {/* Actions - Better alignment */}
+            <div className='flex gap-2 mt-auto pt-4 border-t'>
+              <ListingCardActions
+                onEdit={onEdit}
+                onPromote={onPromote}
+                onRepost={onRepost}
+                onViewReport={onViewReport}
+                onRequestVerification={onRequestVerification}
+                onCopyListing={onCopyListing}
+                onRequestContact={onRequestContact}
+                onShare={onShare}
+                onActivityHistory={onActivityHistory}
+                onTakeDown={onTakeDown}
+                onDelete={onDelete}
+                showPromoteButton={showPromoteButton}
+                showRepostButton={showRepostButton}
+              />
+            </div>
           </div>
-          {/* Close layout wrapper */}
         </div>
       </CardContent>
     </Card>

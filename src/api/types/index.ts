@@ -72,6 +72,8 @@ export type {
   PriceStatistics,
   ProvinceStatsRequest,
   ProvinceStatsItem,
+  CategoryStatsRequest,
+  CategoryStatsItem,
   ListingFilterRequest,
   ListingSearchResponse,
   ListingSearchApiRequest,

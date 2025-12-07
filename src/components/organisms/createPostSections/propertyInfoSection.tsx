@@ -208,6 +208,11 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     if (propertyInfo.bathrooms) {
       setValue('bathrooms', propertyInfo?.bathrooms, { shouldValidate: true })
     }
+    if (propertyInfo?.roomCapacity) {
+      setValue('roomCapacity', propertyInfo?.roomCapacity, {
+        shouldValidate: true,
+      })
+    }
     if (propertyInfo?.direction) {
       setValue('direction', propertyInfo?.direction, { shouldValidate: true })
     }
@@ -267,7 +272,8 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       !propertyInfo?.priceUnit ||
       !propertyInfo?.area ||
       !propertyInfo?.bedrooms ||
-      !propertyInfo?.bathrooms
+      !propertyInfo?.bathrooms ||
+      !propertyInfo?.roomCapacity
     ) {
       return
     }
@@ -284,6 +290,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       area: propertyInfo.area,
       bedrooms: propertyInfo.bedrooms,
       bathrooms: propertyInfo.bathrooms,
+      roomCapacity: propertyInfo.roomCapacity,
       direction: propertyInfo.direction,
       furnishing: furnishing,
       amenities: amenityCodes,
@@ -621,7 +628,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 {tDetails('rooms')}
               </h3>
 
-              <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+              <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
                 <Controller
                   name='bedrooms'
                   control={control}
@@ -656,6 +663,30 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         value={propertyInfo?.bathrooms ?? 0}
                         onChange={(v) => {
                           updatePropertyInfo({ bathrooms: v })
+                        }}
+                        placeholder='0'
+                        min={1}
+                        step={1}
+                        required
+                        error={
+                          error?.message
+                            ? tValidation(getValidationKey(error.message))
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
+                />
+                <Controller
+                  name='roomCapacity'
+                  control={control}
+                  render={({ fieldState: { error } }) => (
+                    <div className='space-y-2'>
+                      <NumberField
+                        label={tDetails('roomCapacity')}
+                        value={propertyInfo?.roomCapacity ?? 0}
+                        onChange={(v) => {
+                          updatePropertyInfo({ roomCapacity: v })
                         }}
                         placeholder='0'
                         min={1}

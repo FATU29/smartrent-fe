@@ -24,6 +24,7 @@ export const useCreatePostForm = () => {
       furnishing: propertyInfo?.furnishing,
       bedrooms: propertyInfo?.bedrooms || 0,
       bathrooms: propertyInfo?.bathrooms || 0,
+      roomCapacity: propertyInfo?.roomCapacity || 0,
       direction: propertyInfo?.direction,
       amenityIds: propertyInfo?.amenityIds || [],
       waterPrice: propertyInfo?.waterPrice,

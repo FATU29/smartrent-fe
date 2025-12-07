@@ -646,7 +646,9 @@
     "topInterest": {
       "title": "Bất động sản theo danh mục",
       "viewAll": "Xem tất cả",
-      "listingsSuffix": "tin đăng"
+      "listingsSuffix": "tin đăng",
+      "noCategories": "Không có danh mục nào",
+      "noCategoriesDescription": "Hiện tại chưa có danh mục bất động sản nào. Vui lòng quay lại sau."
     },
     "searchIntro": {
       "title": "Tìm căn phù hợp nhanh chóng",
@@ -808,6 +810,8 @@
       "bedroomsMinimum": "Số phòng ngủ phải ít nhất là 1",
       "bathroomsRequired": "Số phòng tắm là bắt buộc",
       "bathroomsMinimum": "Số phòng tắm phải ít nhất là 1",
+      "roomCapacityRequired": "Số người ở là bắt buộc",
+      "roomCapacityMinimum": "Số người ở phải ít nhất là 1",
       "directionRequired": "Hướng nhà là bắt buộc",
       "directionInvalid": "Hướng nhà không hợp lệ",
       "moveInDateRequired": "Ngày chuyển vào là bắt buộc",
@@ -1097,6 +1101,7 @@
         "price": "Giá",
         "bedrooms": "Phòng ngủ",
         "bathrooms": "Phòng tắm",
+        "roomCapacity": "Số người ở",
         "propertyAddress": "Địa chỉ Bất động sản",
         "addressPlaceholder": "Nhập địa chỉ bất động sản...",
         "addressHint": "Vui lòng nhập địa chỉ chính xác để khách hàng dễ tìm",
@@ -1279,6 +1284,7 @@
         "description": "Thêm thông tin chi tiết về bất động sản",
         "bedrooms": "Phòng ngủ",
         "bathrooms": "Phòng tắm",
+        "roomCapacity": "Số người ở",
         "floors": "Tầng",
         "yearBuilt": "Năm xây dựng",
         "legalStatus": "Tình trạng pháp lý",
@@ -2003,6 +2009,17 @@
         "postedDate": "Ngày đăng",
         "expiryDate": "Ngày hết hạn",
         "postDate": "Ngày đăng",
+        "price": "Giá",
+        "area": "Diện tích",
+        "bedrooms": "Phòng ngủ",
+        "bathrooms": "Phòng tắm",
+        "views": "Lượt xem",
+        "contacts": "Liên hệ",
+        "customers": "Khách hàng",
+        "status": {
+          "active": "Đang hoạt động",
+          "expired": "Hết hạn"
+        },
         "common": {
           "notAvailable": "Không có"
         },
@@ -2060,7 +2077,11 @@
         "createdAt": "Tạo lúc",
         "bedrooms": "phòng ngủ",
         "bathrooms": "phòng tắm",
-        "edit": "Chỉnh sửa"
+        "edit": "Chỉnh sửa",
+        "noImage": "Chưa có hình ảnh",
+        "draft": "Nháp",
+        "price": "Giá",
+        "area": "Diện tích"
       },
       "delete": {
         "confirmTitle": "Xóa bản nháp",
@@ -2216,6 +2237,7 @@
       "showPhone": "Hiện số"
     },
     "property": {
+      "roomCapacity": "Sức chứa phòng",
       "price": "Khoảng giá",
       "pricePerSqm": "tr/m²",
       "pricePerMonth": "tháng",

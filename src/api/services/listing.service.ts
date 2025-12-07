@@ -23,6 +23,8 @@ import {
   MyListingsBackendResponse,
   ProvinceStatsItem,
   ProvinceStatsRequest,
+  CategoryStatsItem,
+  CategoryStatsRequest,
   QuotaCheckResponse,
 } from '../types'
 
@@ -92,11 +94,20 @@ export class ListingService {
   static async createDraft(
     data: CreateListingRequest,
   ): Promise<ApiResponse<{ listingId: number; status: string }>> {
-    return apiRequest<{ listingId: number; status: string }>({
+    console.log('🚀 [API] Creating Draft:', {
+      endpoint: PATHS.LISTING.CREATE_DRAFT,
+      method: 'POST',
+      payload: data,
+    })
+
+    const response = await apiRequest<{ listingId: number; status: string }>({
       method: 'POST',
       url: PATHS.LISTING.CREATE_DRAFT,
       data,
     })
+
+    console.log('📥 [API] Create Draft Response:', response)
+    return response
   }
 
   static async update(
@@ -164,6 +175,34 @@ export class ListingService {
       {
         method: 'POST',
         url: PATHS.LISTING.PROVINCE_STATS,
+        data: request,
+        skipAuth: true, // Public API - không cần authentication
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Get category statistics
+   * POST /v1/listings/stats/categories
+   * Public API - no authentication required
+   * @param {CategoryStatsRequest} request - Category IDs and filters
+   * @param {AxiosInstance} instance - Optional axios instance for server-side calls
+   * @returns {Promise<ApiResponse<CategoryStatsItem[]>>} Promise resolving to category statistics
+   * @example
+   * const stats = await ListingService.getCategoryStats({
+   *   categoryIds: [1, 2, 3, 4, 5],
+   *   verifiedOnly: false
+   * })
+   */
+  static async getCategoryStats(
+    request: CategoryStatsRequest,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<CategoryStatsItem[]>> {
+    return apiRequest<CategoryStatsItem[]>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.CATEGORY_STATS,
         data: request,
         skipAuth: true, // Public API - không cần authentication
       },
@@ -264,7 +303,15 @@ export class ListingService {
       ':draftId',
       draftId.toString(),
     )
-    return apiRequest<DraftListingResponse>(
+
+    console.log('🚀 [API] Updating Draft:', {
+      draftId,
+      endpoint: url,
+      method: 'POST',
+      payload: data,
+    })
+
+    const response = await apiRequest<DraftListingResponse>(
       {
         method: 'POST',
         url,
@@ -272,6 +319,13 @@ export class ListingService {
       },
       instance,
     )
+
+    console.log('📥 [API] Update Draft Response:', {
+      draftId,
+      response,
+    })
+
+    return response
   }
 
   /**
@@ -327,6 +381,7 @@ export const {
   checkQuota,
   getByIdAdmin,
   getProvinceStats,
+  getCategoryStats,
   search,
   getMyListings,
   getMyDrafts,

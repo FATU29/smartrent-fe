@@ -68,6 +68,7 @@ export const PATHS = {
     CURRENT_PRICE: '/v1/listings/:listingId/current-price',
     RECENT_PRICE_CHANGES: '/v1/listings/recent-price-changes',
     PROVINCE_STATS: '/v1/listings/stats/provinces',
+    CATEGORY_STATS: '/v1/listings/stats/categories',
   },
 
   // Admin endpoints
