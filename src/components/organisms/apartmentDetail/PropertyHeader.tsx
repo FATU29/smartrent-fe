@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
@@ -7,6 +7,13 @@ import { ListingDetail } from '@/api/types'
 import { formatByLocale } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { getPriceUnitTranslationKey } from '@/utils/property'
+import { Button } from '@/components/atoms/button'
+import { Copy, Heart, Flag } from 'lucide-react'
+import { toast } from 'sonner'
+import { ReportListingDialog } from '@/components/molecules/reportListingDialog'
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
+import { useMediaThumbnail } from '@/hooks/useMediaThumbnail'
+import { mapListingToRecentlyViewed } from '@/utils/recentlyViewed/mapper'
 
 interface PropertyHeaderProps {
   listing: ListingDetail
@@ -15,36 +22,129 @@ interface PropertyHeaderProps {
 const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   const t = useTranslations()
   const { language: locale } = useSwitchLanguage()
+  const [isSaved, setIsSaved] = useState(false)
+  const [reportDialogOpen, setReportDialogOpen] = useState(false)
+  const { addListing } = useRecentlyViewed()
 
   const { listing } = props
+  const { thumbnail } = useMediaThumbnail({ media: listing?.media })
 
-  const { title, address, price, priceUnit, area, bedrooms, bathrooms } =
-    listing || {}
+  const {
+    title,
+    address,
+    price,
+    priceUnit,
+    area,
+    bedrooms,
+    bathrooms,
+    listingId,
+  } = listing || {}
 
   const { fullNewAddress: newAddress, fullAddress: oldAddress } = address || {}
 
+  // Add to recently viewed when component mounts
+  useEffect(() => {
+    if (listing && listingId) {
+      const recentlyViewedData = mapListingToRecentlyViewed(listing, thumbnail)
+      addListing(recentlyViewedData)
+    }
+  }, [listingId, thumbnail, listing, addListing]) // Include all dependencies
+
+  const handleCopyLink = () => {
+    const url = window.location.href
+    navigator.clipboard.writeText(url)
+    toast.success(t('common.copied') || 'Link copied!')
+  }
+
+  const handleToggleSaved = () => {
+    setIsSaved(!isSaved)
+    toast.success(
+      isSaved
+        ? t('apartmentDetail.actions.saved') || 'Removed from saved'
+        : t('apartmentDetail.actions.save') || 'Added to saved',
+    )
+  }
+
+  const handleReport = () => {
+    setReportDialogOpen(true)
+  }
+
   return (
     <div className='space-y-4'>
-      {/* Title */}
-      <Typography
-        variant='h1'
-        className='text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight'
-      >
-        {title}
-      </Typography>
+      <div className='flex flex-col md:flex-row items-center justify-between'>
+        <div className='flex flex-col gap-2'>
+          {/* Title */}
+          <Typography
+            variant='h1'
+            className='text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight'
+          >
+            {title}
+          </Typography>
 
-      {/* Address */}
-      <div className='space-y-1'>
-        {newAddress && (
-          <Typography variant='p' className='text-base text-muted-foreground'>
-            {t('apartmentDetail.property.newAddress')}: {newAddress}
-          </Typography>
-        )}
-        {oldAddress && (
-          <Typography variant='p' className='text-base text-muted-foreground'>
-            {t('apartmentDetail.property.legacyAddress')}: {oldAddress}
-          </Typography>
-        )}
+          {/* Address */}
+          <div className='space-y-1'>
+            {newAddress && (
+              <Typography
+                variant='p'
+                className='text-base text-muted-foreground'
+              >
+                {t('apartmentDetail.property.newAddress')}: {newAddress}
+              </Typography>
+            )}
+            {oldAddress && (
+              <Typography
+                variant='p'
+                className='text-base text-muted-foreground'
+              >
+                {t('apartmentDetail.property.legacyAddress')}: {oldAddress}
+              </Typography>
+            )}
+          </div>
+        </div>
+        <div className='flex items-center gap-2'>
+          {/* Copy Link Button */}
+          <Button
+            variant='ghost'
+            size='sm'
+            onClick={handleCopyLink}
+            className='flex items-center gap-1'
+          >
+            <Copy size={16} />
+            <span className='text-sm'>
+              {t('apartmentDetail.actions.share')}
+            </span>
+          </Button>
+
+          {/* Save Button */}
+          <Button
+            variant='ghost'
+            size='sm'
+            onClick={handleToggleSaved}
+            className='flex items-center gap-1'
+          >
+            <Heart
+              size={16}
+              fill={isSaved ? '#ef4444' : 'none'}
+              color='#ef4444'
+            />
+            <span className='text-sm'>
+              {isSaved
+                ? t('apartmentDetail.actions.saved')
+                : t('apartmentDetail.actions.save')}
+            </span>
+          </Button>
+
+          {/* Report Button */}
+          <Button
+            variant='ghost'
+            size='sm'
+            onClick={handleReport}
+            className='flex items-center gap-1'
+          >
+            <Flag size={16} />
+            <span className='text-sm'>{t('common.report') || 'Report'}</span>
+          </Button>
+        </div>
       </div>
 
       {/* Key Metrics */}
@@ -117,6 +217,16 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
         )}
       </div>
       <Separator className='my-4' />
+
+      {/* Report Dialog */}
+      <ReportListingDialog
+        listingId={listingId || ''}
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        onSuccess={() => {
+          // Handle success if needed
+        }}
+      />
     </div>
   )
 }

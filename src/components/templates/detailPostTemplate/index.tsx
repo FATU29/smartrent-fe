@@ -9,6 +9,7 @@ import {
   SellerContact,
   PropertyCarousel,
   PropertyMap,
+  RecentlyViewedSection,
 } from '@/components/organisms/apartmentDetail'
 import { Typography } from '@/components/atoms/typography'
 import { ListingDetail } from '@/api/types'
@@ -23,7 +24,6 @@ import { PhoneClickDetailService } from '@/api/services'
 export interface DetailPostTemplateProps {
   listing: ListingDetail
   similarProperties?: ListingDetail[]
-  recentlyViewed?: ListingDetail[]
   onExport?: () => void
   onCall?: () => void
   onChatZalo?: () => void
@@ -40,7 +40,6 @@ interface Section {
 
 const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   listing,
-  recentlyViewed,
   onChatZalo,
   onSimilarPropertyClick,
 }) => {
@@ -98,7 +97,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     try {
       await PhoneClickDetailService.trackClick({ listingId })
     } catch (error) {
-      // Silent failure - don't block user experience
       console.error('Failed to track phone click:', error)
     }
   }
@@ -217,20 +215,15 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
       {
         id: 'recentlyViewed',
         component: (
-          <PropertyCarousel
-            listings={recentlyViewed || []}
-            title={t('apartmentDetail.sections.recentlyViewed')}
-            onPropertyClick={handleSimilarPropertyClick}
-          />
+          <RecentlyViewedSection currentListingId={listing.listingId} />
         ),
         containerClassName: 'mb-8',
-        isVisible: recentlyViewed && recentlyViewed.length > 0,
+        isVisible: true,
       },
     ],
     [
       listing,
       similarPropertiesData,
-      recentlyViewed,
       t,
       addressNode,
       pricingHistoryData,

@@ -115,6 +115,14 @@ export const PATHS = {
     CALLBACK: '/v1/payments/callback/:provider',
   },
 
+  // Report endpoints
+  REPORT: {
+    REASONS: '/v1/listings/reports/reasons',
+    CREATE: '/v1/listings/:listingId/reports',
+    BY_ID: '/v1/listings/reports/:reportId',
+    MY_REPORTS: '/v1/listings/reports/my-reports',
+  },
+
   // Media endpoints
   MEDIA: {
     UPLOAD_URL: '/v1/media/upload-url',
