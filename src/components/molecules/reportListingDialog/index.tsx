@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
+import { useForm, Controller } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
@@ -19,6 +20,15 @@ import { toast } from 'sonner'
 import { useReportReasons, useCreateReport } from '@/hooks/useReport'
 import { useAuthContext } from '@/contexts/auth'
 
+interface ReportFormData {
+  reasonIds: number[]
+  otherFeedback?: string
+  reporterName?: string
+  reporterPhone?: string
+  reporterEmail: string
+  category: ReportCategory
+}
+
 export interface ReportListingDialogProps {
   listingId: string | number
   open: boolean
@@ -35,13 +45,6 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
   const t = useTranslations()
   const { user, isAuthenticated } = useAuthContext()
 
-  const [selectedReasonIds, setSelectedReasonIds] = useState<number[]>([])
-  const [otherFeedback, setOtherFeedback] = useState('')
-  const [reporterName, setReporterName] = useState('')
-  const [reporterPhone, setReporterPhone] = useState('')
-  const [reporterEmail, setReporterEmail] = useState('')
-  const [phoneError, setPhoneError] = useState('')
-  const [emailError, setEmailError] = useState('')
   const [activeCategory, setActiveCategory] =
     useState<ReportCategory>('LISTING')
 
@@ -49,80 +52,97 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
   const { data: reasons = [], isLoading: loadingReasons } = useReportReasons()
   const { mutate: submitReport, isPending: submitting } = useCreateReport()
 
+  // React Hook Form
+  const { control, handleSubmit, watch, setValue, reset } =
+    useForm<ReportFormData>({
+      defaultValues: {
+        reasonIds: [],
+        otherFeedback: '',
+        reporterName: '',
+        reporterPhone: '',
+        reporterEmail: '',
+        category: 'LISTING',
+      },
+    })
+
+  const selectedReasonIds = watch('reasonIds')
+  const reporterEmail = watch('reporterEmail')
+
   // Auto-fill email from user token when logged in
   useEffect(() => {
-    if (isAuthenticated && user?.email && !reporterEmail) {
-      setReporterEmail(user.email)
+    if (isAuthenticated && user?.email) {
+      setValue('reporterEmail', user.email)
       // Also auto-fill name if available
       if (user.firstName || user.lastName) {
         const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim()
-        setReporterName(fullName)
+        setValue('reporterName', fullName)
       }
       // Auto-fill phone if available
       if (user.phoneNumber) {
         const fullPhone = `${user.phoneCode || ''}${user.phoneNumber}`.trim()
-        setReporterPhone(fullPhone)
+        setValue('reporterPhone', fullPhone)
       }
     }
-  }, [isAuthenticated, user, open])
+  }, [isAuthenticated, user, open, setValue])
 
-  // Debug logging
-  console.log('ReportListingDialog - reasons:', reasons)
-  console.log('ReportListingDialog - isLoading:', loadingReasons)
-  console.log('ReportListingDialog - activeCategory:', activeCategory)
-
-  // Validation functions
-  const validatePhone = (phone: string): boolean => {
-    if (!phone.trim()) {
-      setPhoneError('')
-      return true
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!open) {
+      reset()
+      setActiveCategory('LISTING')
     }
-    // Vietnamese phone number: 10-11 digits, starts with 0
+  }, [open, reset])
+
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!open) {
+      reset()
+      setActiveCategory('LISTING')
+    }
+  }, [open, reset])
+
+  // Validation rules
+  const validatePhone = (value?: string) => {
+    if (!value || !value.trim()) return true // Optional field
     const phoneRegex = /^0\d{9,10}$/
-    if (!phoneRegex.test(phone.trim())) {
-      setPhoneError(t('report.invalidPhone') || 'Số điện thoại không hợp lệ')
-      return false
-    }
-    setPhoneError('')
-    return true
+    return (
+      phoneRegex.test(value.trim()) ||
+      t('report.invalidPhone') ||
+      'Số điện thoại không hợp lệ'
+    )
   }
 
-  const validateEmail = (email: string): boolean => {
-    if (!email.trim()) {
-      setEmailError(t('report.emailRequired') || 'Email là bắt buộc')
-      return false
+  const validateEmail = (value?: string) => {
+    if (!value || !value.trim()) {
+      return t('report.emailRequired') || 'Email là bắt buộc'
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email.trim())) {
-      setEmailError(t('report.invalidEmail') || 'Email không hợp lệ')
-      return false
-    }
-    setEmailError('')
-    return true
+    return (
+      emailRegex.test(value.trim()) ||
+      t('report.invalidEmail') ||
+      'Email không hợp lệ'
+    )
   }
 
   // Toggle checkbox selection
   const toggleReasonSelection = (reasonId: number) => {
-    setSelectedReasonIds((prev) =>
-      prev.includes(reasonId)
-        ? prev.filter((id) => id !== reasonId)
-        : [...prev, reasonId],
-    )
+    const currentIds = watch('reasonIds')
+    if (currentIds.includes(reasonId)) {
+      setValue(
+        'reasonIds',
+        currentIds.filter((id) => id !== reasonId),
+      )
+    } else {
+      setValue('reasonIds', [...currentIds, reasonId])
+    }
   }
 
-  const handleSubmitReport = () => {
-    if (selectedReasonIds.length === 0) {
+  // Handle form submission
+  const onSubmit = (data: ReportFormData) => {
+    if (data.reasonIds.length === 0) {
       toast.error(
         t('common.selectReason') || 'Please select at least one reason',
       )
-      return
-    }
-
-    // Validate email (required) and phone (optional)
-    const isEmailValid = validateEmail(reporterEmail)
-    const isPhoneValid = validatePhone(reporterPhone)
-
-    if (!isEmailValid || !isPhoneValid) {
       return
     }
 
@@ -130,11 +150,11 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
       {
         listingId,
         data: {
-          reasonIds: selectedReasonIds,
-          otherFeedback: otherFeedback.trim() || undefined,
-          reporterName: reporterName.trim() || undefined,
-          reporterPhone: reporterPhone.trim() || undefined,
-          reporterEmail: reporterEmail.trim() || undefined,
+          reasonIds: data.reasonIds,
+          otherFeedback: data.otherFeedback?.trim() || undefined,
+          reporterName: data.reporterName?.trim() || undefined,
+          reporterPhone: data.reporterPhone?.trim() || undefined,
+          reporterEmail: data.reporterEmail.trim(),
           category: activeCategory,
         },
       },
@@ -145,17 +165,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
             toast.success(
               t('report.submitSuccess') || 'Báo cáo đã được gửi thành công',
             )
-
-            // Reset form
-            setSelectedReasonIds([])
-            setOtherFeedback('')
-            setReporterName('')
-            setReporterPhone('')
-            setReporterEmail('')
-            setPhoneError('')
-            setEmailError('')
-            setActiveCategory('LISTING')
-
+            reset()
             onOpenChange(false)
             onSuccess?.()
           } else {
@@ -284,17 +294,20 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
             <Label className='text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 block'>
               {t('report.otherFeedback') || 'Phản hồi khác (Tùy chọn)'}
             </Label>
-            <textarea
-              placeholder={
-                t('report.otherFeedbackPlaceholder') ||
-                'Nhập thêm chi tiết về vấn đề...'
-              }
-              value={otherFeedback}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setOtherFeedback(e.target.value)
-              }
-              className='w-full min-h-[80px] sm:min-h-[100px] p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 resize-none focus:outline-none focus:ring-2 focus:ring-ring'
-              disabled={submitting}
+            <Controller
+              name='otherFeedback'
+              control={control}
+              render={({ field }) => (
+                <textarea
+                  {...field}
+                  placeholder={
+                    t('report.otherFeedbackPlaceholder') ||
+                    'Nhập thêm chi tiết về vấn đề...'
+                  }
+                  className='w-full min-h-[80px] sm:min-h-[100px] p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 resize-none focus:outline-none focus:ring-2 focus:ring-ring'
+                  disabled={submitting}
+                />
+              )}
             />
           </div>
 
@@ -307,62 +320,83 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
 
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
               <div className='sm:col-span-2'>
-                <input
-                  type='text'
-                  placeholder={t('report.reporterName') || 'Họ và tên'}
-                  value={reporterName}
-                  onChange={(e) => setReporterName(e.target.value)}
-                  className='w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring'
-                  disabled={submitting}
-                />
-              </div>
-
-              <div>
-                <input
-                  type='tel'
-                  placeholder={t('report.reporterPhone') || 'Số điện thoại'}
-                  value={reporterPhone}
-                  onChange={(e) => {
-                    setReporterPhone(e.target.value)
-                    if (e.target.value) validatePhone(e.target.value)
-                  }}
-                  onBlur={() => validatePhone(reporterPhone)}
-                  className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring ${
-                    phoneError ? 'border-red-500' : ''
-                  }`}
-                  disabled={submitting}
-                />
-                {phoneError && (
-                  <p className='text-xs text-red-500 mt-1'>{phoneError}</p>
-                )}
-              </div>
-
-              <div>
-                <div className='relative'>
-                  <input
-                    type='email'
-                    placeholder={`${t('report.reporterEmail') || 'Email'} *`}
-                    value={reporterEmail}
-                    onChange={(e) => {
-                      setReporterEmail(e.target.value)
-                      if (e.target.value) validateEmail(e.target.value)
-                    }}
-                    onBlur={() => validateEmail(reporterEmail)}
-                    className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-ring ${
-                      emailError ? 'border-red-500' : ''
-                    }`}
-                    disabled={submitting || (isAuthenticated && !!user?.email)}
-                    required
-                  />
-                  {isAuthenticated && user?.email && (
-                    <span className='absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground'>
-                      {t('report.autoFilled') || 'Tự động điền'}
-                    </span>
+                <Controller
+                  name='reporterName'
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type='text'
+                      placeholder={t('report.reporterName') || 'Họ và tên'}
+                      className='w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring'
+                      disabled={submitting}
+                    />
                   )}
-                </div>
-                {emailError && (
-                  <p className='text-xs text-red-500 mt-1'>{emailError}</p>
-                )}
+                />
+              </div>
+
+              <div>
+                <Controller
+                  name='reporterPhone'
+                  control={control}
+                  rules={{ validate: validatePhone }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <input
+                        {...field}
+                        type='tel'
+                        placeholder={
+                          t('report.reporterPhone') || 'Số điện thoại'
+                        }
+                        className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring ${
+                          fieldState.error ? 'border-red-500' : ''
+                        }`}
+                        disabled={submitting}
+                      />
+                      {fieldState.error && (
+                        <p className='text-xs text-red-500 mt-1'>
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
+
+              <div>
+                <Controller
+                  name='reporterEmail'
+                  control={control}
+                  rules={{ validate: validateEmail }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <div className='relative'>
+                        <input
+                          {...field}
+                          type='email'
+                          placeholder={`${t('report.reporterEmail') || 'Email'} *`}
+                          className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-ring ${
+                            fieldState.error ? 'border-red-500' : ''
+                          }`}
+                          disabled={
+                            submitting || (isAuthenticated && !!user?.email)
+                          }
+                          required
+                        />
+                        {isAuthenticated && user?.email && (
+                          <span className='absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground'>
+                            {t('report.autoFilled') || 'Tự động điền'}
+                          </span>
+                        )}
+                      </div>
+                      {fieldState.error && (
+                        <p className='text-xs text-red-500 mt-1'>
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </>
+                  )}
+                />
               </div>
             </div>
           </div>
@@ -385,7 +419,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
               selectedReasonIds.length === 0 ||
               !reporterEmail.trim()
             }
-            onClick={handleSubmitReport}
+            onClick={handleSubmit(onSubmit)}
             className='w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10'
           >
             {submitting
