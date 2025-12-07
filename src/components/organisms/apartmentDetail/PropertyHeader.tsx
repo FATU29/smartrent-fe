@@ -8,7 +8,8 @@ import { formatByLocale } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { getPriceUnitTranslationKey } from '@/utils/property'
 import { Button } from '@/components/atoms/button'
-import { Copy, Heart, Flag } from 'lucide-react'
+import SaveListingButton from '@/components/molecules/saveListingButton'
+import { Copy, Flag } from 'lucide-react'
 import { toast } from 'sonner'
 import { ReportListingDialog } from '@/components/molecules/reportListingDialog'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
@@ -22,7 +23,6 @@ interface PropertyHeaderProps {
 const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   const t = useTranslations()
   const { language: locale } = useSwitchLanguage()
-  const [isSaved, setIsSaved] = useState(false)
   const [reportDialogOpen, setReportDialogOpen] = useState(false)
   const { addListing } = useRecentlyViewed()
 
@@ -54,15 +54,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     const url = window.location.href
     navigator.clipboard.writeText(url)
     toast.success(t('common.copied') || 'Link copied!')
-  }
-
-  const handleToggleSaved = () => {
-    setIsSaved(!isSaved)
-    toast.success(
-      isSaved
-        ? t('apartmentDetail.actions.saved') || 'Removed from saved'
-        : t('apartmentDetail.actions.save') || 'Added to saved',
-    )
   }
 
   const handleReport = () => {
@@ -116,23 +107,11 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
           </Button>
 
           {/* Save Button */}
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={handleToggleSaved}
-            className='flex items-center gap-1'
-          >
-            <Heart
-              size={16}
-              fill={isSaved ? '#ef4444' : 'none'}
-              color='#ef4444'
-            />
-            <span className='text-sm'>
-              {isSaved
-                ? t('apartmentDetail.actions.saved')
-                : t('apartmentDetail.actions.save')}
-            </span>
-          </Button>
+          <SaveListingButton
+            listingId={listingId}
+            variant='default'
+            showLabel={true}
+          />
 
           {/* Report Button */}
           <Button

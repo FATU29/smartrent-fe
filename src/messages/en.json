@@ -53,6 +53,9 @@
     "email": "Email",
     "contactInformation": "Contact Information",
     "notAvailable": "Not Available",
+    "actions": {
+      "back": "Back"
+    },
     "status": {
       "ALL": "All",
       "EXPIRED": "Expired",
@@ -637,8 +640,9 @@
       }
     },
     "topInterest": {
-      "title": "Top Interested",
-      "viewAll": "View all"
+      "title": "Properties by Category",
+      "viewAll": "View all",
+      "listingsSuffix": "listings"
     },
     "searchIntro": {
       "title": "Find your ideal place faster",
@@ -1652,6 +1656,7 @@
   "navigation": {
     "home": "Home",
     "properties": "Properties",
+    "savedListings": "Saved Listings",
     "about": "About",
     "contact": "Contact",
     "login": "Log In",
@@ -2577,6 +2582,39 @@
         "title": "Unknown Status",
         "desc": "Unable to determine payment status."
       }
+    }
+  },
+  "savedListings": {
+    "title": "Saved Listings",
+    "subtitle": "Your favorite properties",
+    "empty": {
+      "title": "No Saved Listings",
+      "description": "You haven't saved any listings yet. Start exploring and save your favorites!",
+      "action": "Browse Listings"
+    },
+    "actions": {
+      "save": "Save",
+      "saved": "Saved",
+      "unsave": "Remove from saved",
+      "viewAll": "View All Saved"
+    },
+    "count": {
+      "zero": "No saved listings",
+      "one": "1 saved listing",
+      "other": "{count} saved listings"
+    },
+    "messages": {
+      "savedSuccess": "Listing saved successfully",
+      "unsavedSuccess": "Listing removed from saved",
+      "saveFailed": "Failed to save listing",
+      "unsaveFailed": "Failed to remove listing",
+      "loginRequired": "Please login to save listings",
+      "alreadySaved": "Listing already saved",
+      "notFound": "Listing not found"
+    },
+    "tooltip": {
+      "save": "Save this listing",
+      "saved": "Remove from saved"
     }
   }
 }

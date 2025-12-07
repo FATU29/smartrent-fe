@@ -35,6 +35,7 @@ export * from './verification.type'
 export * from './vip-tier.type'
 export * from './exchange-rate.type'
 export * from './address.type'
+export * from './saved-listing.type'
 
 export type {
   PropertyType,

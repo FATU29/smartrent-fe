@@ -53,6 +53,9 @@
     "email": "Email",
     "contactInformation": "Thông tin liên hệ",
     "notAvailable": "Chưa có",
+    "actions": {
+      "back": "Quay lại"
+    },
     "coordinates": "Tọa độ",
     "error": "Lỗi vị trí",
     "enableTooltip": "Nhấp để bật theo dõi vị trí",
@@ -638,8 +641,9 @@
       }
     },
     "topInterest": {
-      "title": "Dẫn đầu",
-      "viewAll": "Xem tất cả"
+      "title": "Bất động sản theo danh mục",
+      "viewAll": "Xem tất cả",
+      "listingsSuffix": "tin đăng"
     },
     "searchIntro": {
       "title": "Tìm căn phù hợp nhanh chóng",
@@ -1569,6 +1573,7 @@
   "navigation": {
     "home": "Trang chủ",
     "properties": "Bất động sản",
+    "savedListings": "Tin đã lưu",
     "about": "Giới thiệu",
     "contact": "Liên hệ",
     "login": "Đăng nhập",
@@ -2578,6 +2583,39 @@
         "tip4": "Tham gia các khóa đào tạo và cộng đồng môi giới để học hỏi kinh nghiệm",
         "tip5": "Theo dõi báo cáo hiệu suất để biết tin nào được quan tâm nhiều nhất"
       }
+    }
+  },
+  "savedListings": {
+    "title": "Tin Đã Lưu",
+    "subtitle": "Các bất động sản yêu thích của bạn",
+    "empty": {
+      "title": "Chưa Có Tin Đã Lưu",
+      "description": "Bạn chưa lưu tin nào. Hãy khám phá và lưu những tin yêu thích!",
+      "action": "Khám Phá Tin Đăng"
+    },
+    "actions": {
+      "save": "Lưu tin",
+      "saved": "Đã lưu",
+      "unsave": "Bỏ lưu",
+      "viewAll": "Xem Tất Cả Tin Đã Lưu"
+    },
+    "count": {
+      "zero": "Chưa có tin đã lưu",
+      "one": "1 tin đã lưu",
+      "other": "{count} tin đã lưu"
+    },
+    "messages": {
+      "savedSuccess": "Đã lưu tin thành công",
+      "unsavedSuccess": "Đã bỏ lưu tin",
+      "saveFailed": "Không thể lưu tin",
+      "unsaveFailed": "Không thể bỏ lưu tin",
+      "loginRequired": "Vui lòng đăng nhập để lưu tin",
+      "alreadySaved": "Tin đã được lưu trước đó",
+      "notFound": "Không tìm thấy tin đăng"
+    },
+    "tooltip": {
+      "save": "Lưu tin này",
+      "saved": "Bỏ lưu tin"
     }
   }
 }

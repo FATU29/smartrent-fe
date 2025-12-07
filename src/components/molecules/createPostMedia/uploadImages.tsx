@@ -20,7 +20,7 @@ interface UploadImagesProps {
 
 const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
   const t = useTranslations('createPost.sections.media')
-  const { pendingImages, addPendingImages, removePendingImage } =
+  const { pendingImages, addPendingImages, removePendingImage, removeMedia } =
     useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -124,9 +124,20 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
                 </div>
                 <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
                   <p className='text-sm truncate mb-3'>{`Image ${index + 1}`}</p>
-                  <p className='text-xs text-green-600 dark:text-green-400'>
-                    {t('uploaded.success')}
-                  </p>
+                  <div className='flex items-center justify-between gap-2'>
+                    <p className='text-xs text-green-600 dark:text-green-400'>
+                      {t('uploaded.success')}
+                    </p>
+                    <Button
+                      size='sm'
+                      variant='ghost'
+                      className='h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950'
+                      onClick={() => img.mediaId && removeMedia(img.mediaId)}
+                      title={t('uploaded.remove')}
+                    >
+                      <Trash2 className='w-4 h-4' />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

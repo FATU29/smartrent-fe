@@ -22,6 +22,7 @@ const ResidentialFilterResponsive = dynamic(
 )
 
 import type { ProvinceStatsItem } from '@/api/types'
+import Image from 'next/image'
 
 interface HomepageTemplateProps {
   cities?: ProvinceStatsItem[]
@@ -75,11 +76,12 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({ cities }) => {
             </div>
             <section className='mb-8 sm:mb-10 relative rounded-2xl overflow-hidden'>
               <div className='absolute inset-0'>
-                <div
-                  className='h-full w-full bg-center bg-cover'
-                  style={{
-                    backgroundImage: `url(/images/default-image.jpg)`,
-                  }}
+                <Image
+                  src='/images/banner-default.jpg'
+                  alt='Banner default'
+                  fill
+                  fetchPriority='high'
+                  loading='eager'
                 />
                 <div className='absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/20 dark:from-black/70 dark:via-black/60 dark:to-black/30' />
               </div>
@@ -134,11 +136,6 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({ cities }) => {
                 <Button onClick={handleLoadMoreClick} className='px-6'>
                   {t('common.loadMore')} ➜
                 </Button>
-              )}
-              {!hasNext && !hasLoadedOnce && (
-                <span className='text-xs text-muted-foreground'>
-                  {t('common.endOfResults')}
-                </span>
               )}
             </div>
             <LocationBrowseSection

@@ -20,7 +20,7 @@ interface VideoUrlProps {
 
 const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
   const t = useTranslations('createPost.sections.media')
-  const { updateMedia, resetMedia } = useCreatePost()
+  const { updateMedia, removeMedia } = useCreatePost()
 
   const isExternalYouTubeVideo = video?.sourceType === 'YOUTUBE'
   const videoUrl = video?.url || ''
@@ -75,7 +75,9 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
 
   const handleRemove = () => {
     setUrl('')
-    resetMedia()
+    if (video?.mediaId) {
+      removeMedia(video.mediaId)
+    }
   }
 
   return (

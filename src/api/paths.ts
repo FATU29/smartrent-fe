@@ -192,4 +192,13 @@ export const PATHS = {
     LATEST: '/v1/exchange-rates/latest',
     VND_TO_USD: '/v1/exchange-rates/vnd-to-usd',
   },
+
+  // Saved Listings endpoints
+  SAVED_LISTINGS: {
+    SAVE: '/v1/saved-listings',
+    UNSAVE: '/v1/saved-listings/:listingId',
+    MY_SAVED: '/v1/saved-listings/my-saved',
+    CHECK: '/v1/saved-listings/check/:listingId',
+    COUNT: '/v1/saved-listings/count',
+  },
 }

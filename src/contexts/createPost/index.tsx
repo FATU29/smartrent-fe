@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useEffect,
 } from 'react'
+import { useRouter } from 'next/router'
 import { useNewProvinces, useNewWards } from '@/hooks/useAddress'
 import { MediaService } from '@/api/services'
 import {
@@ -13,6 +14,9 @@ import {
   MediaItem,
   LISTING_TYPE,
 } from '@/api/types/property.type'
+import type { MediaItem as MediaItemAPI } from '@/api/types/media.type'
+import { useGetDraft } from '@/hooks/useListings/useGetDraft'
+import type { DraftListingResponse } from '@/api/types/draft.type'
 
 // Context Type
 interface VideoUploadProgressState {
@@ -60,6 +64,7 @@ interface CreatePostContextType {
   updateFulltextAddress: (updates: Partial<FulltextAddress>) => void
   resetFulltextAddress: () => void
   updateMedia: (updates: Partial<MediaItem>) => void
+  removeMedia: (mediaId: number) => void
   resetMedia: () => void
   videoUploadProgress: VideoUploadProgressState
   startVideoUpload: (fileName?: string) => void
@@ -78,6 +83,10 @@ interface CreatePostContextType {
   uploadPendingImages: () => Promise<Array<Partial<MediaItem>>>
   isSubmitSuccess: boolean
   setIsSubmitSuccess: (value: boolean) => void
+  // Draft editing
+  draftId: string | null
+  isDraftLoading: boolean
+  loadDraftIntoForm: (draft: DraftListingResponse) => void
 }
 
 const CreatePostContext = createContext<CreatePostContextType | undefined>(
@@ -91,6 +100,9 @@ interface CreatePostProviderProps {
 export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   children,
 }) => {
+  const router = useRouter()
+  const draftIdFromQuery = router.query.draftId as string | undefined
+
   const [propertyInfo, setPropertyInfo] = useState<
     Partial<CreateListingRequest>
   >({
@@ -98,6 +110,11 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   })
   const [fulltextAddress, setFulltextAddress] = useState<FulltextAddress>({})
   const [media, setMedia] = useState<Partial<MediaItem>[]>([])
+
+  // Draft loading
+  const { data: draftData, isLoading: isDraftLoading } = useGetDraft(
+    draftIdFromQuery || null,
+  )
 
   const { data: newProvinces = [] } = useNewProvinces()
   const provinceCodeForWards =
@@ -129,6 +146,160 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
 
   const [isSubmitSuccess, setIsSubmitSuccess] = useState<boolean>(false)
 
+  // Function to load draft data into form
+  const loadDraftIntoForm = (draft: DraftListingResponse) => {
+    console.log('🔄 Loading draft into form:', draft)
+
+    // Map backend draft to CreateListingRequest format
+    const mappedPropertyInfo: Partial<CreateListingRequest> = {
+      title: draft.title,
+      description: draft.description,
+      listingType: draft.listingType as CreateListingRequest['listingType'],
+      vipType: draft.vipType,
+      categoryId: draft.categoryId,
+      productType: draft.productType as CreateListingRequest['productType'],
+      price: draft.price,
+      priceUnit: draft.priceUnit as CreateListingRequest['priceUnit'],
+      area: draft.area,
+      bedrooms: draft.bedrooms,
+      bathrooms: draft.bathrooms,
+      direction: draft.direction as CreateListingRequest['direction'],
+      furnishing: draft.furnishing as CreateListingRequest['furnishing'],
+      roomCapacity: draft.roomCapacity,
+      waterPrice: draft.waterPrice as CreateListingRequest['waterPrice'],
+      electricityPrice:
+        draft.electricityPrice as CreateListingRequest['electricityPrice'],
+      internetPrice:
+        draft.internetPrice as CreateListingRequest['internetPrice'],
+      serviceFee: draft.serviceFee as CreateListingRequest['serviceFee'],
+      amenityIds: draft.amenityIds,
+      mediaIds: draft.mediaIds,
+    }
+
+    // Prepare fulltext address update - explicitly reset all fields
+    const fulltextAddressUpdate: FulltextAddress = {
+      newProvinceCode: '',
+      newWardCode: '',
+      legacyAddressId: '',
+      legacyAddressText: '',
+      propertyAddressEdited: false,
+    }
+
+    // Map address based on addressType
+    if (draft.addressType === 'NEW' && draft.provinceCode && draft.wardCode) {
+      mappedPropertyInfo.address = {
+        new: {
+          provinceCode: draft.provinceCode,
+          wardCode: draft.wardCode,
+          street: draft.street,
+        },
+        latitude: draft.latitude ?? 0,
+        longitude: draft.longitude ?? 0,
+      }
+
+      // Set fulltext address for NEW type
+      fulltextAddressUpdate.newProvinceCode = draft.provinceCode
+      fulltextAddressUpdate.newWardCode = draft.wardCode
+      fulltextAddressUpdate.legacyAddressId = ''
+      fulltextAddressUpdate.legacyAddressText = ''
+
+      console.log(
+        '📍 NEW address - Province:',
+        draft.provinceCode,
+        'Ward:',
+        draft.wardCode,
+        'Street:',
+        draft.street,
+      )
+    } else if (
+      draft.addressType === 'OLD' &&
+      draft.provinceId &&
+      draft.districtId &&
+      draft.wardId
+    ) {
+      mappedPropertyInfo.address = {
+        legacy: {
+          provinceId: draft.provinceId,
+          districtId: draft.districtId,
+          wardId: draft.wardId,
+          street: draft.street,
+        },
+        latitude: draft.latitude ?? 0,
+        longitude: draft.longitude ?? 0,
+      }
+
+      // For OLD type, clear NEW type fields
+      fulltextAddressUpdate.newProvinceCode = ''
+      fulltextAddressUpdate.newWardCode = ''
+
+      console.log(
+        '📍 OLD/LEGACY address - Province:',
+        draft.provinceId,
+        'District:',
+        draft.districtId,
+        'Ward:',
+        draft.wardId,
+      )
+    }
+
+    console.log('✅ Mapped property info:', mappedPropertyInfo)
+    console.log('✅ Fulltext address update:', fulltextAddressUpdate)
+
+    // IMPORTANT: Replace fulltextAddress entirely, don't merge with previous state
+    setFulltextAddress(fulltextAddressUpdate)
+    setPropertyInfo(mappedPropertyInfo)
+
+    // Load media if mediaIds exist - fetch full media details from API
+    if (draft.mediaIds && draft.mediaIds.length > 0) {
+      console.log('📷 Fetching media details for IDs:', draft.mediaIds)
+
+      // Fetch media details in parallel
+      Promise.all(
+        draft.mediaIds.map((id) =>
+          MediaService.getById(id).catch((err) => {
+            console.error(`❌ Failed to fetch media ${id}:`, err)
+            return null
+          }),
+        ),
+      ).then((responses) => {
+        // Filter successful responses and map to context MediaItem format
+        const mediaItems: MediaItem[] = responses
+          .filter((res) => res?.success && res.data)
+          .map((res) => {
+            const apiMedia = res!.data as MediaItemAPI
+            // Map from API MediaItem (string mediaId) to Context MediaItem (number mediaId)
+            return {
+              mediaId: parseInt(apiMedia.mediaId, 10),
+              listingId: apiMedia.listingId,
+              mediaType: apiMedia.mediaType as MediaItem['mediaType'],
+              sourceType: apiMedia.sourceType,
+              url: apiMedia.url,
+              isPrimary: apiMedia.isPrimary,
+              sortOrder: apiMedia.sortOrder,
+              status: apiMedia.status as MediaItem['status'],
+              createdAt: apiMedia.createdAt,
+            } as MediaItem
+          })
+
+        if (mediaItems.length > 0) {
+          setMedia(mediaItems)
+        } else {
+          console.warn('⚠️ No valid media items loaded')
+        }
+      })
+    } else {
+      console.log('📷 No media IDs in draft, clearing media')
+      setMedia([])
+    }
+  }
+
+  useEffect(() => {
+    if (draftData?.success && draftData.data) {
+      console.log('🎯 Draft data received, loading into form...')
+      loadDraftIntoForm(draftData.data)
+    }
+  }, [draftData])
+
   const updatePropertyInfo = (updates: Partial<CreateListingRequest>) => {
     setPropertyInfo((prev) => ({ ...prev, ...updates }))
   }
@@ -152,6 +323,10 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       }
       return [...prev, updates]
     })
+  }
+
+  const removeMedia = (mediaId: number) => {
+    setMedia((prev) => prev.filter((m) => m.mediaId !== mediaId))
   }
 
   const resetMedia = () => {
@@ -381,6 +556,7 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       updateFulltextAddress,
       resetFulltextAddress,
       updateMedia,
+      removeMedia,
       resetMedia,
       videoUploadProgress,
       startVideoUpload,
@@ -399,6 +575,10 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       uploadPendingImages,
       isSubmitSuccess,
       setIsSubmitSuccess,
+      // Draft editing
+      draftId: draftIdFromQuery || null,
+      isDraftLoading,
+      loadDraftIntoForm,
     }),
     [
       propertyInfo,
@@ -410,6 +590,8 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       imagesUploadProgress,
       pendingImagesState,
       isSubmitSuccess,
+      draftIdFromQuery,
+      isDraftLoading,
     ],
   )
 
