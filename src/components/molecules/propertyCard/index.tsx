@@ -11,10 +11,10 @@ import {
   TooltipTrigger,
 } from '@/components/atoms/tooltip'
 import ImageAtom from '@/components/atoms/imageAtom'
+import SaveListingButton from '@/components/molecules/saveListingButton'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
 import { useTranslations } from 'next-intl'
 import {
-  Heart,
   Bed,
   Bath,
   Square,
@@ -53,7 +53,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   const {
     listing,
     onClick,
-    onFavorite,
     className,
     bottomContent,
     imageLayout = 'left',
@@ -95,19 +94,11 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
   const t = useTranslations()
   const tCreatePost = useTranslations()
-  const [isFavorite, setIsFavorite] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     onClick?.(listing)
-  }
-
-  const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    const newFavoriteState = !isFavorite
-    setIsFavorite(newFavoriteState)
-    onFavorite?.(listing, newFavoriteState)
   }
 
   const isCompact = className?.includes('compact')
@@ -205,25 +196,11 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             </div>
           )}
 
-          <Button
-            variant='ghost'
-            size='sm'
-            className={classNames(
-              'absolute top-2 right-2 w-8 h-8 p-0 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 z-10',
-              {
-                'bg-destructive text-destructive-foreground hover:bg-destructive/90':
-                  isFavorite,
-                'text-foreground hover:text-destructive': !isFavorite,
-              },
-            )}
-            onClick={handleFavoriteClick}
-          >
-            <Heart
-              className={classNames('w-4 h-4', {
-                'fill-current': isFavorite,
-              })}
-            />
-          </Button>
+          <SaveListingButton
+            listingId={listing.listingId}
+            variant='icon'
+            className='absolute top-2 right-2 bg-background/80 backdrop-blur-sm'
+          />
 
           {/* Badges - Top Left */}
           <div className='absolute top-2 left-2 flex flex-col gap-1 z-10'>
@@ -314,31 +291,17 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           className='w-full h-full object-cover object-center transition-transform duration-300 group-hover/card:scale-105'
         />
 
-        <Button
-          variant='ghost'
-          size='sm'
+        <SaveListingButton
+          listingId={listing.listingId}
+          variant='icon'
           className={classNames(
-            'absolute p-0 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 z-10',
-            {
-              'top-1 right-1 w-6 h-6': isCompact,
-              'top-2 right-2 w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9':
-                !isCompact,
-              'bg-destructive text-destructive-foreground hover:bg-destructive/90':
-                isFavorite,
-              'text-foreground hover:text-destructive': !isFavorite,
-            },
+            'absolute bg-background/80 backdrop-blur-sm z-10',
+            isCompact
+              ? 'top-1 right-1 w-6 h-6'
+              : 'top-2 right-2 w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9',
           )}
-          onClick={handleFavoriteClick}
-        >
-          <Heart
-            className={classNames(
-              {
-                'fill-current': isFavorite,
-              },
-              isCompact ? 'w-3 h-3' : 'w-3 h-3 sm:w-4 sm:h-4',
-            )}
-          />
-        </Button>
+          iconClassName={isCompact ? 'w-3 h-3' : 'w-3 h-3 sm:w-4 sm:h-4'}
+        />
 
         {/* Badges - Top Left */}
         <div

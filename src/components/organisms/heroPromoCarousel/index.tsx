@@ -1,10 +1,17 @@
 import React from 'react'
-import Carousel from '@/components/atoms/carousel'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from '@/components/atoms/carousel'
+import Autoplay from 'embla-carousel-autoplay'
+import { cn } from '@/lib/utils'
 
 interface Slide {
   id: string
@@ -18,6 +25,10 @@ interface Slide {
 const HeroPromoCarousel = () => {
   const t = useTranslations('homePage.heroSlides')
   const router = useRouter()
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(0)
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
+
   const slides: Slide[] = [
     {
       id: 'rentSecure',
@@ -44,6 +55,21 @@ const HeroPromoCarousel = () => {
     },
   ]
 
+  React.useEffect(() => {
+    if (!api) return
+
+    setScrollSnaps(api.scrollSnapList())
+    setCurrent(api.selectedScrollSnap())
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+
+    api.on('reInit', () => {
+      setScrollSnaps(api.scrollSnapList())
+    })
+  }, [api])
+
   const handleOnClick = (link?: string) => {
     if (link) {
       router.push(link)
@@ -52,48 +78,74 @@ const HeroPromoCarousel = () => {
 
   return (
     <div className='relative rounded-xl overflow-hidden shadow-sm'>
-      <Carousel.Root
+      <Carousel
         className='group'
-        options={{ align: 'start' }}
-        loop
-        autoplay={{ delay: 5000, stopOnInteraction: true }}
+        opts={{ align: 'start', loop: true }}
+        plugins={[
+          Autoplay({
+            delay: 5000,
+            stopOnInteraction: true,
+          }),
+        ]}
+        setApi={setApi}
       >
-        {slides.map((s) => (
-          <Carousel.Item key={s.id} className='pl-0 flex-[0_0_100%]'>
-            <Link href={s.link || '#'}>
-              <div className='relative h-[340px] sm:h-[420px] lg:h-[500px] w-full cursor-pointer'>
-                <Image
-                  src={s.image}
-                  alt={s.heading}
-                  fill
-                  className='object-contain'
-                  priority={s.id === 'rentSecure'}
-                />
-                <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/10' />
-                <div className='absolute bottom-10 left-6 sm:left-10 max-w-xl text-white'>
-                  <h2 className='text-2xl sm:text-4xl font-semibold tracking-tight mb-3'>
-                    {s.heading}
-                  </h2>
-                  <p className='text-sm sm:text-base mb-5 leading-relaxed text-white/90'>
-                    {s.sub}
-                  </p>
-                  {s.cta && s.id !== 'rentSecure' && (
-                    <Button
-                      variant='secondary'
-                      size='sm'
-                      className='backdrop-blur-sm'
-                      onClick={() => handleOnClick(s.link || '#')}
-                    >
-                      {s.cta}
-                    </Button>
-                  )}
+        <CarouselContent className='-ml-0'>
+          {slides.map((s) => (
+            <CarouselItem key={s.id} className='pl-0'>
+              <Link href={s.link || '#'}>
+                <div className='relative h-[340px] sm:h-[420px] lg:h-[500px] w-full cursor-pointer'>
+                  <Image
+                    src={s.image}
+                    alt={s.heading}
+                    fill
+                    className='object-contain'
+                    priority={s.id === 'rentSecure'}
+                    fetchPriority='high'
+                    loading='eager'
+                  />
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/10' />
+                  <div className='absolute bottom-10 left-6 sm:left-10 max-w-xl text-white'>
+                    <h2 className='text-2xl sm:text-4xl font-semibold tracking-tight mb-3'>
+                      {s.heading}
+                    </h2>
+                    <p className='text-sm sm:text-base mb-5 leading-relaxed text-white/90'>
+                      {s.sub}
+                    </p>
+                    {s.cta && s.id !== 'rentSecure' && (
+                      <Button
+                        variant='secondary'
+                        size='sm'
+                        className='backdrop-blur-sm'
+                        onClick={() => handleOnClick(s.link || '#')}
+                      >
+                        {s.cta}
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Link>
-          </Carousel.Item>
-        ))}
-        <Carousel.Indicators className='absolute bottom-4 left-0 w-full' />
-      </Carousel.Root>
+              </Link>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+
+        {/* Indicators */}
+        <div className='absolute bottom-4 left-0 w-full flex justify-center gap-2'>
+          {scrollSnaps.map((_, index) => (
+            <button
+              key={index}
+              type='button'
+              onClick={() => api?.scrollTo(index)}
+              className={cn(
+                'h-2 rounded-full transition-all',
+                current === index
+                  ? 'w-8 bg-white'
+                  : 'w-2 bg-white/50 hover:bg-white/75',
+              )}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </Carousel>
     </div>
   )
 }

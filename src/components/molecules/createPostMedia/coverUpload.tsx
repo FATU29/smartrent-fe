@@ -19,7 +19,7 @@ interface CoverUploadProps {
 const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
   const t = useTranslations('createPost.sections.media.cover')
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const { addPendingImages, removePendingImage, pendingImages } =
+  const { addPendingImages, removePendingImage, removeMedia, pendingImages } =
     useCreatePost()
 
   const handleFiles = (files: FileList | null) => {
@@ -44,7 +44,11 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
   const handleDeleteCover = () => {
     const coverIndex = pendingImages.findIndex((img) => img.isCover)
     if (coverIndex !== -1) {
+      // Remove pending cover
       removePendingImage(coverIndex, true)
+    } else if (coverImage?.mediaId) {
+      // Remove uploaded cover
+      removeMedia(coverImage.mediaId)
     }
   }
 

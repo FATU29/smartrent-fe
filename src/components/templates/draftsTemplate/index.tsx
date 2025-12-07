@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { DraftCard } from '@/components/molecules/draftCard'
@@ -20,6 +21,7 @@ const DraftsList: React.FC<{
   drafts: DraftDetail[]
   isLoading: boolean
 }> = ({ drafts, isLoading }) => {
+  const router = useRouter()
   const tDelete = useTranslations('seller.drafts.delete')
   const [draftToDelete, setDraftToDelete] = useState<number | null>(null)
   const deleteMutation = useDeleteDraft()
@@ -27,6 +29,13 @@ const DraftsList: React.FC<{
   const handleDeleteClick = useCallback((listingId: number) => {
     setDraftToDelete(listingId)
   }, [])
+
+  const handleEditClick = useCallback(
+    (draftId: number) => {
+      router.push(`/seller/create-post?draftId=${draftId}`)
+    },
+    [router],
+  )
 
   const handleConfirmDelete = useCallback(async () => {
     if (draftToDelete === null) return
@@ -73,10 +82,7 @@ const DraftsList: React.FC<{
               createdAt: draft.createdAt,
               updatedAt: draft.updatedAt,
             }}
-            onEdit={() => {
-              // Navigate to edit draft (can be implemented later)
-              console.log('Edit draft:', draft.id)
-            }}
+            onEdit={() => handleEditClick(draft.id)}
             onDelete={() => handleDeleteClick(draft.id)}
           />
         ))}

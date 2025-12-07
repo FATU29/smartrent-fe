@@ -1,7 +1,13 @@
 import React from 'react'
 import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
-import Carousel from '@/components/atoms/carousel'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from '@/components/atoms/carousel'
 import PropertyCard from '@/components/molecules/propertyCard'
 import type { ListingDetail } from '@/api/types/property.type'
 
@@ -67,36 +73,38 @@ const PropertyCarousel: React.FC<PropertyCarouselProps> = (props) => {
         {title}
       </Typography>
 
-      <Carousel.Root
-        options={{
+      <Carousel
+        opts={{
           align: 'start',
           skipSnaps: false,
           containScroll: 'trimSnaps',
+          loop: false,
         }}
-        loop={false}
         className='relative'
       >
-        {listings.map((listing) => (
-          <Carousel.Item
-            key={listing.listingId}
-            className='min-w-0 flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_40%] xl:flex-[0_0_30%] pl-4 first:pl-0'
-          >
-            <PropertyCard
-              listing={listing}
-              onClick={onPropertyClick}
-              className='h-full'
-            />
-          </Carousel.Item>
-        ))}
+        <CarouselContent className='-ml-0'>
+          {listings.map((listing) => (
+            <CarouselItem
+              key={listing.listingId}
+              className='pl-0 sm:pl-4 basis-full sm:basis-1/2 lg:basis-[40%] xl:basis-[30%]'
+            >
+              <PropertyCard
+                listing={listing}
+                onClick={onPropertyClick}
+                className='h-full'
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
 
         {/* Navigation Buttons - Always visible */}
         {listings.length > 3 && (
           <>
-            <Carousel.Prev className='h-10 w-10 shadow-lg hover:bg-gray-50 -left-5' />
-            <Carousel.Next className='h-10 w-10 shadow-lg hover:bg-gray-50 -right-5' />
+            <CarouselPrevious className='h-10 w-10 shadow-lg hover:bg-gray-50 -left-5' />
+            <CarouselNext className='h-10 w-10 shadow-lg hover:bg-gray-50 -right-5' />
           </>
         )}
-      </Carousel.Root>
+      </Carousel>
     </div>
   )
 }

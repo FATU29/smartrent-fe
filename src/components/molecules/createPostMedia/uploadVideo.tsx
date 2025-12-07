@@ -32,7 +32,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
   const t = useTranslations('createPost.sections.media')
   const {
     updateMedia,
-    resetMedia,
+    removeMedia,
     startVideoUpload,
     updateVideoUploadProgress,
     setVideoUploadError,
@@ -129,7 +129,9 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
     }
 
     // Remove video from media context
-    resetMedia()
+    if (video?.mediaId) {
+      removeMedia(video.mediaId)
+    }
 
     if (inputRef.current) {
       inputRef.current.value = ''

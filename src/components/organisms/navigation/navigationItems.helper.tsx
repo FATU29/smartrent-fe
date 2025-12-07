@@ -1,5 +1,5 @@
 import { NavigationItemData } from '@/components/atoms/navigation-item'
-import { Home as HomeIcon, Building2, Users } from 'lucide-react'
+import { Home as HomeIcon, Building2, Users, Heart } from 'lucide-react'
 import type { CategoryApi } from '@/api/types/category.type'
 
 export const getNavigationItems = (
@@ -29,6 +29,13 @@ export const getNavigationItems = (
       icon: <Building2 className='h-4 w-4' />,
       isActive: activeItem === 'properties',
       children: categoryChildren,
+    },
+    {
+      id: 'savedListings',
+      label: t('navigation.savedListings'),
+      href: '/saved-listings',
+      icon: <Heart className='h-4 w-4' />,
+      isActive: activeItem === 'savedListings',
     },
     {
       id: 'tenants',

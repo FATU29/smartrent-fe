@@ -1,7 +1,13 @@
 import React from 'react'
-import Carousel from '@/components/atoms/carousel'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from '@/components/atoms/carousel'
 import { useTranslations } from 'next-intl'
 import { Home, Key, Building2, Brain } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface FeatureItem {
   id: string
@@ -12,6 +18,9 @@ interface FeatureItem {
 
 const PromoFeaturesSection: React.FC = () => {
   const t = useTranslations('homePage.features')
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(0)
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
 
   const items: FeatureItem[] = [
     {
@@ -40,6 +49,21 @@ const PromoFeaturesSection: React.FC = () => {
     },
   ]
 
+  React.useEffect(() => {
+    if (!api) return
+
+    setScrollSnaps(api.scrollSnapList())
+    setCurrent(api.selectedScrollSnap())
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+
+    api.on('reInit', () => {
+      setScrollSnaps(api.scrollSnapList())
+    })
+  }, [api])
+
   return (
     <section className='mt-16'>
       <div className='relative rounded-2xl border bg-gradient-to-b from-background to-background/70 dark:from-background/60 dark:to-background/20 p-6 sm:p-10 overflow-hidden'>
@@ -66,27 +90,47 @@ const PromoFeaturesSection: React.FC = () => {
         </div>
         {/* Mobile carousel */}
         <div className='relative md:hidden -mx-4'>
-          <Carousel.Root
+          <Carousel
             className='px-4'
-            options={{ align: 'start', dragFree: false }}
-            loop={false}
-            autoplay={false}
+            opts={{ align: 'start', dragFree: false, loop: false }}
+            setApi={setApi}
           >
-            {items.map((item) => (
-              <Carousel.Item key={item.id} className='pl-0 flex-[0_0_100%]'>
-                <div className='text-center px-4'>
-                  <div className='flex items-center justify-center h-32 mb-4'>
-                    {item.icon}
+            <CarouselContent className='-ml-0'>
+              {items.map((item) => (
+                <CarouselItem key={item.id} className='pl-0'>
+                  <div className='text-center px-4'>
+                    <div className='flex items-center justify-center h-32 mb-4'>
+                      {item.icon}
+                    </div>
+                    <h3 className='font-semibold mb-3 text-base'>
+                      {item.title}
+                    </h3>
+                    <p className='text-sm leading-relaxed text-muted-foreground'>
+                      {item.description}
+                    </p>
                   </div>
-                  <h3 className='font-semibold mb-3 text-base'>{item.title}</h3>
-                  <p className='text-sm leading-relaxed text-muted-foreground'>
-                    {item.description}
-                  </p>
-                </div>
-              </Carousel.Item>
-            ))}
-            <Carousel.Indicators className='mt-6' />
-          </Carousel.Root>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+
+            {/* Indicators */}
+            <div className='flex justify-center gap-2 mt-6'>
+              {scrollSnaps.map((_, index) => (
+                <button
+                  key={index}
+                  type='button'
+                  onClick={() => api?.scrollTo(index)}
+                  className={cn(
+                    'h-2 rounded-full transition-all',
+                    current === index
+                      ? 'w-8 bg-primary'
+                      : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50',
+                  )}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          </Carousel>
         </div>
       </div>
     </section>

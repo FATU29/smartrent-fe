@@ -101,9 +101,22 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   useEffect(() => {
     const currentStreet = propertyInfo?.address?.new?.street || ''
     if (currentStreet !== streetInput) {
+      console.log('🏠 Syncing street input:', currentStreet)
       setStreetInput(currentStreet)
     }
   }, [propertyInfo?.address?.new?.street])
+
+  // Debug: Log address state changes
+  useEffect(() => {
+    console.log(
+      '🌍 AddressInput - Province:',
+      provinceCode,
+      'Ward:',
+      fulltextAddress?.newWardCode,
+      'Street:',
+      streetInput,
+    )
+  }, [provinceCode, fulltextAddress?.newWardCode, streetInput])
 
   const handleProvinceChange = (value: string) => {
     updateFulltextAddress({
