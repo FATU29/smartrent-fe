@@ -14,9 +14,10 @@ import { useCreatePost } from '@/contexts/createPost'
 import { Video, Upload, X, Loader2 } from 'lucide-react'
 import { MediaService } from '@/api/services'
 import type { MediaItem } from '@/api/types/property.type'
+import { toast } from 'sonner'
 
 const MAX_VIDEO_SIZE_MB = ENV.MAX_VIDEO_SIZE_MB || 100
-const MAX_VIDEO_SIZE = MAX_VIDEO_SIZE_MB * 1024 * 1024
+const MAX_VIDEO_SIZE = MAX_VIDEO_SIZE_MB * 1024 * 1024 // 100MB in bytes
 const ACCEPTED_VIDEO_TYPES = [
   'video/mp4',
   'video/webm',
@@ -48,17 +49,20 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
     const file = e.target.files?.[0]
     if (!file) return
 
+    // Validate video format
     if (!ACCEPTED_VIDEO_TYPES.includes(file.type)) {
-      alert(
-        t('video.upload.invalidType') || 'Định dạng video không được hỗ trợ',
+      toast.error(
+        t('video.upload.invalidType') ||
+          'Video format is not supported. Please use MP4, WebM, or OGG format.',
       )
       return
     }
 
+    // Validate video size (100MB)
     if (file.size > MAX_VIDEO_SIZE) {
-      alert(
+      toast.error(
         t('video.upload.tooLarge', { maxSize: MAX_VIDEO_SIZE_MB }) ||
-          `Kích thước video không được vượt quá ${MAX_VIDEO_SIZE_MB}MB`,
+          `Video size must not exceed ${MAX_VIDEO_SIZE_MB}MB. Current size: ${(file.size / (1024 * 1024)).toFixed(2)}MB`,
       )
       return
     }
@@ -111,14 +115,20 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
       setTimeout(() => {
         resetVideoUploadProgress()
       }, 600)
+
+      // Show success toast
+      toast.success(t('video.upload.success') || 'Video uploaded successfully!')
     } catch (error: unknown) {
       const errorMessage =
         (error as { response?: { data?: { message?: string } } })?.response
           ?.data?.message ||
         (error as { message?: string })?.message ||
         t('video.upload.error') ||
-        'Lỗi khi tải video lên'
+        'Error uploading video'
       setVideoUploadError(errorMessage)
+
+      // Show error toast
+      toast.error(errorMessage)
     }
   }
 

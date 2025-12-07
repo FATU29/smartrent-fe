@@ -16,8 +16,34 @@ export interface PhoneClickDetail {
   readonly userEmail: string
   readonly userContactPhone?: string | null
   readonly userContactPhoneVerified: boolean
+  readonly userAvatarUrl?: string | null
   readonly clickedAt: string
   readonly ipAddress: string
+}
+
+/**
+ * Information about a listing that was clicked
+ */
+export interface ListingClickInfo {
+  readonly listingId: number
+  readonly listingTitle: string
+  readonly clickedAt: string
+  readonly clickCount: number
+}
+
+/**
+ * User details with their phone click history
+ */
+export interface UserPhoneClickDetail {
+  readonly userId: string
+  readonly firstName: string
+  readonly lastName: string
+  readonly email: string
+  readonly contactPhone: string
+  readonly contactPhoneVerified: boolean
+  readonly avatarUrl: string | null
+  readonly totalListingsClicked: number
+  readonly clickedListings: readonly ListingClickInfo[]
 }
 
 /**
@@ -84,5 +110,20 @@ export interface PhoneClickDetailPageResponse {
     readonly totalElements: number
     readonly totalPages: number
     readonly data: readonly PhoneClickDetail[]
+  }
+}
+
+/**
+ * Paginated response for user phone click details
+ */
+export interface UserPhoneClickDetailPageResponse {
+  readonly code: string
+  readonly message: string | null
+  readonly data: {
+    readonly page: number
+    readonly size: number
+    readonly totalElements: number
+    readonly totalPages: number
+    readonly data: readonly UserPhoneClickDetail[]
   }
 }

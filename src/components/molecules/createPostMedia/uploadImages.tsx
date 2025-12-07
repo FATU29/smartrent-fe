@@ -11,8 +11,10 @@ import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { ImagePlus, Upload, Trash2 } from 'lucide-react'
 import type { MediaItem } from '@/api/types/property.type'
+import { toast } from 'sonner'
 
 const MAX_IMAGES = 24
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
 
 interface UploadImagesProps {
   images?: Partial<MediaItem>[]
@@ -26,12 +28,60 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
 
   const totalImages = images.length + pendingImages.length
 
+  const validateImageFile = (file: File): boolean => {
+    // Validate file size (10MB)
+    if (file.size > MAX_IMAGE_SIZE) {
+      toast.error(
+        t('validation.imageSizeExceeded') ||
+          `Image size must not exceed 10MB. File: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`,
+      )
+      return false
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(
+        t('validation.imageFormatInvalid') ||
+          `Image must be jpeg, png, or webp format. File: ${file.name}`,
+      )
+      return false
+    }
+
+    return true
+  }
+
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return
     const remaining = Math.max(0, MAX_IMAGES - totalImages)
-    const slice = Array.from(files).slice(0, remaining)
 
-    if (slice.length === 0) return
+    // Validate all files first
+    const validFiles: File[] = []
+    const invalidFiles: string[] = []
+
+    Array.from(files).forEach((file) => {
+      if (validateImageFile(file)) {
+        validFiles.push(file)
+      } else {
+        invalidFiles.push(file.name)
+      }
+    })
+
+    if (invalidFiles.length > 0) {
+      console.warn('Invalid files rejected:', invalidFiles)
+    }
+
+    const slice = validFiles.slice(0, remaining)
+
+    if (slice.length === 0) {
+      if (validFiles.length > remaining) {
+        toast.error(
+          t('validation.imagesLimitReached') ||
+            `Maximum ${MAX_IMAGES} images allowed`,
+        )
+      }
+      return
+    }
 
     const newPending = slice.map((file) => ({
       file,
@@ -39,6 +89,13 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
     }))
 
     addPendingImages(newPending)
+
+    // Show success message if files were added
+    if (slice.length > 0) {
+      toast.success(
+        t('uploaded.added') || `${slice.length} image(s) added successfully`,
+      )
+    }
   }
 
   const handleRemovePendingImage = (index: number) => {

@@ -460,7 +460,9 @@
         "newPasswordRequired": "New password is required",
         "newPasswordMinLength": "New password must be at least 8 characters",
         "newPasswordLowercase": "Password must have at least 1 lowercase letter",
-        "newPasswordNumber": "Password must have at least 1 number"
+        "newPasswordNumber": "Password must have at least 1 number",
+        "avatarSizeExceeded": "Avatar file size must not exceed {maxSize}MB",
+        "avatarFormatInvalid": "Avatar must be jpeg, png, or webp format"
       },
       "oauth": {
         "processing_login": "Processing login...",
@@ -564,6 +566,7 @@
           "taxNumber": "Tax Number",
           "address": "Address",
           "avatarUpload": "Upload Photo",
+          "avatarRequirements": "Max {maxSize}MB • JPEG, PNG, WebP",
           "saveChanges": "Save Changes",
           "saving": "Saving...",
           "updateSuccess": "Personal information updated successfully!",
@@ -800,6 +803,10 @@
       "serviceFeeRequired": "Service fee is required",
       "videoUploadInProgress": "Please wait for video upload to complete before continuing",
       "imagesUploadInProgress": "Please wait for images upload to complete before continuing",
+      "imageSizeExceeded": "Image size must not exceed 10MB",
+      "imageFormatInvalid": "Image must be jpeg, png, or webp format",
+      "imagesLimitReached": "Maximum 24 images allowed",
+      "coverImageRequired": "Cover image (primary) is required",
       "interiorConditionRequired": "Interior condition is required",
       "bedroomsRequired": "Number of bedrooms is required",
       "bedroomsMinimum": "Number of bedrooms must be at least 1",
@@ -962,7 +969,8 @@
           "cover": "Cover",
           "setCover": "Set Cover",
           "remove": "Remove",
-          "success": "Uploaded successfully"
+          "success": "Uploaded successfully",
+          "added": "{count} image(s) added successfully"
         },
         "upload": {
           "button": "Upload {count} images",
@@ -2064,13 +2072,56 @@
     },
     "customers": {
       "title": "Customer Management",
-      "subtitle": "Track and manage customer interactions with your listings",
+      "subtitle": "Track and manage customers interested in your listings",
       "unviewed": "Unviewed",
       "total": "Total",
-      "searchPlaceholder": "Search customers, listings...",
+      "searchPlaceholder": "Search by customer name or email...",
       "tabs": {
         "customers": "Customers",
         "listings": "Listings"
+      },
+      "table": {
+        "customer": "Customer",
+        "email": "Email",
+        "phone": "Phone",
+        "verified": "Verified",
+        "notVerified": "Not Verified",
+        "totalClicks": "Total Clicks",
+        "clickedListings": "Viewed Listings",
+        "lastClicked": "Last Clicked",
+        "actions": "Actions",
+        "viewDetails": "View Details",
+        "copyPhone": "Copy Phone",
+        "copyEmail": "Copy Email"
+      },
+      "stats": {
+        "totalCustomers": "Total Customers",
+        "totalClicks": "Total Phone Clicks",
+        "uniqueUsers": "Unique Users",
+        "thisMonth": "This Month"
+      },
+      "listingCard": {
+        "clicks": "clicks",
+        "users": "interested users",
+        "lastClick": "Last Click",
+        "viewCustomers": "View Customers"
+      },
+      "customerDetail": {
+        "title": "Customer Details",
+        "contactInfo": "Contact Information",
+        "clickHistory": "Phone Click History",
+        "totalListingsViewed": "Total Listings Viewed",
+        "clickedAt": "Clicked At",
+        "viewListing": "View Listing"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page",
+        "of": "of",
+        "showing": "Showing",
+        "to": "to",
+        "results": "results"
       },
       "selectToView": "Select an item to view details",
       "totalInteractions": "Total Interactions",
@@ -2084,13 +2135,47 @@
       "emptyState": {
         "customers": {
           "title": "No customers yet",
-          "description": "When customers click 'Show Number' or 'Chat via Zalo' on your listings, they will appear here."
+          "description": "When customers click 'Show Number' on your listings, they will appear here."
         },
         "listings": {
           "title": "No listings with interactions",
           "description": "Listings with customer interactions will appear here."
+        },
+        "search": {
+          "title": "No results found",
+          "description": "Try different keywords or clear filters"
         }
-      }
+      },
+      "dialog": {
+        "customerDetail": {
+          "title": "Customer Details",
+          "contactInfo": "Contact Information",
+          "clickHistory": "Phone Click History",
+          "statistics": "Statistics",
+          "totalListings": "Total Listings Viewed",
+          "firstClick": "First Click",
+          "lastClick": "Last Click",
+          "clickedOn": "Clicked on",
+          "times": "times",
+          "viewListing": "View Listing",
+          "close": "Close"
+        },
+        "listingDetail": {
+          "title": "Listing Details",
+          "interestedUsers": "Interested Customers",
+          "statistics": "Statistics",
+          "totalClicks": "Total Phone Clicks",
+          "uniqueUsers": "Unique Users",
+          "clickHistory": "Click History",
+          "noUsers": "No customers have viewed the phone number yet",
+          "loadingUsers": "Loading customers...",
+          "close": "Close",
+          "viewAll": "View All"
+        }
+      },
+      "loading": "Loading...",
+      "error": "An error occurred while loading data",
+      "retry": "Retry"
     }
   },
   "paymentMethodDialog": {

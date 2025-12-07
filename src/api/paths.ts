@@ -181,9 +181,11 @@ export const PATHS = {
   PHONE_CLICK_DETAIL: {
     TRACK: '/v1/phone-click-details',
     BY_LISTING: '/v1/phone-click-details/listing/:listingId',
-    MY_CLICKS: '/v1/phone-click-details/my-clicks',
+    LISTING_USERS: '/v1/phone-click-details/listing/:listingId/users',
     LISTING_STATS: '/v1/phone-click-details/listing/:listingId/stats',
+    MY_CLICKS: '/v1/phone-click-details/my-clicks',
     MY_LISTINGS: '/v1/phone-click-details/my-listings',
+    MY_LISTINGS_USERS: '/v1/phone-click-details/my-listings/users',
     SEARCH_MY_LISTINGS: '/v1/phone-click-details/my-listings/search',
   },
 
