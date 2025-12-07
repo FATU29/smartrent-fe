@@ -11,6 +11,8 @@ import { VerificationAPI } from '@/api/types/verification.type'
 import { decodeToken } from '@/utils/decode-jwt'
 
 export { useAuthGuard, useForceLogout } from './useAuthGuard'
+export { useChangePassword } from './useChangePassword'
+export { useUpdateProfile } from './useUpdateProfile'
 
 export const useAuth = () => {
   const authState = useAuthStore()

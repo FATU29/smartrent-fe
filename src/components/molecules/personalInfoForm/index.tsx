@@ -78,7 +78,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     handleSubmit,
     setValue,
     watch,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty },
   } = useForm<PersonalInfoFormData>({
     resolver: yupResolver(
       validationSchema,
@@ -243,7 +243,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           <div className='flex justify-end pt-4'>
             <Button
               type='submit'
-              disabled={!isValid || loading}
+              disabled={loading || (isDirty && !isValid)}
               className='min-w-[120px]'
             >
               {loading

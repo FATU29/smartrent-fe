@@ -16,6 +16,8 @@ function createClientAxiosInstance(
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
+    maxBodyLength: 10 * 1024 * 1024, // 10MB
+    maxContentLength: 10 * 1024 * 1024, // 10MB
   })
 
   setupInterceptors(instance, undefined)

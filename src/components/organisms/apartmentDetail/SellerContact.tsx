@@ -34,7 +34,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
     lastName = '',
     phoneCode = '',
     phoneNumber = '',
-    avatar,
+    avatarUrl,
   } = host
   const name = `${firstName} ${lastName}`.trim() || 'Người bán'
   const phone = `${phoneCode} ${phoneNumber}`.trim()
@@ -70,9 +70,9 @@ const SellerContact: React.FC<SellerContactProps> = ({
         {/* Seller Info */}
         <div className='flex items-start gap-4'>
           <Avatar className='w-14 h-14 flex-shrink-0'>
-            {avatar ? (
+            {avatarUrl ? (
               <Image
-                src={avatar}
+                src={avatarUrl}
                 alt={name}
                 width={56}
                 height={56}

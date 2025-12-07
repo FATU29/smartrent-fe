@@ -8,5 +8,7 @@ export interface UserApi {
   lastName: string
   idDocument: string
   taxNumber: string
-  avatar?: string
+  contactPhoneNumber: string
+  contactPhoneVerified: boolean
+  avatarUrl?: string
 }

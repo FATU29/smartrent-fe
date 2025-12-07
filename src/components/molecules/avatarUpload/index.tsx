@@ -4,6 +4,7 @@ import { Button } from '@/components/atoms/button'
 import { Camera, Upload } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 
 interface AvatarUploadProps {
   currentImage?: string
@@ -11,6 +12,7 @@ interface AvatarUploadProps {
   onImageChange?: (file: File | null) => void
   className?: string
   size?: 'sm' | 'md' | 'lg'
+  maxSizeInMB?: number // Default: 5MB
 }
 
 const AvatarUpload: React.FC<AvatarUploadProps> = ({
@@ -19,6 +21,7 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
   onImageChange,
   className,
   size = 'lg',
+  maxSizeInMB = 5,
 }) => {
   const t = useTranslations()
   const [preview, setPreview] = React.useState<string | null>(
@@ -34,17 +37,38 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (file) {
-      // Create preview
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setPreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+    if (!file) return
 
-      // Notify parent component
-      onImageChange?.(file)
+    // Validate file size
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024
+    if (file.size > maxSizeInBytes) {
+      toast.error(
+        t('homePage.auth.validation.avatarSizeExceeded', {
+          maxSize: maxSizeInMB,
+        }) || `Avatar file size must not exceed ${maxSizeInMB}MB`,
+      )
+      return
     }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(
+        t('homePage.auth.validation.avatarFormatInvalid') ||
+          'Avatar must be jpeg, png, or webp format',
+      )
+      return
+    }
+
+    // Create preview
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setPreview(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+
+    // Notify parent component
+    onImageChange?.(file)
   }
 
   const handleUploadClick = () => {
@@ -95,10 +119,16 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
         {t('homePage.auth.accountManagement.personalInfo.avatarUpload')}
       </Button>
 
+      <p className='text-xs text-muted-foreground text-center'>
+        {t('homePage.auth.accountManagement.personalInfo.avatarRequirements', {
+          maxSize: maxSizeInMB,
+        }) || `Max ${maxSizeInMB}MB • JPEG, PNG, WebP`}
+      </p>
+
       <input
         ref={fileInputRef}
         type='file'
-        accept='image/*'
+        accept='image/jpeg,image/jpg,image/png,image/webp'
         onChange={handleFileChange}
         className='hidden'
       />
