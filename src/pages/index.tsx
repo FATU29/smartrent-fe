@@ -9,6 +9,7 @@ import LocationProvider from '@/contexts/location'
 import { createServerAxiosInstance } from '@/configs/axios/axiosServer'
 import type { ProvinceStatsItem } from '@/api/types'
 import { List } from '@/contexts/list'
+import { PROVINCE_CODE } from '@/utils/mapper'
 
 interface HomeProps {
   provinceCities?: ProvinceStatsItem[]
@@ -40,18 +41,28 @@ export default Home
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
-    // Create server axios instance for server-side API calls
     const { req } = context
     const cookieStore = req.headers.cookie
     const serverInstance = createServerAxiosInstance(cookieStore)
 
-    // Top 5 provinces: Hà Nội (1), TP.HCM (79), Đà Nẵng (48), Hải Phòng (31), Cần Thơ (92)
-    const topProvinceIds = [1, 79, 48, 31, 92]
+    const topProvinceIds = [
+      PROVINCE_CODE.HANOI,
+      PROVINCE_CODE.HO_CHI_MINH,
+      PROVINCE_CODE.DA_NANG,
+      PROVINCE_CODE.BINH_DUONG,
+      PROVINCE_CODE.DONG_NAI,
+    ]
 
     const provinceStatsResponse = await ListingService.getProvinceStats(
       {
         provinceIds: topProvinceIds,
-        provinceCodes: ['1', '79', '48', '31', '92'],
+        provinceCodes: [
+          PROVINCE_CODE.HANOI.toString(),
+          PROVINCE_CODE.HO_CHI_MINH.toString(),
+          PROVINCE_CODE.DA_NANG.toString(),
+          PROVINCE_CODE.BINH_DUONG.toString(),
+          PROVINCE_CODE.DONG_NAI.toString(),
+        ],
         addressType: 'NEW',
       },
       serverInstance,

@@ -93,7 +93,38 @@
       "4": "Office",
       "5": "Shop"
     },
-    "checking": "Checking"
+    "checking": "Checking",
+    "copied": "Link copied!",
+    "report": "Report",
+    "reportSubmitted": "Report submitted successfully",
+    "reportDescription": "Help us improve by reporting issues with this listing",
+    "reportCategory": {
+      "listing": "Listing Issue",
+      "map": "Map Issue"
+    },
+    "selectReason": "Please select at least one reason",
+    "reportError": "Failed to submit report",
+    "additionalDetails": "Additional Details (Optional)",
+    "reportPlaceholder": "Provide more details about the issue...",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "submitting": "Submitting..."
+  },
+  "report": {
+    "submit": "Submit Report",
+    "submitting": "Submitting...",
+    "submitSuccess": "Report submitted successfully",
+    "submitError": "Failed to submit report",
+    "otherFeedback": "Other Feedback (Optional)",
+    "otherFeedbackPlaceholder": "Provide more details about the issue...",
+    "reporterInfo": "Reporter Information",
+    "reporterName": "Full Name",
+    "reporterPhone": "Phone Number",
+    "reporterEmail": "Email Address",
+    "invalidPhone": "Invalid phone number",
+    "invalidEmail": "Invalid email address",
+    "emailRequired": "Email is required",
+    "autoFilled": "Auto-filled"
   },
   "location": {
     "label": "Your location",
@@ -2136,6 +2167,10 @@
       "metadata": "Additional Information",
       "similarProperties": "Similar Properties",
       "recentlyViewed": "Recently Viewed"
+    },
+    "recentlyViewed": {
+      "title": "Recently Viewed Listings",
+      "description": "Showing the last 5 listings you viewed"
     },
     "priceHistory": {
       "title": "Price History for Houses in {district}",

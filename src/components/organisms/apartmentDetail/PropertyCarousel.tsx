@@ -79,7 +79,7 @@ const PropertyCarousel: React.FC<PropertyCarouselProps> = (props) => {
         {listings.map((listing) => (
           <Carousel.Item
             key={listing.listingId}
-            className='min-w-0 flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4 first:pl-0'
+            className='min-w-0 flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_40%] xl:flex-[0_0_30%] pl-4 first:pl-0'
           >
             <PropertyCard
               listing={listing}

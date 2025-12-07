@@ -8,28 +8,11 @@ import Image from 'next/image'
 import { Button } from '@/components/atoms/button'
 import { useRouter } from 'next/router'
 import { PUBLIC_ROUTES } from '@/constants/route'
+import { imageMap } from '@/utils/mapper'
 
 interface LocationBrowseSectionProps {
   cities?: ProvinceStatsItem[]
   loading?: boolean
-}
-
-// Mapping province names to image paths
-const getProvinceImage = (provinceName: string): string => {
-  const imageMap: Record<string, string> = {
-    'Hà Nội': '/images/example.png',
-    'Thành phố Hồ Chí Minh': '/images/rental-auth-bg.jpg',
-    'TP. Hồ Chí Minh': '/images/rental-auth-bg.jpg',
-    'Đà Nẵng': '/images/default-image.jpg',
-    'Hải Phòng': '/images/default-image.jpg',
-    'Cần Thơ': '/images/default-image.jpg',
-  }
-
-  return (
-    imageMap[provinceName] ||
-    imageMap[provinceName.replace('Thành phố ', 'TP. ')] ||
-    '/images/default-image.jpg'
-  )
 }
 
 const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
@@ -93,8 +76,8 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
             >
               <div className='relative h-[280px] w-full'>
                 <Image
-                  src={getProvinceImage(city.provinceName)}
-                  alt={city.provinceName}
+                  src={imageMap[Number(city?.provinceId)]}
+                  alt={city?.provinceName}
                   fill
                   className='object-cover'
                   sizes='(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'

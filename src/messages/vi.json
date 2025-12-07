@@ -93,7 +93,38 @@
       "4": "Văn phòng",
       "5": "Mặt bằng/Cửa hàng"
     },
-    "checking": "Đang kiểm tra"
+    "checking": "Đang kiểm tra",
+    "copied": "Đã sao chép liên kết!",
+    "report": "Báo cáo",
+    "reportSubmitted": "Báo cáo đã được gửi thành công",
+    "reportDescription": "Giúp chúng tôi cải thiện bằng cách báo cáo các vấn đề với tin đăng này",
+    "reportCategory": {
+      "listing": "Vấn đề về Tin Đăng",
+      "map": "Vấn đề về Bản Đồ"
+    },
+    "selectReason": "Vui lòng chọn ít nhất một lý do",
+    "reportError": "Không thể gửi báo cáo",
+    "additionalDetails": "Thông Tin Bổ Sung (Tùy chọn)",
+    "reportPlaceholder": "Cung cấp thêm chi tiết về vấn đề...",
+    "cancel": "Hủy",
+    "submit": "Gửi",
+    "submitting": "Đang gửi..."
+  },
+  "report": {
+    "submit": "Gửi Báo Cáo",
+    "submitting": "Đang gửi...",
+    "submitSuccess": "Báo cáo đã được gửi thành công",
+    "submitError": "Gửi báo cáo thất bại",
+    "otherFeedback": "Phản hồi khác (Tùy chọn)",
+    "otherFeedbackPlaceholder": "Nhập thêm chi tiết về vấn đề...",
+    "reporterInfo": "Thông tin người báo cáo",
+    "reporterName": "Họ và tên",
+    "reporterPhone": "Số điện thoại",
+    "reporterEmail": "Địa chỉ email",
+    "invalidPhone": "Số điện thoại không hợp lệ",
+    "invalidEmail": "Email không hợp lệ",
+    "emailRequired": "Email là bắt buộc",
+    "autoFilled": "Tự động điền"
   },
   "location": {
     "label": "Vị trí của bạn",
@@ -2137,6 +2168,10 @@
       "metadata": "Thông tin bổ sung",
       "similarProperties": "Bất động sản dành cho bạn",
       "recentlyViewed": "Tin đăng đã xem"
+    },
+    "recentlyViewed": {
+      "title": "Tin đăng đã xem",
+      "description": "Hiển thị 5 tin đăng gần đây nhất bạn đã xem"
     },
     "priceHistory": {
       "title": "Lịch sử giá bán nhà riêng tại {district}",
