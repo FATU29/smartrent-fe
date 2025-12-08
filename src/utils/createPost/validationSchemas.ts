@@ -9,12 +9,83 @@ const getPropertyInfoFields = () => ({
   address: yup
     .object()
     .shape({
-      latitude: yup.number().required('addressRequired'),
-      longitude: yup.number().required('addressRequired'),
+      latitude: yup
+        .number()
+        .required('addressRequired')
+        .test(
+          'is-valid-latitude',
+          'locationRequired',
+          (value) => value !== undefined && value !== 0,
+        ),
+      longitude: yup
+        .number()
+        .required('addressRequired')
+        .test(
+          'is-valid-longitude',
+          'locationRequired',
+          (value) => value !== undefined && value !== 0,
+        ),
       legacy: yup.mixed().optional(),
-      newAddress: yup.mixed().optional(),
+      newAddress: yup
+        .mixed()
+        .optional()
+        .test(
+          'has-province-or-ward',
+          'addressRequired',
+          function (value: unknown) {
+            const address = value as
+              | { provinceCode?: string; wardCode?: string }
+              | undefined
+            // If newAddress exists, check if it has provinceCode and wardCode
+            if (address && typeof address === 'object') {
+              const hasProvince = !!address.provinceCode
+              const hasWard = !!address.wardCode
+              return hasProvince && hasWard
+            }
+            // If newAddress doesn't exist, check if legacy exists
+            const legacy = this.parent.legacy
+            return !!legacy
+          },
+        ),
     })
-    .required('addressRequired'),
+    .required('addressRequired')
+    .test('address-complete', 'addressRequired', function (value: unknown) {
+      const address = value as {
+        latitude?: number
+        longitude?: number
+        newAddress?: { provinceCode?: string; wardCode?: string }
+        legacy?: unknown
+      }
+      if (!address) return false
+
+      // Check if coordinates are valid
+      const hasValidCoords =
+        address.latitude !== undefined &&
+        address.longitude !== undefined &&
+        address.latitude !== 0 &&
+        address.longitude !== 0
+
+      if (!hasValidCoords) {
+        return this.createError({
+          path: this.path,
+          message: 'locationRequired',
+        })
+      }
+
+      // Check if address structure is provided (either newAddress or legacy)
+      const hasNewAddress =
+        address.newAddress?.provinceCode && address.newAddress?.wardCode
+      const hasLegacy = !!address.legacy
+
+      if (!hasNewAddress && !hasLegacy) {
+        return this.createError({
+          path: this.path,
+          message: 'addressRequired',
+        })
+      }
+
+      return true
+    }),
   area: yup
     .number()
     .required('areaRequired')

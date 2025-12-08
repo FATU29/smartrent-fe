@@ -774,7 +774,8 @@
     "validation": {
       "propertyTypeRequired": "Property type is required",
       "propertyTypeInvalid": "Invalid property type",
-      "addressRequired": "Address is required",
+      "addressRequired": "Please select province/city and ward/commune",
+      "locationRequired": "Please select location on map (latitude/longitude)",
       "areaRequired": "Area is required",
       "priceRequired": "Price is required",
       "priceUnitRequired": "Price unit is required",

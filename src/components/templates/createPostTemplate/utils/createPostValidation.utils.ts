@@ -33,12 +33,27 @@ export const validateStep0 = (
   if (!propertyInfo) return false
 
   const address = propertyInfo.address
+
+  // Check if coordinates are valid (not 0)
+  const hasValidCoordinates =
+    !!address?.latitude &&
+    !!address?.longitude &&
+    address.latitude !== 0 &&
+    address.longitude !== 0
+
+  // Check if address structure exists (either newAddress or legacy)
+  const hasNewAddress = !!(
+    address?.newAddress?.provinceCode && address?.newAddress?.wardCode
+  )
+  const hasLegacy = !!address?.legacy
+  const hasAddressStructure = hasNewAddress || hasLegacy
+
   const hasAllRequiredFields =
     !!propertyInfo.categoryId &&
     !!propertyInfo.productType &&
     !!propertyInfo.address &&
-    !!address?.latitude &&
-    !!address?.longitude &&
+    hasValidCoordinates &&
+    hasAddressStructure &&
     !!propertyInfo.area &&
     !!propertyInfo.price &&
     !!propertyInfo.priceUnit &&
