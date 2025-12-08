@@ -1,0 +1,66 @@
+/* Listing Detail Page - Optimized Custom Styles */
+
+/* Price gradient animation */
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.price-gradient {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.12),
+    hsl(var(--primary) / 0.06),
+    transparent
+  );
+  background-size: 200% 200%;
+  animation: gradient-shift 10s ease-in-out infinite;
+}
+
+/* Section styles */
+.listing-section {
+  position: relative;
+}
+
+/* Typography */
+.listing-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+/* Loading skeleton */
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.skeleton {
+  background: hsl(var(--muted));
+  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .price-gradient {
+    padding: 1.25rem;
+  }
+}
+
+/* Print optimization */
+@media print {
+  button,
+  .seller-contact-sticky {
+    display: none !important;
+  }
+}

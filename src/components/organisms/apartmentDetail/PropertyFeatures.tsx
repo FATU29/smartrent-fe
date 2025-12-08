@@ -21,37 +21,32 @@ const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({
   }
 
   return (
-    <div className='space-y-6'>
-      <Typography variant='h3' className='text-xl font-bold'>
+    <div className='space-y-5'>
+      <Typography variant='h3' className='text-xl md:text-2xl font-bold'>
         {title || t('sections.features')}
       </Typography>
 
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
         {features.map((feature, index) => (
           <Card
             key={index}
-            className='hover:border-primary/50 transition-colors'
+            className='hover:border-primary/50 hover:shadow-md transition-all duration-200 group'
           >
-            <CardContent className='flex items-start gap-4 p-4'>
-              <div className='flex-shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary'>
+            <CardContent className='flex flex-col items-center gap-2.5 p-3 md:p-4 text-center'>
+              <div className='w-10 h-10 md:w-11 md:h-11 bg-primary/10 group-hover:bg-primary/20 rounded-lg flex items-center justify-center text-primary transition-colors'>
                 {(() => {
                   const IconComponent = getAmenityIcon(feature.icon)
                   return IconComponent ? (
-                    <IconComponent className='w-5 h-5' />
+                    <IconComponent className='w-5 h-5 md:w-5.5 md:h-5.5' />
                   ) : null
                 })()}
               </div>
-              <div className='flex-1 min-w-0'>
-                <Typography
-                  variant='small'
-                  className='text-muted-foreground mb-1 block'
-                >
-                  {feature.name}
-                </Typography>
-                <Typography variant='p' className='font-semibold truncate'>
-                  {feature.description}
-                </Typography>
-              </div>
+              <Typography
+                variant='small'
+                className='font-semibold text-foreground text-xs md:text-sm line-clamp-2'
+              >
+                {feature.name}
+              </Typography>
             </CardContent>
           </Card>
         ))}

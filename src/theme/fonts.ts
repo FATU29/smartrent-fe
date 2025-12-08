@@ -2,7 +2,16 @@ import {
   Be_Vietnam_Pro,
   JetBrains_Mono,
   Plus_Jakarta_Sans,
+  Inter,
 } from 'next/font/google'
+
+// Inter: Modern, clean font with excellent readability
+export const inter = Inter({
+  subsets: ['latin', 'vietnamese'],
+  display: 'swap',
+  variable: '--font-inter',
+  weight: ['300', '400', '500', '600', '700', '800'],
+})
 
 // Be Vietnam Pro: excellent Vietnamese + English support
 export const beVietnam = Be_Vietnam_Pro({
@@ -29,6 +38,7 @@ export const jakarta = Plus_Jakarta_Sans({
 })
 
 export const fontVariables = [
+  inter.variable,
   beVietnam.variable,
   jetbrainsMono.variable,
   jakarta.variable,

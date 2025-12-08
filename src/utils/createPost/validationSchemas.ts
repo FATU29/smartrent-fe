@@ -12,7 +12,7 @@ const getPropertyInfoFields = () => ({
       latitude: yup.number().required('addressRequired'),
       longitude: yup.number().required('addressRequired'),
       legacy: yup.mixed().optional(),
-      new: yup.mixed().optional(),
+      newAddress: yup.mixed().optional(),
     })
     .required('addressRequired'),
   area: yup
@@ -75,6 +75,11 @@ const getPropertyInfoFields = () => ({
     .required('bathroomsRequired')
     .integer('bathroomsRequired')
     .min(1, 'bathroomsMinimum'),
+  roomCapacity: yup
+    .number()
+    .required('roomCapacityRequired')
+    .integer('roomCapacityRequired')
+    .min(1, 'roomCapacityMinimum'),
   direction: yup
     .string()
     .required('directionRequired')

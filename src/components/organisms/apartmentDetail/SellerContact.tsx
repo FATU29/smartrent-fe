@@ -65,61 +65,78 @@ const SellerContact: React.FC<SellerContactProps> = ({
   }
 
   return (
-    <Card className='w-full'>
-      <CardContent className='p-6 space-y-6'>
+    <Card className='w-full shadow-lg hover:shadow-xl transition-shadow'>
+      <CardContent className='p-5 md:p-6 space-y-5'>
         {/* Seller Info */}
         <div className='flex items-start gap-4'>
-          <Avatar className='w-14 h-14 flex-shrink-0'>
+          <Avatar className='w-14 h-14 md:w-16 md:h-16 flex-shrink-0 ring-2 ring-primary/10'>
             {avatarUrl ? (
               <Image
                 src={avatarUrl}
                 alt={name}
-                width={56}
-                height={56}
+                width={64}
+                height={64}
                 className='w-full h-full object-cover'
               />
             ) : (
-              <div className='w-full h-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center text-lg font-bold'>
+              <div className='w-full h-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center text-lg md:text-xl font-bold'>
                 {getInitials(name)}
               </div>
             )}
           </Avatar>
 
           <div className='flex-1 min-w-0'>
-            <Typography variant='h5' className='font-bold mb-1 truncate'>
+            <Typography
+              variant='h5'
+              className='font-bold mb-2 truncate text-base md:text-lg'
+            >
               {name}
             </Typography>
-            {/* Link to user's listings page */}
             <Typography variant='small' className='text-primary'>
-              <Link href={sellerListingsUrl} className='hover:underline'>
+              <Link
+                href={sellerListingsUrl}
+                className='hover:underline inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-primary/80'
+              >
                 {t('links.viewSellerListings')}
+                <svg
+                  className='w-3.5 h-3.5'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M9 5l7 7-7 7'
+                  />
+                </svg>
               </Link>
             </Typography>
           </div>
         </div>
 
         {/* Contact Buttons */}
-        <div className='space-y-3'>
+        <div className='space-y-2.5'>
           <Button
-            className='hover:bg-blue-100 w-full bg-white text-black border-2 border-primary h-12 font-semibold'
+            className='w-full bg-white hover:bg-blue-50 text-foreground border-2 border-primary h-11 md:h-12 font-semibold shadow-sm hover:shadow-md transition-all'
             onClick={handleZaloClick}
           >
             <Image
               src='/svg/zalo.svg'
               alt='Zalo'
-              width={24}
-              height={24}
+              width={20}
+              height={20}
               className='mr-2'
-              color='white'
             />
             {t('actions.chatZalo')}
           </Button>
 
           <Button
-            className='w-full bg-primary h-12 font-semibold'
+            className='w-full bg-primary hover:bg-primary/90 h-11 md:h-12 font-semibold shadow-sm hover:shadow-md transition-all'
             onClick={handleCall}
           >
-            <Phone className='w-5 h-5 mr-2' />
+            <Phone className='w-4 h-4 md:w-5 md:h-5 mr-2' />
             {showPhone ? phone : t('actions.showPhone')}
           </Button>
         </div>

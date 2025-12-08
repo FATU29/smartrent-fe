@@ -37,6 +37,9 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
     // Don't block if submit was successful
     if (isSubmitSuccess) return false
 
+    // Don't block if editing existing draft (already saved)
+    if (draftId) return false
+
     if (!propertyInfo) return false
 
     // Check if propertyInfo has any meaningful data
@@ -54,11 +57,10 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       return true
     })
 
-    // Don't block if no meaningful data has been entered
     if (!hasAnyData) return false
 
     return true
-  }, [propertyInfo, isSubmitSuccess])
+  }, [propertyInfo, isSubmitSuccess, draftId])
 
   useEffect(() => {
     shouldBlockRef.current = hasUnsavedChanges()
@@ -92,8 +94,8 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
 
     // Validate minimum required fields (new address type)
     const hasNewAddress =
-      propertyInfo.address?.new?.provinceCode &&
-      propertyInfo.address?.new?.wardCode
+      propertyInfo.address?.newAddress?.provinceCode &&
+      propertyInfo.address?.newAddress?.wardCode
 
     if (!hasNewAddress && !propertyInfo.address?.legacy) {
       toast.error(t('addressRequired'))

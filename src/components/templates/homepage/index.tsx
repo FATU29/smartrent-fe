@@ -21,14 +21,18 @@ const ResidentialFilterResponsive = dynamic(
   },
 )
 
-import type { ProvinceStatsItem } from '@/api/types'
+import type { ProvinceStatsItem, CategoryStatsItem } from '@/api/types'
 import Image from 'next/image'
 
 interface HomepageTemplateProps {
   cities?: ProvinceStatsItem[]
+  categoryStats?: CategoryStatsItem[]
 }
 
-const HomepageTemplate: React.FC<HomepageTemplateProps> = ({ cities }) => {
+const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
+  cities,
+  categoryStats,
+}) => {
   const t = useTranslations()
   const { pagination } = useListContext()
   const router = useRouter()
@@ -106,7 +110,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({ cities }) => {
             </section>
 
             <div id='top-interest'>
-              <TopInterestSection />
+              <TopInterestSection categoryStats={categoryStats} />
             </div>
 
             {/* VIP Property Sections */}

@@ -48,7 +48,7 @@ export function mapFrontendToBackendRequest(
     bathrooms: frontendFilter?.bathrooms,
     furnishing: frontendFilter?.furnishing,
     direction: frontendFilter?.direction,
-    verified: frontendFilter?.verified,
+    // verified: frontendFilter?.verified,
     waterPrice: frontendFilter?.waterPrice,
     electricityPrice: frontendFilter?.electricityPrice,
     internetPrice: frontendFilter?.internetPrice,

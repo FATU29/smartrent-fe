@@ -245,7 +245,23 @@ module.exports = {
       error: '#EF4444', // red-500
       info: '#007BFF', // blue-500 (primary)
     },
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: [
+          'var(--font-inter)',
+          'var(--font-sans)',
+          'system-ui',
+          'sans-serif',
+        ],
+        heading: [
+          'var(--font-heading)',
+          'var(--font-inter)',
+          'system-ui',
+          'sans-serif',
+        ],
+        mono: ['var(--font-mono)', 'monospace'],
+      },
+    },
   },
 
   plugins: [

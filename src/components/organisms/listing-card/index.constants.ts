@@ -1,32 +1,32 @@
 export const LISTING_CARD_STYLES = {
   container:
-    'bg-background border border-border rounded-lg p-3 sm:p-4 hover:shadow-md transition-all duration-200 hover:border-primary/20',
-  layout: 'flex flex-col sm:flex-row gap-3 sm:gap-4',
+    'group hover:shadow-xl hover:border-primary/50 transition-all duration-300 overflow-hidden bg-background border border-border rounded-lg',
+  layout: 'flex flex-col sm:flex-row',
 
-  // Image section
-  imageContainer: 'relative w-full h-48 sm:w-32 sm:h-24 flex-shrink-0 group',
-  image:
-    'object-cover rounded-md transition-transform duration-200 group-hover:scale-105',
-  packageBadgeContainer: 'absolute top-2 left-2 z-10',
+  // Image section - Square ratio for better layout
+  imageContainer:
+    'relative w-full sm:w-48 h-48 sm:h-48 shrink-0 bg-gradient-to-br from-muted/50 to-muted',
+  image: 'object-cover transition-all duration-300 group-hover:scale-105',
+  packageBadgeContainer: 'absolute top-3 left-3 z-10',
 
-  // Content sections
-  contentContainer: 'flex-1 min-w-0',
-  contentLayout: 'flex flex-col sm:flex-row sm:justify-between',
-  leftContent: 'flex-1 sm:pr-4',
-  rightContent: 'flex flex-col gap-3 mt-3 sm:mt-0',
+  // Content sections - Reduced padding for compact layout
+  contentContainer: 'flex-1 min-w-0 flex flex-col p-4 sm:p-5',
+  contentLayout: 'flex flex-col flex-1',
+  leftContent: 'flex-1 space-y-3',
+  rightContent: 'flex flex-col gap-4 mt-4 sm:mt-0',
 
-  // Text elements
+  // Text elements - Enhanced typography
   title:
-    'text-sm font-medium text-foreground line-clamp-2 mb-2 hover:text-primary transition-colors cursor-pointer',
-  address: 'text-xs text-muted-foreground mb-2',
-  propertyInfo:
-    'flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs text-muted-foreground mb-2',
-  expiredMessage: 'text-xs text-destructive mb-2 font-medium',
+    'text-lg sm:text-xl font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-tight',
+  address: 'text-sm text-muted-foreground mb-3',
+  propertyInfo: 'flex flex-wrap items-center gap-x-4 gap-y-2 text-sm',
+  expiredMessage:
+    'text-sm text-destructive font-semibold px-3 py-2 bg-destructive/10 rounded-lg border border-destructive/20',
 
   // Badge and status sections
-  badgeContainer: 'flex items-center gap-2 mb-2',
+  badgeContainer: 'flex items-center gap-2 flex-wrap mb-3',
   statusContainer: 'flex justify-start sm:justify-end',
-  statsContainer: 'flex items-center gap-2 sm:gap-4',
+  statsContainer: 'flex items-center gap-3',
 } as const
 
 export const LISTING_CARD_CONFIG = {

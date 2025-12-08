@@ -38,7 +38,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   const [isGeocoding, setIsGeocoding] = useState(false)
   const [wardSearchKeyword, setWardSearchKeyword] = useState<string>('')
   const [streetInput, setStreetInput] = useState<string>(
-    propertyInfo?.address?.new?.street || '',
+    propertyInfo?.address?.newAddress?.street || '',
   )
 
   // Debounce street input to optimize performance
@@ -73,21 +73,24 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   }, [newWardsPages])
 
   const addressForGeocode = useMemo(() => {
-    const street = propertyInfo?.address?.new?.street?.trim()
+    const street = propertyInfo?.address?.newAddress?.street?.trim()
     const legacyText = fulltextAddress?.legacyAddressText || ''
     if (!legacyText) return null
     return street ? `${street}, ${legacyText}` : legacyText
-  }, [propertyInfo?.address?.new?.street, fulltextAddress?.legacyAddressText])
+  }, [
+    propertyInfo?.address?.newAddress?.street,
+    fulltextAddress?.legacyAddressText,
+  ])
 
   // Update property info when debounced street value changes
   useEffect(() => {
-    if (debouncedStreet !== propertyInfo?.address?.new?.street) {
+    if (debouncedStreet !== propertyInfo?.address?.newAddress?.street) {
       const prev = propertyInfo.address
       const nextAddress: ListingAddress = {
         legacy: prev?.legacy,
-        new: {
-          provinceCode: (prev?.new?.provinceCode as string) || '',
-          wardCode: (prev?.new?.wardCode as string) || '',
+        newAddress: {
+          provinceCode: (prev?.newAddress?.provinceCode as string) || '',
+          wardCode: (prev?.newAddress?.wardCode as string) || '',
           street: debouncedStreet,
         },
         latitude: prev?.latitude ?? 0,
@@ -99,12 +102,12 @@ export const AddressInput: React.FC<AddressInputProps> = ({
 
   // Sync local state with external updates
   useEffect(() => {
-    const currentStreet = propertyInfo?.address?.new?.street || ''
+    const currentStreet = propertyInfo?.address?.newAddress?.street || ''
     if (currentStreet !== streetInput) {
       console.log('🏠 Syncing street input:', currentStreet)
       setStreetInput(currentStreet)
     }
-  }, [propertyInfo?.address?.new?.street])
+  }, [propertyInfo?.address?.newAddress?.street])
 
   // Debug: Log address state changes
   useEffect(() => {
@@ -126,14 +129,14 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       propertyAddressEdited: false,
     })
 
-    // Update property info address.new
+    // Update property info address.newAddress
     const prev = propertyInfo.address
     const nextAddress: ListingAddress = {
       legacy: prev?.legacy,
-      new: {
+      newAddress: {
         provinceCode: value,
         wardCode: '', // Reset ward when province changes
-        street: prev?.new?.street || '',
+        street: prev?.newAddress?.street || '',
       },
       latitude: prev?.latitude ?? 0,
       longitude: prev?.longitude ?? 0,
@@ -148,14 +151,14 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       legacyAddressId: '',
     })
 
-    // Update property info address.new
+    // Update property info address.newAddress
     const prev = propertyInfo.address
     const nextAddress: ListingAddress = {
       legacy: prev?.legacy,
-      new: {
-        provinceCode: prev?.new?.provinceCode as string,
+      newAddress: {
+        provinceCode: prev?.newAddress?.provinceCode as string,
         wardCode: value,
-        street: prev?.new?.street || '',
+        street: prev?.newAddress?.street || '',
       },
       latitude: prev?.latitude ?? 0,
       longitude: prev?.longitude ?? 0,
@@ -180,7 +183,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
         districtId: Number(districtId),
         wardId: Number(wardId),
       },
-      new: prev?.new,
+      newAddress: prev?.newAddress,
       latitude: prev?.latitude ?? 0,
       longitude: prev?.longitude ?? 0,
     }

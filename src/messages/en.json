@@ -645,7 +645,9 @@
     "topInterest": {
       "title": "Properties by Category",
       "viewAll": "View all",
-      "listingsSuffix": "listings"
+      "listingsSuffix": "listings",
+      "noCategories": "No categories available",
+      "noCategoriesDescription": "There are currently no property categories available. Please check back later."
     },
     "searchIntro": {
       "title": "Find your ideal place faster",
@@ -812,6 +814,8 @@
       "bedroomsMinimum": "Number of bedrooms must be at least 1",
       "bathroomsRequired": "Number of bathrooms is required",
       "bathroomsMinimum": "Number of bathrooms must be at least 1",
+      "roomCapacityRequired": "Room capacity is required",
+      "roomCapacityMinimum": "Room capacity must be at least 1",
       "directionRequired": "House direction is required",
       "directionInvalid": "Invalid house direction",
       "moveInDateRequired": "Move-in date is required"
@@ -1095,6 +1099,7 @@
         "price": "Price",
         "bedrooms": "Bedrooms",
         "bathrooms": "Bathrooms",
+        "roomCapacity": "Room Capacity",
         "mapNotSelected": "Location not selected",
         "clickButtonToSelectLocation": "Click 'Use My Location' button to select your location on the map",
         "propertyAddress": "Property Address",
@@ -1278,6 +1283,7 @@
         "description": "Add detailed information about the property",
         "bedrooms": "Bedrooms",
         "bathrooms": "Bathrooms",
+        "roomCapacity": "Room Capacity",
         "floors": "Floors",
         "yearBuilt": "Year Built",
         "legalStatus": "Legal Status",
@@ -2002,6 +2008,17 @@
         "postedDate": "Posted Date",
         "expiryDate": "Expiry Date",
         "postDate": "Post date",
+        "price": "Price",
+        "area": "Area",
+        "bedrooms": "Bedrooms",
+        "bathrooms": "Bathrooms",
+        "views": "Views",
+        "contacts": "Contacts",
+        "customers": "Customers",
+        "status": {
+          "active": "Active",
+          "expired": "Expired"
+        },
         "common": {
           "notAvailable": "N/A"
         },
@@ -2059,7 +2076,11 @@
         "createdAt": "Created",
         "bedrooms": "bedrooms",
         "bathrooms": "bathrooms",
-        "edit": "Edit"
+        "edit": "Edit",
+        "noImage": "No Image",
+        "draft": "Draft",
+        "price": "Price",
+        "area": "Area"
       },
       "delete": {
         "confirmTitle": "Delete Draft",
@@ -2215,6 +2236,7 @@
       "showPhone": "Show phone"
     },
     "property": {
+      "roomCapacity": "Room Capacity",
       "price": "Price Range",
       "pricePerSqm": "per m²",
       "pricePerMonth": "month",
