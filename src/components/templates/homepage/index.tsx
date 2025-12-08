@@ -1,4 +1,3 @@
-import HomepageHeader from '@/components/molecules/homepageHeader'
 import HeroPromoCarousel from '@/components/organisms/heroPromoCarousel'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
@@ -21,13 +20,19 @@ const ResidentialFilterResponsive = dynamic(
     ssr: false,
   },
 )
-import type { ProvinceStatsItem } from '@/api/types'
+
+import type { ProvinceStatsItem, CategoryStatsItem } from '@/api/types'
+import Image from 'next/image'
 
 interface HomepageTemplateProps {
   cities?: ProvinceStatsItem[]
+  categoryStats?: CategoryStatsItem[]
 }
 
-const HomepageTemplate: React.FC<HomepageTemplateProps> = ({ cities }) => {
+const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
+  cities,
+  categoryStats,
+}) => {
   const t = useTranslations()
   const { pagination } = useListContext()
   const router = useRouter()
@@ -51,20 +56,16 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({ cities }) => {
 
   const hasNext = pagination.currentPage < pagination.totalPages
 
-  // Track clicks and navigate to page 2 after 2 clicks
   const handleLoadMoreClick = useCallback(() => {
     clickCountRef.current += 1
 
     if (clickCountRef.current >= 2) {
-      // After 2 clicks, navigate to list page with page=2
       router.push(`${PUBLIC_ROUTES.LISTING_LISTING}?page=2`)
     } else {
-      // First click - stay on homepage but could trigger more data load
       router.push(PUBLIC_ROUTES.LISTING_LISTING)
     }
   }, [router])
 
-  // Handler for Apply button - navigate to properties page with filters
   const handleFilterApply = useCallback(() => {
     router.push(PUBLIC_ROUTES.LISTING_LISTING)
   }, [router])
@@ -74,17 +75,17 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({ cities }) => {
       <div className='px-4 sm:px-6 lg:px-8'>
         <div className='max-w-7xl mx-auto'>
           <div className='py-4 sm:py-6 lg:py-8'>
-            <HomepageHeader />
             <div className='mb-10'>
               <HeroPromoCarousel />
             </div>
             <section className='mb-8 sm:mb-10 relative rounded-2xl overflow-hidden'>
               <div className='absolute inset-0'>
-                <div
-                  className='h-full w-full bg-center bg-cover'
-                  style={{
-                    backgroundImage: `url(/images/rental-auth-bg.jpg)`,
-                  }}
+                <Image
+                  src='/images/banner-default.jpg'
+                  alt='Banner default'
+                  fill
+                  fetchPriority='high'
+                  loading='eager'
                 />
                 <div className='absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/20 dark:from-black/70 dark:via-black/60 dark:to-black/30' />
               </div>
@@ -101,14 +102,16 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({ cities }) => {
                   <div className='flex flex-col gap-3'>
                     <ResidentialFilterResponsive onApply={handleFilterApply} />
                     <div className='flex justify-between items-center'>
-                      {/* ClearFilterButton is always present but hidden on homepage by default */}
                       <ClearFilterButton show={false} onClick={() => {}} />
                     </div>
                   </div>
                 </div>
               </div>
             </section>
-            <TopInterestSection />
+
+            <div id='top-interest'>
+              <TopInterestSection categoryStats={categoryStats} />
+            </div>
 
             {/* VIP Property Sections */}
             <div className='space-y-8'>
@@ -137,11 +140,6 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({ cities }) => {
                 <Button onClick={handleLoadMoreClick} className='px-6'>
                   {t('common.loadMore')} ➜
                 </Button>
-              )}
-              {!hasNext && !hasLoadedOnce && (
-                <span className='text-xs text-muted-foreground'>
-                  {t('common.endOfResults')}
-                </span>
               )}
             </div>
             <LocationBrowseSection

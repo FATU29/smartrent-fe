@@ -42,10 +42,21 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
     form.formState.errors,
   )
 
-  const { propertyInfo, resetPropertyInfo, setIsSubmitSuccess } =
-    useCreatePost()
+  const {
+    propertyInfo,
+    resetPropertyInfo,
+    setIsSubmitSuccess,
+    draftId,
+    fulltextAddress,
+  } = useCreatePost()
   const router = useRouter()
   const t = useTranslations('createPost.submit')
+
+  React.useEffect(() => {
+    if (draftId && propertyInfo && Object.keys(propertyInfo).length > 1) {
+      form.reset(propertyInfo)
+    }
+  }, [draftId, propertyInfo, fulltextAddress, form])
 
   const [successOpen, setSuccessOpen] = React.useState(false)
   const [successTitle, setSuccessTitle] = React.useState<string>('')

@@ -63,7 +63,7 @@ const ResidentialPropertiesPage: NextPageWithLayout<
           minBedrooms: filters.minBedrooms ?? null,
           maxBedrooms: filters.maxBedrooms ?? null,
           bathrooms: filters.bathrooms ?? null,
-          verified: filters.verified || null,
+          // verified: filters.verified || null,
           direction: filters.direction ?? null,
           electricityPrice: filters.electricityPrice ?? null,
           waterPrice: filters.waterPrice ?? null,

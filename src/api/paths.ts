@@ -68,6 +68,7 @@ export const PATHS = {
     CURRENT_PRICE: '/v1/listings/:listingId/current-price',
     RECENT_PRICE_CHANGES: '/v1/listings/recent-price-changes',
     PROVINCE_STATS: '/v1/listings/stats/provinces',
+    CATEGORY_STATS: '/v1/listings/stats/categories',
   },
 
   // Admin endpoints
@@ -113,6 +114,14 @@ export const PATHS = {
     EXISTS: '/v1/payments/exists/:transactionRef',
     IPN: '/v1/payments/ipn/:provider',
     CALLBACK: '/v1/payments/callback/:provider',
+  },
+
+  // Report endpoints
+  REPORT: {
+    REASONS: '/v1/listings/reports/reasons',
+    CREATE: '/v1/listings/:listingId/reports',
+    BY_ID: '/v1/listings/reports/:reportId',
+    MY_REPORTS: '/v1/listings/reports/my-reports',
   },
 
   // Media endpoints
@@ -173,9 +182,11 @@ export const PATHS = {
   PHONE_CLICK_DETAIL: {
     TRACK: '/v1/phone-click-details',
     BY_LISTING: '/v1/phone-click-details/listing/:listingId',
-    MY_CLICKS: '/v1/phone-click-details/my-clicks',
+    LISTING_USERS: '/v1/phone-click-details/listing/:listingId/users',
     LISTING_STATS: '/v1/phone-click-details/listing/:listingId/stats',
+    MY_CLICKS: '/v1/phone-click-details/my-clicks',
     MY_LISTINGS: '/v1/phone-click-details/my-listings',
+    MY_LISTINGS_USERS: '/v1/phone-click-details/my-listings/users',
     SEARCH_MY_LISTINGS: '/v1/phone-click-details/my-listings/search',
   },
 
@@ -183,5 +194,14 @@ export const PATHS = {
   EXCHANGE_RATE: {
     LATEST: '/v1/exchange-rates/latest',
     VND_TO_USD: '/v1/exchange-rates/vnd-to-usd',
+  },
+
+  // Saved Listings endpoints
+  SAVED_LISTINGS: {
+    SAVE: '/v1/saved-listings',
+    UNSAVE: '/v1/saved-listings/:listingId',
+    MY_SAVED: '/v1/saved-listings/my-saved',
+    CHECK: '/v1/saved-listings/check/:listingId',
+    COUNT: '/v1/saved-listings/count',
   },
 }

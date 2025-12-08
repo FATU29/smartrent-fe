@@ -9,6 +9,7 @@ import {
   SellerContact,
   PropertyCarousel,
   PropertyMap,
+  RecentlyViewedSection,
 } from '@/components/organisms/apartmentDetail'
 import { Typography } from '@/components/atoms/typography'
 import { ListingDetail } from '@/api/types'
@@ -23,7 +24,6 @@ import { PhoneClickDetailService } from '@/api/services'
 export interface DetailPostTemplateProps {
   listing: ListingDetail
   similarProperties?: ListingDetail[]
-  recentlyViewed?: ListingDetail[]
   onExport?: () => void
   onCall?: () => void
   onChatZalo?: () => void
@@ -34,13 +34,12 @@ export interface DetailPostTemplateProps {
 interface Section {
   id: string
   component: React.ReactNode
-  containerClassName?: string
   isVisible?: boolean
+  order?: number
 }
 
 const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   listing,
-  recentlyViewed,
   onChatZalo,
   onSimilarPropertyClick,
 }) => {
@@ -98,7 +97,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     try {
       await PhoneClickDetailService.trackClick({ listingId })
     } catch (error) {
-      // Silent failure - don't block user experience
       console.error('Failed to track phone click:', error)
     }
   }
@@ -136,13 +134,24 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
       {
         id: 'gallery',
         component: <ImageSlider media={mediaItems} />,
-        containerClassName: 'mb-8',
         isVisible: true,
       },
       {
         id: 'header',
         component: <PropertyHeader listing={listing} />,
-        containerClassName: 'mb-6',
+        isVisible: true,
+      },
+      {
+        id: 'sellerContactMobile',
+        component: (
+          <div className='lg:hidden'>
+            <SellerContact
+              host={user}
+              onChatZalo={handleChatZalo}
+              onPhoneClick={handlePhoneClick}
+            />
+          </div>
+        ),
         isVisible: true,
       },
       {
@@ -153,7 +162,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
             title={t('apartmentDetail.sections.features')}
           />
         ),
-        containerClassName: 'mb-8',
         isVisible: amenities && amenities.length > 0,
       },
       {
@@ -164,7 +172,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
             title={t('apartmentDetail.sections.description')}
           />
         ),
-        containerClassName: 'mb-8',
         isVisible: true,
       },
       {
@@ -181,9 +188,9 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
             oldAddress={address?.fullAddress}
           />
         ),
-        containerClassName: 'mb-8',
         isVisible: mockPricingHistory && mockPricingHistory.length > 0,
       },
+
       {
         id: 'map',
         component: (
@@ -196,7 +203,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
             address={addressNode}
           />
         ),
-        containerClassName: 'mb-8',
         isVisible: true,
       },
       {
@@ -210,27 +216,20 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
             showEmptyState={!isLoadingSimilar && !isErrorSimilar}
           />
         ),
-        containerClassName: 'mb-8',
         order: 8,
         isVisible: shouldShowSimilarProperties,
       },
       {
         id: 'recentlyViewed',
         component: (
-          <PropertyCarousel
-            listings={recentlyViewed || []}
-            title={t('apartmentDetail.sections.recentlyViewed')}
-            onPropertyClick={handleSimilarPropertyClick}
-          />
+          <RecentlyViewedSection currentListingId={listing.listingId} />
         ),
-        containerClassName: 'mb-8',
-        isVisible: recentlyViewed && recentlyViewed.length > 0,
+        isVisible: true,
       },
     ],
     [
       listing,
       similarPropertiesData,
-      recentlyViewed,
       t,
       addressNode,
       pricingHistoryData,
@@ -244,28 +243,26 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
 
   // Render sections function
   const renderSection = (section: Section) => {
+    if (!section.isVisible) return null
+
     return (
-      <>
-        {section.isVisible && (
-          <div key={section.id} className={section.containerClassName}>
-            {section.component}
-          </div>
-        )}
-      </>
+      <div key={section.id} className='w-full'>
+        {section.component}
+      </div>
     )
   }
 
   return (
     <div className='min-h-screen bg-background'>
-      <div className='container mx-auto px-4 py-6 lg:py-8'>
-        <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start'>
-          {/* Main Content - Left Column */}
-          <div className='lg:col-span-8 space-y-0'>
+      <div className='container mx-auto px-4 py-8 lg:py-10'>
+        <div className='grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start'>
+          {/* Main Content */}
+          <div className='lg:col-span-8 flex flex-col gap-8 lg:gap-10'>
             {sections?.map(renderSection)}
           </div>
 
-          {/* Sidebar - Sticky */}
-          <div className='lg:col-span-4 lg:sticky lg:top-24 lg:self-start'>
+          {/* Sidebar - Desktop Only */}
+          <div className='hidden lg:block lg:col-span-4 lg:sticky lg:top-24 lg:self-start'>
             <SellerContact
               host={user}
               onChatZalo={handleChatZalo}

@@ -7,14 +7,19 @@ import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import LocationProvider from '@/contexts/location'
 import { createServerAxiosInstance } from '@/configs/axios/axiosServer'
-import type { ProvinceStatsItem } from '@/api/types'
+import type { ProvinceStatsItem, CategoryStatsItem } from '@/api/types'
 import { List } from '@/contexts/list'
+import { PROVINCE_CODE } from '@/utils/mapper'
 
 interface HomeProps {
   provinceCities?: ProvinceStatsItem[]
+  categoryStats?: CategoryStatsItem[]
 }
 
-const Home: NextPageWithLayout<HomeProps> = ({ provinceCities }) => {
+const Home: NextPageWithLayout<HomeProps> = ({
+  provinceCities,
+  categoryStats,
+}) => {
   return (
     <>
       <SeoHead
@@ -24,7 +29,10 @@ const Home: NextPageWithLayout<HomeProps> = ({ provinceCities }) => {
       <LocationProvider>
         <List.Provider>
           <div className='container mx-auto space-y-6'>
-            <HomepageTemplate cities={provinceCities} />
+            <HomepageTemplate
+              cities={provinceCities}
+              categoryStats={categoryStats}
+            />
           </div>
         </List.Provider>
       </LocationProvider>
@@ -40,28 +48,51 @@ export default Home
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
-    // Create server axios instance for server-side API calls
     const { req } = context
     const cookieStore = req.headers.cookie
     const serverInstance = createServerAxiosInstance(cookieStore)
 
-    // Top 5 provinces: Hà Nội (1), TP.HCM (79), Đà Nẵng (48), Hải Phòng (31), Cần Thơ (92)
-    const topProvinceIds = [1, 79, 48, 31, 92]
+    const topProvinceIds = [
+      PROVINCE_CODE.HANOI,
+      PROVINCE_CODE.HO_CHI_MINH,
+      PROVINCE_CODE.DA_NANG,
+      PROVINCE_CODE.BINH_DUONG,
+      PROVINCE_CODE.DONG_NAI,
+    ]
 
-    const provinceStatsResponse = await ListingService.getProvinceStats(
-      {
-        provinceIds: topProvinceIds,
-        provinceCodes: ['1', '79', '48', '31', '92'],
-        addressType: 'NEW',
-      },
-      serverInstance,
-    )
+    // Fetch province stats and category stats in parallel for better performance
+    const [provinceStatsResponse, categoryStatsResponse] = await Promise.all([
+      ListingService.getProvinceStats(
+        {
+          provinceIds: topProvinceIds,
+          provinceCodes: [
+            PROVINCE_CODE.HANOI.toString(),
+            PROVINCE_CODE.HO_CHI_MINH.toString(),
+            PROVINCE_CODE.DA_NANG.toString(),
+            PROVINCE_CODE.BINH_DUONG.toString(),
+            PROVINCE_CODE.DONG_NAI.toString(),
+          ],
+          addressType: 'NEW',
+          verifiedOnly: true,
+        },
+        serverInstance,
+      ),
+      ListingService.getCategoryStats(
+        {
+          categoryIds: [1, 2, 3, 4, 5],
+          verifiedOnly: true,
+        },
+        serverInstance,
+      ),
+    ])
 
     const provinceCities = provinceStatsResponse?.data || []
+    const categoryStats = categoryStatsResponse?.data || []
 
     return {
       props: {
         provinceCities,
+        categoryStats,
       },
     }
   } catch (error) {

@@ -27,7 +27,9 @@ export const mockUsers: UserApi[] = [
     lastName: 'Doe',
     idDocument: '123456789',
     taxNumber: 'TAX123456',
-    avatar: 'https://i.pravatar.cc/150?img=1',
+    contactPhoneNumber: '0901234567',
+    contactPhoneVerified: true,
+    avatarUrl: 'https://i.pravatar.cc/150?img=1',
   },
   {
     userId: 'user-002',
@@ -38,7 +40,9 @@ export const mockUsers: UserApi[] = [
     lastName: 'Smith',
     idDocument: '987654321',
     taxNumber: 'TAX654321',
-    avatar: 'https://i.pravatar.cc/150?img=2',
+    contactPhoneNumber: '0912345678',
+    contactPhoneVerified: true,
+    avatarUrl: 'https://i.pravatar.cc/150?img=2',
   },
   {
     userId: 'user-003',
@@ -49,7 +53,9 @@ export const mockUsers: UserApi[] = [
     lastName: 'Johnson',
     idDocument: '456789123',
     taxNumber: 'TAX789123',
-    avatar: 'https://i.pravatar.cc/150?img=3',
+    contactPhoneNumber: '0923456789',
+    contactPhoneVerified: true,
+    avatarUrl: 'https://i.pravatar.cc/150?img=3',
   },
 ]
 

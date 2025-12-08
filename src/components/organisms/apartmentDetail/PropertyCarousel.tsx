@@ -1,7 +1,13 @@
 import React from 'react'
 import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
-import Carousel from '@/components/atoms/carousel'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from '@/components/atoms/carousel'
 import PropertyCard from '@/components/molecules/propertyCard'
 import type { ListingDetail } from '@/api/types/property.type'
 
@@ -14,16 +20,16 @@ interface PropertyCarouselProps {
 }
 
 const PropertyCarouselSkeleton: React.FC = () => (
-  <div className='space-y-6'>
-    <div className='h-8 w-64 bg-gray-200 rounded animate-pulse' />
+  <div className='space-y-5'>
+    <div className='h-7 w-48 bg-muted rounded animate-pulse' />
     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
       {[1, 2, 3].map((i) => (
         <Card key={i} className='overflow-hidden'>
-          <div className='aspect-[4/3] bg-gray-200 animate-pulse' />
-          <CardContent className='p-4 space-y-3'>
-            <div className='h-6 bg-gray-200 rounded animate-pulse' />
-            <div className='h-4 bg-gray-200 rounded animate-pulse w-3/4' />
-            <div className='h-4 bg-gray-200 rounded animate-pulse w-1/2' />
+          <div className='aspect-[4/3] bg-muted animate-pulse' />
+          <CardContent className='p-4 space-y-2.5'>
+            <div className='h-5 bg-muted rounded animate-pulse' />
+            <div className='h-4 bg-muted rounded animate-pulse w-3/4' />
+            <div className='h-4 bg-muted rounded animate-pulse w-1/2' />
           </CardContent>
         </Card>
       ))}
@@ -32,8 +38,8 @@ const PropertyCarouselSkeleton: React.FC = () => (
 )
 
 const PropertyCarouselEmpty: React.FC<{ title: string }> = ({ title }) => (
-  <div className='space-y-6'>
-    <Typography variant='h3' className='text-2xl font-bold'>
+  <div className='space-y-5'>
+    <Typography variant='h3' className='text-xl md:text-2xl font-bold'>
       {title}
     </Typography>
     <Card>
@@ -62,41 +68,43 @@ const PropertyCarousel: React.FC<PropertyCarouselProps> = (props) => {
   }
 
   return (
-    <div className='space-y-6'>
-      <Typography variant='h3' className='text-2xl font-bold'>
+    <div className='space-y-5'>
+      <Typography variant='h3' className='text-xl md:text-2xl font-bold'>
         {title}
       </Typography>
 
-      <Carousel.Root
-        options={{
+      <Carousel
+        opts={{
           align: 'start',
           skipSnaps: false,
           containScroll: 'trimSnaps',
+          loop: false,
         }}
-        loop={false}
         className='relative'
       >
-        {listings.map((listing) => (
-          <Carousel.Item
-            key={listing.listingId}
-            className='min-w-0 flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4 first:pl-0'
-          >
-            <PropertyCard
-              listing={listing}
-              onClick={onPropertyClick}
-              className='h-full'
-            />
-          </Carousel.Item>
-        ))}
+        <CarouselContent className='-ml-3'>
+          {listings.map((listing) => (
+            <CarouselItem
+              key={listing.listingId}
+              className='pl-3 basis-[85%] sm:basis-[70%] md:basis-1/2 lg:basis-1/3 xl:basis-[30%]'
+            >
+              <PropertyCard
+                listing={listing}
+                onClick={onPropertyClick}
+                className='h-full'
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
 
-        {/* Navigation Buttons - Always visible */}
-        {listings.length > 3 && (
+        {/* Navigation Buttons */}
+        {listings.length > 1 && (
           <>
-            <Carousel.Prev className='h-10 w-10 shadow-lg hover:bg-gray-50 -left-5' />
-            <Carousel.Next className='h-10 w-10 shadow-lg hover:bg-gray-50 -right-5' />
+            <CarouselPrevious className='h-10 w-10 shadow-md hover:shadow-lg -left-4 border-2 transition-all' />
+            <CarouselNext className='h-10 w-10 shadow-md hover:shadow-lg -right-4 border-2 transition-all' />
           </>
         )}
-      </Carousel.Root>
+      </Carousel>
     </div>
   )
 }

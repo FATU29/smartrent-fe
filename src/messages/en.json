@@ -53,6 +53,9 @@
     "email": "Email",
     "contactInformation": "Contact Information",
     "notAvailable": "Not Available",
+    "actions": {
+      "back": "Back"
+    },
     "status": {
       "ALL": "All",
       "EXPIRED": "Expired",
@@ -93,7 +96,38 @@
       "4": "Office",
       "5": "Shop"
     },
-    "checking": "Checking"
+    "checking": "Checking",
+    "copied": "Link copied!",
+    "report": "Report",
+    "reportSubmitted": "Report submitted successfully",
+    "reportDescription": "Help us improve by reporting issues with this listing",
+    "reportCategory": {
+      "listing": "Listing Issue",
+      "map": "Map Issue"
+    },
+    "selectReason": "Please select at least one reason",
+    "reportError": "Failed to submit report",
+    "additionalDetails": "Additional Details (Optional)",
+    "reportPlaceholder": "Provide more details about the issue...",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "submitting": "Submitting..."
+  },
+  "report": {
+    "submit": "Submit Report",
+    "submitting": "Submitting...",
+    "submitSuccess": "Report submitted successfully",
+    "submitError": "Failed to submit report",
+    "otherFeedback": "Other Feedback (Optional)",
+    "otherFeedbackPlaceholder": "Provide more details about the issue...",
+    "reporterInfo": "Reporter Information",
+    "reporterName": "Full Name",
+    "reporterPhone": "Phone Number",
+    "reporterEmail": "Email Address",
+    "invalidPhone": "Invalid phone number",
+    "invalidEmail": "Invalid email address",
+    "emailRequired": "Email is required",
+    "autoFilled": "Auto-filled"
   },
   "location": {
     "label": "Your location",
@@ -426,7 +460,9 @@
         "newPasswordRequired": "New password is required",
         "newPasswordMinLength": "New password must be at least 8 characters",
         "newPasswordLowercase": "Password must have at least 1 lowercase letter",
-        "newPasswordNumber": "Password must have at least 1 number"
+        "newPasswordNumber": "Password must have at least 1 number",
+        "avatarSizeExceeded": "Avatar file size must not exceed {maxSize}MB",
+        "avatarFormatInvalid": "Avatar must be jpeg, png, or webp format"
       },
       "oauth": {
         "processing_login": "Processing login...",
@@ -530,6 +566,7 @@
           "taxNumber": "Tax Number",
           "address": "Address",
           "avatarUpload": "Upload Photo",
+          "avatarRequirements": "Max {maxSize}MB • JPEG, PNG, WebP",
           "saveChanges": "Save Changes",
           "saving": "Saving...",
           "updateSuccess": "Personal information updated successfully!",
@@ -606,8 +643,11 @@
       }
     },
     "topInterest": {
-      "title": "Top Interested",
-      "viewAll": "View all"
+      "title": "Properties by Category",
+      "viewAll": "View all",
+      "listingsSuffix": "listings",
+      "noCategories": "No categories available",
+      "noCategoriesDescription": "There are currently no property categories available. Please check back later."
     },
     "searchIntro": {
       "title": "Find your ideal place faster",
@@ -765,11 +805,17 @@
       "serviceFeeRequired": "Service fee is required",
       "videoUploadInProgress": "Please wait for video upload to complete before continuing",
       "imagesUploadInProgress": "Please wait for images upload to complete before continuing",
+      "imageSizeExceeded": "Image size must not exceed 10MB",
+      "imageFormatInvalid": "Image must be jpeg, png, or webp format",
+      "imagesLimitReached": "Maximum 24 images allowed",
+      "coverImageRequired": "Cover image (primary) is required",
       "interiorConditionRequired": "Interior condition is required",
       "bedroomsRequired": "Number of bedrooms is required",
       "bedroomsMinimum": "Number of bedrooms must be at least 1",
       "bathroomsRequired": "Number of bathrooms is required",
       "bathroomsMinimum": "Number of bathrooms must be at least 1",
+      "roomCapacityRequired": "Room capacity is required",
+      "roomCapacityMinimum": "Room capacity must be at least 1",
       "directionRequired": "House direction is required",
       "directionInvalid": "Invalid house direction",
       "moveInDateRequired": "Move-in date is required"
@@ -927,7 +973,8 @@
           "cover": "Cover",
           "setCover": "Set Cover",
           "remove": "Remove",
-          "success": "Uploaded successfully"
+          "success": "Uploaded successfully",
+          "added": "{count} image(s) added successfully"
         },
         "upload": {
           "button": "Upload {count} images",
@@ -1052,6 +1099,7 @@
         "price": "Price",
         "bedrooms": "Bedrooms",
         "bathrooms": "Bathrooms",
+        "roomCapacity": "Room Capacity",
         "mapNotSelected": "Location not selected",
         "clickButtonToSelectLocation": "Click 'Use My Location' button to select your location on the map",
         "propertyAddress": "Property Address",
@@ -1235,6 +1283,7 @@
         "description": "Add detailed information about the property",
         "bedrooms": "Bedrooms",
         "bathrooms": "Bathrooms",
+        "roomCapacity": "Room Capacity",
         "floors": "Floors",
         "yearBuilt": "Year Built",
         "legalStatus": "Legal Status",
@@ -1621,6 +1670,7 @@
   "navigation": {
     "home": "Home",
     "properties": "Properties",
+    "savedListings": "Saved Listings",
     "about": "About",
     "contact": "Contact",
     "login": "Log In",
@@ -1958,6 +2008,17 @@
         "postedDate": "Posted Date",
         "expiryDate": "Expiry Date",
         "postDate": "Post date",
+        "price": "Price",
+        "area": "Area",
+        "bedrooms": "Bedrooms",
+        "bathrooms": "Bathrooms",
+        "views": "Views",
+        "contacts": "Contacts",
+        "customers": "Customers",
+        "status": {
+          "active": "Active",
+          "expired": "Expired"
+        },
         "common": {
           "notAvailable": "N/A"
         },
@@ -2015,7 +2076,11 @@
         "createdAt": "Created",
         "bedrooms": "bedrooms",
         "bathrooms": "bathrooms",
-        "edit": "Edit"
+        "edit": "Edit",
+        "noImage": "No Image",
+        "draft": "Draft",
+        "price": "Price",
+        "area": "Area"
       },
       "delete": {
         "confirmTitle": "Delete Draft",
@@ -2028,13 +2093,56 @@
     },
     "customers": {
       "title": "Customer Management",
-      "subtitle": "Track and manage customer interactions with your listings",
+      "subtitle": "Track and manage customers interested in your listings",
       "unviewed": "Unviewed",
       "total": "Total",
-      "searchPlaceholder": "Search customers, listings...",
+      "searchPlaceholder": "Search by customer name or email...",
       "tabs": {
         "customers": "Customers",
         "listings": "Listings"
+      },
+      "table": {
+        "customer": "Customer",
+        "email": "Email",
+        "phone": "Phone",
+        "verified": "Verified",
+        "notVerified": "Not Verified",
+        "totalClicks": "Total Clicks",
+        "clickedListings": "Viewed Listings",
+        "lastClicked": "Last Clicked",
+        "actions": "Actions",
+        "viewDetails": "View Details",
+        "copyPhone": "Copy Phone",
+        "copyEmail": "Copy Email"
+      },
+      "stats": {
+        "totalCustomers": "Total Customers",
+        "totalClicks": "Total Phone Clicks",
+        "uniqueUsers": "Unique Users",
+        "thisMonth": "This Month"
+      },
+      "listingCard": {
+        "clicks": "clicks",
+        "users": "interested users",
+        "lastClick": "Last Click",
+        "viewCustomers": "View Customers"
+      },
+      "customerDetail": {
+        "title": "Customer Details",
+        "contactInfo": "Contact Information",
+        "clickHistory": "Phone Click History",
+        "totalListingsViewed": "Total Listings Viewed",
+        "clickedAt": "Clicked At",
+        "viewListing": "View Listing"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page",
+        "of": "of",
+        "showing": "Showing",
+        "to": "to",
+        "results": "results"
       },
       "selectToView": "Select an item to view details",
       "totalInteractions": "Total Interactions",
@@ -2048,13 +2156,47 @@
       "emptyState": {
         "customers": {
           "title": "No customers yet",
-          "description": "When customers click 'Show Number' or 'Chat via Zalo' on your listings, they will appear here."
+          "description": "When customers click 'Show Number' on your listings, they will appear here."
         },
         "listings": {
           "title": "No listings with interactions",
           "description": "Listings with customer interactions will appear here."
+        },
+        "search": {
+          "title": "No results found",
+          "description": "Try different keywords or clear filters"
         }
-      }
+      },
+      "dialog": {
+        "customerDetail": {
+          "title": "Customer Details",
+          "contactInfo": "Contact Information",
+          "clickHistory": "Phone Click History",
+          "statistics": "Statistics",
+          "totalListings": "Total Listings Viewed",
+          "firstClick": "First Click",
+          "lastClick": "Last Click",
+          "clickedOn": "Clicked on",
+          "times": "times",
+          "viewListing": "View Listing",
+          "close": "Close"
+        },
+        "listingDetail": {
+          "title": "Listing Details",
+          "interestedUsers": "Interested Customers",
+          "statistics": "Statistics",
+          "totalClicks": "Total Phone Clicks",
+          "uniqueUsers": "Unique Users",
+          "clickHistory": "Click History",
+          "noUsers": "No customers have viewed the phone number yet",
+          "loadingUsers": "Loading customers...",
+          "close": "Close",
+          "viewAll": "View All"
+        }
+      },
+      "loading": "Loading...",
+      "error": "An error occurred while loading data",
+      "retry": "Retry"
     }
   },
   "paymentMethodDialog": {
@@ -2094,6 +2236,7 @@
       "showPhone": "Show phone"
     },
     "property": {
+      "roomCapacity": "Room Capacity",
       "price": "Price Range",
       "pricePerSqm": "per m²",
       "pricePerMonth": "month",
@@ -2136,6 +2279,10 @@
       "metadata": "Additional Information",
       "similarProperties": "Similar Properties",
       "recentlyViewed": "Recently Viewed"
+    },
+    "recentlyViewed": {
+      "title": "Recently Viewed Listings",
+      "description": "Showing the last 5 listings you viewed"
     },
     "priceHistory": {
       "title": "Price History for Houses in {district}",
@@ -2542,6 +2689,39 @@
         "title": "Unknown Status",
         "desc": "Unable to determine payment status."
       }
+    }
+  },
+  "savedListings": {
+    "title": "Saved Listings",
+    "subtitle": "Your favorite properties",
+    "empty": {
+      "title": "No Saved Listings",
+      "description": "You haven't saved any listings yet. Start exploring and save your favorites!",
+      "action": "Browse Listings"
+    },
+    "actions": {
+      "save": "Save",
+      "saved": "Saved",
+      "unsave": "Remove from saved",
+      "viewAll": "View All Saved"
+    },
+    "count": {
+      "zero": "No saved listings",
+      "one": "1 saved listing",
+      "other": "{count} saved listings"
+    },
+    "messages": {
+      "savedSuccess": "Listing saved successfully",
+      "unsavedSuccess": "Listing removed from saved",
+      "saveFailed": "Failed to save listing",
+      "unsaveFailed": "Failed to remove listing",
+      "loginRequired": "Please login to save listings",
+      "alreadySaved": "Listing already saved",
+      "notFound": "Listing not found"
+    },
+    "tooltip": {
+      "save": "Save this listing",
+      "saved": "Remove from saved"
     }
   }
 }

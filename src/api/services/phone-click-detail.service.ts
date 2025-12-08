@@ -12,6 +12,7 @@ import type {
   TrackPhoneClickRequest,
   PhoneClickStats,
   SearchPhoneClicksRequest,
+  UserPhoneClickDetail,
 } from '@/api/types/phone-click-detail.type'
 import type { AxiosInstance } from 'axios'
 
@@ -226,6 +227,102 @@ export class PhoneClickDetailService {
       instance,
     )
   }
+
+  /**
+   * Get users who clicked on a specific listing
+   * Retrieves detailed user information for those who clicked on a listing's phone number
+   * @param listingId - ID of the listing
+   * @param page - Page number (1-indexed)
+   * @param size - Number of items per page
+   * @param instance - Optional axios instance for server-side rendering
+   * @returns Promise with paginated user phone click details
+   * @example
+   * ```ts
+   * const response = await PhoneClickDetailService.getUsersWhoClickedListing(123, 1, 10)
+   * console.log(response.data.data) // Array of UserPhoneClickDetail objects
+   * ```
+   */
+  static async getUsersWhoClickedListing(
+    listingId: string | number,
+    page: number = 1,
+    size: number = 10,
+    instance?: AxiosInstance,
+  ): Promise<
+    ApiResponse<{
+      page: number
+      size: number
+      totalElements: number
+      totalPages: number
+      data: UserPhoneClickDetail[]
+    }>
+  > {
+    const url = PATHS.PHONE_CLICK_DETAIL.LISTING_USERS.replace(
+      ':listingId',
+      listingId.toString(),
+    )
+    return apiRequest<{
+      page: number
+      size: number
+      totalElements: number
+      totalPages: number
+      data: UserPhoneClickDetail[]
+    }>(
+      {
+        method: 'GET',
+        url,
+        params: {
+          page,
+          size,
+        },
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Get all users who clicked on my listings
+   * Retrieves detailed information about users interested in seller's listings
+   * @param page - Page number (1-indexed)
+   * @param size - Number of items per page
+   * @param instance - Optional axios instance for server-side rendering
+   * @returns Promise with paginated user phone click details
+   * @example
+   * ```ts
+   * const response = await PhoneClickDetailService.getUsersForMyListings(1, 10)
+   * console.log(response.data.data) // Array of UserPhoneClickDetail objects with clicked listings
+   * ```
+   */
+  static async getUsersForMyListings(
+    page: number = 1,
+    size: number = 10,
+    instance?: AxiosInstance,
+  ): Promise<
+    ApiResponse<{
+      page: number
+      size: number
+      totalElements: number
+      totalPages: number
+      data: UserPhoneClickDetail[]
+    }>
+  > {
+    return apiRequest<{
+      page: number
+      size: number
+      totalElements: number
+      totalPages: number
+      data: UserPhoneClickDetail[]
+    }>(
+      {
+        method: 'GET',
+        url: PATHS.PHONE_CLICK_DETAIL.MY_LISTINGS_USERS,
+        params: {
+          page,
+          size,
+        },
+      },
+      instance,
+    )
+  }
 }
 
 // ============= EXPORTS =============
@@ -237,4 +334,6 @@ export const {
   getListingStats,
   getMyListingsClicks,
   searchMyListingsClicks,
+  getUsersWhoClickedListing,
+  getUsersForMyListings,
 } = PhoneClickDetailService

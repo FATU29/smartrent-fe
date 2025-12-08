@@ -1,55 +1,19 @@
-import { getAmenityByCode } from '@/constants/amenities'
-
-/**
- * Backend draft response item type
- */
-export interface DraftBackendItem {
-  draftId: number
-  userId: string
-  title: string
-  description: string
-  listingType: 'RENT' | 'SALE'
-  vipType: 'VIP' | 'PREMIUM' | null
-  categoryId: number
-  productType: string
-  price: number
-  priceUnit: string
-  addressType: 'OLD' | 'NEW'
-  provinceId?: number
-  districtId?: number
-  wardId?: number
-  provinceCode?: string | null
-  wardCode?: string | null
-  street?: string | null
-  streetId?: number | null
-  projectId?: number | null
-  latitude: number
-  longitude: number
-  area: number
-  bedrooms: number
-  bathrooms: number
-  direction: string
-  furnishing: string
-  roomCapacity?: number | null
-  waterPrice?: string
-  electricityPrice?: string
-  internetPrice?: string
-  serviceFee?: string
-  amenityIds: number[]
-  mediaIds?: number[] | null
-  createdAt: string
-  updatedAt: string
-}
+import type {
+  DraftListingResponse,
+  DraftAddressResponse,
+} from '@/api/types/draft.type'
+import type { Amenity, MediaItem } from '@/api/types/property.type'
 
 /**
  * Frontend draft detail type (UI-friendly)
+ * This is the simplified version used in the UI components
  */
 export interface DraftDetail {
   id: number
   title: string
   description: string
-  listingType: 'RENT' | 'SALE'
-  vipType: 'VIP' | 'PREMIUM' | 'NORMAL'
+  listingType: 'RENT' | 'SHARE'
+  vipType: 'NORMAL' | 'SILVER' | 'GOLD' | 'DIAMOND'
   category: {
     id: number
   }
@@ -58,14 +22,25 @@ export interface DraftDetail {
   priceUnit: string
   address: {
     type: 'OLD' | 'NEW'
-    provinceId?: number
-    districtId?: number
-    wardId?: number
-    provinceCode?: string
-    wardCode?: string
-    street?: string
-    streetId?: number
-    projectId?: number
+    // Full address strings for display
+    fullAddress: string | null
+    fullNewAddress: string | null
+    // Legacy fields
+    provinceId?: number | null
+    provinceName?: string | null
+    districtId?: number | null
+    districtName?: string | null
+    wardId?: number | null
+    wardName?: string | null
+    // New fields
+    provinceCode?: string | null
+    wardCode?: string | null
+    // Common
+    street?: string | null
+    streetId?: number | null
+    streetName?: string | null
+    projectId?: number | null
+    projectName?: string | null
     latitude: number
     longitude: number
   }
@@ -74,54 +49,54 @@ export interface DraftDetail {
   bathrooms: number
   direction: string
   furnishing: string
-  roomCapacity?: number
+  roomCapacity?: number | null
   utilities: {
-    waterPrice?: string
-    electricityPrice?: string
-    internetPrice?: string
-    serviceFee?: string
+    waterPrice: string
+    electricityPrice: string
+    internetPrice: string
+    serviceFee: string
   }
-  amenities: Array<{
-    id: number
-    code: string
-    name: string
-    category: string
-  }>
-  media: {
-    ids?: number[]
-  }
+  amenities: Amenity[]
+  media: MediaItem[]
   createdAt: string
   updatedAt: string
 }
 
 /**
- * Map backend draft item to frontend format
+ * Map backend draft address to frontend format
+ */
+function mapDraftAddress(address: DraftAddressResponse) {
+  return {
+    type: address.addressType,
+    fullAddress: address.fullAddress,
+    fullNewAddress: address.fullNewAddress,
+    // Legacy fields
+    provinceId: address.legacyProvinceId,
+    provinceName: address.legacyProvinceName,
+    districtId: address.legacyDistrictId,
+    districtName: address.legacyDistrictName,
+    wardId: address.legacyWardId,
+    wardName: address.legacyWardName,
+    // New fields
+    provinceCode: address.newProvinceCode,
+    wardCode: address.newWardCode,
+    // Common fields
+    street: address.legacyStreet || address.newStreet,
+    streetId: address.streetId,
+    streetName: address.streetName,
+    projectId: address.projectId,
+    projectName: address.projectName,
+    latitude: address.latitude,
+    longitude: address.longitude,
+  }
+}
+
+/**
+ * Map backend draft response to frontend format
  */
 export function mapDraftBackendToFrontend(
-  backend: DraftBackendItem,
+  backend: DraftListingResponse,
 ): DraftDetail {
-  // Map amenity IDs to amenity details
-  const amenities = backend.amenityIds
-    .map((id) => {
-      const amenity = getAmenityByCode(String(id)) // Try to get by code
-      if (amenity) {
-        return {
-          id: amenity.id,
-          code: amenity.code,
-          name: amenity.translationKey,
-          category: amenity.category,
-        }
-      }
-      // Fallback if not found
-      return {
-        id,
-        code: `amenity-${id}`,
-        name: `Amenity ${id}`,
-        category: 'BASIC',
-      }
-    })
-    .filter(Boolean)
-
   return {
     id: backend.draftId,
     title: backend.title,
@@ -134,35 +109,21 @@ export function mapDraftBackendToFrontend(
     productType: backend.productType,
     price: backend.price,
     priceUnit: backend.priceUnit,
-    address: {
-      type: backend.addressType,
-      provinceId: backend.provinceId,
-      districtId: backend.districtId,
-      wardId: backend.wardId,
-      provinceCode: backend.provinceCode ?? undefined,
-      wardCode: backend.wardCode ?? undefined,
-      street: backend.street ?? undefined,
-      streetId: backend.streetId ?? undefined,
-      projectId: backend.projectId ?? undefined,
-      latitude: backend.latitude,
-      longitude: backend.longitude,
-    },
+    address: mapDraftAddress(backend.address),
     area: backend.area,
     bedrooms: backend.bedrooms,
     bathrooms: backend.bathrooms,
     direction: backend.direction,
     furnishing: backend.furnishing,
-    roomCapacity: backend.roomCapacity ?? undefined,
+    roomCapacity: backend.roomCapacity,
     utilities: {
       waterPrice: backend.waterPrice,
       electricityPrice: backend.electricityPrice,
       internetPrice: backend.internetPrice,
       serviceFee: backend.serviceFee,
     },
-    amenities,
-    media: {
-      ids: backend.mediaIds ?? undefined,
-    },
+    amenities: backend.amenities || [],
+    media: backend.media || [],
     createdAt: backend.createdAt,
     updatedAt: backend.updatedAt,
   }
@@ -172,7 +133,7 @@ export function mapDraftBackendToFrontend(
  * Map array of backend drafts to frontend format
  */
 export function mapDraftsArrayBackendToFrontend(
-  backend: DraftBackendItem[],
+  backend: DraftListingResponse[],
 ): DraftDetail[] {
   return backend.map(mapDraftBackendToFrontend)
 }

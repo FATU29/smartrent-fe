@@ -29,11 +29,13 @@ export * from './pagination.type'
 export * from './payment.type'
 export * from './phone-click-detail.type'
 export * from './push.type'
+export * from './report.type'
 export * from './user.type'
 export * from './verification.type'
 export * from './vip-tier.type'
 export * from './exchange-rate.type'
 export * from './address.type'
+export * from './saved-listing.type'
 
 export type {
   PropertyType,
@@ -70,6 +72,8 @@ export type {
   PriceStatistics,
   ProvinceStatsRequest,
   ProvinceStatsItem,
+  CategoryStatsRequest,
+  CategoryStatsItem,
   ListingFilterRequest,
   ListingSearchResponse,
   ListingSearchApiRequest,

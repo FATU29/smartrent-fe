@@ -268,7 +268,7 @@ export interface ListingNewAddress {
 
 export interface ListingAddress {
   legacy?: ListingLegacyAddress
-  new?: ListingNewAddress
+  newAddress?: ListingNewAddress
   latitude: number
   longitude: number
 }
@@ -395,6 +395,27 @@ export interface ProvinceStatsItem {
   provinceId: number | null
   provinceCode: string | null
   provinceName: string
+  totalListings: number
+  verifiedListings: number
+  vipListings: number
+}
+
+/**
+ * Category statistics request
+ */
+export interface CategoryStatsRequest {
+  categoryIds: number[]
+  verifiedOnly?: boolean
+}
+
+/**
+ * Category statistics response item
+ */
+export interface CategoryStatsItem {
+  categoryId: number
+  categoryName: string
+  categorySlug: string
+  categoryIcon: string
   totalListings: number
   verifiedListings: number
   vipListings: number
@@ -529,30 +550,92 @@ export interface ListingSearchBackendResponse {
 export interface MyListingBackendItem {
   listingId: number
   title: string
+  description?: string
   user: {
     userId: string
+    phoneCode?: string
+    phoneNumber?: string
     firstName?: string
     lastName?: string
     email?: string
     contactPhoneNumber?: string
     contactPhoneVerified?: boolean
   }
+  ownerContactPhoneNumber?: string | null
+  ownerContactPhoneVerified?: boolean | null
+  ownerZaloLink?: string | null
+  contactAvailable?: boolean | null
+  postDate?: string
+  expiryDate?: string
+  listingType?: listingType
   verified?: boolean
+  isVerify?: boolean
+  expired?: boolean
+  isDraft?: boolean
+  listingStatus?: PostStatus | null
   vipType?: VipType
+  categoryId?: number
+  productType?: string
+  price?: number
+  priceUnit?: PriceUnit
   postSource?: string
-  transactionId?: string
+  transactionId?: string | null
   media?: MediaItem[]
   address?: {
     addressId?: number
     fullAddress?: string
-    fullNewAddress?: string
+    fullNewAddress?: string | null
     latitude?: number
     longitude?: number
+    addressType?: string
+    legacyProvinceId?: number
+    legacyProvinceName?: string
+    legacyDistrictId?: number
+    legacyDistrictName?: string
+    legacyWardId?: number
+    legacyWardName?: string
+    legacyStreet?: string | null
+    newProvinceCode?: string | null
+    newProvinceName?: string | null
+    newWardCode?: string | null
+    newWardName?: string | null
+    newStreet?: string | null
+    streetId?: number | null
+    streetName?: string | null
+    projectId?: number | null
+    projectName?: string | null
   }
+  area?: number
+  bedrooms?: number
+  bathrooms?: number
+  direction?: Direction
+  furnishing?: Furnishing
+  roomCapacity?: number | null
+  waterPrice?: PriceType
+  electricityPrice?: PriceType
+  internetPrice?: PriceType
+  serviceFee?: PriceType
+  amenities?: Amenity[] | null
+  locationPricing?: LocationPricing | null
+  createdAt?: string
+  updatedAt?: string
+  isShadow?: boolean
+  parentListingId?: number | null
+  durationDays?: number
+  useMembershipQuota?: boolean
+  paymentProvider?: PaymentProvider | null
+  amountPaid?: number | null
+  paymentInfo?: string | null
   statistics?: {
     viewCount?: number
     contactCount?: number
+    saveCount?: number
+    reportCount?: number
+    lastViewedAt?: string | null
   }
+  verificationNotes?: string | null
+  rejectionReason?: string | null
+  rankOfVipType?: number
 }
 
 /**

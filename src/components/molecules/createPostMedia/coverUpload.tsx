@@ -11,6 +11,9 @@ import {
 import { ImagePlus, Trash2 } from 'lucide-react'
 import type { MediaItem } from '@/api/types/property.type'
 import { useCreatePost } from '@/contexts/createPost'
+import { toast } from 'sonner'
+
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
 
 interface CoverUploadProps {
   coverImage?: Partial<MediaItem>
@@ -19,18 +22,47 @@ interface CoverUploadProps {
 const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
   const t = useTranslations('createPost.sections.media.cover')
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const { addPendingImages, removePendingImage, pendingImages } =
+  const { addPendingImages, removePendingImage, removeMedia, pendingImages } =
     useCreatePost()
+
+  const validateImageFile = (file: File): boolean => {
+    // Validate file size (10MB)
+    if (file.size > MAX_IMAGE_SIZE) {
+      toast.error(
+        t('validation.imageSizeExceeded') ||
+          `Cover image size must not exceed 10MB. File size: ${(file.size / (1024 * 1024)).toFixed(2)}MB`,
+      )
+      return false
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(
+        t('validation.imageFormatInvalid') ||
+          'Cover image must be jpeg, png, or webp format',
+      )
+      return false
+    }
+
+    return true
+  }
 
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return
+
+    const file = files[0]
+
+    // Validate file before processing
+    if (!validateImageFile(file)) {
+      return
+    }
 
     const coverIndex = pendingImages.findIndex((img) => img.isCover)
     if (coverIndex !== -1) {
       removePendingImage(coverIndex, true)
     }
 
-    const file = files[0]
     const newPending = [
       {
         file,
@@ -39,12 +71,18 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
       },
     ]
     addPendingImages(newPending)
+
+    toast.success(t('uploaded.success') || 'Cover image added successfully')
   }
 
   const handleDeleteCover = () => {
     const coverIndex = pendingImages.findIndex((img) => img.isCover)
     if (coverIndex !== -1) {
+      // Remove pending cover
       removePendingImage(coverIndex, true)
+    } else if (coverImage?.mediaId) {
+      // Remove uploaded cover
+      removeMedia(coverImage.mediaId)
     }
   }
 

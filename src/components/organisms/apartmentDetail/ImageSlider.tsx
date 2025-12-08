@@ -41,15 +41,15 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
 
   if (sortedMedia.length === 0) {
     return (
-      <div className='group relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-gray-900 shadow-lg'>
+      <div className='relative w-full aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden bg-muted shadow-lg'>
         <ImageAtom
           src={DEFAULT_IMAGE}
           defaultImage={DEFAULT_IMAGE}
           alt={t('noMediaAvailable')}
-          className='w-full h-full object-cover object-center'
+          className='w-full h-full object-cover'
         />
-        <div className='absolute inset-0 bg-black/30 flex items-center justify-center'>
-          <span className='text-white text-sm font-medium bg-black/50 px-4 py-2 rounded-lg backdrop-blur-sm'>
+        <div className='absolute inset-0 bg-black/50 flex items-center justify-center'>
+          <span className='text-white text-sm md:text-base font-medium bg-black/70 px-5 py-2.5 rounded-lg backdrop-blur-sm'>
             {t('noMediaAvailable')}
           </span>
         </div>
@@ -60,15 +60,15 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
   const currentMedia = sortedMedia[currentIndex]
 
   return (
-    <div className='space-y-4'>
+    <div className='space-y-3 md:space-y-4'>
       {/* Main Media Display */}
-      <div className='relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-gray-900 shadow-lg'>
+      <div className='group relative w-full aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden bg-muted shadow-lg'>
         {currentMedia?.mediaType === 'IMAGE' ? (
           <ImageAtom
             src={currentMedia.url}
             defaultImage={DEFAULT_IMAGE}
             alt={`${t('image')} ${currentIndex + 1}`}
-            className='w-full h-full object-cover object-center'
+            className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105'
           />
         ) : currentMedia?.mediaType === 'VIDEO' ? (
           isYouTube(currentMedia.url) ? (
@@ -85,7 +85,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             <video
               src={currentMedia.url}
               controls
-              className='w-full h-full object-cover object-center rounded-none'
+              className='w-full h-full object-cover'
             />
           )
         ) : null}
@@ -96,41 +96,41 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             <Button
               variant='ghost'
               size='icon'
-              className='absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 backdrop-blur-sm rounded-full shadow-lg h-10 w-10 transition-all duration-200 z-10 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'
+              className='absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full shadow-lg h-10 w-10 md:h-11 md:w-11 transition-all z-10 opacity-0 group-hover:opacity-100 border border-gray-200/50'
               onClick={prevMedia}
             >
-              <ChevronLeft className='w-5 h-5' />
+              <ChevronLeft className='w-5 h-5 md:w-6 md:h-6 text-gray-900' />
             </Button>
             <Button
               variant='ghost'
               size='icon'
-              className='absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 backdrop-blur-sm rounded-full shadow-lg h-10 w-10 transition-all duration-200 z-10 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'
+              className='absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full shadow-lg h-10 w-10 md:h-11 md:w-11 transition-all z-10 opacity-0 group-hover:opacity-100 border border-gray-200/50'
               onClick={nextMedia}
             >
-              <ChevronRight className='w-5 h-5' />
+              <ChevronRight className='w-5 h-5 md:w-6 md:h-6 text-gray-900' />
             </Button>
           </>
         )}
 
         {/* Media Counter */}
         {sortedMedia.length > 1 && (
-          <div className='absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs sm:text-sm backdrop-blur-sm font-medium z-10 opacity-0 group-hover:opacity-100'>
-            {currentIndex + 1} {t('of')} {sortedMedia.length}
+          <div className='absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-black/75 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-xs md:text-sm backdrop-blur-md font-medium z-10'>
+            {currentIndex + 1} / {sortedMedia.length}
           </div>
         )}
 
-        {/* Media Type Badge */}
+        {/* Video Badge */}
         {currentMedia?.mediaType === 'VIDEO' && (
-          <div className='absolute top-4 left-4 bg-red-600 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 z-10'>
-            <Play className='w-3 h-3' fill='currentColor' />
+          <div className='absolute top-3 left-3 md:top-5 md:left-5 bg-red-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-xs md:text-sm font-semibold flex items-center gap-1.5 z-10'>
+            <Play className='w-3 h-3 md:w-4 md:h-4' fill='currentColor' />
             {t('video')}
           </div>
         )}
       </div>
 
-      {/* Thumbnail List */}
+      {/* Thumbnail Grid */}
       {sortedMedia.length > 1 && (
-        <div className='flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400'>
+        <div className='flex gap-2 md:gap-3 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400'>
           {sortedMedia.map((item, index) => {
             const isYouTubeVideo =
               item?.mediaType === 'VIDEO' && isYouTube(item?.url || '')
@@ -141,10 +141,10 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             return (
               <button
                 key={index}
-                className={`relative flex-shrink-0 w-20 h-16 sm:w-24 sm:h-18 md:w-28 md:h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                className={`relative flex-shrink-0 w-20 h-16 sm:w-24 sm:h-20 md:w-28 md:h-22 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                   index === currentIndex
-                    ? 'border-primary shadow-md ring-2 ring-primary/30'
-                    : 'border-gray-200 hover:border-primary/50 opacity-80 hover:opacity-100'
+                    ? 'border-primary shadow-md ring-2 ring-primary/20 scale-105'
+                    : 'border-gray-200 hover:border-primary/50 opacity-60 hover:opacity-100 hover:scale-105'
                 }`}
                 onClick={() => selectMedia(index)}
               >
@@ -152,13 +152,13 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
                   src={thumbnailSrc}
                   defaultImage={DEFAULT_IMAGE}
                   alt={`${item?.mediaType === 'VIDEO' ? t('video') : t('image')} ${index + 1}`}
-                  className='w-full h-full object-cover object-center'
+                  className='w-full h-full object-cover'
                 />
                 {item?.mediaType === 'VIDEO' && (
-                  <div className='absolute inset-0 bg-black/40 flex items-center justify-center'>
-                    <div className='bg-white/90 rounded-full p-1.5 sm:p-2'>
+                  <div className='absolute inset-0 bg-black/30 flex items-center justify-center'>
+                    <div className='bg-white/95 rounded-full p-1.5 md:p-2'>
                       <Play
-                        className='w-3 h-3 sm:w-4 sm:h-4 text-gray-900'
+                        className='w-3 h-3 md:w-4 md:h-4 text-gray-900'
                         fill='currentColor'
                       />
                     </div>

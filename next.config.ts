@@ -1,10 +1,14 @@
 import type { NextConfig } from 'next'
 
 const IMAGE_REMOTE_HOST = process.env.NEXT_PUBLIC_IMAGE_REMOTE_HOST
+const DELOY_ENV = process.env.NEXT_PUBLIC_DEPLOY_ENV || 'development'
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   basePath: '',
+  compiler: {
+    removeConsole: DELOY_ENV === 'production',
+  },
   images: {
     remotePatterns: IMAGE_REMOTE_HOST
       ? [

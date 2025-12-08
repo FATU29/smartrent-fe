@@ -10,6 +10,7 @@ export interface ListingDescriptionRequest {
   area?: number
   bedrooms?: number
   bathrooms?: number
+  roomCapacity?: number
   direction?: string
   furnishing?: string
   amenities?: string[]

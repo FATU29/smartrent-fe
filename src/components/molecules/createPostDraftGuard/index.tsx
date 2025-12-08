@@ -5,6 +5,7 @@ import { SaveDraftDialog } from '@/components/molecules/saveDraftDialog'
 import { useCreatePost } from '@/contexts/createPost'
 import { useAuth } from '@/hooks/useAuth'
 import { useCreateDraft } from '@/hooks/useListings/useCreateDraft'
+import { useUpdateDraft } from '@/hooks/useListings/useUpdateDraft'
 import { toast } from 'sonner'
 
 interface CreatePostDraftGuardProps {
@@ -18,9 +19,12 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
 }) => {
   const router = useRouter()
   const t = useTranslations('createPost.draftDialog')
-  const { propertyInfo, isSubmitSuccess } = useCreatePost()
+  const { propertyInfo, isSubmitSuccess, draftId } = useCreatePost()
   const { user } = useAuth()
-  const { mutate: createDraft, isPending: isDraftSaving } = useCreateDraft()
+  const { mutate: createDraft, isPending: isCreating } = useCreateDraft()
+  const { mutate: updateDraft, isPending: isUpdating } = useUpdateDraft()
+
+  const isDraftSaving = isCreating || isUpdating
 
   const [showDialog, setShowDialog] = useState(false)
 
@@ -32,6 +36,9 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   const hasUnsavedChanges = useCallback((): boolean => {
     // Don't block if submit was successful
     if (isSubmitSuccess) return false
+
+    // Don't block if editing existing draft (already saved)
+    if (draftId) return false
 
     if (!propertyInfo) return false
 
@@ -50,11 +57,10 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       return true
     })
 
-    // Don't block if no meaningful data has been entered
     if (!hasAnyData) return false
 
     return true
-  }, [propertyInfo, isSubmitSuccess])
+  }, [propertyInfo, isSubmitSuccess, draftId])
 
   useEffect(() => {
     shouldBlockRef.current = hasUnsavedChanges()
@@ -88,8 +94,8 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
 
     // Validate minimum required fields (new address type)
     const hasNewAddress =
-      propertyInfo.address?.new?.provinceCode &&
-      propertyInfo.address?.new?.wardCode
+      propertyInfo.address?.newAddress?.provinceCode &&
+      propertyInfo.address?.newAddress?.wardCode
 
     if (!hasNewAddress && !propertyInfo.address?.legacy) {
       toast.error(t('addressRequired'))
@@ -108,29 +114,37 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       isDraft: true,
     }
 
-    // Call API to create draft
-    createDraft(draftPayload, {
-      onSuccess: (response) => {
-        if (response.success && response.data) {
-          toast.success(t('draftSaved'))
-          // Navigate to the page user originally tried to go to
-          shouldBlockRef.current = false
-          isNavigatingRef.current = true
-          const targetUrl = pendingNavigationRef.current || '/seller/drafts'
-          router.push(targetUrl).then(() => {
-            isNavigatingRef.current = false
-            pendingNavigationRef.current = null
-          })
-        } else {
-          toast.error(response.message || t('saveFailed'))
-        }
-      },
-      onError: (error) => {
-        toast.error(t('saveFailed'))
-        console.error('Draft creation error:', error)
-      },
-    })
-  }, [propertyInfo, user?.userId, createDraft, t, router])
+    const onSuccess = (response: {
+      success: boolean
+      data?: unknown
+      message?: string | null
+    }) => {
+      if (response.success && response.data) {
+        toast.success(t('draftSaved'))
+        // Navigate to the page user originally tried to go to
+        shouldBlockRef.current = false
+        isNavigatingRef.current = true
+        const targetUrl = pendingNavigationRef.current || '/seller/drafts'
+        router.push(targetUrl).then(() => {
+          isNavigatingRef.current = false
+          pendingNavigationRef.current = null
+        })
+      } else {
+        toast.error(response.message || t('saveFailed'))
+      }
+    }
+
+    const onError = () => {
+      toast.error(t('saveFailed'))
+    }
+
+    // Update existing draft or create new one
+    if (draftId) {
+      updateDraft({ draftId, data: draftPayload }, { onSuccess, onError })
+    } else {
+      createDraft(draftPayload, { onSuccess, onError })
+    }
+  }, [propertyInfo, user?.userId, draftId, createDraft, updateDraft, t, router])
 
   // Cancel dialog and navigate to the pending URL (user wants to leave)
   const handleCancel = useCallback(() => {

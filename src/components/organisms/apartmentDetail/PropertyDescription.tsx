@@ -21,17 +21,17 @@ const PropertyDescription: React.FC<PropertyDescriptionProps> = ({
   const lines = description.split('\n').filter((line) => line.trim())
 
   return (
-    <div className='space-y-4'>
-      <Typography variant='h3' className='text-xl font-bold'>
+    <div className='space-y-5'>
+      <Typography variant='h3' className='text-xl md:text-2xl font-bold'>
         {title || t('sections.description')}
       </Typography>
 
-      <div className='space-y-2'>
+      <div className='bg-card border border-border rounded-xl p-5 md:p-6 space-y-3'>
         {lines.map((line, index) => (
           <Typography
             key={index}
             variant='p'
-            className='text-muted-foreground leading-relaxed'
+            className='text-foreground/90 leading-relaxed text-sm md:text-base'
           >
             {line}
           </Typography>

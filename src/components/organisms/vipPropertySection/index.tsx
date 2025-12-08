@@ -1,11 +1,19 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import PropertyCard from '@/components/molecules/propertyCard'
-import Carousel from '@/components/atoms/carousel'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  type CarouselApi,
+} from '@/components/atoms/carousel'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { ListingDetail, VipType } from '@/api/types'
 import { useRouter } from 'next/router'
-import { Crown, Sparkles, Award } from 'lucide-react'
+import { Crown, Sparkles, Medal, Star } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface VipPropertySectionProps {
   vipType: VipType
@@ -31,7 +39,7 @@ const VIP_CONFIG = {
     titleKey: 'homePage.vipSections.gold',
   },
   SILVER: {
-    icon: Award,
+    icon: Medal,
     gradient: 'from-gray-400 to-gray-600',
     bgGradient:
       'from-gray-50 to-slate-50 dark:from-gray-950/20 dark:to-slate-950/20',
@@ -39,11 +47,11 @@ const VIP_CONFIG = {
     titleKey: 'homePage.vipSections.silver',
   },
   NORMAL: {
-    icon: Award,
-    gradient: 'from-gray-400 to-gray-600',
+    icon: Star,
+    gradient: 'from-slate-400 to-slate-600',
     bgGradient:
-      'from-gray-50 to-slate-50 dark:from-gray-950/20 dark:to-slate-950/20',
-    textColor: 'text-gray-600 dark:text-gray-400',
+      'from-slate-50 to-slate-100 dark:from-slate-950/20 dark:to-slate-900/20',
+    textColor: 'text-slate-600 dark:text-slate-400',
     titleKey: 'homePage.vipSections.normal',
   },
 }
@@ -55,8 +63,26 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
 }) => {
   const t = useTranslations()
   const router = useRouter()
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(0)
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
   const config = VIP_CONFIG[vipType]
   const Icon = config.icon
+
+  React.useEffect(() => {
+    if (!api) return
+
+    setScrollSnaps(api.scrollSnapList())
+    setCurrent(api.selectedScrollSnap())
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+
+    api.on('reInit', () => {
+      setScrollSnaps(api.scrollSnapList())
+    })
+  }, [api])
 
   const handleFavorite = () => {}
 
@@ -65,6 +91,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
   }
 
   if (isLoading) {
+    const skeletonItems = Array.from({ length: 4 })
     return (
       <section className='mb-8 sm:mb-10'>
         <div className='flex items-center gap-3 mb-4 sm:mb-5'>
@@ -77,24 +104,49 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
             {t(config.titleKey)}
           </h2>
         </div>
-        <Carousel.Root className='group' options={{ align: 'start' }} loop>
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Carousel.Item
-              key={index}
-              className='flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] xl:flex-[0_0_25%] px-2'
-            >
-              <div className='w-full space-y-2 md:space-y-3'>
-                <Skeleton className='aspect-[4/3] rounded-lg w-full' />
-                <div className='p-3 md:p-4 space-y-2 md:space-y-3'>
-                  <Skeleton className='h-3 w-3/4 md:h-4' />
-                  <Skeleton className='h-2.5 w-1/2 md:h-3' />
-                  <Skeleton className='h-4 w-1/3 md:h-6' />
+        <Carousel
+          className='group'
+          opts={{ align: 'start', loop: true }}
+          setApi={setApi}
+        >
+          <CarouselContent>
+            {skeletonItems.map((_, index) => (
+              <CarouselItem
+                key={index}
+                className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'
+              >
+                <div className='w-full space-y-2 md:space-y-3'>
+                  <Skeleton className='aspect-[4/3] rounded-lg w-full' />
+                  <div className='p-3 md:p-4 space-y-2 md:space-y-3'>
+                    <Skeleton className='h-3 w-3/4 md:h-4' />
+                    <Skeleton className='h-2.5 w-1/2 md:h-3' />
+                    <Skeleton className='h-4 w-1/3 md:h-6' />
+                  </div>
                 </div>
-              </div>
-            </Carousel.Item>
-          ))}
-          <Carousel.Indicators className='mt-4' />
-        </Carousel.Root>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className='hidden sm:flex -left-12' />
+          <CarouselNext className='hidden sm:flex -right-12' />
+
+          {/* Indicators - only show on mobile/tablet */}
+          <div className='flex xl:hidden justify-center gap-2 mt-4'>
+            {scrollSnaps.map((_, index) => (
+              <button
+                key={index}
+                type='button'
+                onClick={() => api?.scrollTo(index)}
+                className={cn(
+                  'h-2 rounded-full transition-all',
+                  current === index
+                    ? 'w-8 bg-primary'
+                    : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50',
+                )}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </Carousel>
       </section>
     )
   }
@@ -117,21 +169,46 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
         </span>
       </div>
 
-      <Carousel.Root className='group' options={{ align: 'start' }} loop>
-        {listings.map((listing) => (
-          <Carousel.Item
-            key={listing.listingId}
-            className='flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] xl:flex-[0_0_25%] px-2'
-          >
-            <PropertyCard
-              listing={listing}
-              onFavorite={handleFavorite}
-              onClick={() => handleOnClick(listing)}
+      <Carousel
+        className='group'
+        opts={{ align: 'start', loop: true }}
+        setApi={setApi}
+      >
+        <CarouselContent>
+          {listings.map((listing) => (
+            <CarouselItem
+              key={listing.listingId}
+              className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'
+            >
+              <PropertyCard
+                listing={listing}
+                onFavorite={handleFavorite}
+                onClick={() => handleOnClick(listing)}
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className='hidden sm:flex -left-12' />
+        <CarouselNext className='hidden sm:flex -right-12' />
+
+        {/* Indicators - only show on mobile/tablet */}
+        <div className='flex xl:hidden justify-center gap-2 mt-4'>
+          {scrollSnaps.map((_, index) => (
+            <button
+              key={index}
+              type='button'
+              onClick={() => api?.scrollTo(index)}
+              className={cn(
+                'h-2 rounded-full transition-all',
+                current === index
+                  ? 'w-8 bg-primary'
+                  : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50',
+              )}
+              aria-label={`Go to slide ${index + 1}`}
             />
-          </Carousel.Item>
-        ))}
-        <Carousel.Indicators className='mt-4' />
-      </Carousel.Root>
+          ))}
+        </div>
+      </Carousel>
     </section>
   )
 }

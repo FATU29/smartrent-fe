@@ -207,6 +207,7 @@
   body {
     @apply bg-background text-foreground;
     font-family:
+      var(--font-inter),
       var(--font-sans),
       -apple-system,
       BlinkMacSystemFont,
@@ -220,6 +221,7 @@
       'calt' 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
   }
 
   h1,
@@ -227,14 +229,16 @@
   h3,
   .font-heading {
     font-family:
+      var(--font-inter),
       var(--font-heading),
       -apple-system,
       BlinkMacSystemFont,
       'SF Pro Display',
       system-ui,
       sans-serif;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   html {
@@ -302,5 +306,49 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     line-clamp: 3;
+  }
+
+  /* Scrollbar hide utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Custom Scrollbar Styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 9999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(107, 114, 128, 0.7);
+  }
+
+  /* Webkit overflow scrolling for smooth iOS scroll */
+  .webkit-overflow-scrolling-touch {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Safe area for mobile notch */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }

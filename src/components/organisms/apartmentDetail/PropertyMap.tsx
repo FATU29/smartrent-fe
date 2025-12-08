@@ -60,27 +60,31 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ location, address }) => {
   }
 
   return (
-    <div className='space-y-4'>
-      <div className='flex items-center justify-between'>
-        <Typography variant='h3' className='text-xl font-bold'>
+    <div className='space-y-5'>
+      <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+        <Typography variant='h3' className='text-xl md:text-2xl font-bold'>
           {t('sections.location')}
         </Typography>
         <Button
           variant='outline'
           size='sm'
           onClick={() => window.open(googleMapsUrl, '_blank')}
-          className='flex items-center gap-2'
+          className='flex items-center gap-2 w-full sm:w-auto font-medium'
         >
           <ExternalLink className='w-4 h-4' />
           {t('map.openInGoogleMaps')}
         </Button>
       </div>
 
-      {address && <div className='space-y-2'>{address}</div>}
+      {address && (
+        <div className='bg-muted/40 p-4 rounded-xl border border-border'>
+          {address}
+        </div>
+      )}
 
       {/* Interactive Google Map */}
-      <Card>
-        <CardContent className='relative w-full aspect-[16/9] p-0 overflow-hidden rounded-lg'>
+      <Card className='overflow-hidden shadow-md hover:shadow-lg transition-shadow'>
+        <CardContent className='relative w-full aspect-[16/9] p-0'>
           <GoogleMapReact
             bootstrapURLKeys={apiKey ? { key: apiKey } : undefined}
             defaultCenter={defaultCenter}

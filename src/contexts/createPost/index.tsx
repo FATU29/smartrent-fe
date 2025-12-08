@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useEffect,
 } from 'react'
+import { useRouter } from 'next/router'
 import { useNewProvinces, useNewWards } from '@/hooks/useAddress'
 import { MediaService } from '@/api/services'
 import {
@@ -13,6 +14,8 @@ import {
   MediaItem,
   LISTING_TYPE,
 } from '@/api/types/property.type'
+import { useGetDraft } from '@/hooks/useListings/useGetDraft'
+import type { DraftListingResponse } from '@/api/types/draft.type'
 
 // Context Type
 interface VideoUploadProgressState {
@@ -60,6 +63,7 @@ interface CreatePostContextType {
   updateFulltextAddress: (updates: Partial<FulltextAddress>) => void
   resetFulltextAddress: () => void
   updateMedia: (updates: Partial<MediaItem>) => void
+  removeMedia: (mediaId: number) => void
   resetMedia: () => void
   videoUploadProgress: VideoUploadProgressState
   startVideoUpload: (fileName?: string) => void
@@ -78,6 +82,10 @@ interface CreatePostContextType {
   uploadPendingImages: () => Promise<Array<Partial<MediaItem>>>
   isSubmitSuccess: boolean
   setIsSubmitSuccess: (value: boolean) => void
+  // Draft editing
+  draftId: string | null
+  isDraftLoading: boolean
+  loadDraftIntoForm: (draft: DraftListingResponse) => void
 }
 
 const CreatePostContext = createContext<CreatePostContextType | undefined>(
@@ -91,6 +99,9 @@ interface CreatePostProviderProps {
 export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   children,
 }) => {
+  const router = useRouter()
+  const draftIdFromQuery = router.query.draftId as string | undefined
+
   const [propertyInfo, setPropertyInfo] = useState<
     Partial<CreateListingRequest>
   >({
@@ -99,11 +110,16 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   const [fulltextAddress, setFulltextAddress] = useState<FulltextAddress>({})
   const [media, setMedia] = useState<Partial<MediaItem>[]>([])
 
+  // Draft loading
+  const { data: draftData, isLoading: isDraftLoading } = useGetDraft(
+    draftIdFromQuery || null,
+  )
+
   const { data: newProvinces = [] } = useNewProvinces()
   const provinceCodeForWards =
     fulltextAddress?.newProvinceCode ||
-    (propertyInfo?.address?.new?.provinceCode
-      ? String(propertyInfo.address.new.provinceCode)
+    (propertyInfo?.address?.newAddress?.provinceCode
+      ? String(propertyInfo.address.newAddress.provinceCode)
       : undefined)
   const { data: newWards = [] } = useNewWards(provinceCodeForWards)
 
@@ -129,6 +145,153 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
 
   const [isSubmitSuccess, setIsSubmitSuccess] = useState<boolean>(false)
 
+  // Function to load draft data into form
+  const loadDraftIntoForm = (draft: DraftListingResponse) => {
+    console.log('🔄 Loading draft into form:', draft)
+
+    // Extract amenity IDs from amenities array
+    const amenityIds = draft.amenities?.map((a) => a.amenityId) || []
+
+    // Extract media IDs from media array
+    const mediaIds = draft.media?.map((m) => m.mediaId) || []
+
+    // Map backend draft to CreateListingRequest format
+    const mappedPropertyInfo: Partial<CreateListingRequest> = {
+      title: draft.title,
+      description: draft.description,
+      listingType: draft.listingType as CreateListingRequest['listingType'],
+      vipType: draft.vipType ?? undefined,
+      categoryId: draft.categoryId,
+      productType: draft.productType as CreateListingRequest['productType'],
+      price: draft.price,
+      priceUnit: draft.priceUnit as CreateListingRequest['priceUnit'],
+      area: draft.area,
+      bedrooms: draft.bedrooms,
+      bathrooms: draft.bathrooms,
+      direction: draft.direction as CreateListingRequest['direction'],
+      furnishing: draft.furnishing as CreateListingRequest['furnishing'],
+      roomCapacity: draft.roomCapacity ?? undefined,
+      waterPrice: draft.waterPrice as CreateListingRequest['waterPrice'],
+      electricityPrice:
+        draft.electricityPrice as CreateListingRequest['electricityPrice'],
+      internetPrice:
+        draft.internetPrice as CreateListingRequest['internetPrice'],
+      serviceFee: draft.serviceFee as CreateListingRequest['serviceFee'],
+      amenityIds: amenityIds,
+      mediaIds: mediaIds,
+    }
+
+    // Prepare fulltext address update - explicitly reset all fields
+    const fulltextAddressUpdate: FulltextAddress = {
+      newProvinceCode: '',
+      newWardCode: '',
+      legacyAddressId: '',
+      legacyAddressText: '',
+      propertyAddressEdited: false,
+    }
+
+    // Map address based on addressType from the nested address object
+    const addr = draft.address
+
+    if (
+      addr.addressType === 'NEW' &&
+      addr.newProvinceCode &&
+      addr.newWardCode
+    ) {
+      mappedPropertyInfo.address = {
+        newAddress: {
+          provinceCode: addr.newProvinceCode,
+          wardCode: addr.newWardCode,
+          street: addr.newStreet || undefined,
+        },
+        latitude: addr.latitude ?? 0,
+        longitude: addr.longitude ?? 0,
+      }
+
+      // Set fulltext address for NEW type
+      fulltextAddressUpdate.newProvinceCode = addr.newProvinceCode
+      fulltextAddressUpdate.newWardCode = addr.newWardCode
+      fulltextAddressUpdate.legacyAddressId = ''
+      fulltextAddressUpdate.legacyAddressText = ''
+
+      console.log(
+        '📍 NEW address - Province:',
+        addr.newProvinceCode,
+        'Ward:',
+        addr.newWardCode,
+        'Street:',
+        addr.newStreet,
+      )
+    } else if (
+      addr.addressType === 'OLD' &&
+      addr.legacyProvinceId &&
+      addr.legacyDistrictId &&
+      addr.legacyWardId
+    ) {
+      mappedPropertyInfo.address = {
+        legacy: {
+          provinceId: addr.legacyProvinceId,
+          districtId: addr.legacyDistrictId,
+          wardId: addr.legacyWardId,
+          street: addr.legacyStreet || undefined,
+        },
+        latitude: addr.latitude ?? 0,
+        longitude: addr.longitude ?? 0,
+      }
+
+      // For OLD type, clear NEW type fields
+      fulltextAddressUpdate.newProvinceCode = ''
+      fulltextAddressUpdate.newWardCode = ''
+
+      console.log(
+        '📍 OLD/LEGACY address - Province:',
+        addr.legacyProvinceId,
+        'District:',
+        addr.legacyDistrictId,
+        'Ward:',
+        addr.legacyWardId,
+      )
+    }
+
+    console.log('✅ Mapped property info:', mappedPropertyInfo)
+    console.log('✅ Fulltext address update:', fulltextAddressUpdate)
+
+    // IMPORTANT: Replace fulltextAddress entirely, don't merge with previous state
+    setFulltextAddress(fulltextAddressUpdate)
+    setPropertyInfo(mappedPropertyInfo)
+
+    // Load media - now we have full media objects, not just IDs
+    if (draft.media && draft.media.length > 0) {
+      console.log('📷 Loading media from draft:', draft.media.length, 'items')
+
+      // Map from backend MediaItem to context MediaItem format
+      const mediaItems: MediaItem[] = draft.media.map((m) => ({
+        mediaId: m.mediaId,
+        listingId: m.listingId,
+        mediaType: m.mediaType as MediaItem['mediaType'],
+        sourceType: m.sourceType,
+        url: m.url,
+        isPrimary: m.isPrimary,
+        sortOrder: m.sortOrder,
+        status: m.status as MediaItem['status'],
+        createdAt: m.createdAt,
+      }))
+
+      setMedia(mediaItems)
+      console.log('✅ Loaded', mediaItems.length, 'media items')
+    } else {
+      console.log('📷 No media in draft, clearing media')
+      setMedia([])
+    }
+  }
+
+  useEffect(() => {
+    if (draftData?.success && draftData.data) {
+      console.log('🎯 Draft data received, loading into form...')
+      loadDraftIntoForm(draftData.data)
+    }
+  }, [draftData])
+
   const updatePropertyInfo = (updates: Partial<CreateListingRequest>) => {
     setPropertyInfo((prev) => ({ ...prev, ...updates }))
   }
@@ -152,6 +315,10 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       }
       return [...prev, updates]
     })
+  }
+
+  const removeMedia = (mediaId: number) => {
+    setMedia((prev) => prev.filter((m) => m.mediaId !== mediaId))
   }
 
   const resetMedia = () => {
@@ -290,30 +457,30 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
 
   const composedNewAddress = useMemo(() => {
     const parts: string[] = []
-    const street = propertyInfo?.address?.new?.street?.trim()
+    const street = propertyInfo?.address?.newAddress?.street?.trim()
     if (street) parts.push(street)
 
     const wardCode =
       fulltextAddress?.newWardCode ||
-      (propertyInfo?.address?.new?.wardCode
-        ? String(propertyInfo.address.new.wardCode)
+      (propertyInfo?.address?.newAddress?.wardCode
+        ? String(propertyInfo.address.newAddress.wardCode)
         : undefined)
     const ward = newWards.find((w) => w.code === wardCode)
     if (ward?.name) parts.push(ward.name)
 
     const provinceCode =
       fulltextAddress?.newProvinceCode ||
-      (propertyInfo?.address?.new?.provinceCode
-        ? String(propertyInfo.address.new.provinceCode)
+      (propertyInfo?.address?.newAddress?.provinceCode
+        ? String(propertyInfo.address.newAddress.provinceCode)
         : undefined)
     const province = newProvinces.find((p) => p.id === provinceCode)
     if (province?.name) parts.push(province.name)
 
     return parts.join(', ')
   }, [
-    propertyInfo?.address?.new?.street,
-    propertyInfo?.address?.new?.wardCode,
-    propertyInfo?.address?.new?.provinceCode,
+    propertyInfo?.address?.newAddress?.street,
+    propertyInfo?.address?.newAddress?.wardCode,
+    propertyInfo?.address?.newAddress?.provinceCode,
     fulltextAddress?.newWardCode,
     fulltextAddress?.newProvinceCode,
     newWards,
@@ -323,12 +490,12 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
   const legacyAddressText = fulltextAddress?.legacyAddressText || ''
   const composedLegacyAddress = useMemo(() => {
     if (!legacyAddressText) return ''
-    const street = propertyInfo?.address?.new?.street?.trim()
+    const street = propertyInfo?.address?.newAddress?.street?.trim()
     if (street) {
       return `${street}, ${legacyAddressText}`
     }
     return legacyAddressText
-  }, [propertyInfo?.address?.new?.street, legacyAddressText])
+  }, [propertyInfo?.address?.newAddress?.street, legacyAddressText])
 
   useEffect(() => {
     if (fulltextAddress?.propertyAddressEdited) return
@@ -381,6 +548,7 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       updateFulltextAddress,
       resetFulltextAddress,
       updateMedia,
+      removeMedia,
       resetMedia,
       videoUploadProgress,
       startVideoUpload,
@@ -399,6 +567,10 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       uploadPendingImages,
       isSubmitSuccess,
       setIsSubmitSuccess,
+      // Draft editing
+      draftId: draftIdFromQuery || null,
+      isDraftLoading,
+      loadDraftIntoForm,
     }),
     [
       propertyInfo,
@@ -410,6 +582,8 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       imagesUploadProgress,
       pendingImagesState,
       isSubmitSuccess,
+      draftIdFromQuery,
+      isDraftLoading,
     ],
   )
 

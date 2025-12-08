@@ -6,11 +6,7 @@ import DetailPostTemplate from '@/components/templates/detailPostTemplate'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import type { ListingDetail } from '@/api/types'
 import { ListingService } from '@/api/services'
-import {
-  mockListingDetail,
-  mockRecentlyViewed,
-  mockSimilarProperties,
-} from '@/mock'
+import { mockListingDetail, mockSimilarProperties } from '@/mock'
 import { PUBLIC_ROUTES } from '@/constants'
 
 // Auth dialog handled globally by AuthDialogProvider
@@ -18,7 +14,6 @@ import { PUBLIC_ROUTES } from '@/constants'
 interface ListingDetailProps {
   listing?: ListingDetail
   similarProperties?: ListingDetail[]
-  recentlyViewed?: ListingDetail[]
   onExport?: () => void
   onCall?: () => void
   onChatZalo?: () => void
@@ -31,7 +26,6 @@ const ListingDetail: NextPageWithLayout<ListingDetailProps> = (props) => {
   const {
     listing,
     similarProperties,
-    recentlyViewed,
     onExport,
     onCall,
     onChatZalo,
@@ -41,7 +35,6 @@ const ListingDetail: NextPageWithLayout<ListingDetailProps> = (props) => {
 
   const listingData = listing || mockListingDetail
   const similarPropertiesData = similarProperties || mockSimilarProperties
-  const recentlyViewedData = recentlyViewed || mockRecentlyViewed
 
   const { title, description, media } = listingData || {}
   const images =
@@ -82,7 +75,6 @@ const ListingDetail: NextPageWithLayout<ListingDetailProps> = (props) => {
       <DetailPostTemplate
         listing={listingData}
         similarProperties={similarPropertiesData}
-        recentlyViewed={recentlyViewedData}
         onExport={onExport}
         onCall={handleCall}
         onChatZalo={handleChatZalo}

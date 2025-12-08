@@ -53,6 +53,9 @@
     "email": "Email",
     "contactInformation": "Thông tin liên hệ",
     "notAvailable": "Chưa có",
+    "actions": {
+      "back": "Quay lại"
+    },
     "coordinates": "Tọa độ",
     "error": "Lỗi vị trí",
     "enableTooltip": "Nhấp để bật theo dõi vị trí",
@@ -93,7 +96,38 @@
       "4": "Văn phòng",
       "5": "Mặt bằng/Cửa hàng"
     },
-    "checking": "Đang kiểm tra"
+    "checking": "Đang kiểm tra",
+    "copied": "Đã sao chép liên kết!",
+    "report": "Báo cáo",
+    "reportSubmitted": "Báo cáo đã được gửi thành công",
+    "reportDescription": "Giúp chúng tôi cải thiện bằng cách báo cáo các vấn đề với tin đăng này",
+    "reportCategory": {
+      "listing": "Vấn đề về Tin Đăng",
+      "map": "Vấn đề về Bản Đồ"
+    },
+    "selectReason": "Vui lòng chọn ít nhất một lý do",
+    "reportError": "Không thể gửi báo cáo",
+    "additionalDetails": "Thông Tin Bổ Sung (Tùy chọn)",
+    "reportPlaceholder": "Cung cấp thêm chi tiết về vấn đề...",
+    "cancel": "Hủy",
+    "submit": "Gửi",
+    "submitting": "Đang gửi..."
+  },
+  "report": {
+    "submit": "Gửi Báo Cáo",
+    "submitting": "Đang gửi...",
+    "submitSuccess": "Báo cáo đã được gửi thành công",
+    "submitError": "Gửi báo cáo thất bại",
+    "otherFeedback": "Phản hồi khác (Tùy chọn)",
+    "otherFeedbackPlaceholder": "Nhập thêm chi tiết về vấn đề...",
+    "reporterInfo": "Thông tin người báo cáo",
+    "reporterName": "Họ và tên",
+    "reporterPhone": "Số điện thoại",
+    "reporterEmail": "Địa chỉ email",
+    "invalidPhone": "Số điện thoại không hợp lệ",
+    "invalidEmail": "Email không hợp lệ",
+    "emailRequired": "Email là bắt buộc",
+    "autoFilled": "Tự động điền"
   },
   "location": {
     "label": "Vị trí của bạn",
@@ -427,7 +461,9 @@
         "newPasswordRequired": "Mật khẩu mới là bắt buộc",
         "newPasswordMinLength": "Mật khẩu mới phải có ít nhất 8 ký tự",
         "newPasswordLowercase": "Mật khẩu cần có ít nhất 1 ký tự viết thường",
-        "newPasswordNumber": "Mật khẩu cần có ít nhất 1 ký tự số"
+        "newPasswordNumber": "Mật khẩu cần có ít nhất 1 ký tự số",
+        "avatarSizeExceeded": "Kích thước ảnh đại diện không được vượt quá {maxSize}MB",
+        "avatarFormatInvalid": "Ảnh đại diện phải có định dạng jpeg, png, hoặc webp"
       },
       "oauth": {
         "processing_login": "Đang xử lý đăng nhập...",
@@ -531,6 +567,7 @@
           "taxNumber": "Mã số ĐVQHNS",
           "address": "Địa chỉ",
           "avatarUpload": "Tải ảnh",
+          "avatarRequirements": "Tối đa {maxSize}MB • JPEG, PNG, WebP",
           "saveChanges": "Lưu thay đổi",
           "saving": "Đang lưu...",
           "updateSuccess": "Cập nhật thông tin cá nhân thành công!",
@@ -607,8 +644,11 @@
       }
     },
     "topInterest": {
-      "title": "Dẫn đầu",
-      "viewAll": "Xem tất cả"
+      "title": "Bất động sản theo danh mục",
+      "viewAll": "Xem tất cả",
+      "listingsSuffix": "tin đăng",
+      "noCategories": "Không có danh mục nào",
+      "noCategoriesDescription": "Hiện tại chưa có danh mục bất động sản nào. Vui lòng quay lại sau."
     },
     "searchIntro": {
       "title": "Tìm căn phù hợp nhanh chóng",
@@ -770,10 +810,16 @@
       "bedroomsMinimum": "Số phòng ngủ phải ít nhất là 1",
       "bathroomsRequired": "Số phòng tắm là bắt buộc",
       "bathroomsMinimum": "Số phòng tắm phải ít nhất là 1",
+      "roomCapacityRequired": "Số người ở là bắt buộc",
+      "roomCapacityMinimum": "Số người ở phải ít nhất là 1",
       "directionRequired": "Hướng nhà là bắt buộc",
       "directionInvalid": "Hướng nhà không hợp lệ",
       "moveInDateRequired": "Ngày chuyển vào là bắt buộc",
-      "videoUploadInProgress": "Vui lòng đợi video tải lên hoàn tất trước khi tiếp tục"
+      "videoUploadInProgress": "Vui lòng đợi video tải lên hoàn tất trước khi tiếp tục",
+      "imageSizeExceeded": "Kích thước ảnh không được vượt quá 10MB",
+      "imageFormatInvalid": "Ảnh phải có định dạng jpeg, png, hoặc webp",
+      "imagesLimitReached": "Tối đa 24 ảnh",
+      "coverImageRequired": "Ảnh bìa (chính) là bắt buộc"
     },
     "generateAutomatically": "Tạo tự động",
     "continueToUpload": "Tiếp tục tải lên",
@@ -928,7 +974,8 @@
           "cover": "Ảnh bìa",
           "setCover": "Đặt làm bìa",
           "remove": "Xóa",
-          "success": "Đã tải lên thành công"
+          "success": "Đã tải lên thành công",
+          "added": "Đã thêm {count} ảnh thành công"
         },
         "uploadButton": "Tải phương tiện",
         "upload": {
@@ -1054,6 +1101,7 @@
         "price": "Giá",
         "bedrooms": "Phòng ngủ",
         "bathrooms": "Phòng tắm",
+        "roomCapacity": "Số người ở",
         "propertyAddress": "Địa chỉ Bất động sản",
         "addressPlaceholder": "Nhập địa chỉ bất động sản...",
         "addressHint": "Vui lòng nhập địa chỉ chính xác để khách hàng dễ tìm",
@@ -1236,6 +1284,7 @@
         "description": "Thêm thông tin chi tiết về bất động sản",
         "bedrooms": "Phòng ngủ",
         "bathrooms": "Phòng tắm",
+        "roomCapacity": "Số người ở",
         "floors": "Tầng",
         "yearBuilt": "Năm xây dựng",
         "legalStatus": "Tình trạng pháp lý",
@@ -1538,6 +1587,7 @@
   "navigation": {
     "home": "Trang chủ",
     "properties": "Bất động sản",
+    "savedListings": "Tin đã lưu",
     "about": "Giới thiệu",
     "contact": "Liên hệ",
     "login": "Đăng nhập",
@@ -1959,6 +2009,17 @@
         "postedDate": "Ngày đăng",
         "expiryDate": "Ngày hết hạn",
         "postDate": "Ngày đăng",
+        "price": "Giá",
+        "area": "Diện tích",
+        "bedrooms": "Phòng ngủ",
+        "bathrooms": "Phòng tắm",
+        "views": "Lượt xem",
+        "contacts": "Liên hệ",
+        "customers": "Khách hàng",
+        "status": {
+          "active": "Đang hoạt động",
+          "expired": "Hết hạn"
+        },
         "common": {
           "notAvailable": "Không có"
         },
@@ -2016,7 +2077,11 @@
         "createdAt": "Tạo lúc",
         "bedrooms": "phòng ngủ",
         "bathrooms": "phòng tắm",
-        "edit": "Chỉnh sửa"
+        "edit": "Chỉnh sửa",
+        "noImage": "Chưa có hình ảnh",
+        "draft": "Nháp",
+        "price": "Giá",
+        "area": "Diện tích"
       },
       "delete": {
         "confirmTitle": "Xóa bản nháp",
@@ -2029,13 +2094,56 @@
     },
     "customers": {
       "title": "Quản lý khách hàng",
-      "subtitle": "Theo dõi và quản lý tương tác khách hàng với tin đăng của bạn",
+      "subtitle": "Theo dõi và quản lý khách hàng quan tâm đến tin đăng của bạn",
       "unviewed": "Chưa xem",
       "total": "Tổng",
-      "searchPlaceholder": "Tìm kiếm khách hàng, tin đăng...",
+      "searchPlaceholder": "Tìm kiếm theo tên khách hàng hoặc email...",
       "tabs": {
         "customers": "Khách hàng",
         "listings": "Tin đăng"
+      },
+      "table": {
+        "customer": "Khách hàng",
+        "email": "Email",
+        "phone": "Số điện thoại",
+        "verified": "Đã xác thực",
+        "notVerified": "Chưa xác thực",
+        "totalClicks": "Tổng số nhấn",
+        "clickedListings": "Tin đã xem",
+        "lastClicked": "Lần cuối",
+        "actions": "Hành động",
+        "viewDetails": "Xem chi tiết",
+        "copyPhone": "Sao chép SĐT",
+        "copyEmail": "Sao chép Email"
+      },
+      "stats": {
+        "totalCustomers": "Tổng khách hàng",
+        "totalClicks": "Tổng nhấn xem SĐT",
+        "uniqueUsers": "Người dùng duy nhất",
+        "thisMonth": "Tháng này"
+      },
+      "listingCard": {
+        "clicks": "lượt nhấn",
+        "users": "người quan tâm",
+        "lastClick": "Lần cuối",
+        "viewCustomers": "Xem khách hàng"
+      },
+      "customerDetail": {
+        "title": "Chi tiết khách hàng",
+        "contactInfo": "Thông tin liên hệ",
+        "clickHistory": "Lịch sử xem số điện thoại",
+        "totalListingsViewed": "Tổng tin đã xem",
+        "clickedAt": "Đã xem vào",
+        "viewListing": "Xem tin đăng"
+      },
+      "pagination": {
+        "previous": "Trước",
+        "next": "Sau",
+        "page": "Trang",
+        "of": "của",
+        "showing": "Hiển thị",
+        "to": "đến",
+        "results": "kết quả"
       },
       "selectToView": "Chọn một mục để xem chi tiết",
       "totalInteractions": "Tổng tương tác",
@@ -2049,13 +2157,47 @@
       "emptyState": {
         "customers": {
           "title": "Chưa có khách hàng",
-          "description": "Khi khách hàng nhấn 'Hiện số' hoặc 'Chat qua Zalo' trên tin đăng của bạn, họ sẽ xuất hiện tại đây."
+          "description": "Khi khách hàng nhấn 'Hiện số' trên tin đăng của bạn, họ sẽ xuất hiện tại đây."
         },
         "listings": {
           "title": "Chưa có tin đăng với tương tác",
           "description": "Các tin đăng có tương tác của khách hàng sẽ xuất hiện tại đây."
+        },
+        "search": {
+          "title": "Không tìm thấy kết quả",
+          "description": "Hãy thử từ khóa khác hoặc xóa bộ lọc"
         }
-      }
+      },
+      "dialog": {
+        "customerDetail": {
+          "title": "Chi tiết khách hàng",
+          "contactInfo": "Thông tin liên hệ",
+          "clickHistory": "Lịch sử xem số điện thoại",
+          "statistics": "Thống kê",
+          "totalListings": "Tổng tin đã xem",
+          "firstClick": "Lần đầu xem",
+          "lastClick": "Lần cuối xem",
+          "clickedOn": "Đã xem vào",
+          "times": "lần",
+          "viewListing": "Xem tin đăng",
+          "close": "Đóng"
+        },
+        "listingDetail": {
+          "title": "Chi tiết tin đăng",
+          "interestedUsers": "Khách hàng quan tâm",
+          "statistics": "Thống kê",
+          "totalClicks": "Tổng lượt xem SĐT",
+          "uniqueUsers": "Người dùng duy nhất",
+          "clickHistory": "Lịch sử xem",
+          "noUsers": "Chưa có khách hàng nào xem số điện thoại",
+          "loadingUsers": "Đang tải danh sách khách hàng...",
+          "close": "Đóng",
+          "viewAll": "Xem tất cả"
+        }
+      },
+      "loading": "Đang tải...",
+      "error": "Có lỗi xảy ra khi tải dữ liệu",
+      "retry": "Thử lại"
     }
   },
   "paymentMethodDialog": {
@@ -2095,6 +2237,7 @@
       "showPhone": "Hiện số"
     },
     "property": {
+      "roomCapacity": "Sức chứa phòng",
       "price": "Khoảng giá",
       "pricePerSqm": "tr/m²",
       "pricePerMonth": "tháng",
@@ -2137,6 +2280,10 @@
       "metadata": "Thông tin bổ sung",
       "similarProperties": "Bất động sản dành cho bạn",
       "recentlyViewed": "Tin đăng đã xem"
+    },
+    "recentlyViewed": {
+      "title": "Tin đăng đã xem",
+      "description": "Hiển thị 5 tin đăng gần đây nhất bạn đã xem"
     },
     "priceHistory": {
       "title": "Lịch sử giá bán nhà riêng tại {district}",
@@ -2543,6 +2690,39 @@
         "tip4": "Tham gia các khóa đào tạo và cộng đồng môi giới để học hỏi kinh nghiệm",
         "tip5": "Theo dõi báo cáo hiệu suất để biết tin nào được quan tâm nhiều nhất"
       }
+    }
+  },
+  "savedListings": {
+    "title": "Tin Đã Lưu",
+    "subtitle": "Các bất động sản yêu thích của bạn",
+    "empty": {
+      "title": "Chưa Có Tin Đã Lưu",
+      "description": "Bạn chưa lưu tin nào. Hãy khám phá và lưu những tin yêu thích!",
+      "action": "Khám Phá Tin Đăng"
+    },
+    "actions": {
+      "save": "Lưu tin",
+      "saved": "Đã lưu",
+      "unsave": "Bỏ lưu",
+      "viewAll": "Xem Tất Cả Tin Đã Lưu"
+    },
+    "count": {
+      "zero": "Chưa có tin đã lưu",
+      "one": "1 tin đã lưu",
+      "other": "{count} tin đã lưu"
+    },
+    "messages": {
+      "savedSuccess": "Đã lưu tin thành công",
+      "unsavedSuccess": "Đã bỏ lưu tin",
+      "saveFailed": "Không thể lưu tin",
+      "unsaveFailed": "Không thể bỏ lưu tin",
+      "loginRequired": "Vui lòng đăng nhập để lưu tin",
+      "alreadySaved": "Tin đã được lưu trước đó",
+      "notFound": "Không tìm thấy tin đăng"
+    },
+    "tooltip": {
+      "save": "Lưu tin này",
+      "saved": "Bỏ lưu tin"
     }
   }
 }
