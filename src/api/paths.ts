@@ -18,9 +18,9 @@ export const PATHS = {
     VERIFICATION: '/v1/verification',
     RE_SEND_VERIFICATION: '/v1/verification/code',
     INTROSPECT: '/v1/auth/introspect',
-    FORGOT_PASSWORD: '/v1/auth/forgot-password',
-    CHANGE_PASSWORD: '/v1/auth/change-password',
-    RESET_PASSWORD: '/v1/auth/reset-password',
+    FORGOT_PASSWORD: '/v1/auth/forgot-password', // NOSONAR - API endpoint path, not a password
+    CHANGE_PASSWORD: '/v1/auth/change-password', // NOSONAR - API endpoint path, not a password
+    RESET_PASSWORD: '/v1/auth/reset-password', // NOSONAR - API endpoint path, not a password
     GOOGLE_OAUTH: '/v1/auth/outbound/google',
   },
 
@@ -29,7 +29,7 @@ export const PATHS = {
     CREATE: '/v1/users',
     PROFILE: '/v1/users/profile',
     UPDATE: '/v1/users/update',
-    CHANGE_PASSWORD: '/v1/users/change-password',
+    CHANGE_PASSWORD: '/v1/users/change-password', // NOSONAR - API endpoint path, not a password
   },
 
   // Property endpoints (deprecated - use LISTING instead)

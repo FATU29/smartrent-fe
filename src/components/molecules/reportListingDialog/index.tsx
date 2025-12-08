@@ -116,7 +116,8 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
     if (!value || !value.trim()) {
       return t('report.emailRequired') || 'Email là bắt buộc'
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    // Use a safer regex pattern to avoid ReDoS vulnerability
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     return (
       emailRegex.test(value.trim()) ||
       t('report.invalidEmail') ||

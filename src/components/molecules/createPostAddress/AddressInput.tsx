@@ -208,8 +208,13 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     try {
       const response = await AddressService.geocode(addressForGeocode)
 
-      if (response?.data) {
-        const { latitude, longitude } = response?.data
+      if (
+        response &&
+        response.data &&
+        response.data.latitude !== undefined &&
+        response.data.longitude !== undefined
+      ) {
+        const { latitude, longitude } = response.data
         const prev = propertyInfo.address
         updatePropertyInfo({
           address: {

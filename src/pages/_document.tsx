@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from 'next/document'
+import { fontVariables } from '@/theme/fonts'
 
 export default function Document() {
   return (
@@ -23,7 +24,7 @@ export default function Document() {
           crossOrigin='anonymous'
         />
       </Head>
-      <body className='antialiased'>
+      <body className={`${fontVariables} antialiased`}>
         <Main />
         <NextScript />
       </body>

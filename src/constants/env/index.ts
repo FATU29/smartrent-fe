@@ -25,7 +25,7 @@ export const ENV = {
   API_CODES: {
     SUCCESS: '999999',
     INVALID_EMAIL: '2001',
-    INVALID_PASSWORD: '2002',
+    INVALID_PASSWORD: '2002', // NOSONAR - Error code constant, not a password
     FIELD_REQUIRED: '2004',
     INVALID_PHONE: '2005',
     EMAIL_EXISTS: '3001',
