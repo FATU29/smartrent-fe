@@ -14,6 +14,7 @@ interface SaveDraftDialogProps {
   open: boolean
   onSave: () => void | Promise<void>
   onCancel: () => void
+  onDiscard: () => void
   isSaving?: boolean
 }
 
@@ -23,6 +24,7 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
   open,
   onSave,
   onCancel,
+  onDiscard,
   isSaving = false,
 }) => {
   const t = useTranslations('createPost.draftDialog')
@@ -32,7 +34,7 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
   }, [onSave])
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onDiscard()}>
       <DialogContent
         className={DIALOG_MAX_WIDTH}
         showCloseButton={!isSaving}
@@ -53,6 +55,9 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
         </DialogHeader>
         <DialogFooter className='gap-2 sm:gap-0'>
           <div className='flex gap-2'>
+            <Button variant='outline' onClick={onDiscard} disabled={isSaving}>
+              {t('discard')}
+            </Button>
             <Button variant='outline' onClick={onCancel} disabled={isSaving}>
               {t('cancel')}
             </Button>

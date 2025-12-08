@@ -414,6 +414,15 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         : undefined
                     }
                   />
+                  {/* Show error message prominently below address input */}
+                  {error?.message && (
+                    <div className='flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg'>
+                      <MapPin className='w-4 h-4 text-destructive flex-shrink-0 mt-0.5' />
+                      <p className='text-sm text-destructive font-medium'>
+                        {tValidation(getValidationKey(error.message))}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             />
@@ -486,10 +495,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
                   {/* Validation Error Message */}
                   {error?.message && (
-                    <p className='text-sm text-destructive flex items-center gap-1'>
-                      <MapPin className='w-4 h-4' />
-                      {tValidation(getValidationKey(error.message))}
-                    </p>
+                    <div className='flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg'>
+                      <MapPin className='w-4 h-4 text-destructive flex-shrink-0 mt-0.5' />
+                      <p className='text-sm text-destructive font-medium'>
+                        {tValidation(getValidationKey(error.message))}
+                      </p>
+                    </div>
                   )}
 
                   <div className='text-xs text-gray-500 dark:text-gray-400 space-y-1'>
@@ -719,18 +730,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     return (
                       <label
                         key={amenity.key}
-                        className={`flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-                          amenityIds?.includes(amenity.id)
-                            ? amenity?.color
-                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
-                        }`}
+                        className='flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
                       >
                         {IconComponent && (
                           <IconComponent className='w-4 h-4 flex-shrink-0' />
                         )}
                         <input
                           type='checkbox'
-                          className='w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 flex-shrink-0'
+                          className='w-4 h-4 rounded border-2 border-gray-300 text-primary focus:ring-primary focus:ring-2 flex-shrink-0'
                           checked={amenityIds?.includes(amenity.id)}
                           onChange={(e) => {
                             if (e.target.checked) {
