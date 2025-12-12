@@ -19,6 +19,7 @@ import { useListContext } from '@/contexts/list/useListContext'
 import AddressFilterView from '../mobileFilter/addressFilterView'
 import { useRouter } from 'next/router'
 import { navigateToPropertiesWithFilters } from '@/utils/filters'
+import useLocation from '@/hooks/useLocation'
 
 interface ResidentialFilterDialogProps {
   open: boolean
@@ -52,6 +53,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   const t = useTranslations('residentialFilter')
   const router = useRouter()
   const { filters, updateFilters, resetFilters } = useListContext()
+  const { disableLocation } = useLocation()
   const [view, setView] = useState<ViewKey>('main')
   const [draft, setDraft] = useState<ListingFilterRequest>(filters)
 
@@ -83,7 +85,14 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
 
   const resetAndStay = () => {
     resetFilters()
-    setDraft({ keyword: '', size: filters.size, page: 1 })
+    disableLocation()
+    setDraft({
+      keyword: '',
+      size: filters.size,
+      page: 1,
+      userLatitude: undefined,
+      userLongitude: undefined,
+    })
   }
 
   const backToParent = () => setView('main')

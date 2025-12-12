@@ -241,7 +241,7 @@ const NewAddressSection: React.FC<AddressSectionProps> = ({
   const provinces = useMemo(
     () =>
       (newProvincesData ?? []).map((province) => ({
-        id: String(province.id),
+        id: String(province.key),
         label: province.name,
       })),
     [newProvincesData],

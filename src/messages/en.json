@@ -2672,7 +2672,9 @@
       },
       "pending": {
         "title": "Payment Pending",
-        "desc": "Waiting for confirmation from the payment provider..."
+        "desc": "Waiting for confirmation from the payment provider...",
+        "waitingTitle": "Processing Payment",
+        "waitingDesc": "Processing your payment, please wait a moment..."
       },
       "failed": {
         "title": "Payment Failed",

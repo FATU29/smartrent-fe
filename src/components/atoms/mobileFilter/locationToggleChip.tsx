@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useLocation } from '@/hooks/useLocation'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
@@ -9,9 +9,30 @@ import {
   TooltipTrigger,
 } from '@/components/atoms/tooltip'
 
-const LocationToggleChip: React.FC = () => {
+interface LocationToggleChipProps {
+  onLocationChange?: (latitude?: number, longitude?: number) => void
+}
+
+const LocationToggleChip: React.FC<LocationToggleChipProps> = ({
+  onLocationChange,
+}) => {
   const t = useTranslations('location')
-  const { isEnabled, toggleLocation, isLoading, error } = useLocation()
+  const { coordinates, isEnabled, toggleLocation, isLoading, error } =
+    useLocation()
+
+  // Sync coordinates with parent component
+  useEffect(() => {
+    if (onLocationChange) {
+      if (coordinates) {
+        onLocationChange(
+          Number(coordinates.latitude),
+          Number(coordinates.longitude),
+        )
+      } else {
+        onLocationChange(undefined, undefined)
+      }
+    }
+  }, [coordinates, onLocationChange])
 
   const getTooltipContent = () => {
     if (error?.translationKey) {

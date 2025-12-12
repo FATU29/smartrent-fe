@@ -2442,7 +2442,9 @@
       },
       "pending": {
         "title": "Đang chờ xác nhận",
-        "desc": "Đang chờ xác nhận từ nhà cung cấp thanh toán..."
+        "desc": "Đang chờ xác nhận từ nhà cung cấp thanh toán...",
+        "waitingTitle": "Đang thanh toán",
+        "waitingDesc": "Đang xử lý thanh toán, vui lòng đợi trong giây lát..."
       },
       "failed": {
         "title": "Thanh toán thất bại",

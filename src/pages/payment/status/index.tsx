@@ -1,6 +1,8 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useMemo, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 import MainLayout from '@/components/layouts/homePageLayout'
 import { PaymentService } from '@/api/services'
 import type { PaymentTransaction } from '@/api/types/payment.type'
@@ -13,9 +15,12 @@ const TERMINAL_STATUSES: PaymentStatusType[] = [
   'FAILED',
   'CANCELLED',
   'REFUNDED',
-]
+] as const
 
 const MAX_POLL_COUNT = 10
+const POLL_INTERVAL = 2000 // 2 seconds
+const STALE_TIME = 1000 // 1 second - data is considered stale quickly for payment status
+const GC_TIME = 5 * 60 * 1000 // 5 minutes - keep in cache for a while
 
 function useTransactionRefFromQuery() {
   const router = useRouter()
@@ -34,30 +39,27 @@ const PaymentStatusPage: React.FC = () => {
   const router = useRouter()
   const txnRef = useTransactionRefFromQuery()
   const pollCountRef = useRef(0)
+  const t = useTranslations('paymentStatusPage')
+  const previousStatusRef = useRef<PaymentStatusType | null>(null)
+  const isTerminalRef = useRef(false)
 
-  const {
-    data: txnResp,
-    isFetching,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['payment', 'transaction', txnRef],
-    queryFn: async () => {
-      if (!txnRef) return null
-      const resp = await PaymentService.getTransaction(txnRef)
-      return resp
-    },
-    enabled: !!txnRef,
-    refetchInterval: (query) => {
+  // Memoize query function to prevent recreation
+  const queryFn = useCallback(async () => {
+    if (!txnRef) return null
+    const resp = await PaymentService.getTransaction(txnRef)
+    return resp
+  }, [txnRef])
+
+  // Optimized refetch interval function
+  const refetchIntervalFn = useCallback(
+    (query: { state: { error: unknown; data: unknown } }) => {
       // Don't poll if there's an error
       if (query.state.error) {
-        console.log('🛑 Stopped polling due to error:', query.state.error)
         return false
       }
 
       // Check max poll count
       if (pollCountRef.current >= MAX_POLL_COUNT) {
-        console.log('🛑 Stopped polling: reached max poll count (10)')
         return false
       }
 
@@ -68,31 +70,29 @@ const PaymentStatusPage: React.FC = () => {
       // If no data yet and no error, keep polling
       if (!status) {
         pollCountRef.current++
-        console.log(
-          `⏳ Polling... (${pollCountRef.current}/${MAX_POLL_COUNT}) (no status yet)`,
-        )
-        return 2000
+        return POLL_INTERVAL
       }
 
       // Stop polling if status is terminal
       const normalized = status.toUpperCase() as PaymentStatusType
       const shouldStop = TERMINAL_STATUSES.includes(normalized)
 
-      if (!shouldStop) {
-        pollCountRef.current++
+      if (shouldStop) {
+        isTerminalRef.current = true
+        return false
       }
 
-      console.log(
-        shouldStop
-          ? '✅ Stopped polling (terminal status)'
-          : `⏳ Polling... (${pollCountRef.current}/${MAX_POLL_COUNT})`,
-        normalized,
-      )
-      return shouldStop ? false : 2000
+      pollCountRef.current++
+      return POLL_INTERVAL
     },
-    refetchOnWindowFocus: (query) => {
+    [],
+  )
+
+  // Optimized refetch on window focus
+  const refetchOnWindowFocusFn = useCallback(
+    (query: { state: { error: unknown; data: unknown } }) => {
       // Don't refetch on window focus if there's an error or terminal status
-      if (query.state.error) return false
+      if (query.state.error || isTerminalRef.current) return false
       const status = (
         query.state.data as ApiResponse<PaymentTransaction> | null | undefined
       )?.data?.status
@@ -100,29 +100,123 @@ const PaymentStatusPage: React.FC = () => {
       const normalized = status.toUpperCase() as PaymentStatusType
       return !TERMINAL_STATUSES.includes(normalized)
     },
-    retry: (failureCount, error: unknown) => {
-      // Don't retry if transaction not found or other client errors
-      const status = (error as { response?: { status?: number } })?.response
-        ?.status
-      if (status === 404 || (status && status >= 400 && status < 500)) {
-        return false
+    [],
+  )
+
+  // Optimized retry function
+  const retryFn = useCallback((failureCount: number, error: unknown) => {
+    // Don't retry if transaction not found or other client errors
+    const status = (error as { response?: { status?: number } })?.response
+      ?.status
+    if (status === 404 || (status && status >= 400 && status < 500)) {
+      return false
+    }
+    // Retry up to 2 times for server errors or network issues
+    return failureCount < 2
+  }, [])
+
+  // Store previous data to use as placeholder
+  const previousDataRef = useRef<
+    ApiResponse<PaymentTransaction> | null | undefined
+  >(null)
+  const previousStatusRefForUI = useRef<PaymentStatusType | null>(null)
+
+  const {
+    data: txnResp,
+    isFetching,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['payment', 'transaction', txnRef],
+    queryFn,
+    enabled: !!txnRef && typeof window !== 'undefined', // Client-side only
+    refetchInterval: refetchIntervalFn,
+    refetchOnWindowFocus: refetchOnWindowFocusFn,
+    refetchOnMount: true, // Always refetch on mount to get latest status
+    refetchOnReconnect: true, // Refetch when network reconnects
+    retry: retryFn,
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
+    // Client-side only - no SSR for polling
+    networkMode: 'online',
+    // Keep previous data while fetching to prevent UI flickering
+    placeholderData: (previousData) => {
+      const data = previousData || previousDataRef.current || undefined
+      if (data) {
+        previousDataRef.current = data
       }
-      // Retry up to 2 times for server errors or network issues
-      return failureCount < 2
+      return data
     },
   })
 
-  // Determine status - treat error as FAILED
-  const status = (
-    error
-      ? 'FAILED'
-      : txnResp?.data?.status?.toUpperCase() || (txnRef ? 'PENDING' : 'UNKNOWN')
-  ) as PaymentStatusType
-  const isTerminal = TERMINAL_STATUSES.includes(status) || !!error
+  // Update previous data ref when new data arrives
+  useEffect(() => {
+    if (txnResp) {
+      previousDataRef.current = txnResp
+    }
+  }, [txnResp])
 
-  const handleRetry = () => {
+  // Calculate status from response - use stable reference to prevent flickering
+  const status = useMemo(() => {
+    let newStatus: PaymentStatusType
+    if (error) {
+      newStatus = 'FAILED' as PaymentStatusType
+    } else if (!txnResp?.data?.status) {
+      newStatus = (txnRef ? 'PENDING' : 'UNKNOWN') as PaymentStatusType
+    } else {
+      newStatus = txnResp.data.status.toUpperCase() as PaymentStatusType
+    }
+
+    // Update ref only when status actually changes
+    if (previousStatusRefForUI.current !== newStatus) {
+      previousStatusRefForUI.current = newStatus
+    }
+
+    // Return current status (will be stable if unchanged)
+    return newStatus
+  }, [error, txnResp?.data?.status, txnRef])
+
+  // Memoize isTerminal calculation
+  const isTerminal = useMemo(() => {
+    return TERMINAL_STATUSES.includes(status) || !!error
+  }, [status, error])
+
+  // Update terminal ref when status changes
+  useEffect(() => {
+    if (isTerminal) {
+      isTerminalRef.current = true
+    }
+  }, [isTerminal])
+
+  // Reset poll count when transaction ref changes
+  useEffect(() => {
+    pollCountRef.current = 0
+    isTerminalRef.current = false
+    previousStatusRef.current = null
+    previousStatusRefForUI.current = null
+    previousDataRef.current = null // Reset previous data when transaction changes
+  }, [txnRef])
+
+  // Show toast notification when status changes to COMPLETED
+  useEffect(() => {
+    if (
+      status === 'COMPLETED' &&
+      previousStatusRef.current !== 'COMPLETED' &&
+      previousStatusRef.current !== null
+    ) {
+      toast.success(t('states.completed.title'), {
+        description: t('states.completed.desc'),
+      })
+    }
+    previousStatusRef.current = status
+  }, [status, t])
+
+  // Memoize handleRetry to prevent recreation
+  const handleRetry = useCallback(() => {
+    pollCountRef.current = 0
+    isTerminalRef.current = false
     router.replace(router.asPath)
-  }
+  }, [router])
 
   // Build product info from transaction data
   const productInfo = useMemo(() => {
@@ -173,10 +267,9 @@ const PaymentStatusPage: React.FC = () => {
       <PaymentStatusTemplate
         transactionRef={txnRef}
         status={status}
-        message={txnResp?.message}
         isLoading={isLoading}
         isFetching={isFetching}
-        error={error}
+        error={error as Error | null}
         isTerminal={isTerminal}
         onRetry={handleRetry}
         productInfo={productInfo}

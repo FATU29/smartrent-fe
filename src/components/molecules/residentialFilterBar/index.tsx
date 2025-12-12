@@ -53,6 +53,8 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
 
   const handleReset = () => {
     resetFilters()
+    // Disable location when filters are reset
+    disableLocation()
 
     // Only navigate to /properties if NOT on homepage (no custom onApply handler)
     if (!onApply) {
@@ -60,28 +62,41 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
     }
   }
 
-  const handleSortChange = useCallback((value: SortKey) => {
-    updateFilter({
-      sortBy: value,
-      page: 1,
-    })
-  }, [])
+  const handleSortChange = useCallback(
+    (value: SortKey) => {
+      updateFilters({
+        sortBy: value,
+        page: 1,
+      })
+    },
+    [updateFilters],
+  )
 
-  const updateFilter = (partial: Partial<ListingFilterRequest>) => {
-    updateFilters(partial)
-  }
+  const updateFilter = useCallback(
+    (partial: Partial<ListingFilterRequest>) => {
+      updateFilters(partial)
+    },
+    [updateFilters],
+  )
 
   const handleLocationChange = useCallback(
     (userLatitude?: number, userLongitude?: number) => {
       if (!userLatitude || !userLongitude) {
+        // Clear coordinates from filters when location is disabled
+        updateFilter({
+          userLatitude: undefined,
+          userLongitude: undefined,
+        })
         disableLocation()
+      } else {
+        // Update filters with new coordinates
+        updateFilter({
+          userLatitude: userLatitude,
+          userLongitude: userLongitude,
+        })
       }
-      updateFilter({
-        userLatitude: userLatitude,
-        userLongitude: userLongitude,
-      })
     },
-    [],
+    [updateFilter, disableLocation],
   )
 
   return (
@@ -192,10 +207,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
             <div className='flex items-center gap-1'>
               <LocationSwitch
                 onLocationChange={handleLocationChange}
-                disabled={
-                  filters.userLatitude === undefined ||
-                  filters.userLongitude === undefined
-                }
+                disabled={false}
               />
             </div>
           </div>

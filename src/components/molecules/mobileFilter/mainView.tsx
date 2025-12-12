@@ -44,6 +44,16 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
     return parts.join(' ') + (unit ? ` ${unit}` : '')
   }
 
+  const handleLocationChange = (
+    userLatitude?: number,
+    userLongitude?: number,
+  ) => {
+    onUpdate({
+      userLatitude: userLatitude,
+      userLongitude: userLongitude,
+    })
+  }
+
   return (
     <div className='pb-20'>
       <div className='space-y-1'>
@@ -140,7 +150,7 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
             icon={<MapPin className='h-4 w-4 text-muted-foreground' />}
             title={t('toggles.location')}
           >
-            <LocationToggleChip />
+            <LocationToggleChip onLocationChange={handleLocationChange} />
           </ToggleSection>
         )}
       </div>
