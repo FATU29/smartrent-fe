@@ -10,6 +10,7 @@ import { createServerAxiosInstance } from '@/configs/axios/axiosServer'
 import type { ProvinceStatsItem, CategoryStatsItem } from '@/api/types'
 import { List } from '@/contexts/list'
 import { PROVINCE_CODE } from '@/utils/mapper'
+import AiChatWidget from '@/components/organisms/aiChatWidget'
 
 interface HomeProps {
   provinceCities?: ProvinceStatsItem[]
@@ -34,6 +35,7 @@ const Home: NextPageWithLayout<HomeProps> = ({
               categoryStats={categoryStats}
             />
           </div>
+          <AiChatWidget position='bottom-right' />
         </List.Provider>
       </LocationProvider>
     </>
