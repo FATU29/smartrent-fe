@@ -9,7 +9,6 @@ import { PUBLIC_ROUTES } from '@/constants/route'
 export interface PaymentStatusTemplateProps {
   transactionRef?: string
   status: PaymentStatusType | string
-  message?: string | null
   isLoading?: boolean
   isFetching?: boolean
   error?: Error | null
@@ -21,7 +20,6 @@ export interface PaymentStatusTemplateProps {
 export const PaymentStatusTemplate: React.FC<PaymentStatusTemplateProps> = ({
   transactionRef,
   status,
-  message,
   isLoading = false,
   isFetching = false,
   error,
@@ -79,8 +77,8 @@ export const PaymentStatusTemplate: React.FC<PaymentStatusTemplateProps> = ({
             <PaymentStatusCard
               transactionRef={transactionRef}
               status={status}
-              message={message}
-              isLoading={isLoading || isFetching}
+              isLoading={isLoading}
+              isFetching={isFetching}
               productInfo={productInfo}
             />
 

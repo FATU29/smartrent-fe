@@ -80,14 +80,19 @@ export const LocationSwitch: React.FC<LocationSwitchProps> = ({
   }
 
   const handleToggle = async () => {
+    if (disabled) return
     await toggleLocation()
   }
 
   useEffect(() => {
     if (disabled) {
       disableLocation()
+      // Notify parent that location is disabled
+      if (onLocationChange) {
+        onLocationChange(undefined, undefined)
+      }
     }
-  }, [disabled])
+  }, [disabled, disableLocation, onLocationChange])
 
   return (
     <div className={cn('flex items-center gap-3', className)}>
@@ -95,7 +100,7 @@ export const LocationSwitch: React.FC<LocationSwitchProps> = ({
         <Switch
           checked={isEnabled && !disabled}
           onCheckedChange={handleToggle}
-          disabled={isLoading}
+          disabled={isLoading || disabled}
         />
         <TooltipProvider delayDuration={300}>
           <Tooltip>

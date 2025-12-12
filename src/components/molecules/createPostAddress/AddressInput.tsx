@@ -280,11 +280,11 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   }, [wardsError, tAddress])
 
   const provinceOptions = useMemo(
-    () => newProvinces.map((p) => ({ value: p.id, label: p.name })),
+    () => newProvinces.map((p) => ({ value: String(p.id), label: p.name })),
     [newProvinces],
   )
   const wardOptions = useMemo(
-    () => newWards.map((w) => ({ value: w.code, label: w.name })),
+    () => newWards.map((w) => ({ value: String(w.ward_id), label: w.name })),
     [newWards],
   )
 
