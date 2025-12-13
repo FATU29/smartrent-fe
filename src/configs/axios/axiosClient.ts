@@ -7,7 +7,7 @@ import { apiRequest } from './instance'
 function createClientAxiosInstance(
   config: Partial<AxiosInstanceConfig> = {},
 ): AxiosInstance {
-  const { baseURL = ENV.URL_API_BASE, timeout = 30000, errorHandler } = config
+  const { baseURL = ENV.URL_API_BASE, timeout = 60000, errorHandler } = config
 
   const instance = axios.create({
     baseURL,

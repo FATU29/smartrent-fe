@@ -32,7 +32,10 @@ export class SavedListingService {
         data,
       })
     } catch (error) {
-      console.error('Error saving listing:', error)
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error saving listing:', error)
+      }
       throw error
     }
   }
@@ -53,7 +56,10 @@ export class SavedListingService {
         url,
       })
     } catch (error) {
-      console.error('Error unsaving listing:', error)
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error unsaving listing:', error)
+      }
       throw error
     }
   }
@@ -74,28 +80,10 @@ export class SavedListingService {
         params: { page, size },
       })
     } catch (error) {
-      console.error('Error fetching saved listings:', error)
-      throw error
-    }
-  }
-
-  /**
-   * Check if a specific listing is saved by the current user
-   * @param listingId - ID of the listing to check
-   * @returns Boolean indicating if listing is saved
-   */
-  static async checkIsSaved(listingId: number): Promise<ApiResponse<boolean>> {
-    try {
-      const url = PATHS.SAVED_LISTINGS.CHECK.replace(
-        ':listingId',
-        listingId.toString(),
-      )
-      return await apiRequest<boolean>({
-        method: 'GET',
-        url,
-      })
-    } catch (error) {
-      console.error('Error checking saved listing:', error)
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching saved listings:', error)
+      }
       throw error
     }
   }
@@ -111,7 +99,10 @@ export class SavedListingService {
         url: PATHS.SAVED_LISTINGS.COUNT,
       })
     } catch (error) {
-      console.error('Error fetching saved listings count:', error)
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching saved listings count:', error)
+      }
       throw error
     }
   }

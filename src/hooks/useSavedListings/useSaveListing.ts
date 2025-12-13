@@ -24,7 +24,7 @@ export const useSaveListing = () => {
       }
       return SavedListingService.save({ listingId })
     },
-    onSuccess: (response, listingId) => {
+    onSuccess: (response) => {
       // Check if the API request was actually successful
       if (!response?.success) {
         // Handle as error if success is false
@@ -50,10 +50,6 @@ export const useSaveListing = () => {
       // Show success toast only if truly successful
       toast.success(t('savedSuccess'))
 
-      // Invalidate check query for this listing
-      queryClient.invalidateQueries({
-        queryKey: SAVED_LISTING_QUERY_KEYS.check(listingId),
-      })
       // Invalidate saved listings list
       queryClient.invalidateQueries({
         queryKey: SAVED_LISTING_QUERY_KEYS.lists(),

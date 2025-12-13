@@ -130,7 +130,9 @@ export function isServerError(error: unknown): boolean {
 }
 
 export function logError(error: unknown, context?: string): void {
+  // Only log errors in development environment
   if (process.env.NODE_ENV === 'development') {
     console.log(`[AxiosServer${context ? ` - ${context}` : ''}]:`, error)
   }
+  // In production, silently handle errors to avoid console pollution
 }

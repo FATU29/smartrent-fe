@@ -27,7 +27,7 @@ function createServerAxiosInstance(
     typeof cookies === 'string' ? parseCookieString(cookies) : cookies
   const config: Partial<AxiosInstanceConfig> = {
     baseURL: ENV.URL_API_BASE,
-    timeout: 30000,
+    timeout: 60000,
     withCredentials: false,
   }
 

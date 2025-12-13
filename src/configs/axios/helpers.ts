@@ -23,7 +23,10 @@ const clearAuthTokens = () => {
 
 export const handleExpiredTokens = (refreshTokenValue?: string | null) => {
   if (!refreshTokenValue || isTokenExpired(refreshTokenValue)) {
-    console.log('Refresh token expired or not found, logging out...')
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Refresh token expired or not found, logging out...')
+    }
     clearAuthTokens()
 
     if (typeof window !== 'undefined') {
@@ -55,7 +58,10 @@ export const applyAuthToken = (
       config.headers['userId'] = decoded.user.userId
     }
   } catch (error) {
-    console.error('Failed to decode token for userId:', error)
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to decode token for userId:', error)
+    }
   }
 }
 
@@ -65,7 +71,7 @@ export const applyDefaultConfig = (config: InternalAxiosRequestConfig) => {
   }
 
   if (!config.timeout) {
-    config.timeout = 30000
+    config.timeout = 60000
   }
 }
 

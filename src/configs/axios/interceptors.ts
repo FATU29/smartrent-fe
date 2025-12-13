@@ -27,7 +27,10 @@ const refreshToken = async (): Promise<string | null> => {
 
     return data.accessToken
   } catch (error) {
-    console.error('Token refresh failed:', error)
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Token refresh failed:', error)
+    }
     return null
   }
 }
