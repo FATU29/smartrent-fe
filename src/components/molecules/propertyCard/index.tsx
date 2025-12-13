@@ -12,6 +12,7 @@ import {
 } from '@/components/atoms/tooltip'
 import ImageAtom from '@/components/atoms/imageAtom'
 import SaveListingButton from '@/components/molecules/saveListingButton'
+import CompareToggleBtn from '@/components/molecules/compareToggleBtn'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
 import { useTranslations } from 'next-intl'
 import {
@@ -196,11 +197,19 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             </div>
           )}
 
-          <SaveListingButton
-            listingId={listing.listingId}
-            variant='icon'
-            className='absolute top-2 right-2 bg-background/80 backdrop-blur-sm'
-          />
+          <div className='absolute top-2 right-2 flex gap-2 z-10'>
+            <CompareToggleBtn
+              listing={listing}
+              variant='ghost'
+              size='icon'
+              className='bg-background/80 backdrop-blur-sm'
+            />
+            <SaveListingButton
+              listingId={listing.listingId}
+              variant='icon'
+              className='bg-background/80 backdrop-blur-sm'
+            />
+          </div>
 
           {/* Badges - Top Left */}
           <div className='absolute top-2 left-2 flex flex-col gap-1 z-10'>
@@ -291,17 +300,33 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           className='w-full h-full object-cover object-center transition-transform duration-300 group-hover/card:scale-105'
         />
 
-        <SaveListingButton
-          listingId={listing.listingId}
-          variant='icon'
+        <div
           className={classNames(
-            'absolute bg-background/80 backdrop-blur-sm z-10',
-            isCompact
-              ? 'top-1 right-1 w-6 h-6'
-              : 'top-2 right-2 w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9',
+            'absolute flex gap-1 z-10',
+            isCompact ? 'top-1 right-1' : 'top-2 right-2 sm:top-3 sm:right-3',
           )}
-          iconClassName={isCompact ? 'w-3 h-3' : 'w-3 h-3 sm:w-4 sm:h-4'}
-        />
+        >
+          <CompareToggleBtn
+            listing={listing}
+            variant='ghost'
+            size='icon'
+            className={classNames(
+              'bg-background/80 backdrop-blur-sm',
+              isCompact ? 'w-6 h-6' : 'w-8 h-8 sm:w-9 sm:h-9',
+            )}
+          />
+          <SaveListingButton
+            listingId={listing.listingId}
+            variant='icon'
+            className={classNames(
+              'bg-background/80 backdrop-blur-sm',
+              isCompact
+                ? 'w-6 h-6'
+                : 'w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9',
+            )}
+            iconClassName={isCompact ? 'w-3 h-3' : 'w-3 h-3 sm:w-4 sm:h-4'}
+          />
+        </div>
 
         {/* Badges - Top Left */}
         <div
