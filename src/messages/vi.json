@@ -1931,6 +1931,46 @@
     }
   },
   "seller": {
+    "dashboard": {
+      "title": "Bảng điều khiển",
+      "description": "Tổng quan về gói hội viên và hiệu suất tin đăng của bạn",
+      "seoTitle": "Bảng điều khiển – Seller",
+      "seoDescription": "Xem lợi ích gói hội viên và thống kê lượt click số điện thoại",
+      "membership": {
+        "title": "Gói hội viên của tôi",
+        "noMembership": "Bạn chưa có gói hội viên đang hoạt động",
+        "upgradeNow": "Nâng cấp ngay",
+        "manageMembership": "Quản lý gói hội viên",
+        "packageLevel": "Cấp độ gói",
+        "validUntil": "Có hiệu lực đến",
+        "daysRemaining": "Số ngày còn lại",
+        "activeBenefits": "Lợi ích đang hoạt động",
+        "moreBenefits": "lợi ích khác",
+        "upgradeTitle": "Nâng cấp gói hội viên",
+        "upgradeDescription": "Mở khóa thêm tính năng và lợi ích với các gói premium",
+        "viewPlans": "Xem các gói",
+        "feature1": "Nhiều lượt đăng tin hơn mỗi tháng",
+        "feature2": "Hỗ trợ ưu tiên và hỗ trợ",
+        "feature3": "Phân tích và thống kê nâng cao"
+      },
+      "phoneClicks": {
+        "title": "Thống kê lượt click số điện thoại",
+        "description": "Theo dõi số lượng người dùng đã click vào số điện thoại trong tin đăng của bạn",
+        "loading": "Đang tải...",
+        "totalClicks": "Tổng lượt click",
+        "uniqueUsers": "Người dùng duy nhất",
+        "topListings": "Tin đăng hàng đầu",
+        "clickTrends": "Xu hướng click",
+        "last7Days": "7 ngày qua",
+        "noData": "Chưa có dữ liệu",
+        "clicks": "Lượt click",
+        "date": "Ngày"
+      },
+      "phoneClickStats": {
+        "title": "Phân tích lượt click số điện thoại",
+        "description": "Theo dõi mức độ tương tác với tin đăng của bạn thông qua lượt click số điện thoại"
+      }
+    },
     "listingManagement": {
       "toolbar": {
         "searchPlaceholder": "Tìm kiếm tin...",
