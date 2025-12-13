@@ -42,8 +42,8 @@ export const navigateToPropertiesWithFilters = (
       districtId: filters?.districtId ?? null,
       wardId: filters?.wardId ?? null,
       isLegacy: filters?.isLegacy ?? null,
-      latitude: filters?.latitude ?? filters?.userLatitude ?? null,
-      longitude: filters?.longitude ?? filters?.userLongitude ?? null,
+      userLatitude: filters?.latitude ?? filters?.userLatitude ?? null,
+      userLongitude: filters?.longitude ?? filters?.userLongitude ?? null,
       sortBy: filters?.sortBy ?? null,
       userId: filters?.userId ?? null,
       // Reflect pagination in URL

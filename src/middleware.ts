@@ -30,44 +30,56 @@ function isPublicPath(pathname: string) {
 }
 
 export function middleware(request: NextRequest) {
-  const { nextUrl, cookies } = request
-  const { pathname, searchParams } = nextUrl
+  try {
+    const { nextUrl, cookies } = request
+    const { pathname, searchParams } = nextUrl
 
-  // Skip middleware for static assets and API
-  if (isIgnoredPath(pathname)) return NextResponse.next()
-
-  // Allow public routes
-  if (isPublicPath(pathname)) {
-    return NextResponse.next()
-  }
-
-  // If already flagged to show auth dialog, let it pass to avoid loops
-  if (searchParams.get('auth') === 'login') return NextResponse.next()
-
-  // Check auth cookie set by the app
-  const accessToken = cookies.get('access_token')?.value
-
-  const isAuthenticated = Boolean(accessToken)
-
-  if (!isAuthenticated) {
-    // Redirect to the SAME URL but with a flag that the client will use to open the login dialog
-    const url = nextUrl.clone()
-    url.searchParams.set('auth', 'login')
-
-    // Attach returnUrl (original path + query without the auth flag) if not already set
-    if (!url.searchParams.get('returnUrl')) {
-      const original = new URL(nextUrl.toString())
-      // Ensure no auth flag in returnUrl
-      original.searchParams.delete('auth')
-      const returnUrl =
-        original.pathname + (original.search ? original.search : '')
-      url.searchParams.set('returnUrl', returnUrl)
+    // Validate pathname exists and is a string
+    if (!pathname || typeof pathname !== 'string') {
+      return NextResponse.next()
     }
 
-    return NextResponse.redirect(url)
-  }
+    // Skip middleware for static assets and API
+    if (isIgnoredPath(pathname)) return NextResponse.next()
 
-  return NextResponse.next()
+    // Allow public routes
+    if (isPublicPath(pathname)) {
+      return NextResponse.next()
+    }
+
+    // If already flagged to show auth dialog, let it pass to avoid loops
+    if (searchParams.get('auth') === 'login') return NextResponse.next()
+
+    // Check auth cookie set by the app
+    const accessToken = cookies.get('access_token')?.value
+
+    const isAuthenticated = Boolean(accessToken)
+
+    if (!isAuthenticated) {
+      // Redirect to the SAME URL but with a flag that the client will use to open the login dialog
+      const url = nextUrl.clone()
+      url.searchParams.set('auth', 'login')
+
+      // Attach returnUrl (original path + query without the auth flag) if not already set
+      if (!url.searchParams.get('returnUrl')) {
+        const original = new URL(nextUrl.toString())
+        // Ensure no auth flag in returnUrl
+        original.searchParams.delete('auth')
+        // Ensure pathname exists before using it
+        const safePathname = original.pathname || '/'
+        const returnUrl =
+          safePathname + (original.search ? original.search : '')
+        url.searchParams.set('returnUrl', returnUrl)
+      }
+
+      return NextResponse.redirect(url)
+    }
+
+    return NextResponse.next()
+  } catch {
+    // Silently handle any errors to prevent logging
+    return NextResponse.next()
+  }
 }
 
 // Run middleware on all routes by default

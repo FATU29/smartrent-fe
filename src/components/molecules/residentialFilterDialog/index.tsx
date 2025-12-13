@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import {
   Dialog,
   DialogContent,
   DialogTitle,
+  DialogDescription,
   VisuallyHidden,
 } from '@/components/atoms/dialog'
 import { useTranslations } from 'next-intl'
@@ -25,8 +26,8 @@ interface ResidentialFilterDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   title?: string
-  onApply?: () => void // Custom apply handler (e.g., navigate from homepage to /properties)
-  hideLocationFilter?: boolean // Hide address/location filters for seller page
+  onApply?: () => void
+  hideLocationFilter?: boolean
 }
 
 type ViewKey =
@@ -54,54 +55,79 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   const router = useRouter()
   const { filters, updateFilters, resetFilters } = useListContext()
   const { disableLocation } = useLocation()
+
+  // State
   const [view, setView] = useState<ViewKey>('main')
   const [draft, setDraft] = useState<ListingFilterRequest>(filters)
 
+  // Refs for stable values
+  const filtersRef = useRef(filters)
+  const prevOpenRef = useRef(open)
+
+  // Keep filters ref in sync
   useEffect(() => {
-    if (open) {
-      setView('main')
-      setDraft(filters)
+    filtersRef.current = filters
+  }, [filters])
+
+  // Sync draft when dialog opens, reset view when closes
+  useEffect(() => {
+    if (open && !prevOpenRef.current) {
+      setDraft(filtersRef.current)
     }
+    if (!open) {
+      setView('main')
+    }
+    prevOpenRef.current = open
   }, [open])
 
-  const update = (partial: Partial<ListingFilterRequest>) => {
-    setDraft((prev) => ({ ...prev, ...partial }) as ListingFilterRequest)
-  }
+  // Handlers
+  const update = useCallback((partial: Partial<ListingFilterRequest>) => {
+    setDraft((prev) => ({ ...prev, ...partial }))
+  }, [])
 
-  const apply = () => {
+  const apply = useCallback(() => {
     updateFilters({ ...draft, page: 1 })
 
-    // If custom onApply handler is provided (e.g., from homepage), use it
     if (onApplyProp) {
       onApplyProp()
       onOpenChange(false)
       return
     }
 
-    // Default behavior: Navigate to /properties with current filters
-    navigateToPropertiesWithFilters(router, draft)
+    if (router.isReady) {
+      navigateToPropertiesWithFilters(router, draft)
+    }
     onOpenChange(false)
-  }
+  }, [draft, updateFilters, onApplyProp, router, onOpenChange])
 
-  const resetAndStay = () => {
+  const resetAndStay = useCallback(() => {
     resetFilters()
     disableLocation()
-    setDraft({
+    setDraft((prev) => ({
+      ...prev,
       keyword: '',
-      size: filters.size,
       page: 1,
       userLatitude: undefined,
       userLongitude: undefined,
-    })
-  }
+    }))
+  }, [resetFilters, disableLocation])
 
-  const backToParent = () => setView('main')
+  const backToParent = useCallback(() => setView('main'), [])
 
-  const closeDialog = () => {
-    onOpenChange(false)
-    setView('main')
-  }
+  const closeDialog = useCallback(() => onOpenChange(false), [onOpenChange])
 
+  const handleOpenChange = useCallback(
+    (newOpen: boolean) => {
+      if (!newOpen) {
+        closeDialog()
+      } else {
+        onOpenChange(newOpen)
+      }
+    },
+    [closeDialog, onOpenChange],
+  )
+
+  // Render view content
   const renderBody = () => {
     switch (view) {
       case 'address':
@@ -203,16 +229,16 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(o) => (!o ? closeDialog() : onOpenChange(o))}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         showCloseButton={false}
         className='size-full md:h-[90vh] max-w-none md:max-w-[500px] rounded-none md:rounded-lg p-0 flex flex-col'
       >
         <VisuallyHidden>
           <DialogTitle>{title || t('actions.filter')}</DialogTitle>
+          <DialogDescription>
+            {t('actions.filter') || 'Filter residential properties'}
+          </DialogDescription>
         </VisuallyHidden>
         <MobileFilterHeader
           title={title || t('actions.filter')}

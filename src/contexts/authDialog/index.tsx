@@ -35,7 +35,9 @@ export const AuthDialogProvider = ({ children }: PropsWithChildren) => {
     setType(t)
     setReturnUrl(url || null)
     try {
-      if (url) localStorage.setItem('returnUrl', url)
+      if (url && url !== 'undefined' && url !== '/undefined') {
+        localStorage.setItem('returnUrl', url)
+      }
     } catch {}
     setOpen(true)
   }, [])

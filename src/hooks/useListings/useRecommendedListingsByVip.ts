@@ -25,7 +25,7 @@ interface UseRecommendedListingsByVipReturn {
 export const useRecommendedListingsByVip = (
   options: UseRecommendedListingsByVipOptions,
 ): UseRecommendedListingsByVipReturn => {
-  const { coordinates, isEnabled: isLocationEnabled } = useLocationContext()
+  const { coordinates } = useLocationContext()
   const { vipType, page = 1, size = 4, enabled = true } = options
 
   const { data, isLoading, isError, error, refetch } = useQuery({
@@ -55,11 +55,6 @@ export const useRecommendedListingsByVip = (
       })
 
       const listings = response.data?.listings || []
-
-      console.log(`✅ Fetched ${vipType} listings:`, {
-        count: listings.length,
-        hasLocation: isLocationEnabled,
-      })
 
       return listings
     },

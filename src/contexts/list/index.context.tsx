@@ -93,10 +93,8 @@ const useListFilters = (
   initialFilters: Partial<ListingFilterRequest>,
   shouldAppendRef: React.MutableRefObject<boolean>,
 ) => {
-  console.log('[useListFilters] initialFilters received:', initialFilters)
   const [filters, setFilters] = useState<ListingFilterRequest>(() => {
     const merged = mergeFilters(initialFilters)
-    console.log('[useListFilters] Merged filters:', merged)
     return merged
   })
 

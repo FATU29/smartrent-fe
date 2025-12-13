@@ -51,11 +51,11 @@ export const AuthRouteGate = () => {
 
   // Redirect to returnUrl after successful login (from query or sessionStorage)
   useEffect(() => {
-    if (isAuthenticated && showLoginNotice) {
+    if (isAuthenticated && showLoginNotice && router.isReady) {
       setShowLoginNotice(false)
-      const currentPath = router.asPath.split('?')[0]
+      const currentPath = router.asPath?.split('?')[0] || '/'
       const queryReturnUrl =
-        typeof router.query.returnUrl === 'string'
+        typeof router.query.returnUrl === 'string' && router.query.returnUrl
           ? (router.query.returnUrl as string)
           : undefined
       let storedReturnUrl: string | null = null
@@ -70,12 +70,18 @@ export const AuthRouteGate = () => {
         } catch {}
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { auth, returnUrl, ...rest } = router.query
-        router.replace({ pathname: router.pathname, query: rest }, undefined, {
-          shallow: true,
-        })
+        if (router.pathname) {
+          router.replace(
+            { pathname: router.pathname, query: rest },
+            undefined,
+            {
+              shallow: true,
+            },
+          )
+        }
       }
 
-      if (target && target !== currentPath) {
+      if (target && target !== currentPath && target !== '/undefined') {
         router.replace(target).finally(cleanup)
       } else {
         cleanup()
@@ -85,7 +91,9 @@ export const AuthRouteGate = () => {
 
   const handleLoginClick = () => {
     // Save current URL as returnUrl
-    const currentUrl = router.asPath.split('?')[0]
+    // Ensure router is ready and asPath exists
+    if (!router.isReady || !router.asPath) return
+    const currentUrl = router.asPath.split('?')[0] || '/'
     try {
       localStorage.setItem('returnUrl', currentUrl)
     } catch {}

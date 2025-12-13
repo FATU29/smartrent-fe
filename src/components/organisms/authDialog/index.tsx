@@ -11,6 +11,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  DialogDescription,
   VisuallyHidden,
 } from '@/components/atoms/dialog'
 import { Skeleton } from '@/components/atoms/skeleton'
@@ -77,6 +78,15 @@ const AuthDialog: NextPage<AuthDialogProps> = (props) => {
                   ? 'Reset Password'
                   : 'Authentication'}
           </DialogTitle>
+          <DialogDescription>
+            {authType === 'login'
+              ? 'Sign in to your account'
+              : authType === 'register'
+                ? 'Create a new account'
+                : authType === 'forgotPassword'
+                  ? 'Reset your password'
+                  : 'Authentication required'}
+          </DialogDescription>
         </VisuallyHidden>
         <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
           <div className='flex flex-col gap-8 md:flex-row md:gap-10'>
