@@ -1930,6 +1930,46 @@
     }
   },
   "seller": {
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "Overview of your membership and listing performance",
+      "seoTitle": "Dashboard – Seller",
+      "seoDescription": "View your membership benefits and phone click statistics",
+      "membership": {
+        "title": "My Membership",
+        "noMembership": "You don't have an active membership",
+        "upgradeNow": "Upgrade Now",
+        "manageMembership": "Manage Membership",
+        "packageLevel": "Package Level",
+        "validUntil": "Valid Until",
+        "daysRemaining": "Days Remaining",
+        "activeBenefits": "Active Benefits",
+        "moreBenefits": "more benefits",
+        "upgradeTitle": "Upgrade Your Membership",
+        "upgradeDescription": "Unlock more features and benefits with our premium plans",
+        "viewPlans": "View Plans",
+        "feature1": "More listing credits per month",
+        "feature2": "Priority support and assistance",
+        "feature3": "Advanced analytics and insights"
+      },
+      "phoneClicks": {
+        "title": "Phone Click Statistics",
+        "description": "Track how many users clicked on your listing phone numbers",
+        "loading": "Loading...",
+        "totalClicks": "Total Clicks",
+        "uniqueUsers": "Unique Users",
+        "topListings": "Top Listings",
+        "clickTrends": "Click Trends",
+        "last7Days": "Last 7 Days",
+        "noData": "No data available",
+        "clicks": "Clicks",
+        "date": "Date"
+      },
+      "phoneClickStats": {
+        "title": "Phone Click Analytics",
+        "description": "Monitor engagement with your listings through phone clicks"
+      }
+    },
     "listingManagement": {
       "toolbar": {
         "searchPlaceholder": "Search listings...",

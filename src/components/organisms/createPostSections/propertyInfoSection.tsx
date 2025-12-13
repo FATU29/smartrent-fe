@@ -54,10 +54,12 @@ import type { ListingDescriptionRequest } from '@/api/types/ai.type'
 
 interface PropertyInfoSectionProps {
   className?: string
+  attemptedSubmit?: boolean
 }
 
 const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   className,
+  attemptedSubmit = false,
 }) => {
   const t = useTranslations('createPost.sections.propertyInfo')
   const tCommon = useTranslations('common')
@@ -438,13 +440,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   <AddressInput
                     className='w-full'
                     error={
-                      error?.message
+                      attemptedSubmit && error?.message
                         ? tValidation(getValidationKey(error.message))
                         : undefined
                     }
                   />
                   {/* Show error message prominently below address input */}
-                  {error?.message && (
+                  {attemptedSubmit && error?.message && (
                     <div className='flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg'>
                       <MapPin className='w-4 h-4 text-destructive flex-shrink-0 mt-0.5' />
                       <p className='text-sm text-destructive font-medium'>

@@ -214,3 +214,6 @@ export const useUsersWhoClickedListing = (
     gcTime: 5 * 60 * 1000,
   })
 }
+
+export { useDashboardPhoneClickStats } from './useDashboardPhoneClickStats'
+export type { DashboardPhoneClickStats } from './useDashboardPhoneClickStats'

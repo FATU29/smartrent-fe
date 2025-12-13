@@ -132,6 +132,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           <StepRenderer
             currentStep={currentStep}
             progressSteps={progressSteps}
+            attemptedSubmit={attemptedSubmit}
           />
 
           <ValidationErrors
