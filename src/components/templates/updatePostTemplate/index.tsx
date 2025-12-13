@@ -1,22 +1,23 @@
 import React from 'react'
-import { useCreatePostSteps } from './hooks/useCreatePostSteps'
-import { useCreatePostValidation } from './hooks/useCreatePostValidation'
-import { useCreatePostStepsConfig } from './utils/createPostSteps.config'
+import { useUpdatePostSteps } from './hooks/useUpdatePostSteps'
+import { useUpdatePostValidation } from './hooks/useUpdatePostValidation'
+import { useUpdatePostStepsConfig } from './utils/updatePostSteps.config'
 import { NavigationButtons } from './components/NavigationButtons'
 import { ListingService } from '@/api/services/listing.service'
-import type { CreateVipListingRequest } from '@/api/types/property.type'
-import { useCreatePost } from '@/contexts/createPost'
+import type { CreateListingRequest } from '@/api/types/property.type'
+import { useUpdatePost } from '@/contexts/updatePost'
 import { useRouter } from 'next/router'
 import { StepRenderer } from './components/StepRenderer'
 import { useTranslations } from 'next-intl'
 import NotificationDialog from '@/components/molecules/notifications/NotificationDialog'
+import { getFormDefaultValues } from '@/components/templates/shared/form.utils'
 import { PostTemplateBase } from '@/components/templates/shared/PostTemplateBase'
 
-interface CreatePostTemplateProps {
+interface UpdatePostTemplateProps {
   className?: string
 }
 
-const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
+const UpdatePostTemplateContent: React.FC<{ className?: string }> = ({
   className,
 }) => {
   const {
@@ -28,31 +29,29 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
     handleNext,
     handleBack,
     handleStepClick,
-  } = useCreatePostSteps()
+    setAttemptedSubmit,
+  } = useUpdatePostSteps()
 
-  const progressSteps = useCreatePostStepsConfig(currentStep, isStepComplete)
+  const progressSteps = useUpdatePostStepsConfig(currentStep, isStepComplete)
 
-  const { currentErrors, canProceed } = useCreatePostValidation(
+  const { currentErrors, canProceed } = useUpdatePostValidation(
     currentStep,
     attemptedSubmit,
     form.formState.errors,
   )
 
-  const {
-    propertyInfo,
-    resetPropertyInfo,
-    setIsSubmitSuccess,
-    draftId,
-    fulltextAddress,
-  } = useCreatePost()
+  const { propertyInfo, resetPropertyInfo, setIsSubmitSuccess, listingId } =
+    useUpdatePost()
   const router = useRouter()
-  const t = useTranslations('createPost.submit')
+  const t = useTranslations('updatePost.submit')
+  const tCreate = useTranslations('createPost.submit')
 
   React.useEffect(() => {
-    if (draftId && propertyInfo && Object.keys(propertyInfo).length > 1) {
-      form.reset(propertyInfo)
+    if (listingId && propertyInfo && Object.keys(propertyInfo).length > 1) {
+      // Reset form with propertyInfo to sync form state with context
+      form.reset(getFormDefaultValues(propertyInfo))
     }
-  }, [draftId, propertyInfo, fulltextAddress, form])
+  }, [listingId, propertyInfo, form])
 
   const [successOpen, setSuccessOpen] = React.useState(false)
   const [successTitle, setSuccessTitle] = React.useState<string>('')
@@ -62,43 +61,49 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const [errorDesc, setErrorDesc] = React.useState<string>('')
 
   const handleSubmit = async () => {
-    try {
-      const useQuota =
-        !!propertyInfo?.useMembershipQuota ||
-        (!!propertyInfo?.benefitIds && propertyInfo.benefitIds.length > 0)
+    // Trigger validation for all steps before submitting
+    setAttemptedSubmit(true)
 
-      if (useQuota) {
-        const { success, data, message } =
-          await ListingService.create(propertyInfo)
-        if (!success || !data) {
-          setErrorTitle(t('errorTitle'))
-          setErrorDesc(message || t('createFailed'))
-          setErrorOpen(true)
-          return
-        }
-        setIsSubmitSuccess(true)
-        setSuccessTitle(t('successTitle'))
-        setSuccessDesc(t('successDescription'))
-        setSuccessOpen(true)
-        return
+    // Validate the current step (last step)
+    const isValid = await form.trigger()
+
+    // Check if all steps are complete
+    const allStepsComplete = progressSteps.every((_, index) =>
+      isStepComplete(index),
+    )
+
+    if (!isValid || !allStepsComplete) {
+      // Scroll to top to show validation errors
+      if (topRef.current) {
+        topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
+      return
+    }
 
-      const { success, data, message } = await ListingService.createVip(
-        propertyInfo as CreateVipListingRequest,
+    if (!listingId) {
+      setErrorTitle(t('errorTitle'))
+      setErrorDesc(t('noListingId'))
+      setErrorOpen(true)
+      return
+    }
+
+    try {
+      const { success, message } = await ListingService.update(
+        listingId,
+        propertyInfo as CreateListingRequest,
       )
-      if (!success || !data) {
+
+      if (!success) {
         setErrorTitle(t('errorTitle'))
-        setErrorDesc(message || t('createVipFailed'))
+        setErrorDesc(message || t('updateFailed'))
         setErrorOpen(true)
         return
       }
-      if (data.paymentUrl) {
-        setIsSubmitSuccess(true)
-        window.location.href = data.paymentUrl
-        return
-      }
+
       setIsSubmitSuccess(true)
-      await router.push(`/listing-detail/${data.listingId}`)
+      setSuccessTitle(t('successTitle'))
+      setSuccessDesc(t('successDescription'))
+      setSuccessOpen(true)
     } catch (err) {
       console.error('Submit error:', err)
       setErrorTitle(t('errorTitle'))
@@ -144,11 +149,11 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         open={successOpen}
         title={successTitle}
         description={successDesc}
-        okText={t('ok')}
+        okText={tCreate('ok')}
         onOpenChange={setSuccessOpen}
         onOk={async () => {
-          setIsSubmitSuccess(true) // Set context flag before navigation
-          resetPropertyInfo() // Clear context before navigation
+          setIsSubmitSuccess(true)
+          resetPropertyInfo()
           await router.push('/seller/listings')
         }}
       />
@@ -157,18 +162,18 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         open={errorOpen}
         title={errorTitle}
         description={errorDesc}
-        okText={t('ok')}
+        okText={tCreate('ok')}
         onOpenChange={setErrorOpen}
       />
     </PostTemplateBase>
   )
 }
 
-const CreatePostTemplate: React.FC<CreatePostTemplateProps> = ({
+const UpdatePostTemplate: React.FC<UpdatePostTemplateProps> = ({
   className,
 }) => {
-  return <CreatePostTemplateContent className={className} />
+  return <UpdatePostTemplateContent className={className} />
 }
 
-export { CreatePostTemplate }
-export type { CreatePostTemplateProps }
+export { UpdatePostTemplate }
+export type { UpdatePostTemplateProps }
