@@ -1589,6 +1589,7 @@
     "home": "Trang chủ",
     "properties": "Bất động sản",
     "savedListings": "Tin đã lưu",
+    "compare": "So Sánh",
     "about": "Giới thiệu",
     "contact": "Liên hệ",
     "login": "Đăng nhập",
@@ -2779,6 +2780,50 @@
     "tooltip": {
       "save": "Lưu tin này",
       "saved": "Bỏ lưu tin"
+    }
+  },
+  "compare": {
+    "title": "So Sánh Tin Đăng",
+    "subtitle": "So sánh tối đa 3 bất động sản",
+    "empty": {
+      "title": "Chưa Có Tin Để So Sánh",
+      "description": "Bạn chưa thêm tin nào để so sánh. Hãy khám phá và thêm các bất động sản để so sánh!",
+      "action": "Khám Phá Tin Đăng"
+    },
+    "actions": {
+      "addToCompare": "Thêm vào so sánh",
+      "removeFromCompare": "Bỏ khỏi so sánh",
+      "clearAll": "Xóa tất cả",
+      "compareNow": "So Sánh Ngay",
+      "viewDetails": "Xem Chi Tiết"
+    },
+    "messages": {
+      "added": "Đã thêm vào so sánh",
+      "removed": "Đã bỏ khỏi so sánh",
+      "limitReached": "Bạn chỉ có thể so sánh tối đa 3 tin. Hãy xóa một tin để thêm tin khác.",
+      "alreadyAdded": "Tin này đã có trong danh sách so sánh"
+    },
+    "table": {
+      "features": "Tính năng",
+      "price": "Giá",
+      "location": "Vị trí",
+      "area": "Diện tích",
+      "bedrooms": "Phòng ngủ",
+      "bathrooms": "Phòng tắm",
+      "furnishing": "Nội thất",
+      "direction": "Hướng",
+      "propertyType": "Loại BĐS",
+      "verified": "Đã xác thực",
+      "vipType": "Gói VIP",
+      "amenities": "Tiện ích",
+      "notAvailable": "N/A",
+      "yes": "Có",
+      "no": "Không"
+    },
+    "floatingBar": {
+      "items": "{count} tin",
+      "items_plural": "{count} tin",
+      "compareNow": "So Sánh Ngay"
     }
   }
 }

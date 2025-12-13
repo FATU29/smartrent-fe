@@ -1,6 +1,7 @@
 import React from 'react'
 import AppHeader from '@/components/organisms/appHeader'
 import Footer from '@/components/organisms/footer'
+import CompareFloatingBar from '@/components/organisms/compareFloatingBar'
 
 type MainLayoutProps = {
   children: React.ReactNode
@@ -13,6 +14,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, activeItem }) => {
       <AppHeader activeItem={activeItem} />
       <div className='flex-1'>{children}</div>
       <Footer />
+      <CompareFloatingBar />
     </div>
   )
 }
