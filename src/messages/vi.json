@@ -34,6 +34,20 @@
       "desc": "Không thể xác định trạng thái thanh toán."
     }
   },
+  "aiChat": {
+    "title": "Smart Rent AI",
+    "subtitle": "Trợ lý ảo",
+    "placeholder": "Nhập tin nhắn...",
+    "send": "Gửi tin nhắn",
+    "typing": "Bot đang nhập",
+    "clearHistory": "Xóa lịch sử chat",
+    "close": "Đóng chat",
+    "openChat": "Mở chat",
+    "confirmClear": "Bạn có chắc chắn muốn xóa toàn bộ lịch sử chat?",
+    "chatMessages": "Tin nhắn chat",
+    "messageInput": "Nhập tin nhắn",
+    "attachFile": "Đính kèm tệp"
+  },
   "common": {
     "or": "Hoặc",
     "loading": "Đang tải...",
@@ -1589,6 +1603,7 @@
     "home": "Trang chủ",
     "properties": "Bất động sản",
     "savedListings": "Tin đã lưu",
+    "compare": "So Sánh",
     "about": "Giới thiệu",
     "contact": "Liên hệ",
     "login": "Đăng nhập",
@@ -1846,6 +1861,19 @@
       "added": "Đã chọn"
     }
   },
+  "updatePost": {
+    "title": "Cập nhật Tin Đăng Bất động sản",
+    "loading": "Đang tải dữ liệu tin đăng...",
+    "updateListing": "Cập nhật Tin đăng",
+    "submit": {
+      "errorTitle": "Lỗi cập nhật",
+      "successTitle": "Cập nhật thành công",
+      "successDescription": "Tin đăng của bạn đã được cập nhật thành công.",
+      "updateFailed": "Cập nhật tin đăng thất bại. Vui lòng thử lại.",
+      "noListingId": "Không tìm thấy ID tin đăng.",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại."
+    }
+  },
   "pricing": {
     "bestSeller": "Bán chạy nhất",
     "buyNow": "Mua ngay",
@@ -1931,6 +1959,46 @@
     }
   },
   "seller": {
+    "dashboard": {
+      "title": "Bảng điều khiển",
+      "description": "Tổng quan về gói hội viên và hiệu suất tin đăng của bạn",
+      "seoTitle": "Bảng điều khiển – Seller",
+      "seoDescription": "Xem lợi ích gói hội viên và thống kê lượt click số điện thoại",
+      "membership": {
+        "title": "Gói hội viên của tôi",
+        "noMembership": "Bạn chưa có gói hội viên đang hoạt động",
+        "upgradeNow": "Nâng cấp ngay",
+        "manageMembership": "Quản lý gói hội viên",
+        "packageLevel": "Cấp độ gói",
+        "validUntil": "Có hiệu lực đến",
+        "daysRemaining": "Số ngày còn lại",
+        "activeBenefits": "Lợi ích đang hoạt động",
+        "moreBenefits": "lợi ích khác",
+        "upgradeTitle": "Nâng cấp gói hội viên",
+        "upgradeDescription": "Mở khóa thêm tính năng và lợi ích với các gói premium",
+        "viewPlans": "Xem các gói",
+        "feature1": "Nhiều lượt đăng tin hơn mỗi tháng",
+        "feature2": "Hỗ trợ ưu tiên và hỗ trợ",
+        "feature3": "Phân tích và thống kê nâng cao"
+      },
+      "phoneClicks": {
+        "title": "Thống kê lượt click số điện thoại",
+        "description": "Theo dõi số lượng người dùng đã click vào số điện thoại trong tin đăng của bạn",
+        "loading": "Đang tải...",
+        "totalClicks": "Tổng lượt click",
+        "uniqueUsers": "Người dùng duy nhất",
+        "topListings": "Tin đăng hàng đầu",
+        "clickTrends": "Xu hướng click",
+        "last7Days": "7 ngày qua",
+        "noData": "Chưa có dữ liệu",
+        "clicks": "Lượt click",
+        "date": "Ngày"
+      },
+      "phoneClickStats": {
+        "title": "Phân tích lượt click số điện thoại",
+        "description": "Theo dõi mức độ tương tác với tin đăng của bạn thông qua lượt click số điện thoại"
+      }
+    },
     "listingManagement": {
       "toolbar": {
         "searchPlaceholder": "Tìm kiếm tin...",
@@ -2442,7 +2510,9 @@
       },
       "pending": {
         "title": "Đang chờ xác nhận",
-        "desc": "Đang chờ xác nhận từ nhà cung cấp thanh toán..."
+        "desc": "Đang chờ xác nhận từ nhà cung cấp thanh toán...",
+        "waitingTitle": "Đang thanh toán",
+        "waitingDesc": "Đang xử lý thanh toán, vui lòng đợi trong giây lát..."
       },
       "failed": {
         "title": "Thanh toán thất bại",
@@ -2724,6 +2794,50 @@
     "tooltip": {
       "save": "Lưu tin này",
       "saved": "Bỏ lưu tin"
+    }
+  },
+  "compare": {
+    "title": "So Sánh Tin Đăng",
+    "subtitle": "So sánh tối đa 3 bất động sản",
+    "empty": {
+      "title": "Chưa Có Tin Để So Sánh",
+      "description": "Bạn chưa thêm tin nào để so sánh. Hãy khám phá và thêm các bất động sản để so sánh!",
+      "action": "Khám Phá Tin Đăng"
+    },
+    "actions": {
+      "addToCompare": "Thêm vào so sánh",
+      "removeFromCompare": "Bỏ khỏi so sánh",
+      "clearAll": "Xóa tất cả",
+      "compareNow": "So Sánh Ngay",
+      "viewDetails": "Xem Chi Tiết"
+    },
+    "messages": {
+      "added": "Đã thêm vào so sánh",
+      "removed": "Đã bỏ khỏi so sánh",
+      "limitReached": "Bạn chỉ có thể so sánh tối đa 3 tin. Hãy xóa một tin để thêm tin khác.",
+      "alreadyAdded": "Tin này đã có trong danh sách so sánh"
+    },
+    "table": {
+      "features": "Tính năng",
+      "price": "Giá",
+      "location": "Vị trí",
+      "area": "Diện tích",
+      "bedrooms": "Phòng ngủ",
+      "bathrooms": "Phòng tắm",
+      "furnishing": "Nội thất",
+      "direction": "Hướng",
+      "propertyType": "Loại BĐS",
+      "verified": "Đã xác thực",
+      "vipType": "Gói VIP",
+      "amenities": "Tiện ích",
+      "notAvailable": "N/A",
+      "yes": "Có",
+      "no": "Không"
+    },
+    "floatingBar": {
+      "items": "{count} tin",
+      "items_plural": "{count} tin",
+      "compareNow": "So Sánh Ngay"
     }
   }
 }

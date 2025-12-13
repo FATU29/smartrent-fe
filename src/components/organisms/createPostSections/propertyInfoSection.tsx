@@ -54,10 +54,12 @@ import type { ListingDescriptionRequest } from '@/api/types/ai.type'
 
 interface PropertyInfoSectionProps {
   className?: string
+  attemptedSubmit?: boolean
 }
 
 const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   className,
+  attemptedSubmit = false,
 }) => {
   const t = useTranslations('createPost.sections.propertyInfo')
   const tCommon = useTranslations('common')
@@ -150,19 +152,43 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     }
   }, [description])
 
+  // Track if this is the initial mount to prevent validation on mount
+  const isInitialMount = React.useRef(true)
+
   React.useEffect(() => {
+    // Skip validation on initial mount to prevent auto-triggering errors
+    const shouldValidate = !isInitialMount.current
+
     if (propertyInfo?.categoryId) {
       setValue('categoryId', propertyInfo?.categoryId, {
-        shouldValidate: true,
+        shouldValidate,
       })
     }
     if (propertyInfo?.productType) {
       setValue('productType', propertyInfo?.productType, {
-        shouldValidate: true,
+        shouldValidate,
       })
     }
+    // Only validate address if it has meaningful data (not empty/default values)
     if (propertyInfo?.address) {
-      setValue('address', propertyInfo?.address, { shouldValidate: true })
+      const address = propertyInfo.address
+      const hasValidCoords =
+        address.latitude !== undefined &&
+        address.longitude !== undefined &&
+        address.latitude !== 0 &&
+        address.longitude !== 0
+      const hasNewAddress = !!(
+        address.newAddress?.provinceCode && address.newAddress?.wardCode
+      )
+      const hasLegacy = !!address.legacy
+
+      // Only validate if address has valid data
+      const shouldValidateAddress: boolean =
+        shouldValidate && (hasValidCoords || hasNewAddress || hasLegacy)
+
+      setValue('address', propertyInfo?.address, {
+        shouldValidate: shouldValidateAddress,
+      })
     }
     if (propertyInfo.area) {
       setValue('area', propertyInfo?.area, { shouldValidate: true })
@@ -214,7 +240,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       })
     }
     if (propertyInfo?.direction) {
-      setValue('direction', propertyInfo?.direction, { shouldValidate: true })
+      setValue('direction', propertyInfo?.direction, { shouldValidate })
+    }
+
+    // Mark initial mount as complete after first render
+    if (isInitialMount.current) {
+      isInitialMount.current = false
     }
   }, [propertyInfo, setValue])
 
@@ -409,13 +440,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   <AddressInput
                     className='w-full'
                     error={
-                      error?.message
+                      attemptedSubmit && error?.message
                         ? tValidation(getValidationKey(error.message))
                         : undefined
                     }
                   />
                   {/* Show error message prominently below address input */}
-                  {error?.message && (
+                  {attemptedSubmit && error?.message && (
                     <div className='flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg'>
                       <MapPin className='w-4 h-4 text-destructive flex-shrink-0 mt-0.5' />
                       <p className='text-sm text-destructive font-medium'>

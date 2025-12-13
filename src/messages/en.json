@@ -34,6 +34,20 @@
       "desc": "Unable to determine payment status."
     }
   },
+  "aiChat": {
+    "title": "Smart Rent AI",
+    "subtitle": "Virtual Assistant",
+    "placeholder": "Type a message...",
+    "send": "Send message",
+    "typing": "Bot is typing",
+    "clearHistory": "Clear chat history",
+    "close": "Close chat",
+    "openChat": "Open chat",
+    "confirmClear": "Are you sure you want to clear all chat history?",
+    "chatMessages": "Chat messages",
+    "messageInput": "Message input",
+    "attachFile": "Attach file"
+  },
   "common": {
     "or": "Or",
     "loading": "Loading...",
@@ -1558,6 +1572,19 @@
       }
     }
   },
+  "updatePost": {
+    "title": "Update Real Estate Listing",
+    "loading": "Loading listing data...",
+    "updateListing": "Update Listing",
+    "submit": {
+      "errorTitle": "Update Error",
+      "successTitle": "Update Successful",
+      "successDescription": "Your listing has been successfully updated.",
+      "updateFailed": "Failed to update listing. Please try again.",
+      "noListingId": "Listing ID not found.",
+      "unexpectedError": "An unexpected error occurred. Please try again."
+    }
+  },
   "pricing": {
     "bestSeller": "Best Seller",
     "buyNow": "Buy Now",
@@ -1672,6 +1699,7 @@
     "home": "Home",
     "properties": "Properties",
     "savedListings": "Saved Listings",
+    "compare": "Compare",
     "about": "About",
     "contact": "Contact",
     "login": "Log In",
@@ -1930,6 +1958,46 @@
     }
   },
   "seller": {
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "Overview of your membership and listing performance",
+      "seoTitle": "Dashboard – Seller",
+      "seoDescription": "View your membership benefits and phone click statistics",
+      "membership": {
+        "title": "My Membership",
+        "noMembership": "You don't have an active membership",
+        "upgradeNow": "Upgrade Now",
+        "manageMembership": "Manage Membership",
+        "packageLevel": "Package Level",
+        "validUntil": "Valid Until",
+        "daysRemaining": "Days Remaining",
+        "activeBenefits": "Active Benefits",
+        "moreBenefits": "more benefits",
+        "upgradeTitle": "Upgrade Your Membership",
+        "upgradeDescription": "Unlock more features and benefits with our premium plans",
+        "viewPlans": "View Plans",
+        "feature1": "More listing credits per month",
+        "feature2": "Priority support and assistance",
+        "feature3": "Advanced analytics and insights"
+      },
+      "phoneClicks": {
+        "title": "Phone Click Statistics",
+        "description": "Track how many users clicked on your listing phone numbers",
+        "loading": "Loading...",
+        "totalClicks": "Total Clicks",
+        "uniqueUsers": "Unique Users",
+        "topListings": "Top Listings",
+        "clickTrends": "Click Trends",
+        "last7Days": "Last 7 Days",
+        "noData": "No data available",
+        "clicks": "Clicks",
+        "date": "Date"
+      },
+      "phoneClickStats": {
+        "title": "Phone Click Analytics",
+        "description": "Monitor engagement with your listings through phone clicks"
+      }
+    },
     "listingManagement": {
       "toolbar": {
         "searchPlaceholder": "Search listings...",
@@ -2672,7 +2740,9 @@
       },
       "pending": {
         "title": "Payment Pending",
-        "desc": "Waiting for confirmation from the payment provider..."
+        "desc": "Waiting for confirmation from the payment provider...",
+        "waitingTitle": "Processing Payment",
+        "waitingDesc": "Processing your payment, please wait a moment..."
       },
       "failed": {
         "title": "Payment Failed",
@@ -2723,6 +2793,50 @@
     "tooltip": {
       "save": "Save this listing",
       "saved": "Remove from saved"
+    }
+  },
+  "compare": {
+    "title": "Compare Listings",
+    "subtitle": "Compare up to 3 properties side by side",
+    "empty": {
+      "title": "No Listings to Compare",
+      "description": "You haven't added any listings to compare yet. Start exploring and add properties to compare!",
+      "action": "Browse Listings"
+    },
+    "actions": {
+      "addToCompare": "Add to Compare",
+      "removeFromCompare": "Remove from Compare",
+      "clearAll": "Clear All",
+      "compareNow": "Compare Now",
+      "viewDetails": "View Details"
+    },
+    "messages": {
+      "added": "Added to compare",
+      "removed": "Removed from compare",
+      "limitReached": "You can compare up to 3 listings. Remove one to add another.",
+      "alreadyAdded": "This listing is already in your compare list"
+    },
+    "table": {
+      "features": "Features",
+      "price": "Price",
+      "location": "Location",
+      "area": "Area",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "furnishing": "Furnishing",
+      "direction": "Direction",
+      "propertyType": "Property Type",
+      "verified": "Verified",
+      "vipType": "VIP Type",
+      "amenities": "Amenities",
+      "notAvailable": "N/A",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "floatingBar": {
+      "items": "{count} item",
+      "items_plural": "{count} items",
+      "compareNow": "Compare Now"
     }
   }
 }

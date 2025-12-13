@@ -1,5 +1,4 @@
 export { FilterSection } from './filter-section'
-export { AddChipButton } from './add-chip-button'
 export { SearchInput } from './search-input'
 export { StatusBadge } from './status-badge'
 export { RankDisplay } from './rank-display'

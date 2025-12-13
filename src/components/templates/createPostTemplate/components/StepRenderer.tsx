@@ -10,15 +10,17 @@ import type { ProgressStep } from '@/components/molecules/progressSteps'
 interface StepRendererProps {
   currentStep: number
   progressSteps: ProgressStep[]
+  attemptedSubmit: boolean
 }
 
 export const StepRenderer: React.FC<StepRendererProps> = ({
   currentStep,
   progressSteps,
+  attemptedSubmit,
 }) => {
   switch (currentStep) {
     case 0:
-      return <PropertyInfoStep />
+      return <PropertyInfoStep attemptedSubmit={attemptedSubmit} />
     case 1:
       return <AIValuationStep />
     case 2:

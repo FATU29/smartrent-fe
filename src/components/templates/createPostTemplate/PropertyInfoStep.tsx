@@ -6,10 +6,12 @@ import { useTranslations } from 'next-intl'
 
 interface PropertyInfoStepProps {
   className?: string
+  attemptedSubmit: boolean
 }
 
 export const PropertyInfoStep: React.FC<PropertyInfoStepProps> = ({
   className,
+  attemptedSubmit,
 }) => {
   const t = useTranslations('createPost')
 
@@ -29,7 +31,10 @@ export const PropertyInfoStep: React.FC<PropertyInfoStepProps> = ({
             {t('sections.propertyInfo.description')}
           </Typography>
         </Card>
-        <PropertyInfoSection className='w-full' />
+        <PropertyInfoSection
+          className='w-full'
+          attemptedSubmit={attemptedSubmit}
+        />
       </Card>
     </Card>
   )

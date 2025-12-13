@@ -104,22 +104,9 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   useEffect(() => {
     const currentStreet = propertyInfo?.address?.newAddress?.street || ''
     if (currentStreet !== streetInput) {
-      console.log('🏠 Syncing street input:', currentStreet)
       setStreetInput(currentStreet)
     }
   }, [propertyInfo?.address?.newAddress?.street])
-
-  // Debug: Log address state changes
-  useEffect(() => {
-    console.log(
-      '🌍 AddressInput - Province:',
-      provinceCode,
-      'Ward:',
-      fulltextAddress?.newWardCode,
-      'Street:',
-      streetInput,
-    )
-  }, [provinceCode, fulltextAddress?.newWardCode, streetInput])
 
   const handleProvinceChange = (value: string) => {
     updateFulltextAddress({
@@ -129,13 +116,12 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       propertyAddressEdited: false,
     })
 
-    // Update property info address.newAddress
     const prev = propertyInfo.address
     const nextAddress: ListingAddress = {
       legacy: prev?.legacy,
       newAddress: {
         provinceCode: value,
-        wardCode: '', // Reset ward when province changes
+        wardCode: '',
         street: prev?.newAddress?.street || '',
       },
       latitude: prev?.latitude ?? 0,
@@ -145,13 +131,11 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   }
 
   const handleWardChange = (value: string) => {
-    // Update UI state
     updateFulltextAddress({
       newWardCode: value,
       legacyAddressId: '',
     })
 
-    // Update property info address.newAddress
     const prev = propertyInfo.address
     const nextAddress: ListingAddress = {
       legacy: prev?.legacy,
@@ -280,11 +264,11 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   }, [wardsError, tAddress])
 
   const provinceOptions = useMemo(
-    () => newProvinces.map((p) => ({ value: p.id, label: p.name })),
+    () => newProvinces.map((p) => ({ value: String(p.id), label: p.name })),
     [newProvinces],
   )
   const wardOptions = useMemo(
-    () => newWards.map((w) => ({ value: w.code, label: w.name })),
+    () => newWards.map((w) => ({ value: String(w.code), label: w.name })),
     [newWards],
   )
 
@@ -292,7 +276,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   const showLegacySelector = provinceCode && fulltextAddress?.newWardCode
   const showLegacyAddress = !!legacyAddressText
 
-  // Render
   return (
     <div className={`space-y-4 ${className || ''}`}>
       {/* Province and Ward Selection */}
