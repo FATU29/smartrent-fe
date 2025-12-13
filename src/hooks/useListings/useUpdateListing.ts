@@ -18,11 +18,9 @@ export const useUpdateListing = () => {
       data: CreateListingRequest
     }) => ListingService.update(listingId, data),
     onSuccess: (response, variables) => {
-      // Invalidate and refetch the specific listing
       queryClient.invalidateQueries({
         queryKey: ['listing', variables.listingId],
       })
-      // Also invalidate my listings
       queryClient.invalidateQueries({ queryKey: ['my-listings'] })
     },
   })

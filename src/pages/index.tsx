@@ -62,7 +62,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       PROVINCE_CODE.DONG_NAI,
     ]
 
-    // Fetch province stats and category stats in parallel for better performance
     const [provinceStatsResponse, categoryStatsResponse] = await Promise.all([
       ListingService.getProvinceStats(
         {

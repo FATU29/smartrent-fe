@@ -39,7 +39,7 @@ const ListingDetail: NextPageWithLayout<ListingDetailProps> = (props) => {
   const { title, description, media } = listingData || {}
   const images =
     media
-      ?.filter((item) => item.mediaType === 'IMAGE' && item.url)
+      ?.filter((item) => item.mediaType === 'IMAGE' && item.url && !!item.url)
       .map((item) => item.url)
       .filter((url): url is string => !!url && url !== 'undefined') || []
 

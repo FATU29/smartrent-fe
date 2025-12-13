@@ -9,20 +9,13 @@ import LocationBrowseSection from '@/components/organisms/locationBrowseSection'
 import PromoFeaturesSection from '@/components/organisms/promoFeaturesSection'
 import TopInterestSection from '@/components/organisms/topInterestSection'
 import { List } from '@/contexts/list'
-import dynamic from 'next/dynamic'
 import ClearFilterButton from '@/components/atoms/clearFilterButton'
 import { useRecommendedListingsByVip } from '@/hooks/useListings'
 import VipPropertySection from '@/components/organisms/vipPropertySection'
 
-const ResidentialFilterResponsive = dynamic(
-  () => import('@/components/molecules/residentialFilterResponsive'),
-  {
-    ssr: false,
-  },
-)
-
 import type { ProvinceStatsItem, CategoryStatsItem } from '@/api/types'
 import Image from 'next/image'
+import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
 
 interface HomepageTemplateProps {
   cities?: ProvinceStatsItem[]
@@ -66,10 +59,6 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
     }
   }, [router])
 
-  const handleFilterApply = useCallback(() => {
-    router.push(PUBLIC_ROUTES.LISTING_LISTING)
-  }, [router])
-
   return (
     <div className='w-full'>
       <div className='px-4 sm:px-6 lg:px-8'>
@@ -100,7 +89,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                 </div>
                 <div className='backdrop-blur-sm bg-white/75 dark:bg-black/50 p-3 sm:p-4 rounded-xl shadow-lg ring-1 ring-white/40 dark:ring-white/10'>
                   <div className='flex flex-col gap-3'>
-                    <ResidentialFilterResponsive onApply={handleFilterApply} />
+                    <ResidentialFilterResponsive />
                     <div className='flex justify-between items-center'>
                       <ClearFilterButton show={false} onClick={() => {}} />
                     </div>

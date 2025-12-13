@@ -16,8 +16,8 @@ function createClientAxiosInstance(
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
-    maxBodyLength: 10 * 1024 * 1024, // 10MB
-    maxContentLength: 10 * 1024 * 1024, // 10MB
+    maxBodyLength: 200 * 1024 * 1024, // 200MB
+    maxContentLength: 200 * 1024 * 1024, // 200MB
   })
 
   setupInterceptors(instance, undefined)
@@ -35,9 +35,7 @@ function createClientAxiosInstance(
   return instance
 }
 
-export const instanceClientAxios = createClientAxiosInstance({
-  withCredentials: true,
-})
+export const instanceClientAxios = createClientAxiosInstance()
 
 export const api = {
   get: <T = unknown>(url: string, config?: CustomAxiosRequestConfig) =>

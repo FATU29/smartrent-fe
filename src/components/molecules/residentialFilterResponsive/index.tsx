@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 import dynamic from 'next/dynamic'
+import ResidentialFilterBar from '../residentialFilterBar'
 
 const ResidentialFilterDialog = dynamic(
   () => import('@/components/molecules/residentialFilterDialog'),
@@ -8,15 +9,8 @@ const ResidentialFilterDialog = dynamic(
   },
 )
 
-const ResidentialFilterBar = dynamic(
-  () => import('@/components/molecules/residentialFilterBar'),
-  {
-    ssr: false,
-  },
-)
-
 interface ResidentialFilterResponsiveProps {
-  onApply?: () => void // Custom apply handler (e.g., navigate from homepage to /properties)
+  onApply?: () => void
 }
 
 const ResidentialFilterResponsive: React.FC<

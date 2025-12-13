@@ -10,29 +10,60 @@ const DEFAULTS = {
 } as const
 
 /**
+ * Checks if a string is a valid non-empty value
+ * @param value - The value to check
+ * @returns true if value is a valid non-empty string
+ */
+function isValidString(value?: string | null): value is string {
+  if (value === undefined || value === null) return false
+  if (typeof value !== 'string') return false
+  const trimmed = value.trim()
+  return (
+    trimmed.length > 0 &&
+    trimmed !== 'undefined' &&
+    trimmed !== 'null' &&
+    trimmed !== 'NaN'
+  )
+}
+
+/**
  * Converts a relative or absolute path to an absolute URL
  * @param path - The path to convert
  * @returns Absolute URL or undefined if path is invalid
  */
-function toAbsoluteUrl(path?: string): string | undefined {
-  if (!path || path === 'undefined') return undefined
-  if (path.startsWith('http://') || path.startsWith('https://')) return path
+function toAbsoluteUrl(path?: string | null): string | undefined {
+  if (!isValidString(path)) return undefined
 
-  const base = ENV.SITE_URL?.replace(/\/$/, '') || ''
-  if (!base) return undefined
+  const trimmedPath = path.trim()
+  if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://')) {
+    return trimmedPath
+  }
 
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  const base = ENV.SITE_URL?.trim().replace(/\/$/, '')
+  if (!isValidString(base)) return undefined
+
+  const normalizedPath = trimmedPath.startsWith('/')
+    ? trimmedPath
+    : `/${trimmedPath}`
   return `${base}${normalizedPath}`
 }
 
 /**
  * Validates and sanitizes image URL
  */
-function isValidImageUrl(url?: string): url is string {
-  if (!url || url === 'undefined' || url === 'null') return false
+function isValidImageUrl(url?: string | null): url is string {
+  if (!isValidString(url)) return false
+
   // Check if it's a valid URL format
   try {
-    new URL(url.startsWith('http') ? url : `https://example.com${url}`)
+    const trimmedUrl = url.trim()
+    // Try parsing as absolute URL first
+    if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+      new URL(trimmedUrl)
+      return true
+    }
+    // Try parsing as relative URL
+    new URL(trimmedUrl, 'https://example.com')
     return true
   } catch {
     return false
@@ -42,30 +73,53 @@ function isValidImageUrl(url?: string): url is string {
 export default function SeoHead(props: SeoProps = {}) {
   const router = useRouter()
 
-  // Basic meta tags
-  const canonicalUrl = toAbsoluteUrl(props.canonical || router.asPath)
-  const title = props.title || DEFAULTS.title
-  const description = props.description || DEFAULTS.description
+  const fallbackPath = isValidString(router.asPath) ? router.asPath : '/'
+  const canonicalUrl = toAbsoluteUrl(
+    isValidString(props.canonical) ? props.canonical : fallbackPath,
+  )
+  const title = isValidString(props.title) ? props.title : DEFAULTS.title
+  const description = isValidString(props.description)
+    ? props.description
+    : DEFAULTS.description
 
-  // Open Graph
+  // Open Graph with validation
   const og = props.openGraph || {}
-  const ogTitle = og.title || title
-  const ogDesc = og.description || description
+  const ogTitle = isValidString(og.title) ? og.title : title
+  const ogDesc = isValidString(og.description) ? og.description : description
   const ogUrl = toAbsoluteUrl(og.url) || canonicalUrl
-  const siteName = og.siteName || ENV.SITE_NAME || DEFAULTS.siteName
+  const siteName = isValidString(og.siteName)
+    ? og.siteName
+    : isValidString(ENV.SITE_NAME)
+      ? ENV.SITE_NAME
+      : DEFAULTS.siteName
   const ogType = og.type || 'website'
 
   // Process and validate Open Graph images
-  const images = (og.images || [])
-    .filter((img) => isValidImageUrl(img.url))
+  // Double-check to ensure no undefined values slip through
+  const images = (Array.isArray(og.images) ? og.images : [])
+    .filter(
+      (img) =>
+        img &&
+        typeof img === 'object' &&
+        'url' in img &&
+        isValidImageUrl(img.url),
+    )
     .map((img) => {
+      // Additional safety check
+      if (!img || typeof img !== 'object' || !isValidImageUrl(img.url)) {
+        return null
+      }
       const absoluteUrl = toAbsoluteUrl(img.url)
-      return absoluteUrl ? { ...img, url: absoluteUrl } : null
+      // Ensure absoluteUrl is valid before returning
+      if (!absoluteUrl || !isValidString(absoluteUrl)) {
+        return null
+      }
+      return { ...img, url: absoluteUrl }
     })
     .filter((img): img is NonNullable<typeof img> => img !== null)
     .slice(0, 4) // Limit to 4 images as per Open Graph spec
 
-  // Twitter Card
+  // Twitter Card with validation
   const twitter = props.twitter || {}
   const twitterCard =
     twitter.card || (images.length > 0 ? 'summary_large_image' : 'summary')
@@ -105,10 +159,12 @@ export default function SeoHead(props: SeoProps = {}) {
       {router.locale && <meta property='og:locale' content={router.locale} />}
 
       {/* Open Graph Images */}
-      {images.map((img, idx) => (
-        <meta key={`og:image:${idx}`} property='og:image' content={img.url} />
-      ))}
-      {images[0]?.url && (
+      {images
+        .filter((img) => img && isValidString(img.url))
+        .map((img, idx) => (
+          <meta key={`og:image:${idx}`} property='og:image' content={img.url} />
+        ))}
+      {images[0] && isValidString(images[0].url) && (
         <>
           <meta property='og:image:secure_url' content={images[0].url} />
           {images[0].width && (
@@ -120,8 +176,8 @@ export default function SeoHead(props: SeoProps = {}) {
               content={String(images[0].height)}
             />
           )}
-          {images[0].alt && (
-            <meta property='og:image:alt' content={images[0].alt as string} />
+          {isValidString(images[0].alt) && (
+            <meta property='og:image:alt' content={images[0].alt} />
           )}
           <meta property='og:image:type' content='image/jpeg' />
         </>
@@ -131,9 +187,13 @@ export default function SeoHead(props: SeoProps = {}) {
       <meta name='twitter:card' content={twitterCard} />
       <meta name='twitter:title' content={ogTitle} />
       <meta name='twitter:description' content={ogDesc} />
-      {images[0]?.url && <meta name='twitter:image' content={images[0].url} />}
-      {twitter.site && <meta name='twitter:site' content={twitter.site} />}
-      {twitter.creator && (
+      {images[0]?.url && isValidString(images[0].url) && (
+        <meta name='twitter:image' content={images[0].url} />
+      )}
+      {isValidString(twitter.site) && (
+        <meta name='twitter:site' content={twitter.site} />
+      )}
+      {isValidString(twitter.creator) && (
         <meta name='twitter:creator' content={twitter.creator} />
       )}
 

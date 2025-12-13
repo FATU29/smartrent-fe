@@ -7,33 +7,9 @@ export const useCreateDraft = () => {
 
   return useMutation({
     mutationFn: (data: CreateListingRequest) => {
-      console.log('📝 [CREATE DRAFT] Request Data:', {
-        title: data.title,
-        description: data.description,
-        listingType: data.listingType,
-        categoryId: data.categoryId,
-        productType: data.productType,
-        price: data.price,
-        priceUnit: data.priceUnit,
-        address: data.address,
-        area: data.area,
-        bedrooms: data.bedrooms,
-        bathrooms: data.bathrooms,
-        direction: data.direction,
-        furnishing: data.furnishing,
-        roomCapacity: data.roomCapacity,
-        waterPrice: data.waterPrice,
-        electricityPrice: data.electricityPrice,
-        internetPrice: data.internetPrice,
-        serviceFee: data.serviceFee,
-        amenityIds: data.amenityIds,
-        mediaIds: data.mediaIds,
-        fullRequest: data,
-      })
       return ListingService.createDraft(data)
     },
-    onSuccess: (response) => {
-      console.log('✅ [CREATE DRAFT] Success:', response)
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-drafts'] })
     },
     onError: (error) => {

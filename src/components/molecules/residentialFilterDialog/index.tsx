@@ -80,7 +80,6 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
     prevOpenRef.current = open
   }, [open])
 
-  // Handlers
   const update = useCallback((partial: Partial<ListingFilterRequest>) => {
     setDraft((prev) => ({ ...prev, ...partial }))
   }, [])

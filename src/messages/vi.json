@@ -1787,7 +1787,8 @@
         "title": "Giá internet",
         "any": "Tất cả",
         "negotiable": "Thỏa thuận",
-        "owner": "Do chủ nhà quy định"
+        "owner": "Do chủ nhà quy định",
+        "provider": "Theo nhà cung cấp"
       },
       "serviceFee": {
         "title": "Phí dịch vụ",

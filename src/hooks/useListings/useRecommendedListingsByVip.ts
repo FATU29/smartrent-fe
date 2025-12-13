@@ -38,13 +38,6 @@ export const useRecommendedListingsByVip = (
       size,
     ],
     queryFn: async () => {
-      console.log(`🔍 Fetching ${vipType} listings...`, {
-        hasCoordinates: !!coordinates,
-        coordinates,
-        page,
-        size,
-      })
-
       const response = await ListingService.search({
         vipType,
         userLatitude: coordinates?.latitude,

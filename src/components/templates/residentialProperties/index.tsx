@@ -1,31 +1,18 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import dynamic from 'next/dynamic'
 import PropertyListContent from '@/components/molecules/propertyListContent'
 
-const ResidentialFilterResponsive = dynamic(
-  () => import('@/components/molecules/residentialFilterResponsive'),
-  {
-    ssr: false,
-  },
-)
 import PropertyFilterSidebar from '@/components/molecules/propertyFilterSidebar'
 import { Typography } from '@/components/atoms/typography'
 import { Switch } from '@/components/atoms/switch'
 import { useListContext } from '@/contexts/list'
 import { ListingDetail } from '@/api/types/property.type'
+import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
 
 const ResidentialPropertiesTemplate: React.FC = () => {
   const t = useTranslations('propertiesPage')
   const { pagination } = useListContext<ListingDetail>()
   const [emailNotification, setEmailNotification] = useState(false)
-
-  const handleFavorite = useCallback(
-    (property: ListingDetail, isFavorite: boolean) => {
-      console.log('Favorite:', property, isFavorite)
-    },
-    [],
-  )
 
   return (
     <>
@@ -64,7 +51,7 @@ const ResidentialPropertiesTemplate: React.FC = () => {
       <div className='flex flex-col lg:flex-row gap-6'>
         {/* Left Column - Property List */}
         <main className='flex-1'>
-          <PropertyListContent onFavorite={handleFavorite} />
+          <PropertyListContent />
         </main>
 
         {/* Right Column - Filter Sidebar - Desktop Only */}

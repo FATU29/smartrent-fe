@@ -24,7 +24,7 @@ const clearAuthTokens = () => {
 export const handleExpiredTokens = (refreshTokenValue?: string | null) => {
   if (!refreshTokenValue || isTokenExpired(refreshTokenValue)) {
     // Only log in development
-    if (process.env.NODE_ENV === 'development') {
+    if (!ENV.IS_PRODUCTION) {
       console.log('Refresh token expired or not found, logging out...')
     }
     clearAuthTokens()
@@ -58,8 +58,7 @@ export const applyAuthToken = (
       config.headers['userId'] = decoded.user.userId
     }
   } catch (error) {
-    // Only log in development
-    if (process.env.NODE_ENV === 'development') {
+    if (!ENV.IS_PRODUCTION) {
       console.error('Failed to decode token for userId:', error)
     }
   }

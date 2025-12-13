@@ -1883,7 +1883,8 @@
         "title": "Internet Price",
         "any": "All",
         "negotiable": "Negotiable",
-        "owner": "Set by owner"
+        "owner": "Set by owner",
+        "provider": "Provider rate"
       },
       "serviceFee": {
         "title": "Service Fee",
