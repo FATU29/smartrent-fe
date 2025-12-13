@@ -34,6 +34,20 @@
       "desc": "Không thể xác định trạng thái thanh toán."
     }
   },
+  "aiChat": {
+    "title": "Smart Rent AI",
+    "subtitle": "Trợ lý ảo",
+    "placeholder": "Nhập tin nhắn...",
+    "send": "Gửi tin nhắn",
+    "typing": "Bot đang nhập",
+    "clearHistory": "Xóa lịch sử chat",
+    "close": "Đóng chat",
+    "openChat": "Mở chat",
+    "confirmClear": "Bạn có chắc chắn muốn xóa toàn bộ lịch sử chat?",
+    "chatMessages": "Tin nhắn chat",
+    "messageInput": "Nhập tin nhắn",
+    "attachFile": "Đính kèm tệp"
+  },
   "common": {
     "or": "Hoặc",
     "loading": "Đang tải...",
