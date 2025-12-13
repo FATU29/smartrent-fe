@@ -1,13 +1,13 @@
-import { useCreatePost } from '@/contexts/createPost'
-import { useCreatePostForm } from './useCreatePostForm'
+import { useUpdatePost } from '@/contexts/updatePost'
+import { useUpdatePostForm } from './useUpdatePostForm'
 import { usePostSteps } from '@/components/templates/shared/steps.hooks'
 
-const TOTAL_STEPS = 5
+const TOTAL_STEPS = 4
 
-export const useCreatePostSteps = () => {
+export const useUpdatePostSteps = () => {
   const { propertyInfo, media, videoUploadProgress, imagesUploadProgress } =
-    useCreatePost()
-  const form = useCreatePostForm()
+    useUpdatePost()
+  const form = useUpdatePostForm()
 
   return usePostSteps({
     totalSteps: TOTAL_STEPS,
@@ -16,6 +16,6 @@ export const useCreatePostSteps = () => {
     media,
     videoUploadProgress,
     imagesUploadProgress,
-    isCreatePost: true,
+    isCreatePost: false,
   })
 }

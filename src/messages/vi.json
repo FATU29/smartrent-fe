@@ -1846,6 +1846,19 @@
       "added": "Đã chọn"
     }
   },
+  "updatePost": {
+    "title": "Cập nhật Tin Đăng Bất động sản",
+    "loading": "Đang tải dữ liệu tin đăng...",
+    "updateListing": "Cập nhật Tin đăng",
+    "submit": {
+      "errorTitle": "Lỗi cập nhật",
+      "successTitle": "Cập nhật thành công",
+      "successDescription": "Tin đăng của bạn đã được cập nhật thành công.",
+      "updateFailed": "Cập nhật tin đăng thất bại. Vui lòng thử lại.",
+      "noListingId": "Không tìm thấy ID tin đăng.",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại."
+    }
+  },
   "pricing": {
     "bestSeller": "Bán chạy nhất",
     "buyNow": "Mua ngay",

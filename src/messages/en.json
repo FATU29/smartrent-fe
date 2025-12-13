@@ -1558,6 +1558,19 @@
       }
     }
   },
+  "updatePost": {
+    "title": "Update Real Estate Listing",
+    "loading": "Loading listing data...",
+    "updateListing": "Update Listing",
+    "submit": {
+      "errorTitle": "Update Error",
+      "successTitle": "Update Successful",
+      "successDescription": "Your listing has been successfully updated.",
+      "updateFailed": "Failed to update listing. Please try again.",
+      "noListingId": "Listing ID not found.",
+      "unexpectedError": "An unexpected error occurred. Please try again."
+    }
+  },
   "pricing": {
     "bestSeller": "Best Seller",
     "buyNow": "Buy Now",

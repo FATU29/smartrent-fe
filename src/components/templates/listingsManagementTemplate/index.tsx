@@ -73,9 +73,9 @@ const ListingsWithPagination = () => {
         <>
           <ListingsList
             listings={listings}
-            onEditListing={(listing) =>
-              console.log('Edit listing:', listing.listingId)
-            }
+            onEditListing={(listing) => {
+              window.location.href = `/seller/update-post/${listing.listingId}`
+            }}
             onPromoteListing={(listing) =>
               console.log('Promote listing:', listing.listingId)
             }
