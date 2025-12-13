@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
 import { TChatMessage } from '@/hooks/useChatAi'
+import { Progress } from '@/components/atoms/progress'
 
 import AiChatBubble from '@/components/molecules/aiChatBubble'
 import AiChatInput from '@/components/molecules/aiChatInput'
@@ -13,6 +14,7 @@ type TAiChatInterfaceProps = {
   inputValue: string
   isLoading: boolean
   isTyping: boolean
+  progress: number
   scrollRef: RefObject<HTMLDivElement | null>
   onInputChange: (value: string) => void
   onSendMessage: (value: string) => void
@@ -25,6 +27,7 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
   inputValue,
   isLoading,
   isTyping,
+  progress,
   scrollRef,
   onInputChange,
   onSendMessage,
@@ -77,6 +80,13 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Progress indicator */}
+      {isLoading && progress > 0 && (
+        <div className='border-t bg-background px-4 py-2'>
+          <Progress value={progress} className='h-1' />
+        </div>
+      )}
 
       {/* Input area - Fixed on mobile */}
       <div

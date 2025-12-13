@@ -14,6 +14,7 @@ export type TChatState = {
   messages: TChatMessage[]
   isLoading: boolean
   isTyping: boolean
+  progress: number
 }
 
 export const useChatLogic = () => {
@@ -32,9 +33,11 @@ export const useChatLogic = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   const [inputValue, setInputValue] = useState('')
+  const [progress, setProgress] = useState(0)
 
   const messageIdCounter = useRef(2)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const progressTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   //Init util function
   const scrollToBottom = useCallback(() => {
@@ -114,10 +117,45 @@ export const useChatLogic = () => {
 
       scrollToBottom()
 
-      // Simulate API delay
-      await new Promise((resolve) =>
-        setTimeout(resolve, 1000 + Math.random() * 1000),
-      )
+      // Simulate API delay with progress indicator
+      // Use deterministic delay based on message length for consistent behavior
+      // This is safe as it's only for UI simulation, not security purposes
+      const baseDelay = 1000
+      const messageLengthDelay = Math.min(trimmedContent.length * 50, 1000)
+      const totalDelay = baseDelay + messageLengthDelay
+
+      // Clear any existing progress timer
+      if (progressTimerRef.current) {
+        clearInterval(progressTimerRef.current)
+        progressTimerRef.current = null
+      }
+
+      // Simulate progress from 0 to 100
+      const progressInterval = 50 // Update every 50ms
+      const progressSteps = totalDelay / progressInterval
+      const progressIncrement = 100 / progressSteps
+
+      let currentProgress = 0
+      progressTimerRef.current = setInterval(() => {
+        currentProgress += progressIncrement
+        if (currentProgress >= 100) {
+          currentProgress = 100
+          if (progressTimerRef.current) {
+            clearInterval(progressTimerRef.current)
+            progressTimerRef.current = null
+          }
+        }
+        setProgress(currentProgress)
+      }, progressInterval)
+
+      await new Promise((resolve) => setTimeout(resolve, totalDelay))
+
+      // Ensure progress is at 100% before proceeding
+      if (progressTimerRef.current) {
+        clearInterval(progressTimerRef.current)
+        progressTimerRef.current = null
+      }
+      setProgress(100)
 
       // Generate bot response
       const botResponseContent = generateBotResponse(trimmedContent)
@@ -132,6 +170,7 @@ export const useChatLogic = () => {
       setIsTyping(false)
       setMessages((prev) => [...prev, botMessage])
       setIsLoading(false)
+      setProgress(0)
 
       scrollToBottom()
     },
@@ -159,10 +198,21 @@ export const useChatLogic = () => {
     scrollToBottom()
   }, [messages, scrollToBottom])
 
+  // Cleanup progress timer on unmount
+  useEffect(() => {
+    return () => {
+      if (progressTimerRef.current) {
+        clearInterval(progressTimerRef.current)
+        progressTimerRef.current = null
+      }
+    }
+  }, [])
+
   return {
     messages,
     isLoading,
     isTyping,
+    progress,
     inputValue,
     scrollRef,
     sendMessage,

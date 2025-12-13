@@ -36,6 +36,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
     messages,
     isLoading,
     isTyping,
+    progress,
     inputValue,
     scrollRef,
     sendMessage,
@@ -117,6 +118,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                 inputValue={inputValue}
                 isLoading={isLoading}
                 isTyping={isTyping}
+                progress={progress}
                 scrollRef={scrollRef}
                 onInputChange={handleInputChange}
                 onSendMessage={sendMessage}
@@ -155,6 +157,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
             inputValue={inputValue}
             isLoading={isLoading}
             isTyping={isTyping}
+            progress={progress}
             scrollRef={scrollRef}
             onInputChange={handleInputChange}
             onSendMessage={sendMessage}

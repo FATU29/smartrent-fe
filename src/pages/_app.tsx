@@ -20,6 +20,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import AuthRouteGate from '@/components/utility/AuthRouteGate'
 import ErrorBoundary from '@/components/atoms/errorBoundary'
+import NextTopLoader from 'nextjs-toploader'
 
 const messages = {
   vi,
@@ -34,6 +35,14 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <div className={fontVariables}>
+      <NextTopLoader
+        color='var(--primary)'
+        height={3}
+        showSpinner={false}
+        easing='ease'
+        speed={200}
+        shadow='0 0 10px var(--primary),0 0 5px var(--primary)'
+      />
       <QueryClientProvider client={queryClient}>
         <NextIntlClientProvider
           locale={language}
