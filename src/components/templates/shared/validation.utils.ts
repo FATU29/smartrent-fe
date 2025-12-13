@@ -70,6 +70,8 @@ export const validateStep0 = (
     propertyInfo.bedrooms >= 1 &&
     typeof propertyInfo.bathrooms === 'number' &&
     propertyInfo.bathrooms >= 1 &&
+    typeof propertyInfo.roomCapacity === 'number' &&
+    propertyInfo.roomCapacity >= 1 &&
     !!propertyInfo.direction
 
   return hasAllRequiredFields

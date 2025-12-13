@@ -51,6 +51,7 @@ import NumberField from '@/components/atoms/number-field'
 import classNames from 'classnames'
 import { useGenerateListingDescription } from '@/hooks/useAI'
 import type { ListingDescriptionRequest } from '@/api/types/ai.type'
+import { toast } from 'sonner'
 
 interface PropertyInfoSectionProps {
   className?: string
@@ -289,23 +290,60 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       })
     }
 
-    if (
-      !categoryName ||
-      !productType ||
-      !furnishing ||
-      !propertyInfo?.direction ||
-      !propertyInfo?.waterPrice ||
-      !propertyInfo?.electricityPrice ||
-      !propertyInfo?.internetPrice ||
-      !propertyInfo?.serviceFee ||
-      !propertyInfo?.price ||
-      propertyInfo.price <= 0 ||
-      !propertyInfo?.priceUnit ||
-      !propertyInfo?.area ||
-      !propertyInfo?.bedrooms ||
-      !propertyInfo?.bathrooms ||
-      !propertyInfo?.roomCapacity
-    ) {
+    if (!categoryName) {
+      toast.error(tValidation('propertyTypeRequired'))
+      return
+    }
+    if (!productType) {
+      toast.error(tValidation('propertyTypeRequired'))
+      return
+    }
+    if (!furnishing) {
+      toast.error(tValidation('interiorConditionRequired'))
+      return
+    }
+    if (!propertyInfo?.direction) {
+      toast.error(tValidation('directionRequired'))
+      return
+    }
+    if (!propertyInfo?.waterPrice) {
+      toast.error(tValidation('waterPriceRequired'))
+      return
+    }
+    if (!propertyInfo?.electricityPrice) {
+      toast.error(tValidation('electricityPriceRequired'))
+      return
+    }
+    if (!propertyInfo?.internetPrice) {
+      toast.error(tValidation('internetPriceRequired'))
+      return
+    }
+    if (!propertyInfo?.serviceFee) {
+      toast.error(tValidation('serviceFeeRequired'))
+      return
+    }
+    if (!propertyInfo?.price || propertyInfo.price <= 0) {
+      toast.error(tValidation('priceRequired'))
+      return
+    }
+    if (!propertyInfo?.priceUnit) {
+      toast.error(tValidation('priceUnitRequired'))
+      return
+    }
+    if (!propertyInfo?.area) {
+      toast.error(tValidation('areaRequired'))
+      return
+    }
+    if (!propertyInfo?.bedrooms) {
+      toast.error(tValidation('bedroomsRequired'))
+      return
+    }
+    if (!propertyInfo?.bathrooms) {
+      toast.error(tValidation('bathroomsRequired'))
+      return
+    }
+    if (!propertyInfo?.roomCapacity) {
+      toast.error(tValidation('roomCapacityRequired'))
       return
     }
 

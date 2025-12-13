@@ -290,6 +290,7 @@ export const STEP_0_FIELDS = [
   'furnishing',
   'bedrooms',
   'bathrooms',
+  'roomCapacity',
   'direction',
 ] as const
 

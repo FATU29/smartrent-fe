@@ -35,6 +35,8 @@ export const PostTemplateBase: React.FC<PostTemplateBaseProps> = ({
   progressSteps,
   currentErrors,
   onStepClick,
+  stepRenderer,
+  navigationButtons,
   children,
 }) => {
   return (
@@ -55,10 +57,13 @@ export const PostTemplateBase: React.FC<PostTemplateBaseProps> = ({
             />
           </Card>
 
+          {stepRenderer}
+
           <ValidationErrors
             errors={currentErrors}
             currentStepTitle={progressSteps[currentStep]?.title}
           />
+          {navigationButtons}
 
           {children}
         </Card>
