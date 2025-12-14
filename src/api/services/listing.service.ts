@@ -94,20 +94,11 @@ export class ListingService {
   static async createDraft(
     data: CreateListingRequest,
   ): Promise<ApiResponse<{ listingId: number; status: string }>> {
-    console.log('🚀 [API] Creating Draft:', {
-      endpoint: PATHS.LISTING.CREATE_DRAFT,
-      method: 'POST',
-      payload: data,
-    })
-
-    const response = await apiRequest<{ listingId: number; status: string }>({
+    return apiRequest<{ listingId: number; status: string }>({
       method: 'POST',
       url: PATHS.LISTING.CREATE_DRAFT,
       data,
     })
-
-    console.log('📥 [API] Create Draft Response:', response)
-    return response
   }
 
   static async update(
@@ -304,14 +295,7 @@ export class ListingService {
       draftId.toString(),
     )
 
-    console.log('🚀 [API] Updating Draft:', {
-      draftId,
-      endpoint: url,
-      method: 'POST',
-      payload: data,
-    })
-
-    const response = await apiRequest<DraftListingResponse>(
+    return apiRequest<DraftListingResponse>(
       {
         method: 'POST',
         url,
@@ -319,13 +303,6 @@ export class ListingService {
       },
       instance,
     )
-
-    console.log('📥 [API] Update Draft Response:', {
-      draftId,
-      response,
-    })
-
-    return response
   }
 
   /**

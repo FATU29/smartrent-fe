@@ -7,6 +7,7 @@ export const PATHS = {
   AI: {
     LISTING_DESCRIPTION: '/v1/ai/listing-description',
     HOUSING_PREDICTOR: '/v1/housing-predictor/predict',
+    CHAT: '/v1/ai/chat',
   },
 
   // Auth endpoints

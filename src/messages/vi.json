@@ -44,9 +44,27 @@
     "close": "Đóng chat",
     "openChat": "Mở chat",
     "confirmClear": "Bạn có chắc chắn muốn xóa toàn bộ lịch sử chat?",
+    "confirmClearTitle": "Xóa Lịch Sử Chat",
+    "confirmClearDescription": "Hành động này không thể hoàn tác. Toàn bộ lịch sử trò chuyện của bạn sẽ bị xóa vĩnh viễn.",
+    "confirmClearYes": "Có, xóa lịch sử",
+    "confirmClearNo": "Hủy",
     "chatMessages": "Tin nhắn chat",
     "messageInput": "Nhập tin nhắn",
-    "attachFile": "Đính kèm tệp"
+    "attachFile": "Đính kèm tệp",
+    "loginRequired": "Vui lòng đăng nhập để sử dụng trợ lý AI. Đăng nhập giúp chúng tôi cung cấp trải nghiệm tốt hơn và lưu lịch sử trò chuyện của bạn."
+  },
+  "chat": {
+    "title": "Trợ Lý Tìm Nhà AI",
+    "subtitle": "Hỗ trợ bởi AI để giúp bạn tìm bất động sản phù hợp",
+    "inputPlaceholder": "Hỏi tôi bất cứ điều gì về bất động sản...",
+    "helperText": "Nhấn Enter để gửi",
+    "clearChat": "Xóa cuộc trò chuyện",
+    "foundListings": "Tìm thấy",
+    "listing": {
+      "viewDetails": "Xem Chi Tiết",
+      "month": "tháng",
+      "year": "năm"
+    }
   },
   "common": {
     "or": "Hoặc",

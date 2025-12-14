@@ -40,6 +40,14 @@ export const useLogin = () => {
 
         const { user } = decodeToken(tokens.accessToken)
         login(user, tokens)
+
+        // Clear AI chat session when login successfully
+        try {
+          sessionStorage.removeItem('smart-rent-ai-chat-session')
+        } catch (error) {
+          console.warn('[useLogin] Failed to clear AI chat session:', error)
+        }
+
         return result
       } catch (error) {
         setLoading(false)
@@ -76,6 +84,17 @@ export const useAdminLogin = () => {
 
         const { user } = decodeToken(tokens.accessToken)
         login(user, tokens)
+
+        // Clear AI chat session when login successfully
+        try {
+          sessionStorage.removeItem('smart-rent-ai-chat-session')
+        } catch (error) {
+          console.warn(
+            '[useAdminLogin] Failed to clear AI chat session:',
+            error,
+          )
+        }
+
         return result
       } catch (error) {
         setLoading(false)
@@ -130,6 +149,13 @@ export const useLogout = () => {
 
   const logoutUser = useCallback(async () => {
     const accessToken = cookieManager.getAccessToken()
+
+    // Clear AI chat session on logout
+    try {
+      sessionStorage.removeItem('smart-rent-ai-chat-session')
+    } catch (error) {
+      console.warn('[Logout] Failed to clear AI chat session:', error)
+    }
 
     // If no access token, just clear local state and return
     if (!accessToken) {
