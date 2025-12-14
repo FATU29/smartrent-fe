@@ -4,6 +4,8 @@ import type {
   ListingDescriptionResponse,
   HousingPredictorRequest,
   HousingPredictorResponse,
+  ChatRequest,
+  ChatResponseData,
 } from '@/api/types/ai.type'
 import type { ApiResponse } from '@/configs/axios/types'
 import { apiRequest } from '@/configs/axios/instance'
@@ -32,6 +34,19 @@ export class AiService {
 
     return response
   }
+
+  static async chat(
+    request: ChatRequest,
+  ): Promise<ApiResponse<ChatResponseData>> {
+    const response = await apiRequest<ChatResponseData>({
+      method: 'POST',
+      url: PATHS.AI.CHAT,
+      data: request,
+    })
+
+    return response
+  }
 }
 
-export const { generateListingDescription, predictHousingPrice } = AiService
+export const { generateListingDescription, predictHousingPrice, chat } =
+  AiService

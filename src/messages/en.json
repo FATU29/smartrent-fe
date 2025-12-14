@@ -44,9 +44,27 @@
     "close": "Close chat",
     "openChat": "Open chat",
     "confirmClear": "Are you sure you want to clear all chat history?",
+    "confirmClearTitle": "Clear Chat History",
+    "confirmClearDescription": "This action cannot be undone. All your conversation history will be permanently deleted.",
+    "confirmClearYes": "Yes, clear history",
+    "confirmClearNo": "Cancel",
     "chatMessages": "Chat messages",
     "messageInput": "Message input",
-    "attachFile": "Attach file"
+    "attachFile": "Attach file",
+    "loginRequired": "Please log in to use the AI assistant. Logging in helps us provide a better experience and save your conversation history."
+  },
+  "chat": {
+    "title": "AI Property Assistant",
+    "subtitle": "Powered by AI to help you find the perfect property",
+    "inputPlaceholder": "Ask me anything about properties...",
+    "helperText": "Press Enter to send",
+    "clearChat": "Clear conversation",
+    "foundListings": "Properties found",
+    "listing": {
+      "viewDetails": "View Details",
+      "month": "month",
+      "year": "year"
+    }
   },
   "common": {
     "or": "Or",
