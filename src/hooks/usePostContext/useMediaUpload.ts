@@ -149,9 +149,13 @@ export const useMediaUpload = () => {
 
         if (res?.success && res?.data?.url) {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { status, ...restData } = res.data
+          const { status, durationSeconds, ...restData } = res.data
           const mediaItem: Partial<MediaItem> = {
             ...restData,
+            durationSeconds:
+              durationSeconds !== undefined
+                ? Number(durationSeconds)
+                : undefined,
             mediaId: Number(res.data.mediaId),
             isPrimary: pending.isCover || false,
             mediaType: 'IMAGE',

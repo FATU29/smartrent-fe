@@ -46,7 +46,6 @@ const AiChatInput: FC<TAiChatInputProps> = ({
 
   const handleAttach = () => {
     // Future: File attachment functionality
-    console.log('Attach file clicked')
   }
 
   //Init effect hook

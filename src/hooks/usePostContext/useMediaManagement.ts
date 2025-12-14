@@ -37,11 +37,21 @@ export const useMediaManagement = (
       .filter((id) => !isNaN(id) && id > 0)
 
     const currentIds = propertyInfo.mediaIds || []
+
+    // Check if arrays are different (order-independent check)
+    const sortedMediaIds = [...mediaIds].sort((a, b) => a - b)
+    const sortedCurrentIds = [...currentIds].sort((a, b) => a - b)
+
     const hasChanged =
-      mediaIds.length !== currentIds.length ||
-      mediaIds.some((id, index) => id !== currentIds[index])
+      sortedMediaIds.length !== sortedCurrentIds.length ||
+      sortedMediaIds.some((id, index) => id !== sortedCurrentIds[index])
 
     if (hasChanged) {
+      console.log('🔄 Syncing mediaIds:', {
+        from: currentIds,
+        to: mediaIds,
+        mediaCount: media.length,
+      })
       setPropertyInfo((prev) => ({
         ...prev,
         mediaIds,

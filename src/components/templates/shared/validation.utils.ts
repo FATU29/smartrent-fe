@@ -60,7 +60,7 @@ export const validateStep0 = (
     !!propertyInfo.title &&
     propertyInfo.title.trim().length >= 30 &&
     !!propertyInfo.description &&
-    propertyInfo.description.trim().length >= 70 &&
+    propertyInfo.description.trim().length >= 100 &&
     !!propertyInfo.waterPrice &&
     !!propertyInfo.electricityPrice &&
     !!propertyInfo.internetPrice &&
@@ -96,26 +96,28 @@ interface MediaUrls {
   images?: string[]
 }
 
-/**
- * Validate Step 2 - Media
- * Accepts either old MediaUrls format or new MediaItem[] format
- */
 export const validateStep2 = (
   media: MediaUrls | Partial<MediaItem>[] | undefined,
+  isCreatePost: boolean = true,
 ): boolean => {
   if (!media) return false
 
-  // Handle new format: MediaItem[]
   if (Array.isArray(media)) {
     const hasVideo = media.some((m) => m.mediaType === 'VIDEO')
     const imagesCount = media.filter((m) => m.mediaType === 'IMAGE').length
-    return hasVideo || imagesCount >= 4
+
+    if (isCreatePost) {
+      return hasVideo || imagesCount >= 4
+    }
+    return imagesCount > 0 || hasVideo
   }
 
-  // Handle old format: MediaUrls
   const images = media.images || []
   const imagesCount = Array.isArray(images) ? images.length : 0
   const hasVideo = !!media.video
 
-  return hasVideo || imagesCount >= 4
+  if (isCreatePost) {
+    return hasVideo || imagesCount >= 4
+  }
+  return imagesCount > 0 || hasVideo
 }

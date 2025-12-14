@@ -24,12 +24,10 @@ interface LocationMapProps {
 
 const LocationMap: React.FC<LocationMapProps> = ({ location, className }) => {
   const handleGetDirections = () => {
-    console.log('Opening directions to:', location.address)
     // Future: Open Google Maps directions
   }
 
   const handleViewInMaps = () => {
-    console.log('Opening in Google Maps:', location.address)
     // Future: Open location in Google Maps
   }
 

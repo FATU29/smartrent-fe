@@ -89,22 +89,6 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
       ? selectedBenefit?.benefitNameDisplay || t('freePosting')
       : selectedTier?.tierName || t('notSelected')
 
-  const totalPrice = (() => {
-    const duration = propertyInfo.durationDays
-    if (usingMembershipQuota || usingPromotion) return 0
-    if (!selectedTier || !duration) return 0
-    switch (duration) {
-      case 10:
-        return selectedTier.price10Days
-      case 15:
-        return selectedTier.price15Days
-      case 30:
-        return selectedTier.price30Days
-      default:
-        return (selectedTier.pricePerDay || 0) * duration
-    }
-  })()
-
   const formatDate = (date?: string | Date) => {
     if (!date) return t('notSelected')
     const d = typeof date === 'string' ? new Date(date) : date
@@ -484,37 +468,6 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                     <Typography className='text-sm'>{getEndDate()}</Typography>
                   </Card>
                 }
-              />
-            </CardContent>
-
-            <Separator className='my-0' />
-
-            {/* Price Breakdown */}
-            <CardHeader className='pt-6 pb-4'>
-              <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                <CreditCard className='w-5 h-5 text-primary' />
-                <CardTitle className='text-lg'>
-                  {tCreatePost('sections.packageConfig.priceBreakdown')}
-                </CardTitle>
-              </Card>
-            </CardHeader>
-
-            <CardContent className='space-y-3'>
-              <OrderSummaryRow
-                label={tCreatePost('sections.packageConfig.packagePrice')}
-                value={`${totalPrice.toLocaleString('vi-VN')} đ`}
-              />
-              <Separator className='my-4' />
-              <OrderSummaryRow
-                label={tCreatePost('sections.packageConfig.totalAmount')}
-                value={
-                  <Card className='text-right border-0 shadow-none p-0'>
-                    <Typography className='text-2xl font-bold text-primary'>
-                      {totalPrice.toLocaleString('vi-VN')} đ
-                    </Typography>
-                  </Card>
-                }
-                variant='total'
               />
             </CardContent>
           </Card>

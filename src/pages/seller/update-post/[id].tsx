@@ -4,50 +4,67 @@ import { UpdatePostTemplate } from '@/components/templates/updatePostTemplate'
 import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import LocationProvider from '@/contexts/location'
-import { UpdatePostProvider, useUpdatePost } from '@/contexts/updatePost'
-import { CreatePostProvider } from '@/contexts/createPost'
-import { UpdateToCreateBridge } from '@/components/templates/updatePostTemplate/components/UpdateToCreateBridge'
+import { CreatePostProvider, useCreatePost } from '@/contexts/createPost'
 import { useRouter } from 'next/router'
 import { ListingService } from '@/api/services/listing.service'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/atoms/card'
 import { Loader2 } from 'lucide-react'
+import { mapListingToFormData } from '@/utils/property/mapListingToFormData'
 
 const UpdatePostPageContent = () => {
   const router = useRouter()
   const { id } = router.query
   const t = useTranslations('updatePost')
-  const { loadListingIntoForm, listingId } = useUpdatePost()
+  const { updatePropertyInfo, updateFulltextAddress, setMedia } =
+    useCreatePost()
   const hasLoadedRef = React.useRef(false)
+  const [isLoading, setIsLoading] = React.useState(true)
+  const [listingId, setListingId] = React.useState<string | null>(null)
 
   useEffect(() => {
     const fetchListing = async () => {
-      // Prevent loading the same listing multiple times
       if (!id || typeof id !== 'string' || !router.isReady) return
       if (hasLoadedRef.current && listingId === id) return
 
       hasLoadedRef.current = true
+      setIsLoading(true)
 
       try {
-        const { success, data, message } = await ListingService.getById(id)
+        const { success, data } = await ListingService.getById(id)
+        console.log('📡 Fetched listing from API:', {
+          success,
+          hasData: !!data,
+          title: data?.title,
+          description: data?.description?.substring(0, 50),
+          postDate: data?.postDate,
+          vipType: data?.vipType,
+        })
         if (success && data) {
-          await loadListingIntoForm(data)
+          const {
+            propertyInfo: mappedPropertyInfo,
+            fulltextAddress,
+            media,
+          } = mapListingToFormData(data)
+          updatePropertyInfo(mappedPropertyInfo)
+          updateFulltextAddress(fulltextAddress)
+          setMedia(media)
+          setListingId(id)
         } else {
-          console.error('Failed to load listing:', message)
-          hasLoadedRef.current = false // Reset on error so we can retry
-          // Optionally redirect to listings page on error
+          hasLoadedRef.current = false
         }
       } catch (error) {
-        console.error('Error fetching listing:', error)
-        hasLoadedRef.current = false // Reset on error so we can retry
+        console.error('❌ Error fetching listing:', error)
+        hasLoadedRef.current = false
+      } finally {
+        setIsLoading(false)
       }
     }
 
     fetchListing()
-  }, [id, router.isReady, listingId]) // Only re-run if id or router state changes
+  }, [id, router.isReady])
 
-  // Show loading state while fetching listing data
-  if (!listingId || !router.isReady) {
+  if (isLoading || !listingId || !router.isReady) {
     return (
       <Card className='w-full mx-auto md:container md:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8 border-0 shadow-none'>
         <CardContent className='flex flex-col items-center justify-center min-h-[400px] gap-4'>
@@ -58,13 +75,7 @@ const UpdatePostPageContent = () => {
     )
   }
 
-  return (
-    <CreatePostProvider>
-      <UpdateToCreateBridge>
-        <UpdatePostTemplate />
-      </UpdateToCreateBridge>
-    </CreatePostProvider>
-  )
+  return <UpdatePostTemplate />
 }
 
 const UpdatePostPage: NextPageWithLayout = () => {
@@ -74,9 +85,9 @@ const UpdatePostPage: NextPageWithLayout = () => {
     <>
       <SeoHead title={t('title')} noindex />
       <LocationProvider>
-        <UpdatePostProvider>
+        <CreatePostProvider>
           <UpdatePostPageContent />
-        </UpdatePostProvider>
+        </CreatePostProvider>
       </LocationProvider>
     </>
   )

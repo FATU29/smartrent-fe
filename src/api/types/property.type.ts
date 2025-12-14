@@ -168,9 +168,14 @@ export interface MediaItem {
   mediaType: MediaType
   sourceType: string
   url: string
+  thumbnailUrl?: string | null
   isPrimary: boolean
   sortOrder: number
   status: PostStatus
+  fileSize?: number
+  mimeType?: string
+  originalFilename?: string
+  durationSeconds?: number | null
   createdAt: string
 }
 
@@ -292,8 +297,8 @@ export interface CreateListingRequest {
   roomCapacity?: number
   amenityIds?: number[]
   mediaIds?: number[]
-  postDate?: string | Date // startDate
-  expiryDate?: string | Date // calculated expiry date
+  postDate?: Date // startDate
+  expiryDate?: Date // calculated expiry date
   listingType?: listingType
   isDraft?: boolean
   waterPrice?: PriceType

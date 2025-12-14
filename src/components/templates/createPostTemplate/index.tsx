@@ -100,7 +100,6 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       setIsSubmitSuccess(true)
       await router.push(`/listing-detail/${data.listingId}`)
     } catch (err) {
-      console.error('Submit error:', err)
       setErrorTitle(t('errorTitle'))
       setErrorDesc(err instanceof Error ? err.message : t('unexpectedError'))
       setErrorOpen(true)

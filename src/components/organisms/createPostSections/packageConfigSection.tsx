@@ -18,7 +18,6 @@ import {
 } from '@/components/atoms/card'
 import { Label } from '@/components/atoms/label'
 import { Typography } from '@/components/atoms/typography'
-import { Switch } from '@/components/atoms/switch'
 import {
   Calendar,
   Tag,
@@ -69,11 +68,11 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
 
   const [benefitDialogOpen, setBenefitDialogOpen] = useState(false)
 
-  const useMembershipQuota = propertyInfo?.useMembershipQuota ?? false
-
   const hasBenefits =
     !!propertyInfo?.benefitIds && propertyInfo.benefitIds.length > 0
-  const useMembership = useMembershipQuota || hasBenefits
+
+  const useMembershipQuota = hasBenefits
+  const useMembership = useMembershipQuota
 
   const selectedTier = useMemo(
     () => vipTiers.find((t) => t.tierCode === propertyInfo.vipType),
@@ -82,17 +81,14 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   const selectedDuration = propertyInfo.durationDays ?? 10
 
   const startDate = useMemo(() => {
-    if (!propertyInfo.postDate) return new Date().toISOString().split('T')[0]
-    return typeof propertyInfo.postDate === 'string'
-      ? propertyInfo.postDate.split('T')[0]
-      : new Date(propertyInfo.postDate).toISOString().split('T')[0]
+    if (!propertyInfo.postDate) return new Date()
+    return propertyInfo.postDate
   }, [propertyInfo.postDate])
 
-  // Initialize default values
   useEffect(() => {
     if (vipTiers.length > 0 && !propertyInfo.vipType) {
       const firstTier = vipTiers[0]
-      const defaultStartDate = new Date().toISOString().split('T')[0]
+      const defaultStartDate = new Date()
 
       const defaultDuration = useMembershipQuota ? 30 : 10
 
@@ -100,7 +96,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       const expiryDateObj = new Date(
         startDateObj.getTime() + defaultDuration * 24 * 60 * 60 * 1000,
       )
-      const defaultExpiryDate = expiryDateObj.toISOString()
+      const defaultExpiryDate = expiryDateObj
 
       updatePropertyInfo({
         vipType: firstTier.tierCode as VipType,
@@ -161,7 +157,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       const expiryDateObj = new Date(
         startDateObj.getTime() + 10 * 24 * 60 * 60 * 1000,
       )
-      const expiryDate = expiryDateObj.toISOString()
+      const expiryDate = expiryDateObj
 
       updatePropertyInfo({
         vipType: tier.tierCode as VipType,
@@ -188,16 +184,15 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
 
   const handleDurationSelect = useCallback(
     (days: number) => {
-      // Calculate new expiry date with the new duration
       const startDateObj = new Date(startDate)
       const expiryDateObj = new Date(
         startDateObj.getTime() + days * 24 * 60 * 60 * 1000,
       )
-      const expiryDate = expiryDateObj.toISOString()
+      const expiryDate = expiryDateObj
 
       updatePropertyInfo({
         durationDays: days as DurationDays,
-        expiryDate,
+        expiryDate: expiryDateObj,
       })
       setValue('durationDays', days, {
         shouldValidate: true,
@@ -224,7 +219,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       )
       const expiryDate = expiryDateObj.toISOString()
 
-      updatePropertyInfo({ postDate: fullDate, expiryDate })
+      updatePropertyInfo({ postDate: startDateObj, expiryDate: expiryDateObj })
       setValue('postDate', fullDate, {
         shouldValidate: true,
         shouldDirty: true,
@@ -236,42 +231,6 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       trigger()
     },
     [updatePropertyInfo, setValue, trigger, selectedDuration],
-  )
-
-  const handleToggleMembershipQuota = useCallback(
-    (checked: boolean) => {
-      const newDuration = checked ? 30 : 10
-
-      // Calculate new expiry date
-      const startDateObj = new Date(startDate)
-      const expiryDateObj = new Date(
-        startDateObj.getTime() + newDuration * 24 * 60 * 60 * 1000,
-      )
-      const expiryDate = expiryDateObj.toISOString()
-
-      updatePropertyInfo({
-        useMembershipQuota: checked,
-        durationDays: newDuration,
-        expiryDate,
-      })
-
-      setValue('useMembershipQuota', checked, { shouldDirty: true })
-      setValue('durationDays', newDuration, {
-        shouldValidate: true,
-        shouldDirty: true,
-      })
-      setValue('expiryDate', expiryDate, {
-        shouldValidate: true,
-        shouldDirty: true,
-      })
-
-      if (!checked && hasBenefits) {
-        updatePropertyInfo({ benefitIds: [] })
-        setValue('benefitIds', [], { shouldDirty: true })
-      }
-      trigger()
-    },
-    [updatePropertyInfo, setValue, trigger, startDate, hasBenefits],
   )
 
   const handleApplyBenefits = useCallback(
@@ -292,7 +251,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         durationDays:
           benefitIds.length > 0 ? 30 : (propertyInfo.durationDays ?? 10),
         expiryDate:
-          benefitIds.length > 0 ? expiryDate : propertyInfo.expiryDate,
+          benefitIds.length > 0 ? expiryDateObj : propertyInfo.expiryDate,
       })
       setValue('benefitIds', benefitIds, { shouldDirty: true })
       setValue('useMembershipQuota', benefitIds.length > 0, {
@@ -358,24 +317,6 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       </CardHeader>
 
       <CardContent className='px-0 space-y-6'>
-        {/* Use Membership Quota Toggle */}
-        <Card className='p-6'>
-          <CardContent className='flex items-center justify-between gap-4 p-0'>
-            <div>
-              <Typography className='font-medium text-sm'>
-                {t('useMembershipQuota')}
-              </Typography>
-              <Typography variant='muted' className='text-xs'>
-                {t('useMembershipQuotaDescription')}
-              </Typography>
-            </div>
-            <Switch
-              checked={useMembership}
-              onCheckedChange={handleToggleMembershipQuota}
-            />
-          </CardContent>
-        </Card>
-
         {/* Package Type Selection */}
         <Card>
           <CardHeader>
@@ -486,7 +427,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               {t('startDate')}
             </Label>
             <DatePicker
-              value={startDate}
+              value={startDate.toISOString().split('T')[0]}
               onChange={handleDateChange}
               placeholder={t('selectStartDate')}
             />

@@ -35,7 +35,6 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
       return false
     }
 
-    // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
     if (!allowedTypes.includes(file.type)) {
       toast.error(
