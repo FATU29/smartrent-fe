@@ -62,8 +62,12 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
     isLoading: isSaveLoading,
     toggleSave,
   } = useToggleSaveListing(listingId)
-  const { addToCompare, removeFromCompare, isInCompare } = useCompareStore()
-  const isInCompareList = isInCompare(listingId)
+  // Subscribe to compareList to trigger re-renders when it changes
+  const compareList = useCompareStore((state) => state.compareList)
+  const { addToCompare, removeFromCompare } = useCompareStore()
+  const isInCompareList = compareList.some(
+    (listing) => listing.listingId === listingId,
+  )
 
   const handleSaveClick = async (e: React.MouseEvent) => {
     e.preventDefault()

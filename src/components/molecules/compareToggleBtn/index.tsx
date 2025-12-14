@@ -30,22 +30,20 @@ const CompareToggleBtn: React.FC<CompareToggleBtnProps> = ({
   showLabel = false,
 }) => {
   const t = useTranslations('compare')
-  const { addToCompare, removeFromCompare, isInCompare } = useCompareStore()
+  // Subscribe to compareList to trigger re-renders when it changes
+  const compareList = useCompareStore((state) => state.compareList)
+  const { addToCompare, removeFromCompare } = useCompareStore()
   const [isMounted, setIsMounted] = useState(false)
-  const [isInList, setIsInList] = useState(false)
 
   // Handle hydration: Zustand persist may not be ready on first render
   useEffect(() => {
     setIsMounted(true)
-    setIsInList(isInCompare(listing.listingId))
-  }, [listing.listingId, isInCompare])
+  }, [])
 
-  // Update state when store changes
-  useEffect(() => {
-    if (isMounted) {
-      setIsInList(isInCompare(listing.listingId))
-    }
-  }, [isMounted, listing.listingId, isInCompare])
+  // Compute isInList from compareList - this will update when compareList changes
+  const isInList = compareList.some(
+    (item) => item.listingId === listing.listingId,
+  )
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation()

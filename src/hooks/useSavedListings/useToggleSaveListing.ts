@@ -1,43 +1,53 @@
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useSaveListing } from './useSaveListing'
 import { useUnsaveListing } from './useUnsaveListing'
+import { useCheckSavedListing } from './useCheckSavedListing'
+import { SAVED_LISTING_QUERY_KEYS } from '@/api/types'
 
 /**
  * Combined hook for save/unsave toggle functionality
- * Uses optimistic UI updates - no API call to check saved status
- * The saved state is managed locally and updated on successful save/unsave actions
+ * Uses API to check initial saved status and optimistic UI updates
+ * The saved state is synced with the server via check API
  */
 export const useToggleSaveListing = (listingId: number | null | undefined) => {
-  const [isSaved, setIsSaved] = useState(false)
+  const queryClient = useQueryClient()
+  const { data: isSaved = false, isLoading: isChecking } =
+    useCheckSavedListing(listingId)
   const saveMutation = useSaveListing()
   const unsaveMutation = useUnsaveListing()
 
-  const isLoading = saveMutation.isPending || unsaveMutation.isPending
+  const isLoading =
+    isChecking || saveMutation.isPending || unsaveMutation.isPending
 
-  // Update local state when mutations succeed
+  // Invalidate check query when mutations succeed to sync with server
   useEffect(() => {
-    if (saveMutation.isSuccess) {
-      setIsSaved(true)
+    if (saveMutation.isSuccess && listingId) {
+      queryClient.setQueryData(SAVED_LISTING_QUERY_KEYS.check(listingId), true)
+      queryClient.invalidateQueries({
+        queryKey: SAVED_LISTING_QUERY_KEYS.check(listingId),
+      })
     }
-  }, [saveMutation.isSuccess])
+  }, [saveMutation.isSuccess, listingId, queryClient])
 
   useEffect(() => {
-    if (unsaveMutation.isSuccess) {
-      setIsSaved(false)
+    if (unsaveMutation.isSuccess && listingId) {
+      queryClient.setQueryData(SAVED_LISTING_QUERY_KEYS.check(listingId), false)
+      queryClient.invalidateQueries({
+        queryKey: SAVED_LISTING_QUERY_KEYS.check(listingId),
+      })
     }
-  }, [unsaveMutation.isSuccess])
-
-  // Reset state when listingId changes
-  useEffect(() => {
-    setIsSaved(false)
-  }, [listingId])
+  }, [unsaveMutation.isSuccess, listingId, queryClient])
 
   const toggleSave = useCallback(async () => {
     if (!listingId || isLoading) return
 
     // Optimistic update
     const previousState = isSaved
-    setIsSaved(!previousState)
+    queryClient.setQueryData(
+      SAVED_LISTING_QUERY_KEYS.check(listingId),
+      !previousState,
+    )
 
     try {
       if (previousState) {
@@ -47,34 +57,43 @@ export const useToggleSaveListing = (listingId: number | null | undefined) => {
       }
     } catch (error) {
       // Revert optimistic update on error
-      setIsSaved(previousState)
+      queryClient.setQueryData(
+        SAVED_LISTING_QUERY_KEYS.check(listingId),
+        previousState,
+      )
       // Error handling is done in the mutation hooks
       // Only log in development
       if (process.env.NODE_ENV === 'development') {
         console.error('Error toggling save:', error)
       }
     }
-  }, [listingId, isSaved, isLoading, saveMutation, unsaveMutation])
+  }, [listingId, isSaved, isLoading, saveMutation, unsaveMutation, queryClient])
 
   const saveListing = useCallback(() => {
     if (!listingId || isLoading) return
-    setIsSaved(true)
+    queryClient.setQueryData(SAVED_LISTING_QUERY_KEYS.check(listingId), true)
     saveMutation.mutate(listingId, {
       onError: () => {
-        setIsSaved(false)
+        queryClient.setQueryData(
+          SAVED_LISTING_QUERY_KEYS.check(listingId),
+          false,
+        )
       },
     })
-  }, [listingId, isLoading, saveMutation])
+  }, [listingId, isLoading, saveMutation, queryClient])
 
   const unsaveListing = useCallback(() => {
     if (!listingId || isLoading) return
-    setIsSaved(false)
+    queryClient.setQueryData(SAVED_LISTING_QUERY_KEYS.check(listingId), false)
     unsaveMutation.mutate(listingId, {
       onError: () => {
-        setIsSaved(true)
+        queryClient.setQueryData(
+          SAVED_LISTING_QUERY_KEYS.check(listingId),
+          true,
+        )
       },
     })
-  }, [listingId, isLoading, unsaveMutation])
+  }, [listingId, isLoading, unsaveMutation, queryClient])
 
   return {
     isSaved,
