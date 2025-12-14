@@ -39,9 +39,19 @@ const UserDropdown: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant='ghost' className='relative h-9 w-9 rounded-full'>
           <Avatar className='h-9 w-9'>
-            <div className='flex items-center justify-center h-full w-full bg-primary text-primary-foreground text-sm font-medium'>
-              {getInitials(user.firstName, user.lastName)}
-            </div>
+            {user.avatarUrl ? (
+              <Image
+                src={user.avatarUrl}
+                alt={`${user.firstName} ${user.lastName}`}
+                fill
+                className='object-cover'
+                sizes='36px'
+              />
+            ) : (
+              <div className='flex items-center justify-center h-full w-full bg-primary text-primary-foreground text-sm font-medium'>
+                {getInitials(user.firstName, user.lastName)}
+              </div>
+            )}
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

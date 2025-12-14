@@ -189,8 +189,6 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
     (r: ReportReason) => r.category === activeCategory,
   )
 
-  console.log('ReportListingDialog - filteredReasons:', filteredReasons)
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='h-full w-full sm:h-auto sm:max-w-2xl sm:w-full max-h-screen sm:max-h-[90vh] overflow-y-auto p-4 sm:p-6 sm:rounded-lg rounded-none'>

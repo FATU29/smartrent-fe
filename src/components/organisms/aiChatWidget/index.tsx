@@ -3,18 +3,18 @@ import { MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
-import { Dialog, DialogContent } from '@/components/atoms/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/atoms/dialog'
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/atoms/popover'
+  ResizablePanelGroup,
+  ResizablePanel,
+} from '@/components/atoms/resizable'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useChatLogic } from '@/hooks/useChatAi'
 
 import AiChatHeader from '@/components/organisms/aiChatHeader'
 import AiChatInterface from '@/components/organisms/aiChatInterface'
 import AiChatButton from '@/components/atoms/aiChatButton'
+import AiChatClearDialog from '@/components/molecules/aiChatClearDialog'
 
 type TAiChatWidgetProps = {
   className?: string
@@ -28,6 +28,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
   //Init state hook
   const [isOpen, setIsOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [showClearDialog, setShowClearDialog] = useState(false)
 
   //Init use hook
   const isMobile = useMediaQuery('(max-width: 768px)')
@@ -36,7 +37,6 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
     messages,
     isLoading,
     isTyping,
-    progress,
     inputValue,
     scrollRef,
     sendMessage,
@@ -54,9 +54,16 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
   }
 
   const handleClear = () => {
-    if (window.confirm(t('confirmClear'))) {
-      clearMessages()
-    }
+    setShowClearDialog(true)
+  }
+
+  const handleConfirmClear = () => {
+    clearMessages()
+    setShowClearDialog(false)
+  }
+
+  const handleCancelClear = () => {
+    setShowClearDialog(false)
   }
 
   //Init effect hook
@@ -105,6 +112,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
             aria-describedby='chat-interface-mobile'
             showCloseButton={false}
           >
+            <DialogTitle className='sr-only'>{t('title')}</DialogTitle>
             <div className='flex h-full w-full flex-col overflow-hidden bg-background'>
               <AiChatHeader
                 onClose={handleClose}
@@ -118,7 +126,6 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                 inputValue={inputValue}
                 isLoading={isLoading}
                 isTyping={isTyping}
-                progress={progress}
                 scrollRef={scrollRef}
                 onInputChange={handleInputChange}
                 onSendMessage={sendMessage}
@@ -128,45 +135,80 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Clear History Confirmation Dialog */}
+        <AiChatClearDialog
+          open={showClearDialog}
+          onOpenChange={setShowClearDialog}
+          onConfirm={handleConfirmClear}
+          onCancel={handleCancelClear}
+        />
       </>
     )
   }
 
-  // Desktop: Popover
+  // Desktop: Resizable Floating Window
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>{FloatingButton}</PopoverTrigger>
+    <>
+      {FloatingButton}
 
-      <PopoverContent
-        side='top'
-        align='end'
-        sideOffset={16}
-        className='h-[600px] w-[400px] overflow-hidden rounded-xl border-2 p-0 shadow-2xl'
-        aria-describedby='chat-interface-desktop'
-      >
-        <div className='flex h-full flex-col overflow-hidden bg-background'>
-          <AiChatHeader
-            onClose={handleClose}
-            onClear={handleClear}
-            showClear
-            className='flex-shrink-0'
-          />
+      {/* Floating Resizable Chat Window */}
+      {isOpen && (
+        <div
+          className={cn(
+            'fixed z-50 animate-in fade-in slide-in-from-bottom-8 duration-300',
+            'resize overflow-auto',
+            position === 'bottom-right'
+              ? 'bottom-24 right-6'
+              : 'bottom-24 left-6',
+          )}
+          style={{
+            width: '450px',
+            height: '600px',
+            minWidth: '350px',
+            minHeight: '450px',
+            maxWidth: '90vw',
+            maxHeight: '85vh',
+          }}
+        >
+          <ResizablePanelGroup
+            direction='vertical'
+            className='h-full w-full rounded-xl border-2 border-primary/20 shadow-2xl bg-background hover:border-primary/40 transition-colors'
+          >
+            <ResizablePanel defaultSize={100} minSize={50} maxSize={100}>
+              <div className='flex h-full w-full flex-col overflow-hidden bg-background rounded-xl'>
+                <AiChatHeader
+                  onClose={handleClose}
+                  onClear={handleClear}
+                  showClear
+                  className='flex-shrink-0 rounded-t-xl'
+                />
 
-          <AiChatInterface
-            messages={messages}
-            inputValue={inputValue}
-            isLoading={isLoading}
-            isTyping={isTyping}
-            progress={progress}
-            scrollRef={scrollRef}
-            onInputChange={handleInputChange}
-            onSendMessage={sendMessage}
-            isMobile={false}
-            className='flex-1 min-h-0'
-          />
+                <AiChatInterface
+                  messages={messages}
+                  inputValue={inputValue}
+                  isLoading={isLoading}
+                  isTyping={isTyping}
+                  scrollRef={scrollRef}
+                  onInputChange={handleInputChange}
+                  onSendMessage={sendMessage}
+                  isMobile={false}
+                  className='flex-1 min-h-0'
+                />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </div>
-      </PopoverContent>
-    </Popover>
+      )}
+
+      {/* Clear History Confirmation Dialog */}
+      <AiChatClearDialog
+        open={showClearDialog}
+        onOpenChange={setShowClearDialog}
+        onConfirm={handleConfirmClear}
+        onCancel={handleCancelClear}
+      />
+    </>
   )
 }
 

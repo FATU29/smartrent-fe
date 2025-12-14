@@ -46,12 +46,8 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
     const usingQuota = !!pi?.useMembershipQuota
 
     if (usingQuota || hasBenefit) {
-      console.log(
-        'Creating listing with membership quota/benefit (no payment required)...',
-      )
       // TODO: Call API to create listing directly
     } else {
-      console.log('Redirecting to payment...')
       // TODO: Call API to create payment
     }
 

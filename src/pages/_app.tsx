@@ -21,6 +21,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import AuthRouteGate from '@/components/utility/AuthRouteGate'
 import ErrorBoundary from '@/components/atoms/errorBoundary'
 import NextTopLoader from 'nextjs-toploader'
+import AiChatWidget from '@/components/organisms/aiChatWidget'
+import { useRouter } from 'next/router'
 
 const messages = {
   vi,
@@ -31,7 +33,30 @@ const queryClient = new QueryClient()
 
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const { language } = useSwitchLanguage()
+  const router = useRouter()
   const getLayout = Component.getLayout ?? ((page) => page)
+
+  // Check if current page should show chat widget
+  const showChatWidget = React.useMemo(() => {
+    const pathname = router.pathname
+
+    // Don't show on 404 page
+    if (pathname === '/404') return false
+
+    // Show on public pages
+    const publicPaths = [
+      '/',
+      '/properties',
+      '/sellernet',
+      '/auth',
+      '/listing-detail',
+      '/compare',
+    ]
+
+    return publicPaths.some(
+      (path) => pathname === path || pathname.startsWith(path + '/'),
+    )
+  }, [router.pathname])
 
   return (
     <div className={fontVariables}>
@@ -60,6 +85,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
                   <AuthRouteGate />
                   {getLayout(<Component {...pageProps} />)}
                   <Toaster />
+                  {showChatWidget && <AiChatWidget position='bottom-right' />}
                 </AuthDialogProvider>
               </AuthProvider>
             </ThemeDataProvider>

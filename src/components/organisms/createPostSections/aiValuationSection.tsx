@@ -27,6 +27,7 @@ import {
 } from '@/utils/ai/housingPredictor'
 import { formatByLocale } from '@/utils/currency/convert'
 import type { HousingPredictorResponse } from '@/api/types/ai.type'
+import { toast } from 'sonner'
 
 interface AIValuationSectionProps {
   className?: string
@@ -41,6 +42,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
     'createPost.sections.propertyDetails',
   )
   const tAddress = useTranslations('createPost.sections.propertyInfo.address')
+
   const { propertyInfo, composedLegacyAddress, composedNewAddress } =
     useCreatePost()
   const [prediction, setPrediction] = useState<HousingPredictorResponse | null>(
@@ -87,7 +89,12 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
       onSuccess: (response) => {
         if (response.code === '999999' && response.data) {
           setPrediction(response.data)
+        } else {
+          toast.error('Dịch vụ định giá AI tạm thời không khả dụng')
         }
+      },
+      onError: () => {
+        toast.error('Dịch vụ định giá AI tạm thời không khả dụng')
       },
     })
   }, [predictionRequest, requestKey, isPredicting, prediction, predictPrice])
@@ -100,7 +107,12 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
       onSuccess: (response) => {
         if (response.code === '999999' && response.data) {
           setPrediction(response.data)
+        } else {
+          toast.error('Dịch vụ định giá AI tạm thời không khả dụng')
         }
+      },
+      onError: () => {
+        toast.error('Dịch vụ định giá AI tạm thời không khả dụng')
       },
     })
   }

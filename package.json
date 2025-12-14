@@ -57,6 +57,7 @@
     "react-date-range": "^2.0.1",
     "react-dom": "^19.2.1",
     "react-hook-form": "^7.68.0",
+    "react-resizable-panels": "^3.0.6",
     "react-slugify": "^5.0.0",
     "recharts": "^2.15.4",
     "sass": "^1.90.0",

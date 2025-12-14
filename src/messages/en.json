@@ -44,9 +44,27 @@
     "close": "Close chat",
     "openChat": "Open chat",
     "confirmClear": "Are you sure you want to clear all chat history?",
+    "confirmClearTitle": "Clear Chat History",
+    "confirmClearDescription": "This action cannot be undone. All your conversation history will be permanently deleted.",
+    "confirmClearYes": "Yes, clear history",
+    "confirmClearNo": "Cancel",
     "chatMessages": "Chat messages",
     "messageInput": "Message input",
-    "attachFile": "Attach file"
+    "attachFile": "Attach file",
+    "loginRequired": "Please log in to use the AI assistant. Logging in helps us provide a better experience and save your conversation history."
+  },
+  "chat": {
+    "title": "AI Property Assistant",
+    "subtitle": "Powered by AI to help you find the perfect property",
+    "inputPlaceholder": "Ask me anything about properties...",
+    "helperText": "Press Enter to send",
+    "clearChat": "Clear conversation",
+    "foundListings": "Properties found",
+    "listing": {
+      "viewDetails": "View Details",
+      "month": "month",
+      "year": "year"
+    }
   },
   "common": {
     "or": "Or",
@@ -805,10 +823,9 @@
       "startDateRequired": "Please select a start date",
       "listingTitleRequired": "Listing title is required",
       "listingTitleMinLength": "Title must be at least 30 characters",
-      "listingTitleMaxLength": "Title cannot exceed 120 characters",
+      "listingTitleMaxLength": "Title cannot exceed 200 characters",
       "propertyDescriptionRequired": "Property description is required",
-      "propertyDescriptionMinLength": "Description must be at least 70 characters",
-      "propertyDescriptionMaxLength": "Description cannot exceed 2000 characters",
+      "propertyDescriptionMinLength": "Description must be at least 100 characters",
       "fullNameRequired": "Full name is required",
       "emailRequired": "Email is required",
       "emailInvalid": "Invalid email address",
@@ -855,6 +872,7 @@
       "propertyInfo": {
         "generateAutomatically": "Generate Automatically",
         "listingInfo": "Listing Info",
+        "updateListingInfo": "Update Listing",
         "mapPreview": "Map Preview",
         "district": "District",
         "hcmc": "HCMC",
@@ -943,6 +961,12 @@
           "remaining": "Remaining: {count}",
           "cancel": "Cancel",
           "apply": "Apply ({count})"
+        },
+        "updatePost": {
+          "description": "Current package information (post date can be adjusted)",
+          "endDateAutoCalculated": "End date (Auto-calculated)",
+          "endDateNote": "End date is automatically calculated based on start date + duration",
+          "updateNote": "Note: Package type and duration cannot be changed during update. You can adjust the start date and the end date will be automatically calculated."
         }
       },
       "orderSummary": {
@@ -967,6 +991,8 @@
         "fullName": "Full Name",
         "email": "Email",
         "phone": "Phone Number",
+        "notSelected": "Not selected",
+        "freePosting": "Free Posting",
         "confirmationNotice": {
           "title": "Confirm Information",
           "description": "Please review carefully before proceeding. You can edit by going back to previous steps."
@@ -974,6 +1000,7 @@
       },
       "media": {
         "title": "Images & Video",
+        "allImagesUploaded": "All images uploaded",
         "description": "Upload high-quality images and optional video to present your property",
         "downloadSample": "Download Sample",
         "titleWithCount": "{count} / 24 images",
@@ -983,6 +1010,9 @@
           "chooseFromLibrary": "Choose From Library",
           "note": "Minimum 4 images if no video · Maximum 24 · Minimum size 100x100px · Max 15MB per image"
         },
+        "readyToUpload": "Ready to Upload",
+        "pendingImages": "Pending Images ({count})",
+        "uploadNow": "Upload Now",
         "uploaded": {
           "title": "Uploaded Images",
           "cover": "Cover",
@@ -997,7 +1027,8 @@
           "images": "images",
           "success": "Images uploaded successfully",
           "failed": "Failed to upload images",
-          "noPendingImages": "No images to upload"
+          "noPendingImages": "No images to upload",
+          "added": "{count} image(s) added successfully"
         },
         "uploadButton": "Upload Media",
         "validation": {
@@ -1080,13 +1111,21 @@
           "replaceCta": "Replace Cover",
           "deleteCta": "Delete",
           "badge": "Cover",
-          "uploading": "Uploading..."
+          "uploading": "Uploading...",
+          "uploaded": {
+            "success": "Cover image added successfully"
+          },
+          "validation": {
+            "imageSizeExceeded": "Cover image size must not exceed 10MB",
+            "imageFormatInvalid": "Cover image must be jpeg, png, or webp format"
+          }
         }
       },
       "propertyInfo": {
         "categoryType": "Category Type",
         "generateAutomatically": "Generate Automatically",
         "listingInfo": "Listing Info",
+        "updateListingInfo": "Update Listing Info",
         "mapPreview": "Map Preview",
         "district": "District",
         "hcmc": "HCMC",
@@ -1387,6 +1426,7 @@
         "addressReadOnlyHint": "This address is automatically generated from the Property Information section above",
         "amenitiesSyncHint": "Amenities are automatically synced with the Property Information section",
         "selectTone": "Select tone",
+        "minimum": "minimum",
         "tone": {
           "friendly": "Friendly",
           "professionally": "Professional"
@@ -1574,6 +1614,7 @@
   },
   "updatePost": {
     "title": "Update Real Estate Listing",
+    "description": "Update your listing information",
     "loading": "Loading listing data...",
     "updateListing": "Update Listing",
     "submit": {

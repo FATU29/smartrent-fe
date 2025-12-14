@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card } from '@/components/atoms/card'
-import { OrderSummarySection } from '@/components/organisms/createPostSections/orderSummarySection'
+import { OrderSummarySection } from '@/components/organisms/updatePostSections/orderSummarySection'
 
 interface OrderSummaryStepProps {
   className?: string

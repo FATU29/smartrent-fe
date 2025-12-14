@@ -5,7 +5,7 @@ export const useUpdatePostStepsConfig = (
   currentStep: number,
   isStepComplete: (index: number) => boolean,
 ): ProgressStep[] => {
-  // Update post has 4 steps: property-info, ai-valuation, images-video, order-summary
-  // Step indices: 0, 1, 2, 4 (skipping package-config at index 3)
-  return usePostStepsConfig(currentStep, isStepComplete, [0, 1, 2, 4])
+  // Update post has 5 steps: property-info, ai-valuation, images-video, package-config (readonly), order-summary
+  // Step indices: 0, 1, 2, 3, 4 (all steps included, but package-config is readonly)
+  return usePostStepsConfig(currentStep, isStepComplete, [0, 1, 2, 3, 4])
 }

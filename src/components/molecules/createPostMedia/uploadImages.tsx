@@ -89,17 +89,9 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
     }))
 
     addPendingImages(newPending)
-
-    // Show success message if files were added
-    if (slice.length > 0) {
-      toast.success(
-        t('uploaded.added') || `${slice.length} image(s) added successfully`,
-      )
-    }
   }
 
   const handleRemovePendingImage = (index: number) => {
-    // Get non-cover pending images and find the actual index
     const nonCoverPending = pendingImages.filter((img) => !img.isCover)
     const targetImage = nonCoverPending[index]
     if (!targetImage) return
