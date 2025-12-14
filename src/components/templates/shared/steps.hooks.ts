@@ -71,7 +71,17 @@ export const usePostSteps = ({
 
   const isStepComplete = useCallback(
     (index: number): boolean => {
-      // Check form errors first
+      // For update post: step 2 and 3 have relaxed validation
+      if (!isCreatePost) {
+        if (index === 3) {
+          return true
+        }
+        if (index === 2) {
+          return validateStep2(media, false)
+        }
+      }
+
+      // Check form errors for other cases
       if (hasFormErrors(index, errors)) {
         return false
       }
@@ -81,7 +91,7 @@ export const usePostSteps = ({
         case 0:
           return validateStep0(propertyInfo as CreateListingRequest | undefined)
         case 2:
-          return validateStep2(media)
+          return validateStep2(media, isCreatePost)
         case 3:
           if (isCreatePost) {
             return validateStep3(
@@ -147,7 +157,7 @@ export const usePostSteps = ({
     }
 
     // Steps that don't require validation - proceed directly
-    const skipValidationSteps = isCreatePost ? [1, 4] : [1, 3]
+    const skipValidationSteps = isCreatePost ? [1, 4] : [1, 3, 4]
     if (skipValidationSteps.includes(currentStep)) {
       proceedNext()
       return

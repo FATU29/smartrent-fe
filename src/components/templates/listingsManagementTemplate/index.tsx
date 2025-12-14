@@ -76,33 +76,33 @@ const ListingsWithPagination = () => {
             onEditListing={(listing) => {
               window.location.href = `/seller/update-post/${listing.listingId}`
             }}
-            onPromoteListing={(listing) =>
-              console.log('Promote listing:', listing.listingId)
-            }
-            onRepostListing={(listing) =>
-              console.log('Repost listing:', listing.listingId)
-            }
-            onViewReport={(listing) =>
-              console.log('View report:', listing.listingId)
-            }
-            onRequestVerification={(listing) =>
-              console.log('Request verification:', listing.listingId)
-            }
-            onCopyListing={(listing) =>
-              console.log('Copy listing:', listing.listingId)
-            }
-            onRequestContact={(listing) =>
-              console.log('Request contact:', listing.listingId)
-            }
-            onShare={(listing) =>
-              console.log('Share listing:', listing.listingId)
-            }
-            onActivityHistory={(listing) =>
-              console.log('Activity history:', listing.listingId)
-            }
-            onTakeDown={(listing) =>
-              console.log('Take down listing:', listing.listingId)
-            }
+            onPromoteListing={() => {
+              // TODO: Implement promote listing
+            }}
+            onRepostListing={() => {
+              // TODO: Implement repost listing
+            }}
+            onViewReport={() => {
+              // TODO: Implement view report
+            }}
+            onRequestVerification={() => {
+              // TODO: Implement request verification
+            }}
+            onCopyListing={() => {
+              // TODO: Implement copy listing
+            }}
+            onRequestContact={() => {
+              // TODO: Implement request contact
+            }}
+            onShare={() => {
+              // TODO: Implement share listing
+            }}
+            onActivityHistory={() => {
+              // TODO: Implement activity history
+            }}
+            onTakeDown={() => {
+              // TODO: Implement take down listing
+            }}
             onDelete={(listing) => {
               setSelectedListingForDelete(listing)
               setDeleteDialogOpen(true)

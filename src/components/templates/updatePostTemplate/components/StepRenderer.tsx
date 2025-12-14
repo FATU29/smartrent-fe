@@ -2,6 +2,7 @@ import React from 'react'
 import { PropertyInfoStep } from '../PropertyInfoStep'
 import { AIValuationStep } from '../AIValuationStep'
 import { MediaStep } from '../MediaStep'
+import { PackageConfigStep } from '../PackageConfigStep'
 import { OrderSummaryStep } from '../OrderSummaryStep'
 import type { ProgressStep } from '@/components/molecules/progressSteps'
 import { DefaultStep } from './DefaultStep'
@@ -25,6 +26,8 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
     case 2:
       return <MediaStep />
     case 3:
+      return <PackageConfigStep />
+    case 4:
       return <OrderSummaryStep />
     default:
       return <DefaultStep step={progressSteps[currentStep]} />

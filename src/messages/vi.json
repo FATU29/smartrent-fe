@@ -807,10 +807,9 @@
       "startDateRequired": "Vui lòng chọn ngày bắt đầu",
       "listingTitleRequired": "Tiêu đề tin đăng là bắt buộc",
       "listingTitleMinLength": "Tiêu đề phải có ít nhất 30 ký tự",
-      "listingTitleMaxLength": "Tiêu đề không được vượt quá 120 ký tự",
+      "listingTitleMaxLength": "Tiêu đề không được vượt quá 200 ký tự",
       "propertyDescriptionRequired": "Mô tả bất động sản là bắt buộc",
-      "propertyDescriptionMinLength": "Mô tả phải có ít nhất 70 ký tự",
-      "propertyDescriptionMaxLength": "Mô tả không được vượt quá 2000 ký tự",
+      "propertyDescriptionMinLength": "Mô tả phải có ít nhất 100 ký tự",
       "fullNameRequired": "Họ và tên là bắt buộc",
       "emailRequired": "Email là bắt buộc",
       "emailInvalid": "Email không hợp lệ",
@@ -856,6 +855,7 @@
       "propertyInfo": {
         "generateAutomatically": "Tạo tự động",
         "listingInfo": "Thông tin Tin đăng",
+        "updateListingInfo": "Cập nhật Tin đăng",
         "mapPreview": "Xem trước Bản đồ",
         "district": "Quận",
         "hcmc": "TP.HCM",
@@ -944,6 +944,12 @@
           "remaining": "Còn lại: {count}",
           "cancel": "Hủy",
           "apply": "Áp dụng ({count})"
+        },
+        "updatePost": {
+          "description": "Thông tin gói đăng tin hiện tại (có thể điều chỉnh ngày đăng)",
+          "endDateAutoCalculated": "Ngày kết thúc (Tự động tính)",
+          "endDateNote": "Ngày kết thúc được tự động tính dựa trên ngày bắt đầu + thời hạn",
+          "updateNote": "Lưu ý: Loại gói và thời hạn không thể thay đổi khi cập nhật. Bạn có thể điều chỉnh ngày bắt đầu đăng tin và ngày kết thúc sẽ được tự động tính toán."
         }
       },
       "orderSummary": {
@@ -968,6 +974,8 @@
         "fullName": "Họ và tên",
         "email": "Email",
         "phone": "Số điện thoại",
+        "notSelected": "Chưa chọn",
+        "freePosting": "Đăng tin miễn phí",
         "confirmationNotice": {
           "title": "Xác nhận thông tin",
           "description": "Vui lòng kiểm tra kỹ thông tin trước khi tiếp tục. Bạn có thể chỉnh sửa bằng cách quay lại các bước trước."
@@ -993,13 +1001,18 @@
           "added": "Đã thêm {count} ảnh thành công"
         },
         "uploadButton": "Tải phương tiện",
+        "allImagesUploaded": "Tất cả ảnh đã được tải lên",
+        "readyToUpload": "Sẵn sàng để tải lên",
+        "pendingImages": "Ảnh chờ tải ({count})",
+        "uploadNow": "Tải lên ngay",
         "upload": {
           "button": "Tải lên {count} ảnh",
           "uploading": "Đang tải lên...",
           "success": "Tải lên ảnh thành công",
           "failed": "Tải lên ảnh thất bại",
           "noPendingImages": "Không có ảnh nào để tải lên",
-          "images": "ảnh"
+          "images": "ảnh",
+          "added": "Đã thêm {count} ảnh thành công"
         },
         "validation": {
           "pendingImages": "Vui lòng tải lên các ảnh đang chờ trước khi tiếp tục",
@@ -1081,12 +1094,20 @@
           "replaceCta": "Thay ảnh bìa",
           "deleteCta": "Xóa",
           "badge": "Ảnh bìa",
-          "uploading": "Đang tải lên..."
+          "uploading": "Đang tải lên...",
+          "uploaded": {
+            "success": "Đã thêm ảnh bìa thành công"
+          },
+          "validation": {
+            "imageSizeExceeded": "Kích thước ảnh bìa không được vượt quá 10MB",
+            "imageFormatInvalid": "Ảnh bìa phải ở định dạng jpeg, png hoặc webp"
+          }
         }
       },
       "propertyInfo": {
         "generateAutomatically": "Tạo tự động",
         "listingInfo": "Thông tin Tin đăng",
+        "updateListingInfo": "Cập nhật Thông tin Tin đăng",
         "mapPreview": "Xem trước Bản đồ",
         "district": "Quận",
         "street": "Đường/Phố",
@@ -1388,6 +1409,7 @@
         "addressReadOnlyHint": "Địa chỉ này được tự động tạo từ phần Thông tin Bất động sản bên trên",
         "amenitiesSyncHint": "Tiện nghi được đồng bộ tự động với phần Thông tin Bất động sản",
         "selectTone": "Chọn giọng điệu",
+        "minimum": "tối thiểu",
         "tone": {
           "friendly": "Thân thiện",
           "professionally": "Chuyên nghiệp"
@@ -1864,6 +1886,7 @@
   },
   "updatePost": {
     "title": "Cập nhật Tin Đăng Bất động sản",
+    "description": "Cập nhật thông tin tin đăng của bạn",
     "loading": "Đang tải dữ liệu tin đăng...",
     "updateListing": "Cập nhật Tin đăng",
     "submit": {

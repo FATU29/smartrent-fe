@@ -10,9 +10,7 @@ import { Check, X, Info, ChevronRight, ChevronDown, Camera } from 'lucide-react'
 
 const PhotoGuidelines: React.FC = () => {
   const t = useTranslations('createPost.sections.media')
-  // Separate collapsibles for Normal Photos and 360° Photos
   const [openNormal, setOpenNormal] = useState(false)
-  // const [open360, setOpen360] = useState(false)
 
   return (
     <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>

@@ -1,4 +1,4 @@
-import { useUpdatePost } from '@/contexts/updatePost'
+import { useCreatePost } from '@/contexts/createPost'
 import { usePostValidation } from '@/components/templates/shared/validation.hooks'
 import type { FieldErrors } from 'react-hook-form'
 import type { CreateListingRequest } from '@/api/types/property.type'
@@ -8,7 +8,7 @@ export const useUpdatePostValidation = (
   attemptedSubmit: boolean,
   errors: FieldErrors<Partial<CreateListingRequest>>,
 ) => {
-  const { propertyInfo, media } = useUpdatePost()
+  const { propertyInfo, media } = useCreatePost()
 
   return usePostValidation({
     currentStep,

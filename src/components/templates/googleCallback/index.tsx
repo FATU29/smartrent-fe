@@ -43,7 +43,6 @@ export default function GoogleCallback() {
 
   const handleOAuthSuccess = useCallback(
     (response: OAuthResponse) => {
-      console.log('response', response)
       if (response.data) {
         const { accessToken, refreshToken } = response.data
         const { user } = decodeToken(accessToken)

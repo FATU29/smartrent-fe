@@ -6,6 +6,8 @@ import {
   CardTitle,
 } from '@/components/atoms/card'
 import { Button } from '@/components/atoms/button'
+import { Input } from '@/components/atoms/input'
+import { Textarea } from '@/components/atoms/textarea'
 import SelectDropdown from '@/components/atoms/select-dropdown'
 import {
   MapPin,
@@ -22,7 +24,7 @@ import {
 import { useTranslations } from 'next-intl'
 import { useFormContext, Controller } from 'react-hook-form'
 import { useCreatePost } from '@/contexts/createPost'
-import { useDebounce } from '@/hooks/useDebounce'
+import { useRouter } from 'next/router'
 import type {
   CreateListingRequest,
   Direction,
@@ -62,6 +64,9 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   className,
   attemptedSubmit = false,
 }) => {
+  const router = useRouter()
+  const isUpdateMode = router.pathname.includes('/update-post')
+
   const t = useTranslations('createPost.sections.propertyInfo')
   const tCommon = useTranslations('common')
   const tDetails = useTranslations('createPost.sections.propertyDetails')
@@ -114,50 +119,76 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     amenityIds,
   } = propertyInfo
 
-  // Local state for title and description with debouncing
   const [titleInput, setTitleInput] = React.useState<string>(title || '')
   const [descriptionInput, setDescriptionInput] = React.useState<string>(
     description || '',
   )
 
-  // Debounce title and description to optimize performance
-  const debouncedTitle = useDebounce(titleInput, 500)
-  const debouncedDescription = useDebounce(descriptionInput, 500)
+  // Track if user has interacted with these fields
+  const [titleTouched, setTitleTouched] = React.useState(false)
+  const [descriptionTouched, setDescriptionTouched] = React.useState(false)
+
+  // Track if we're updating from AI generation to prevent sync issues
+  const isAIGenerating = React.useRef(false)
 
   const { latitude, longitude } = address || {}
 
-  // Update property info when debounced title changes
+  // Only sync from context when NOT touched by user and NOT during AI generation
   React.useEffect(() => {
-    if (debouncedTitle !== title) {
-      updatePropertyInfo({ title: debouncedTitle })
+    if (
+      !titleTouched &&
+      !isAIGenerating.current &&
+      title !== undefined &&
+      title !== ''
+    ) {
+      setTitleInput(title)
     }
-  }, [debouncedTitle])
-
-  // Update property info when debounced description changes
-  React.useEffect(() => {
-    if (debouncedDescription !== description) {
-      updatePropertyInfo({ description: debouncedDescription })
-    }
-  }, [debouncedDescription])
-
-  // Sync local state with external updates (e.g., from AI generation)
-  React.useEffect(() => {
-    if (title !== titleInput) {
-      setTitleInput(title || '')
-    }
-  }, [title])
+  }, [title, titleTouched])
 
   React.useEffect(() => {
-    if (description !== descriptionInput) {
-      setDescriptionInput(description || '')
+    if (
+      !descriptionTouched &&
+      !isAIGenerating.current &&
+      description !== undefined &&
+      description !== ''
+    ) {
+      setDescriptionInput(description)
     }
-  }, [description])
+  }, [description, descriptionTouched])
 
-  // Track if this is the initial mount to prevent validation on mount
+  // Update context and form when user types (with debounce effect via local state)
+  React.useEffect(() => {
+    if (titleTouched && titleInput !== title) {
+      const timer = setTimeout(() => {
+        updatePropertyInfo({ title: titleInput })
+        setValue('title', titleInput, { shouldValidate: true })
+        trigger('title')
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [titleInput, titleTouched, title, updatePropertyInfo, setValue, trigger])
+
+  React.useEffect(() => {
+    if (descriptionTouched && descriptionInput !== description) {
+      const timer = setTimeout(() => {
+        updatePropertyInfo({ description: descriptionInput })
+        setValue('description', descriptionInput, { shouldValidate: true })
+        trigger('description')
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [
+    descriptionInput,
+    descriptionTouched,
+    description,
+    updatePropertyInfo,
+    setValue,
+    trigger,
+  ])
+
   const isInitialMount = React.useRef(true)
 
   React.useEffect(() => {
-    // Skip validation on initial mount to prevent auto-triggering errors
     const shouldValidate = !isInitialMount.current
 
     if (propertyInfo?.categoryId) {
@@ -170,7 +201,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         shouldValidate,
       })
     }
-    // Only validate address if it has meaningful data (not empty/default values)
+
     if (propertyInfo?.address) {
       const address = propertyInfo.address
       const hasValidCoords =
@@ -183,7 +214,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       )
       const hasLegacy = !!address.legacy
 
-      // Only validate if address has valid data
       const shouldValidateAddress: boolean =
         shouldValidate && (hasValidCoords || hasNewAddress || hasLegacy)
 
@@ -192,59 +222,62 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       })
     }
     if (propertyInfo.area) {
-      setValue('area', propertyInfo?.area, { shouldValidate: true })
+      setValue('area', propertyInfo?.area, { shouldValidate: false })
     }
     if (propertyInfo?.price) {
-      setValue('price', propertyInfo?.price, { shouldValidate: true })
+      setValue('price', propertyInfo?.price, { shouldValidate: false })
     }
     if (propertyInfo?.priceUnit) {
-      setValue('priceUnit', propertyInfo?.priceUnit, { shouldValidate: true })
+      setValue('priceUnit', propertyInfo?.priceUnit, { shouldValidate: false })
     }
     if (propertyInfo?.title) {
-      setValue('title', propertyInfo?.title, { shouldValidate: true })
+      setValue('title', propertyInfo?.title, { shouldValidate: false })
     }
     if (propertyInfo.description) {
       setValue('description', propertyInfo?.description, {
-        shouldValidate: true,
+        shouldValidate: false,
       })
     }
     if (propertyInfo?.waterPrice) {
-      setValue('waterPrice', propertyInfo?.waterPrice, { shouldValidate: true })
+      setValue('waterPrice', propertyInfo?.waterPrice, {
+        shouldValidate: false,
+      })
     }
     if (propertyInfo?.electricityPrice) {
       setValue('electricityPrice', propertyInfo?.electricityPrice, {
-        shouldValidate: true,
+        shouldValidate: false,
       })
     }
     if (propertyInfo?.internetPrice) {
       setValue('internetPrice', propertyInfo?.internetPrice, {
-        shouldValidate: true,
+        shouldValidate: false,
       })
     }
     if (propertyInfo?.serviceFee) {
       setValue('serviceFee', propertyInfo?.serviceFee, {
-        shouldValidate: true,
+        shouldValidate: false,
       })
     }
     if (propertyInfo?.furnishing) {
-      setValue('furnishing', propertyInfo?.furnishing, { shouldValidate: true })
+      setValue('furnishing', propertyInfo?.furnishing, {
+        shouldValidate: false,
+      })
     }
     if (propertyInfo?.bedrooms) {
-      setValue('bedrooms', propertyInfo?.bedrooms, { shouldValidate: true })
+      setValue('bedrooms', propertyInfo?.bedrooms, { shouldValidate: false })
     }
     if (propertyInfo.bathrooms) {
-      setValue('bathrooms', propertyInfo?.bathrooms, { shouldValidate: true })
+      setValue('bathrooms', propertyInfo?.bathrooms, { shouldValidate: false })
     }
     if (propertyInfo?.roomCapacity) {
       setValue('roomCapacity', propertyInfo?.roomCapacity, {
-        shouldValidate: true,
+        shouldValidate: false,
       })
     }
     if (propertyInfo?.direction) {
-      setValue('direction', propertyInfo?.direction, { shouldValidate })
+      setValue('direction', propertyInfo?.direction, { shouldValidate: false })
     }
 
-    // Mark initial mount as complete after first render
     if (isInitialMount.current) {
       isInitialMount.current = false
     }
@@ -368,10 +401,9 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       internetPrice: propertyInfo.internetPrice,
       serviceFee: propertyInfo.serviceFee,
       tone: aiTone,
-      titleMaxWords: 120,
+      titleMaxWords: 200,
       titleMinWords: 30,
-      descriptionMaxWords: 2000,
-      descriptionMinWords: 70,
+      descriptionMinWords: 100,
     }
 
     generateAI(req, {
@@ -379,10 +411,32 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         const generatedTitle = resp.data?.title || title || ''
         const generatedDescription = resp.data?.description || description || ''
 
+        console.log('🤖 AI Generated:', {
+          title: generatedTitle,
+          description: generatedDescription?.substring(0, 100) + '...',
+        })
+
+        // Set flag to prevent sync issues during AI generation
+        isAIGenerating.current = true
+
+        // Update local input state immediately
+        setTitleInput(generatedTitle)
+        setDescriptionInput(generatedDescription)
+
+        // Update context
         updatePropertyInfo({
           title: generatedTitle,
           description: generatedDescription,
         })
+
+        // Update form values without validation (AI generated content shouldn't auto-validate)
+        setValue('title', generatedTitle, { shouldValidate: false })
+        setValue('description', generatedDescription, { shouldValidate: false })
+
+        // Reset flag after a short delay
+        setTimeout(() => {
+          isAIGenerating.current = false
+        }, 100)
       },
     })
   }
@@ -398,7 +452,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
               <div className='p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg'>
                 <FileText className='w-6 h-6 text-blue-600 dark:text-blue-400' />
               </div>
-              {t('listingInfo')}
+              {isUpdateMode ? t('updateListingInfo') : t('listingInfo')}
             </CardTitle>
           </CardHeader>
           <CardContent className='space-y-6'>
@@ -468,30 +522,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             <Controller
               name='address'
               control={control}
-              render={({ fieldState: { error } }) => (
+              render={() => (
                 <div className='space-y-3'>
                   <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
                     <MapPin className='w-4 h-4 text-blue-500' />
                     {t('propertyAddress')}
                     <span className='text-destructive ml-1'>*</span>
                   </label>
-                  <AddressInput
-                    className='w-full'
-                    error={
-                      attemptedSubmit && error?.message
-                        ? tValidation(getValidationKey(error.message))
-                        : undefined
-                    }
-                  />
-                  {/* Show error message prominently below address input */}
-                  {attemptedSubmit && error?.message && (
-                    <div className='flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg'>
-                      <MapPin className='w-4 h-4 text-destructive flex-shrink-0 mt-0.5' />
-                      <p className='text-sm text-destructive font-medium'>
-                        {tValidation(getValidationKey(error.message))}
-                      </p>
-                    </div>
-                  )}
+                  <AddressInput className='w-full' />
                 </div>
               )}
             />
@@ -562,8 +600,8 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     </div>
                   )}
 
-                  {/* Validation Error Message */}
-                  {error?.message && (
+                  {/* Validation Error Message - only show when user attempts to proceed */}
+                  {attemptedSubmit && error?.message && (
                     <div className='flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg'>
                       <MapPin className='w-4 h-4 text-destructive flex-shrink-0 mt-0.5' />
                       <p className='text-sm text-destructive font-medium'>
@@ -1061,19 +1099,18 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     {tAI('listingTitle')}
                     <span className='text-destructive ml-1'>*</span>
                   </label>
-                  <input
+                  <Input
                     type='text'
                     value={titleInput}
-                    maxLength={120}
-                    className={`w-full h-12 px-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 ${
-                      error
-                        ? 'border-destructive dark:border-destructive'
-                        : 'border-gray-200 dark:border-gray-700'
-                    }`}
+                    maxLength={200}
                     placeholder={tPlaceholders('enterListingTitle')}
                     onChange={(e) => {
                       setTitleInput(e.target.value)
+                      setTitleTouched(true)
                     }}
+                    onBlur={() => setTitleTouched(true)}
+                    aria-invalid={!!error}
+                    className='h-12'
                   />
                   {error && (
                     <p className='text-xs text-destructive' role='alert'>
@@ -1089,14 +1126,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                       </p>
                       <p
                         className={`text-xs font-medium ${
-                          titleInput.length > 120
+                          titleInput.length > 200
                             ? 'text-destructive'
                             : titleInput.length >= 30
                               ? 'text-green-600 dark:text-green-400'
                               : 'text-gray-500 dark:text-gray-400'
                         }`}
                       >
-                        {titleInput.length}/120
+                        {titleInput.length}/200
                       </p>
                     </div>
                   )}
@@ -1114,18 +1151,16 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     {tAI('propertyDescription')}
                     <span className='text-destructive ml-1'>*</span>
                   </label>
-                  <textarea
+                  <Textarea
                     value={descriptionInput}
-                    maxLength={2000}
-                    className={`w-full h-32 px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 resize-none ${
-                      error
-                        ? 'border-destructive dark:border-destructive'
-                        : 'border-gray-200 dark:border-gray-700'
-                    }`}
                     placeholder={tPlaceholders('enterPropertyDescription')}
                     onChange={(e) => {
                       setDescriptionInput(e.target.value)
+                      setDescriptionTouched(true)
                     }}
+                    onBlur={() => setDescriptionTouched(true)}
+                    aria-invalid={!!error}
+                    className='min-h-[128px] resize-none'
                   />
                   {error && (
                     <p className='text-xs text-destructive' role='alert'>
@@ -1141,14 +1176,15 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                       </p>
                       <p
                         className={`text-xs font-medium ${
-                          descriptionInput.length > 2000
-                            ? 'text-destructive'
-                            : descriptionInput.length >= 70
-                              ? 'text-green-600 dark:text-green-400'
-                              : 'text-gray-500 dark:text-gray-400'
+                          descriptionInput.length >= 100
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-gray-500 dark:text-gray-400'
                         }`}
                       >
-                        {descriptionInput.length}/2000
+                        {descriptionInput.length}{' '}
+                        {descriptionInput.length >= 100
+                          ? '✓'
+                          : `(${tAI('minimum')} 100)`}
                       </p>
                     </div>
                   )}

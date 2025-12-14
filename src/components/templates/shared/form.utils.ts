@@ -22,5 +22,10 @@ export const getFormDefaultValues = (
     electricityPrice: propertyInfo?.electricityPrice,
     internetPrice: propertyInfo?.internetPrice,
     serviceFee: propertyInfo?.serviceFee,
+    // Package config fields
+    vipType: propertyInfo?.vipType,
+    postDate: propertyInfo?.postDate,
+    expiryDate: propertyInfo?.expiryDate,
+    durationDays: propertyInfo?.durationDays,
   }
 }
