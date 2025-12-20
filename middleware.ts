@@ -19,6 +19,7 @@ function isPublicPath(pathname: string) {
   if (pathname.startsWith('/sellernet')) return true
   if (pathname.startsWith('/listing-detail')) return true
   if (pathname.startsWith('/compare')) return true
+  if (pathname.startsWith('/news')) return true
 }
 
 export function middleware(request: NextRequest) {

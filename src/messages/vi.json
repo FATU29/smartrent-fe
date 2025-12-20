@@ -85,6 +85,7 @@
     "email": "Email",
     "contactInformation": "Thông tin liên hệ",
     "notAvailable": "Chưa có",
+    "viewDetails": "Xem chi tiết",
     "actions": {
       "back": "Quay lại"
     },
@@ -1642,6 +1643,11 @@
   "navigation": {
     "home": "Trang chủ",
     "properties": "Bất động sản",
+    "maps": "Xem bản đồ",
+    "backToList": "Quay lại danh sách",
+    "loadingProperties": "Đang tải bất động sản...",
+    "propertiesFound": "bất động sản",
+    "news": "Tin tức",
     "savedListings": "Tin đã lưu",
     "compare": "So Sánh",
     "about": "Giới thiệu",
