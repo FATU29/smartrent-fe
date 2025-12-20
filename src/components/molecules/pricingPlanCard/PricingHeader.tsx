@@ -19,7 +19,9 @@ interface PricingHeaderProps {
   readonly icon?: React.ReactNode
   readonly name: string
   readonly description?: string
-  readonly formattedPrice: string
+  readonly formattedSalePrice: string
+  readonly formattedOriginalPrice: string
+  readonly hasDiscount: boolean
   readonly resolvedPricePeriod?: string
   readonly discountText?: string
   readonly savingAmountText?: string
@@ -35,7 +37,9 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
   icon,
   name,
   description,
-  formattedPrice,
+  formattedSalePrice,
+  formattedOriginalPrice,
+  hasDiscount,
   resolvedPricePeriod,
   discountText,
   savingAmountText,
@@ -89,21 +93,31 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
           </Typography>
         )}
         <Typography as='div' className={getPriceContainerStyles(compact)}>
-          <Typography
-            as='div'
-            className='flex items-end gap-1 whitespace-nowrap'
-          >
-            <Typography as='span' className={getPriceStyles(compact)}>
-              {formattedPrice}
-            </Typography>
-            {resolvedPricePeriod && (
-              <Typography as='span' className={getPricePeriodStyles(compact)}>
-                {resolvedPricePeriod}
+          <Typography as='div' className='flex flex-col items-start gap-1'>
+            <Typography
+              as='div'
+              className='flex items-end gap-1 whitespace-nowrap'
+            >
+              <Typography as='span' className={getPriceStyles(compact)}>
+                {formattedSalePrice}
               </Typography>
-            )}
-            {discountText && (
-              <Typography as='span' className={getDiscountStyles(compact)}>
-                {discountText}
+              {resolvedPricePeriod && (
+                <Typography as='span' className={getPricePeriodStyles(compact)}>
+                  {resolvedPricePeriod}
+                </Typography>
+              )}
+              {discountText && (
+                <Typography as='span' className={getDiscountStyles(compact)}>
+                  {discountText}
+                </Typography>
+              )}
+            </Typography>
+            {hasDiscount && (
+              <Typography
+                as='span'
+                className='text-sm text-muted-foreground line-through'
+              >
+                {formattedOriginalPrice} {resolvedPricePeriod}
               </Typography>
             )}
           </Typography>

@@ -1,10 +1,20 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import PropertyCarousel from '@/components/organisms/apartmentDetail/PropertyCarousel'
+import PropertyCard from '@/components/molecules/propertyCard'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { useRouter } from 'next/router'
 import type { ListingDetail } from '@/api/types'
 import { mapRecentlyViewedToListing } from '@/utils/recentlyViewed/mapper'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  type CarouselApi,
+} from '@/components/atoms/carousel'
+import { History } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface RecentlyViewedSectionProps {
   currentListingId?: string | number
@@ -16,34 +26,100 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
   const t = useTranslations()
   const router = useRouter()
   const { recentlyViewed } = useRecentlyViewed()
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(0)
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
 
-  // Filter out current listing
+  React.useEffect(() => {
+    if (!api) return
+
+    setScrollSnaps(api.scrollSnapList())
+    setCurrent(api.selectedScrollSnap())
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+
+    api.on('reInit', () => {
+      setScrollSnaps(api.scrollSnapList())
+    })
+  }, [api])
+
   const filteredListings = currentListingId
     ? recentlyViewed.filter(
         (item) => String(item.listingId) !== String(currentListingId),
       )
     : recentlyViewed
 
-  // If no recently viewed items, don't render
   if (filteredListings.length === 0) {
     return null
   }
 
-  // Convert to ListingDetail format
-  const listingsData: ListingDetail[] = filteredListings.map((listing) =>
+  const listingsData = filteredListings.map((listing) =>
     mapRecentlyViewedToListing(listing),
   ) as ListingDetail[]
 
-  const handlePropertyClick = (listing: ListingDetail) => {
+  const handleFavorite = () => {}
+
+  const handleOnClick = (listing: ListingDetail) => {
     router.push(`/listing-detail/${listing.listingId}`)
   }
 
   return (
-    <PropertyCarousel
-      listings={listingsData}
-      title={t('apartmentDetail.recentlyViewed.title') || 'Tin đăng đã xem'}
-      onPropertyClick={handlePropertyClick}
-    />
+    <section className='mb-8 sm:mb-10'>
+      <div className='flex items-center gap-3 mb-4 sm:mb-5'>
+        <div className='p-2 rounded-lg bg-gradient-to-br from-slate-400 to-slate-600'>
+          <History className='w-5 h-5 text-white' />
+        </div>
+        <h2 className='text-xl sm:text-2xl font-semibold'>
+          {t('apartmentDetail.recentlyViewed.title') || 'Tin đăng đã xem'}
+        </h2>
+        <span className='ml-auto text-sm font-medium text-slate-600 dark:text-slate-400'>
+          {listingsData.length}
+        </span>
+      </div>
+
+      <Carousel
+        className='group'
+        opts={{ align: 'start', loop: true }}
+        setApi={setApi}
+      >
+        <CarouselContent>
+          {listingsData.map((listing) => (
+            <CarouselItem
+              key={listing.listingId}
+              className='basis-full sm:basis-1/2 lg:basis-1/3'
+            >
+              <PropertyCard
+                listing={listing}
+                onFavorite={handleFavorite}
+                onClick={() => handleOnClick(listing)}
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className='hidden sm:flex -left-12' />
+        <CarouselNext className='hidden sm:flex -right-12' />
+
+        {/* Indicators - only show on mobile/tablet */}
+        <div className='flex xl:hidden justify-center gap-2 mt-4'>
+          {scrollSnaps.map((_, index) => (
+            <button
+              key={`indicator-${index}`}
+              type='button'
+              onClick={() => api?.scrollTo(index)}
+              className={cn(
+                'h-2 rounded-full transition-all',
+                current === index
+                  ? 'w-8 bg-primary'
+                  : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50',
+              )}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </Carousel>
+    </section>
   )
 }
 

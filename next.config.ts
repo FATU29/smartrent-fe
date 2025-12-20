@@ -24,8 +24,17 @@ const nextConfig: NextConfig = {
             protocol: 'https',
             hostname: 'imagedelivery.net',
           },
+          {
+            protocol: 'https',
+            hostname: 'lh3.googleusercontent.com',
+          },
         ]
-      : [],
+      : [
+          {
+            protocol: 'https',
+            hostname: 'lh3.googleusercontent.com',
+          },
+        ],
   },
 }
 

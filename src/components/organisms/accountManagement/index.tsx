@@ -57,6 +57,7 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
       phoneNumber: user.phoneNumber || '',
       idDocument: user.idDocument || '',
       taxNumber: user.taxNumber || '',
+      avatarUrl: user.avatarUrl,
     }
   }, [user])
 

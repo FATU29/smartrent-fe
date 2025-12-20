@@ -60,10 +60,10 @@ const UserDropdown: React.FC = () => {
         sideOffset={8}
         className='p-0 overflow-hidden rounded-xl overflow-x-hidden w-auto min-w-[16rem] max-w-[20rem]'
       >
-        <div className='p-5 bg-gradient-to-br from-primary via-blue-700 to-blue-800 text-white relative overflow-hidden'>
+        <div className='p-5 bg-gradient-to-br from-primary via-blue-500 to-blue-600 text-white relative overflow-hidden'>
           <div className='absolute inset-0 opacity-30 mix-blend-lighten'>
             <Image
-              src='/images/rental-auth-bg.jpg'
+              src='/images/banner-default.jpg'
               alt='Background pattern'
               fill
               className='object-cover object-right-top'

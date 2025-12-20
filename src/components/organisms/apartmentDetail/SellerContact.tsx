@@ -88,7 +88,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
           <div className='flex-1 min-w-0'>
             <Typography
               variant='h5'
-              className='font-bold mb-2 truncate text-base md:text-lg'
+              className='font-bold mb-2 truncate text-basemd:text-lg '
             >
               {name}
             </Typography>
@@ -129,7 +129,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
               height={20}
               className='mr-2'
             />
-            {t('actions.chatZalo')}
+            <p className='text-black'>{t('actions.chatZalo')}</p>
           </Button>
 
           <Button
