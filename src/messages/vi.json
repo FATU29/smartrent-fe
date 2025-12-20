@@ -961,6 +961,10 @@
           "noBenefits": "Không có quyền lợi khả dụng",
           "error": "Không thể tải quyền lợi",
           "remaining": "Còn lại: {count}",
+          "expires": "Hết hạn",
+          "active": "Đang hoạt động",
+          "daysRemaining": "còn {count} ngày",
+          "noMembership": "Bạn chưa có gói hội viên nào",
           "cancel": "Hủy",
           "apply": "Áp dụng ({count})"
         },
