@@ -85,6 +85,7 @@
     "email": "Email",
     "contactInformation": "Contact Information",
     "notAvailable": "Not Available",
+    "viewDetails": "View Details",
     "actions": {
       "back": "Back"
     },
@@ -1739,6 +1740,11 @@
   "navigation": {
     "home": "Home",
     "properties": "Properties",
+    "maps": "Map View",
+    "backToList": "Back to List",
+    "loadingProperties": "Loading properties...",
+    "propertiesFound": "properties found",
+    "news": "News",
     "savedListings": "Saved Listings",
     "compare": "Compare",
     "about": "About",

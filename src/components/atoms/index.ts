@@ -7,6 +7,8 @@ export { VerificationBadge } from './verification-badge'
 export { LocationSwitch } from './locationSwitch'
 export { DatePicker } from './date-picker'
 export { NotFoundIcon } from './not-found-icon'
+export { Logo } from './logo'
+export type { LogoProps } from './logo'
 export {
   ChartContainer,
   ChartTooltip,

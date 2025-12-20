@@ -49,6 +49,7 @@ export const PUBLIC_ROUTES = {
   APARTMENT_DETAIL_PREFIX: '/listing-detail', // dynamic [...slug]
   PAYMENT_STATUS: '/payment/status',
   LISTING_LISTING: '/properties',
+  MAPS: '/maps',
 } as const
 
 export type PublicRouteKey = keyof typeof PUBLIC_ROUTES

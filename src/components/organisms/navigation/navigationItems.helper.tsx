@@ -1,11 +1,5 @@
 import { NavigationItemData } from '@/components/atoms/navigation-item'
-import {
-  Home as HomeIcon,
-  Building2,
-  Users,
-  Heart,
-  GitCompare,
-} from 'lucide-react'
+import { Building2, Newspaper, Heart, GitCompare } from 'lucide-react'
 import type { CategoryApi } from '@/api/types/category.type'
 
 export const getNavigationItems = (
@@ -22,19 +16,19 @@ export const getNavigationItems = (
   }))
   return [
     {
-      id: 'home',
-      label: t('navigation.home'),
-      href: '/',
-      icon: <HomeIcon className='h-4 w-4' />,
-      isActive: activeItem === 'home',
-    },
-    {
       id: 'properties',
       label: t('navigation.properties'),
       href: '/properties',
       icon: <Building2 className='h-4 w-4' />,
       isActive: activeItem === 'properties',
       children: categoryChildren,
+    },
+    {
+      id: 'news',
+      label: t('navigation.news'),
+      href: '/news',
+      icon: <Newspaper className='h-4 w-4' />,
+      isActive: activeItem === 'news',
     },
     {
       id: 'savedListings',
@@ -50,33 +44,5 @@ export const getNavigationItems = (
       icon: <GitCompare className='h-4 w-4' />,
       isActive: activeItem === 'compare',
     },
-    {
-      id: 'tenants',
-      label: t('navigation.tenants'),
-      href: '/tenants',
-      icon: <Users className='h-4 w-4' />,
-      isActive: activeItem === 'tenants',
-      children: [
-        {
-          id: 'applications',
-          label: t('navigation.applications'),
-          href: '/tenants/applications',
-          isActive: activeItem === 'applications',
-        },
-        {
-          id: 'leases',
-          label: t('navigation.leases'),
-          href: '/tenants/leases',
-          isActive: activeItem === 'leases',
-        },
-        {
-          id: 'maintenance',
-          label: t('navigation.maintenance'),
-          href: '/tenants/maintenance',
-          isActive: activeItem === 'maintenance',
-        },
-      ],
-    },
-    // Removed documents, calendar, analytics from navigation per request
   ]
 }
