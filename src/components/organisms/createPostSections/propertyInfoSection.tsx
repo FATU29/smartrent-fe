@@ -411,11 +411,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         const generatedTitle = resp.data?.title || title || ''
         const generatedDescription = resp.data?.description || description || ''
 
-        console.log('🤖 AI Generated:', {
-          title: generatedTitle,
-          description: generatedDescription?.substring(0, 100) + '...',
-        })
-
         // Set flag to prevent sync issues during AI generation
         isAIGenerating.current = true
 

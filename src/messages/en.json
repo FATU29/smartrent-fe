@@ -960,6 +960,10 @@
           "noBenefits": "No benefits available",
           "error": "Failed to load benefits",
           "remaining": "Remaining: {count}",
+          "expires": "Expires",
+          "active": "Active",
+          "daysRemaining": "{count} days left",
+          "noMembership": "You don't have any membership package",
           "cancel": "Cancel",
           "apply": "Apply ({count})"
         },
