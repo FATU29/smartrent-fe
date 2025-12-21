@@ -38,7 +38,6 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
 }) => {
   const t = useTranslations()
   const { language } = useSwitchLanguage()
-  // Ensure locale is properly set and reactive to language changes
   const locale = useMemo(() => language || 'vi', [language])
   const [selectedPeriod, setSelectedPeriod] = useState<
     '1year' | '2years' | '5years'
@@ -98,7 +97,6 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
       }
     })
 
-    // Use API statistics directly - no calculation needed
     if (!priceStatistics) {
       return { chartData: chartDataWithRange, statistics: null }
     }
@@ -128,7 +126,6 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
     return null
   }
 
-  // Chart config following shadcn pattern
   const chartConfig: ChartConfig = {
     highest: {
       label: t('apartmentDetail.priceHistory.chartLabels.highest'),
@@ -175,7 +172,6 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
               className='text-xl sm:text-2xl font-bold mb-1 break-words'
             >
               {formatByLocale(statistics.current, locale)}{' '}
-              {t('apartmentDetail.priceHistory.statistics.priceUnit')}
             </Typography>
             <Typography variant='small' className='text-muted-foreground'>
               {t('apartmentDetail.priceHistory.statistics.avgPrice')}
@@ -400,7 +396,6 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 className='font-bold text-sm sm:text-base break-words'
               >
                 {formatByLocale(statistics.minPrice, locale)}{' '}
-                {t('apartmentDetail.priceHistory.statistics.priceUnit')}
               </Typography>
             </div>
             <div>
@@ -415,7 +410,6 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 className='font-bold text-sm sm:text-base break-words'
               >
                 {formatByLocale(statistics.maxPrice, locale)}{' '}
-                {t('apartmentDetail.priceHistory.statistics.priceUnit')}
               </Typography>
             </div>
             <div>
@@ -430,7 +424,6 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 className='font-bold text-sm sm:text-base break-words'
               >
                 {formatByLocale(statistics.avgPrice, locale)}{' '}
-                {t('apartmentDetail.priceHistory.statistics.priceUnit')}
               </Typography>
             </div>
             <div>

@@ -49,7 +49,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
           className='w-full h-full object-cover'
         />
         <div className='absolute inset-0 bg-black/50 flex items-center justify-center'>
-          <span className='text-white text-sm md:text-base font-medium bg-black/70 px-5 py-2.5 rounded-lg backdrop-blur-sm'>
+          <span className='text-white text-sm md:text-base font-medium bg-black/70 px-5 py-2.5 rounded-lg '>
             {t('noMediaAvailable')}
           </span>
         </div>
@@ -62,13 +62,13 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
   return (
     <div className='space-y-3 md:space-y-4'>
       {/* Main Media Display */}
-      <div className='group relative w-full aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden bg-muted shadow-lg'>
+      <div className='relative w-full aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden bg-muted shadow-lg'>
         {currentMedia?.mediaType === 'IMAGE' ? (
           <ImageAtom
             src={currentMedia.url}
             defaultImage={DEFAULT_IMAGE}
             alt={`${t('image')} ${currentIndex + 1}`}
-            className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105'
+            className='w-full h-full object-cover'
           />
         ) : currentMedia?.mediaType === 'VIDEO' ? (
           isYouTube(currentMedia.url) ? (
@@ -96,7 +96,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             <Button
               variant='ghost'
               size='icon'
-              className='absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full shadow-lg h-10 w-10 md:h-11 md:w-11 transition-all z-10 opacity-0 group-hover:opacity-100 border border-gray-200/50'
+              className='absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full shadow-lg h-10 w-10 md:h-11 md:w-11  z-10 border border-gray-200/50'
               onClick={prevMedia}
             >
               <ChevronLeft className='w-5 h-5 md:w-6 md:h-6 text-gray-900' />
@@ -104,7 +104,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             <Button
               variant='ghost'
               size='icon'
-              className='absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full shadow-lg h-10 w-10 md:h-11 md:w-11 transition-all z-10 opacity-0 group-hover:opacity-100 border border-gray-200/50'
+              className='absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full shadow-lg h-10 w-10 md:h-11 md:w-11  z-10  border border-gray-200/50'
               onClick={nextMedia}
             >
               <ChevronRight className='w-5 h-5 md:w-6 md:h-6 text-gray-900' />
@@ -143,8 +143,8 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
                 key={index}
                 className={`relative flex-shrink-0 w-20 h-16 sm:w-24 sm:h-20 md:w-28 md:h-22 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                   index === currentIndex
-                    ? 'border-primary shadow-md ring-2 ring-primary/20 scale-105'
-                    : 'border-gray-200 hover:border-primary/50 opacity-60 hover:opacity-100 hover:scale-105'
+                    ? 'border-primary'
+                    : 'border-transparent hover:border-gray-300'
                 }`}
                 onClick={() => selectMedia(index)}
               >

@@ -48,11 +48,9 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
   const [activeCategory, setActiveCategory] =
     useState<ReportCategory>('LISTING')
 
-  // React Query hooks
   const { data: reasons = [], isLoading: loadingReasons } = useReportReasons()
   const { mutate: submitReport, isPending: submitting } = useCreateReport()
 
-  // React Hook Form
   const { control, handleSubmit, watch, setValue, reset } =
     useForm<ReportFormData>({
       defaultValues: {
@@ -67,17 +65,15 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
 
   const selectedReasonIds = watch('reasonIds')
   const reporterEmail = watch('reporterEmail')
+  const reporterPhone = watch('reporterPhone')
 
-  // Auto-fill email from user token when logged in
   useEffect(() => {
     if (isAuthenticated && user?.email) {
       setValue('reporterEmail', user.email)
-      // Also auto-fill name if available
       if (user.firstName || user.lastName) {
         const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim()
         setValue('reporterName', fullName)
       }
-      // Auto-fill phone if available
       if (user.phoneNumber) {
         const fullPhone = `${user.phoneCode || ''}${user.phoneNumber}`.trim()
         setValue('reporterPhone', fullPhone)
@@ -85,7 +81,6 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
     }
   }, [isAuthenticated, user, open, setValue])
 
-  // Reset form when dialog closes
   useEffect(() => {
     if (!open) {
       reset()
@@ -101,9 +96,10 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
     }
   }, [open, reset])
 
-  // Validation rules
   const validatePhone = (value?: string) => {
-    if (!value || !value.trim()) return true // Optional field
+    if (!value || !value.trim()) {
+      return t('report.phoneRequired') || 'Số điện thoại là bắt buộc'
+    }
     const phoneRegex = /^0\d{9,10}$/
     return (
       phoneRegex.test(value.trim()) ||
@@ -116,7 +112,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
     if (!value || !value.trim()) {
       return t('report.emailRequired') || 'Email là bắt buộc'
     }
-    // Use a safer regex pattern to avoid ReDoS vulnerability
+
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     return (
       emailRegex.test(value.trim()) ||
@@ -125,7 +121,6 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
     )
   }
 
-  // Toggle checkbox selection
   const toggleReasonSelection = (reasonId: number) => {
     const currentIds = watch('reasonIds')
     if (currentIds.includes(reasonId)) {
@@ -138,7 +133,6 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
     }
   }
 
-  // Handle form submission
   const onSubmit = (data: ReportFormData) => {
     if (data.reasonIds.length === 0) {
       toast.error(
@@ -344,13 +338,12 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
                       <input
                         {...field}
                         type='tel'
-                        placeholder={
-                          t('report.reporterPhone') || 'Số điện thoại'
-                        }
+                        placeholder={`${t('report.reporterPhone') || 'Số điện thoại'} *`}
                         className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring ${
                           fieldState.error ? 'border-red-500' : ''
                         }`}
                         disabled={submitting}
+                        required
                       />
                       {fieldState.error && (
                         <p className='text-xs text-red-500 mt-1'>
@@ -416,7 +409,8 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
               submitting ||
               loadingReasons ||
               selectedReasonIds.length === 0 ||
-              !reporterEmail.trim()
+              !reporterEmail.trim() ||
+              !reporterPhone?.trim()
             }
             onClick={handleSubmit(onSubmit)}
             className='w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10'

@@ -9,8 +9,6 @@ import { ListingService } from '@/api/services'
 import { mockListingDetail, mockSimilarProperties } from '@/mock'
 import { PUBLIC_ROUTES } from '@/constants'
 
-// Auth dialog handled globally by AuthDialogProvider
-
 interface ListingDetailProps {
   listing?: ListingDetail
   similarProperties?: ListingDetail[]
@@ -54,12 +52,10 @@ const ListingDetail: NextPageWithLayout<ListingDetailProps> = (props) => {
   )
 
   const handleCall = useCallback(() => {
-    // Show full phone number logic
     onCall?.()
   }, [onCall])
 
   const handleChatZalo = useCallback(() => {
-    // Open Zalo chat
     onChatZalo?.()
   }, [onChatZalo])
 

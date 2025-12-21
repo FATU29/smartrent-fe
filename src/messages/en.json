@@ -2859,7 +2859,7 @@
       "action": "Browse Listings"
     },
     "actions": {
-      "addToCompare": "Add to Compare",
+      "addToCompare": "Compare",
       "removeFromCompare": "Remove from Compare",
       "clearAll": "Clear All",
       "compareNow": "Compare Now",

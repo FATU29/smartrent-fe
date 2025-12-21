@@ -64,7 +64,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     usePricingHistory(listingId)
   const { data: priceStatisticsData } = usePriceStatistics(listingId)
 
-  // Fetch similar properties based on VIP type and location
   const {
     data: fetchedSimilarProperties,
     isLoading: isLoadingSimilar,
@@ -75,12 +74,11 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     wardId: locationPricing?.wardPricing?.locationId,
     districtId: locationPricing?.districtPricing?.locationId,
     provinceId: locationPricing?.provincePricing?.locationId,
-    isLegacy: true, // Based on location pricing structure
+    isLegacy: true,
     enabled: !!listingId && !!vipType,
     limit: 10,
   })
 
-  // Use fetched similar properties if available, otherwise fallback to props
   const similarPropertiesData = fetchedSimilarProperties || []
   const shouldShowSimilarProperties =
     isLoadingSimilar ||
@@ -190,7 +188,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         ),
         isVisible: mockPricingHistory && mockPricingHistory.length > 0,
       },
-
       {
         id: 'map',
         component: (

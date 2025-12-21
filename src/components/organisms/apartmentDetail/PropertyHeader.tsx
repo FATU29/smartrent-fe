@@ -49,7 +49,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
       const recentlyViewedData = mapListingToRecentlyViewed(listing, thumbnail)
       addListing(recentlyViewedData)
     }
-  }, [listingId, thumbnail, listing, addListing]) // Include all dependencies
+  }, [listingId, thumbnail, listing, addListing])
 
   const handleCopyLink = () => {
     const url = window.location.href
@@ -61,7 +61,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     setReportDialogOpen(true)
   }
 
-  // Convert ListingDetail to ListingApi for CompareToggleBtn
   const listingForCompare: ListingApi = {
     listingId: listing.listingId,
     title: listing.title || '',
@@ -92,7 +91,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     <div className='space-y-5 listing-section'>
       {/* Title and Actions */}
       <div className='flex flex-col gap-4'>
-        <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4'>
+        <div className='flex flex-col gap-4'>
           <div className='flex-1 min-w-0'>
             {/* Title */}
             <Typography
@@ -129,8 +128,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
             </div>
           </div>
 
-          {/* Action Buttons - Desktop */}
-          <div className='hidden lg:flex items-center gap-2 flex-shrink-0'>
+          <div className='grid grid-cols-2 md:grid-cols-4 gap-2 mt-4'>
             <Button
               variant='outline'
               size='sm'
@@ -151,6 +149,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
             <SaveListingButton
               listingId={listingId}
               variant='default'
+              size='sm'
               showLabel={true}
             />
 
@@ -164,43 +163,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
               <span>{t('common.report') || 'Report'}</span>
             </Button>
           </div>
-        </div>
-
-        {/* Action Buttons - Mobile/Tablet */}
-        <div className='flex lg:hidden items-center gap-2'>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={handleCopyLink}
-            className='flex-1 flex items-center justify-center gap-2'
-          >
-            <Copy size={16} />
-            <span>{t('apartmentDetail.actions.share')}</span>
-          </Button>
-
-          <CompareToggleBtn
-            listing={listingForCompare}
-            variant='outline'
-            size='sm'
-            showLabel={true}
-            className='flex-1'
-          />
-
-          <SaveListingButton
-            listingId={listingId}
-            variant='default'
-            showLabel={true}
-            className='flex-1'
-          />
-
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={handleReport}
-            className='flex items-center gap-2'
-          >
-            <Flag size={16} />
-          </Button>
         </div>
       </div>
 
