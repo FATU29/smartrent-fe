@@ -34,17 +34,17 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
 
   const diamondListings = useRecommendedListingsByVip({
     vipType: 'DIAMOND',
-    size: 4,
+    size: 10,
   })
 
   const goldListings = useRecommendedListingsByVip({
     vipType: 'GOLD',
-    size: 4,
+    size: 10,
   })
 
   const silverListings = useRecommendedListingsByVip({
     vipType: 'SILVER',
-    size: 4,
+    size: 10,
   })
 
   const hasNext = pagination.currentPage < pagination.totalPages

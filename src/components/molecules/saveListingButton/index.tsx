@@ -22,6 +22,7 @@ interface SaveListingButtonProps {
   onSaved?: () => void
   onUnsaved?: () => void
   disabled?: boolean
+  size?: 'default' | 'sm' | 'lg' | 'icon'
 }
 
 /**
@@ -38,6 +39,7 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
   onSaved,
   onUnsaved,
   disabled = false,
+  size = 'default',
 }) => {
   const t = useTranslations('savedListings')
   const { isSaved, isLoading, toggleSave } = useToggleSaveListing(listingId)
@@ -142,14 +144,10 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
   return (
     <Button
       variant='outline'
-      size='default'
+      size={size}
       onClick={handleClick}
       disabled={disabled || isLoading || !listingId}
-      className={cn(
-        'hover:scale-105 active:scale-95',
-        'transition-all duration-200',
-        className,
-      )}
+      className={cn(className)}
       aria-label={isSaved ? t('tooltip.saved') : t('tooltip.save')}
     >
       {buttonContent}
