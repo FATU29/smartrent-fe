@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import { X } from 'lucide-react'
+import Logo from '@/components/atoms/logo'
 import VerticalNav, {
   type VerticalNavItem,
 } from '@/components/molecules/verticalNav/VerticalNav'
@@ -74,6 +75,9 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
           <div className='grid grid-cols-1 md:grid-cols-[auto_1fr] md:gap-0 pt-0 pb-4 md:pb-6'>
             <aside className='hidden md:block'>
               <div className='sticky top-0 h-screen border-r bg-card overflow-y-auto overflow-x-hidden flex flex-col z-40 w-fit min-w-[180px] p-3 pr-5'>
+                <div className='px-2 py-2 mb-1.5'>
+                  <Logo size='small' />
+                </div>
                 <VerticalNav
                   items={items}
                   t={(key) => t(key)}

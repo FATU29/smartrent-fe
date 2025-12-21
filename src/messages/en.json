@@ -85,6 +85,7 @@
     "email": "Email",
     "contactInformation": "Contact Information",
     "notAvailable": "Not Available",
+    "viewDetails": "View Details",
     "actions": {
       "back": "Back"
     },
@@ -959,6 +960,10 @@
           "noBenefits": "No benefits available",
           "error": "Failed to load benefits",
           "remaining": "Remaining: {count}",
+          "expires": "Expires",
+          "active": "Active",
+          "daysRemaining": "{count} days left",
+          "noMembership": "You don't have any membership package",
           "cancel": "Cancel",
           "apply": "Apply ({count})"
         },
@@ -1739,6 +1744,11 @@
   "navigation": {
     "home": "Home",
     "properties": "Properties",
+    "maps": "Map View",
+    "backToList": "Back to List",
+    "loadingProperties": "Loading properties...",
+    "propertiesFound": "properties found",
+    "news": "News",
     "savedListings": "Saved Listings",
     "compare": "Compare",
     "about": "About",
@@ -2014,6 +2024,9 @@
         "validUntil": "Valid Until",
         "daysRemaining": "Days Remaining",
         "activeBenefits": "Active Benefits",
+        "benefits": "benefits",
+        "expires": "Expires",
+        "of": "of",
         "moreBenefits": "more benefits",
         "upgradeTitle": "Upgrade Your Membership",
         "upgradeDescription": "Unlock more features and benefits with our premium plans",

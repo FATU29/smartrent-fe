@@ -7,9 +7,9 @@ import {
   PropertyDescription,
   PriceHistoryChart,
   SellerContact,
-  PropertyCarousel,
   PropertyMap,
   RecentlyViewedSection,
+  SimilarPropertiesSection,
 } from '@/components/organisms/apartmentDetail'
 import { Typography } from '@/components/atoms/typography'
 import { ListingDetail } from '@/api/types'
@@ -208,9 +208,8 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
       {
         id: 'similarProperties',
         component: (
-          <PropertyCarousel
+          <SimilarPropertiesSection
             listings={similarPropertiesData}
-            title={t('apartmentDetail.sections.similarProperties')}
             onPropertyClick={handleSimilarPropertyClick}
             isLoading={isLoadingSimilar}
             showEmptyState={!isLoadingSimilar && !isErrorSimilar}

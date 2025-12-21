@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
-import { Building2, Bell, X } from 'lucide-react'
+import { Bell, X } from 'lucide-react'
 import { SELLER_ROUTES } from '@/constants'
+import Logo from '@/components/atoms/logo'
 
 import { NAV_ITEMS } from './index.helper'
 import { SELLERNET_NAV } from '@/components/layouts/sellernet/index.helper'
@@ -70,17 +70,9 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
           <div className='grid grid-cols-1 md:grid-cols-[200px_1fr] md:pb-6 pb-4 md:gap-0'>
             <aside className='hidden md:block'>
               <div className='sticky top-0 h-screen rounded-none border-r bg-card p-3 shadow-sm overflow-y-auto overflow-x-hidden pr-1 flex flex-col'>
-                <Link
-                  href='/'
-                  className='flex items-center gap-2 px-2 py-2 mb-1.5'
-                >
-                  <span className='inline-flex h-7 w-7 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
-                    <Building2 className='h-4 w-4' />
-                  </span>
-                  <span className='text-base font-semibold tracking-tight'>
-                    SmartRent
-                  </span>
-                </Link>
+                <div className='px-2 py-2 mb-1.5'>
+                  <Logo size='small' />
+                </div>
 
                 <VerticalNav
                   items={
@@ -99,13 +91,9 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
                 <div className='px-4 sm:px-6 pt-[max(env(safe-area-inset-top),0px)] md:px-6 md:pt-0'>
                   <div className='flex h-14 items-center justify-between gap-2 md:justify-between md:gap-3 md:h-auto md:py-4'>
                     <div className='flex items-center gap-3 min-w-0'>
-                      <Link
-                        href='/'
-                        aria-label='Home'
-                        className='md:hidden inline-flex h-9 w-9 items-center justify-center rounded-full border bg-background text-foreground'
-                      >
-                        <Building2 className='h-5 w-5' />
-                      </Link>
+                      <div className='md:hidden'>
+                        <Logo size='small' showText={false} />
+                      </div>
                       <div className='min-w-0'>
                         <div className='hidden md:block text-base md:text-lg font-semibold truncate'>
                           {headerTitle}

@@ -7,6 +7,8 @@ import type {
   GetAllPushDetailsResponse,
   PushDetailCode,
   PushDetail,
+  PushListingRequest,
+  PushListingResponse,
 } from '@/api/types/push.type'
 
 export class PushService {
@@ -81,5 +83,39 @@ export class PushService {
       displayName:
         locale === 'en' ? pushDetail.detailNameEn : pushDetail.detailName,
     }
+  }
+
+  /**
+   * Push a listing to the top (with payment or membership quota)
+   * @param request - Push listing request containing listingId, useMembershipQuota, and paymentProvider
+   * @returns Promise with payment URL if payment required, or confirmation if quota used
+   * @example
+   * ```ts
+   * // Direct payment
+   * const response = await PushService.pushListing({
+   *   listingId: 123,
+   *   useMembershipQuota: false,
+   *   paymentProvider: 'VNPAY'
+   * })
+   * if (response.data.paymentUrl) {
+   *   window.location.href = response.data.paymentUrl
+   * }
+   *
+   * // Use membership quota
+   * const response = await PushService.pushListing({
+   *   listingId: 123,
+   *   useMembershipQuota: true
+   * })
+   * console.log(response.data.message) // "Push successful"
+   * ```
+   */
+  static async pushListing(
+    request: PushListingRequest,
+  ): Promise<ApiResponse<PushListingResponse>> {
+    return apiRequest<PushListingResponse>({
+      url: PATHS.PUSHES.PUSH,
+      method: 'POST',
+      data: request,
+    })
   }
 }

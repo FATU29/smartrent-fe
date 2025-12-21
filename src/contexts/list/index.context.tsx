@@ -246,10 +246,8 @@ export const ListProvider = <T,>({
   initialFilters = {},
   initialPagination,
 }: ListProviderProps<T>) => {
-  // Shared ref for append mode
   const shouldAppendRef = useRef(false)
 
-  // State management
   const {
     items,
     setItems,
@@ -260,7 +258,6 @@ export const ListProvider = <T,>({
     hasInitialData,
   } = useListState<T>(initialData, initialPagination)
 
-  // Filters management
   const {
     filters,
     updateFilters,
@@ -271,7 +268,6 @@ export const ListProvider = <T,>({
     activeFilterCount,
   } = useListFilters(initialFilters, shouldAppendRef)
 
-  // Fetch management
   useListFetch(
     fetcher,
     filters,
@@ -282,7 +278,6 @@ export const ListProvider = <T,>({
     shouldAppendRef,
   )
 
-  // Remove item callback for optimistic deletion
   const removeItem = useCallback((id: string | number) => {
     setItems((prev) =>
       prev.filter((item) => {
@@ -295,7 +290,6 @@ export const ListProvider = <T,>({
     )
   }, [])
 
-  // Context value
   const value: ListContextType<T> = useMemo(
     () => ({
       items,

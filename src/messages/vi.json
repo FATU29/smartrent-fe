@@ -85,6 +85,7 @@
     "email": "Email",
     "contactInformation": "Thông tin liên hệ",
     "notAvailable": "Chưa có",
+    "viewDetails": "Xem chi tiết",
     "actions": {
       "back": "Quay lại"
     },
@@ -960,6 +961,10 @@
           "noBenefits": "Không có quyền lợi khả dụng",
           "error": "Không thể tải quyền lợi",
           "remaining": "Còn lại: {count}",
+          "expires": "Hết hạn",
+          "active": "Đang hoạt động",
+          "daysRemaining": "còn {count} ngày",
+          "noMembership": "Bạn chưa có gói hội viên nào",
           "cancel": "Hủy",
           "apply": "Áp dụng ({count})"
         },
@@ -1642,6 +1647,11 @@
   "navigation": {
     "home": "Trang chủ",
     "properties": "Bất động sản",
+    "maps": "Xem bản đồ",
+    "backToList": "Quay lại danh sách",
+    "loadingProperties": "Đang tải bất động sản...",
+    "propertiesFound": "bất động sản",
+    "news": "Tin tức",
     "savedListings": "Tin đã lưu",
     "compare": "So Sánh",
     "about": "Giới thiệu",
@@ -2015,6 +2025,9 @@
         "validUntil": "Có hiệu lực đến",
         "daysRemaining": "Số ngày còn lại",
         "activeBenefits": "Lợi ích đang hoạt động",
+        "benefits": "lợi ích",
+        "expires": "Hết hạn",
+        "of": "trên",
         "moreBenefits": "lợi ích khác",
         "upgradeTitle": "Nâng cấp gói hội viên",
         "upgradeDescription": "Mở khóa thêm tính năng và lợi ích với các gói premium",

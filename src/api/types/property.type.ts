@@ -665,3 +665,41 @@ export interface ListingSearchResponse<T> {
   filterCriteria?: Partial<ListingFilterRequest>
   recommendations?: T[]
 }
+
+/**
+ * Map Bounds request parameters
+ * Public API - no authentication required
+ */
+export interface MapBoundsRequest {
+  // Coordinates - Northeast corner (góc Đông Bắc)
+  neLat: number
+  neLng: number
+  // Coordinates - Southwest corner (góc Tây Nam)
+  swLat: number
+  swLng: number
+  // Zoom level (1-22)
+  zoom: number
+  // Optional filters
+  limit?: number // Mặc định 100, tối đa 500
+  verifiedOnly?: boolean // Mặc định false
+  categoryId?: number // Lọc theo loại BĐS
+  vipType?: VipType // Lọc theo VIP tier
+}
+
+/**
+ * Map Bounds response
+ * Returns listings within the specified bounds
+ */
+export interface MapBoundsResponse {
+  listings: ListingDetail[]
+  totalCount: number // Tổng số bài đăng tìm thấy
+  returnedCount: number // Số bài thực tế trả về
+  hasMore: boolean // totalCount > returnedCount
+  bounds: {
+    neLat: number
+    neLng: number
+    swLat: number
+    swLng: number
+    zoom: number
+  }
+}

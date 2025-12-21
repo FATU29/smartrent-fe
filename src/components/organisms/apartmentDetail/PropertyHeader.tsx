@@ -8,12 +8,14 @@ import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { getPriceUnitTranslationKey } from '@/utils/property'
 import { Button } from '@/components/atoms/button'
 import SaveListingButton from '@/components/molecules/saveListingButton'
+import CompareToggleBtn from '@/components/molecules/compareToggleBtn'
 import { Copy, Flag } from 'lucide-react'
 import { toast } from 'sonner'
 import { ReportListingDialog } from '@/components/molecules/reportListingDialog'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { useMediaThumbnail } from '@/hooks/useMediaThumbnail'
 import { mapListingToRecentlyViewed } from '@/utils/recentlyViewed/mapper'
+import { ListingApi } from '@/api/types/property.type'
 
 interface PropertyHeaderProps {
   listing: ListingDetail
@@ -57,6 +59,33 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
 
   const handleReport = () => {
     setReportDialogOpen(true)
+  }
+
+  // Convert ListingDetail to ListingApi for CompareToggleBtn
+  const listingForCompare: ListingApi = {
+    listingId: listing.listingId,
+    title: listing.title || '',
+    price: listing.price || 0,
+    priceUnit: listing.priceUnit,
+    area: listing.area || 0,
+    bedrooms: listing.bedrooms || 0,
+    bathrooms: listing.bathrooms || 0,
+    roomCapacity: listing.roomCapacity,
+    address: listing.address,
+    media: listing.media || [],
+    vipType: listing.vipType,
+    verified: listing.verified || false,
+    description: listing.description || '',
+    postDate: listing.postDate || new Date().toISOString(),
+    expiryDate: listing.expiryDate || new Date().toISOString(),
+    category: listing.category || { categoryId: 0, name: '' },
+    user: listing.user || { userId: 0, firstName: '', lastName: '' },
+    productType: listing.productType,
+    furnishing: listing.furnishing,
+    direction: listing.direction,
+    amenities: listing.amenities || [],
+    createdAt: listing.createdAt || new Date().toISOString(),
+    updatedAt: listing.updatedAt || new Date().toISOString(),
   }
 
   return (
@@ -112,6 +141,13 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
               <span>{t('apartmentDetail.actions.share')}</span>
             </Button>
 
+            <CompareToggleBtn
+              listing={listingForCompare}
+              variant='outline'
+              size='sm'
+              showLabel={true}
+            />
+
             <SaveListingButton
               listingId={listingId}
               variant='default'
@@ -141,6 +177,14 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
             <Copy size={16} />
             <span>{t('apartmentDetail.actions.share')}</span>
           </Button>
+
+          <CompareToggleBtn
+            listing={listingForCompare}
+            variant='outline'
+            size='sm'
+            showLabel={true}
+            className='flex-1'
+          />
 
           <SaveListingButton
             listingId={listingId}

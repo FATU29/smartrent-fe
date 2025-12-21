@@ -12,6 +12,23 @@ export interface RecentlyViewedListing {
   address: string
   thumbnail?: string
   viewedAt: number // timestamp
+  // Additional fields for better display
+  bedrooms?: number
+  bathrooms?: number
+  verified?: boolean
+  vipType?: string
+  productType?: string
+  furnishing?: string
+  direction?: string
+  roomCapacity?: number
+  description?: string
+  postDate?: string
+  user?: {
+    userId?: string
+    firstName?: string
+    lastName?: string
+    avatarUrl?: string
+  }
 }
 
 const STORAGE_KEY = 'smart-rent-recently-viewed'

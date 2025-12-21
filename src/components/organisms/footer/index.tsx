@@ -1,8 +1,8 @@
 import React from 'react'
 import { Typography } from '@/components/atoms/typography'
+import Logo from '@/components/atoms/logo'
 import { useTranslations } from 'next-intl'
 import {
-  Building2,
   Facebook,
   Instagram,
   Twitter,
@@ -23,14 +23,7 @@ const Footer: React.FC = () => {
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12'>
             {/* Company Info */}
             <div className='space-y-3'>
-              <div className='flex items-center gap-2'>
-                <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
-                  <Building2 className='h-5 w-5 text-primary-foreground' />
-                </div>
-                <Typography variant='h5' className='text-foreground font-bold'>
-                  SmartRent
-                </Typography>
-              </div>
+              <Logo size='medium' clickable={false} />
               <Typography variant='muted' className='text-sm leading-relaxed'>
                 {t('footer.description')}
               </Typography>

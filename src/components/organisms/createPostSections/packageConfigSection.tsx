@@ -458,13 +458,12 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
             </Button>
             {propertyInfo.benefitIds && propertyInfo.benefitIds.length > 0 && (
               <Typography variant='muted' className='text-xs'>
-                {t('promotionApplied')}: {propertyInfo.benefitIds.length}{' '}
-                {propertyInfo.benefitIds.length > 1 ? 'benefits' : 'benefit'}
+                {t('promotionApplied')}: 1 benefit
               </Typography>
             )}
             {!membership && !isMembershipLoading && (
               <Typography variant='muted' className='text-xs text-orange-600'>
-                Bạn chưa có gói hội viên
+                {t('benefit.noMembership')}
               </Typography>
             )}
           </CardContent>

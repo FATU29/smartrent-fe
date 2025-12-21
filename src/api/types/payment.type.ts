@@ -123,3 +123,13 @@ export interface PaymentHistoryPage {
 
 // Generic map params for IPN / callback endpoints
 export type ProviderParams = Record<string, string>
+
+// Payment callback response
+export interface PaymentCallbackResponse {
+  transactionRef: string
+  providerTransactionId?: string
+  status: PaymentStatus | string
+  success: boolean
+  signatureValid: boolean
+  message?: string
+}

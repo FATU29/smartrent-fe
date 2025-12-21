@@ -12,12 +12,17 @@ export default function Document() {
         <meta name='theme-color' content='#ffffff' />
 
         {/* Favicon and Icons */}
-        <link rel='icon' href='/favicon.ico' sizes='any' />
-        <link rel='icon' type='image/svg+xml' href='/svg/default-avatar.svg' />
-        <link rel='apple-touch-icon' href='/favicon.ico' />
+        <link rel='icon' href='/images/logo-smartrent.jpg' sizes='any' />
+        <link
+          rel='icon'
+          type='image/svg+xml'
+          href='/images/logo-smartrent.jpg'
+        />
+        <link rel='apple-touch-icon' href='/images/logo-smartrent.jpg' />
 
         {/* Preconnect to improve performance */}
         <link rel='preconnect' href='https://fonts.googleapis.com' />
+
         <link
           rel='preconnect'
           href='https://fonts.gstatic.com'

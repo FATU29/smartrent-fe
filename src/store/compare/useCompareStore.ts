@@ -69,7 +69,7 @@ export const useCompareStore = create<CompareState>()(
     }),
     {
       name: 'compare-storage',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => sessionStorage),
       // Only persist the compare list
       partialize: (state) => ({
         compareList: state.compareList,

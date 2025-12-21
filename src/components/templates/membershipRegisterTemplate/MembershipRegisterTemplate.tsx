@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { MembershipHeader } from './MembershipHeader'
 import { MembershipPlansGrid } from './MembershipPlansGrid'
-import type { PaymentProvider } from '@/api/types/membership.type'
+import type { PaymentProvider, Membership } from '@/api/types/membership.type'
 import { useDialog } from '@/hooks/useDialog'
 import PaymentMethodDialog from '@/components/molecules/paymentMethodDialog'
 import { useAuthContext } from '@/contexts/auth'
@@ -36,6 +36,28 @@ export const MembershipRegisterTemplate: React.FC = () => {
       }
 
       try {
+        // Find the selected membership details
+        const selectedMembership = memberships.find(
+          (m: Membership) => m.membershipId === membershipId,
+        )
+
+        // Store membership info in session storage before redirect
+        if (selectedMembership) {
+          sessionStorage.setItem(
+            'pendingMembership',
+            JSON.stringify({
+              membershipId: selectedMembership.membershipId,
+              packageName: selectedMembership.packageName,
+              packageLevel: selectedMembership.packageLevel,
+              salePrice: selectedMembership.salePrice,
+              originalPrice: selectedMembership.originalPrice,
+              durationMonths: selectedMembership.durationMonths,
+              discountPercentage: selectedMembership.discountPercentage,
+              benefits: selectedMembership.benefits,
+            }),
+          )
+        }
+
         const result = await purchaseMutation.mutateAsync({
           request: {
             membershipId: membershipId,
@@ -62,7 +84,14 @@ export const MembershipRegisterTemplate: React.FC = () => {
         )
       }
     },
-    [membershipId, user?.userId, handleClose, purchaseMutation, tPage],
+    [
+      membershipId,
+      user?.userId,
+      handleClose,
+      purchaseMutation,
+      tPage,
+      memberships,
+    ],
   )
 
   const handlePlanSelect = useCallback(
