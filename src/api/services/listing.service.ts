@@ -26,6 +26,8 @@ import {
   CategoryStatsItem,
   CategoryStatsRequest,
   QuotaCheckResponse,
+  MapBoundsRequest,
+  MapBoundsResponse,
 } from '../types'
 
 // ============= LISTING SERVICE CLASS =============
@@ -344,6 +346,43 @@ export class ListingService {
       url,
     })
   }
+
+  /**
+   * Get listings within map bounds
+   * POST /v1/listings/map-bounds
+   * Public API - no authentication required
+   *
+   * Designed for interactive map features to fetch listings within the visible map area.
+   *
+   * @param {MapBoundsRequest} request - Map bounds and filters
+   * @param {AxiosInstance} instance - Optional axios instance for server-side calls
+   * @returns {Promise<ApiResponse<MapBoundsResponse>>} Promise resolving to listings within bounds
+   *
+   * @example
+   * const response = await ListingService.getMapBounds({
+   *   neLat: 10.823,
+   *   neLng: 106.701,
+   *   swLat: 10.705,
+   *   swLng: 106.59,
+   *   zoom: 14,
+   *   limit: 100,
+   *   verifiedOnly: false
+   * })
+   */
+  static async getMapBounds(
+    request: MapBoundsRequest,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<MapBoundsResponse>> {
+    return apiRequest<MapBoundsResponse>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.MAP_BOUNDS,
+        data: request,
+        skipAuth: true, // Public API - không cần authentication
+      },
+      instance,
+    )
+  }
 }
 
 // ============= EXPORTS =============
@@ -366,4 +405,5 @@ export const {
   updateDraft,
   publishDraft,
   deleteDraft,
+  getMapBounds,
 } = ListingService

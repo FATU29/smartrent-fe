@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MembershipService } from '@/api/services'
 import type { PurchaseMembershipRequest } from '@/api/types/membership.type'
+import { redirectToPayment } from '@/utils/payment'
 
 export const useMembershipPackages = () => {
   return useQuery({
@@ -75,6 +76,10 @@ export const useMembershipHistory = (userId: string | undefined) => {
   })
 }
 
+/**
+ * Hook to purchase membership with payment
+ * @deprecated Use useMembershipPurchase from @/hooks/usePayment instead for better features
+ */
 export const usePurchaseMembership = () => {
   const queryClient = useQueryClient()
 
@@ -95,7 +100,12 @@ export const usePurchaseMembership = () => {
       }
       return response.data
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
+      // Redirect to payment URL if present
+      if (data.paymentUrl) {
+        redirectToPayment(data.paymentUrl)
+      }
+
       // Invalidate relevant queries to refresh data
       queryClient.invalidateQueries({
         queryKey: ['memberships', 'my', variables.userId],

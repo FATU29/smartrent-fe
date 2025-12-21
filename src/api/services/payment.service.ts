@@ -12,6 +12,7 @@ import type {
   PaymentHistoryPage,
   PaymentStatus,
   ProviderParams,
+  PaymentCallbackResponse,
 } from '@/api/types/payment.type'
 
 export class PaymentService {
@@ -119,9 +120,21 @@ export class PaymentService {
   static async callback(
     provider: string,
     params: ProviderParams,
-  ): Promise<ApiResponse<PaymentTransaction>> {
+  ): Promise<ApiResponse<PaymentCallbackResponse>> {
     const url = PATHS.PAYMENT.CALLBACK.replace(':provider', provider)
-    return apiRequest<PaymentTransaction>({ method: 'GET', url, params })
+    return apiRequest<PaymentCallbackResponse>({ method: 'GET', url, params })
+  }
+
+  /** Handle VNPAY callback with query string */
+  static async vnpayCallback(
+    queryString: string,
+  ): Promise<ApiResponse<PaymentCallbackResponse>> {
+    const params = new URLSearchParams(queryString)
+    const paramsObj: ProviderParams = {}
+    params.forEach((value, key) => {
+      paramsObj[key] = value
+    })
+    return this.callback('VNPAY', paramsObj)
   }
 }
 

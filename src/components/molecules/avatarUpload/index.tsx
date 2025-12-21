@@ -76,22 +76,30 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
   }
 
   const getInitials = (fullName: string) => {
+    if (!fullName || !fullName.trim()) {
+      return ''
+    }
     return fullName
       .split(' ')
+      .filter((n) => n.length > 0)
       .map((n) => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2)
   }
 
+  const initials = getInitials(name)
+
   return (
     <div className={cn('flex flex-col items-center gap-4', className)}>
       <div className='relative group'>
         <Avatar className={cn(sizeClasses[size])}>
           <AvatarImage src={preview || currentImage} alt={name} />
-          <AvatarFallback className='text-lg font-semibold'>
-            {getInitials(name)}
-          </AvatarFallback>
+          {initials && (
+            <AvatarFallback className='text-lg font-semibold'>
+              {initials}
+            </AvatarFallback>
+          )}
         </Avatar>
 
         {/* Overlay button on hover */}

@@ -469,9 +469,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             <div className='flex-1 min-w-0'>
               <ul className='list-disc list-inside space-y-1'>
                 {newAddress && (
-                  <li
+                  <p
                     className={classNames(
-                      'text-foreground',
+                      'text-foreground line-clamp-2',
                       isCompact ? 'text-sm' : 'text-xs sm:text-sm',
                     )}
                   >
@@ -479,12 +479,12 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                       {t('apartmentDetail.address.new')}:
                     </span>{' '}
                     <span className='break-words'>{newAddress}</span>
-                  </li>
+                  </p>
                 )}
                 {legacyAddress && (
-                  <li
+                  <p
                     className={classNames(
-                      'text-muted-foreground',
+                      'text-muted-foreground line-clamp-2',
                       isCompact ? 'text-sm' : 'text-xs sm:text-sm',
                     )}
                   >
@@ -492,7 +492,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                       {t('apartmentDetail.address.old')}:
                     </span>{' '}
                     <span className='break-words'>{legacyAddress}</span>
-                  </li>
+                  </p>
                 )}
               </ul>
             </div>
@@ -508,14 +508,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             >
               {formatByLocale(price, priceUnit)}
             </Typography>
-            {area && !isCompact && (
-              <Typography
-                variant='small'
-                className='text-muted-foreground font-medium text-xs sm:text-sm'
-              >
-                {area} {t('homePage.property.area')}
-              </Typography>
-            )}
           </div>
 
           <div className='flex items-center justify-between flex-wrap gap-2'>

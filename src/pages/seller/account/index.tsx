@@ -1,14 +1,17 @@
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
-import SeoHead from '@/components/atoms/seo/SeoHead'
+import { SELLERNET_ROUTES } from '@/constants/route'
 
 const AccountPage: NextPageWithLayout = () => {
-  return (
-    <>
-      <SeoHead title='Tài khoản – Seller' noindex />
-      <div className='p-4'>Account – {`coming soon`}</div>
-    </>
-  )
+  const router = useRouter()
+
+  useEffect(() => {
+    router.replace(SELLERNET_ROUTES.PERSONAL_EDIT)
+  }, [router])
+
+  return null
 }
 
 AccountPage.getLayout = (page) => <SellerLayout>{page}</SellerLayout>

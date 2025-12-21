@@ -49,3 +49,20 @@ export interface TransformedPushDetail {
   readonly features?: readonly string[]
   readonly isBestSeller?: boolean
 }
+
+// Push listing with payment types
+export interface PushListingRequest {
+  listingId: number
+  useMembershipQuota: boolean // true = use quota, false = direct payment
+  paymentProvider?: 'VNPAY' | 'PAYPAL' | 'MOMO' // Required if useMembershipQuota is false
+}
+
+export interface PushListingResponse {
+  paymentUrl?: string // Present if payment is required
+  transactionRef?: string // Present if payment is required
+  amount?: number // Present if payment is required
+  currency?: string // Present if payment is required
+  provider?: string // Present if payment is required
+  message?: string // Confirmation message if quota is used
+  success?: boolean // true if quota used successfully
+}

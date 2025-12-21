@@ -16,7 +16,6 @@ export const useGetMyDrafts = () => {
         return []
       }
 
-      // Backend returns array of draft items directly
       const drafts = response.data as unknown as DraftListingResponse[]
       return mapDraftsArrayBackendToFrontend(drafts)
     },

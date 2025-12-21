@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
@@ -9,6 +9,11 @@ import MapViewTemplate from '@/components/templates/mapView'
 
 const MapsPage: NextPageWithLayout = () => {
   const t = useTranslations('navigation')
+
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [])
 
   return (
     <>

@@ -46,6 +46,7 @@ export const PATHS = {
   LISTING: {
     LIST: '/v1/listings',
     SEARCH: '/v1/listings/search',
+    MAP_BOUNDS: '/v1/listings/map-bounds',
     MY_LISTINGS: '/v1/listings/my-listings',
     MY_DRAFTS: '/v1/listings/my-drafts',
     BY_ID: '/v1/listings/:id',
@@ -94,6 +95,11 @@ export const PATHS = {
     ACTIVE_DETAILS: '/v1/push-details',
     DETAIL_BY_CODE: '/v1/push-details/:detailCode',
     ALL_DETAILS: '/v1/push-details/all',
+  },
+
+  // Push Actions endpoints
+  PUSHES: {
+    PUSH: '/v1/pushes/push', // Push listing with payment or membership quota
   },
 
   // VIP Tier endpoints

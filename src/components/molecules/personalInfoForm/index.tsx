@@ -24,6 +24,7 @@ type PersonalInfoFormData = {
   taxNumber?: string
   avatar?: File
   address?: string
+  avatarUrl?: string
 }
 
 type PersonalInfoFormProps = {
@@ -91,6 +92,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       idDocument: initialData?.idDocument || '',
       taxNumber: initialData?.taxNumber || '',
       address: initialData?.address || '',
+      avatarUrl: initialData?.avatarUrl || '',
     },
     mode: 'onChange',
   })
@@ -151,6 +153,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           <div className='flex justify-center'>
             <AvatarUpload
               name={fullName}
+              currentImage={initialData?.avatarUrl}
               onImageChange={handleAvatarChange}
               size='lg'
             />

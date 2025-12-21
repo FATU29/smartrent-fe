@@ -8,86 +8,73 @@ import {
   useMap,
 } from '@vis.gl/react-google-maps'
 import { Button } from '@/components/atoms/button'
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2, ExternalLink, X } from 'lucide-react'
 import { ENV } from '@/constants/env'
-import { PUBLIC_ROUTES } from '@/constants/route'
-import { ListingDetail } from '@/api/types/property.type'
+import { PUBLIC_ROUTES, buildApartmentDetailRoute } from '@/constants/route'
+import { ListingDetail, VipType } from '@/api/types/property.type'
 import MapMarker from '@/components/molecules/mapMarker'
-import MapPropertyCard from '@/components/molecules/mapPropertyCard'
+import PropertyCard from '@/components/molecules/propertyCard'
 import { ListingService } from '@/api/services/listing.service'
-import {
-  mapFrontendToBackendRequest,
-  mapBackendToFrontendResponse,
-} from '@/utils/property/mapListingResponse'
-import { getFiltersFromQuery } from '@/utils/queryParams'
 
 const VIETNAM_CENTER = { lat: 16.0544, lng: 108.2022 }
 const DEFAULT_ZOOM = 12
 const MAP_HEIGHT = 'h-[calc(100vh-80px)]'
 const DEBOUNCE_DELAY_MS = 500
-const MAP_LISTINGS_PAGE_SIZE = 200
-
-// Helper function to check if listing is within map bounds
-const isListingInBounds = (
-  listing: ListingDetail,
-  ne: google.maps.LatLng,
-  sw: google.maps.LatLng,
-): boolean => {
-  if (!listing.address?.latitude || !listing.address?.longitude) {
-    return false
-  }
-
-  const lat = listing.address.latitude
-  const lng = listing.address.longitude
-
-  return (
-    lat <= ne.lat() && lat >= sw.lat() && lng <= ne.lng() && lng >= sw.lng()
-  )
-}
+const MAP_LISTINGS_LIMIT = 200
 
 const MapContent: React.FC = () => {
   const map = useMap()
   const router = useRouter()
   const t = useTranslations('navigation')
+  const tCommon = useTranslations('common')
   const [listings, setListings] = useState<ListingDetail[]>([])
   const [selectedListing, setSelectedListing] = useState<ListingDetail | null>(
     null,
   )
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [totalCount, setTotalCount] = useState(0)
+  const [hasMore, setHasMore] = useState(false)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchListingsInBounds = useCallback(async () => {
     if (!map) return
 
     const bounds = map.getBounds()
-    if (!bounds) return
+    const zoom = map.getZoom()
+    if (!bounds || !zoom) return
 
     setIsLoading(true)
     setError(null)
 
     try {
-      const filters = getFiltersFromQuery(router.query)
       const ne = bounds.getNorthEast()
       const sw = bounds.getSouthWest()
 
-      const backendRequest = mapFrontendToBackendRequest({
-        ...filters,
-        page: 1,
-        size: MAP_LISTINGS_PAGE_SIZE,
+      // Extract optional filters from query params
+      const { categoryId, vipType, verifiedOnly } = router.query
+
+      const response = await ListingService.getMapBounds({
+        neLat: ne.lat(),
+        neLng: ne.lng(),
+        swLat: sw.lat(),
+        swLng: sw.lng(),
+        zoom,
+        limit: MAP_LISTINGS_LIMIT,
+        verifiedOnly: verifiedOnly === 'true',
+        categoryId: categoryId ? Number(categoryId) : undefined,
+        vipType: vipType as VipType | undefined,
       })
 
-      const response = await ListingService.search(backendRequest)
-
       if (response.success && response.data) {
-        const frontendResponse = mapBackendToFrontendResponse(response.data)
-        const listingsInBounds = (frontendResponse.listings || []).filter(
-          (listing) => isListingInBounds(listing, ne, sw),
-        )
-        setListings(listingsInBounds)
+        setListings(response.data.listings)
+        setTotalCount(response.data.totalCount)
+        setHasMore(response.data.hasMore)
       } else {
         setError('Failed to load properties')
         setListings([])
+        setTotalCount(0)
+        setHasMore(false)
       }
     } catch (err) {
       const errorMessage =
@@ -97,6 +84,8 @@ const MapContent: React.FC = () => {
       console.error('Error fetching listings:', err)
       setError(errorMessage)
       setListings([])
+      setTotalCount(0)
+      setHasMore(false)
     } finally {
       setIsLoading(false)
     }
@@ -160,10 +149,18 @@ const MapContent: React.FC = () => {
     setSelectedListing(null)
   }, [])
 
+  const handleViewDetails = useCallback(
+    (listing: ListingDetail) => {
+      const route = buildApartmentDetailRoute(String(listing.listingId))
+      router.push(route)
+    },
+    [router],
+  )
+
   return (
     <>
       {/* Back to List Button */}
-      <div className='absolute top-4 left-4 z-10'>
+      <div className='absolute top-20 left-4 z-50'>
         <Button
           variant='secondary'
           size='sm'
@@ -198,20 +195,50 @@ const MapContent: React.FC = () => {
       {!isLoading && listings.length > 0 && (
         <div className='absolute top-20 left-4 z-10'>
           <div className='bg-white shadow-lg rounded-lg px-4 py-2'>
-            <span className='text-sm font-medium'>
-              {listings.length} {t('propertiesFound')}
-            </span>
+            <div className='flex flex-col gap-1'>
+              <span className='text-sm font-medium'>
+                {listings.length} {t('propertiesFound')}
+              </span>
+              {hasMore && totalCount > listings.length && (
+                <span className='text-xs text-gray-500'>
+                  ({totalCount} total, zoom in for more)
+                </span>
+              )}
+            </div>
           </div>
         </div>
       )}
 
       {/* Selected Property Card */}
       {selectedListing && (
-        <div className='absolute top-4 right-4 z-10'>
-          <MapPropertyCard
-            listing={selectedListing}
-            onClose={handleCloseCard}
-          />
+        <div className='absolute top-4 right-4 z-20 max-w-sm'>
+          <div className='relative bg-background rounded-lg shadow-xl'>
+            <Button
+              variant='ghost'
+              size='icon'
+              className='absolute -top-2 -right-2 z-30 bg-background hover:bg-background/80 shadow-lg rounded-full w-8 h-8'
+              onClick={handleCloseCard}
+            >
+              <X className='h-4 w-4' />
+            </Button>
+            <PropertyCard
+              listing={selectedListing}
+              onClick={handleViewDetails}
+              className='compact'
+              imageLayout='top'
+              bottomContent={
+                <Button
+                  className='w-full'
+                  onClick={() => handleViewDetails(selectedListing)}
+                  variant='default'
+                  size='sm'
+                >
+                  <ExternalLink className='h-4 w-4 mr-2' />
+                  {tCommon('viewDetails')}
+                </Button>
+              }
+            />
+          </div>
         </div>
       )}
 

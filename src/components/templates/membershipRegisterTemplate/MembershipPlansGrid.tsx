@@ -5,6 +5,14 @@ import PricingPlanCard, {
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import type { Membership } from '@/api/types/membership.type'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/atoms/carousel'
 
 interface MembershipPlansGridProps {
   readonly loading?: boolean
@@ -20,6 +28,7 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
   onPlanSelect,
 }) => {
   const tPage = useTranslations('membershipPage')
+  const isTabletOrBelow = useMediaQuery('(max-width: 1279px)') // xl breakpoint
 
   const handlePlanSelect = useCallback(
     (membershipId: number) => {
@@ -50,6 +59,35 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
     )
   }
 
+  // Show carousel for tablet and below
+  if (isTabletOrBelow) {
+    return (
+      <div className='relative px-12'>
+        <Carousel
+          opts={{
+            align: 'start',
+            loop: false,
+          }}
+          className='w-full'
+        >
+          <CarouselContent>
+            {safeMemberships.map((plan) => (
+              <CarouselItem key={plan.membershipId}>
+                <PricingPlanCard
+                  membership={plan}
+                  onSelect={() => handlePlanSelect(plan.membershipId)}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
+    )
+  }
+
+  // Show grid for desktop (xl and above)
   return (
     <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-3 auto-rows-fr'>
       {safeMemberships.map((plan) => (

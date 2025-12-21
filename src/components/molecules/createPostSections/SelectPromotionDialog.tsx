@@ -44,7 +44,10 @@ export const SelectBenefitDialog: React.FC<SelectBenefitDialogProps> = ({
   const availableBenefits = useMemo(() => {
     if (!membershipData?.benefits) return []
     return membershipData?.benefits?.filter(
-      (b) => b.quantityRemaining > 0 && b.status === BenefitStatus.ACTIVE,
+      (b) =>
+        b.quantityRemaining > 0 &&
+        b.status === BenefitStatus.ACTIVE &&
+        b.benefitType.startsWith('POST_'),
     )
   }, [membershipData])
 

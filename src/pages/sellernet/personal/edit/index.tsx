@@ -22,14 +22,12 @@ const PersonalEditPage: NextPageWithLayout = () => {
     data: PersonalInfoFormData,
   ): Promise<boolean> => {
     try {
-      // Map phoneNumber to contactPhoneNumber for API
       const result = await updateProfile({
         firstName: data.firstName,
         lastName: data.lastName,
         idDocument: data.idDocument,
         taxNumber: data.taxNumber,
-        contactPhoneNumber: data.phoneNumber, // Map to contactPhoneNumber
-        avatar: data.avatar,
+        contactPhoneNumber: data.phoneNumber,
       })
 
       return result.success
