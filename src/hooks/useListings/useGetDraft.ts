@@ -13,5 +13,7 @@ export const useGetDraft = (draftId: string | number | null) => {
       return ListingService.getDraft(draftId)
     },
     enabled: !!draftId,
+    staleTime: 0, // No cache for draft data
+    gcTime: 0, // Previously cacheTime, no cache retention
   })
 }
