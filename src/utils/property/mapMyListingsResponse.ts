@@ -58,8 +58,7 @@ export function mapMyListingItem(
     priceUnit: (item.priceUnit || 'MONTH') as PriceUnit,
     address: {
       fullAddress: item.address?.fullAddress,
-      fullNewAddress:
-        item.address?.fullNewAddress || item.address?.fullAddress || '',
+      fullNewAddress: item.address?.fullNewAddress || '',
       latitude: item.address?.latitude || 0,
       longitude: item.address?.longitude || 0,
     },
@@ -77,6 +76,7 @@ export function mapMyListingItem(
     createdAt: item.createdAt || new Date().toISOString(),
     updatedAt: item.updatedAt || new Date().toISOString(),
     durationDays: item.durationDays,
+
     // Owner view additions
     listingViews: item.statistics?.viewCount || 0,
     interested: item.statistics?.contactCount || 0,

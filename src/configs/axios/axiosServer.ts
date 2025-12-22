@@ -39,6 +39,8 @@ function createServerAxiosInstance(
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
+    maxBodyLength: Infinity, // No limit for file uploads
+    maxContentLength: Infinity, // No limit for file uploads
   })
 
   setupInterceptors(instance, cookieStore)

@@ -16,7 +16,6 @@ import { ListingOwnerDetail } from '@/api/types'
 import {
   MapPin,
   Calendar,
-  DollarSign,
   Maximize2,
   Bed,
   Bath,
@@ -25,6 +24,13 @@ import {
   Users,
 } from 'lucide-react'
 import { DEFAULT_IMAGE } from '@/constants/common'
+import { AMENITIES_CONFIG } from '@/constants/amenities'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/atoms/dialog'
 
 export interface ListingCardProps {
   property: ListingOwnerDetail
@@ -60,6 +66,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const t = useTranslations('seller.listingManagement.card')
   const tNot = useTranslations()
   const { language } = useLanguage()
+  const [showAllAmenities, setShowAllAmenities] = React.useState(false)
 
   const {
     title,
@@ -80,6 +87,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     address,
     price,
     priceUnit,
+    amenities,
+    roomCapacity,
   } = property
 
   const calculatedExpiryDate = React.useMemo(() => {
@@ -203,88 +212,162 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             </div>
 
             {/* Addresses - Full text display with better styling */}
-            {(newAddress || legacyAddress) && (
-              <div className='space-y-2 mb-4'>
-                {newAddress && (
-                  <div className='flex items-start gap-2.5 p-3 rounded-lg bg-primary/5 border border-primary/10'>
-                    <MapPin className='w-5 h-5 mt-0.5 shrink-0 text-primary' />
-                    <div className='flex-1 min-w-0'>
-                      <Typography
-                        variant='small'
-                        className='text-xs text-muted-foreground mb-0.5'
-                      >
-                        {tNot('apartmentDetail.property.newAddress')}
-                      </Typography>
-                      <Typography
-                        variant='small'
-                        className='text-foreground font-medium leading-relaxed'
-                        title={newAddress}
-                      >
-                        {newAddress}
-                      </Typography>
-                    </div>
+            <div className='space-y-2 mb-4'>
+              {newAddress && (
+                <div className='flex items-start gap-2.5 p-3 rounded-lg bg-primary/5 border border-primary/10'>
+                  <MapPin className='w-5 h-5 mt-0.5 shrink-0 text-primary' />
+                  <div className='flex-1 min-w-0'>
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground mb-0.5'
+                    >
+                      {tNot('apartmentDetail.property.newAddress')}
+                    </Typography>
+                    <Typography
+                      variant='small'
+                      className='text-foreground font-medium leading-relaxed'
+                      title={newAddress}
+                    >
+                      {newAddress}
+                    </Typography>
                   </div>
-                )}
-                {legacyAddress && (
-                  <div className='flex items-start gap-2.5 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900'>
-                    <MapPin className='w-5 h-5 mt-0.5 shrink-0 text-blue-600 dark:text-blue-400' />
-                    <div className='flex-1 min-w-0'>
-                      <Typography
-                        variant='small'
-                        className='text-xs text-muted-foreground mb-0.5'
-                      >
-                        {tNot('apartmentDetail.property.legacyAddress')}
-                      </Typography>
-                      <Typography
-                        variant='small'
-                        className='text-foreground font-medium leading-relaxed'
-                        title={legacyAddress}
-                      >
-                        {legacyAddress}
-                      </Typography>
-                    </div>
+                </div>
+              )}
+              {legacyAddress && (
+                <div className='flex items-start gap-2.5 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900'>
+                  <MapPin className='w-5 h-5 mt-0.5 shrink-0 text-blue-600 dark:text-blue-400' />
+                  <div className='flex-1 min-w-0'>
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground mb-0.5'
+                    >
+                      {tNot('apartmentDetail.property.legacyAddress')}
+                    </Typography>
+                    <Typography
+                      variant='small'
+                      className='text-foreground font-medium leading-relaxed'
+                      title={legacyAddress}
+                    >
+                      {legacyAddress}
+                    </Typography>
                   </div>
-                )}
+                </div>
+              )}
+            </div>
+
+            {/* Amenities - Limit to 5 items with show more dialog */}
+            {amenities && amenities.length > 0 && (
+              <div className='mb-4'>
+                <Typography
+                  variant='small'
+                  className='text-xs text-muted-foreground mb-2 font-medium'
+                >
+                  {t('amenities')}
+                </Typography>
+                <div className='flex flex-wrap gap-2'>
+                  {amenities.slice(0, 5).map((amenity) => {
+                    const amenityConfig = AMENITIES_CONFIG.find(
+                      (config) => config.id === amenity.amenityId,
+                    )
+                    const IconComponent = amenityConfig?.icon
+
+                    return (
+                      <div
+                        key={amenity.amenityId}
+                        className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/50 border border-muted-foreground/10'
+                      >
+                        {IconComponent && (
+                          <IconComponent className='w-4 h-4 text-muted-foreground' />
+                        )}
+                        <Typography
+                          variant='small'
+                          className='text-xs text-foreground'
+                        >
+                          {amenity.name}
+                        </Typography>
+                      </div>
+                    )
+                  })}
+                  {amenities.length > 5 && (
+                    <button
+                      onClick={() => setShowAllAmenities(true)}
+                      className='flex items-center px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer'
+                    >
+                      <Typography
+                        variant='small'
+                        className='text-xs text-primary font-medium'
+                      >
+                        +{amenities.length - 5} {t('more')}
+                      </Typography>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Amenities Dialog */}
+            <Dialog open={showAllAmenities} onOpenChange={setShowAllAmenities}>
+              <DialogContent className='max-w-2xl h-screen sm:h-auto sm:max-h-[80vh] w-full sm:max-w-2xl p-0 sm:p-6'>
+                <DialogHeader className='px-6 pt-6 sm:p-0'>
+                  <DialogTitle>{t('amenities')}</DialogTitle>
+                </DialogHeader>
+                <div className='overflow-y-auto h-[calc(100vh-100px)] sm:h-auto sm:max-h-[60vh] px-6 pb-6 sm:px-0 sm:pb-0 pr-2'>
+                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                    {amenities?.map((amenity) => {
+                      const amenityConfig = AMENITIES_CONFIG.find(
+                        (config) => config.id === amenity.amenityId,
+                      )
+                      const IconComponent = amenityConfig?.icon
+
+                      return (
+                        <div
+                          key={amenity.amenityId}
+                          className='flex items-center gap-2.5 p-3 rounded-lg bg-muted/30 border border-muted-foreground/10'
+                        >
+                          {IconComponent && (
+                            <IconComponent className='w-5 h-5 text-muted-foreground shrink-0' />
+                          )}
+                          <Typography
+                            variant='small'
+                            className='text-sm text-foreground'
+                          >
+                            {amenity.name}
+                          </Typography>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            {/* Price - Large display without card */}
+            {price && (
+              <div className='mb-4'>
+                <div className='flex items-baseline gap-2'>
+                  <Typography
+                    variant='h3'
+                    className='font-bold text-primary text-xl sm:text-2xl'
+                  >
+                    {typeof price === 'number' && price > 0
+                      ? formatByLocale(price, language)
+                      : new Intl.NumberFormat('vi-VN').format(price || 0) +
+                        '\u00A0₫'}
+                  </Typography>
+                  {priceUnit && (
+                    <Typography
+                      variant='large'
+                      className='text-sm sm:text-base text-muted-foreground'
+                    >
+                      /{tNot(getPriceUnitTranslationKey(priceUnit))}
+                    </Typography>
+                  )}
+                </div>
               </div>
             )}
 
             {/* Property Specs - Column layout on mobile, grid on desktop */}
             <div className='flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5'>
-              {price && (
-                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-primary/10 border border-primary/20 transition-all hover:bg-primary/15'>
-                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-primary/20'>
-                    <DollarSign className='w-5 h-5 text-primary' />
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <Typography
-                      variant='small'
-                      className='text-xs text-muted-foreground mb-0.5'
-                    >
-                      {t('price')}
-                    </Typography>
-                    <div className='flex items-baseline gap-1'>
-                      <Typography
-                        variant='small'
-                        className='font-bold text-primary truncate text-sm sm:text-base'
-                      >
-                        {typeof price === 'number' && price > 0
-                          ? formatByLocale(price, language)
-                          : new Intl.NumberFormat('vi-VN').format(price || 0) +
-                            '\u00A0₫'}
-                      </Typography>
-                      {priceUnit && (
-                        <Typography
-                          variant='small'
-                          className='text-xs sm:text-sm text-muted-foreground'
-                        >
-                          /{tNot(getPriceUnitTranslationKey(priceUnit))}
-                        </Typography>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {property.area && (
                 <div className='flex items-center gap-2.5 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 transition-all hover:bg-blue-100 dark:hover:bg-blue-950/50'>
                   <div className='flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900'>
@@ -302,6 +385,28 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                       className='font-bold truncate text-blue-700 dark:text-blue-400 text-sm sm:text-base'
                     >
                       {property.area} m²
+                    </Typography>
+                  </div>
+                </div>
+              )}
+
+              {roomCapacity !== undefined && roomCapacity > 0 && (
+                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900 transition-all hover:bg-orange-100 dark:hover:bg-orange-950/50'>
+                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900'>
+                    <Users className='w-5 h-5 text-orange-600 dark:text-orange-400' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <Typography
+                      variant='small'
+                      className='text-xs text-muted-foreground mb-0.5'
+                    >
+                      {t('roomCapacity')}
+                    </Typography>
+                    <Typography
+                      variant='small'
+                      className='font-bold truncate text-orange-700 dark:text-orange-400 text-sm sm:text-base'
+                    >
+                      {roomCapacity} {t('people')}
                     </Typography>
                   </div>
                 </div>
@@ -355,7 +460,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             {/* Listing Info & Statistics - Better alignment */}
             <div className='space-y-3 mb-4'>
               {/* Listing Code and Dates */}
-              <div className='flex flex-wrap items-center gap-2 text-sm sm:text-base'>
+              <div className='flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 text-sm sm:text-base'>
                 <div className='flex items-center gap-1.5'>
                   <Typography variant='small' className='text-muted-foreground'>
                     {t('listingCode')}:
@@ -367,7 +472,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
                 {postDisplay && (
                   <>
-                    <span className='text-muted-foreground'>•</span>
+                    <span className='hidden sm:inline text-muted-foreground'>
+                      •
+                    </span>
                     <div className='flex items-center gap-1.5'>
                       <Calendar className='w-3.5 h-3.5 text-muted-foreground' />
                       <Typography
@@ -383,7 +490,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                   </>
                 )}
 
-                <span className='text-muted-foreground'>•</span>
+                <span className='hidden sm:inline text-muted-foreground'>
+                  •
+                </span>
                 <div className='flex items-center gap-1.5'>
                   <Calendar className='w-3.5 h-3.5 text-muted-foreground' />
                   <Typography variant='small' className='text-muted-foreground'>
