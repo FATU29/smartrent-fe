@@ -28,6 +28,7 @@ const PersonalEditPage: NextPageWithLayout = () => {
         idDocument: data.idDocument,
         taxNumber: data.taxNumber,
         contactPhoneNumber: data.phoneNumber,
+        avatar: data.avatar, // Include avatar file
       })
 
       return result.success

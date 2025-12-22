@@ -20,6 +20,7 @@ import {
   Navigation,
   CheckCircle,
   Loader2,
+  Bot,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useFormContext, Controller } from 'react-hook-form'
@@ -441,7 +442,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       {/* Layout Wrapper */}
       <div className='space-y-10'>
         {/* Main Property Information Card */}
-        <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+        <Card className='mb-6 shadow-lg border'>
           <CardHeader className='pb-4'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
               <div className='p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg'>
@@ -620,7 +621,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         </Card>
 
         {/* Property Details Card */}
-        <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+        <Card className='mb-6 shadow-lg border'>
           <CardHeader className='pb-4'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
               <div className='p-2 bg-green-100 dark:bg-green-900/30 rounded-lg'>
@@ -871,7 +872,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         </Card>
 
         {/* Utilities & Structure Card */}
-        <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+        <Card className='mb-6 shadow-lg border'>
           <CardHeader className='pb-4'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
               <div className='p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg'>
@@ -1047,12 +1048,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         </Card>
 
         {/* AI Content Card */}
-        <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+        <Card className='mb-6 shadow-lg border'>
           <CardHeader className='pb-4'>
             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3'>
               <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
-                <div className='p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg'>
-                  <Zap className='w-6 h-6 text-white' />
+                <div className='p-2 bg-primary/10 rounded-lg'>
+                  <Bot className='w-6 h-6 text-primary' />
                 </div>
                 {tAI('title')}
               </CardTitle>

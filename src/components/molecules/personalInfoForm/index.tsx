@@ -105,7 +105,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   const addressController = useController({ name: 'address', control })
 
   const watchedValues = watch()
-  const fullName = `${watchedValues.firstName} ${watchedValues.lastName}`.trim()
 
   // Realtime sync basic identity fields to auth store so dropdown updates immediately
   React.useEffect(() => {
@@ -127,13 +126,8 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   }
 
   const handleFormSubmit = (data: PersonalInfoFormData) => {
-    // Sync to auth store first
-    updateUser({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phoneNumber: data.phoneNumber as unknown as string,
-    })
+    // Don't sync to auth store here - let the API response handle it
+    // This ensures we only update after successful server update
     onSubmit?.(data)
   }
 
@@ -152,7 +146,8 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           {/* Avatar Upload */}
           <div className='flex justify-center'>
             <AvatarUpload
-              name={fullName}
+              firstName={watchedValues.firstName}
+              lastName={watchedValues.lastName}
               currentImage={initialData?.avatarUrl}
               onImageChange={handleAvatarChange}
               size='lg'

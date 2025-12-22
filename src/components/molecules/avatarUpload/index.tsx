@@ -2,32 +2,41 @@ import * as React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
 import { Button } from '@/components/atoms/button'
 import { Camera, Upload } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, getUserInitials } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 interface AvatarUploadProps {
   currentImage?: string
-  name?: string
+  firstName?: string
+  lastName?: string
   onImageChange?: (file: File | null) => void
   className?: string
   size?: 'sm' | 'md' | 'lg'
-  maxSizeInMB?: number // Default: 5MB
+  maxSizeInMB?: number // Default: 10MB
 }
 
 const AvatarUpload: React.FC<AvatarUploadProps> = ({
   currentImage,
-  name = '',
+  firstName = '',
+  lastName = '',
   onImageChange,
   className,
   size = 'lg',
-  maxSizeInMB = 5,
+  maxSizeInMB = 10,
 }) => {
   const t = useTranslations()
   const [preview, setPreview] = React.useState<string | null>(
     currentImage || null,
   )
   const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  // Sync preview with currentImage prop changes (e.g., after successful upload)
+  React.useEffect(() => {
+    if (currentImage && currentImage !== preview) {
+      setPreview(currentImage)
+    }
+  }, [currentImage])
 
   const sizeClasses = {
     sm: 'size-16',
@@ -75,28 +84,16 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
     fileInputRef.current?.click()
   }
 
-  const getInitials = (fullName: string) => {
-    if (!fullName || !fullName.trim()) {
-      return ''
-    }
-    return fullName
-      .split(' ')
-      .filter((n) => n.length > 0)
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
-
-  const initials = getInitials(name)
+  const initials = getUserInitials(firstName, lastName)
+  const fullName = `${firstName} ${lastName}`.trim()
 
   return (
     <div className={cn('flex flex-col items-center gap-4', className)}>
       <div className='relative group'>
         <Avatar className={cn(sizeClasses[size])}>
-          <AvatarImage src={preview || currentImage} alt={name} />
+          <AvatarImage src={preview || currentImage} alt={fullName} />
           {initials && (
-            <AvatarFallback className='text-lg font-semibold'>
+            <AvatarFallback className='bg-primary text-primary-foreground text-lg font-semibold'>
               {initials}
             </AvatarFallback>
           )}

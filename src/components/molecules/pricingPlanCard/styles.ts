@@ -3,21 +3,15 @@ import { cn } from '@/lib/utils'
 // Helper functions to reduce cognitive complexity
 
 export const getCardStyles = (
-  interactive: boolean,
   selected: boolean,
   isBestSeller: boolean,
   className?: string,
 ) => {
   return cn(
-    'relative h-full transition-all duration-300',
-    'bg-gradient-to-b from-background to-background/95 dark:from-background dark:to-background/60',
-    interactive &&
-      'hover:-translate-y-1 hover:shadow-xl hover:border-primary/60 hover:bg-accent/40 focus-within:-translate-y-1 focus-within:shadow-xl focus-within:border-primary/60 active:translate-y-0',
+    'relative h-full w-full flex flex-col transition-shadow duration-300',
+    'bg-background border-border',
     selected && 'ring-2 ring-primary shadow-lg',
-    isBestSeller &&
-      'border-primary/70 shadow-[0_0_0_1px_var(--tw-ring-color)] shadow-primary/10',
-    isBestSeller &&
-      'before:absolute before:inset-0 before:-z-10 before:rounded-[inherit] before:bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.15),transparent_60%)]',
+    isBestSeller && 'border-primary shadow-md',
     className,
   )
 }
@@ -70,9 +64,6 @@ export const getFeatureItemStyles = (compact: boolean) => {
   return cn('flex items-start gap-2', compact ? 'text-[11px]' : 'text-sm')
 }
 
-export const getButtonStyles = (interactive: boolean) => {
-  return cn(
-    'w-full transition-transform',
-    interactive && 'hover:translate-y-[-2px] active:translate-y-0',
-  )
+export const getButtonStyles = () => {
+  return cn('w-full')
 }

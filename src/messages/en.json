@@ -2034,7 +2034,23 @@
         "viewPlans": "View Plans",
         "feature1": "More listing credits per month",
         "feature2": "Priority support and assistance",
-        "feature3": "Advanced analytics and insights"
+        "feature3": "Advanced analytics and insights",
+        "emptyState": {
+          "title": "No Active Membership",
+          "description": "Upgrade to a membership plan to unlock premium features and grow your business faster",
+          "benefit1": {
+            "title": "Unlimited Listings",
+            "desc": "Post unlimited property listings with Gold, Silver, and Standard packages"
+          },
+          "benefit2": {
+            "title": "Increased Visibility",
+            "desc": "Your listings get priority placement in search results"
+          },
+          "benefit3": {
+            "title": "Advanced Analytics",
+            "desc": "Track views, phone clicks, and detailed listing performance"
+          }
+        }
       },
       "phoneClicks": {
         "title": "Phone Click Statistics",

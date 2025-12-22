@@ -5,9 +5,11 @@ import { ListingEmptyState } from '@/components/organisms/listings/ListingEmptyS
 import { ListingToolbar } from '@/components/molecules/listings/ListingToolbar'
 import dynamic from 'next/dynamic'
 import { ListingsList } from '@/components/organisms/listings-list'
+import { ListingListSkeleton } from '@/components/organisms/listings-list/ListingListSkeleton'
 import { useDeleteListing } from '@/hooks/useListings/useDeleteListing'
 import { toast } from 'sonner'
 import { DeleteListingDialog } from '@/components/molecules/deleteListingDialog'
+import { MembershipPushDisplay } from '@/components/molecules/listings/MembershipPushDisplay'
 
 const ResidentialFilterDialog = dynamic(
   () => import('@/components/molecules/residentialFilterDialog'),
@@ -18,6 +20,8 @@ const ResidentialFilterDialog = dynamic(
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { List, useListContext } from '@/contexts/list'
+import { useMyMembership } from '@/hooks/useMembership'
+import { useAuthContext } from '@/contexts/auth'
 import {
   ListingOwnerDetail,
   PostStatus,
@@ -33,6 +37,9 @@ const ListingsWithPagination = () => {
     loadMore,
     removeItem,
   } = useListContext<ListingOwnerDetail>()
+  const { user } = useAuthContext()
+  const { data: membershipData, isLoading: isMembershipLoading } =
+    useMyMembership(user?.userId)
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tSeller = useTranslations('seller.listingManagement')
@@ -57,10 +64,8 @@ const ListingsWithPagination = () => {
 
   if (isLoading && listings.length === 0) {
     return (
-      <div className='min-h-[300px] flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='animate-pulse text-gray-500'>{t('loading')}</div>
-        </div>
+      <div className='min-h-[300px]'>
+        <ListingListSkeleton count={3} />
       </div>
     )
   }
@@ -71,6 +76,13 @@ const ListingsWithPagination = () => {
         <ListingEmptyState />
       ) : (
         <>
+          {/* Membership Push Display */}
+          <MembershipPushDisplay
+            membershipData={membershipData}
+            isLoading={isMembershipLoading}
+            className='mb-4'
+          />
+
           <ListingsList
             listings={listings}
             onEditListing={(listing) => {

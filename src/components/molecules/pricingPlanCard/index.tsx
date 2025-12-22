@@ -13,6 +13,7 @@ import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
+import { motion } from 'framer-motion'
 // MembershipPackageLevel is imported below with BenefitType
 import { PricingHeader } from './PricingHeader'
 import { PricingFeatures } from './PricingFeatures'
@@ -86,43 +87,64 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
   const discountText = formatDiscountText(membership.discountPercentage)
   const resolvedIcon = getMembershipLevelIcon(membership.packageLevel)
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: 'spring' as const,
+        stiffness: 100,
+        damping: 15,
+      },
+    },
+  }
+
   return (
-    <Card
-      aria-labelledby={headingId}
-      className={getCardStyles(interactive, selected, isBestSeller, className)}
+    <motion.div
+      initial='hidden'
+      animate='visible'
+      variants={cardVariants}
+      whileTap={interactive ? { scale: 0.98 } : undefined}
+      className='h-full w-full'
     >
-      <CardHeader>
-        <PricingHeader
-          isBestSeller={isBestSeller}
-          bestSellerLabel={translations.bestSeller}
-          icon={resolvedIcon}
-          name={membership.packageName}
-          description={membership.description}
-          formattedSalePrice={formattedSalePrice}
-          formattedOriginalPrice={formattedOriginalPrice}
-          hasDiscount={hasDiscount}
-          resolvedPricePeriod={resolvedPricePeriod}
-          discountText={discountText}
-          saveUpToText={translations.saveUpTo}
-          locale={locale}
-          compact={compact}
-          headingId={headingId}
-        />
-      </CardHeader>
-      <CardContent>
-        <PricingFeatures benefits={membership.benefits} compact={compact} />
-      </CardContent>
-      <CardFooter className={cn('mt-auto', compact ? 'pt-3' : 'pt-6')}>
-        <Button
-          className={getButtonStyles(interactive)}
-          onClick={onSelect}
-          aria-label={resolvedCta}
-          size={compact ? 'sm' : undefined}
-        >
-          {resolvedCta}
-        </Button>
-      </CardFooter>
-    </Card>
+      <Card
+        aria-labelledby={headingId}
+        className={getCardStyles(selected, isBestSeller, className)}
+      >
+        <CardHeader>
+          <PricingHeader
+            isBestSeller={isBestSeller}
+            bestSellerLabel={translations.bestSeller}
+            icon={resolvedIcon}
+            name={membership.packageName}
+            description={membership.description}
+            formattedSalePrice={formattedSalePrice}
+            formattedOriginalPrice={formattedOriginalPrice}
+            hasDiscount={hasDiscount}
+            resolvedPricePeriod={resolvedPricePeriod}
+            discountText={discountText}
+            saveUpToText={translations.saveUpTo}
+            locale={locale}
+            compact={compact}
+            headingId={headingId}
+          />
+        </CardHeader>
+        <CardContent>
+          <PricingFeatures benefits={membership.benefits} compact={compact} />
+        </CardContent>
+        <CardFooter className={cn('mt-auto', compact ? 'pt-3' : 'pt-6')}>
+          <Button
+            className={getButtonStyles()}
+            onClick={onSelect}
+            aria-label={resolvedCta}
+            size={compact ? 'sm' : undefined}
+          >
+            {resolvedCta}
+          </Button>
+        </CardFooter>
+      </Card>
+    </motion.div>
   )
 }
 

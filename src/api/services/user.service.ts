@@ -35,10 +35,10 @@ export class UserService {
   /**
    * Update user profile with PATCH method
    * Supports multipart/form-data for avatar upload
-   * Avatar file: max 5MB, allowed formats: jpeg, png, webp
+   * Avatar file: max 10MB, allowed formats: jpeg, png, webp
    *
    * @param data - Profile data to update (as query params)
-   * @param avatarFile - Avatar file to upload (optional, max 5MB)
+   * @param avatarFile - Avatar file to upload (optional, max 10MB)
    * @returns Updated user profile with avatarUrl
    */
   static async updateProfile(
@@ -48,10 +48,10 @@ export class UserService {
 
     // Add avatar file if provided
     if (data.avatar) {
-      // Validate file size (5MB)
-      const maxSize = 5 * 1024 * 1024 // 5MB in bytes
+      // Validate file size (10MB)
+      const maxSize = 10 * 1024 * 1024 // 10MB in bytes
       if (data.avatar.size > maxSize) {
-        throw new Error('Avatar file size must not exceed 5MB')
+        throw new Error('Avatar file size must not exceed 10MB')
       }
 
       // Validate file type

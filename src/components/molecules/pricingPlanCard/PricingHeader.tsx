@@ -2,6 +2,7 @@ import React from 'react'
 import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
 import { formatSavingByLocale } from '@/utils/currency/convert'
+import { motion } from 'framer-motion'
 import {
   getHeaderStyles,
   getTitleStyles,
@@ -51,8 +52,10 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
   return (
     <Typography as='div'>
       {isBestSeller && (
-        <Typography
-          as='div'
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           className='absolute -top-3 left-1/2 -translate-x-1/2'
         >
           <Badge
@@ -61,16 +64,23 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
           >
             {bestSellerLabel}
           </Badge>
-        </Typography>
+        </motion.div>
       )}
       <Typography as='div' className={getHeaderStyles(compact, isBestSeller)}>
         {icon ? (
-          <Typography
-            as='div'
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{
+              type: 'spring' as const,
+              stiffness: 200,
+              damping: 20,
+              delay: 0.1,
+            }}
             className='size-14 flex items-center justify-center'
           >
             {icon}
-          </Typography>
+          </motion.div>
         ) : (
           <Typography
             as='div'
@@ -80,19 +90,33 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
             ?
           </Typography>
         )}
-        <Typography as='h3' id={headingId} className={getTitleStyles(compact)}>
+        <motion.h3
+          id={headingId}
+          className={getTitleStyles(compact)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           {name}
-        </Typography>
+        </motion.h3>
         {description && (
-          <Typography
-            variant='muted'
-            as='p'
+          <motion.p
             className={getDescriptionStyles(compact)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
           >
-            {description}
-          </Typography>
+            <Typography variant='muted' as='span'>
+              {description}
+            </Typography>
+          </motion.p>
         )}
-        <Typography as='div' className={getPriceContainerStyles(compact)}>
+        <motion.div
+          className={getPriceContainerStyles(compact)}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
           <Typography as='div' className='flex flex-col items-start gap-1'>
             <Typography
               as='div'
@@ -129,7 +153,7 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
               </Typography>
             </Typography>
           )}
-        </Typography>
+        </motion.div>
       </Typography>
     </Typography>
   )

@@ -2,6 +2,7 @@ import React from 'react'
 import { Check } from 'lucide-react'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 import { getContentStyles, getFeatureItemStyles } from './styles'
 import type { MembershipBenefit } from '@/api/types/membership.type'
 
@@ -38,20 +39,48 @@ export const PricingFeatures: React.FC<PricingFeaturesProps> = ({
   benefits,
   compact,
 }) => {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        type: 'spring' as const,
+        stiffness: 100,
+        damping: 12,
+      },
+    },
+  }
+
   return (
     <Typography as='div' className={getContentStyles(compact)}>
-      <Typography as='div' className='flex flex-col gap-2'>
+      <motion.div
+        className='flex flex-col gap-2'
+        variants={containerVariants}
+        initial='hidden'
+        animate='visible'
+      >
         {benefits.map((b, i) => (
-          <Typography
+          <motion.div
             key={i}
-            as='div'
             className={getFeatureItemStyles(compact)}
+            variants={itemVariants}
           >
             <FeatureIcon active={true} />
             <Typography as='span'>{b.benefitNameDisplay || ''}</Typography>
-          </Typography>
+          </motion.div>
         ))}
-      </Typography>
+      </motion.div>
     </Typography>
   )
 }

@@ -2035,7 +2035,23 @@
         "viewPlans": "Xem các gói",
         "feature1": "Nhiều lượt đăng tin hơn mỗi tháng",
         "feature2": "Hỗ trợ ưu tiên và hỗ trợ",
-        "feature3": "Phân tích và thống kê nâng cao"
+        "feature3": "Phân tích và thống kê nâng cao",
+        "emptyState": {
+          "title": "Chưa có gói hội viên",
+          "description": "Nâng cấp lên gói hội viên để mở khóa các tính năng cao cấp và phát triển doanh nghiệp của bạn nhanh chóng hơn",
+          "benefit1": {
+            "title": "Đăng tin không giới hạn",
+            "desc": "Đăng tin bất động sản không giới hạn với các gói Gold, Silver và Standard"
+          },
+          "benefit2": {
+            "title": "Tăng độ hiển thị",
+            "desc": "Tin đăng của bạn được ưu tiên hiển thị ở vị trí cao hơn"
+          },
+          "benefit3": {
+            "title": "Phân tích nâng cao",
+            "desc": "Theo dõi lượt xem, click số điện thoại và hiệu suất tin đăng chi tiết"
+          }
+        }
       },
       "phoneClicks": {
         "title": "Thống kê lượt click số điện thoại",

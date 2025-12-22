@@ -52,21 +52,115 @@ const DashboardMembershipCard: React.FC = () => {
 
   if (!membership) {
     return (
-      <Card>
-        <CardHeader>
+      <Card className='relative overflow-hidden'>
+        {/* Background decoration */}
+        <div className='absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/5 to-transparent rounded-full -translate-y-32 translate-x-32' />
+        <div className='absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-500/5 to-transparent rounded-full translate-y-24 -translate-x-24' />
+
+        <CardHeader className='relative'>
           <CardTitle className='flex items-center gap-2'>
             <Crown className='h-5 w-5 text-primary' />
             {t('title')}
           </CardTitle>
-          <CardDescription>{t('noMembership')}</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Link href='/sellernet/membership/register'>
-            <Button className='w-full' variant='default'>
-              {t('upgradeNow')}
-              <ArrowRight className='ml-2 h-4 w-4' />
-            </Button>
-          </Link>
+
+        <CardContent className='relative space-y-6'>
+          {/* Empty State Icon & Text */}
+          <div className='flex flex-col items-center justify-center py-6 text-center'>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{
+                type: 'spring',
+                stiffness: 200,
+                damping: 15,
+              }}
+              className='relative mb-6'
+            >
+              <div className='absolute inset-0 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-full blur-xl' />
+              <div className='relative flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary to-blue-600'>
+                <Crown className='h-10 w-10 text-white' />
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h3 className='text-lg font-semibold mb-2 text-foreground'>
+                {t('emptyState.title')}
+              </h3>
+              <p className='text-sm text-muted-foreground max-w-sm'>
+                {t('emptyState.description')}
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Benefits Preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className='grid grid-cols-1 gap-3'
+          >
+            <div className='flex items-start gap-3 p-3 rounded-lg bg-gradient-to-r from-primary/5 to-blue-500/5 border border-primary/10'>
+              <div className='flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center'>
+                <Sparkles className='h-4 w-4 text-primary' />
+              </div>
+              <div className='flex-1 min-w-0'>
+                <p className='text-xs font-medium text-foreground'>
+                  {t('emptyState.benefit1.title')}
+                </p>
+                <p className='text-xs text-muted-foreground'>
+                  {t('emptyState.benefit1.desc')}
+                </p>
+              </div>
+            </div>
+
+            <div className='flex items-start gap-3 p-3 rounded-lg bg-gradient-to-r from-primary/5 to-blue-500/5 border border-primary/10'>
+              <div className='flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center'>
+                <TrendingUp className='h-4 w-4 text-primary' />
+              </div>
+              <div className='flex-1 min-w-0'>
+                <p className='text-xs font-medium text-foreground'>
+                  {t('emptyState.benefit2.title')}
+                </p>
+                <p className='text-xs text-muted-foreground'>
+                  {t('emptyState.benefit2.desc')}
+                </p>
+              </div>
+            </div>
+
+            <div className='flex items-start gap-3 p-3 rounded-lg bg-gradient-to-r from-primary/5 to-blue-500/5 border border-primary/10'>
+              <div className='flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center'>
+                <Gift className='h-4 w-4 text-primary' />
+              </div>
+              <div className='flex-1 min-w-0'>
+                <p className='text-xs font-medium text-foreground'>
+                  {t('emptyState.benefit3.title')}
+                </p>
+                <p className='text-xs text-muted-foreground'>
+                  {t('emptyState.benefit3.desc')}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Link href='/sellernet/membership/register'>
+              <Button className='w-full' size='lg' variant='default'>
+                <Crown className='mr-2 h-4 w-4' />
+                {t('upgradeNow')}
+                <ArrowRight className='ml-2 h-4 w-4' />
+              </Button>
+            </Link>
+          </motion.div>
         </CardContent>
       </Card>
     )

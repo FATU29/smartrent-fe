@@ -13,7 +13,7 @@ interface UpdateProfileResult {
 
 /**
  * Hook for updating user profile
- * Handles profile update with optional avatar upload (max 5MB)
+ * Handles profile update with optional avatar upload (max 10MB)
  * Supports formats: jpeg, png, webp
  */
 export const useUpdateProfile = () => {
@@ -35,9 +35,9 @@ export const useUpdateProfile = () => {
     try {
       // Validate avatar file size if provided
       if (data.avatar) {
-        const maxSize = 5 * 1024 * 1024 // 5MB
+        const maxSize = 10 * 1024 * 1024 // 10MB
         if (data.avatar.size > maxSize) {
-          const errorMsg = 'Avatar file size must not exceed 5MB'
+          const errorMsg = 'Avatar file size must not exceed 10MB'
           setError(errorMsg)
           return {
             success: false,
