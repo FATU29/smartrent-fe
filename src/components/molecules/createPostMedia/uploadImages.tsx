@@ -89,6 +89,10 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
     }))
 
     addPendingImages(newPending)
+
+    if (inputRef.current) {
+      inputRef.current.value = ''
+    }
   }
 
   const handleRemovePendingImage = (index: number) => {

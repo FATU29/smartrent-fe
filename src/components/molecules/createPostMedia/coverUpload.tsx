@@ -71,6 +71,11 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
     ]
     addPendingImages(newPending)
 
+    // Reset input value to allow selecting the same file again
+    if (inputRef.current) {
+      inputRef.current.value = ''
+    }
+
     toast.success(t('uploaded.success') || 'Cover image added successfully')
   }
 
