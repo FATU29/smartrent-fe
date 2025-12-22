@@ -63,11 +63,15 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
   const handleSubmit = async () => {
     try {
+      // Determine if user is using membership quota/benefits
+      // If benefitIds.length > 0, user is using quota - create listing directly
+      // If benefitIds.length <= 0, use payment flow - create VIP listing with payment
       const useQuota =
         !!propertyInfo?.useMembershipQuota ||
         (!!propertyInfo?.benefitIds && propertyInfo.benefitIds.length > 0)
 
       if (useQuota) {
+        // User has benefits/quota - create listing directly without payment
         const { success, data, message } =
           await ListingService.create(propertyInfo)
         if (!success || !data) {
@@ -83,20 +87,39 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         return
       }
 
+      // User doesn't have benefits (benefitIds.length <= 0) - use payment flow
       const { success, data, message } = await ListingService.createVip(
         propertyInfo as CreateVipListingRequest,
       )
+
       if (!success || !data) {
         setErrorTitle(t('errorTitle'))
         setErrorDesc(message || t('createVipFailed'))
         setErrorOpen(true)
         return
       }
+
+      // Check if payment is required
       if (data.paymentUrl) {
+        // Store listing info in session storage for tracking after payment callback
+        const listingPaymentInfo = {
+          title: propertyInfo?.title,
+          vipType: propertyInfo?.vipType,
+          durationDays: propertyInfo?.durationDays,
+          transactionType: 'POST_FEE',
+        }
+        sessionStorage.setItem(
+          'pendingListingCreation',
+          JSON.stringify(listingPaymentInfo),
+        )
+
+        // Redirect to VNPAY payment page
         setIsSubmitSuccess(true)
         window.location.href = data.paymentUrl
         return
       }
+
+      // Listing created successfully without payment (shouldn't happen in this flow)
       setIsSubmitSuccess(true)
       await router.push(`/listing-detail/${data.listingId}`)
     } catch (err) {

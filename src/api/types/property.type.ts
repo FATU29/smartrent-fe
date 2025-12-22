@@ -35,14 +35,13 @@ export type PriceType = 'NEGOTIABLE' | 'SET_BY_OWNER' | 'PROVIDER_RATE'
 
 export enum POST_STATUS {
   ALL = '',
-  // Trạng thái cụ thể
-  EXPIRED = 1, // Hết hạn
-  EXPIRED_SOON = 2, // Sắp hết hạn
-  DISPLAYING = 3, // Đang hiển thị
-  IN_REVIEW = 4, // Chờ duyệt
-  PENDING_PAYMENT = 5, // Đang duyệt (hoặc Đã duyệt, tùy ngữ cảnh)
-  REJECTED = 6, // Chờ thanh toán
-  VERIFIED = 7,
+  EXPIRED = 'EXPIRED', // Hết hạn
+  EXPIRING_SOON = 'EXPIRING_SOON', // Sắp hết hạn
+  DISPLAYING = 'DISPLAYING', // Đang hiển thị
+  IN_REVIEW = 'IN_REVIEW', // Chờ duyệt
+  PENDING_PAYMENT = 'PENDING_PAYMENT', // Chờ thanh toán
+  REJECTED = 'REJECTED', // Đã từ chối
+  VERIFIED = 'VERIFIED', // Đã xác minh
 }
 
 export enum PAYMENT_PROVIDER {
@@ -70,7 +69,7 @@ export type DurationDays =
 export type PostStatus =
   | POST_STATUS.ALL
   | POST_STATUS.EXPIRED
-  | POST_STATUS.EXPIRED_SOON
+  | POST_STATUS.EXPIRING_SOON
   | POST_STATUS.DISPLAYING
   | POST_STATUS.IN_REVIEW
   | POST_STATUS.PENDING_PAYMENT

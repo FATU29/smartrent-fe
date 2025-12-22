@@ -50,6 +50,15 @@ interface StoredMembershipInfo {
   }>
 }
 
+interface StoredListingInfo {
+  title?: string
+  vipType?: string
+  durationDays?: number
+  transactionType: 'POST_FEE'
+}
+
+type PaymentType = 'membership' | 'listing'
+
 const PaymentResultPage: NextPage = () => {
   const searchParams = useSearchParams()
   const [result, setResult] = useState<PaymentResultState>({
@@ -58,6 +67,8 @@ const PaymentResultPage: NextPage = () => {
   })
   const [membershipInfo, setMembershipInfo] =
     useState<StoredMembershipInfo | null>(null)
+  const [listingInfo, setListingInfo] = useState<StoredListingInfo | null>(null)
+  const [paymentType, setPaymentType] = useState<PaymentType | null>(null)
 
   useEffect(() => {
     // Retrieve membership info from session storage
@@ -68,8 +79,21 @@ const PaymentResultPage: NextPage = () => {
           storedMembership,
         ) as StoredMembershipInfo
         setMembershipInfo(parsedMembership)
+        setPaymentType('membership')
       } catch (error) {
         console.error('Error parsing stored membership:', error)
+      }
+    }
+
+    // Retrieve listing creation info from session storage
+    const storedListing = sessionStorage.getItem('pendingListingCreation')
+    if (storedListing) {
+      try {
+        const parsedListing = JSON.parse(storedListing) as StoredListingInfo
+        setListingInfo(parsedListing)
+        setPaymentType('listing')
+      } catch (error) {
+        console.error('Error parsing stored listing:', error)
       }
     }
     const processPaymentResult = async () => {
@@ -128,17 +152,29 @@ const PaymentResultPage: NextPage = () => {
                 details: response.data,
                 transactionInfo,
               })
-              // Clear stored membership on cancellation
+              // Clear stored info on cancellation
               sessionStorage.removeItem('pendingMembership')
+              sessionStorage.removeItem('pendingListingCreation')
             } else if (isSuccess) {
+              // Determine success message based on payment type
+              let successMessage = 'Payment completed successfully!'
+              if (paymentType === 'listing') {
+                successMessage =
+                  'Payment completed! Your VIP listing has been created.'
+              } else if (paymentType === 'membership') {
+                successMessage =
+                  'Payment completed! Your membership has been activated.'
+              }
+
               setResult({
                 status: 'success',
-                message: 'Payment completed successfully!',
+                message: successMessage,
                 details: response.data,
                 transactionInfo,
               })
-              // Clear stored membership on success
+              // Clear stored info on success
               sessionStorage.removeItem('pendingMembership')
+              sessionStorage.removeItem('pendingListingCreation')
             } else {
               const errorMessage = getVNPayResponseMessage(
                 transactionInfo.responseCode,
@@ -149,8 +185,9 @@ const PaymentResultPage: NextPage = () => {
                 details: response.data,
                 transactionInfo,
               })
-              // Clear stored membership on failure
+              // Clear stored info on failure
               sessionStorage.removeItem('pendingMembership')
+              sessionStorage.removeItem('pendingListingCreation')
             }
           } else {
             setResult({
@@ -160,6 +197,7 @@ const PaymentResultPage: NextPage = () => {
               transactionInfo,
             })
             sessionStorage.removeItem('pendingMembership')
+            sessionStorage.removeItem('pendingListingCreation')
           }
         } else {
           setResult({
@@ -169,6 +207,7 @@ const PaymentResultPage: NextPage = () => {
             transactionInfo,
           })
           sessionStorage.removeItem('pendingMembership')
+          sessionStorage.removeItem('pendingListingCreation')
         }
       } catch (error) {
         console.error('Payment result processing error:', error)
@@ -180,6 +219,7 @@ const PaymentResultPage: NextPage = () => {
               : 'Error processing payment result',
         })
         sessionStorage.removeItem('pendingMembership')
+        sessionStorage.removeItem('pendingListingCreation')
       }
     }
 
@@ -291,6 +331,93 @@ const PaymentResultPage: NextPage = () => {
 
                 {/* Content Area */}
                 <div className='p-8'>
+                  {/* Listing Information */}
+                  {result.status === 'success' && listingInfo && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className='mb-8 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100'
+                    >
+                      <div className='flex items-center gap-3 mb-4'>
+                        <div className='flex items-center justify-center w-10 h-10 bg-purple-500 rounded-lg'>
+                          <Sparkles className='w-6 h-6 text-white' />
+                        </div>
+                        <h3 className='text-xl font-bold text-gray-800'>
+                          VIP Listing Details
+                        </h3>
+                      </div>
+
+                      <div className='space-y-3'>
+                        {listingInfo.title && (
+                          <div className='flex items-start justify-between py-2 border-b border-purple-200'>
+                            <div className='flex items-center gap-2'>
+                              <Package className='w-5 h-5 text-purple-600' />
+                              <span className='text-gray-600 font-medium'>
+                                Title
+                              </span>
+                            </div>
+                            <span className='font-semibold text-gray-900 text-right max-w-[60%]'>
+                              {listingInfo.title}
+                            </span>
+                          </div>
+                        )}
+
+                        {listingInfo.vipType && (
+                          <div className='flex items-center justify-between py-2 border-b border-purple-200'>
+                            <div className='flex items-center gap-2'>
+                              <Sparkles className='w-5 h-5 text-purple-600' />
+                              <span className='text-gray-600 font-medium'>
+                                VIP Tier
+                              </span>
+                            </div>
+                            <span className='font-semibold text-gray-900'>
+                              {listingInfo.vipType}
+                            </span>
+                          </div>
+                        )}
+
+                        {listingInfo.durationDays && (
+                          <div className='flex items-center justify-between py-2 border-b border-purple-200'>
+                            <div className='flex items-center gap-2'>
+                              <Calendar className='w-5 h-5 text-purple-600' />
+                              <span className='text-gray-600 font-medium'>
+                                Duration
+                              </span>
+                            </div>
+                            <span className='font-semibold text-gray-900'>
+                              {listingInfo.durationDays} Days
+                            </span>
+                          </div>
+                        )}
+
+                        {result.transactionInfo && (
+                          <div className='flex items-center justify-between py-2'>
+                            <div className='flex items-center gap-2'>
+                              <CreditCard className='w-5 h-5 text-purple-600' />
+                              <span className='text-gray-600 font-medium'>
+                                Amount Paid
+                              </span>
+                            </div>
+                            <span className='font-bold text-xl text-gray-900'>
+                              {result.transactionInfo.amount.toLocaleString(
+                                'vi-VN',
+                              )}{' '}
+                              VND
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className='mt-6 pt-6 border-t border-purple-200'>
+                        <p className='text-sm text-gray-600'>
+                          Your VIP listing has been created and will be visible
+                          to potential buyers immediately.
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+
                   {/* Membership Information */}
                   {result.status === 'success' && membershipInfo && (
                     <motion.div
@@ -475,12 +602,19 @@ const PaymentResultPage: NextPage = () => {
                     {result.status === 'success' && (
                       <>
                         <button
-                          onClick={() =>
-                            (window.location.href = '/seller/dashboard')
-                          }
+                          onClick={() => {
+                            // Redirect based on payment type
+                            if (paymentType === 'listing') {
+                              window.location.href = '/seller/listings'
+                            } else {
+                              window.location.href = '/seller/dashboard'
+                            }
+                          }}
                           className='flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                         >
-                          Go to Dashboard
+                          {paymentType === 'listing'
+                            ? 'View My Listings'
+                            : 'Go to Dashboard'}
                           <ArrowRight className='w-5 h-5' />
                         </button>
                         <button

@@ -29,28 +29,15 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   const showBackButton = currentStep > 0
 
   const getSubmitButtonText = () => {
-    const pi = propertyInfo as unknown as Record<string, unknown>
-    const hasBenefit = Array.isArray(pi?.benefitsMembership)
-      ? (pi?.benefitsMembership as unknown[]).length > 0
+    const hasBenefit = Array.isArray(propertyInfo?.benefitIds)
+      ? propertyInfo.benefitIds.length > 0
       : false
-    const usingQuota = !!pi?.useMembershipQuota
+    const usingQuota = !!propertyInfo?.useMembershipQuota
 
     return usingQuota || hasBenefit ? t('createListing') : t('payment')
   }
 
   const handleSubmit = () => {
-    const pi = propertyInfo as unknown as Record<string, unknown>
-    const hasBenefit = Array.isArray(pi?.benefitsMembership)
-      ? (pi?.benefitsMembership as unknown[]).length > 0
-      : false
-    const usingQuota = !!pi?.useMembershipQuota
-
-    if (usingQuota || hasBenefit) {
-      // TODO: Call API to create listing directly
-    } else {
-      // TODO: Call API to create payment
-    }
-
     onSubmit()
   }
 

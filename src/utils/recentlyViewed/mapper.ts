@@ -1,5 +1,6 @@
 import type { ListingDetail } from '@/api/types'
 import type { RecentlyViewedListing } from '@/utils/localstorage/recentlyViewed'
+import { POST_STATUS } from '@/api/types/property.type'
 
 /**
  * Convert ListingDetail to RecentlyViewedListing format with thumbnail
@@ -79,7 +80,7 @@ export const mapRecentlyViewedToListing = (
           url: recentlyViewed.thumbnail,
           isPrimary: true,
           sortOrder: 0,
-          status: 3, // DISPLAYING
+          status: POST_STATUS.DISPLAYING,
           createdAt: new Date().toISOString(),
         },
       ]
