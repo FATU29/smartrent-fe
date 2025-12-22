@@ -41,6 +41,9 @@ export const MembershipRegisterTemplate: React.FC = () => {
           (m: Membership) => m.membershipId === membershipId,
         )
 
+        // Clear any previous payment session storage
+        sessionStorage.removeItem('pendingListingCreation')
+
         // Store membership info in session storage before redirect
         if (selectedMembership) {
           sessionStorage.setItem(

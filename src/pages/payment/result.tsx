@@ -80,6 +80,8 @@ const PaymentResultPage: NextPage = () => {
         ) as StoredMembershipInfo
         setMembershipInfo(parsedMembership)
         setPaymentType('membership')
+        // Clear listing info when membership payment is detected
+        setListingInfo(null)
       } catch (error) {
         console.error('Error parsing stored membership:', error)
       }
@@ -92,6 +94,8 @@ const PaymentResultPage: NextPage = () => {
         const parsedListing = JSON.parse(storedListing) as StoredListingInfo
         setListingInfo(parsedListing)
         setPaymentType('listing')
+        // Clear membership info when listing payment is detected
+        setMembershipInfo(null)
       } catch (error) {
         console.error('Error parsing stored listing:', error)
       }
@@ -331,195 +335,201 @@ const PaymentResultPage: NextPage = () => {
 
                 {/* Content Area */}
                 <div className='p-8'>
-                  {/* Listing Information */}
-                  {result.status === 'success' && listingInfo && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                      className='mb-8 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100'
-                    >
-                      <div className='flex items-center gap-3 mb-4'>
-                        <div className='flex items-center justify-center w-10 h-10 bg-purple-500 rounded-lg'>
-                          <Sparkles className='w-6 h-6 text-white' />
+                  {/* Show only ONE section based on payment type */}
+                  {result.status === 'success' &&
+                    paymentType === 'listing' &&
+                    listingInfo && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className='mb-8 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100'
+                      >
+                        <div className='flex items-center gap-3 mb-4'>
+                          <div className='flex items-center justify-center w-10 h-10 bg-purple-500 rounded-lg'>
+                            <Sparkles className='w-6 h-6 text-white' />
+                          </div>
+                          <h3 className='text-xl font-bold text-gray-800'>
+                            VIP Listing Details
+                          </h3>
                         </div>
-                        <h3 className='text-xl font-bold text-gray-800'>
-                          VIP Listing Details
-                        </h3>
-                      </div>
 
-                      <div className='space-y-3'>
-                        {listingInfo.title && (
-                          <div className='flex items-start justify-between py-2 border-b border-purple-200'>
-                            <div className='flex items-center gap-2'>
-                              <Package className='w-5 h-5 text-purple-600' />
-                              <span className='text-gray-600 font-medium'>
-                                Title
+                        <div className='space-y-3'>
+                          {listingInfo.title && (
+                            <div className='flex items-start justify-between py-2 border-b border-purple-200'>
+                              <div className='flex items-center gap-2'>
+                                <Package className='w-5 h-5 text-purple-600' />
+                                <span className='text-gray-600 font-medium'>
+                                  Title
+                                </span>
+                              </div>
+                              <span className='font-semibold text-gray-900 text-right max-w-[60%]'>
+                                {listingInfo.title}
                               </span>
                             </div>
-                            <span className='font-semibold text-gray-900 text-right max-w-[60%]'>
-                              {listingInfo.title}
-                            </span>
-                          </div>
-                        )}
+                          )}
 
-                        {listingInfo.vipType && (
-                          <div className='flex items-center justify-between py-2 border-b border-purple-200'>
+                          {listingInfo.vipType && (
+                            <div className='flex items-center justify-between py-2 border-b border-purple-200'>
+                              <div className='flex items-center gap-2'>
+                                <Sparkles className='w-5 h-5 text-purple-600' />
+                                <span className='text-gray-600 font-medium'>
+                                  VIP Tier
+                                </span>
+                              </div>
+                              <span className='font-semibold text-gray-900'>
+                                {listingInfo.vipType}
+                              </span>
+                            </div>
+                          )}
+
+                          {listingInfo.durationDays && (
+                            <div className='flex items-center justify-between py-2 border-b border-purple-200'>
+                              <div className='flex items-center gap-2'>
+                                <Calendar className='w-5 h-5 text-purple-600' />
+                                <span className='text-gray-600 font-medium'>
+                                  Duration
+                                </span>
+                              </div>
+                              <span className='font-semibold text-gray-900'>
+                                {listingInfo.durationDays} Days
+                              </span>
+                            </div>
+                          )}
+
+                          {result.transactionInfo && (
+                            <div className='flex items-center justify-between py-2'>
+                              <div className='flex items-center gap-2'>
+                                <CreditCard className='w-5 h-5 text-purple-600' />
+                                <span className='text-gray-600 font-medium'>
+                                  Amount Paid
+                                </span>
+                              </div>
+                              <span className='font-bold text-xl text-gray-900'>
+                                {result.transactionInfo.amount.toLocaleString(
+                                  'vi-VN',
+                                )}{' '}
+                                VND
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className='mt-6 pt-6 border-t border-purple-200'>
+                          <p className='text-sm text-gray-600'>
+                            Your VIP listing has been created and will be
+                            visible to potential buyers immediately.
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+
+                  {/* Membership Information */}
+                  {result.status === 'success' &&
+                    paymentType === 'membership' &&
+                    membershipInfo && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className='mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100'
+                      >
+                        <div className='flex items-center gap-3 mb-4'>
+                          <div className='flex items-center justify-center w-10 h-10 bg-blue-500 rounded-lg'>
+                            <Sparkles className='w-6 h-6 text-white' />
+                          </div>
+                          <h3 className='text-xl font-bold text-gray-800'>
+                            Membership Details
+                          </h3>
+                        </div>
+
+                        <div className='space-y-3'>
+                          <div className='flex items-center justify-between py-2 border-b border-blue-200'>
                             <div className='flex items-center gap-2'>
-                              <Sparkles className='w-5 h-5 text-purple-600' />
+                              <Package className='w-5 h-5 text-blue-600' />
                               <span className='text-gray-600 font-medium'>
-                                VIP Tier
+                                Package
                               </span>
                             </div>
                             <span className='font-semibold text-gray-900'>
-                              {listingInfo.vipType}
+                              {membershipInfo.packageName}
                             </span>
                           </div>
-                        )}
 
-                        {listingInfo.durationDays && (
-                          <div className='flex items-center justify-between py-2 border-b border-purple-200'>
+                          <div className='flex items-center justify-between py-2 border-b border-blue-200'>
                             <div className='flex items-center gap-2'>
-                              <Calendar className='w-5 h-5 text-purple-600' />
+                              <Calendar className='w-5 h-5 text-blue-600' />
                               <span className='text-gray-600 font-medium'>
                                 Duration
                               </span>
                             </div>
                             <span className='font-semibold text-gray-900'>
-                              {listingInfo.durationDays} Days
+                              {membershipInfo.durationMonths}{' '}
+                              {membershipInfo.durationMonths === 1
+                                ? 'Month'
+                                : 'Months'}
                             </span>
                           </div>
-                        )}
 
-                        {result.transactionInfo && (
                           <div className='flex items-center justify-between py-2'>
                             <div className='flex items-center gap-2'>
-                              <CreditCard className='w-5 h-5 text-purple-600' />
+                              <CreditCard className='w-5 h-5 text-blue-600' />
                               <span className='text-gray-600 font-medium'>
                                 Amount Paid
                               </span>
                             </div>
-                            <span className='font-bold text-xl text-gray-900'>
-                              {result.transactionInfo.amount.toLocaleString(
-                                'vi-VN',
-                              )}{' '}
-                              VND
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className='mt-6 pt-6 border-t border-purple-200'>
-                        <p className='text-sm text-gray-600'>
-                          Your VIP listing has been created and will be visible
-                          to potential buyers immediately.
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Membership Information */}
-                  {result.status === 'success' && membershipInfo && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                      className='mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100'
-                    >
-                      <div className='flex items-center gap-3 mb-4'>
-                        <div className='flex items-center justify-center w-10 h-10 bg-blue-500 rounded-lg'>
-                          <Sparkles className='w-6 h-6 text-white' />
-                        </div>
-                        <h3 className='text-xl font-bold text-gray-800'>
-                          Membership Details
-                        </h3>
-                      </div>
-
-                      <div className='space-y-3'>
-                        <div className='flex items-center justify-between py-2 border-b border-blue-200'>
-                          <div className='flex items-center gap-2'>
-                            <Package className='w-5 h-5 text-blue-600' />
-                            <span className='text-gray-600 font-medium'>
-                              Package
-                            </span>
-                          </div>
-                          <span className='font-semibold text-gray-900'>
-                            {membershipInfo.packageName}
-                          </span>
-                        </div>
-
-                        <div className='flex items-center justify-between py-2 border-b border-blue-200'>
-                          <div className='flex items-center gap-2'>
-                            <Calendar className='w-5 h-5 text-blue-600' />
-                            <span className='text-gray-600 font-medium'>
-                              Duration
-                            </span>
-                          </div>
-                          <span className='font-semibold text-gray-900'>
-                            {membershipInfo.durationMonths}{' '}
-                            {membershipInfo.durationMonths === 1
-                              ? 'Month'
-                              : 'Months'}
-                          </span>
-                        </div>
-
-                        <div className='flex items-center justify-between py-2'>
-                          <div className='flex items-center gap-2'>
-                            <CreditCard className='w-5 h-5 text-blue-600' />
-                            <span className='text-gray-600 font-medium'>
-                              Amount Paid
-                            </span>
-                          </div>
-                          <div className='text-right'>
-                            <span className='font-bold text-xl text-gray-900'>
-                              {membershipInfo.salePrice.toLocaleString('vi-VN')}{' '}
-                              VND
-                            </span>
-                            {membershipInfo.discountPercentage > 0 && (
-                              <div className='flex items-center gap-2 justify-end'>
-                                <span className='text-sm text-gray-500 line-through'>
-                                  {membershipInfo.originalPrice.toLocaleString(
-                                    'vi-VN',
-                                  )}{' '}
-                                  VND
-                                </span>
-                                <span className='text-sm font-semibold text-green-600 bg-green-100 px-2 py-0.5 rounded'>
-                                  -{membershipInfo.discountPercentage}%
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Benefits */}
-                      {membershipInfo.benefits &&
-                        membershipInfo.benefits.length > 0 && (
-                          <div className='mt-6 pt-6 border-t border-blue-200'>
-                            <h4 className='font-semibold text-gray-800 mb-3 flex items-center gap-2'>
-                              <Sparkles className='w-4 h-4 text-blue-600' />
-                              Included Benefits
-                            </h4>
-                            <ul className='space-y-2'>
-                              {membershipInfo.benefits.map((benefit) => (
-                                <li
-                                  key={benefit.benefitId}
-                                  className='flex items-start gap-2 text-sm'
-                                >
-                                  <Check className='w-4 h-4 text-green-500 mt-0.5 flex-shrink-0' />
-                                  <span className='text-gray-700'>
-                                    <strong>
-                                      {benefit.benefitNameDisplay}
-                                    </strong>{' '}
-                                    - {benefit.quantityPerMonth} per month
+                            <div className='text-right'>
+                              <span className='font-bold text-xl text-gray-900'>
+                                {membershipInfo.salePrice.toLocaleString(
+                                  'vi-VN',
+                                )}{' '}
+                                VND
+                              </span>
+                              {membershipInfo.discountPercentage > 0 && (
+                                <div className='flex items-center gap-2 justify-end'>
+                                  <span className='text-sm text-gray-500 line-through'>
+                                    {membershipInfo.originalPrice.toLocaleString(
+                                      'vi-VN',
+                                    )}{' '}
+                                    VND
                                   </span>
-                                </li>
-                              ))}
-                            </ul>
+                                  <span className='text-sm font-semibold text-green-600 bg-green-100 px-2 py-0.5 rounded'>
+                                    -{membershipInfo.discountPercentage}%
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        )}
-                    </motion.div>
-                  )}
+                        </div>
+
+                        {/* Benefits */}
+                        {membershipInfo.benefits &&
+                          membershipInfo.benefits.length > 0 && (
+                            <div className='mt-6 pt-6 border-t border-blue-200'>
+                              <h4 className='font-semibold text-gray-800 mb-3 flex items-center gap-2'>
+                                <Sparkles className='w-4 h-4 text-blue-600' />
+                                Included Benefits
+                              </h4>
+                              <ul className='space-y-2'>
+                                {membershipInfo.benefits.map((benefit) => (
+                                  <li
+                                    key={benefit.benefitId}
+                                    className='flex items-start gap-2 text-sm'
+                                  >
+                                    <Check className='w-4 h-4 text-green-500 mt-0.5 flex-shrink-0' />
+                                    <span className='text-gray-700'>
+                                      <strong>
+                                        {benefit.benefitNameDisplay}
+                                      </strong>{' '}
+                                      - {benefit.quantityPerMonth} per month
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                      </motion.div>
+                    )}
 
                   {/* Transaction Details */}
                   {result.transactionInfo && (

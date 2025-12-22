@@ -101,6 +101,9 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
       // Check if payment is required
       if (data.paymentUrl) {
+        // Clear any previous payment session storage
+        sessionStorage.removeItem('pendingMembership')
+
         // Store listing info in session storage for tracking after payment callback
         const listingPaymentInfo = {
           title: propertyInfo?.title,
