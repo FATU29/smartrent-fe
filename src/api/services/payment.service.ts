@@ -129,12 +129,20 @@ export class PaymentService {
   static async vnpayCallback(
     queryString: string,
   ): Promise<ApiResponse<PaymentCallbackResponse>> {
-    const params = new URLSearchParams(queryString)
-    const paramsObj: ProviderParams = {}
-    params.forEach((value, key) => {
-      paramsObj[key] = value
+    // ✅ CRITICAL: Pass the raw query string directly in the URL
+    // DO NOT decode and re-encode as it will break VNPay's signature
+    const cleanQuery = queryString.startsWith('?')
+      ? queryString.slice(1)
+      : queryString
+
+    // Build the URL with the raw query string
+    const url = `${PATHS.PAYMENT.CALLBACK.replace(':provider', 'VNPAY')}?${cleanQuery}`
+
+    // Make the request without params to avoid re-encoding
+    return apiRequest<PaymentCallbackResponse>({
+      method: 'GET',
+      url,
     })
-    return this.callback('VNPAY', paramsObj)
   }
 }
 

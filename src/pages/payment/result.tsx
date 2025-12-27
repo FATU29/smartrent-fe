@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
-import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { PaymentService } from '@/api/services'
 import {
-  filterVNPayParams,
   extractVNPayTransactionInfo,
   getVNPayResponseMessage,
   isVNPaySuccess,
@@ -61,7 +59,6 @@ interface StoredListingInfo {
 type PaymentType = 'membership' | 'listing'
 
 const PaymentResultPage: NextPage = () => {
-  const searchParams = useSearchParams()
   const t = useTranslations('paymentResultPage')
   const [result, setResult] = useState<PaymentResultState>({
     status: 'loading',
@@ -104,17 +101,22 @@ const PaymentResultPage: NextPage = () => {
     }
     const processPaymentResult = async () => {
       try {
-        // Filter only VNPay parameters (starting with 'vnp_')
-        const vnpParams = filterVNPayParams(searchParams)
-        const queryString = vnpParams.toString()
+        // ✅ CRITICAL: Use the RAW query string from window.location.search
+        // DO NOT use useSearchParams() or URLSearchParams as they decode the values
+        // which breaks VNPay's signature verification
+        const rawQueryString = window.location.search
 
-        if (!queryString) {
+        if (!rawQueryString || rawQueryString === '?') {
           setResult({
             status: 'failed',
             message: t('failed.noParams'),
           })
           return
         }
+
+        // Create URLSearchParams only for validation and display purposes
+        // The raw query string is what we pass to the backend
+        const vnpParams = new URLSearchParams(rawQueryString)
 
         // Validate VNPay callback parameters
         const validation = validateVNPayCallback(vnpParams)
@@ -129,8 +131,9 @@ const PaymentResultPage: NextPage = () => {
         // Extract transaction info for display
         const transactionInfo = extractVNPayTransactionInfo(vnpParams)
 
-        // Call the backend callback endpoint with filtered parameters
-        const response = await PaymentService.vnpayCallback(`?${queryString}`)
+        // ✅ Pass the RAW query string directly to the backend
+        // This preserves the original URL encoding that VNPay used for signature calculation
+        const response = await PaymentService.vnpayCallback(rawQueryString)
 
         // Handle response based on code
         if (response.code === '200000') {
@@ -228,7 +231,7 @@ const PaymentResultPage: NextPage = () => {
     }
 
     processPaymentResult()
-  }, [searchParams])
+  }, []) // Only run once on mount
 
   const getStatusIcon = (status: PaymentStatus) => {
     switch (status) {
