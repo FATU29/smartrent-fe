@@ -10,6 +10,11 @@ import { StepRenderer } from './components/StepRenderer'
 import { useTranslations } from 'next-intl'
 import NotificationDialog from '@/components/molecules/notifications/NotificationDialog'
 import { PostTemplateBase } from '@/components/templates/shared/PostTemplateBase'
+import PaymentMethodDialog from '@/components/molecules/paymentMethodDialog'
+import { PaymentProvider as MembershipPaymentProvider } from '@/api/types/membership.type'
+import { PAYMENT_PROVIDER } from '@/api/types/property.type'
+import { useDialog } from '@/hooks/useDialog'
+import { toast } from 'sonner'
 
 interface CreatePostTemplateProps {
   className?: string
@@ -60,7 +65,38 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const [errorTitle, setErrorTitle] = React.useState<string>('')
   const [errorDesc, setErrorDesc] = React.useState<string>('')
 
+  // Payment method dialog
+  const {
+    open: paymentDialogOpen,
+    handleOpen: openPaymentDialog,
+    handleClose: closePaymentDialog,
+  } = useDialog()
+
+  // Check if payment provider selection is needed
+  const needsPaymentSelection = React.useMemo(() => {
+    const hasBenefit = Array.isArray(propertyInfo?.benefitIds)
+      ? propertyInfo.benefitIds.length > 0
+      : false
+    const usingQuota = !!propertyInfo?.useMembershipQuota
+
+    // Need payment selection if NOT using quota/benefits
+    return !usingQuota && !hasBenefit
+  }, [propertyInfo])
+
   const handleSubmit = async () => {
+    // If payment is needed, open payment method dialog first
+    if (needsPaymentSelection) {
+      openPaymentDialog()
+      return
+    }
+
+    // Otherwise, create listing directly (using quota or free listing)
+    await createListing()
+  }
+
+  const createListing = async (
+    selectedProvider?: MembershipPaymentProvider,
+  ) => {
     try {
       // Use unified /v1/listings endpoint for all listing types (NORMAL, SILVER, GOLD, DIAMOND)
       // Backend will determine if payment is required based on:
@@ -68,8 +104,30 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       // - useMembershipQuota flag
       // - benefitIds (if provided, use membership benefits)
 
+      // Convert MembershipPaymentProvider enum to property PaymentProvider type
+      let paymentProvider: PAYMENT_PROVIDER | undefined
+      if (selectedProvider) {
+        switch (selectedProvider) {
+          case MembershipPaymentProvider.VNPAY:
+            paymentProvider = PAYMENT_PROVIDER.VNPAY
+            break
+          case MembershipPaymentProvider.MOMO:
+            paymentProvider = PAYMENT_PROVIDER.MOMO
+            break
+          case MembershipPaymentProvider.PAYPAL:
+            paymentProvider = PAYMENT_PROVIDER.PAYPAL
+            break
+        }
+      }
+
+      const requestData = {
+        ...propertyInfo,
+        // Set payment provider if selected from dialog
+        ...(paymentProvider && { paymentProvider }),
+      }
+
       const { success, data, message } =
-        await ListingService.create(propertyInfo)
+        await ListingService.create(requestData)
 
       if (!success || !data) {
         setErrorTitle(t('errorTitle'))
@@ -96,7 +154,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           JSON.stringify(listingPaymentInfo),
         )
 
-        // Redirect to VNPAY payment page
+        // Redirect to payment page
         setIsSubmitSuccess(true)
         window.location.href = data.paymentUrl
         return
@@ -120,6 +178,24 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       setErrorOpen(true)
     }
   }
+
+  const handleSelectPaymentMethod = React.useCallback(
+    async (provider: MembershipPaymentProvider) => {
+      closePaymentDialog()
+
+      // Show loading toast
+      toast.loading(t('processing'), {
+        id: 'create-listing-payment',
+      })
+
+      // Create listing with selected payment provider
+      await createListing(provider)
+
+      // Dismiss loading toast
+      toast.dismiss('create-listing-payment')
+    },
+    [createListing, closePaymentDialog, t],
+  )
 
   return (
     <PostTemplateBase
@@ -173,6 +249,13 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         description={errorDesc}
         okText={t('ok')}
         onOpenChange={setErrorOpen}
+      />
+
+      {/* Payment Method Dialog */}
+      <PaymentMethodDialog
+        open={paymentDialogOpen}
+        onOpenChange={closePaymentDialog}
+        onSelectMethod={handleSelectPaymentMethod}
       />
     </PostTemplateBase>
   )

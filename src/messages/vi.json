@@ -804,7 +804,10 @@
       "errorDescription": "Đã xảy ra lỗi khi tạo tin đăng của bạn. Vui lòng thử lại.",
       "successTitle": "Tin đăng đã được tạo thành công!",
       "ok": "OK",
-      "successDescription": " Tin đăng của bạn đã được tạo thành công và đang chờ phê duyệt. Bạn sẽ nhận được thông báo khi tin đăng được phê duyệt và hiển thị trên trang web."
+      "successDescription": " Tin đăng của bạn đã được tạo thành công và đang chờ phê duyệt. Bạn sẽ nhận được thông báo khi tin đăng được phê duyệt và hiển thị trên trang web.",
+      "processing": "Đang xử lý thanh toán...",
+      "createFailed": "Tạo tin đăng thất bại",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn"
     },
     "validation": {
       "imagesUploadInProgress": "Vui lòng đợi quá trình tải ảnh hoàn tất trước khi tiếp tục",
