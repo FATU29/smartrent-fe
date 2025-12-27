@@ -4,7 +4,6 @@ import { useCreatePostValidation } from './hooks/useCreatePostValidation'
 import { useCreatePostStepsConfig } from './utils/createPostSteps.config'
 import { NavigationButtons } from './components/NavigationButtons'
 import { ListingService } from '@/api/services/listing.service'
-import type { CreateVipListingRequest } from '@/api/types/property.type'
 import { useCreatePost } from '@/contexts/createPost'
 import { useRouter } from 'next/router'
 import { StepRenderer } from './components/StepRenderer'
@@ -63,44 +62,24 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
   const handleSubmit = async () => {
     try {
-      // Determine if user is using membership quota/benefits
-      // If benefitIds.length > 0, user is using quota - create listing directly
-      // If benefitIds.length <= 0, use payment flow - create VIP listing with payment
-      const useQuota =
-        !!propertyInfo?.useMembershipQuota ||
-        (!!propertyInfo?.benefitIds && propertyInfo.benefitIds.length > 0)
+      // Use unified /v1/listings endpoint for all listing types (NORMAL, SILVER, GOLD, DIAMOND)
+      // Backend will determine if payment is required based on:
+      // - vipType (NORMAL = no payment, SILVER/GOLD/DIAMOND = check quota/payment)
+      // - useMembershipQuota flag
+      // - benefitIds (if provided, use membership benefits)
 
-      if (useQuota) {
-        // User has benefits/quota - create listing directly without payment
-        const { success, data, message } =
-          await ListingService.create(propertyInfo)
-        if (!success || !data) {
-          setErrorTitle(t('errorTitle'))
-          setErrorDesc(message || t('createFailed'))
-          setErrorOpen(true)
-          return
-        }
-        setIsSubmitSuccess(true)
-        setSuccessTitle(t('successTitle'))
-        setSuccessDesc(t('successDescription'))
-        setSuccessOpen(true)
-        return
-      }
-
-      // User doesn't have benefits (benefitIds.length <= 0) - use payment flow
-      const { success, data, message } = await ListingService.createVip(
-        propertyInfo as CreateVipListingRequest,
-      )
+      const { success, data, message } =
+        await ListingService.create(propertyInfo)
 
       if (!success || !data) {
         setErrorTitle(t('errorTitle'))
-        setErrorDesc(message || t('createVipFailed'))
+        setErrorDesc(message || t('createFailed'))
         setErrorOpen(true)
         return
       }
 
       // Check if payment is required
-      if (data.paymentUrl) {
+      if (data.paymentRequired && data.paymentUrl) {
         // Clear any previous payment session storage
         sessionStorage.removeItem('pendingMembership')
 
@@ -109,6 +88,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           title: propertyInfo?.title,
           vipType: propertyInfo?.vipType,
           durationDays: propertyInfo?.durationDays,
+          transactionId: data.transactionId,
           transactionType: 'POST_FEE',
         }
         sessionStorage.setItem(
@@ -122,9 +102,18 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         return
       }
 
-      // Listing created successfully without payment (shouldn't happen in this flow)
+      // Listing created successfully without payment (used quota or free NORMAL listing)
       setIsSubmitSuccess(true)
-      await router.push(`/listing-detail/${data.listingId}`)
+      setSuccessTitle(t('successTitle'))
+      setSuccessDesc(t('successDescription'))
+      setSuccessOpen(true)
+
+      // Redirect to listing detail if listingId is available
+      if (data.listingId) {
+        setTimeout(() => {
+          router.push(`/listing-detail/${data.listingId}`)
+        }, 2000)
+      }
     } catch (err) {
       setErrorTitle(t('errorTitle'))
       setErrorDesc(err instanceof Error ? err.message : t('unexpectedError'))

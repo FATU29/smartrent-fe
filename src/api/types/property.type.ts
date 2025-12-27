@@ -315,6 +315,7 @@ export interface CreateListingRequest {
 
 /**
  * Create VIP listing request
+ * @deprecated Use CreateListingRequest with vipType instead. This interface is deprecated.
  */
 export interface CreateVipListingRequest extends CreateListingRequest {
   vipType: Exclude<VipType, 'NORMAL'>

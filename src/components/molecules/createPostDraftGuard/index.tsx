@@ -146,7 +146,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
     }
   }, [propertyInfo, user?.userId, draftId, createDraft, updateDraft, t, router])
 
-  // Cancel dialog and navigate to the pending URL (user wants to leave)
+  // Cancel dialog and navigate to the pending URL (user wants to leave without saving)
   const handleCancel = useCallback(() => {
     shouldBlockRef.current = false
     isNavigatingRef.current = true
@@ -167,13 +167,6 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
       isNavigatingRef.current = false
     }
   }, [router])
-
-  // Discard changes and just close the dialog without navigation
-  const handleDiscard = useCallback(() => {
-    setShowDialog(false)
-    pendingNavigationRef.current = null
-    blockedUrlRef.current = null
-  }, [])
 
   // Handle browser reload/close tab (shows browser's default dialog)
   useEffect(() => {
@@ -292,7 +285,6 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
         open={showDialog}
         onSave={saveDraft}
         onCancel={handleCancel}
-        onDiscard={handleDiscard}
         isSaving={isDraftSaving}
       />
     </>

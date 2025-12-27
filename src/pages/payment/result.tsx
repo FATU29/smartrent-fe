@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { PaymentService } from '@/api/services'
 import {
   filterVNPayParams,
@@ -61,9 +62,10 @@ type PaymentType = 'membership' | 'listing'
 
 const PaymentResultPage: NextPage = () => {
   const searchParams = useSearchParams()
+  const t = useTranslations('paymentResultPage')
   const [result, setResult] = useState<PaymentResultState>({
     status: 'loading',
-    message: 'Processing payment...',
+    message: t('processing.message'),
   })
   const [membershipInfo, setMembershipInfo] =
     useState<StoredMembershipInfo | null>(null)
@@ -109,7 +111,7 @@ const PaymentResultPage: NextPage = () => {
         if (!queryString) {
           setResult({
             status: 'failed',
-            message: 'No payment parameters found',
+            message: t('failed.noParams'),
           })
           return
         }
@@ -119,7 +121,7 @@ const PaymentResultPage: NextPage = () => {
         if (!validation.isValid) {
           setResult({
             status: 'failed',
-            message: `Invalid payment data: ${validation.errors.join(', ')}`,
+            message: `${t('failed.invalidData')}: ${validation.errors.join(', ')}`,
           })
           return
         }
@@ -136,7 +138,7 @@ const PaymentResultPage: NextPage = () => {
           if (!response.data?.signatureValid) {
             setResult({
               status: 'failed',
-              message: 'Payment signature verification failed',
+              message: t('failed.signatureFailed'),
               details: response.data,
               transactionInfo,
             })
@@ -152,7 +154,7 @@ const PaymentResultPage: NextPage = () => {
             if (isCancelled) {
               setResult({
                 status: 'cancelled',
-                message: 'Payment was cancelled',
+                message: t('cancelled.message'),
                 details: response.data,
                 transactionInfo,
               })
@@ -161,13 +163,11 @@ const PaymentResultPage: NextPage = () => {
               sessionStorage.removeItem('pendingListingCreation')
             } else if (isSuccess) {
               // Determine success message based on payment type
-              let successMessage = 'Payment completed successfully!'
+              let successMessage = t('success.messageDefault')
               if (paymentType === 'listing') {
-                successMessage =
-                  'Payment completed! Your VIP listing has been created.'
+                successMessage = t('success.messageListing')
               } else if (paymentType === 'membership') {
-                successMessage =
-                  'Payment completed! Your membership has been activated.'
+                successMessage = t('success.messageMembership')
               }
 
               setResult({
@@ -220,7 +220,7 @@ const PaymentResultPage: NextPage = () => {
           message:
             error instanceof Error
               ? error.message
-              : 'Error processing payment result',
+              : t('failed.errorProcessing'),
         })
         sessionStorage.removeItem('pendingMembership')
         sessionStorage.removeItem('pendingListingCreation')
@@ -283,7 +283,7 @@ const PaymentResultPage: NextPage = () => {
                   />
                 </div>
                 <h2 className='text-2xl font-bold text-gray-800 mb-2'>
-                  Processing Payment
+                  {t('processing.title')}
                 </h2>
                 <p className='text-gray-600'>{result.message}</p>
               </div>
@@ -314,9 +314,9 @@ const PaymentResultPage: NextPage = () => {
                     transition={{ delay: 0.2 }}
                     className='text-3xl font-bold text-white mb-2'
                   >
-                    {result.status === 'success' && 'Payment Successful!'}
-                    {result.status === 'failed' && 'Payment Failed'}
-                    {result.status === 'cancelled' && 'Payment Cancelled'}
+                    {result.status === 'success' && t('success.title')}
+                    {result.status === 'failed' && t('failed.title')}
+                    {result.status === 'cancelled' && t('cancelled.title')}
                   </motion.h1>
 
                   <motion.p
@@ -350,7 +350,7 @@ const PaymentResultPage: NextPage = () => {
                             <Sparkles className='w-6 h-6 text-white' />
                           </div>
                           <h3 className='text-xl font-bold text-gray-800'>
-                            VIP Listing Details
+                            {t('sections.vipListing.title')}
                           </h3>
                         </div>
 
@@ -360,7 +360,7 @@ const PaymentResultPage: NextPage = () => {
                               <div className='flex items-center gap-2'>
                                 <Package className='w-5 h-5 text-purple-600' />
                                 <span className='text-gray-600 font-medium'>
-                                  Title
+                                  {t('sections.vipListing.listingTitle')}
                                 </span>
                               </div>
                               <span className='font-semibold text-gray-900 text-right max-w-[60%]'>
@@ -374,7 +374,7 @@ const PaymentResultPage: NextPage = () => {
                               <div className='flex items-center gap-2'>
                                 <Sparkles className='w-5 h-5 text-purple-600' />
                                 <span className='text-gray-600 font-medium'>
-                                  VIP Tier
+                                  {t('sections.vipListing.vipTier')}
                                 </span>
                               </div>
                               <span className='font-semibold text-gray-900'>
@@ -388,11 +388,12 @@ const PaymentResultPage: NextPage = () => {
                               <div className='flex items-center gap-2'>
                                 <Calendar className='w-5 h-5 text-purple-600' />
                                 <span className='text-gray-600 font-medium'>
-                                  Duration
+                                  {t('sections.vipListing.duration')}
                                 </span>
                               </div>
                               <span className='font-semibold text-gray-900'>
-                                {listingInfo.durationDays} Days
+                                {listingInfo.durationDays}{' '}
+                                {t('sections.vipListing.durationDays')}
                               </span>
                             </div>
                           )}
@@ -402,7 +403,7 @@ const PaymentResultPage: NextPage = () => {
                               <div className='flex items-center gap-2'>
                                 <CreditCard className='w-5 h-5 text-purple-600' />
                                 <span className='text-gray-600 font-medium'>
-                                  Amount Paid
+                                  {t('sections.vipListing.amountPaid')}
                                 </span>
                               </div>
                               <span className='font-bold text-xl text-gray-900'>
@@ -417,8 +418,7 @@ const PaymentResultPage: NextPage = () => {
 
                         <div className='mt-6 pt-6 border-t border-purple-200'>
                           <p className='text-sm text-gray-600'>
-                            Your VIP listing has been created and will be
-                            visible to potential buyers immediately.
+                            {t('sections.vipListing.note')}
                           </p>
                         </div>
                       </motion.div>
@@ -439,7 +439,7 @@ const PaymentResultPage: NextPage = () => {
                             <Sparkles className='w-6 h-6 text-white' />
                           </div>
                           <h3 className='text-xl font-bold text-gray-800'>
-                            Membership Details
+                            {t('sections.membership.title')}
                           </h3>
                         </div>
 
@@ -448,7 +448,7 @@ const PaymentResultPage: NextPage = () => {
                             <div className='flex items-center gap-2'>
                               <Package className='w-5 h-5 text-blue-600' />
                               <span className='text-gray-600 font-medium'>
-                                Package
+                                {t('sections.membership.package')}
                               </span>
                             </div>
                             <span className='font-semibold text-gray-900'>
@@ -460,14 +460,14 @@ const PaymentResultPage: NextPage = () => {
                             <div className='flex items-center gap-2'>
                               <Calendar className='w-5 h-5 text-blue-600' />
                               <span className='text-gray-600 font-medium'>
-                                Duration
+                                {t('sections.membership.duration')}
                               </span>
                             </div>
                             <span className='font-semibold text-gray-900'>
                               {membershipInfo.durationMonths}{' '}
                               {membershipInfo.durationMonths === 1
-                                ? 'Month'
-                                : 'Months'}
+                                ? t('sections.membership.month')
+                                : t('sections.membership.months')}
                             </span>
                           </div>
 
@@ -475,7 +475,7 @@ const PaymentResultPage: NextPage = () => {
                             <div className='flex items-center gap-2'>
                               <CreditCard className='w-5 h-5 text-blue-600' />
                               <span className='text-gray-600 font-medium'>
-                                Amount Paid
+                                {t('sections.membership.amountPaid')}
                               </span>
                             </div>
                             <div className='text-right'>
@@ -508,7 +508,7 @@ const PaymentResultPage: NextPage = () => {
                             <div className='mt-6 pt-6 border-t border-blue-200'>
                               <h4 className='font-semibold text-gray-800 mb-3 flex items-center gap-2'>
                                 <Sparkles className='w-4 h-4 text-blue-600' />
-                                Included Benefits
+                                {t('sections.membership.benefitsTitle')}
                               </h4>
                               <ul className='space-y-2'>
                                 {membershipInfo.benefits.map((benefit) => (
@@ -521,7 +521,8 @@ const PaymentResultPage: NextPage = () => {
                                       <strong>
                                         {benefit.benefitNameDisplay}
                                       </strong>{' '}
-                                      - {benefit.quantityPerMonth} per month
+                                      - {benefit.quantityPerMonth}{' '}
+                                      {t('sections.membership.perMonth')}
                                     </span>
                                   </li>
                                 ))}
@@ -554,12 +555,14 @@ const PaymentResultPage: NextPage = () => {
                     >
                       <h3 className='font-semibold text-gray-800 mb-4 flex items-center gap-2'>
                         <Hash className='w-5 h-5 text-gray-600' />
-                        Transaction Details
+                        {t('sections.transaction.title')}
                       </h3>
 
                       <div className='space-y-3 text-sm'>
                         <div className='flex justify-between items-center py-2 border-b border-gray-200'>
-                          <span className='text-gray-600'>Amount</span>
+                          <span className='text-gray-600'>
+                            {t('sections.transaction.amount')}
+                          </span>
                           <span className='font-bold text-gray-900'>
                             {result.transactionInfo.amount.toLocaleString(
                               'vi-VN',
@@ -570,7 +573,9 @@ const PaymentResultPage: NextPage = () => {
 
                         {result.transactionInfo.bankCode && (
                           <div className='flex justify-between items-center py-2 border-b border-gray-200'>
-                            <span className='text-gray-600'>Bank</span>
+                            <span className='text-gray-600'>
+                              {t('sections.transaction.bank')}
+                            </span>
                             <span className='font-semibold text-gray-900 uppercase'>
                               {result.transactionInfo.bankCode}
                             </span>
@@ -580,7 +585,7 @@ const PaymentResultPage: NextPage = () => {
                         {result.transactionInfo.transactionNo && (
                           <div className='flex justify-between items-center py-2 border-b border-gray-200'>
                             <span className='text-gray-600'>
-                              VNPay Transaction No
+                              {t('sections.transaction.vnpayTxnNo')}
                             </span>
                             <span className='font-mono font-semibold text-gray-900 text-xs'>
                               {result.transactionInfo.transactionNo}
@@ -591,7 +596,7 @@ const PaymentResultPage: NextPage = () => {
                         {result.status === 'failed' && (
                           <div className='flex justify-between items-center py-2 bg-red-100 rounded-lg px-3 -mx-3 mt-3'>
                             <span className='text-red-700 font-medium'>
-                              Error Code
+                              {t('sections.transaction.errorCode')}
                             </span>
                             <span className='font-mono font-bold text-red-900'>
                               {result.transactionInfo.responseCode}
@@ -623,15 +628,15 @@ const PaymentResultPage: NextPage = () => {
                           className='flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                         >
                           {paymentType === 'listing'
-                            ? 'View My Listings'
-                            : 'Go to Dashboard'}
+                            ? t('actions.viewListings')
+                            : t('actions.goToDashboard')}
                           <ArrowRight className='w-5 h-5' />
                         </button>
                         <button
                           onClick={() => (window.location.href = '/')}
                           className='flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-300'
                         >
-                          Return to Home
+                          {t('actions.returnHome')}
                         </button>
                       </>
                     )}
@@ -644,14 +649,14 @@ const PaymentResultPage: NextPage = () => {
                           className='flex-1 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl'
                         >
                           {result.status === 'cancelled'
-                            ? 'Go Back'
-                            : 'Try Again'}
+                            ? t('actions.goBack')
+                            : t('actions.tryAgain')}
                         </button>
                         <button
                           onClick={() => (window.location.href = '/')}
                           className='flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-300'
                         >
-                          Return to Home
+                          {t('actions.returnHome')}
                         </button>
                       </>
                     )}

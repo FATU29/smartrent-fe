@@ -860,6 +860,7 @@
       "title": "Save as Draft?",
       "description": "You have unsaved changes. Do you want to save this post as a draft before leaving?",
       "save": "Save Draft",
+      "dontSave": "Don't Save",
       "discard": "Discard",
       "cancel": "Cancel",
       "saving": "Saving...",
@@ -2799,7 +2800,12 @@
     "subtitle": "We are tracking your transaction. This page will update automatically.",
     "labels": {
       "transactionRef": "Transaction Ref",
-      "checking": "Checking status"
+      "checking": "Checking status",
+      "membershipPackage": "Membership Package",
+      "product": "Product",
+      "amount": "Amount",
+      "paymentMethod": "Payment Method",
+      "paymentTime": "Payment Time"
     },
     "actions": {
       "backHome": "Back to Home",
@@ -2837,6 +2843,64 @@
         "title": "Unknown Status",
         "desc": "Unable to determine payment status."
       }
+    }
+  },
+  "paymentResultPage": {
+    "processing": {
+      "title": "Processing Payment",
+      "message": "Processing payment..."
+    },
+    "success": {
+      "title": "Payment Successful!",
+      "messageListing": "Payment completed! Your VIP listing has been created.",
+      "messageMembership": "Payment completed! Your membership has been activated.",
+      "messageDefault": "Payment completed successfully!"
+    },
+    "failed": {
+      "title": "Payment Failed",
+      "noParams": "No payment parameters found",
+      "invalidData": "Invalid payment data",
+      "signatureFailed": "Payment signature verification failed",
+      "errorProcessing": "Error processing payment result"
+    },
+    "cancelled": {
+      "title": "Payment Cancelled",
+      "message": "Payment was cancelled"
+    },
+    "sections": {
+      "vipListing": {
+        "title": "VIP Listing Details",
+        "listingTitle": "Title",
+        "vipTier": "VIP Tier",
+        "duration": "Duration",
+        "durationDays": "Days",
+        "amountPaid": "Amount Paid",
+        "note": "Your VIP listing has been created and will be visible to potential buyers immediately."
+      },
+      "membership": {
+        "title": "Membership Details",
+        "package": "Package",
+        "duration": "Duration",
+        "month": "Month",
+        "months": "Months",
+        "amountPaid": "Amount Paid",
+        "benefitsTitle": "Included Benefits",
+        "perMonth": "per month"
+      },
+      "transaction": {
+        "title": "Transaction Details",
+        "amount": "Amount",
+        "bank": "Bank",
+        "vnpayTxnNo": "VNPay Transaction No",
+        "errorCode": "Error Code"
+      }
+    },
+    "actions": {
+      "viewListings": "View My Listings",
+      "goToDashboard": "Go to Dashboard",
+      "returnHome": "Return to Home",
+      "tryAgain": "Try Again",
+      "goBack": "Go Back"
     }
   },
   "savedListings": {
