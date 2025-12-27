@@ -51,6 +51,7 @@ export const PATHS = {
     MY_DRAFTS: '/v1/listings/my-drafts',
     BY_ID: '/v1/listings/:id',
     CREATE: '/v1/listings',
+    /** @deprecated Use CREATE instead. This endpoint is deprecated. */
     CREATE_VIP: '/v1/listings/vip',
     // Draft endpoints
     CREATE_DRAFT: '/v1/listings/draft',

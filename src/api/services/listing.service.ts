@@ -59,33 +59,66 @@ export class ListingService {
     }
   }
 
-  static async create(
-    data: CreateListingRequest,
-  ): Promise<ApiResponse<{ listingId: number; status: string }>> {
-    return apiRequest<{ listingId: number; status: string }>({
+  /**
+   * Create a new listing (NORMAL, SILVER, GOLD, or DIAMOND)
+   * @param data - Listing creation request
+   * @returns Response with listingId if no payment required, or paymentUrl if payment needed
+   */
+  static async create(data: CreateListingRequest): Promise<
+    ApiResponse<{
+      listingId?: number | null
+      status?: string
+      paymentRequired?: boolean
+      transactionId?: string
+      amount?: number
+      paymentUrl?: string
+      message?: string
+    }>
+  > {
+    return apiRequest<{
+      listingId?: number | null
+      status?: string
+      paymentRequired?: boolean
+      transactionId?: string
+      amount?: number
+      paymentUrl?: string
+      message?: string
+    }>({
       method: 'POST',
       url: PATHS.LISTING.CREATE,
       data,
     })
   }
 
+  /**
+   * @deprecated Use create() instead. This endpoint is deprecated.
+   * Create VIP listing with payment (DEPRECATED - use create() for all listing types)
+   */
   static async createVip(data: CreateVipListingRequest): Promise<
     ApiResponse<{
-      listingId: string
-      title: string
-      vipType: string
-      postSource: string
-      status: string
+      listingId?: string | null
+      title?: string
+      vipType?: string
+      postSource?: string
+      status?: string
       paymentUrl?: string
+      paymentRequired?: boolean
+      transactionId?: string
+      amount?: number
+      message?: string
     }>
   > {
     return apiRequest<{
-      listingId: string
-      title: string
-      vipType: string
-      postSource: string
-      status: string
+      listingId?: string | null
+      title?: string
+      vipType?: string
+      postSource?: string
+      status?: string
       paymentUrl?: string
+      paymentRequired?: boolean
+      transactionId?: string
+      amount?: number
+      message?: string
     }>({
       method: 'POST',
       url: PATHS.LISTING.CREATE_VIP,
