@@ -43,7 +43,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
 
   return (
     <Card className='w-full mx-auto md:max-w-6xl mt-8 sm:mt-12 border-0 shadow-none p-0'>
-      <Card className='flex flex-col sm:flex-row gap-4 sm:gap-6 justify-between items-center flex-wrap border-0 shadow-none p-0'>
+      <Card className='flex flex-col sm:flex-row gap-4 sm:gap-6 items-center flex-wrap border-0 shadow-none p-0'>
         {showBackButton && (
           <Button
             variant='outline'
@@ -59,7 +59,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
           <Button
             onClick={onNext}
             disabled={!canProceed}
-            className='w-full sm:w-auto order-1 sm:order-2 h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
+            className='w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
           >
             {t('next')}
             <ArrowRight className='w-4 h-4 ml-2' />
@@ -68,7 +68,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
           <Button
             onClick={handleSubmit}
             disabled={!canProceed}
-            className='w-full sm:w-auto order-1 sm:order-2 h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
+            className='w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
           >
             <CreditCard className='w-4 h-4 mr-2' />
             {getSubmitButtonText()}

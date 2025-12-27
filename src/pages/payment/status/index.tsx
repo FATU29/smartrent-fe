@@ -229,15 +229,17 @@ const PaymentStatusPage: React.FC = () => {
           <div>
             <div className='text-xs text-muted-foreground'>
               {txn.transactionType === 'MEMBERSHIP_PURCHASE'
-                ? 'Gói membership'
-                : 'Sản phẩm'}
+                ? t('labels.membershipPackage')
+                : t('labels.product')}
             </div>
             <div className='text-sm font-medium'>{txn.orderInfo}</div>
           </div>
         )}
         {txn.amount && (
           <div className='flex items-baseline gap-2'>
-            <span className='text-xs text-muted-foreground'>Số tiền:</span>
+            <span className='text-xs text-muted-foreground'>
+              {t('labels.amount')}:
+            </span>
             <span className='text-base font-semibold'>
               {new Intl.NumberFormat('vi-VN', {
                 style: 'currency',
@@ -248,13 +250,17 @@ const PaymentStatusPage: React.FC = () => {
         )}
         {txn.paymentMethod && (
           <div className='flex items-center gap-2 text-xs'>
-            <span className='text-muted-foreground'>Phương thức:</span>
+            <span className='text-muted-foreground'>
+              {t('labels.paymentMethod')}:
+            </span>
             <span>{txn.paymentMethod}</span>
           </div>
         )}
         {txn.paymentDate && (
           <div className='flex items-center gap-2 text-xs'>
-            <span className='text-muted-foreground'>Thời gian:</span>
+            <span className='text-muted-foreground'>
+              {t('labels.paymentTime')}:
+            </span>
             <span>{new Date(txn.paymentDate).toLocaleString('vi-VN')}</span>
           </div>
         )}

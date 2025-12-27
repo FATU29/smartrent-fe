@@ -1,4 +1,9 @@
-import { InternalAxiosRequestConfig, AxiosInstance } from 'axios'
+import {
+  InternalAxiosRequestConfig,
+  AxiosInstance,
+  AxiosResponse,
+  AxiosError,
+} from 'axios'
 import { CustomAxiosRequestConfig } from './types'
 import { getAccessToken, getRefreshToken } from './utils'
 import { AuthService } from '@/api/services/auth.service'
@@ -85,11 +90,41 @@ export function createAuthRequestInterceptor(
   }
 }
 
+export function createAuthResponseInterceptor() {
+  return {
+    onFulfilled: (response: AxiosResponse) => response,
+    onRejected: async (error: AxiosError) => {
+      // Handle 401 errors - token refresh failed or unauthorized
+      if (error.response?.status === 401) {
+        const refreshTokenValue = getRefreshToken()
+
+        // If refresh token is expired or missing, trigger logout
+        if (!refreshTokenValue || isTokenExpired(refreshTokenValue)) {
+          handleExpiredTokens(refreshTokenValue)
+        } else {
+          // API returned 401 even with valid refresh token
+          handleRefreshFailure()
+        }
+      }
+
+      return Promise.reject(error)
+    },
+  }
+}
+
 export function setupInterceptors(
   axiosInstance: AxiosInstance,
   cookies?: Record<string, unknown>,
 ) {
+  // Request interceptor
   axiosInstance.interceptors.request.use(createAuthRequestInterceptor(cookies))
+
+  // Response interceptor for handling 401 errors
+  const responseInterceptor = createAuthResponseInterceptor()
+  axiosInstance.interceptors.response.use(
+    responseInterceptor.onFulfilled,
+    responseInterceptor.onRejected,
+  )
 
   return axiosInstance
 }
