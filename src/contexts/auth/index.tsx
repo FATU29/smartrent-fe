@@ -41,6 +41,21 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const { validToken } = useValidToken()
 
+  // Listen for unauthorized events from axios interceptors
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      console.warn('[Auth] Unauthorized event received, logging out...')
+      logout()
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('auth:unauthorized', handleUnauthorized)
+      return () => {
+        window.removeEventListener('auth:unauthorized', handleUnauthorized)
+      }
+    }
+  }, [logout])
+
   // Initialize auth on mount/reload - check cookies sync with store
   useEffect(() => {
     const initializeAuth = async () => {
