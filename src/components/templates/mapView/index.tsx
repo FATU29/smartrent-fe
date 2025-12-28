@@ -211,7 +211,7 @@ const MapContent: React.FC = () => {
 
       {/* Selected Property Card */}
       {selectedListing && (
-        <div className='absolute top-4 right-4 z-20 max-w-sm'>
+        <div className='absolute top-4 md:right-4 left-4 right-4 md:left-auto z-20 md:max-w-sm'>
           <div className='relative bg-background rounded-lg shadow-xl'>
             <Button
               variant='ghost'
