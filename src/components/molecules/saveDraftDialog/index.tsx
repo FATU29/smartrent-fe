@@ -31,8 +31,14 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
     await onSave()
   }, [onSave])
 
+  const handleClose = useCallback(() => {
+    if (!isSaving) {
+      onCancel()
+    }
+  }, [isSaving, onCancel])
+
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
       <DialogContent
         className={DIALOG_MAX_WIDTH}
         showCloseButton={!isSaving}
@@ -51,7 +57,7 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
           <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
-        <DialogFooter className='gap-2 sm:gap-0'>
+        <DialogFooter className='flex gap-2 sm:gap-0'>
           <Button variant='outline' onClick={onCancel} disabled={isSaving}>
             {t('dontSave')}
           </Button>

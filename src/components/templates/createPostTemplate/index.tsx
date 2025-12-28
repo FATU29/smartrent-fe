@@ -16,6 +16,7 @@ import { PAYMENT_PROVIDER } from '@/api/types/property.type'
 import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
 import { redirectToPayment } from '@/utils/payment'
+import { useUpdateDraft } from '@/hooks/useListings/useUpdateDraft'
 
 interface CreatePostTemplateProps {
   className?: string
@@ -52,6 +53,9 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   } = useCreatePost()
   const router = useRouter()
   const t = useTranslations('createPost.submit')
+  const tDraft = useTranslations('createPost')
+
+  const { mutate: updateDraft, isPending: isUpdatingDraft } = useUpdateDraft()
 
   React.useEffect(() => {
     if (draftId && propertyInfo && Object.keys(propertyInfo).length > 1) {
@@ -199,6 +203,34 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
     [createListing, closePaymentDialog, t],
   )
 
+  const handleUpdateDraft = React.useCallback(() => {
+    if (!draftId) {
+      toast.error(tDraft('draftUpdateFailed'))
+      return
+    }
+
+    const draftPayload = {
+      ...propertyInfo,
+      isDraft: true,
+    }
+
+    updateDraft(
+      { draftId, data: draftPayload },
+      {
+        onSuccess: (response) => {
+          if (response.success) {
+            toast.success(tDraft('draftUpdated'))
+          } else {
+            toast.error(response.message || tDraft('draftUpdateFailed'))
+          }
+        },
+        onError: () => {
+          toast.error(tDraft('draftUpdateFailed'))
+        },
+      },
+    )
+  }, [draftId, propertyInfo, updateDraft, tDraft])
+
   return (
     <PostTemplateBase
       className={className}
@@ -228,6 +260,8 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           onBack={handleBack}
           onNext={handleNext}
           onSubmit={handleSubmit}
+          onUpdateDraft={handleUpdateDraft}
+          isUpdatingDraft={isUpdatingDraft}
         />
       }
     >

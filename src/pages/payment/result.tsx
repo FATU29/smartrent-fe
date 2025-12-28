@@ -648,14 +648,6 @@ const PaymentResultPage: NextPage = () => {
                       result.status === 'cancelled') && (
                       <>
                         <button
-                          onClick={() => window.history.back()}
-                          className='flex-1 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl'
-                        >
-                          {result.status === 'cancelled'
-                            ? t('actions.goBack')
-                            : t('actions.tryAgain')}
-                        </button>
-                        <button
                           onClick={() => (window.location.href = '/')}
                           className='flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-300'
                         >

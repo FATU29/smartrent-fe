@@ -875,6 +875,10 @@
       "addressRequired": "Địa chỉ là bắt buộc để lưu bản nháp",
       "requiredFieldsMissing": "Danh mục và tiêu đề là bắt buộc để lưu bản nháp"
     },
+    "updateDraft": "Cập nhật bản nháp",
+    "updatingDraft": "Đang cập nhật...",
+    "draftUpdated": "Cập nhật bản nháp thành công!",
+    "draftUpdateFailed": "Cập nhật bản nháp thất bại. Vui lòng thử lại.",
     "steps": {
       "propertyInfo": {
         "generateAutomatically": "Tạo tự động",

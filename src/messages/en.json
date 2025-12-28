@@ -874,6 +874,10 @@
       "addressRequired": "Address is required to save draft",
       "requiredFieldsMissing": "Category and title are required to save draft"
     },
+    "updateDraft": "Update Draft",
+    "updatingDraft": "Updating...",
+    "draftUpdated": "Draft updated successfully!",
+    "draftUpdateFailed": "Failed to update draft. Please try again.",
     "steps": {
       "propertyInfo": {
         "generateAutomatically": "Generate Automatically",
