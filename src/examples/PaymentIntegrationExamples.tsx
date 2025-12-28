@@ -12,7 +12,11 @@ import {
   useTransaction,
   usePaymentHistory,
 } from '@/hooks/usePayment'
-import { formatCurrency, getPaymentStatusIcon } from '@/utils/payment'
+import {
+  formatCurrency,
+  getPaymentStatusIcon,
+  redirectToPayment,
+} from '@/utils/payment'
 import { PaymentProvider } from '@/api/types/membership.type'
 
 // Example 1: Membership Purchase
@@ -308,7 +312,8 @@ export function CompletePaymentFlowExample() {
       )
 
       if (confirmRedirect) {
-        window.location.href = data.paymentUrl
+        // Use redirectToPayment to preserve exact URL encoding for VNPay signature
+        redirectToPayment(data.paymentUrl)
       }
     },
     onError: (error) => {
