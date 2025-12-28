@@ -127,7 +127,19 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
           </Button>
         </div>
 
-        {/* Row 2: Apply + Reset */}
+        {/* Row 2: View Map Button */}
+        <div className='flex gap-2'>
+          <Button
+            variant='secondary'
+            className='h-9 px-4 flex-1'
+            type='button'
+            onClick={handleViewMap}
+          >
+            <MapIcon className='h-4 w-4 mr-1' /> {t('actions.viewMap')}
+          </Button>
+        </div>
+
+        {/* Row 3: Apply + Reset */}
         <div className='flex gap-2'>
           <Button
             variant='default'

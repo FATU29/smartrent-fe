@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { X, Menu, LogIn, UserPlus, LogOut, User, Settings } from 'lucide-react'
+import {
+  X,
+  Menu,
+  LogIn,
+  UserPlus,
+  LogOut,
+  User,
+  Settings,
+  MapIcon,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
@@ -13,6 +22,7 @@ import { useTranslations } from 'next-intl'
 import { useAuth, useLogout } from '@/hooks/useAuth'
 import { useAuthDialog } from '@/contexts/authDialog'
 import { useRouter } from 'next/router'
+import { PUBLIC_ROUTES } from '@/constants/route'
 
 interface MobileNavigationDrawerProps {
   items: NavigationItemData[]
@@ -168,6 +178,18 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
               {/* User Actions */}
               <div className='flex flex-col gap-2'>
                 <Button
+                  variant='secondary'
+                  size='sm'
+                  className='w-full justify-start gap-2'
+                  onClick={() => {
+                    router.push(PUBLIC_ROUTES.MAPS)
+                    setIsOpen(false)
+                  }}
+                >
+                  <MapIcon className='h-4 w-4' />
+                  {t('navigation.maps')}
+                </Button>
+                <Button
                   variant='default'
                   size='sm'
                   className='w-full justify-start gap-2'
@@ -207,6 +229,18 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
             </div>
           ) : (
             <div className='flex flex-col gap-2'>
+              <Button
+                variant='secondary'
+                size='sm'
+                className='w-full justify-start gap-2'
+                onClick={() => {
+                  router.push(PUBLIC_ROUTES.MAPS)
+                  setIsOpen(false)
+                }}
+              >
+                <MapIcon className='h-4 w-4' />
+                {t('navigation.maps')}
+              </Button>
               <Button
                 variant='default'
                 size='sm'

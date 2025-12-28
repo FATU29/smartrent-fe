@@ -160,7 +160,7 @@ const MapContent: React.FC = () => {
   return (
     <>
       {/* Back to List Button */}
-      <div className='absolute top-20 left-4 z-50'>
+      <div className='absolute top-20 left-4 z-40'>
         <Button
           variant='secondary'
           size='sm'

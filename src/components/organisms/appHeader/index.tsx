@@ -12,6 +12,8 @@ import { useAuth } from '@/hooks/useAuth'
 import { useAuthDialog } from '@/contexts/authDialog'
 import { useRouter } from 'next/router'
 import { useCategories } from '@/hooks/useCategories'
+import { MapIcon } from 'lucide-react'
+import { PUBLIC_ROUTES } from '@/constants/route'
 
 export interface AppHeaderProps {
   activeItem?: string
@@ -58,28 +60,41 @@ const AppHeader: React.FC<AppHeaderProps> = ({
 
   const defaultRightContent = (
     <div className='flex items-center gap-2 sm:gap-3'>
-      <LanguageSwitch />
-      <ThemeSwitch />
+      <div className='hidden lg:flex items-center gap-2 sm:gap-3'>
+        <LanguageSwitch />
+        <ThemeSwitch />
+      </div>
+      <Button
+        onClick={() => router.push(PUBLIC_ROUTES.MAPS)}
+        variant='outline'
+        size='sm'
+        className='hidden lg:flex items-center gap-1 text-xs sm:text-sm'
+      >
+        <MapIcon className='h-4 w-4' />
+        <span className='hidden md:inline'>{t('navigation.maps')}</span>
+      </Button>
       <Button
         onClick={() => router.push('/seller/create-post')}
         variant='default'
         size='sm'
-        className='bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-md transition-all duration-300 text-xs sm:text-sm'
+        className='hidden lg:block bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-md transition-all duration-300 text-xs sm:text-sm'
       >
         {t('common.createPost')}
       </Button>
-      {isAuthenticated ? (
-        <UserDropdown />
-      ) : (
-        <Button
-          onClick={() => openAuth('login', router.asPath)}
-          size='sm'
-          variant='default'
-          className='bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-md transition-all duration-300 text-xs sm:text-sm'
-        >
-          {t('homePage.auth.login.loginButton')}
-        </Button>
-      )}
+      <div className='hidden lg:block'>
+        {isAuthenticated ? (
+          <UserDropdown />
+        ) : (
+          <Button
+            onClick={() => openAuth('login', router.asPath)}
+            size='sm'
+            variant='default'
+            className='bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-md transition-all duration-300 text-xs sm:text-sm'
+          >
+            {t('homePage.auth.login.loginButton')}
+          </Button>
+        )}
+      </div>
     </div>
   )
 
