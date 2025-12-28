@@ -15,6 +15,7 @@ import { PaymentProvider as MembershipPaymentProvider } from '@/api/types/member
 import { PAYMENT_PROVIDER } from '@/api/types/property.type'
 import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
+import { redirectToPayment } from '@/utils/payment'
 
 interface CreatePostTemplateProps {
   className?: string
@@ -154,9 +155,10 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           JSON.stringify(listingPaymentInfo),
         )
 
-        // Redirect to payment page
+        // Redirect to payment page using safe redirect utility
+        // This preserves exact URL encoding required for VNPay signature verification
         setIsSubmitSuccess(true)
-        window.location.href = data.paymentUrl
+        redirectToPayment(data.paymentUrl)
         return
       }
 

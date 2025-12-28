@@ -11,6 +11,7 @@ import {
   usePurchaseMembership,
 } from '@/hooks/useMembership'
 import { toast } from 'sonner'
+import { redirectToPayment } from '@/utils/payment'
 
 export const MembershipRegisterTemplate: React.FC = () => {
   const tPage = useTranslations('membershipPage')
@@ -71,8 +72,9 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
         // Redirect to payment URL if available
         // Backend will handle callback and redirect to configured frontend URL
+        // Use redirectToPayment to preserve exact URL encoding for VNPay signature
         if (result.paymentUrl) {
-          window.location.href = result.paymentUrl
+          redirectToPayment(result.paymentUrl)
         } else {
           toast.success(tPage('success.purchaseSuccess'))
         }

@@ -5,9 +5,15 @@
 import type { PaymentProvider } from '@/api/types/payment.type'
 
 /**
- * Redirect to payment URL
+ * Redirect to payment URL preserving exact URL encoding.
  *
- * @param paymentUrl - Payment URL to redirect to
+ * CRITICAL FOR VNPAY: VNPay calculates signatures based on the exact URL-encoded query string.
+ * The backend generates the URL with specific encoding (e.g., spaces as '+', special chars as %XX).
+ * If the browser re-encodes the URL differently, the signature becomes invalid ("sai chữ ký").
+ *
+ * This function uses an anchor element click to navigate, which preserves the URL exactly as-is.
+ *
+ * @param paymentUrl - Payment URL to redirect to (must be the exact URL from backend)
  * @param newWindow - Whether to open in new window (default: false)
  *
  * @example
@@ -19,11 +25,91 @@ export function redirectToPayment(
   paymentUrl: string,
   newWindow: boolean = false,
 ): void {
+  if (!paymentUrl) {
+    console.error('[Payment Redirect] Payment URL is empty or undefined')
+    return
+  }
+
+  // Debug logging
+  console.log('[Payment] Redirecting to:', paymentUrl)
+
   if (newWindow) {
     window.open(paymentUrl, '_blank', 'noopener,noreferrer')
-  } else {
-    window.location.href = paymentUrl
+    return
   }
+
+  // Simple redirect - the URL should work as-is if backend generates correct signature
+  window.location.href = paymentUrl
+}
+
+/**
+ * Redirect using anchor element click.
+ * Note: This may not preserve exact URL encoding in all browsers.
+ *
+ * @param url - The URL to redirect to
+ */
+export function redirectViaAnchor(url: string): void {
+  try {
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.style.display = 'none'
+    document.body.appendChild(anchor)
+    anchor.click()
+
+    setTimeout(() => {
+      if (anchor.parentNode) {
+        anchor.parentNode.removeChild(anchor)
+      }
+    }, 100)
+  } catch (error) {
+    console.error('[Payment Redirect] Anchor redirect failed:', error)
+    window.location.assign(url)
+  }
+}
+
+/**
+ * Alternative: Redirect using location.assign
+ *
+ * @param url - The URL to redirect to
+ */
+export function redirectViaAssign(url: string): void {
+  window.location.assign(url)
+}
+
+/**
+ * Debug utility: Compare two URLs to find encoding differences.
+ * Use this to debug signature issues.
+ *
+ * @param url1 - First URL (e.g., from backend response)
+ * @param url2 - Second URL (e.g., from browser location after redirect)
+ * @returns Object with comparison results
+ */
+export function comparePaymentUrls(
+  url1: string,
+  url2: string,
+): { identical: boolean; differences: string[] } {
+  const differences: string[] = []
+
+  if (url1 === url2) {
+    return { identical: true, differences: [] }
+  }
+
+  // Compare character by character
+  const maxLen = Math.max(url1.length, url2.length)
+  for (let i = 0; i < maxLen; i++) {
+    const char1 = url1[i] || '(missing)'
+    const char2 = url2[i] || '(missing)'
+    if (char1 !== char2) {
+      differences.push(`Position ${i}: '${char1}' vs '${char2}'`)
+      // Only show first 10 differences
+      if (differences.length >= 10) {
+        differences.push('... (more differences)')
+        break
+      }
+    }
+  }
+
+  return { identical: false, differences }
 }
 
 /**
