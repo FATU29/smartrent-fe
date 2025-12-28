@@ -22,7 +22,6 @@ import {
   navigateToPropertiesWithClearedFilters,
 } from '@/utils/filters'
 import { PUBLIC_ROUTES } from '@/constants/route'
-import { pushQueryParams } from '@/utils/queryParams'
 
 interface ResidentialFilterBarProps {
   onOpenAdvanced?: () => void
@@ -101,59 +100,11 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
     [updateFilter, disableLocation],
   )
 
-  const serializeFiltersToQueryParams = useCallback(
-    (filters: ListingFilterRequest) => {
-      const amenityIds = filters.amenityIds
-      const filterKeys: (keyof ListingFilterRequest)[] = [
-        'userId',
-        'categoryId',
-        'productType',
-        'keyword',
-        'minPrice',
-        'maxPrice',
-        'minArea',
-        'maxArea',
-        'minBedrooms',
-        'maxBedrooms',
-        'bathrooms',
-        'direction',
-        'electricityPrice',
-        'waterPrice',
-        'internetPrice',
-        'serviceFee',
-        'provinceId',
-        'districtId',
-        'wardId',
-        'isLegacy',
-        'userLongitude',
-        'userLatitude',
-        'sortBy',
-        'page',
-        'size',
-      ]
-
-      const queryParams: Record<string, unknown> = {}
-      filterKeys.forEach((key) => {
-        queryParams[key] = filters[key] ?? null
-      })
-
-      queryParams.amenityIds =
-        amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null
-
-      return queryParams
-    },
-    [],
-  )
-
   const handleViewMap = useCallback(() => {
-    // Navigate to maps page with current filters
-    const queryParams = serializeFiltersToQueryParams(filters)
-    pushQueryParams(router, queryParams, {
-      pathname: PUBLIC_ROUTES.MAPS,
-      shallow: false,
-      scroll: false,
-    })
-  }, [router, filters, serializeFiltersToQueryParams])
+    // Navigate to maps page without any filter query params
+    // Maps page handles listing fetching via map bounds, not filters
+    router.push(PUBLIC_ROUTES.MAPS)
+  }, [router])
 
   return (
     <div className='w-full space-y-3'>

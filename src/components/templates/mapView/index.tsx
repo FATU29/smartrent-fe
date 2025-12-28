@@ -193,7 +193,7 @@ const MapContent: React.FC = () => {
 
       {/* Property Count Badge */}
       {!isLoading && listings.length > 0 && (
-        <div className='absolute top-20 left-4 z-10'>
+        <div className='absolute top-32 left-4 z-10'>
           <div className='bg-white shadow-lg rounded-lg px-4 py-2'>
             <div className='flex flex-col gap-1'>
               <span className='text-sm font-medium'>

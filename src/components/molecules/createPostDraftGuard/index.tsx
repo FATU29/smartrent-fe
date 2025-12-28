@@ -168,6 +168,13 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
     }
   }, [router])
 
+  // Close dialog only (X button) - user stays on current page
+  const handleClose = useCallback(() => {
+    setShowDialog(false)
+    pendingNavigationRef.current = null
+    blockedUrlRef.current = null
+  }, [])
+
   // Handle browser reload/close tab (shows browser's default dialog)
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent): string | undefined => {
@@ -285,6 +292,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
         open={showDialog}
         onSave={saveDraft}
         onCancel={handleCancel}
+        onClose={handleClose}
         isSaving={isDraftSaving}
       />
     </>

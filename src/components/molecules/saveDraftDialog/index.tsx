@@ -14,6 +14,7 @@ interface SaveDraftDialogProps {
   open: boolean
   onSave: () => void | Promise<void>
   onCancel: () => void
+  onClose?: () => void
   isSaving?: boolean
 }
 
@@ -23,6 +24,7 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
   open,
   onSave,
   onCancel,
+  onClose,
   isSaving = false,
 }) => {
   const t = useTranslations('createPost.draftDialog')
@@ -33,9 +35,13 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
 
   const handleClose = useCallback(() => {
     if (!isSaving) {
-      onCancel()
+      if (onClose) {
+        onClose()
+      } else {
+        onCancel()
+      }
     }
-  }, [isSaving, onCancel])
+  }, [isSaving, onCancel, onClose])
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
