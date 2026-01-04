@@ -11,8 +11,6 @@ export const useReportReasons = () => {
     queryKey: ['report', 'reasons'],
     queryFn: async () => {
       const response = await ReportService.getReportReasons()
-      console.log('useReportReasons - full response:', response)
-      console.log('useReportReasons - data array:', response.data)
 
       // Extract the data array from ApiResponse
       if (response.data && Array.isArray(response.data)) {

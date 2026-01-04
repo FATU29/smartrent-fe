@@ -212,4 +212,10 @@ export const PATHS = {
     CHECK: '/v1/saved-listings/check/:listingId',
     COUNT: '/v1/saved-listings/count',
   },
+
+  // Recently Viewed endpoints
+  RECENTLY_VIEWED: {
+    GET: '/v1/recently-viewed',
+    SYNC: '/v1/recently-viewed/sync',
+  },
 }
