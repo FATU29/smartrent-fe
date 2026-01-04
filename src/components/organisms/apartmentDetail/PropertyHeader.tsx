@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
@@ -12,9 +12,6 @@ import CompareToggleBtn from '@/components/molecules/compareToggleBtn'
 import { Copy, Flag } from 'lucide-react'
 import { toast } from 'sonner'
 import { ReportListingDialog } from '@/components/molecules/reportListingDialog'
-import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
-import { useMediaThumbnail } from '@/hooks/useMediaThumbnail'
-import { mapListingToRecentlyViewed } from '@/utils/recentlyViewed/mapper'
 import { ListingApi } from '@/api/types/property.type'
 
 interface PropertyHeaderProps {
@@ -25,10 +22,8 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   const t = useTranslations()
   const { language: locale } = useSwitchLanguage()
   const [reportDialogOpen, setReportDialogOpen] = useState(false)
-  const { addListing } = useRecentlyViewed()
 
   const { listing } = props
-  const { thumbnail } = useMediaThumbnail({ media: listing?.media })
 
   const {
     title,
@@ -43,13 +38,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   } = listing || {}
 
   const { fullNewAddress: newAddress, fullAddress: oldAddress } = address || {}
-
-  useEffect(() => {
-    if (listing && listingId) {
-      const recentlyViewedData = mapListingToRecentlyViewed(listing, thumbnail)
-      addListing(recentlyViewedData)
-    }
-  }, [listingId, thumbnail, listing, addListing])
 
   const handleCopyLink = () => {
     const url = window.location.href

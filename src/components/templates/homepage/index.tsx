@@ -10,42 +10,36 @@ import PromoFeaturesSection from '@/components/organisms/promoFeaturesSection'
 import TopInterestSection from '@/components/organisms/topInterestSection'
 import { List } from '@/contexts/list'
 import ClearFilterButton from '@/components/atoms/clearFilterButton'
-import { useRecommendedListingsByVip } from '@/hooks/useListings'
 import VipPropertySection from '@/components/organisms/vipPropertySection'
 
-import type { ProvinceStatsItem, CategoryStatsItem } from '@/api/types'
+import type {
+  ProvinceStatsItem,
+  CategoryStatsItem,
+  ListingDetail,
+} from '@/api/types'
 import Image from 'next/image'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
 
 interface HomepageTemplateProps {
   cities?: ProvinceStatsItem[]
   categoryStats?: CategoryStatsItem[]
+  diamondListings?: ListingDetail[]
+  goldListings?: ListingDetail[]
+  silverListings?: ListingDetail[]
 }
 
 const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   cities,
   categoryStats,
+  diamondListings = [],
+  goldListings = [],
+  silverListings = [],
 }) => {
   const t = useTranslations()
   const { pagination } = useListContext()
   const router = useRouter()
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
   const clickCountRef = useRef(0)
-
-  const diamondListings = useRecommendedListingsByVip({
-    vipType: 'DIAMOND',
-    size: 10,
-  })
-
-  const goldListings = useRecommendedListingsByVip({
-    vipType: 'GOLD',
-    size: 10,
-  })
-
-  const silverListings = useRecommendedListingsByVip({
-    vipType: 'SILVER',
-    size: 10,
-  })
 
   const hasNext = pagination.currentPage < pagination.totalPages
 
@@ -106,18 +100,18 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
             <div className='space-y-8'>
               <VipPropertySection
                 vipType='DIAMOND'
-                listings={diamondListings.listings}
-                isLoading={diamondListings.isLoading}
+                listings={diamondListings}
+                isLoading={false}
               />
               <VipPropertySection
                 vipType='GOLD'
-                listings={goldListings.listings}
-                isLoading={goldListings.isLoading}
+                listings={goldListings}
+                isLoading={false}
               />
               <VipPropertySection
                 vipType='SILVER'
-                listings={silverListings.listings}
-                isLoading={silverListings.isLoading}
+                listings={silverListings}
+                isLoading={false}
               />
             </div>
 

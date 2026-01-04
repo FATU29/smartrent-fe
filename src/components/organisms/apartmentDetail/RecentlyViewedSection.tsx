@@ -15,6 +15,7 @@ import {
 } from '@/components/atoms/carousel'
 import { History } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Skeleton } from '@/components/atoms/skeleton'
 
 interface RecentlyViewedSectionProps {
   currentListingId?: string | number
@@ -25,10 +26,24 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
 }) => {
   const t = useTranslations()
   const router = useRouter()
-  const { recentlyViewed } = useRecentlyViewed()
+  const { recentlyViewed, isLoading, refresh } = useRecentlyViewed()
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
+  const prevListingIdRef = React.useRef<string | number | undefined>(
+    currentListingId,
+  )
+
+  React.useEffect(() => {
+    if (
+      currentListingId !== prevListingIdRef.current &&
+      currentListingId &&
+      refresh
+    ) {
+      prevListingIdRef.current = currentListingId
+      refresh()
+    }
+  }, [currentListingId, refresh])
 
   React.useEffect(() => {
     if (!api) return
@@ -51,10 +66,6 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
       )
     : recentlyViewed
 
-  if (filteredListings.length === 0) {
-    return null
-  }
-
   const listingsData = filteredListings.map((listing) =>
     mapRecentlyViewedToListing(listing),
   ) as ListingDetail[]
@@ -63,6 +74,54 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
 
   const handleOnClick = (listing: ListingDetail) => {
     router.push(`/listing-detail/${listing.listingId}`)
+  }
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <section className='mb-8 sm:mb-10'>
+        <div className='flex items-center gap-3 mb-4 sm:mb-5'>
+          <div className='p-2 rounded-lg bg-gradient-to-br from-slate-400 to-slate-600'>
+            <History className='w-5 h-5 text-white' />
+          </div>
+          <Skeleton className='h-7 w-48' />
+          <Skeleton className='ml-auto h-5 w-8' />
+        </div>
+
+        <Carousel
+          className='group'
+          opts={{ align: 'start', loop: false }}
+          setApi={setApi}
+        >
+          <CarouselContent>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <CarouselItem
+                key={index}
+                className='basis-full sm:basis-1/2 lg:basis-1/3'
+              >
+                <div className='space-y-2'>
+                  <Skeleton className='aspect-[4/3] rounded-lg w-full' />
+                  <div className='p-3 space-y-2'>
+                    <Skeleton className='h-4 w-3/4' />
+                    <Skeleton className='h-3 w-1/2' />
+                    <Skeleton className='h-5 w-1/3' />
+                    <div className='flex gap-2'>
+                      <Skeleton className='h-4 w-16' />
+                      <Skeleton className='h-4 w-16' />
+                    </div>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </section>
+    )
+  }
+
+  // Don't show section if no listings
+  if (filteredListings.length === 0) {
+    return null
   }
 
   return (
@@ -81,7 +140,7 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
 
       <Carousel
         className='group'
-        opts={{ align: 'start', loop: true }}
+        opts={{ align: 'start', loop: false }}
         setApi={setApi}
       >
         <CarouselContent>

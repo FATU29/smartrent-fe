@@ -7,7 +7,11 @@ import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import LocationProvider from '@/contexts/location'
 import { createServerAxiosInstance } from '@/configs/axios/axiosServer'
-import type { ProvinceStatsItem, CategoryStatsItem } from '@/api/types'
+import type {
+  ProvinceStatsItem,
+  CategoryStatsItem,
+  ListingDetail,
+} from '@/api/types'
 import { List } from '@/contexts/list'
 import { PROVINCE_CODE } from '@/utils/mapper'
 import AiChatWidget from '@/components/organisms/aiChatWidget'
@@ -15,11 +19,17 @@ import AiChatWidget from '@/components/organisms/aiChatWidget'
 interface HomeProps {
   provinceCities?: ProvinceStatsItem[]
   categoryStats?: CategoryStatsItem[]
+  diamondListings?: ListingDetail[]
+  goldListings?: ListingDetail[]
+  silverListings?: ListingDetail[]
 }
 
 const Home: NextPageWithLayout<HomeProps> = ({
   provinceCities,
   categoryStats,
+  diamondListings,
+  goldListings,
+  silverListings,
 }) => {
   return (
     <>
@@ -33,6 +43,9 @@ const Home: NextPageWithLayout<HomeProps> = ({
             <HomepageTemplate
               cities={provinceCities}
               categoryStats={categoryStats}
+              diamondListings={diamondListings}
+              goldListings={goldListings}
+              silverListings={silverListings}
             />
           </div>
           <AiChatWidget position='bottom-right' />
@@ -62,7 +75,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       PROVINCE_CODE.DONG_NAI,
     ]
 
-    const [provinceStatsResponse, categoryStatsResponse] = await Promise.all([
+    const [
+      provinceStatsResponse,
+      categoryStatsResponse,
+      diamondListingsResponse,
+      goldListingsResponse,
+      silverListingsResponse,
+    ] = await Promise.all([
       ListingService.getProvinceStats(
         {
           provinceIds: topProvinceIds,
@@ -85,15 +104,48 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
         serverInstance,
       ),
+      ListingService.search(
+        {
+          vipType: 'DIAMOND',
+          verified: true,
+          page: 1,
+          size: 10,
+        },
+        serverInstance,
+      ),
+      ListingService.search(
+        {
+          vipType: 'GOLD',
+          verified: true,
+          page: 1,
+          size: 10,
+        },
+        serverInstance,
+      ),
+      ListingService.search(
+        {
+          vipType: 'SILVER',
+          verified: true,
+          page: 1,
+          size: 10,
+        },
+        serverInstance,
+      ),
     ])
 
     const provinceCities = provinceStatsResponse?.data || []
     const categoryStats = categoryStatsResponse?.data || []
+    const diamondListings = diamondListingsResponse?.data?.listings || []
+    const goldListings = goldListingsResponse?.data?.listings || []
+    const silverListings = silverListingsResponse?.data?.listings || []
 
     return {
       props: {
         provinceCities,
         categoryStats,
+        diamondListings,
+        goldListings,
+        silverListings,
       },
     }
   } catch (error) {
