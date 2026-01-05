@@ -13,15 +13,22 @@ export {
 } from './membership.type'
 export type {
   CancelMembershipResponse,
+  ForfeitedBenefit,
+  GetAvailableUpgradesResponse,
   GetMembershipHistoryResponse,
   GetMyMembershipResponse,
   GetPackageByIdResponse,
   GetPackagesResponse,
+  GetUpgradePreviewResponse,
   Membership,
   MembershipBenefit,
+  NewBenefit,
   PurchaseMembershipRequest,
   PurchaseMembershipResponse,
   TransformedMembershipPlan,
+  UpgradePreview,
+  UpgradeRequest,
+  UpgradeResponse,
   UserBenefit,
   UserMembership,
 } from './membership.type'
@@ -36,6 +43,7 @@ export * from './vip-tier.type'
 export * from './exchange-rate.type'
 export * from './address.type'
 export * from './saved-listing.type'
+export * from './recently-viewed.type'
 
 export type {
   PropertyType,

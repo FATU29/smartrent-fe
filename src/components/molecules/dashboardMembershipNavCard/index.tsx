@@ -10,9 +10,13 @@ import {
   Shield,
   TrendingUp,
 } from 'lucide-react'
+import { useMyMembership } from '@/hooks/useMembership'
+import { useAuth } from '@/hooks/useAuth'
 
 const DashboardMembershipNavCard: React.FC = () => {
   const t = useTranslations('seller.dashboard.membership')
+  const { user } = useAuth()
+  const { data: membership } = useMyMembership(user?.userId)
 
   const features = [
     {
@@ -68,12 +72,22 @@ const DashboardMembershipNavCard: React.FC = () => {
           })}
         </div>
 
-        {/* CTA Button */}
+        {/* CTA Button - Always goes to register page (shows upgrade or purchase) */}
         <Link href='/sellernet/membership/register' className='block'>
           <Button className='w-full' size='lg' variant='default'>
-            <Sparkles className='mr-2 h-4 w-4' />
-            {t('viewPlans')}
-            <ArrowRight className='ml-2 h-4 w-4' />
+            {membership ? (
+              <>
+                <TrendingUp className='mr-2 h-4 w-4' />
+                {t('upgradeButton')}
+                <ArrowRight className='ml-2 h-4 w-4' />
+              </>
+            ) : (
+              <>
+                <Sparkles className='mr-2 h-4 w-4' />
+                {t('viewPlans')}
+                <ArrowRight className='ml-2 h-4 w-4' />
+              </>
+            )}
           </Button>
         </Link>
       </div>

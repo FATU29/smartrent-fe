@@ -89,6 +89,10 @@ export const PATHS = {
     MY_MEMBERSHIP: '/v1/memberships/my-membership',
     HISTORY: '/v1/memberships/history',
     CANCEL: '/v1/memberships/:userMembershipId',
+    // Upgrade endpoints
+    AVAILABLE_UPGRADES: '/v1/memberships/available-upgrades',
+    UPGRADE_PREVIEW: '/v1/memberships/upgrade-preview/:targetMembershipId',
+    INITIATE_UPGRADE: '/v1/memberships/initiate-upgrade',
   },
 
   // Push Details endpoints
@@ -211,5 +215,11 @@ export const PATHS = {
     MY_SAVED: '/v1/saved-listings/my-saved',
     CHECK: '/v1/saved-listings/check/:listingId',
     COUNT: '/v1/saved-listings/count',
+  },
+
+  // Recently Viewed endpoints
+  RECENTLY_VIEWED: {
+    GET: '/v1/recently-viewed',
+    SYNC: '/v1/recently-viewed/sync',
   },
 }

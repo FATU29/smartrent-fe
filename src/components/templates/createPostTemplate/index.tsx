@@ -145,6 +145,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       if (data.paymentRequired && data.paymentUrl) {
         // Clear any previous payment session storage
         sessionStorage.removeItem('pendingMembership')
+        sessionStorage.removeItem('pendingMembershipUpgrade')
 
         // Store listing info in session storage for tracking after payment callback
         const listingPaymentInfo = {

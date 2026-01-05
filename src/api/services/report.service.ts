@@ -27,8 +27,6 @@ export class ReportService {
         url: PATHS.REPORT.REASONS,
       })
 
-      console.log('Report reasons API response:', response)
-
       // The API returns data array directly
       if (response.data && Array.isArray(response.data)) {
         return {

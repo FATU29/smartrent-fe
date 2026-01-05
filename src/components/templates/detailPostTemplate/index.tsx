@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   ImageSlider,
@@ -20,6 +20,8 @@ import {
 import { useSimilarProperties } from '@/hooks/useListings/useSimilarProperties'
 import { mockPricingHistory } from '@/mock'
 import { PhoneClickDetailService } from '@/api/services'
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
+import { mapListingToRecentlyViewed } from '@/utils/recentlyViewed/mapper'
 
 export interface DetailPostTemplateProps {
   listing: ListingDetail
@@ -44,6 +46,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   onSimilarPropertyClick,
 }) => {
   const t = useTranslations()
+  const { addListing } = useRecentlyViewed()
 
   const {
     description,
@@ -51,12 +54,34 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     user,
     amenities,
     address,
-    listingId,
     vipType,
     locationPricing,
   } = listing || {}
 
+  // Memoize listingId to prevent effect from running on every render
+  const listingId = useMemo(() => listing?.listingId, [listing?.listingId])
+
   const mediaItems = media || []
+
+  // Track listing view - update timestamp every time user views a listing
+  useEffect(() => {
+    if (!listing || !listingId) return
+
+    try {
+      // Get thumbnail from media
+      const thumbnail =
+        mediaItems?.find((item) => item.mediaType === 'IMAGE' && item.url)
+          ?.url || null
+
+      // Map listing to recently viewed format
+      const recentlyViewedData = mapListingToRecentlyViewed(listing, thumbnail)
+
+      // Add to recently viewed (will update timestamp and move to top)
+      addListing(recentlyViewedData)
+    } catch (error) {
+      console.error('Failed to track listing view:', error)
+    }
+  }, [listingId, addListing]) // Only depend on listingId and addListing (addListing is now stable)
 
   const { longitude, latitude } = address || {}
 

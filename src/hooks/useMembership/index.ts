@@ -3,6 +3,9 @@ import { MembershipService } from '@/api/services'
 import type { PurchaseMembershipRequest } from '@/api/types/membership.type'
 import { redirectToPayment } from '@/utils/payment'
 
+// Export upgrade hooks
+export * from './useMembershipUpgrade'
+
 export const useMembershipPackages = () => {
   return useQuery({
     queryKey: ['memberships'],
