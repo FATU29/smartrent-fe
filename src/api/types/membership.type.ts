@@ -135,3 +135,62 @@ export interface TransformedMembershipPlan {
   }>
   readonly isBestSeller: boolean
 }
+
+// Upgrade types
+export interface ForfeitedBenefit {
+  readonly benefitType: string
+  readonly benefitName: string
+  readonly totalQuantity: number
+  readonly usedQuantity: number
+  readonly remainingQuantity: number
+  readonly estimatedValue: number
+}
+
+export interface NewBenefit {
+  readonly benefitType: string
+  readonly benefitName: string
+  readonly quantity: number
+  readonly description: string
+}
+
+export interface UpgradePreview {
+  readonly currentMembershipId?: number
+  readonly currentPackageName?: string
+  readonly currentPackageLevel?: string
+  readonly daysRemaining?: number
+  readonly targetMembershipId?: number
+  readonly targetPackageName?: string
+  readonly targetPackageLevel?: string
+  readonly targetDurationDays?: number
+  readonly targetPackagePrice?: number
+  readonly discountAmount?: number
+  readonly finalPrice?: number
+  readonly discountPercentage?: number
+  readonly forfeitedBenefits?: ForfeitedBenefit[]
+  readonly newBenefits?: NewBenefit[]
+  readonly eligible: boolean
+  readonly ineligibilityReason: string | null
+}
+
+export interface UpgradeRequest {
+  readonly targetMembershipId: number
+  readonly paymentProvider: PaymentProvider
+}
+
+export interface UpgradeResponse {
+  readonly transactionRef: string
+  readonly paymentUrl: string | null
+  readonly paymentProvider: string
+  readonly previousMembershipId: number
+  readonly newMembershipPackageId: number
+  readonly newPackageName: string
+  readonly newPackageLevel: string
+  readonly originalPrice: number
+  readonly discountAmount: number
+  readonly finalAmount: number
+  readonly status: 'PENDING_PAYMENT' | 'COMPLETED'
+  readonly message: string
+}
+
+export type GetAvailableUpgradesResponse = UpgradePreview[]
+export type GetUpgradePreviewResponse = UpgradePreview

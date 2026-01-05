@@ -49,6 +49,17 @@ interface StoredMembershipInfo {
   }>
 }
 
+interface StoredMembershipUpgradeInfo {
+  targetMembershipId: number
+  targetPackageName: string
+  targetPackageLevel: string
+  currentMembershipId?: number
+  currentPackageName?: string
+  discountAmount?: number
+  finalPrice?: number
+  transactionRef?: string | null
+}
+
 interface StoredListingInfo {
   title?: string
   vipType?: string
@@ -56,7 +67,7 @@ interface StoredListingInfo {
   transactionType: 'POST_FEE'
 }
 
-type PaymentType = 'membership' | 'listing'
+type PaymentType = 'membership' | 'membershipUpgrade' | 'listing'
 
 const PaymentResultPage: NextPage = () => {
   const t = useTranslations('paymentResultPage')
@@ -70,9 +81,24 @@ const PaymentResultPage: NextPage = () => {
   const [paymentType, setPaymentType] = useState<PaymentType | null>(null)
 
   useEffect(() => {
-    // Retrieve membership info from session storage
+    // Retrieve membership upgrade info from session storage (check first - upgrade takes priority)
+    const storedUpgrade = sessionStorage.getItem('pendingMembershipUpgrade')
+    if (storedUpgrade) {
+      try {
+        // Verify it's valid JSON (we don't need to store it, just check if it exists)
+        JSON.parse(storedUpgrade) as StoredMembershipUpgradeInfo
+        setPaymentType('membershipUpgrade')
+        // Clear other info when upgrade payment is detected
+        setMembershipInfo(null)
+        setListingInfo(null)
+      } catch (error) {
+        console.error('Error parsing stored membership upgrade:', error)
+      }
+    }
+
+    // Retrieve membership purchase info from session storage
     const storedMembership = sessionStorage.getItem('pendingMembership')
-    if (storedMembership) {
+    if (storedMembership && !storedUpgrade) {
       try {
         const parsedMembership = JSON.parse(
           storedMembership,
@@ -88,7 +114,7 @@ const PaymentResultPage: NextPage = () => {
 
     // Retrieve listing creation info from session storage
     const storedListing = sessionStorage.getItem('pendingListingCreation')
-    if (storedListing) {
+    if (storedListing && !storedUpgrade && !storedMembership) {
       try {
         const parsedListing = JSON.parse(storedListing) as StoredListingInfo
         setListingInfo(parsedListing)
@@ -163,6 +189,7 @@ const PaymentResultPage: NextPage = () => {
               })
               // Clear stored info on cancellation
               sessionStorage.removeItem('pendingMembership')
+              sessionStorage.removeItem('pendingMembershipUpgrade')
               sessionStorage.removeItem('pendingListingCreation')
             } else if (isSuccess) {
               // Determine success message based on payment type
@@ -171,6 +198,8 @@ const PaymentResultPage: NextPage = () => {
                 successMessage = t('success.messageListing')
               } else if (paymentType === 'membership') {
                 successMessage = t('success.messageMembership')
+              } else if (paymentType === 'membershipUpgrade') {
+                successMessage = t('success.messageMembershipUpgrade')
               }
 
               setResult({
@@ -181,6 +210,7 @@ const PaymentResultPage: NextPage = () => {
               })
               // Clear stored info on success
               sessionStorage.removeItem('pendingMembership')
+              sessionStorage.removeItem('pendingMembershipUpgrade')
               sessionStorage.removeItem('pendingListingCreation')
             } else {
               const errorMessage = getVNPayResponseMessage(
@@ -194,6 +224,7 @@ const PaymentResultPage: NextPage = () => {
               })
               // Clear stored info on failure
               sessionStorage.removeItem('pendingMembership')
+              sessionStorage.removeItem('pendingMembershipUpgrade')
               sessionStorage.removeItem('pendingListingCreation')
             }
           } else {
@@ -204,6 +235,7 @@ const PaymentResultPage: NextPage = () => {
               transactionInfo,
             })
             sessionStorage.removeItem('pendingMembership')
+            sessionStorage.removeItem('pendingMembershipUpgrade')
             sessionStorage.removeItem('pendingListingCreation')
           }
         } else {
@@ -214,6 +246,7 @@ const PaymentResultPage: NextPage = () => {
             transactionInfo,
           })
           sessionStorage.removeItem('pendingMembership')
+          sessionStorage.removeItem('pendingMembershipUpgrade')
           sessionStorage.removeItem('pendingListingCreation')
         }
       } catch (error) {
@@ -226,6 +259,7 @@ const PaymentResultPage: NextPage = () => {
               : t('failed.errorProcessing'),
         })
         sessionStorage.removeItem('pendingMembership')
+        sessionStorage.removeItem('pendingMembershipUpgrade')
         sessionStorage.removeItem('pendingListingCreation')
       }
     }

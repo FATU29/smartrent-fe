@@ -1680,13 +1680,88 @@
     "errors": {
       "loadFailed": "Failed to load packages",
       "loginRequired": "Please login to continue",
-      "purchaseFailed": "An error occurred while registering the package"
+      "purchaseFailed": "An error occurred while registering the package",
+      "alreadyHasMembership": "You already have an active membership. Please use the upgrade feature instead."
     },
     "success": {
       "purchaseSuccess": "Package registered successfully!"
     },
     "loading": {
       "fetchingData": "Loading data..."
+    },
+    "currentPlan": "Current Plan",
+    "packageLevel": "Package Level",
+    "status": "Status",
+    "daysRemaining": "Days Remaining",
+    "days": "days",
+    "upgradeButton": "Upgrade Membership",
+    "purchaseButton": "Purchase Membership",
+    "noMembership": "You don't have an active membership yet.",
+    "alreadyHasMembership": "You already have an active membership. Redirecting to upgrade page..."
+  },
+  "membershipUpgrade": {
+    "title": "Upgrade Your Membership",
+    "subtitle": "Choose a higher-tier membership and get a discount based on your remaining membership time.",
+    "savePercent": "Save {percent}%",
+    "daysRemaining": "{days} days remaining in your current plan",
+    "upgradingFrom": "Upgrade from {currentPlan}",
+    "originalPrice": "Original Price",
+    "discount": "Your Discount",
+    "finalPrice": "You Pay",
+    "newBenefits": "New Benefits",
+    "forfeitedBenefits": "Benefits You'll Forfeit",
+    "remaining": "remaining",
+    "moreForfeited": "more benefits",
+    "andMore": "+{count} more benefits",
+    "upgradeButton": "Upgrade Now",
+    "currentMembership": {
+      "title": "Current Membership",
+      "message": "You are currently on {planName} with {daysRemaining} days remaining."
+    },
+    "noMembership": {
+      "title": "No Active Membership",
+      "message": "You need an active membership to upgrade. Please purchase a membership first.",
+      "action": "Purchase Membership"
+    },
+    "noUpgrades": {
+      "title": "No Upgrade Options Available",
+      "message": "You are already at the highest tier or there are no upgrade options available at this time.",
+      "backButton": "Back to Packages",
+      "info1": "You're at the Top Tier",
+      "info1Desc": "You already have access to all premium features and benefits.",
+      "info2": "Maximum Benefits Unlocked",
+      "info2Desc": "Enjoy all the advanced features available in your current plan."
+    },
+    "errors": {
+      "loadFailedTitle": "Failed to Load Upgrades",
+      "loadFailed": "Unable to load upgrade options. Please try again later.",
+      "invalidSelection": "Invalid upgrade selection. Please try again.",
+      "upgradeFailed": "Failed to initiate upgrade. Please try again."
+    },
+    "preview": {
+      "title": "Upgrade Preview",
+      "description": "Review the details of your membership upgrade before confirming.",
+      "currentPlan": "Current Plan",
+      "newPlan": "New Plan",
+      "daysRemaining": "{days} days remaining",
+      "duration": "{days} days duration",
+      "pricing": "Pricing",
+      "originalPrice": "Original Price",
+      "yourDiscount": "Your Discount",
+      "finalPrice": "Final Price",
+      "free": "FREE",
+      "forfeitedBenefitsTitle": "Benefits You'll Forfeit",
+      "remaining": "remaining",
+      "newBenefitsTitle": "New Benefits You'll Receive",
+      "freeUpgradeTitle": "Free Upgrade!",
+      "freeUpgradeMessage": "Your discount covers the full upgrade cost. No payment required!",
+      "cancel": "Cancel",
+      "confirmUpgrade": "Proceed to Payment",
+      "confirmFreeUpgrade": "Confirm Free Upgrade",
+      "processing": "Processing...",
+      "close": "Close",
+      "notEligibleTitle": "Upgrade Not Available",
+      "notEligibleMessage": "This upgrade option is not available for your current membership."
     }
   },
   "membershipPlans": {
@@ -2027,7 +2102,10 @@
       "membership": {
         "title": "My Membership",
         "noMembership": "You don't have an active membership",
+        "noMembershipDescription": "Upgrade to a membership plan to unlock premium features",
         "upgradeNow": "Upgrade Now",
+        "upgradeButton": "Upgrade Membership",
+        "purchasePlans": "Purchase Plans",
         "manageMembership": "Manage Membership",
         "packageLevel": "Package Level",
         "validUntil": "Valid Until",
@@ -2861,6 +2939,7 @@
       "title": "Payment Successful!",
       "messageListing": "Payment completed! Your VIP listing has been created.",
       "messageMembership": "Payment completed! Your membership has been activated.",
+      "messageMembershipUpgrade": "Payment completed! Your membership has been upgraded successfully.",
       "messageDefault": "Payment completed successfully!"
     },
     "failed": {

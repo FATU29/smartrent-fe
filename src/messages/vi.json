@@ -1975,13 +1975,88 @@
     "errors": {
       "loadFailed": "Không thể tải danh sách gói",
       "loginRequired": "Vui lòng đăng nhập để tiếp tục",
-      "purchaseFailed": "Đã có lỗi xảy ra khi đăng ký gói"
+      "purchaseFailed": "Đã có lỗi xảy ra khi đăng ký gói",
+      "alreadyHasMembership": "Bạn đã có gói hội viên đang hoạt động. Vui lòng sử dụng tính năng nâng cấp."
     },
     "success": {
       "purchaseSuccess": "Đã đăng ký gói thành công!"
     },
     "loading": {
       "fetchingData": "Đang tải dữ liệu..."
+    },
+    "currentPlan": "Gói hiện tại",
+    "packageLevel": "Cấp độ gói",
+    "status": "Trạng thái",
+    "daysRemaining": "Số ngày còn lại",
+    "days": "ngày",
+    "upgradeButton": "Nâng cấp gói",
+    "purchaseButton": "Mua gói hội viên",
+    "noMembership": "Bạn chưa có gói hội viên nào.",
+    "alreadyHasMembership": "Bạn đã có gói hội viên đang hoạt động. Đang chuyển đến trang nâng cấp..."
+  },
+  "membershipUpgrade": {
+    "title": "Nâng cấp gói hội viên",
+    "subtitle": "Chọn gói hội viên cao cấp hơn và nhận chiết khấu dựa trên thời gian còn lại của gói hiện tại.",
+    "savePercent": "Tiết kiệm {percent}%",
+    "daysRemaining": "Còn {days} ngày trong gói hiện tại",
+    "upgradingFrom": "Nâng cấp từ {currentPlan}",
+    "originalPrice": "Giá gốc",
+    "discount": "Chiết khấu của bạn",
+    "finalPrice": "Bạn thanh toán",
+    "newBenefits": "Quyền lợi mới",
+    "forfeitedBenefits": "Quyền lợi bạn sẽ mất",
+    "remaining": "còn lại",
+    "moreForfeited": "quyền lợi khác",
+    "andMore": "+{count} quyền lợi khác",
+    "upgradeButton": "Nâng cấp ngay",
+    "currentMembership": {
+      "title": "Gói hội viên hiện tại",
+      "message": "Bạn đang sử dụng gói {planName} với {daysRemaining} ngày còn lại."
+    },
+    "noMembership": {
+      "title": "Chưa có gói hội viên",
+      "message": "Bạn cần có gói hội viên đang hoạt động để nâng cấp. Vui lòng mua gói hội viên trước.",
+      "action": "Mua gói hội viên"
+    },
+    "noUpgrades": {
+      "title": "Không có tùy chọn nâng cấp",
+      "message": "Bạn đã ở gói cao nhất hoặc hiện không có tùy chọn nâng cấp nào.",
+      "backButton": "Quay lại danh sách gói",
+      "info1": "Bạn đang ở gói cao nhất",
+      "info1Desc": "Bạn đã có quyền truy cập vào tất cả các tính năng và lợi ích cao cấp.",
+      "info2": "Lợi ích tối đa đã được mở khóa",
+      "info2Desc": "Tận hưởng tất cả các tính năng nâng cao có sẵn trong gói hiện tại của bạn."
+    },
+    "errors": {
+      "loadFailedTitle": "Không thể tải tùy chọn nâng cấp",
+      "loadFailed": "Không thể tải các tùy chọn nâng cấp. Vui lòng thử lại sau.",
+      "invalidSelection": "Lựa chọn nâng cấp không hợp lệ. Vui lòng thử lại.",
+      "upgradeFailed": "Không thể thực hiện nâng cấp. Vui lòng thử lại."
+    },
+    "preview": {
+      "title": "Xem trước nâng cấp",
+      "description": "Xem lại chi tiết nâng cấp gói hội viên trước khi xác nhận.",
+      "currentPlan": "Gói hiện tại",
+      "newPlan": "Gói mới",
+      "daysRemaining": "Còn {days} ngày",
+      "duration": "Thời hạn {days} ngày",
+      "pricing": "Giá cả",
+      "originalPrice": "Giá gốc",
+      "yourDiscount": "Chiết khấu của bạn",
+      "finalPrice": "Giá cuối cùng",
+      "free": "MIỄN PHÍ",
+      "forfeitedBenefitsTitle": "Quyền lợi bạn sẽ mất",
+      "remaining": "còn lại",
+      "newBenefitsTitle": "Quyền lợi mới bạn sẽ nhận",
+      "freeUpgradeTitle": "Nâng cấp miễn phí!",
+      "freeUpgradeMessage": "Chiết khấu của bạn đủ để thanh toán toàn bộ chi phí nâng cấp. Không cần thanh toán thêm!",
+      "cancel": "Hủy",
+      "confirmUpgrade": "Tiến hành thanh toán",
+      "confirmFreeUpgrade": "Xác nhận nâng cấp miễn phí",
+      "processing": "Đang xử lý...",
+      "close": "Đóng",
+      "notEligibleTitle": "Không thể nâng cấp",
+      "notEligibleMessage": "Tùy chọn nâng cấp này không khả dụng cho gói hội viên hiện tại của bạn."
     }
   },
   "membershipPlans": {
@@ -2028,7 +2103,10 @@
       "membership": {
         "title": "Gói hội viên của tôi",
         "noMembership": "Bạn chưa có gói hội viên đang hoạt động",
+        "noMembershipDescription": "Nâng cấp lên gói hội viên để mở khóa các tính năng cao cấp",
         "upgradeNow": "Nâng cấp ngay",
+        "upgradeButton": "Nâng cấp gói hội viên",
+        "purchasePlans": "Mua gói",
         "manageMembership": "Quản lý gói hội viên",
         "packageLevel": "Cấp độ gói",
         "validUntil": "Có hiệu lực đến",
@@ -2631,6 +2709,7 @@
       "title": "Thanh toán thành công!",
       "messageListing": "Thanh toán hoàn tất! Tin VIP của bạn đã được tạo.",
       "messageMembership": "Thanh toán hoàn tất! Tài khoản hội viên của bạn đã được kích hoạt.",
+      "messageMembershipUpgrade": "Thanh toán hoàn tất! Gói hội viên của bạn đã được nâng cấp thành công.",
       "messageDefault": "Thanh toán hoàn tất thành công!"
     },
     "failed": {
