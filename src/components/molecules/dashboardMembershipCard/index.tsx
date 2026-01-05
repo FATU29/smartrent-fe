@@ -367,6 +367,36 @@ const DashboardMembershipCard: React.FC = () => {
             </div>
           </motion.div>
         )}
+
+        {/* Upgrade/Purchase CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className='pt-4 border-t'
+        >
+          <Link href='/sellernet/membership/register' className='block'>
+            <Button
+              variant={isActive ? 'outline' : 'default'}
+              className='w-full gap-2'
+              size='lg'
+            >
+              {isActive ? (
+                <>
+                  <TrendingUp className='h-4 w-4' />
+                  {t('upgradeButton')}
+                  <ArrowRight className='h-4 w-4' />
+                </>
+              ) : (
+                <>
+                  <Sparkles className='h-4 w-4' />
+                  {t('purchasePlans')}
+                  <ArrowRight className='h-4 w-4' />
+                </>
+              )}
+            </Button>
+          </Link>
+        </motion.div>
       </CardContent>
     </Card>
   )

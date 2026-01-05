@@ -13,15 +13,22 @@ export {
 } from './membership.type'
 export type {
   CancelMembershipResponse,
+  ForfeitedBenefit,
+  GetAvailableUpgradesResponse,
   GetMembershipHistoryResponse,
   GetMyMembershipResponse,
   GetPackageByIdResponse,
   GetPackagesResponse,
+  GetUpgradePreviewResponse,
   Membership,
   MembershipBenefit,
+  NewBenefit,
   PurchaseMembershipRequest,
   PurchaseMembershipResponse,
   TransformedMembershipPlan,
+  UpgradePreview,
+  UpgradeRequest,
+  UpgradeResponse,
   UserBenefit,
   UserMembership,
 } from './membership.type'

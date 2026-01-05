@@ -89,6 +89,10 @@ export const PATHS = {
     MY_MEMBERSHIP: '/v1/memberships/my-membership',
     HISTORY: '/v1/memberships/history',
     CANCEL: '/v1/memberships/:userMembershipId',
+    // Upgrade endpoints
+    AVAILABLE_UPGRADES: '/v1/memberships/available-upgrades',
+    UPGRADE_PREVIEW: '/v1/memberships/upgrade-preview/:targetMembershipId',
+    INITIATE_UPGRADE: '/v1/memberships/initiate-upgrade',
   },
 
   // Push Details endpoints
