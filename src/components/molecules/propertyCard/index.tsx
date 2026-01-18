@@ -19,7 +19,6 @@ import {
   Bed,
   Bath,
   Square,
-  Star,
   Camera,
   Check,
   Home,
@@ -367,20 +366,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               )
             })()}
         </div>
-
-        {amenities && amenities.length > 0 && (
-          <Badge
-            className={classNames(
-              'absolute bg-yellow-500 text-white rounded-md shadow-sm flex items-center gap-1 z-10',
-              isCompact
-                ? 'top-1 right-8 text-[10px] px-1 py-0.5'
-                : 'top-2 right-10 sm:top-3 sm:right-12 text-xs px-2 py-1',
-            )}
-          >
-            <Star className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
-            {!isCompact && t('homePage.property.featured')}
-          </Badge>
-        )}
       </div>
     )
   }

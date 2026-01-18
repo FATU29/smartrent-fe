@@ -71,6 +71,21 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
 
   const handleFavorite = () => {}
 
+  const handleLinkClick = (e: React.MouseEvent) => {
+    // Prevent navigation if clicking on action buttons
+    const target = e.target as HTMLElement
+    const clickedButton =
+      target.closest('[data-action-button]') ||
+      target.closest('button') ||
+      target.closest('[role="button"]')
+
+    if (clickedButton) {
+      e.preventDefault()
+      e.stopPropagation()
+      return false
+    }
+  }
+
   // Show skeleton while loading
   if (isLoading) {
     return (
@@ -147,6 +162,7 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
               <Link
                 href={`/listing-detail/${listing.listingId}`}
                 className='block h-full'
+                onClick={handleLinkClick}
               >
                 <PropertyCard listing={listing} onFavorite={handleFavorite} />
               </Link>

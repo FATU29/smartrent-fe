@@ -46,7 +46,9 @@ const CompareToggleBtn: React.FC<CompareToggleBtnProps> = ({
   )
 
   const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault()
     e.stopPropagation()
+    e.nativeEvent.stopImmediatePropagation()
 
     if (!isMounted) return
 
@@ -89,6 +91,7 @@ const CompareToggleBtn: React.FC<CompareToggleBtnProps> = ({
         className,
       )}
       onClick={handleToggle}
+      data-action-button='true'
     >
       {isInList ? (
         <CheckCircle className='w-4 h-4' />

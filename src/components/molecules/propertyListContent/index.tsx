@@ -40,9 +40,23 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
     },
   })
 
-  const handlePropertyClick = useCallback(
-    (property: ListingDetail) => {
-      onPropertyClick?.(property)
+  const handleLinkClick = useCallback(
+    (e: React.MouseEvent, property: ListingDetail) => {
+      // Prevent navigation if clicking on action buttons
+      const target = e.target as HTMLElement
+      const clickedButton =
+        target.closest('[data-action-button]') ||
+        target.closest('button') ||
+        target.closest('[role="button"]')
+
+      if (clickedButton) {
+        e.preventDefault()
+        e.stopPropagation()
+        return false
+      }
+      if (onPropertyClick) {
+        onPropertyClick(property)
+      }
     },
     [onPropertyClick],
   )
@@ -84,19 +98,23 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
       <div className='space-y-3 md:space-y-4'>
         {items.map((property) =>
           onPropertyClick ? (
-            <PropertyCard
+            <div
               key={property.listingId}
-              listing={property}
-              onClick={handlePropertyClick}
-              onFavorite={handleFavorite}
-              className='compact'
-              imageLayout='top'
-            />
+              onClick={() => onPropertyClick(property)}
+            >
+              <PropertyCard
+                listing={property}
+                onFavorite={handleFavorite}
+                className='compact'
+                imageLayout='top'
+              />
+            </div>
           ) : (
             <Link
               key={property.listingId}
               href={`/listing-detail/${property.listingId}`}
               className='block'
+              onClick={(e) => handleLinkClick(e, property)}
             >
               <PropertyCard
                 listing={property}

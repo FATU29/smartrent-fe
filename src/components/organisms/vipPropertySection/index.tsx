@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import PropertyCard from '@/components/molecules/propertyCard'
 import {
   Carousel,
@@ -11,7 +12,6 @@ import {
 } from '@/components/atoms/carousel'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { ListingDetail, VipType } from '@/api/types'
-import Link from 'next/link'
 import { Crown, Sparkles, Medal, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -84,6 +84,21 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
   }, [api])
 
   const handleFavorite = () => {}
+
+  const handleLinkClick = (e: React.MouseEvent) => {
+    // Prevent navigation if clicking on action buttons
+    const target = e.target as HTMLElement
+    const clickedButton =
+      target.closest('[data-action-button]') ||
+      target.closest('button') ||
+      target.closest('[role="button"]')
+
+    if (clickedButton) {
+      e.preventDefault()
+      e.stopPropagation()
+      return false
+    }
+  }
 
   if (isLoading) {
     const skeletonItems = Array.from({ length: 4 })
@@ -178,6 +193,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
               <Link
                 href={`/listing-detail/${listing.listingId}`}
                 className='block h-full'
+                onClick={handleLinkClick}
               >
                 <PropertyCard listing={listing} onFavorite={handleFavorite} />
               </Link>

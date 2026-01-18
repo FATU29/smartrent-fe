@@ -47,6 +47,7 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    e.nativeEvent.stopImmediatePropagation()
 
     if (!listingId || disabled || isLoading) return
 
@@ -98,6 +99,7 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
                 className,
               )}
               aria-label={isSaved ? t('tooltip.saved') : t('tooltip.save')}
+              data-action-button='true'
             >
               {buttonContent}
             </button>
@@ -149,6 +151,7 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
       disabled={disabled || isLoading || !listingId}
       className={cn(className)}
       aria-label={isSaved ? t('tooltip.saved') : t('tooltip.save')}
+      data-action-button='true'
     >
       {buttonContent}
     </Button>

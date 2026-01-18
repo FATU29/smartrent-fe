@@ -24,11 +24,27 @@ const PropertyList: React.FC<PropertyListProps> = ({
 
   const handleFavorite = () => {}
 
+  const handleLinkClick = (e: React.MouseEvent) => {
+    // Prevent navigation if clicking on buttons or interactive elements
+    const target = e.target as HTMLElement
+    const clickedButton =
+      target.closest('[data-action-button]') ||
+      target.closest('button') ||
+      target.closest('[role="button"]')
+
+    if (clickedButton) {
+      e.preventDefault()
+      e.stopPropagation()
+      return false
+    }
+  }
+
   const PropertyItem = (property: ListingDetail) => (
     <Link
       key={property.listingId}
       href={`/listing-detail/${property.listingId}`}
       className='block h-full'
+      onClick={handleLinkClick}
     >
       <PropertyCard listing={property} onFavorite={handleFavorite} />
     </Link>
