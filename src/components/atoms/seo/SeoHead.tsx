@@ -9,6 +9,15 @@ const DEFAULTS = {
   siteName: 'SmartRent',
 } as const
 
+interface PreloadImage {
+  href: string
+  as: 'image'
+  type?: string
+  imageSrcSet?: string
+  imageSizes?: string
+  fetchPriority?: 'high' | 'low' | 'auto'
+}
+
 /**
  * Checks if a string is a valid non-empty value
  * @param value - The value to check
@@ -70,7 +79,9 @@ function isValidImageUrl(url?: string | null): url is string {
   }
 }
 
-export default function SeoHead(props: SeoProps = {}) {
+export default function SeoHead(
+  props: SeoProps & { preloadImages?: PreloadImage[] } = {},
+) {
   const router = useRouter()
 
   const fallbackPath = isValidString(router.asPath) ? router.asPath : '/'
@@ -81,6 +92,7 @@ export default function SeoHead(props: SeoProps = {}) {
   const description = isValidString(props.description)
     ? props.description
     : DEFAULTS.description
+  const preloadImages = props.preloadImages || []
 
   // Open Graph with validation
   const og = props.openGraph || {}
@@ -126,6 +138,20 @@ export default function SeoHead(props: SeoProps = {}) {
 
   return (
     <Head>
+      {/* Preload Critical Images */}
+      {preloadImages.map((img, idx) => (
+        <link
+          key={`preload-img-${idx}`}
+          rel='preload'
+          as={img.as}
+          href={img.href}
+          {...(img.type && { type: img.type })}
+          {...(img.imageSrcSet && { imageSrcSet: img.imageSrcSet })}
+          {...(img.imageSizes && { imageSizes: img.imageSizes })}
+          {...(img.fetchPriority && { fetchPriority: img.fetchPriority })}
+        />
+      ))}
+
       {/* Basic Meta Tags */}
       <title>{title}</title>
       <meta name='description' content={description} />

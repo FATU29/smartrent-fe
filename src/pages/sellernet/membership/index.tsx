@@ -1,3 +1,4 @@
+import { SELLERNET_ROUTES } from '@/constants'
 import React, { useMemo } from 'react'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SellernetLayout from '@/components/layouts/sellernet/SellernetLayout'
@@ -22,7 +23,7 @@ const MembershipPage: NextPageWithLayout = () => {
   const pageTitle = useMemo(() => `${tPage('title')} – Sellernet`, [tPage])
 
   const handleManageMembership = () => {
-    router.push('/sellernet/membership/register')
+    router.push(SELLERNET_ROUTES.MEMBERSHIP_REGISTER)
   }
 
   if (isLoading) {

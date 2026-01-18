@@ -96,10 +96,9 @@ const ResidentialPropertiesPage: NextPageWithLayout<
       filters: ListingFilterRequest,
     ): Promise<ApiResponse<ListingSearchResponse<ListingDetail>>> => {
       const backendRequest = mapFrontendToBackendRequest(filters)
+      pushFiltersToQuery(filters)
 
       const backendResponse = await ListingService.search(backendRequest)
-
-      pushFiltersToQuery(filters)
 
       if (!backendResponse.success || !backendResponse.data) {
         return {

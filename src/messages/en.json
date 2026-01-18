@@ -1708,12 +1708,21 @@
     "originalPrice": "Original Price",
     "discount": "Your Discount",
     "finalPrice": "You Pay",
+    "youSave": "You save",
     "newBenefits": "New Benefits",
     "forfeitedBenefits": "Benefits You'll Forfeit",
     "remaining": "remaining",
     "moreForfeited": "more benefits",
     "andMore": "+{count} more benefits",
     "upgradeButton": "Upgrade Now",
+    "remainingTimeExplanation": "Your current membership has this many days left. Your discount is calculated based on this time.",
+    "forfeitedExplanation": "When you upgrade, these benefits from your current plan will be replaced by the new plan's benefits.",
+    "discountExplanation": {
+      "title": "Smart Discount Applied",
+      "description": "You have {days} days remaining in your current plan. We're giving you a {percent}% discount so you don't lose that value when upgrading!",
+      "howItWorks": "Your discount is calculated based on the unused time in your current membership. The more time remaining, the bigger your discount.",
+      "savings": "Total savings: {amount}"
+    },
     "currentMembership": {
       "title": "Current Membership",
       "message": "You are currently on {planName} with {daysRemaining} days remaining."

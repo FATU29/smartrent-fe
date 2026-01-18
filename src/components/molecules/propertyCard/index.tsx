@@ -98,8 +98,11 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onClick?.(listing)
+    // Only trigger onClick if it's provided and not wrapped in Link
+    if (onClick) {
+      e.stopPropagation()
+      onClick(listing)
+    }
   }
 
   const isCompact = className?.includes('compact')
@@ -161,7 +164,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     return (
       <div className='flex gap-2'>
         {/* Main Image */}
-        <div className='relative flex-1 aspect-video overflow-hidden rounded-lg'>
+        <div className='relative flex-1 aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg'>
           {assetsVideo && currentImageIndex === 0 ? (
             isYouTube(assetsVideo) ? (
               <div className='w-full h-full'>
@@ -238,7 +241,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
         {/* Thumbnails */}
         {thumbnails.length > 1 && (
-          <div className='flex flex-col gap-1.5 w-16 md:w-20'>
+          <div className='flex flex-col gap-1.5 w-12 md:w-14'>
             {thumbnails.slice(0, 3).map((img, idx) => (
               <button
                 key={idx}
@@ -394,7 +397,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             : 'flex flex-col',
           className,
         )}
-        onClick={handleClick}
+        onClick={onClick ? handleClick : undefined}
       >
         {/* Image Gallery - Top Layout */}
         {isTopLayout && <div className='p-2 pb-1'>{renderImageGallery()}</div>}

@@ -1,3 +1,4 @@
+import { SELLER_ROUTES } from '@/constants'
 import React from 'react'
 import { useCreatePostSteps } from './hooks/useCreatePostSteps'
 import { useCreatePostValidation } from './hooks/useCreatePostValidation'
@@ -17,6 +18,7 @@ import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
 import { redirectToPayment } from '@/utils/payment'
 import { useUpdateDraft } from '@/hooks/useListings/useUpdateDraft'
+import { useDeleteDraft } from '@/hooks/useListings/useDeleteDraft'
 
 interface CreatePostTemplateProps {
   className?: string
@@ -56,6 +58,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const tDraft = useTranslations('createPost')
 
   const { mutate: updateDraft, isPending: isUpdatingDraft } = useUpdateDraft()
+  const { mutateAsync: deleteDraft } = useDeleteDraft()
 
   React.useEffect(() => {
     if (draftId && propertyInfo && Object.keys(propertyInfo).length > 1) {
@@ -154,6 +157,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           durationDays: propertyInfo?.durationDays,
           transactionId: data.transactionId,
           transactionType: 'POST_FEE',
+          draftId: draftId || null, // Store draftId to delete after successful payment
         }
         sessionStorage.setItem(
           'pendingListingCreation',
@@ -168,6 +172,15 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       }
 
       // Listing created successfully without payment (used quota or free NORMAL listing)
+      // If recreating from draft, delete the draft
+      if (draftId) {
+        try {
+          await deleteDraft(draftId)
+        } catch (error) {
+          console.error('Failed to delete draft after listing creation:', error)
+        }
+      }
+
       setIsSubmitSuccess(true)
       setSuccessTitle(t('successTitle'))
       setSuccessDesc(t('successDescription'))
@@ -276,7 +289,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         onOk={async () => {
           setIsSubmitSuccess(true) // Set context flag before navigation
           resetPropertyInfo() // Clear context before navigation
-          await router.push('/seller/listings')
+          await router.push(SELLER_ROUTES.LISTINGS)
         }}
       />
       {/* Error Dialog */}

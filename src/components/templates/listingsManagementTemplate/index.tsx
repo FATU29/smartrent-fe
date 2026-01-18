@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/router'
 import { ListingStatusFilterResponsive } from '@/components/molecules/listings/ListingStatusFilterResponsive'
 import { ListingEmptyState } from '@/components/organisms/listings/ListingEmptyState'
 import { ListingToolbar } from '@/components/molecules/listings/ListingToolbar'
@@ -30,6 +31,7 @@ import {
 } from '@/api/types'
 
 const ListingsWithPagination = () => {
+  const router = useRouter()
   const {
     items: listings,
     isLoading,
@@ -86,7 +88,7 @@ const ListingsWithPagination = () => {
           <ListingsList
             listings={listings}
             onEditListing={(listing) => {
-              window.location.href = `/seller/update-post/${listing.listingId}`
+              router.push(`/seller/update-post/${listing.listingId}`)
             }}
             onPromoteListing={() => {
               // TODO: Implement promote listing

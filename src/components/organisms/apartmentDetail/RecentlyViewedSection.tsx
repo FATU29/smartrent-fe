@@ -2,7 +2,7 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import PropertyCard from '@/components/molecules/propertyCard'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 import type { ListingDetail } from '@/api/types'
 import { mapRecentlyViewedToListing } from '@/utils/recentlyViewed/mapper'
 import {
@@ -25,7 +25,6 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
   currentListingId,
 }) => {
   const t = useTranslations()
-  const router = useRouter()
   const { recentlyViewed, isLoading, refresh } = useRecentlyViewed()
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
@@ -71,10 +70,6 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
   ) as ListingDetail[]
 
   const handleFavorite = () => {}
-
-  const handleOnClick = (listing: ListingDetail) => {
-    router.push(`/listing-detail/${listing.listingId}`)
-  }
 
   // Show skeleton while loading
   if (isLoading) {
@@ -149,11 +144,12 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
               key={listing.listingId}
               className='basis-full sm:basis-1/2 lg:basis-1/3'
             >
-              <PropertyCard
-                listing={listing}
-                onFavorite={handleFavorite}
-                onClick={() => handleOnClick(listing)}
-              />
+              <Link
+                href={`/listing-detail/${listing.listingId}`}
+                className='block h-full'
+              >
+                <PropertyCard listing={listing} onFavorite={handleFavorite} />
+              </Link>
             </CarouselItem>
           ))}
         </CarouselContent>

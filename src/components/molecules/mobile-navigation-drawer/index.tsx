@@ -1,3 +1,4 @@
+import { SELLER_ROUTES } from '@/constants'
 import React, { useState, useEffect } from 'react'
 import {
   X,
@@ -13,6 +14,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import { Avatar } from '@/components/atoms/avatar'
+import Link from 'next/link'
 import NavigationMenu from '@/components/molecules/navigation-menu'
 import { NavigationItemData } from '@/components/atoms/navigation-item'
 import LanguageSwitch from '@/components/molecules/languageSwitch'
@@ -177,29 +179,31 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
 
               {/* User Actions */}
               <div className='flex flex-col gap-2'>
-                <Button
-                  variant='secondary'
-                  size='sm'
-                  className='w-full justify-start gap-2'
-                  onClick={() => {
-                    router.push(PUBLIC_ROUTES.MAPS)
-                    setIsOpen(false)
-                  }}
+                <Link
+                  href={PUBLIC_ROUTES.MAPS}
+                  onClick={() => setIsOpen(false)}
                 >
-                  <MapIcon className='h-4 w-4' />
-                  {t('navigation.maps')}
-                </Button>
-                <Button
-                  variant='default'
-                  size='sm'
-                  className='w-full justify-start gap-2'
-                  onClick={() => {
-                    router.push('/seller/create-post')
-                    setIsOpen(false)
-                  }}
+                  <Button
+                    variant='secondary'
+                    size='sm'
+                    className='w-full justify-start gap-2'
+                  >
+                    <MapIcon className='h-4 w-4' />
+                    {t('navigation.maps')}
+                  </Button>
+                </Link>
+                <Link
+                  href={SELLER_ROUTES.CREATE}
+                  onClick={() => setIsOpen(false)}
                 >
-                  {t('common.createPost')}
-                </Button>
+                  <Button
+                    variant='default'
+                    size='sm'
+                    className='w-full justify-start gap-2'
+                  >
+                    {t('common.createPost')}
+                  </Button>
+                </Link>
                 <Button
                   variant='ghost'
                   size='sm'
@@ -229,31 +233,30 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
             </div>
           ) : (
             <div className='flex flex-col gap-2'>
-              <Button
-                variant='secondary'
-                size='sm'
-                className='w-full justify-start gap-2'
-                onClick={() => {
-                  router.push(PUBLIC_ROUTES.MAPS)
-                  setIsOpen(false)
-                }}
+              <Link href={PUBLIC_ROUTES.MAPS} onClick={() => setIsOpen(false)}>
+                <Button
+                  variant='secondary'
+                  size='sm'
+                  className='w-full justify-start gap-2'
+                >
+                  <MapIcon className='h-4 w-4' />
+                  {t('navigation.maps')}
+                </Button>
+              </Link>
+              <Link
+                href={SELLER_ROUTES.CREATE}
+                onClick={() => setIsOpen(false)}
               >
-                <MapIcon className='h-4 w-4' />
-                {t('navigation.maps')}
-              </Button>
+                <Button
+                  variant='default'
+                  size='sm'
+                  className='w-full justify-start gap-2'
+                >
+                  {t('common.createPost')}
+                </Button>
+              </Link>
               <Button
-                variant='default'
-                size='sm'
-                className='w-full justify-start gap-2'
-                onClick={() => {
-                  router.push('/seller/create-post')
-                  setIsOpen(false)
-                }}
-              >
-                {t('common.createPost')}
-              </Button>
-              <Button
-                variant='default'
+                variant='outline'
                 size='sm'
                 className='w-full justify-start gap-2'
                 onClick={() => handleAuthClick('login')}

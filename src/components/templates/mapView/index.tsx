@@ -44,6 +44,13 @@ const MapContent: React.FC = () => {
     const zoom = map.getZoom()
     if (!bounds || !zoom) return
 
+    if (zoom < 3) {
+      setListings([])
+      setTotalCount(0)
+      setHasMore(false)
+      return
+    }
+
     setIsLoading(true)
     setError(null)
 
@@ -51,7 +58,6 @@ const MapContent: React.FC = () => {
       const ne = bounds.getNorthEast()
       const sw = bounds.getSouthWest()
 
-      // Extract optional filters from query params
       const { categoryId, vipType, verifiedOnly } = router.query
 
       const response = await ListingService.getMapBounds({

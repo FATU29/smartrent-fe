@@ -1,3 +1,4 @@
+import { SELLERNET_ROUTES } from '@/constants'
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import {
@@ -153,7 +154,7 @@ const DashboardMembershipCard: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Link href='/sellernet/membership/register'>
+            <Link href={SELLERNET_ROUTES.MEMBERSHIP_REGISTER}>
               <Button className='w-full' size='lg' variant='default'>
                 <Crown className='mr-2 h-4 w-4' />
                 {t('upgradeNow')}
@@ -375,7 +376,7 @@ const DashboardMembershipCard: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.8 }}
           className='pt-4 border-t'
         >
-          <Link href='/sellernet/membership/register' className='block'>
+          <Link href={SELLERNET_ROUTES.MEMBERSHIP_REGISTER} className='block'>
             <Button
               variant={isActive ? 'outline' : 'default'}
               className='w-full gap-2'

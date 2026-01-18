@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import type { NextPage } from 'next'
 import { useTranslations } from 'next-intl'
-import { PaymentService } from '@/api/services'
+import { PaymentService, ListingService } from '@/api/services'
+import MainLayout from '@/components/layouts/homePageLayout'
+import type { NextPageWithLayout } from '@/types/next-page'
 import {
   extractVNPayTransactionInfo,
   getVNPayResponseMessage,
@@ -65,11 +66,12 @@ interface StoredListingInfo {
   vipType?: string
   durationDays?: number
   transactionType: 'POST_FEE'
+  draftId?: string | number | null
 }
 
 type PaymentType = 'membership' | 'membershipUpgrade' | 'listing'
 
-const PaymentResultPage: NextPage = () => {
+const PaymentResultPage: NextPageWithLayout = () => {
   const t = useTranslations('paymentResultPage')
   const [result, setResult] = useState<PaymentResultState>({
     status: 'loading',
@@ -125,6 +127,7 @@ const PaymentResultPage: NextPage = () => {
         console.error('Error parsing stored listing:', error)
       }
     }
+
     const processPaymentResult = async () => {
       try {
         // ✅ CRITICAL: Use the RAW query string from window.location.search
@@ -208,6 +211,28 @@ const PaymentResultPage: NextPage = () => {
                 details: response.data,
                 transactionInfo,
               })
+
+              // Delete draft if payment was for listing creation from draft
+              if (paymentType === 'listing' && storedListing) {
+                try {
+                  const parsedListing = JSON.parse(
+                    storedListing,
+                  ) as StoredListingInfo
+                  if (parsedListing.draftId) {
+                    await ListingService.deleteDraft(parsedListing.draftId)
+                    console.log(
+                      '✅ Draft deleted successfully after payment:',
+                      parsedListing.draftId,
+                    )
+                  }
+                } catch (error) {
+                  console.error(
+                    '❌ Failed to delete draft after payment:',
+                    error,
+                  )
+                }
+              }
+
               // Clear stored info on success
               sessionStorage.removeItem('pendingMembership')
               sessionStorage.removeItem('pendingMembershipUpgrade')
@@ -698,6 +723,10 @@ const PaymentResultPage: NextPage = () => {
       </AnimatePresence>
     </div>
   )
+}
+
+PaymentResultPage.getLayout = function getLayout(page: React.ReactNode) {
+  return <MainLayout>{page}</MainLayout>
 }
 
 export default PaymentResultPage

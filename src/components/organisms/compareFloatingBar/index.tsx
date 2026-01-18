@@ -1,3 +1,4 @@
+import { PUBLIC_ROUTES } from '@/constants'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -205,7 +206,7 @@ const CompareFloatingBar: React.FC<CompareFloatingBarProps> = ({
                   : t('floatingBar.items_plural', { count })}
               </Badge>
 
-              <Link href='/compare'>
+              <Link href={PUBLIC_ROUTES.COMPARE}>
                 <Button size='sm' className='gap-2 shrink-0'>
                   {t('floatingBar.compareNow')}
                 </Button>

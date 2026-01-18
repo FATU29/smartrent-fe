@@ -1,13 +1,13 @@
 import React, { useCallback } from 'react'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useListContext } from '@/contexts/list'
 import PropertyCard from '@/components/molecules/propertyCard'
+import { PropertyCardSkeleton } from '@/components/molecules/propertyCard/PropertyCardSkeleton'
 import ListPagination from '@/contexts/list/index.pagination'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { Typography } from '@/components/atoms/typography'
-import { Skeleton } from '@/components/atoms/skeleton'
 import { ListingDetail } from '@/api/types'
 
 interface PropertyListContentProps {
@@ -19,7 +19,6 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
   onPropertyClick,
   onFavorite,
 }) => {
-  const router = useRouter()
   const t = useTranslations('propertiesPage')
   const { items, isLoading, pagination, loadMore } =
     useListContext<ListingDetail>()
@@ -43,13 +42,9 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
 
   const handlePropertyClick = useCallback(
     (property: ListingDetail) => {
-      if (onPropertyClick) {
-        onPropertyClick(property)
-      } else {
-        router.push(`/listing-detail/${property.listingId}`)
-      }
+      onPropertyClick?.(property)
     },
-    [onPropertyClick, router],
+    [onPropertyClick],
   )
 
   const handleFavorite = useCallback(
@@ -60,12 +55,8 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
   )
 
   const PropertySkeleton = (
-    <div className='space-y-4 md:space-y-6'>
-      {Array.from({ length: 5 }).map((_, index) => (
-        <div key={index} className='flex gap-4'>
-          <Skeleton className='w-full h-32 md:h-40 flex-shrink-0 rounded-lg' />
-        </div>
-      ))}
+    <div className='space-y-3 md:space-y-4'>
+      <PropertyCardSkeleton count={5} className='compact' imageLayout='top' />
     </div>
   )
 
@@ -91,16 +82,40 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
   return (
     <div className='space-y-4'>
       <div className='space-y-3 md:space-y-4'>
-        {items.map((property) => (
-          <PropertyCard
-            key={property.listingId}
-            listing={property}
-            onClick={handlePropertyClick}
-            onFavorite={handleFavorite}
+        {items.map((property) =>
+          onPropertyClick ? (
+            <PropertyCard
+              key={property.listingId}
+              listing={property}
+              onClick={handlePropertyClick}
+              onFavorite={handleFavorite}
+              className='compact'
+              imageLayout='top'
+            />
+          ) : (
+            <Link
+              key={property.listingId}
+              href={`/listing-detail/${property.listingId}`}
+              className='block'
+            >
+              <PropertyCard
+                listing={property}
+                onFavorite={handleFavorite}
+                className='compact'
+                imageLayout='top'
+              />
+            </Link>
+          ),
+        )}
+
+        {/* Show loading skeleton during client-side fetch */}
+        {isLoading && items.length > 0 && (
+          <PropertyCardSkeleton
+            count={3}
             className='compact'
             imageLayout='top'
           />
-        ))}
+        )}
 
         {/* Infinite Scroll Trigger - Mobile Only */}
         {isMobile && hasNext && (
