@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import MainLayout from '@/components/layouts/homePageLayout'
-import { PaymentService } from '@/api/services'
+import { ListingService, PaymentService } from '@/api/services'
 import type { PaymentTransaction } from '@/api/types/payment.type'
 import type { ApiResponse } from '@/configs/axios/types'
 import { PaymentStatusTemplate } from '@/components/templates/paymentStatusTemplate'
@@ -207,6 +207,34 @@ const PaymentStatusPage: React.FC = () => {
       toast.success(t('states.completed.title'), {
         description: t('states.completed.desc'),
       })
+
+      // Delete draft if listing was created from a draft
+      const deleteDraftAfterPayment = async () => {
+        try {
+          const storedListing = sessionStorage.getItem('pendingListingCreation')
+          if (storedListing) {
+            const listingInfo = JSON.parse(storedListing) as {
+              draftId?: string | null
+              transactionType?: string
+            }
+
+            if (
+              listingInfo.draftId &&
+              listingInfo.transactionType === 'POST_FEE'
+            ) {
+              try {
+                await ListingService.deleteDraft(listingInfo.draftId)
+              } catch (error) {
+                console.error('Failed to delete draft after payment:', error)
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error processing draft deletion:', error)
+        }
+      }
+
+      deleteDraftAfterPayment()
     }
     previousStatusRef.current = status
   }, [status, t])

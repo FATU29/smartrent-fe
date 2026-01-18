@@ -13,7 +13,7 @@ import {
 } from '@/components/atoms/carousel'
 import Image from 'next/image'
 import { Button } from '@/components/atoms/button'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import { imageMap } from '@/utils/mapper'
 import { cn } from '@/lib/utils'
@@ -28,7 +28,6 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
   loading = false,
 }) => {
   const t = useTranslations('homePage.locations')
-  const router = useRouter()
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
@@ -73,13 +72,6 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
     )
   }
 
-  const handleProvinceClick = (province: ProvinceStatsItem) => {
-    router.push({
-      pathname: PUBLIC_ROUTES.LISTING_LISTING,
-      query: { provinceId: province.provinceId },
-    })
-  }
-
   return (
     <section className='mt-16'>
       <Typography
@@ -95,54 +87,55 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
         setApi={setApi}
       >
         <CarouselContent>
-          {cities.map((city) => (
-            <CarouselItem
-              key={city.provinceId || city.provinceCode}
-              className='basis-full sm:basis-1/2 lg:basis-1/3'
-            >
-              <button
-                type='button'
-                className='w-full text-left relative rounded-xl overflow-hidden group/card shadow-md hover:shadow-xl transition-shadow'
-                onClick={() => handleProvinceClick(city)}
+          {cities.map((city) => {
+            const provinceUrl = `${PUBLIC_ROUTES.LISTING_LISTING}?provinceId=${city.provinceId}`
+            return (
+              <CarouselItem
+                key={city.provinceId || city.provinceCode}
+                className='basis-full sm:basis-1/2 lg:basis-1/3'
               >
-                <div className='relative h-[280px] w-full'>
-                  <Image
-                    src={imageMap[Number(city?.provinceId)]}
-                    alt={city?.provinceName}
-                    fill
-                    className='object-cover'
-                    sizes='(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
-                    loading='lazy'
-                  />
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent' />
-                  <div className='absolute bottom-6 left-6 right-6 text-white'>
-                    <Typography
-                      variant='h3'
-                      className='text-2xl font-bold mb-2 text-white drop-shadow'
-                    >
-                      {city.provinceName}
-                    </Typography>
-                    <Typography
-                      variant='p'
-                      className='text-sm text-white/90 mb-3'
-                    >
-                      {city.totalListings} {t('listingsSuffix')}
-                    </Typography>
-                    <Button
-                      size='sm'
-                      className='backdrop-blur-sm bg-white/90 text-gray-900 hover:bg-white hover:text-gray-900'
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleProvinceClick(city)
-                      }}
-                    >
-                      {t('exploreButton') || 'Khám phá'}
-                    </Button>
+                <Link
+                  href={provinceUrl}
+                  className='block w-full text-left relative rounded-xl overflow-hidden group/card shadow-md hover:shadow-xl transition-shadow'
+                >
+                  <div className='relative h-[280px] w-full'>
+                    <Image
+                      src={
+                        imageMap[Number(city?.provinceId)] ||
+                        '/images/default-image.jpg'
+                      }
+                      alt={city?.provinceName}
+                      fill
+                      className='object-cover'
+                      sizes='(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
+                      loading='lazy'
+                    />
+                    <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent' />
+                    <div className='absolute bottom-6 left-6 right-6 text-white'>
+                      <Typography
+                        variant='h3'
+                        className='text-2xl font-bold mb-2 text-white drop-shadow'
+                      >
+                        {city.provinceName}
+                      </Typography>
+                      <Typography
+                        variant='p'
+                        className='text-sm text-white/90 mb-3'
+                      >
+                        {city.totalListings} {t('listingsSuffix')}
+                      </Typography>
+                      <Button
+                        size='sm'
+                        className='backdrop-blur-sm bg-white/90 text-gray-900 hover:bg-white hover:text-gray-900 pointer-events-none'
+                      >
+                        {t('exploreButton') || 'Khám phá'}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </button>
-            </CarouselItem>
-          ))}
+                </Link>
+              </CarouselItem>
+            )
+          })}
         </CarouselContent>
         <CarouselPrevious className='hidden sm:flex -left-12' />
         <CarouselNext className='hidden sm:flex -right-12' />

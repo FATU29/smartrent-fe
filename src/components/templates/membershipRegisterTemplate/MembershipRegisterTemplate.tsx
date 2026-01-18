@@ -1,3 +1,4 @@
+import { SELLERNET_ROUTES } from '@/constants'
 import React, { useCallback, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
@@ -221,7 +222,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
           sessionStorage.removeItem('pendingMembershipUpgrade')
           toast.success(result.message)
           handleClosePayment()
-          router.push('/sellernet/membership')
+          router.push(SELLERNET_ROUTES.PREFIX + '/membership')
         } else if (result.paymentUrl) {
           // Update storage with transaction ref
           const storedUpgrade = sessionStorage.getItem(

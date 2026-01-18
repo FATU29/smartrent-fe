@@ -56,9 +56,7 @@ const ResidentialPropertiesTemplate: React.FC = () => {
 
         {/* Right Column - Filter Sidebar - Desktop Only */}
         <aside className='hidden lg:block lg:w-80 xl:w-96 flex-shrink-0'>
-          <div className='sticky top-20'>
-            <PropertyFilterSidebar />
-          </div>
+          <PropertyFilterSidebar />
         </aside>
       </div>
     </>

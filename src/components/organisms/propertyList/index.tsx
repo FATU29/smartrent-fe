@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { ListingDetail } from '@/api/types'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface PropertyListProps {
   listings?: ListingDetail[]
@@ -18,24 +18,20 @@ const PropertyList: React.FC<PropertyListProps> = ({
   initialProperties = [],
 }) => {
   const t = useTranslations()
-  const router = useRouter()
 
   // Use listings prop if provided, otherwise fall back to initialProperties
   const displayedProperties = listings || initialProperties
 
   const handleFavorite = () => {}
 
-  const handleOnClick = (property: ListingDetail) => {
-    router.push(`/listing-detail/${property.listingId}`)
-  }
-
   const PropertyItem = (property: ListingDetail) => (
-    <PropertyCard
+    <Link
       key={property.listingId}
-      listing={property}
-      onFavorite={handleFavorite}
-      onClick={() => handleOnClick(property)}
-    />
+      href={`/listing-detail/${property.listingId}`}
+      className='block h-full'
+    >
+      <PropertyCard listing={property} onFavorite={handleFavorite} />
+    </Link>
   )
 
   const PropertySkeleton = (

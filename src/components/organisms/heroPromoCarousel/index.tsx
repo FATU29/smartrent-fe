@@ -100,8 +100,8 @@ const HeroPromoCarousel = () => {
                     fill
                     className='object-contain'
                     priority={s.id === 'rentSecure'}
-                    fetchPriority='high'
-                    loading='eager'
+                    quality={85}
+                    sizes='(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1280px'
                   />
                   <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/10' />
                   <div className='absolute bottom-10 left-6 sm:left-10 max-w-xl text-white'>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import RadioRow from '@/components/atoms/mobileFilter/radioRow'
 import ToggleChip from '@/components/atoms/mobileFilter/toggleChip'
 import LocationToggleChip from '@/components/atoms/mobileFilter/locationToggleChip'
@@ -21,7 +22,6 @@ import {
   MapIcon,
 } from 'lucide-react'
 import { ListingFilterRequest } from '@/api/types'
-import { useRouter } from 'next/router'
 import { PUBLIC_ROUTES } from '@/constants/route'
 
 interface MobileFilterMainViewProps {
@@ -38,7 +38,6 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
   hideLocationFilter = false,
 }) => {
   const t = useTranslations('residentialFilter')
-  const router = useRouter()
 
   const formatRange = (min?: number, max?: number, unit?: string) => {
     if (!min && !max) return t('summary.all')
@@ -59,22 +58,15 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
     })
   }
 
-  const handleViewMap = () => {
-    router.push(PUBLIC_ROUTES.MAPS)
-  }
-
   return (
     <div className='pb-20'>
       {/* View Map Button */}
       <div className='p-4 pb-3'>
-        <Button
-          variant='secondary'
-          className='w-full h-10'
-          type='button'
-          onClick={handleViewMap}
-        >
-          <MapIcon className='h-4 w-4 mr-2' /> {t('actions.viewMap')}
-        </Button>
+        <Link href={PUBLIC_ROUTES.MAPS} className='block'>
+          <Button variant='secondary' className='w-full h-10' type='button'>
+            <MapIcon className='h-4 w-4 mr-2' /> {t('actions.viewMap')}
+          </Button>
+        </Link>
       </div>
 
       <div className='space-y-1'>

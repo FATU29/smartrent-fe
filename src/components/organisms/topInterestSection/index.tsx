@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Button } from '@/components/atoms/button'
 import { PUBLIC_ROUTES } from '@/constants/route'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 import {
   Carousel,
   CarouselContent,
@@ -32,7 +32,6 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
   categoryStats,
 }) => {
   const t = useTranslations('homePage.topInterest')
-  const router = useRouter()
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
@@ -86,14 +85,11 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
     <section className='mb-8 sm:mb-10'>
       <div className='flex items-center justify-between mb-4 sm:mb-5'>
         <h2 className='text-xl sm:text-2xl font-semibold'>{t('title')}</h2>
-        <Button
-          variant='ghost'
-          size='sm'
-          className='text-sm'
-          onClick={() => router.push(PUBLIC_ROUTES.LISTING_LISTING)}
-        >
-          {t('viewAll')}
-        </Button>
+        <Link href={PUBLIC_ROUTES.LISTING_LISTING}>
+          <Button variant='ghost' size='sm' className='text-sm'>
+            {t('viewAll')}
+          </Button>
+        </Link>
       </div>
 
       {items.length === 0 ? (
@@ -132,14 +128,9 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
                 key={item.id}
                 className='basis-full sm:basis-1/2 lg:basis-1/3'
               >
-                <button
-                  type='button'
-                  className='w-full text-left relative rounded-lg overflow-hidden group/card border bg-background shadow-sm hover:shadow-md transition-all'
-                  onClick={() =>
-                    router.push(
-                      `${PUBLIC_ROUTES.LISTING_LISTING}?categoryId=${item.id}`,
-                    )
-                  }
+                <Link
+                  href={`${PUBLIC_ROUTES.LISTING_LISTING}?categoryId=${item.id}`}
+                  className='block w-full text-left relative rounded-lg overflow-hidden group/card border bg-background shadow-sm hover:shadow-md transition-all'
                 >
                   <div className='relative h-40 sm:h-44 lg:h-48 w-full'>
                     <Image
@@ -160,7 +151,7 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
                       </span>
                     </div>
                   </div>
-                </button>
+                </Link>
               </CarouselItem>
             ))}
           </CarouselContent>

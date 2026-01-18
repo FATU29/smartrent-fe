@@ -1,3 +1,4 @@
+import { SELLER_ROUTES } from '@/constants'
 import React, { useEffect, useMemo, useState } from 'react'
 import Navigation from '@/components/organisms/navigation'
 import { Button } from '@/components/atoms/button'
@@ -13,6 +14,7 @@ import { useAuthDialog } from '@/contexts/authDialog'
 import { useRouter } from 'next/router'
 import { useCategories } from '@/hooks/useCategories'
 import { MapIcon } from 'lucide-react'
+import Link from 'next/link'
 import { PUBLIC_ROUTES } from '@/constants/route'
 
 export interface AppHeaderProps {
@@ -55,7 +57,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({
       onItemClick(item)
       return
     }
-    if (item.href) router.push(item.href)
+    if (item.href) {
+      // Prevent default behavior and use client-side navigation
+      router.push(item.href, undefined, { scroll: true })
+    }
   }
 
   const defaultRightContent = (
@@ -64,23 +69,25 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         <LanguageSwitch />
         <ThemeSwitch />
       </div>
-      <Button
-        onClick={() => router.push(PUBLIC_ROUTES.MAPS)}
-        variant='outline'
-        size='sm'
-        className='hidden lg:flex items-center gap-1 text-xs sm:text-sm'
-      >
-        <MapIcon className='h-4 w-4' />
-        <span className='hidden md:inline'>{t('navigation.maps')}</span>
-      </Button>
-      <Button
-        onClick={() => router.push('/seller/create-post')}
-        variant='default'
-        size='sm'
-        className='hidden lg:block bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-md transition-all duration-300 text-xs sm:text-sm'
-      >
-        {t('common.createPost')}
-      </Button>
+      <Link href={PUBLIC_ROUTES.MAPS}>
+        <Button
+          variant='outline'
+          size='sm'
+          className='hidden lg:flex items-center gap-1 text-xs sm:text-sm'
+        >
+          <MapIcon className='h-4 w-4' />
+          <span className='hidden md:inline'>{t('navigation.maps')}</span>
+        </Button>
+      </Link>
+      <Link href={SELLER_ROUTES.CREATE}>
+        <Button
+          variant='default'
+          size='sm'
+          className='hidden lg:block bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-md transition-all duration-300 text-xs sm:text-sm'
+        >
+          {t('common.createPost')}
+        </Button>
+      </Link>
       <div className='hidden lg:block'>
         {isAuthenticated ? (
           <UserDropdown />

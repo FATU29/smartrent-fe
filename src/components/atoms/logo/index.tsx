@@ -86,6 +86,7 @@ export const Logo: React.FC<LogoProps> = ({
             alt='SmartRent Logo'
             fill
             className='object-cover'
+            sizes='(max-width: 640px) 40px, (max-width: 768px) 48px, 64px'
             priority
           />
         </div>

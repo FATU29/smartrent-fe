@@ -1,3 +1,4 @@
+import { SELLER_ROUTES } from '@/constants'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useUpdatePostSteps } from './hooks/useUpdatePostSteps'
 import { useUpdatePostValidation } from './hooks/useUpdatePostValidation'
@@ -138,7 +139,7 @@ const UpdatePostTemplateContent: React.FC<{ className?: string }> = ({
   const handleSuccessClose = useCallback(async () => {
     setIsSubmitSuccess(true)
     resetPropertyInfo()
-    await router.push('/seller/listings')
+    await router.push(SELLER_ROUTES.LISTINGS)
   }, [setIsSubmitSuccess, resetPropertyInfo, router])
 
   return (

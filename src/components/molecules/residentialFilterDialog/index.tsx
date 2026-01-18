@@ -21,6 +21,8 @@ import AddressFilterView from '../mobileFilter/addressFilterView'
 import { useRouter } from 'next/router'
 import { navigateToPropertiesWithFilters } from '@/utils/filters'
 import useLocation from '@/hooks/useLocation'
+import { PUBLIC_ROUTES } from '@/constants/route'
+import Link from 'next/link'
 
 interface ResidentialFilterDialogProps {
   open: boolean
@@ -55,6 +57,24 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   const router = useRouter()
   const { filters, updateFilters, resetFilters } = useListContext()
   const { disableLocation } = useLocation()
+
+  // Build URL for apply link
+  const buildApplyUrl = useCallback((filterData: ListingFilterRequest) => {
+    const params = new URLSearchParams()
+    Object.entries(filterData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        if (Array.isArray(value)) {
+          params.set(key, value.join(','))
+        } else {
+          params.set(key, String(value))
+        }
+      }
+    })
+    const queryString = params.toString()
+    return queryString
+      ? `${PUBLIC_ROUTES.LISTING_LISTING}?${queryString}`
+      : PUBLIC_ROUTES.LISTING_LISTING
+  }, [])
 
   // State
   const [view, setView] = useState<ViewKey>('main')
@@ -244,11 +264,34 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
           onClose={closeDialog}
         />
         <div className='flex-1 overflow-y-auto'>{renderBody()}</div>
-        <MobileFilterActionBar
-          onReset={view !== 'main' ? backToParent : resetAndStay}
-          onApply={apply}
-          resetLabel={view !== 'main' ? t('actions.back') : undefined}
-        />
+        {onApplyProp ? (
+          <MobileFilterActionBar
+            onReset={view !== 'main' ? backToParent : resetAndStay}
+            onApply={apply}
+            resetLabel={view !== 'main' ? t('actions.back') : undefined}
+          />
+        ) : (
+          <div className='border-t p-4 flex gap-2'>
+            <button
+              className='flex-1 px-4 py-2 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-accent hover:text-accent-foreground'
+              onClick={view !== 'main' ? backToParent : resetAndStay}
+            >
+              {view !== 'main' ? t('actions.back') : t('actions.clear')}
+            </button>
+            <Link
+              href={buildApplyUrl({ ...draft, page: 1 })}
+              className='flex-1'
+              onClick={() => {
+                updateFilters({ ...draft, page: 1 })
+                onOpenChange(false)
+              }}
+            >
+              <button className='w-full px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90'>
+                {t('actions.apply')}
+              </button>
+            </Link>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   )

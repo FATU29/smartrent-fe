@@ -84,7 +84,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
             {/* Title */}
             <Typography
               variant='h1'
-              className='listing-title text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4'
+              className='listing-title text-xl md:text-2xl lg:text-3xl font-bold leading-tight mb-4 line-clamp-3'
             >
               {title}
             </Typography>
