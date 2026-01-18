@@ -2003,12 +2003,21 @@
     "originalPrice": "Giá gốc",
     "discount": "Chiết khấu của bạn",
     "finalPrice": "Bạn thanh toán",
+    "youSave": "Bạn tiết kiệm",
     "newBenefits": "Quyền lợi mới",
     "forfeitedBenefits": "Quyền lợi bạn sẽ mất",
     "remaining": "còn lại",
     "moreForfeited": "quyền lợi khác",
     "andMore": "+{count} quyền lợi khác",
     "upgradeButton": "Nâng cấp ngay",
+    "remainingTimeExplanation": "Gói hội viên hiện tại của bạn còn lại số ngày này. Chiết khấu của bạn được tính dựa trên thời gian còn lại.",
+    "forfeitedExplanation": "Khi bạn nâng cấp, các quyền lợi này từ gói hiện tại sẽ được thay thế bằng quyền lợi của gói mới.",
+    "discountExplanation": {
+      "title": "Chiết khấu thông minh",
+      "description": "Bạn còn {days} ngày trong gói hiện tại. Chúng tôi tặng bạn chiết khấu {percent}% để bạn không bị mất giá trị khi nâng cấp!",
+      "howItWorks": "Chiết khấu của bạn được tính dựa trên thời gian chưa sử dụng trong gói hội viên hiện tại. Thời gian còn lại càng nhiều, chiết khấu càng lớn.",
+      "savings": "Tổng tiết kiệm: {amount}"
+    },
     "currentMembership": {
       "title": "Gói hội viên hiện tại",
       "message": "Bạn đang sử dụng gói {planName} với {daysRemaining} ngày còn lại."

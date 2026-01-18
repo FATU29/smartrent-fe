@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import PropertyCard from '@/components/molecules/propertyCard'
+import Link from 'next/link'
 import type { ListingDetail } from '@/api/types'
 import {
   Carousel,
@@ -48,10 +49,6 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
   }, [api])
 
   const handleFavorite = () => {}
-
-  const handleOnClick = (listing: ListingDetail) => {
-    onPropertyClick?.(listing)
-  }
 
   if (isLoading) {
     const skeletonItems = Array.from({ length: 4 })
@@ -145,11 +142,13 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
               key={listing.listingId}
               className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'
             >
-              <PropertyCard
-                listing={listing}
-                onFavorite={handleFavorite}
-                onClick={() => handleOnClick(listing)}
-              />
+              <Link
+                href={`/listing-detail/${listing.listingId}`}
+                className='block h-full'
+                onClick={() => onPropertyClick?.(listing)}
+              >
+                <PropertyCard listing={listing} onFavorite={handleFavorite} />
+              </Link>
             </CarouselItem>
           ))}
         </CarouselContent>

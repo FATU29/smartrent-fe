@@ -47,7 +47,6 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
     const publicPaths = [
       '/',
       '/properties',
-      '/sellernet',
       '/auth',
       '/listing-detail',
       '/compare',

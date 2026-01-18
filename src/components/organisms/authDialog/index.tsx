@@ -93,7 +93,7 @@ const AuthDialog: NextPage<AuthDialogProps> = (props) => {
             <div className='flex justify-center items-center'>
               <div className='w-[8rem] h-[8rem] md:h-[20rem] md:w-[20rem]'>
                 <ImageAtom
-                  src={`${basePath}/images/default-bg.jpg`}
+                  src={`${basePath}/images/rental-auth-bg.jpg`}
                   defaultImage={DEFAULT_IMAGE}
                   alt='bg_in_auth'
                   className='shrink-0 aspect-square w-full h-full rounded-lg'

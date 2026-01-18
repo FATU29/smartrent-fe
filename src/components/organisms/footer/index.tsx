@@ -28,30 +28,30 @@ const Footer: React.FC = () => {
                 {t('footer.description')}
               </Typography>
               <div className='flex space-x-4 mt-5 sm:mt-6'>
-                <a
-                  href='#'
+                <button
                   className='text-muted-foreground hover:text-primary transition-colors'
+                  aria-label='Facebook'
                 >
                   <Facebook className='h-5 w-5' />
-                </a>
-                <a
-                  href='#'
+                </button>
+                <button
                   className='text-muted-foreground hover:text-primary transition-colors'
+                  aria-label='Instagram'
                 >
                   <Instagram className='h-5 w-5' />
-                </a>
-                <a
-                  href='#'
+                </button>
+                <button
                   className='text-muted-foreground hover:text-primary transition-colors'
+                  aria-label='Twitter'
                 >
                   <Twitter className='h-5 w-5' />
-                </a>
-                <a
-                  href='#'
+                </button>
+                <button
                   className='text-muted-foreground hover:text-primary transition-colors'
+                  aria-label='Youtube'
                 >
                   <Youtube className='h-5 w-5' />
-                </a>
+                </button>
               </div>
             </div>
 
@@ -64,50 +64,38 @@ const Footer: React.FC = () => {
                 {t('footer.quickLinks')}
               </Typography>
               <div className='space-y-2'>
-                <a
-                  href='#'
-                  className='block text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
+                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
                   <Typography
                     variant='small'
                     className='text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.aboutUs')}
                   </Typography>
-                </a>
-                <a
-                  href='#'
-                  className='block text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
+                </button>
+                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
                   <Typography
                     variant='small'
                     className='text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.properties')}
                   </Typography>
-                </a>
-                <a
-                  href='#'
-                  className='block text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
+                </button>
+                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
                   <Typography
                     variant='small'
                     className='text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.services')}
                   </Typography>
-                </a>
-                <a
-                  href='#'
-                  className='block text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
+                </button>
+                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
                   <Typography
                     variant='small'
                     className='text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.contact')}
                   </Typography>
-                </a>
+                </button>
               </div>
             </div>
 
@@ -120,50 +108,38 @@ const Footer: React.FC = () => {
                 {t('footer.support')}
               </Typography>
               <div className='space-y-2'>
-                <a
-                  href='#'
-                  className='block text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
+                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
                   <Typography
                     variant='small'
                     className='text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.helpCenter')}
                   </Typography>
-                </a>
-                <a
-                  href='#'
-                  className='block text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
+                </button>
+                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
                   <Typography
                     variant='small'
                     className='text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.privacyPolicy')}
                   </Typography>
-                </a>
-                <a
-                  href='#'
-                  className='block text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
+                </button>
+                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
                   <Typography
                     variant='small'
                     className='text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.termsOfService')}
                   </Typography>
-                </a>
-                <a
-                  href='#'
-                  className='block text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
+                </button>
+                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
                   <Typography
                     variant='small'
                     className='text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.faq')}
                   </Typography>
-                </a>
+                </button>
               </div>
             </div>
 
@@ -217,28 +193,22 @@ const Footer: React.FC = () => {
                 {t('footer.copyright')}
               </Typography>
               <div className='flex items-center gap-4'>
-                <a
-                  href='#'
-                  className='text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
+                <button className='text-sm text-muted-foreground hover:text-primary transition-colors'>
                   <Typography
                     variant='small'
                     className='text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.privacy')}
                   </Typography>
-                </a>
-                <a
-                  href='#'
-                  className='text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
+                </button>
+                <button className='text-sm text-muted-foreground hover:text-primary transition-colors'>
                   <Typography
                     variant='small'
                     className='text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.terms')}
                   </Typography>
-                </a>
+                </button>
               </div>
             </div>
             <div className='mt-5 sm:mt-6 lg:mt-7'>

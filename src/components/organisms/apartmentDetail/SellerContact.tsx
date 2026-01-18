@@ -76,7 +76,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
                 alt={name}
                 width={64}
                 height={64}
-                className='w-full h-full object-cover'
+                className='object-cover'
               />
             ) : (
               <div className='w-full h-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center text-lg md:text-xl font-bold'>
@@ -127,7 +127,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
               alt='Zalo'
               width={20}
               height={20}
-              className='mr-2'
+              className='mr-2 w-5 h-5'
             />
             <p className='text-black'>{t('actions.chatZalo')}</p>
           </Button>

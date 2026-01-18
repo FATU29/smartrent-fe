@@ -1,3 +1,4 @@
+import { SELLERNET_ROUTES } from '@/constants'
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
@@ -73,7 +74,7 @@ const DashboardMembershipNavCard: React.FC = () => {
         </div>
 
         {/* CTA Button - Always goes to register page (shows upgrade or purchase) */}
-        <Link href='/sellernet/membership/register' className='block'>
+        <Link href={SELLERNET_ROUTES.MEMBERSHIP_REGISTER} className='block'>
           <Button className='w-full' size='lg' variant='default'>
             {membership ? (
               <>

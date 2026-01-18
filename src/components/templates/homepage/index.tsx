@@ -1,6 +1,6 @@
 import HeroPromoCarousel from '@/components/organisms/heroPromoCarousel'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { useState, useCallback, useRef } from 'react'
 import { Button } from '@/components/atoms/button'
 import { PUBLIC_ROUTES } from '@/constants/route'
@@ -37,21 +37,17 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
 }) => {
   const t = useTranslations()
   const { pagination } = useListContext()
-  const router = useRouter()
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
   const clickCountRef = useRef(0)
 
   const hasNext = pagination.currentPage < pagination.totalPages
 
-  const handleLoadMoreClick = useCallback(() => {
+  const getLoadMoreHref = useCallback(() => {
     clickCountRef.current += 1
-
-    if (clickCountRef.current >= 2) {
-      router.push(`${PUBLIC_ROUTES.LISTING_LISTING}?page=2`)
-    } else {
-      router.push(PUBLIC_ROUTES.LISTING_LISTING)
-    }
-  }, [router])
+    return clickCountRef.current >= 2
+      ? `${PUBLIC_ROUTES.LISTING_LISTING}?page=2`
+      : PUBLIC_ROUTES.LISTING_LISTING
+  }, [])
 
   return (
     <div className='w-full'>
@@ -67,8 +63,9 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                   src='/images/banner-default.jpg'
                   alt='Banner default'
                   fill
-                  fetchPriority='high'
-                  loading='eager'
+                  priority
+                  quality={85}
+                  sizes='(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1280px'
                 />
                 <div className='absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/20 dark:from-black/70 dark:via-black/60 dark:to-black/30' />
               </div>
@@ -120,9 +117,9 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                 <List.LoadMore onAfterLoad={() => setHasLoadedOnce(true)} />
               )}
               {(hasLoadedOnce || !hasNext) && (
-                <Button onClick={handleLoadMoreClick} className='px-6'>
-                  {t('common.loadMore')} ➜
-                </Button>
+                <Link href={getLoadMoreHref()}>
+                  <Button className='px-6'>{t('common.loadMore')} ➜</Button>
+                </Link>
               )}
             </div>
             <LocationBrowseSection

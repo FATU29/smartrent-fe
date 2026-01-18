@@ -11,7 +11,7 @@ import {
 } from '@/components/atoms/carousel'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { ListingDetail, VipType } from '@/api/types'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { Crown, Sparkles, Medal, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -62,7 +62,6 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
   isLoading,
 }) => {
   const t = useTranslations()
-  const router = useRouter()
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
@@ -85,10 +84,6 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
   }, [api])
 
   const handleFavorite = () => {}
-
-  const handleOnClick = (property: ListingDetail) => {
-    router.push(`/listing-detail/${property.listingId}`)
-  }
 
   if (isLoading) {
     const skeletonItems = Array.from({ length: 4 })
@@ -180,11 +175,12 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
               key={listing.listingId}
               className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'
             >
-              <PropertyCard
-                listing={listing}
-                onFavorite={handleFavorite}
-                onClick={() => handleOnClick(listing)}
-              />
+              <Link
+                href={`/listing-detail/${listing.listingId}`}
+                className='block h-full'
+              >
+                <PropertyCard listing={listing} onFavorite={handleFavorite} />
+              </Link>
             </CarouselItem>
           ))}
         </CarouselContent>

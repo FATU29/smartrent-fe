@@ -205,6 +205,11 @@ const useListFetch = <T,>(
     let isCancelled = false
 
     const fetchData = async () => {
+      // Clear items when not appending (filter change)
+      if (!shouldAppendRef.current) {
+        setItems([])
+      }
+
       setIsLoading(true)
       try {
         const response = await fetcherRef.current!(filters)

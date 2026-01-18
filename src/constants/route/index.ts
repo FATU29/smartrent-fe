@@ -50,6 +50,7 @@ export const PUBLIC_ROUTES = {
   PAYMENT_STATUS: '/payment/status',
   LISTING_LISTING: '/properties',
   MAPS: '/maps',
+  COMPARE: '/compare',
 } as const
 
 export type PublicRouteKey = keyof typeof PUBLIC_ROUTES

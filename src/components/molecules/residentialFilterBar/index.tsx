@@ -9,6 +9,7 @@ import { Button } from '@/components/atoms/button'
 import Switch from '@/components/atoms/switch'
 import { useTranslations } from 'next-intl'
 import { Filter, MapIcon, ShieldCheck } from 'lucide-react'
+import Link from 'next/link'
 
 import { LocationSwitch } from '@/components/atoms'
 import { useRouter } from 'next/router'
@@ -40,6 +41,24 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
     useListContext<ListingFilterRequest>()
 
   const { disableLocation } = useLocation()
+
+  // Build URL for apply link
+  const buildApplyUrl = () => {
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        if (Array.isArray(value)) {
+          params.set(key, value.join(','))
+        } else {
+          params.set(key, String(value))
+        }
+      }
+    })
+    const queryString = params.toString()
+    return queryString
+      ? `${PUBLIC_ROUTES.LISTING_LISTING}?${queryString}`
+      : PUBLIC_ROUTES.LISTING_LISTING
+  }
 
   const handleApply = () => {
     // If custom onApply handler is provided (e.g., from homepage), use it
@@ -100,12 +119,6 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
     [updateFilter, disableLocation],
   )
 
-  const handleViewMap = useCallback(() => {
-    // Navigate to maps page without any filter query params
-    // Maps page handles listing fetching via map bounds, not filters
-    router.push(PUBLIC_ROUTES.MAPS)
-  }, [router])
-
   return (
     <div className='w-full space-y-3'>
       {/* Location enabled banner with coordinates removed per requirement */}
@@ -129,26 +142,39 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
 
         {/* Row 2: View Map Button */}
         <div className='flex gap-2'>
-          <Button
-            variant='secondary'
-            className='h-9 px-4 flex-1'
-            type='button'
-            onClick={handleViewMap}
-          >
-            <MapIcon className='h-4 w-4 mr-1' /> {t('actions.viewMap')}
-          </Button>
+          <Link href={PUBLIC_ROUTES.MAPS} className='flex-1'>
+            <Button
+              variant='secondary'
+              className='h-9 px-4 w-full'
+              type='button'
+            >
+              <MapIcon className='h-4 w-4 mr-1' /> {t('actions.viewMap')}
+            </Button>
+          </Link>
         </div>
 
         {/* Row 3: Apply + Reset */}
         <div className='flex gap-2'>
-          <Button
-            variant='default'
-            className='h-9 px-4 flex-1'
-            type='button'
-            onClick={handleApply}
-          >
-            {tActions('apply')}
-          </Button>
+          {onApply ? (
+            <Button
+              variant='default'
+              className='h-9 px-4 flex-1'
+              type='button'
+              onClick={handleApply}
+            >
+              {tActions('apply')}
+            </Button>
+          ) : (
+            <Link href={buildApplyUrl()} className='flex-1'>
+              <Button
+                variant='default'
+                className='h-9 px-4 w-full'
+                type='button'
+              >
+                {tActions('apply')}
+              </Button>
+            </Link>
+          )}
           <Button
             variant='outline'
             className='h-9 px-4 flex-1'
@@ -165,14 +191,11 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
         <div className='flex flex-col md:flex-row gap-3 items-stretch'>
           <div className='flex-1 flex items-center gap-3'>
             <ListSearch />
-            <Button
-              variant='default'
-              className='h-9 px-6'
-              type='button'
-              onClick={handleViewMap}
-            >
-              <MapIcon className='h-4 w-4 mr-1' /> {t('actions.viewMap')}
-            </Button>
+            <Link href={PUBLIC_ROUTES.MAPS}>
+              <Button variant='default' className='h-9 px-6' type='button'>
+                <MapIcon className='h-4 w-4 mr-1' /> {t('actions.viewMap')}
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -239,14 +262,22 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
 
         {/* Apply and Reset buttons - New row */}
         <div className='flex gap-2 items-center'>
-          <Button
-            variant='default'
-            className='h-9 px-6'
-            type='button'
-            onClick={handleApply}
-          >
-            {tActions('apply')}
-          </Button>
+          {onApply ? (
+            <Button
+              variant='default'
+              className='h-9 px-6'
+              type='button'
+              onClick={handleApply}
+            >
+              {tActions('apply')}
+            </Button>
+          ) : (
+            <Link href={buildApplyUrl()}>
+              <Button variant='default' className='h-9 px-6' type='button'>
+                {tActions('apply')}
+              </Button>
+            </Link>
+          )}
           <Button
             variant='outline'
             className='h-9 px-6'
