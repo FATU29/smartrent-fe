@@ -32,7 +32,12 @@ export const AuthRouteGate = () => {
 
     if (auth === 'login' && !isAuthenticated && !is404Page) {
       setShowLoginNotice(true)
-      if (typeof returnUrl === 'string') {
+      if (
+        typeof returnUrl === 'string' &&
+        returnUrl !== 'undefined' &&
+        returnUrl !== '/undefined' &&
+        returnUrl.startsWith('/')
+      ) {
         try {
           localStorage.setItem('returnUrl', returnUrl)
         } catch {}
@@ -62,7 +67,14 @@ export const AuthRouteGate = () => {
       try {
         storedReturnUrl = localStorage.getItem('returnUrl')
       } catch {}
-      const target = queryReturnUrl || storedReturnUrl || currentPath
+      const rawTarget = queryReturnUrl || storedReturnUrl || currentPath
+      const target =
+        rawTarget &&
+        rawTarget !== 'undefined' &&
+        rawTarget !== '/undefined' &&
+        rawTarget.startsWith('/')
+          ? rawTarget
+          : '/'
 
       const cleanup = () => {
         try {
@@ -81,7 +93,7 @@ export const AuthRouteGate = () => {
         }
       }
 
-      if (target && target !== currentPath && target !== '/undefined') {
+      if (target && target !== currentPath && target !== '/') {
         router.replace(target).finally(cleanup)
       } else {
         cleanup()
@@ -94,10 +106,14 @@ export const AuthRouteGate = () => {
     // Ensure router is ready and asPath exists
     if (!router.isReady || !router.asPath) return
     const currentUrl = router.asPath.split('?')[0] || '/'
+    const safeUrl =
+      currentUrl && currentUrl !== 'undefined' && currentUrl !== '/undefined'
+        ? currentUrl
+        : '/'
     try {
-      localStorage.setItem('returnUrl', currentUrl)
+      localStorage.setItem('returnUrl', safeUrl)
     } catch {}
-    openAuth('login', currentUrl)
+    openAuth('login', safeUrl)
   }
 
   if (showLoginNotice && !isAuthenticated) {

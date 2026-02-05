@@ -28,6 +28,10 @@ import {
   Sofa,
   Crown,
   Sparkles,
+  MapPin,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import { ListingDetail } from '@/api/types'
 import { getAmenityIcon } from '@/constants/amenities'
@@ -88,6 +92,8 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   const { fullNewAddress: newAddress, fullAddress: legacyAddress } =
     address || {}
 
+  const displayAddress = newAddress || legacyAddress
+
   // Get primary image or first image
   const assetsImages = images?.map((img) => img.url) || []
   const assetsVideo = video?.url || null
@@ -130,22 +136,29 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
       {
         label: string
         className: string
+        borderClassName: string
         icon: React.ComponentType<{ className?: string }>
       }
     > = {
       SILVER: {
         label: 'VIP Silver',
-        className: 'bg-gray-500 text-white',
+        className:
+          'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-sm',
+        borderClassName: 'ring-1 ring-gray-300',
         icon: Sparkles,
       },
       GOLD: {
         label: 'VIP Gold',
-        className: 'bg-yellow-500 text-white',
+        className:
+          'bg-gradient-to-r from-yellow-400 to-amber-500 text-white shadow-sm',
+        borderClassName: 'ring-1 ring-yellow-300',
         icon: Crown,
       },
       DIAMOND: {
         label: 'VIP Diamond',
-        className: 'bg-blue-500 text-white',
+        className:
+          'bg-gradient-to-r from-blue-400 to-indigo-500 text-white shadow-sm',
+        borderClassName: 'ring-1 ring-blue-300',
         icon: Crown,
       },
     }
@@ -153,6 +166,29 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   }
 
   const vipBadgeConfig = getVipBadgeConfig()
+
+  // Get VIP card border style
+  const getVipCardBorder = () => {
+    if (!vipType || vipType === 'NORMAL') return ''
+    const borders: Record<string, string> = {
+      SILVER: 'ring-1 ring-gray-300/50',
+      GOLD: 'ring-1 ring-yellow-400/50',
+      DIAMOND: 'ring-1 ring-blue-400/50',
+    }
+    return borders[vipType] || ''
+  }
+
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    setCurrentImageIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1))
+  }
+
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    setCurrentImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1))
+  }
 
   const renderImageGallery = () => {
     if (!isTopLayout) return null
@@ -179,7 +215,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               <video
                 src={assetsVideo}
                 controls
-                className='w-full h-full object-cover object-center transition-transform duration-300 group-hover/card:scale-105'
+                className='w-full h-full object-cover object-center transition-transform duration-500 group-hover/card:scale-105'
               />
             )
           ) : (
@@ -187,38 +223,78 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               src={displayImage || `${basePath}/images/default-image.jpg`}
               defaultImage={DEFAULT_IMAGE}
               alt={title}
-              className='w-full h-full object-cover object-center transition-all duration-300 group-hover/card:scale-105'
+              className='w-full h-full object-cover object-center transition-all duration-500 group-hover/card:scale-105'
             />
+          )}
+
+          {/* Bottom gradient overlay */}
+          <div className='absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent pointer-events-none' />
+
+          {/* Image navigation arrows - only show on hover */}
+          {totalImages > 1 && (
+            <>
+              <button
+                type='button'
+                onClick={handlePrevImage}
+                className='absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-black/80 shadow-sm z-10'
+                aria-label='Previous image'
+              >
+                <ChevronLeft className='w-4 h-4 text-gray-800 dark:text-gray-200' />
+              </button>
+              <button
+                type='button'
+                onClick={handleNextImage}
+                className='absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-black/80 shadow-sm z-10'
+                aria-label='Next image'
+              >
+                <ChevronRight className='w-4 h-4 text-gray-800 dark:text-gray-200' />
+              </button>
+            </>
           )}
 
           {/* Image Count Badge */}
           {totalImages > 0 && (
-            <div className='absolute bottom-2 left-2 flex items-center gap-1 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-sm'>
+            <div className='absolute bottom-2 left-2 flex items-center gap-1.5 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-md'>
               <Camera className='w-3.5 h-3.5' />
               <span className='font-medium'>{totalImages}</span>
             </div>
           )}
 
-          <div className='absolute top-2 right-2 flex gap-2 z-10'>
+          {/* Image dots indicator */}
+          {totalImages > 1 && totalImages <= 5 && (
+            <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1'>
+              {assetsImages.slice(0, 5).map((_, idx) => (
+                <span
+                  key={idx}
+                  className={classNames(
+                    'w-1.5 h-1.5 rounded-full transition-all duration-200',
+                    currentImageIndex === idx ? 'bg-white w-3' : 'bg-white/50',
+                  )}
+                />
+              ))}
+            </div>
+          )}
+
+          <div className='absolute top-2 right-2 flex gap-1.5 z-10'>
             <CompareToggleBtn
               listing={listing}
               variant='ghost'
               size='icon'
-              className='bg-background/80 backdrop-blur-sm'
+              className='bg-white/80 dark:bg-black/60 backdrop-blur-md hover:bg-white dark:hover:bg-black/80 shadow-sm rounded-full transition-all duration-200'
             />
             <SaveListingButton
               listingId={listing.listingId}
               variant='icon'
-              className='bg-background/80 backdrop-blur-sm'
+              className='bg-white/80 dark:bg-black/60 backdrop-blur-md hover:bg-white dark:hover:bg-black/80 shadow-sm rounded-full transition-all duration-200'
             />
           </div>
 
           {/* Badges - Top Left */}
-          <div className='absolute top-2 left-2 flex flex-col gap-1 z-10'>
+          <div className='absolute top-2 left-2 flex flex-col gap-1.5 z-10'>
             {verified && (
-              <Badge className='bg-green-500 text-white text-xs px-2 py-1 rounded shadow-sm flex items-center gap-1'>
-                <Check className='w-3.5 h-3.5' />
-                <span className='font-medium'>
+              <Badge className='bg-emerald-500/90 text-white text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm'>
+                <Check className='w-3 h-3' />
+                <span className='font-medium text-[11px]'>
                   {t('homePage.property.verified')}
                 </span>
               </Badge>
@@ -228,10 +304,12 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 const VipIcon = vipBadgeConfig.icon
                 return (
                   <Badge
-                    className={`${vipBadgeConfig.className} text-xs px-2 py-1 rounded shadow-sm flex items-center gap-1`}
+                    className={`${vipBadgeConfig.className} text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm`}
                   >
-                    <VipIcon className='w-3.5 h-3.5' />
-                    <span className='font-medium'>{vipBadgeConfig.label}</span>
+                    <VipIcon className='w-3 h-3' />
+                    <span className='font-medium text-[11px]'>
+                      {vipBadgeConfig.label}
+                    </span>
                   </Badge>
                 )
               })()}
@@ -250,11 +328,11 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   setCurrentImageIndex(idx)
                 }}
                 className={classNames(
-                  'relative aspect-square overflow-hidden rounded-md border transition-all',
+                  'relative aspect-square overflow-hidden rounded-lg border-2 transition-all duration-200',
                   {
-                    'border-primary ring-2 ring-primary/30 border-2':
+                    'border-primary ring-2 ring-primary/20 scale-105':
                       currentImageIndex === idx,
-                    'border border-border hover:border-primary/50 opacity-75 hover:opacity-100':
+                    'border-transparent hover:border-primary/40 opacity-70 hover:opacity-100':
                       currentImageIndex !== idx,
                   },
                 )}
@@ -268,9 +346,12 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               </button>
             ))}
             {totalImages > 3 && (
-              <div className='relative aspect-square overflow-hidden rounded-md border border-border bg-muted flex items-center justify-center'>
+              <div className='relative aspect-square overflow-hidden rounded-lg border border-border bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'>
                 <div className='text-center'>
-                  <Typography variant='small' className='text-xs font-semibold'>
+                  <Typography
+                    variant='small'
+                    className='text-xs font-bold text-muted-foreground'
+                  >
                     +{totalImages - 3}
                   </Typography>
                 </div>
@@ -299,8 +380,11 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           src={mainImage || `${basePath}/images/default-image.jpg`}
           defaultImage={DEFAULT_IMAGE}
           alt={title}
-          className='w-full h-full object-cover object-center transition-transform duration-300 group-hover/card:scale-105'
+          className='w-full h-full object-cover object-center transition-transform duration-500 group-hover/card:scale-105'
         />
+
+        {/* Bottom gradient */}
+        <div className='absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/40 to-transparent pointer-events-none' />
 
         <div
           className={classNames(
@@ -313,7 +397,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             variant='ghost'
             size='icon'
             className={classNames(
-              'bg-background/80 backdrop-blur-sm',
+              'bg-white/80 dark:bg-black/60 backdrop-blur-md rounded-full shadow-sm hover:bg-white dark:hover:bg-black/80 transition-all',
               isCompact ? 'w-6 h-6' : 'w-8 h-8 sm:w-9 sm:h-9',
             )}
           />
@@ -321,7 +405,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             listingId={listing.listingId}
             variant='icon'
             className={classNames(
-              'bg-background/80 backdrop-blur-sm',
+              'bg-white/80 dark:bg-black/60 backdrop-blur-md rounded-full shadow-sm hover:bg-white dark:hover:bg-black/80 transition-all',
               isCompact
                 ? 'w-6 h-6'
                 : 'w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9',
@@ -342,8 +426,8 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           {verified && (
             <Badge
               className={classNames(
-                'bg-green-500 text-white rounded-md shadow-sm flex items-center gap-0.5',
-                isCompact ? 'text-[10px] px-1 py-0.5' : 'text-xs px-2 py-1',
+                'bg-emerald-500/90 text-white rounded-full shadow-md flex items-center gap-0.5 backdrop-blur-sm',
+                isCompact ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2.5 py-1',
               )}
             >
               <Check className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
@@ -356,8 +440,10 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               return (
                 <Badge
                   className={classNames(
-                    `${vipBadgeConfig.className} rounded-md shadow-sm flex items-center gap-0.5`,
-                    isCompact ? 'text-[10px] px-1 py-0.5' : 'text-xs px-2 py-1',
+                    `${vipBadgeConfig.className} rounded-full shadow-md flex items-center gap-0.5 backdrop-blur-sm`,
+                    isCompact
+                      ? 'text-[10px] px-1.5 py-0.5'
+                      : 'text-xs px-2.5 py-1',
                   )}
                 >
                   <VipIcon className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
@@ -366,15 +452,57 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               )
             })()}
         </div>
+
+        {/* Image count - bottom left */}
+        {totalImages > 0 && (
+          <div
+            className={classNames(
+              'absolute bottom-1.5 left-1.5 flex items-center gap-1 bg-black/60 text-white rounded-full backdrop-blur-md',
+              isCompact ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2 py-0.5',
+            )}
+          >
+            <Camera className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
+            <span className='font-medium'>{totalImages}</span>
+          </div>
+        )}
       </div>
     )
   }
+
+  // Stats pill component for consistent styling
+  const StatPill: React.FC<{
+    icon: React.ReactNode
+    value: React.ReactNode
+    label?: string
+  }> = ({ icon, value, label }) => (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/60 hover:bg-muted transition-colors duration-200'>
+          <span className='text-primary'>{icon}</span>
+          <Typography
+            variant='small'
+            className='font-semibold text-sm text-foreground'
+          >
+            {value}
+          </Typography>
+        </div>
+      </TooltipTrigger>
+      {label && (
+        <TooltipContent side='top' className='z-50'>
+          <p>{label}</p>
+        </TooltipContent>
+      )}
+    </Tooltip>
+  )
 
   return (
     <TooltipProvider delayDuration={0}>
       <Card
         className={classNames(
-          'group/card cursor-pointer transition-all duration-300 overflow-hidden',
+          'group/card cursor-pointer overflow-hidden transition-all duration-300',
+          'hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5',
+          'border-border/60 hover:border-primary/30',
+          getVipCardBorder(),
           isCompact
             ? isTopLayout
               ? 'flex flex-col'
@@ -392,11 +520,12 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
         <CardContent
           className={classNames('flex-1 flex flex-col', {
-            'px-3 pb-3 pt-2 space-y-2': isCompact && isTopLayout,
+            'px-3 pb-3 pt-2 space-y-2.5': isCompact && isTopLayout,
             'p-2.5 space-y-1.5': isCompact && !isTopLayout,
             'p-3 sm:p-4 space-y-2 sm:space-y-3': !isCompact,
           })}
         >
+          {/* Title & Property Type Row */}
           <div className='flex items-start justify-between gap-2'>
             <Typography
               variant='h6'
@@ -409,7 +538,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             >
               {title}
             </Typography>
-            {/* Property Type & Listing Type Badges */}
+            {/* Property Type Badge */}
             <div className='flex items-center gap-1 flex-shrink-0'>
               {productType && (
                 <Tooltip>
@@ -417,10 +546,10 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     <Badge
                       variant='secondary'
                       className={classNames(
-                        'flex items-center gap-1',
+                        'flex items-center gap-1 rounded-full font-medium',
                         isCompact
-                          ? 'text-xs px-2 py-0.5'
-                          : 'text-[10px] px-1.5 py-0.5',
+                          ? 'text-xs px-2.5 py-0.5'
+                          : 'text-[10px] px-2 py-0.5',
                       )}
                     >
                       {ProductTypeIcon && (
@@ -443,171 +572,119 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             </div>
           </div>
 
-          {/* Description - Only in compact mode */}
-          {isCompact && description && (
-            <Typography
-              variant='small'
-              className='text-sm text-muted-foreground line-clamp-2'
-            >
-              {description}
-            </Typography>
+          {/* Address - Compact one-liner with icon */}
+          {displayAddress && (
+            <div className='flex items-start gap-1.5 min-w-0'>
+              <MapPin
+                className={classNames(
+                  'flex-shrink-0 text-muted-foreground mt-0.5',
+                  isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3',
+                )}
+              />
+              <Typography
+                variant='small'
+                className={classNames(
+                  'text-muted-foreground line-clamp-1 leading-snug',
+                  isCompact ? 'text-sm' : 'text-xs sm:text-sm',
+                )}
+              >
+                {displayAddress}
+              </Typography>
+            </div>
           )}
 
-          <div className='flex items-start gap-2'>
-            <div className='flex-1 min-w-0'>
-              <ul className='list-disc list-inside space-y-1'>
-                {newAddress && (
-                  <p
-                    className={classNames(
-                      'text-foreground line-clamp-2',
-                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                    )}
-                  >
-                    <span className='font-medium'>
-                      {t('apartmentDetail.address.new')}:
-                    </span>{' '}
-                    <span className='break-words'>{newAddress}</span>
-                  </p>
-                )}
-                {legacyAddress && (
-                  <p
-                    className={classNames(
-                      'text-muted-foreground line-clamp-2',
-                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                    )}
-                  >
-                    <span className='font-medium'>
-                      {t('apartmentDetail.address.old')}:
-                    </span>{' '}
-                    <span className='break-words'>{legacyAddress}</span>
-                  </p>
-                )}
-              </ul>
-            </div>
-          </div>
-
-          <div className='flex items-center justify-between'>
+          {/* Price Row */}
+          <div className='flex items-center justify-between gap-2'>
             <Typography
               variant='h5'
               className={classNames(
-                'text-primary font-bold',
+                'text-primary font-bold tracking-tight',
                 isCompact ? 'text-lg md:text-xl' : 'text-base sm:text-lg',
               )}
             >
               {formatByLocale(price, priceUnit)}
             </Typography>
+            {/* Area as secondary price info */}
+            {area && isCompact && (
+              <Typography
+                variant='small'
+                className='text-xs text-muted-foreground font-medium bg-muted/60 px-2 py-0.5 rounded-full'
+              >
+                {formatByLocale(Math.round(price / area), 'VND')}
+                /m²
+              </Typography>
+            )}
           </div>
 
-          <div className='flex items-center justify-between flex-wrap gap-2'>
-            <div
-              className={classNames(
-                'flex items-center flex-wrap',
-                isCompact ? 'gap-3' : 'space-x-2 sm:space-x-3 md:space-x-4',
-              )}
+          {/* Property Stats - Pill Style */}
+          <div className='flex items-center flex-wrap gap-2'>
+            {bedrooms !== undefined && (
+              <StatPill
+                icon={<Bed className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />}
+                value={bedrooms}
+                label={`${bedrooms} ${t('homePage.property.bedrooms')}`}
+              />
+            )}
+            {bathrooms !== undefined && (
+              <StatPill
+                icon={
+                  <Bath className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
+                }
+                value={bathrooms}
+                label={`${bathrooms} ${t('homePage.property.bathrooms')}`}
+              />
+            )}
+            {area && (
+              <StatPill
+                icon={
+                  <Square className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
+                }
+                value={`${area} m²`}
+              />
+            )}
+            {roomCapacity && (
+              <StatPill
+                icon={
+                  <Users className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
+                }
+                value={roomCapacity}
+                label={`${t('homePage.property.capacity')}: ${roomCapacity}`}
+              />
+            )}
+            {/* Compact inline furnishing & direction */}
+            {furnishing && isCompact && (
+              <StatPill
+                icon={<Sofa className='w-3.5 h-3.5' />}
+                value={tCreatePost(getFurnishingTranslationKey(furnishing))}
+                label={`${t('apartmentDetail.property.furnishing')}: ${tCreatePost(getFurnishingTranslationKey(furnishing))}`}
+              />
+            )}
+            {direction && isCompact && (
+              <StatPill
+                icon={<Compass className='w-3.5 h-3.5' />}
+                value={tCreatePost(getDirectionTranslationKey(direction))}
+                label={`${t('apartmentDetail.property.direction')}: ${tCreatePost(getDirectionTranslationKey(direction))}`}
+              />
+            )}
+          </div>
+
+          {/* Description - Only in compact mode */}
+          {isCompact && description && (
+            <Typography
+              variant='small'
+              className='text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed'
             >
-              {bedrooms !== undefined && (
-                <div
-                  className={classNames(
-                    'flex items-center text-muted-foreground',
-                    isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                  )}
-                >
-                  <Bed
-                    className={classNames(
-                      'mr-1',
-                      isCompact ? 'w-4 h-4' : 'w-3 h-3 sm:w-4 sm:h-4',
-                    )}
-                  />
-                  <Typography
-                    variant='small'
-                    className={classNames(
-                      'font-medium',
-                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                    )}
-                  >
-                    {bedrooms}
-                  </Typography>
-                </div>
-              )}
-              {bathrooms !== undefined && (
-                <div
-                  className={classNames(
-                    'flex items-center text-muted-foreground',
-                    isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                  )}
-                >
-                  <Bath
-                    className={classNames(
-                      'mr-1',
-                      isCompact ? 'w-4 h-4' : 'w-3 h-3 sm:w-4 sm:h-4',
-                    )}
-                  />
-                  <Typography
-                    variant='small'
-                    className={classNames(
-                      'font-medium',
-                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                    )}
-                  >
-                    {bathrooms}
-                  </Typography>
-                </div>
-              )}
-              {area && (
-                <div
-                  className={classNames(
-                    'flex items-center text-muted-foreground',
-                    isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                  )}
-                >
-                  <Square
-                    className={classNames(
-                      'mr-1',
-                      isCompact ? 'w-4 h-4' : 'w-3 h-3 sm:w-4 sm:h-4',
-                    )}
-                  />
-                  <Typography
-                    variant='small'
-                    className={classNames(
-                      'font-medium',
-                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                    )}
-                  >
-                    {area} m²
-                  </Typography>
-                </div>
-              )}
-              {roomCapacity && (
-                <div
-                  className={classNames(
-                    'flex items-center text-muted-foreground',
-                    isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                  )}
-                >
-                  <Users
-                    className={classNames(
-                      'mr-1',
-                      isCompact ? 'w-4 h-4' : 'w-3 h-3 sm:w-4 sm:h-4',
-                    )}
-                  />
-                  <Typography
-                    variant='small'
-                    className={classNames(
-                      'font-medium',
-                      isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                    )}
-                  >
-                    {roomCapacity}
-                  </Typography>
-                </div>
-              )}
-            </div>
-            {/* Additional Info - Right Side */}
+              {description}
+            </Typography>
+          )}
+
+          {/* Non-compact layout: furnishing & direction */}
+          {!isCompact && (furnishing || direction) && (
             <div className='flex items-center gap-1.5 flex-wrap'>
-              {furnishing && !isCompact && (
+              {furnishing && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className='flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 hover:bg-muted transition-colors'>
+                    <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors'>
                       <Sofa className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
                       <Typography
                         variant='small'
@@ -625,10 +702,10 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   </TooltipContent>
                 </Tooltip>
               )}
-              {direction && !isCompact && (
+              {direction && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className='flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 hover:bg-muted transition-colors'>
+                    <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors'>
                       <Compass className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
                       <Typography
                         variant='small'
@@ -647,32 +724,43 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 </Tooltip>
               )}
             </div>
-          </div>
+          )}
 
-          {/* User Info & Contact - Only show user info in compact mode, no phone button */}
+          {/* User Info & Post Date Footer */}
           {isCompact && user && (
-            <div className='flex items-center justify-between gap-2 mt-auto pt-2 border-t border-border'>
+            <div className='flex items-center justify-between gap-2 mt-auto pt-2.5 border-t border-border/60'>
               {/* User Info */}
               <div className='flex items-center gap-2 flex-1 min-w-0'>
+                <div className='w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0'>
+                  <Typography
+                    variant='small'
+                    className='text-xs font-bold text-primary'
+                  >
+                    {userName ? userName.charAt(0).toUpperCase() : '?'}
+                  </Typography>
+                </div>
                 <div className='flex-1 min-w-0'>
                   {userName && (
                     <Typography
                       variant='small'
-                      className='text-sm font-medium truncate'
+                      className='text-sm font-medium truncate block'
                     >
                       {userName}
                     </Typography>
                   )}
-                  {postDate && (
-                    <Typography
-                      variant='small'
-                      className='text-xs text-muted-foreground'
-                    >
-                      {formatDate(postDate, 'dd/MM/yyyy')}
-                    </Typography>
-                  )}
                 </div>
               </div>
+              {postDate && (
+                <div className='flex items-center gap-1 text-muted-foreground flex-shrink-0'>
+                  <Calendar className='w-3 h-3' />
+                  <Typography
+                    variant='small'
+                    className='text-xs text-muted-foreground'
+                  >
+                    {formatDate(postDate, 'dd/MM/yyyy')}
+                  </Typography>
+                </div>
+              )}
             </div>
           )}
 
@@ -684,7 +772,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           )}
 
           {!isCompact && amenities && amenities.length > 0 && (
-            <div className='flex items-start flex-wrap gap-1 mt-auto'>
+            <div className='flex items-start flex-wrap gap-1.5 mt-auto'>
               {amenities.slice(0, 2).map((amenity, index) => {
                 const IconComponent = getAmenityIcon(amenity.name)
                 return (
@@ -692,7 +780,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     key={index}
                     variant='secondary'
                     size='sm'
-                    className='h-6 px-3 py-0 text-xs rounded-full hover:bg-secondary/80 transition-colors duration-200 min-w-[80px] flex items-center justify-center'
+                    className='h-7 px-3 py-0 text-xs rounded-full hover:bg-secondary/80 transition-colors duration-200 min-w-[80px] flex items-center justify-center'
                   >
                     {IconComponent ? (
                       <IconComponent className='w-3 h-3' />
@@ -707,7 +795,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     <Button
                       variant='secondary'
                       size='sm'
-                      className='h-6 px-3 py-0 text-xs rounded-full hover:bg-secondary/80 transition-colors duration-200 cursor-help min-w-[80px] flex items-center justify-center'
+                      className='h-7 px-3 py-0 text-xs rounded-full hover:bg-secondary/80 transition-colors duration-200 cursor-help min-w-[80px] flex items-center justify-center'
                     >
                       +{amenities.length - 2} {t('homePage.property.more')}
                     </Button>

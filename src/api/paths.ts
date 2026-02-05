@@ -222,4 +222,22 @@ export const PATHS = {
     GET: '/v1/recently-viewed',
     SYNC: '/v1/recently-viewed/sync',
   },
+
+  // News endpoints (Public)
+  NEWS: {
+    LIST: '/v1/news',
+    DETAIL: '/v1/news/:slug',
+  },
+
+  // News Admin endpoints
+  ADMIN_NEWS: {
+    LIST: '/v1/admin/news',
+    DETAIL: '/v1/admin/news/:newsId',
+    CREATE: '/v1/admin/news',
+    UPDATE: '/v1/admin/news/:newsId',
+    PUBLISH: '/v1/admin/news/:newsId/publish',
+    UNPUBLISH: '/v1/admin/news/:newsId/unpublish',
+    ARCHIVE: '/v1/admin/news/:newsId/archive',
+    DELETE: '/v1/admin/news/:newsId',
+  },
 }
