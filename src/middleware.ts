@@ -22,6 +22,7 @@ function isPublicPath(pathname: string) {
   if (pathname.startsWith('/auth')) return true
   if (pathname.startsWith('/listing-detail')) return true
   if (pathname.startsWith('/compare')) return true
+  if (pathname.startsWith('/news')) return true
 
   // Allow 404 page
   if (pathname === '/404') return true

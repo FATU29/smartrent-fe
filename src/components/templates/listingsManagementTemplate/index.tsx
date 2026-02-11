@@ -11,6 +11,7 @@ import { useDeleteListing } from '@/hooks/useListings/useDeleteListing'
 import { toast } from 'sonner'
 import { DeleteListingDialog } from '@/components/molecules/deleteListingDialog'
 import { MembershipPushDisplay } from '@/components/molecules/listings/MembershipPushDisplay'
+import { usePushListing, usePushQuota } from '@/hooks/usePush'
 
 const ResidentialFilterDialog = dynamic(
   () => import('@/components/molecules/residentialFilterDialog'),
@@ -42,6 +43,8 @@ const ListingsWithPagination = () => {
   const { user } = useAuthContext()
   const { data: membershipData, isLoading: isMembershipLoading } =
     useMyMembership(user?.userId)
+  const { data: quotaData, refetch: refetchQuota } = usePushQuota()
+  const pushMutation = usePushListing()
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tSeller = useTranslations('seller.listingManagement')
@@ -63,6 +66,30 @@ const ListingsWithPagination = () => {
       rootMargin: '100px',
     },
   })
+
+  const handlePushListing = async (listing: ListingOwnerDetail) => {
+    const hasQuota = quotaData?.data && quotaData.data.totalAvailable > 0
+    const useMembershipQuota = hasQuota ?? false
+
+    try {
+      const result = await pushMutation.mutateAsync({
+        listingId: listing.listingId,
+        useMembershipQuota: useMembershipQuota,
+        paymentProvider: useMembershipQuota ? undefined : 'VNPAY',
+      })
+
+      // If payment URL is returned, it will be handled in the hook's onSuccess
+      if (result.data?.paymentUrl) {
+        toast.loading('Redirecting to payment...')
+      } else if (result.data?.message) {
+        toast.success(result.data.message || 'Listing pushed successfully!')
+        // Trigger quota refresh
+        refetchQuota()
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to push listing')
+    }
+  }
 
   if (isLoading && listings.length === 0) {
     return (
@@ -90,8 +117,8 @@ const ListingsWithPagination = () => {
             onEditListing={(listing) => {
               router.push(`/seller/update-post/${listing.listingId}`)
             }}
-            onPromoteListing={() => {
-              // TODO: Implement promote listing
+            onPromoteListing={(listing) => {
+              handlePushListing(listing)
             }}
             onRepostListing={() => {
               // TODO: Implement repost listing

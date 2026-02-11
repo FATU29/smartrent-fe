@@ -20,7 +20,10 @@ import {
   useUsersWhoClickedListing,
   usePhoneClickStats,
 } from '@/hooks/usePhoneClickDetails'
-import type { ListingClickInfo } from '@/api/types/phone-click-detail.type'
+import type {
+  ListingClickInfo,
+  UserPhoneClickDetail,
+} from '@/api/types/phone-click-detail.type'
 
 interface ListingDetailDialogProps {
   listing: ListingClickInfo | null
@@ -168,10 +171,17 @@ export default function ListingDetailDialog({
                 </div>
               ) : (
                 <div className='space-y-3'>
-                  {usersData.data.map((user) => {
+                  {usersData.data.map((user: UserPhoneClickDetail) => {
                     const userClickCount = user.clickedListings
-                      .filter((l) => l.listingId === listing.listingId)
-                      .reduce((sum, l) => sum + l.clickCount, 0)
+                      .filter(
+                        (l: ListingClickInfo) =>
+                          l.listingId === listing.listingId,
+                      )
+                      .reduce(
+                        (sum: number, l: ListingClickInfo) =>
+                          sum + l.clickCount,
+                        0,
+                      )
 
                     const handleKeyDown = (e: React.KeyboardEvent) => {
                       if (e.key === 'Enter' || e.key === ' ') {

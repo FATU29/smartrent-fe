@@ -419,7 +419,7 @@ export default function UnifiedDetailDialog({
                   </div>
                 ) : (
                   <div className='space-y-3'>
-                    {usersData.data.map((user) => (
+                    {usersData.data.map((user: UserPhoneClickDetail) => (
                       <InterestedUserCard
                         key={user.userId}
                         user={user}

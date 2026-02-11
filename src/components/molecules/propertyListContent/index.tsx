@@ -95,7 +95,7 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
 
   return (
     <div className='space-y-4'>
-      <div className='space-y-3 md:space-y-4'>
+      <div className='space-y-4 md:space-y-5'>
         {items.map((property) =>
           onPropertyClick ? (
             <div
@@ -113,7 +113,7 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
             <Link
               key={property.listingId}
               href={`/listing-detail/${property.listingId}`}
-              className='block'
+              className='block transition-transform duration-200 active:scale-[0.99]'
               onClick={(e) => handleLinkClick(e, property)}
             >
               <PropertyCard

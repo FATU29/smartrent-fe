@@ -31,7 +31,14 @@ export default function GoogleCallback() {
     // Prefer unified returnUrl key used by middleware/AuthRouteGate
     const returnUrl = localStorage.getItem('returnUrl')
     const legacyReturnTo = localStorage.getItem('returnTo')
-    const target = returnUrl || legacyReturnTo || DEFAULT_RETURN_PATH
+    const rawTarget = returnUrl || legacyReturnTo || DEFAULT_RETURN_PATH
+    const target =
+      rawTarget &&
+      rawTarget !== 'undefined' &&
+      rawTarget !== '/undefined' &&
+      rawTarget.startsWith('/')
+        ? rawTarget
+        : DEFAULT_RETURN_PATH
     // Cleanup both keys to avoid stale redirects
     try {
       localStorage.removeItem('returnUrl')

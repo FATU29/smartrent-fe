@@ -44,6 +44,7 @@ export * from './exchange-rate.type'
 export * from './address.type'
 export * from './saved-listing.type'
 export * from './recently-viewed.type'
+export * from './news.type'
 
 export type {
   PropertyType,
