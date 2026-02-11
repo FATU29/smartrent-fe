@@ -51,6 +51,8 @@ export const PUBLIC_ROUTES = {
   LISTING_LISTING: '/properties',
   MAPS: '/maps',
   COMPARE: '/compare',
+  NEWS: '/news',
+  NEWS_DETAIL: '/news/:slug',
 } as const
 
 export type PublicRouteKey = keyof typeof PUBLIC_ROUTES

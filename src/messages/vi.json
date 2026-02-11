@@ -350,7 +350,8 @@
       "contact": "Liên hệ",
       "viewDetails": "Xem Chi tiết",
       "addToFavorites": "Thêm vào Yêu thích",
-      "removeFromFavorites": "Xóa khỏi Yêu thích"
+      "removeFromFavorites": "Xóa khỏi Yêu thích",
+      "capacity": "Sức chứa"
     },
     "auth": {
       "login": {
@@ -653,9 +654,9 @@
       "exploreButton": "Khám phá"
     },
     "vipSections": {
-      "diamond": "💎 Bất động sản Kim Cương",
-      "gold": "⭐ Bất động sản Vàng",
-      "silver": "🥈 Bất động sản Bạc",
+      "diamond": "Bất động sản Kim Cương",
+      "gold": "Bất động sản Vàng",
+      "silver": "Bất động sản Bạc",
       "normal": "Bất động sản Thường"
     },
     "features": {
@@ -687,6 +688,11 @@
     "searchIntro": {
       "title": "Tìm căn phù hợp nhanh chóng",
       "description": "Nhập từ khóa hoặc dùng bộ lọc chi tiết để thu hẹp theo vị trí, giá, loại hình và tiện nghi bạn cần."
+    },
+    "latestNews": {
+      "title": "Tin Tức Mới Nhất",
+      "subtitle": "Cập nhật tin tức bất động sản, mẹo và xu hướng thị trường mới nhất",
+      "viewAll": "Xem tất cả"
     },
     "filters": {
       "title": "Lọc Bất động sản",
@@ -2644,6 +2650,47 @@
         "4to5": "4 - 5 phòng ngủ",
         "6plus": "6+ phòng ngủ"
       }
+    }
+  },
+  "newsPage": {
+    "title": "Tin Tức & Blog",
+    "subtitle": "Cập nhật tin tức bất động sản mới nhất, mẹo và xu hướng thị trường",
+    "seoTitle": "Tin Tức & Blog - SmartRent",
+    "seoDescription": "Tin tức bất động sản mới nhất, mẹo thuê nhà, xu hướng thị trường và hướng dẫn",
+    "allCategories": "Tất cả",
+    "searchPlaceholder": "Tìm kiếm bài viết...",
+    "clearFilters": "Xóa bộ lọc",
+    "resultCount": "{count, plural, =0 {Không tìm thấy bài viết} one {# bài viết} other {# bài viết}}",
+    "noNews": "Không tìm thấy bài viết",
+    "noNewsDescription": "Hãy thử điều chỉnh tiêu chí tìm kiếm hoặc quay lại sau để xem bài viết mới.",
+    "emptyState": {
+      "title": "Chưa có bài viết",
+      "searchTitle": "Không tìm thấy bài viết phù hợp",
+      "description": "Hiện tại chưa có bài viết nào. Hãy quay lại sau để xem tin tức và thông tin mới nhất.",
+      "searchDescription": "Chúng tôi không tìm thấy bài viết nào phù hợp với bộ lọc hiện tại. Hãy thử điều chỉnh tìm kiếm của bạn.",
+      "resetFilters": "Đặt lại bộ lọc",
+      "browseAll": "Xem tất cả bài viết",
+      "tips": "Gợi ý tìm kiếm",
+      "tip1": "Thử sử dụng từ khóa rộng hơn hoặc khác đi",
+      "tip2": "Bớt một số bộ lọc để mở rộng kết quả",
+      "tip3": "Kiểm tra lỗi chính tả trong tìm kiếm của bạn"
+    },
+    "loadingMore": "Đang tải thêm...",
+    "notFound": "Không tìm thấy bài viết",
+    "notFoundDescription": "Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    "backToNews": "Quay lại Tin tức",
+    "views": "lượt xem",
+    "share": "Chia sẻ",
+    "shareSuccess": "Chia sẻ thành công!",
+    "linkCopied": "Đã sao chép liên kết!",
+    "shareFailed": "Chia sẻ thất bại. Vui lòng thử lại.",
+    "relatedNews": "Bài viết liên quan",
+    "categories": {
+      "news": "Tin tức",
+      "blog": "Blog",
+      "marketTrend": "Xu hướng thị trường",
+      "guide": "Hướng dẫn",
+      "announcement": "Thông báo"
     }
   },
   "notFound": {

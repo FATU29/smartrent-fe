@@ -3,6 +3,15 @@ import { Card, CardContent } from '@/components/atoms/card'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { cn } from '@/lib/utils'
 
+const getContentPadding = (
+  isTopLayout: boolean,
+  isCompact: boolean | undefined,
+) => {
+  if (isTopLayout) return 'px-3 pb-3 pt-2'
+  if (isCompact) return 'p-2.5'
+  return 'p-3 sm:p-4'
+}
+
 interface PropertyCardSkeletonProps {
   className?: string
   count?: number
@@ -21,9 +30,9 @@ export const PropertyCardSkeleton: React.FC<PropertyCardSkeletonProps> = ({
     <>
       {Array.from({ length: count }, (_, index) => (
         <Card
-          key={index}
+          key={`property-skeleton-${index}`}
           className={cn(
-            'overflow-hidden animate-pulse',
+            'overflow-hidden animate-pulse border-border/60',
             isCompact
               ? isTopLayout
                 ? 'flex flex-col'
@@ -47,15 +56,15 @@ export const PropertyCardSkeleton: React.FC<PropertyCardSkeletonProps> = ({
                     <div className='relative flex-1 aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg'>
                       <Skeleton className='w-full h-full' />
                       {/* Badges */}
-                      <div className='absolute top-2 left-2 flex flex-col gap-1'>
-                        <Skeleton className='w-16 h-5 rounded-md' />
+                      <div className='absolute top-2 left-2 flex flex-col gap-1.5'>
+                        <Skeleton className='w-16 h-5 rounded-full' />
                       </div>
-                      <div className='absolute top-2 right-2 flex gap-2'>
-                        <Skeleton className='w-8 h-8 rounded-md' />
-                        <Skeleton className='w-8 h-8 rounded-md' />
+                      <div className='absolute top-2 right-2 flex gap-1.5'>
+                        <Skeleton className='w-8 h-8 rounded-full' />
+                        <Skeleton className='w-8 h-8 rounded-full' />
                       </div>
                       <div className='absolute bottom-2 left-2'>
-                        <Skeleton className='w-12 h-5 rounded' />
+                        <Skeleton className='w-14 h-5 rounded-full' />
                       </div>
                     </div>
                     {/* Thumbnails */}
@@ -63,7 +72,7 @@ export const PropertyCardSkeleton: React.FC<PropertyCardSkeletonProps> = ({
                       {Array.from({ length: 3 }, (_, i) => (
                         <Skeleton
                           key={i}
-                          className='aspect-square rounded-md'
+                          className='aspect-square rounded-lg'
                         />
                       ))}
                     </div>
@@ -90,7 +99,7 @@ export const PropertyCardSkeleton: React.FC<PropertyCardSkeletonProps> = ({
                   >
                     <Skeleton
                       className={cn(
-                        'rounded-md',
+                        'rounded-full',
                         isCompact ? 'w-12 h-4' : 'w-16 h-5',
                       )}
                     />
@@ -103,13 +112,13 @@ export const PropertyCardSkeleton: React.FC<PropertyCardSkeletonProps> = ({
                   >
                     <Skeleton
                       className={cn(
-                        'rounded-md',
+                        'rounded-full',
                         isCompact ? 'w-6 h-6' : 'w-8 h-8',
                       )}
                     />
                     <Skeleton
                       className={cn(
-                        'rounded-md',
+                        'rounded-full',
                         isCompact ? 'w-6 h-6' : 'w-8 h-8',
                       )}
                     />
@@ -121,126 +130,93 @@ export const PropertyCardSkeleton: React.FC<PropertyCardSkeletonProps> = ({
               <div
                 className={cn(
                   'flex-1 min-w-0 flex flex-col',
-                  isTopLayout ? 'p-2 pt-1' : isCompact ? 'p-2' : 'p-3 sm:p-4',
+                  getContentPadding(isTopLayout, isCompact),
                 )}
               >
-                {/* Header: Title & Badges */}
-                <div className={cn('space-y-2', isCompact ? 'mb-2' : 'mb-3')}>
-                  {/* Title */}
-                  <div className='space-y-1'>
+                {/* Title & Badge */}
+                <div className='flex items-start justify-between gap-2 mb-2.5'>
+                  <div className='flex-1 space-y-1'>
                     <Skeleton
                       className={cn(
                         'rounded',
-                        isCompact ? 'h-3 w-3/4' : 'h-4 w-4/5',
+                        isCompact ? 'h-4 w-3/4' : 'h-4 w-4/5',
                       )}
                     />
                     <Skeleton
                       className={cn(
                         'rounded',
-                        isCompact ? 'h-3 w-1/2' : 'h-4 w-2/3',
+                        isCompact ? 'h-4 w-1/2' : 'h-4 w-2/3',
                       )}
                     />
                   </div>
-
-                  {/* Badges */}
-                  {!isCompact && (
-                    <div className='flex items-center gap-2'>
-                      <Skeleton className='h-5 w-16 rounded' />
-                      <Skeleton className='h-5 w-20 rounded' />
-                    </div>
-                  )}
+                  <Skeleton className='h-5 w-16 rounded-full flex-shrink-0' />
                 </div>
 
-                {/* Address Section */}
-                {!isCompact && (
-                  <div className='space-y-2 mb-3'>
-                    <div className='flex items-start gap-2 p-2 rounded-lg bg-muted/50'>
-                      <Skeleton className='w-4 h-4 rounded mt-0.5' />
-                      <div className='flex-1 space-y-1'>
-                        <Skeleton className='h-2 w-20' />
-                        <Skeleton className='h-3 w-full' />
-                        <Skeleton className='h-3 w-4/5' />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Amenities */}
-                {!isCompact && (
-                  <div className='mb-3'>
-                    <Skeleton className='h-3 w-16 mb-2' />
-                    <div className='flex flex-wrap gap-2'>
-                      {Array.from({ length: 4 }, (_, i) => (
-                        <Skeleton key={i} className='h-7 w-20 rounded-lg' />
-                      ))}
-                      <Skeleton className='h-7 w-12 rounded-lg' />
-                    </div>
-                  </div>
-                )}
+                {/* Address */}
+                <div className='flex items-center gap-1.5 mb-2.5'>
+                  <Skeleton className='w-3.5 h-3.5 rounded-full flex-shrink-0' />
+                  <Skeleton className='h-3 w-2/3 rounded' />
+                </div>
 
                 {/* Price */}
-                <div className={cn(isCompact ? 'mb-2' : 'mb-3')}>
+                <div className='flex items-center justify-between mb-2.5'>
                   <Skeleton
                     className={cn(
                       'rounded',
-                      isCompact ? 'h-4 w-24' : 'h-6 w-32',
+                      isCompact ? 'h-6 w-28' : 'h-6 w-32',
                     )}
                   />
+                  {isCompact && <Skeleton className='h-4 w-20 rounded-full' />}
                 </div>
 
-                {/* Property Specs */}
+                {/* Stats pills */}
+                <div className='flex items-center gap-2 mb-2.5'>
+                  {Array.from({ length: isCompact ? 4 : 3 }, (_, i) => (
+                    <Skeleton key={i} className='h-8 w-16 rounded-lg' />
+                  ))}
+                </div>
+
+                {/* Description (compact only) */}
+                {isCompact && (
+                  <div className='space-y-1 mb-2.5'>
+                    <Skeleton className='h-3 w-full rounded' />
+                    <Skeleton className='h-3 w-4/5 rounded' />
+                  </div>
+                )}
+
+                {/* Amenities (non-compact) */}
                 {!isCompact && (
-                  <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 mb-3'>
-                    {Array.from({ length: 4 }, (_, i) => (
-                      <div
-                        key={i}
-                        className='flex items-center gap-2 p-2 rounded-lg bg-muted/50'
-                      >
-                        <Skeleton className='w-8 h-8 rounded-full' />
-                        <div className='flex-1 space-y-1'>
-                          <Skeleton className='h-2 w-12' />
-                          <Skeleton className='h-3 w-16' />
-                        </div>
-                      </div>
+                  <div className='flex flex-wrap gap-1.5 mb-3'>
+                    {Array.from({ length: 3 }, (_, i) => (
+                      <Skeleton key={i} className='h-7 w-20 rounded-full' />
                     ))}
                   </div>
                 )}
 
-                {/* Stats - Compact */}
+                {/* Bottom Section - User Info */}
                 {isCompact && (
-                  <div className='flex items-center gap-2 mb-2'>
-                    <Skeleton className='h-3 w-3 rounded' />
-                    <Skeleton className='h-3 w-16 rounded' />
-                    <Skeleton className='h-3 w-16 rounded' />
-                  </div>
-                )}
-
-                {/* Description */}
-                {!isCompact && (
-                  <div className='space-y-1 mb-3'>
-                    <Skeleton className='h-3 w-full' />
-                    <Skeleton className='h-3 w-4/5' />
-                  </div>
-                )}
-
-                {/* Bottom Section - Stats or Actions */}
-                {isCompact ? (
-                  <div className='flex items-center justify-between mt-auto pt-2 border-t border-border'>
+                  <div className='flex items-center justify-between mt-auto pt-2.5 border-t border-border/60'>
                     <div className='flex items-center gap-2'>
-                      <Skeleton className='h-5 w-5 rounded-full' />
+                      <Skeleton className='w-7 h-7 rounded-full' />
+                      <Skeleton className='h-3 w-20 rounded' />
+                    </div>
+                    <div className='flex items-center gap-1'>
+                      <Skeleton className='w-3 h-3 rounded' />
                       <Skeleton className='h-3 w-16 rounded' />
                     </div>
-                    <Skeleton className='h-6 w-6 rounded-full' />
                   </div>
-                ) : (
-                  <div className='flex items-center justify-between mt-auto pt-3 border-t border-border'>
+                )}
+
+                {/* Non-compact bottom */}
+                {!isCompact && (
+                  <div className='flex items-center justify-between mt-auto pt-3 border-t border-border/60'>
                     <div className='flex items-center gap-3'>
                       <Skeleton className='h-6 w-6 rounded-full' />
                       <Skeleton className='h-4 w-20' />
                     </div>
                     <div className='flex items-center gap-2'>
-                      <Skeleton className='h-8 w-8 rounded-md' />
-                      <Skeleton className='h-8 w-8 rounded-md' />
+                      <Skeleton className='h-8 w-8 rounded-full' />
+                      <Skeleton className='h-8 w-8 rounded-full' />
                     </div>
                   </div>
                 )}

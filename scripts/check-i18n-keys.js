@@ -101,6 +101,20 @@ function collectLeafKeysWithValues(obj, prefix = '', out = new Map()) {
 
 function extractPlaceholders(str) {
   if (typeof str !== 'string') return []
+
+  // Detect ICU plural/select/selectordinal messages.
+  // For these we only compare the variable name and message type
+  // (e.g. "{count, plural, …}") rather than the translated branch texts.
+  const icuPattern = /\{(\w+)\s*,\s*(plural|select|selectordinal)\s*,/
+  const icuMatch = str.match(icuPattern)
+  if (icuMatch) {
+    // Return the structural variable references, e.g. ["{count, plural}"]
+    // plus any standalone {#} tokens used inside branches.
+    const result = [`{${icuMatch[1]}, ${icuMatch[2]}}`]
+    if (str.includes('{#')) result.push('{#}')
+    return result.sort()
+  }
+
   const matches = str.match(/\{[^}]+\}/g)
   return matches ? matches.sort() : []
 }

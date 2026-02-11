@@ -48,29 +48,24 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Required for SonarCloud to get blame info
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-          SONAR_ORG: ${{ secrets.SONAR_ORG }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          # Only override projectKey & organization — all other settings
+          # are read from sonar-project.properties (single source of truth).
           args: >-
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             -Dsonar.organization=${{ secrets.SONAR_ORG }}
-            -Dsonar.sources=src
-            -Dsonar.exclusions=**/*.test.ts,**/*.test.tsx,**/__tests__/**
-            -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.coverage.exclusions=src/**/*
+
+      # Quality Gate check — informational only while no tests exist.
+      # Set continue-on-error to false once coverage & tests are in place.
       - name: SonarCloud Quality Gate
-        if: ${{ always() }}
-        continue-on-error: true # Do not fail pipeline if gate fails (while no tests)
-        uses: SonarSource/sonarcloud-github-action@v5
+        uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
+        timeout-minutes: 5
+        continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: >-
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.organization=${{ secrets.SONAR_ORG }}

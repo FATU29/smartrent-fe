@@ -1,6 +1,7 @@
 import '@/styles/globals.css'
 import '@/styles/reset.scss'
 import '@/styles/listing-detail.css'
+import '@/styles/news-article.css'
 import '@/components/molecules/desktopNavigation/navigation.css'
 import ThemeDataProvider from '@/contexts/theme'
 import AuthProvider from '@/contexts/auth'

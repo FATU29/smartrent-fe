@@ -105,6 +105,17 @@ export const PATHS = {
   // Push Actions endpoints
   PUSHES: {
     PUSH: '/v1/pushes/push', // Push listing with payment or membership quota
+    SCHEDULE: '/v1/pushes/schedule', // Schedule automatic pushes
+    HISTORY: '/v1/pushes/history/:listingId', // Get listing push history
+    MY_HISTORY: '/v1/pushes/my-history', // Get user's push history
+    CANCEL_SCHEDULE: '/v1/pushes/schedule/:scheduleId', // Cancel scheduled push
+  },
+
+  // Quota endpoints
+  QUOTA: {
+    CHECK_PUSH: '/v1/quotas/check/PUSH', // Check push quota
+    CHECK_ALL: '/v1/quotas/check', // Check all quotas
+    CHECK_SPECIFIC: '/v1/quotas/check/:benefitType', // Check specific quota
   },
 
   // VIP Tier endpoints
@@ -221,5 +232,24 @@ export const PATHS = {
   RECENTLY_VIEWED: {
     GET: '/v1/recently-viewed',
     SYNC: '/v1/recently-viewed/sync',
+  },
+
+  // News endpoints (Public)
+  NEWS: {
+    LIST: '/v1/news',
+    DETAIL: '/v1/news/:slug',
+    NEWEST: '/v1/news/newest',
+  },
+
+  // News Admin endpoints
+  ADMIN_NEWS: {
+    LIST: '/v1/admin/news',
+    DETAIL: '/v1/admin/news/:newsId',
+    CREATE: '/v1/admin/news',
+    UPDATE: '/v1/admin/news/:newsId',
+    PUBLISH: '/v1/admin/news/:newsId/publish',
+    UNPUBLISH: '/v1/admin/news/:newsId/unpublish',
+    ARCHIVE: '/v1/admin/news/:newsId/archive',
+    DELETE: '/v1/admin/news/:newsId',
   },
 }
