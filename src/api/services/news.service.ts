@@ -17,6 +17,27 @@ import type {
   NewsUpdateRequest,
 } from '../types/news.type'
 
+// ============= HELPERS =============
+
+const buildNewsQueryString = (params?: NewsListRequest): string => {
+  if (!params) return ''
+  const queryParams = new URLSearchParams()
+  if (params.page) queryParams.append('page', params.page.toString())
+  if (params.size) queryParams.append('size', params.size.toString())
+  if (params.category) queryParams.append('category', params.category)
+  if (params.tag) queryParams.append('tag', params.tag)
+  if (params.keyword) queryParams.append('keyword', params.keyword)
+  return queryParams.toString()
+}
+
+const NEWS_LIST_ERROR_DATA: NewsListResponse = {
+  news: [],
+  totalItems: 0,
+  currentPage: 1,
+  pageSize: 20,
+  totalPages: 0,
+}
+
 // ============= NEWS SERVICE CLASS =============
 
 export class NewsService {
@@ -30,15 +51,7 @@ export class NewsService {
     params?: NewsListRequest,
   ): Promise<ApiResponse<NewsListResponse>> {
     try {
-      const queryParams = new URLSearchParams()
-
-      if (params?.page) queryParams.append('page', params.page.toString())
-      if (params?.size) queryParams.append('size', params.size.toString())
-      if (params?.category) queryParams.append('category', params.category)
-      if (params?.tag) queryParams.append('tag', params.tag)
-      if (params?.keyword) queryParams.append('keyword', params.keyword)
-
-      const queryString = queryParams.toString()
+      const queryString = buildNewsQueryString(params)
       const url = queryString
         ? `${PATHS.NEWS.LIST}?${queryString}`
         : PATHS.NEWS.LIST
@@ -54,13 +67,7 @@ export class NewsService {
       return {
         code: '500',
         message: String(error),
-        data: {
-          news: [],
-          totalItems: 0,
-          currentPage: 1,
-          pageSize: 20,
-          totalPages: 0,
-        },
+        data: { ...NEWS_LIST_ERROR_DATA },
         success: false,
       }
     }
@@ -146,15 +153,7 @@ export class NewsService {
     params?: NewsListRequest,
   ): Promise<ApiResponse<NewsListResponse>> {
     try {
-      const queryParams = new URLSearchParams()
-
-      if (params?.page) queryParams.append('page', params.page.toString())
-      if (params?.size) queryParams.append('size', params.size.toString())
-      if (params?.category) queryParams.append('category', params.category)
-      if (params?.tag) queryParams.append('tag', params.tag)
-      if (params?.keyword) queryParams.append('keyword', params.keyword)
-
-      const queryString = queryParams.toString()
+      const queryString = buildNewsQueryString(params)
       const url = queryString
         ? `${PATHS.ADMIN_NEWS.LIST}?${queryString}`
         : PATHS.ADMIN_NEWS.LIST
@@ -170,13 +169,7 @@ export class NewsService {
       return {
         code: '500',
         message: String(error),
-        data: {
-          news: [],
-          totalItems: 0,
-          currentPage: 1,
-          pageSize: 20,
-          totalPages: 0,
-        },
+        data: { ...NEWS_LIST_ERROR_DATA },
         success: false,
       }
     }

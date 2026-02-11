@@ -7,10 +7,14 @@ import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
 import ImageAtom from '@/components/atoms/imageAtom'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
-import { NewsItem, NewsCategory } from '@/api/types/news.type'
+import { NewsItem } from '@/api/types/news.type'
 import { Calendar, Eye, User, ArrowRight } from 'lucide-react'
-import { formatDistanceToNow, format } from 'date-fns'
 import { PUBLIC_ROUTES } from '@/constants/route'
+import {
+  getCategoryConfig,
+  formatPublishedDate,
+  formatViewCount,
+} from '@/utils/news'
 import classNames from 'classnames'
 
 interface LatestNewsSectionProps {
@@ -24,59 +28,6 @@ const LatestNewsSection: React.FC<LatestNewsSectionProps> = ({
 }) => {
   const t = useTranslations('homePage.latestNews')
   const tCategories = useTranslations('newsPage.categories')
-
-  const getCategoryConfig = (cat: NewsCategory | string) => {
-    const configs: Record<string, { label: string; className: string }> = {
-      NEWS: {
-        label: tCategories('news'),
-        className: 'bg-blue-500 text-white border-blue-500',
-      },
-      BLOG: {
-        label: tCategories('blog'),
-        className: 'bg-violet-500 text-white border-violet-500',
-      },
-      MARKET_TREND: {
-        label: tCategories('marketTrend'),
-        className: 'bg-amber-500 text-white border-amber-500',
-      },
-      GUIDE: {
-        label: tCategories('guide'),
-        className: 'bg-emerald-500 text-white border-emerald-500',
-      },
-      ANNOUNCEMENT: {
-        label: tCategories('announcement'),
-        className: 'bg-red-500 text-white border-red-500',
-      },
-    }
-    return configs[cat] || configs.NEWS
-  }
-
-  const formatPublishedDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString)
-      const now = new Date()
-      const diffDays = Math.floor(
-        (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
-      )
-
-      if (diffDays < 7) {
-        return formatDistanceToNow(date, { addSuffix: true })
-      }
-      return format(date, 'dd/MM/yyyy')
-    } catch {
-      return dateString
-    }
-  }
-
-  const formatViewCount = (count: number) => {
-    if (count >= 1000000) {
-      return `${(count / 1000000).toFixed(1)}M`
-    }
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`
-    }
-    return count.toString()
-  }
 
   if (isLoading) {
     return (
@@ -132,7 +83,7 @@ const LatestNewsSection: React.FC<LatestNewsSectionProps> = ({
       {/* News Grid */}
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6'>
         {news.map((item) => {
-          const categoryConfig = getCategoryConfig(item.category)
+          const categoryConfig = getCategoryConfig(item.category, tCategories)
           const newsUrl = `${PUBLIC_ROUTES.NEWS}/${item.slug}`
           const imageUrl = item.thumbnailUrl || `${basePath}${DEFAULT_IMAGE}`
 

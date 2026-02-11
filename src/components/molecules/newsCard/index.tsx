@@ -7,10 +7,14 @@ import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
 import ImageAtom from '@/components/atoms/imageAtom'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
-import { NewsItem, NewsCategory } from '@/api/types/news.type'
+import { NewsItem } from '@/api/types/news.type'
 import { Calendar, Eye, User, Tag } from 'lucide-react'
-import { formatDistanceToNow, format } from 'date-fns'
 import { PUBLIC_ROUTES } from '@/constants/route'
+import {
+  getCategoryConfig,
+  formatPublishedDate,
+  formatViewCount,
+} from '@/utils/news'
 
 interface NewsCardProps {
   news: NewsItem
@@ -46,60 +50,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
     }
   }
 
-  const getCategoryConfig = (cat: NewsCategory | string) => {
-    const configs: Record<string, { label: string; className: string }> = {
-      NEWS: {
-        label: tCategories('news'),
-        className: 'bg-blue-500 text-white border-blue-500',
-      },
-      BLOG: {
-        label: tCategories('blog'),
-        className: 'bg-violet-500 text-white border-violet-500',
-      },
-      MARKET_TREND: {
-        label: tCategories('marketTrend'),
-        className: 'bg-amber-500 text-white border-amber-500',
-      },
-      GUIDE: {
-        label: tCategories('guide'),
-        className: 'bg-emerald-500 text-white border-emerald-500',
-      },
-      ANNOUNCEMENT: {
-        label: tCategories('announcement'),
-        className: 'bg-red-500 text-white border-red-500',
-      },
-    }
-    return configs[cat] || configs.NEWS
-  }
-
-  const categoryConfig = getCategoryConfig(category)
-
-  const formatPublishedDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString)
-      const now = new Date()
-      const diffDays = Math.floor(
-        (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
-      )
-
-      if (diffDays < 7) {
-        return formatDistanceToNow(date, { addSuffix: true })
-      }
-      return format(date, 'dd/MM/yyyy')
-    } catch {
-      return dateString
-    }
-  }
-
-  const formatViewCount = (count: number) => {
-    if (count >= 1000000) {
-      return `${(count / 1000000).toFixed(1)}M`
-    }
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`
-    }
-    return count.toString()
-  }
+  const categoryConfig = getCategoryConfig(category, tCategories)
 
   const newsUrl = `${PUBLIC_ROUTES.NEWS}/${slug}`
   const imageUrl = thumbnailUrl || `${basePath}${DEFAULT_IMAGE}`

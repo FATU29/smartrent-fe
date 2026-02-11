@@ -1,7 +1,7 @@
 import React from 'react'
 import { useListContext } from '@/contexts/list'
 import NewsCard from '@/components/molecules/newsCard'
-import { NewsCardSkeleton } from '@/components/atoms/newsCardSkeleton'
+import { NewsCardSkeleton } from '@/components/molecules/newsCard/NewsCardSkeleton'
 import ListPagination from '@/contexts/list/index.pagination'
 import NewsEmptyState from '@/components/atoms/newsEmptyState'
 import { NewsItem } from '@/api/types/news.type'

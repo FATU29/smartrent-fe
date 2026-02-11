@@ -8,8 +8,8 @@ import ImageAtom from '@/components/atoms/imageAtom'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
 import { NewsItem } from '@/api/types/news.type'
 import { Calendar, Eye, User } from 'lucide-react'
-import { formatDistanceToNow, format } from 'date-fns'
 import { PUBLIC_ROUTES } from '@/constants/route'
+import { formatPublishedDate, formatViewCount } from '@/utils/news'
 
 export interface NewsGridItemProps {
   news: NewsItem
@@ -25,28 +25,6 @@ export interface NewsGridItemProps {
 }
 
 // Helpers
-
-const formatPublishedDate = (dateString: string) => {
-  try {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffDays = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
-    )
-    if (diffDays < 7) {
-      return formatDistanceToNow(date, { addSuffix: true })
-    }
-    return format(date, 'dd/MM/yyyy')
-  } catch {
-    return dateString
-  }
-}
-
-const formatViewCount = (count: number) => {
-  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`
-  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`
-  return count.toString()
-}
 
 const CATEGORY_STYLES: Record<string, string> = {
   NEWS: 'bg-primary/10 text-primary border-primary/20',
