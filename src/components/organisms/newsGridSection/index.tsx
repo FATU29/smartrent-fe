@@ -30,6 +30,76 @@ const CATEGORY_LABEL_MAP: Record<string, string> = {
   ANNOUNCEMENT: 'announcement',
 }
 
+interface NewsGridContentProps {
+  isMobile: boolean
+  news: NewsItem[]
+  featuredItem: NewsItem | null
+  restItems: NewsItem[]
+  getCategoryLabel: (category: string) => string
+}
+
+const NewsGridContent: React.FC<NewsGridContentProps> = ({
+  isMobile,
+  news,
+  featuredItem,
+  restItems,
+  getCategoryLabel,
+}) => {
+  if (isMobile) {
+    return (
+      <Carousel
+        opts={{ align: 'start', loop: false, dragFree: true }}
+        className='w-full'
+      >
+        <CarouselContent className='-ml-3'>
+          {news.slice(0, 5).map((item: NewsItem) => (
+            <CarouselItem
+              key={item.newsId}
+              className='pl-3 basis-[75%] min-[480px]:basis-[60%]'
+            >
+              <NewsGridItem
+                news={item}
+                getCategoryLabel={getCategoryLabel}
+                showSummary={false}
+                showMeta
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+    )
+  }
+
+  return (
+    <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5'>
+      {featuredItem && (
+        <NewsGridItem
+          key={featuredItem.newsId}
+          news={featuredItem}
+          variant='featured'
+          getCategoryLabel={getCategoryLabel}
+          showSummary
+          showMeta
+        />
+      )}
+
+      {restItems.length > 0 && (
+        <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
+          {restItems.map((item: NewsItem) => (
+            <NewsGridItem
+              key={item.newsId}
+              news={item}
+              getCategoryLabel={getCategoryLabel}
+              showSummary={false}
+              showMeta
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 const NewsGridSection: React.FC<NewsGridSectionProps> = ({
   news,
   loading = false,
@@ -86,60 +156,18 @@ const NewsGridSection: React.FC<NewsGridSectionProps> = ({
           <NewsGridItemSkeleton className='lg:row-span-2' />
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5'>
             {Array.from({ length: skeletonCount }).map((_, i) => (
-              <NewsGridItemSkeleton key={i} />
+              <NewsGridItemSkeleton key={`grid-skeleton-${i}`} />
             ))}
           </div>
         </div>
-      ) : isMobile ? (
-        /* ── Mobile carousel ── */
-        <Carousel
-          opts={{ align: 'start', loop: false, dragFree: true }}
-          className='w-full'
-        >
-          <CarouselContent className='-ml-3'>
-            {news.slice(0, 5).map((item: NewsItem) => (
-              <CarouselItem
-                key={item.newsId}
-                className='pl-3 basis-[75%] min-[480px]:basis-[60%]'
-              >
-                <NewsGridItem
-                  news={item}
-                  getCategoryLabel={getCategoryLabel}
-                  showSummary={false}
-                  showMeta
-                />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
       ) : (
-        /* ── Desktop: featured left + 2×2 right ── */
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5'>
-          {featuredItem && (
-            <NewsGridItem
-              key={featuredItem.newsId}
-              news={featuredItem}
-              variant='featured'
-              getCategoryLabel={getCategoryLabel}
-              showSummary
-              showMeta
-            />
-          )}
-
-          {restItems.length > 0 && (
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
-              {restItems.map((item: NewsItem) => (
-                <NewsGridItem
-                  key={item.newsId}
-                  news={item}
-                  getCategoryLabel={getCategoryLabel}
-                  showSummary={false}
-                  showMeta
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        <NewsGridContent
+          isMobile={isMobile}
+          news={news}
+          featuredItem={featuredItem}
+          restItems={restItems}
+          getCategoryLabel={getCategoryLabel}
+        />
       )}
     </section>
   )

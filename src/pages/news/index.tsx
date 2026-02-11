@@ -204,8 +204,8 @@ export const getServerSideProps: GetServerSideProps<NewsPageProps> = async (
   try {
     const { query } = context
 
-    const page = query.page ? parseInt(query.page as string, 10) : 1
-    const size = query.size ? parseInt(query.size as string, 10) : 20
+    const page = query.page ? Number.parseInt(query.page as string, 10) : 1
+    const size = query.size ? Number.parseInt(query.size as string, 10) : 20
     const category = (query.category as string) || null
     const keyword = (query.keyword as string) || null
 

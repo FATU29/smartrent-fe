@@ -19,7 +19,7 @@ const NewsListPagination = ({
   const { filters, pagination, goToPage, updateFilters } = useNewsContext()
 
   const handleSizeChange = (newSize: string) => {
-    updateFilters({ size: parseInt(newSize), page: 1 })
+    updateFilters({ size: Number.parseInt(newSize, 10), page: 1 })
   }
 
   return (

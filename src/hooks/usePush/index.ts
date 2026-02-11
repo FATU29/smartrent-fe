@@ -78,7 +78,7 @@ export function usePushListing() {
 
       // If payment URL is returned, redirect to payment
       if (data.data?.paymentUrl) {
-        window.location.href = data.data.paymentUrl
+        globalThis.location.href = data.data.paymentUrl
       }
     },
   })

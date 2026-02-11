@@ -40,7 +40,7 @@ const mergeFilters = (
 ): NewsFilterRequest => ({
   ...DEFAULT_NEWS_FILTERS,
   ...overrides,
-  page: overrides.page !== undefined ? overrides.page : DEFAULT_NEWS_PAGE,
+  page: overrides.page ?? DEFAULT_NEWS_PAGE,
 })
 
 const areFiltersEqual = (
@@ -107,7 +107,7 @@ const useNewsFilters = (
         const updated = {
           ...prev,
           ...newFilters,
-          page: newFilters.page !== undefined ? newFilters.page : 1,
+          page: newFilters.page ?? 1,
         }
         return areFiltersEqual(prev, updated) ? prev : updated
       })

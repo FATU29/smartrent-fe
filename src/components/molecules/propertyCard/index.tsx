@@ -53,6 +53,32 @@ interface PropertyCardProps {
   imageLayout?: 'left' | 'top'
 }
 
+// Stats pill component for consistent styling
+const StatPill: React.FC<{
+  icon: React.ReactNode
+  value: React.ReactNode
+  label?: string
+}> = ({ icon, value, label }) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/60 hover:bg-muted transition-colors duration-200'>
+        <span className='text-primary'>{icon}</span>
+        <Typography
+          variant='small'
+          className='font-semibold text-sm text-foreground'
+        >
+          {value}
+        </Typography>
+      </div>
+    </TooltipTrigger>
+    {label && (
+      <TooltipContent side='top' className='z-50'>
+        <p>{label}</p>
+      </TooltipContent>
+    )}
+  </Tooltip>
+)
+
 const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   const {
     listing,
@@ -263,9 +289,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           {/* Image dots indicator */}
           {totalImages > 1 && totalImages <= 5 && (
             <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1'>
-              {assetsImages.slice(0, 5).map((_, idx) => (
+              {assetsImages.slice(0, 5).map((img, idx) => (
                 <span
-                  key={idx}
+                  key={img || `dot-${idx}`}
                   className={classNames(
                     'w-1.5 h-1.5 rounded-full transition-all duration-200',
                     currentImageIndex === idx ? 'bg-white w-3' : 'bg-white/50',
@@ -321,7 +347,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           <div className='flex flex-col gap-1.5 w-12 md:w-14'>
             {thumbnails.slice(0, 3).map((img, idx) => (
               <button
-                key={idx}
+                key={img || `thumb-${idx}`}
                 type='button'
                 onClick={(e) => {
                   e.stopPropagation()
@@ -468,32 +494,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
       </div>
     )
   }
-
-  // Stats pill component for consistent styling
-  const StatPill: React.FC<{
-    icon: React.ReactNode
-    value: React.ReactNode
-    label?: string
-  }> = ({ icon, value, label }) => (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/60 hover:bg-muted transition-colors duration-200'>
-          <span className='text-primary'>{icon}</span>
-          <Typography
-            variant='small'
-            className='font-semibold text-sm text-foreground'
-          >
-            {value}
-          </Typography>
-        </div>
-      </TooltipTrigger>
-      {label && (
-        <TooltipContent side='top' className='z-50'>
-          <p>{label}</p>
-        </TooltipContent>
-      )}
-    </Tooltip>
-  )
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -773,11 +773,11 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
           {!isCompact && amenities && amenities.length > 0 && (
             <div className='flex items-start flex-wrap gap-1.5 mt-auto'>
-              {amenities.slice(0, 2).map((amenity, index) => {
+              {amenities.slice(0, 2).map((amenity) => {
                 const IconComponent = getAmenityIcon(amenity.name)
                 return (
                   <Button
-                    key={index}
+                    key={amenity.name}
                     variant='secondary'
                     size='sm'
                     className='h-7 px-3 py-0 text-xs rounded-full hover:bg-secondary/80 transition-colors duration-200 min-w-[80px] flex items-center justify-center'
@@ -805,9 +805,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                       <Typography variant='small' className='font-medium'>
                         {t('homePage.property.additionalAmenities')}:
                       </Typography>
-                      {amenities.slice(2).map((amenity, index) => (
+                      {amenities.slice(2).map((amenity) => (
                         <Typography
-                          key={index}
+                          key={amenity.name}
                           variant='small'
                           className='block'
                         >

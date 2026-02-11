@@ -62,113 +62,108 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
     : category.replace('_', ' ')
 
   return (
-    <Link href={newsUrl} passHref legacyBehavior>
-      <a
+    <Link
+      href={newsUrl}
+      className={classNames(
+        'group block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl',
+        className,
+      )}
+    >
+      <Card
         className={classNames(
-          'group block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl',
-          className,
+          'overflow-hidden transition-all duration-200 h-full flex flex-col',
+          'hover:shadow-md hover:border-primary/30',
         )}
       >
-        <Card
+        {/* Thumbnail */}
+        <div
           className={classNames(
-            'overflow-hidden transition-all duration-200 h-full flex flex-col',
-            'hover:shadow-md hover:border-primary/30',
+            'relative overflow-hidden bg-muted',
+            isFeatured ? 'aspect-[4/3] sm:aspect-[16/10]' : 'aspect-[16/10]',
           )}
         >
-          {/* Thumbnail */}
+          <ImageAtom
+            src={imageUrl}
+            alt={title}
+            width={isFeatured ? 600 : 320}
+            height={isFeatured ? 375 : 200}
+            className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+          />
           <div
             className={classNames(
-              'relative overflow-hidden bg-muted',
-              isFeatured ? 'aspect-[4/3] sm:aspect-[16/10]' : 'aspect-[16/10]',
+              'absolute',
+              isFeatured ? 'top-3 left-3' : 'top-2 left-2',
             )}
           >
-            <ImageAtom
-              src={imageUrl}
-              alt={title}
-              width={isFeatured ? 600 : 320}
-              height={isFeatured ? 375 : 200}
-              className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
-            />
+            <Badge
+              variant='outline'
+              className={classNames(
+                'font-medium backdrop-blur-sm bg-background/80',
+                isFeatured ? 'text-xs' : 'text-[10px] px-1.5 py-0.5',
+                catStyle,
+              )}
+            >
+              {catLabel}
+            </Badge>
+          </div>
+        </div>
+
+        {/* Body */}
+        <CardContent
+          className={classNames(
+            'flex flex-col flex-1',
+            isFeatured ? 'p-5' : 'p-3',
+          )}
+        >
+          <Typography
+            variant={isFeatured ? 'h3' : 'h4'}
+            className={classNames(
+              'font-semibold line-clamp-2 group-hover:text-primary transition-colors',
+              isFeatured ? 'text-lg sm:text-xl mb-2' : 'text-sm mb-1.5',
+            )}
+          >
+            {title}
+          </Typography>
+
+          {showSummary && (
+            <Typography
+              variant='p'
+              className={classNames(
+                'text-muted-foreground flex-1',
+                isFeatured
+                  ? 'text-sm sm:text-base line-clamp-3 mb-3'
+                  : 'text-xs line-clamp-2 mb-2',
+              )}
+            >
+              {summary}
+            </Typography>
+          )}
+
+          {showMeta && (
             <div
               className={classNames(
-                'absolute',
-                isFeatured ? 'top-3 left-3' : 'top-2 left-2',
+                'flex flex-wrap items-center text-muted-foreground border-t',
+                isFeatured ? 'gap-2 text-xs pt-3' : 'gap-1.5 text-[11px] pt-2',
               )}
             >
-              <Badge
-                variant='outline'
-                className={classNames(
-                  'font-medium backdrop-blur-sm bg-background/80',
-                  isFeatured ? 'text-xs' : 'text-[10px] px-1.5 py-0.5',
-                  catStyle,
-                )}
-              >
-                {catLabel}
-              </Badge>
+              {authorName && (
+                <span className='inline-flex items-center gap-1'>
+                  <User className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
+                  <span className='truncate max-w-[80px]'>{authorName}</span>
+                </span>
+              )}
+              <span className='inline-flex items-center gap-1'>
+                <Calendar className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
+                {formatPublishedDate(publishedAt)}
+              </span>
+              <span className='inline-flex items-center gap-1'>
+                <Eye className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
+                {formatViewCount(viewCount)}
+              </span>
             </div>
-          </div>
-
-          {/* Body */}
-          <CardContent
-            className={classNames(
-              'flex flex-col flex-1',
-              isFeatured ? 'p-5' : 'p-3',
-            )}
-          >
-            <Typography
-              variant={isFeatured ? 'h3' : 'h4'}
-              className={classNames(
-                'font-semibold line-clamp-2 group-hover:text-primary transition-colors',
-                isFeatured ? 'text-lg sm:text-xl mb-2' : 'text-sm mb-1.5',
-              )}
-            >
-              {title}
-            </Typography>
-
-            {showSummary && (
-              <Typography
-                variant='p'
-                className={classNames(
-                  'text-muted-foreground flex-1',
-                  isFeatured
-                    ? 'text-sm sm:text-base line-clamp-3 mb-3'
-                    : 'text-xs line-clamp-2 mb-2',
-                )}
-              >
-                {summary}
-              </Typography>
-            )}
-
-            {showMeta && (
-              <div
-                className={classNames(
-                  'flex flex-wrap items-center text-muted-foreground border-t',
-                  isFeatured
-                    ? 'gap-2 text-xs pt-3'
-                    : 'gap-1.5 text-[11px] pt-2',
-                )}
-              >
-                {authorName && (
-                  <span className='inline-flex items-center gap-1'>
-                    <User className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
-                    <span className='truncate max-w-[80px]'>{authorName}</span>
-                  </span>
-                )}
-                <span className='inline-flex items-center gap-1'>
-                  <Calendar
-                    className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'}
-                  />
-                  {formatPublishedDate(publishedAt)}
-                </span>
-                <span className='inline-flex items-center gap-1'>
-                  <Eye className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
-                  {formatViewCount(viewCount)}
-                </span>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </a>
+          )}
+        </CardContent>
+      </Card>
     </Link>
   )
 }

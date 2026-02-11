@@ -3,6 +3,15 @@ import { Card, CardContent } from '@/components/atoms/card'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { cn } from '@/lib/utils'
 
+const getContentPadding = (
+  isTopLayout: boolean,
+  isCompact: boolean | undefined,
+) => {
+  if (isTopLayout) return 'px-3 pb-3 pt-2'
+  if (isCompact) return 'p-2.5'
+  return 'p-3 sm:p-4'
+}
+
 interface PropertyCardSkeletonProps {
   className?: string
   count?: number
@@ -21,7 +30,7 @@ export const PropertyCardSkeleton: React.FC<PropertyCardSkeletonProps> = ({
     <>
       {Array.from({ length: count }, (_, index) => (
         <Card
-          key={index}
+          key={`property-skeleton-${index}`}
           className={cn(
             'overflow-hidden animate-pulse border-border/60',
             isCompact
@@ -121,11 +130,7 @@ export const PropertyCardSkeleton: React.FC<PropertyCardSkeletonProps> = ({
               <div
                 className={cn(
                   'flex-1 min-w-0 flex flex-col',
-                  isTopLayout
-                    ? 'px-3 pb-3 pt-2'
-                    : isCompact
-                      ? 'p-2.5'
-                      : 'p-3 sm:p-4',
+                  getContentPadding(isTopLayout, isCompact),
                 )}
               >
                 {/* Title & Badge */}

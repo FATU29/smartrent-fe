@@ -41,8 +41,11 @@ const LatestNewsSection: React.FC<LatestNewsSectionProps> = ({
           </Typography>
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6'>
-          {[...Array(5)].map((_, i) => (
-            <Card key={i} className='overflow-hidden animate-pulse'>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Card
+              key={`news-skeleton-${i}`}
+              className='overflow-hidden animate-pulse'
+            >
               <div className='aspect-video bg-muted' />
               <CardContent className='p-4 space-y-3'>
                 <div className='h-4 bg-muted rounded w-3/4' />
@@ -88,93 +91,93 @@ const LatestNewsSection: React.FC<LatestNewsSectionProps> = ({
           const imageUrl = item.thumbnailUrl || `${basePath}${DEFAULT_IMAGE}`
 
           return (
-            <Link key={item.newsId} href={newsUrl} passHref legacyBehavior>
-              <a
+            <Link
+              key={item.newsId}
+              href={newsUrl}
+              className={classNames(
+                'group block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl',
+              )}
+            >
+              <Card
                 className={classNames(
-                  'group block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl',
+                  'overflow-hidden transition-all duration-200 h-full flex flex-col',
+                  'hover:shadow-md hover:border-primary/30',
                 )}
               >
-                <Card
-                  className={classNames(
-                    'overflow-hidden transition-all duration-200 h-full flex flex-col',
-                    'hover:shadow-md hover:border-primary/30',
-                  )}
-                >
-                  {/* Image */}
-                  <div className='relative aspect-video overflow-hidden bg-muted'>
-                    <ImageAtom
-                      src={imageUrl}
-                      alt={item.title}
-                      width={400}
-                      height={225}
-                      className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
-                    />
+                {/* Image */}
+                <div className='relative aspect-video overflow-hidden bg-muted'>
+                  <ImageAtom
+                    src={imageUrl}
+                    alt={item.title}
+                    width={400}
+                    height={225}
+                    className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+                  />
 
-                    {/* Category Badge */}
-                    <div className='absolute top-3 left-3'>
-                      <Badge
-                        variant='outline'
-                        className={classNames(
-                          'text-xs font-medium',
-                          categoryConfig.className,
-                        )}
-                      >
-                        {categoryConfig.label}
-                      </Badge>
-                    </div>
+                  {/* Category Badge */}
+                  <div className='absolute top-3 left-3'>
+                    <Badge
+                      variant='outline'
+                      className={classNames(
+                        'text-xs font-medium',
+                        categoryConfig.className,
+                      )}
+                    >
+                      {categoryConfig.label}
+                    </Badge>
                   </div>
+                </div>
 
-                  {/* Content */}
-                  <CardContent className='flex flex-col flex-1 p-4'>
-                    {/* Title */}
-                    <Typography
-                      variant='h4'
-                      className={classNames(
-                        'font-semibold line-clamp-2 group-hover:text-primary transition-colors',
-                        'text-base mb-2',
-                      )}
-                    >
-                      {item.title}
-                    </Typography>
+                {/* Content */}
+                <CardContent className='flex flex-col flex-1 p-4'>
+                  {/* Title */}
+                  <Typography
+                    variant='h4'
+                    className={classNames(
+                      'font-semibold line-clamp-2 group-hover:text-primary transition-colors',
+                      'text-base mb-2',
+                    )}
+                  >
+                    {item.title}
+                  </Typography>
 
-                    {/* Summary */}
-                    <Typography
-                      variant='p'
-                      className={classNames(
-                        'text-muted-foreground line-clamp-2',
-                        'text-sm mb-3 flex-1',
-                      )}
-                    >
-                      {item.summary}
-                    </Typography>
+                  {/* Summary */}
+                  <Typography
+                    variant='p'
+                    className={classNames(
+                      'text-muted-foreground line-clamp-2',
+                      'text-sm mb-3 flex-1',
+                    )}
+                  >
+                    {item.summary}
+                  </Typography>
 
-                    {/* Meta Info */}
-                    <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground pt-3 border-t'>
-                      {/* Author */}
-                      {item.authorName && (
-                        <span className='inline-flex items-center gap-1'>
-                          <User className='w-3 h-3' />
-                          <span className='truncate max-w-[80px]'>
-                            {item.authorName}
-                          </span>
+                  {/* Meta Info */}
+                  <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground pt-3 border-t'>
+                    {/* Author */}
+                    {item.authorName && (
+                      <span className='inline-flex items-center gap-1'>
+                        <User className='w-3 h-3' />
+                        <span className='truncate max-w-[80px]'>
+                          {item.authorName}
                         </span>
-                      )}
-
-                      {/* Date */}
-                      <span className='inline-flex items-center gap-1'>
-                        <Calendar className='w-3 h-3' />
-                        {formatPublishedDate(item.publishedAt)}
                       </span>
+                    )}
 
-                      {/* View Count */}
-                      <span className='inline-flex items-center gap-1'>
-                        <Eye className='w-3 h-3' />
-                        {formatViewCount(item.viewCount)}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </a>
+                    {/* Date */}
+                    <span className='inline-flex items-center gap-1'>
+                      <Calendar className='w-3 h-3' />
+                      {formatPublishedDate(item.publishedAt)}
+                    </span>
+
+                    {/* View Count */}
+                    <span className='inline-flex items-center gap-1'>
+                      <Eye className='w-3 h-3' />
+                      {formatViewCount(item.viewCount)}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
             </Link>
           )
         })}

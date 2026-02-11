@@ -101,7 +101,7 @@ export const NewsCardSkeleton: React.FC<NewsCardSkeletonProps> = ({
     <>
       {Array.from({ length: count }).map((_, index) => (
         <NewsCardSkeletonSingle
-          key={index}
+          key={`skeleton-${layout}-${index}`}
           layout={layout}
           className={className}
         />

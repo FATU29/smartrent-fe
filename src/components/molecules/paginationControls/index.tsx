@@ -166,9 +166,9 @@ const PaginationControls = ({
                 </Button>
               ))}
 
-              {visiblePages[visiblePages.length - 1] < totalPages && (
+              {visiblePages.at(-1)! < totalPages && (
                 <>
-                  {visiblePages[visiblePages.length - 1] < totalPages - 1 && (
+                  {visiblePages.at(-1)! < totalPages - 1 && (
                     <span className='px-2 text-muted-foreground'>...</span>
                   )}
                   <Button

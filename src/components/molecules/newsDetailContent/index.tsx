@@ -3,51 +3,67 @@ import ImageAtom from '@/components/atoms/imageAtom'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
 
 // Simple HTML sanitizer for news content
-const sanitizeHtml = (html: string): string => {
-  const allowedTags = [
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'p',
-    'a',
-    'img',
-    'ul',
-    'ol',
-    'li',
-    'strong',
-    'em',
-    'blockquote',
-    'code',
-    'pre',
-    'table',
-    'thead',
-    'tbody',
-    'tr',
-    'th',
-    'td',
-    'br',
-    'hr',
-    'div',
-    'span',
-  ]
-  const parser = typeof window !== 'undefined' ? new DOMParser() : null
-  if (!parser) return html
+const allowedTags = new Set([
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'p',
+  'a',
+  'img',
+  'ul',
+  'ol',
+  'li',
+  'strong',
+  'em',
+  'blockquote',
+  'code',
+  'pre',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td',
+  'br',
+  'hr',
+  'div',
+  'span',
+])
 
-  const doc = parser.parseFromString(html, 'text/html')
+/** Tags whose entire subtree should be stripped (not just unwrapped). */
+const removableTags = new Set(['script', 'style', 'iframe', 'object', 'embed'])
+
+const sanitizeHtml = (html: string): string => {
+  if (typeof globalThis.window === 'undefined') return html
+
+  const doc = new DOMParser().parseFromString(html, 'text/html')
   const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_ELEMENT)
-  const nodesToRemove: Node[] = []
+  const nodesToProcess: Element[] = []
 
   while (walker.nextNode()) {
     const node = walker.currentNode as Element
-    if (!allowedTags.includes(node.tagName.toLowerCase())) {
-      nodesToRemove.push(node)
+    if (!allowedTags.has(node.tagName.toLowerCase())) {
+      nodesToProcess.push(node)
     }
   }
 
-  nodesToRemove.forEach((node) => node.parentNode?.removeChild(node))
+  for (const node of nodesToProcess) {
+    if (!node.parentNode) continue
+
+    if (removableTags.has(node.tagName.toLowerCase())) {
+      node.remove()
+    } else {
+      // Unwrap: keep child nodes, remove the disallowed wrapper
+      while (node.firstChild) {
+        node.parentNode.insertBefore(node.firstChild, node)
+      }
+      node.remove()
+    }
+  }
+
   return doc.body.innerHTML
 }
 

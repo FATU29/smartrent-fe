@@ -19,9 +19,9 @@ const NewsTagList: React.FC<NewsTagListProps> = ({ tags, className }) => {
         <span className='text-sm font-medium text-muted-foreground'>Tags</span>
       </div>
       <div className='flex flex-wrap gap-2'>
-        {tags.map((tag, index) => (
+        {tags.map((tag) => (
           <Link
-            key={index}
+            key={tag}
             href={`${PUBLIC_ROUTES.NEWS}?tag=${encodeURIComponent(tag)}`}
           >
             <Badge

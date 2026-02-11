@@ -21,7 +21,7 @@ const NewsDetailHeader: React.FC<NewsDetailHeaderProps> = ({ news }) => {
         await navigator.share({
           title: news.title,
           text: news.summary,
-          url: window.location.href,
+          url: globalThis.location.href,
         })
         toast.success(t('shareSuccess'))
       } catch {
@@ -29,7 +29,7 @@ const NewsDetailHeader: React.FC<NewsDetailHeaderProps> = ({ news }) => {
       }
     } else {
       try {
-        await navigator.clipboard.writeText(window.location.href)
+        await navigator.clipboard.writeText(globalThis.location.href)
         toast.success(t('linkCopied'))
       } catch {
         toast.error(t('shareFailed'))
