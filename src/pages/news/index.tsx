@@ -9,7 +9,6 @@ import NewsListTemplate from '@/components/templates/newsListTemplate'
 import { ListProvider } from '@/contexts/list/index.context'
 import { NewsService } from '@/api/services/news.service'
 import type { ApiResponse } from '@/configs/axios/types'
-import { Typography } from '@/components/atoms/typography'
 import { NewsItem, NewsFilterRequest } from '@/api/types/news.type'
 import {
   ListingFilterRequest,
@@ -134,12 +133,9 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
       setSelectedCategory(category)
       selectedCategoryRef.current = category
 
-      // Trigger a re-fetch by updating filters with page reset
-      // The fetcher will pick up the new category from the ref
+      // Update URL shallowly (no SSR reload)
       const queryParams: Record<string, string> = {}
-      if (category) {
-        queryParams.category = category
-      }
+      if (category) queryParams.category = category
 
       router.push(
         {
@@ -147,29 +143,39 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
           query: Object.keys(queryParams).length > 0 ? queryParams : undefined,
         },
         undefined,
-        { shallow: false },
+        { shallow: true },
       )
+
+      // Trigger client-side re-fetch via ListContext
+      // Use _t to force a new filtersKey even if page was already 1
+      if (listActionsRef.current) {
+        listActionsRef.current.updateFilters({
+          page: 1,
+          _t: Date.now(),
+        } as Partial<ListingFilterRequest>)
+      }
     },
     [router],
+  )
+
+  // Capture ListContext actions so category change can trigger re-fetch
+  const listActionsRef = useRef<{
+    updateFilters: (f: Partial<ListingFilterRequest>) => void
+  } | null>(null)
+
+  const handleListReady = useCallback(
+    (actions: {
+      updateFilters: (f: Partial<ListingFilterRequest>) => void
+    }) => {
+      listActionsRef.current = actions
+    },
+    [],
   )
 
   return (
     <>
       <SeoHead title={t('seoTitle')} description={t('seoDescription')} />
       <div className='container mx-auto py-6 px-4 md:px-0'>
-        {/* Page Header */}
-        <header className='mb-8'>
-          <Typography
-            variant='h1'
-            className='text-2xl md:text-3xl font-bold mb-2'
-          >
-            {t('title')}
-          </Typography>
-          <Typography variant='p' className='text-muted-foreground'>
-            {t('subtitle')}
-          </Typography>
-        </header>
-
         <ListProvider<NewsItem>
           fetcher={fetcher}
           initialData={initialData}
@@ -179,6 +185,7 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
           <NewsListTemplate
             selectedCategory={selectedCategory}
             onCategoryChange={handleCategoryChange}
+            onListReady={handleListReady}
           />
         </ListProvider>
       </div>

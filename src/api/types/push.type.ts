@@ -65,4 +65,19 @@ export interface PushListingResponse {
   provider?: string // Present if payment is required
   message?: string // Confirmation message if quota is used
   success?: boolean // true if quota used successfully
+  pushId?: number // ID of the push record
+  listingId?: number
+  userId?: string
+  pushSource?: string // 'MEMBERSHIP_QUOTA' | 'DIRECT_PAYMENT' | 'DIRECT_PURCHASE' | 'SCHEDULED' | 'ADMIN'
+  pushedAt?: string // ISO 8601 timestamp
+}
+
+// Quota response types
+export interface QuotaStatusResponse {
+  benefitType: string // 'POST_SILVER' | 'POST_GOLD' | 'POST_DIAMOND' | 'PUSH'
+  totalAvailable: number // Remaining quota
+  totalUsed: number // Already used
+  totalGranted: number // Total granted
+  hasActiveMembership: boolean
+  message?: string
 }

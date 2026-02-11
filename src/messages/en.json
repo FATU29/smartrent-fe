@@ -688,6 +688,11 @@
       "title": "Find your ideal place faster",
       "description": "Type a keyword or refine with filters for location, price, property type and amenities."
     },
+    "latestNews": {
+      "title": "Latest News",
+      "subtitle": "Stay updated with the latest real estate news, tips, and market trends",
+      "viewAll": "View All"
+    },
     "filters": {
       "title": "Filter Properties",
       "anyAmenities": "All Amenities",
@@ -2657,6 +2662,18 @@
     "resultCount": "{count, plural, =0 {No articles found} one {# article found} other {# articles found}}",
     "noNews": "No articles found",
     "noNewsDescription": "Try adjusting your search criteria or check back later for new articles.",
+    "emptyState": {
+      "title": "No articles yet",
+      "searchTitle": "No matching articles",
+      "description": "There are no articles available at the moment. Check back soon for the latest news and insights.",
+      "searchDescription": "We couldn't find any articles matching your current filters. Try adjusting your search.",
+      "resetFilters": "Reset filters",
+      "browseAll": "Browse all articles",
+      "tips": "Search tips",
+      "tip1": "Try using broader or different keywords",
+      "tip2": "Remove some filters to widen results",
+      "tip3": "Check for spelling mistakes in your search"
+    },
     "loadingMore": "Loading more articles...",
     "notFound": "Article not found",
     "notFoundDescription": "The article you're looking for doesn't exist or has been removed.",

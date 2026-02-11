@@ -12,28 +12,22 @@ import { List } from '@/contexts/list'
 import ClearFilterButton from '@/components/atoms/clearFilterButton'
 import VipPropertySection from '@/components/organisms/vipPropertySection'
 
-import type {
-  ProvinceStatsItem,
-  CategoryStatsItem,
-  ListingDetail,
-} from '@/api/types'
+import type { ProvinceStatsItem, CategoryStatsItem } from '@/api/types'
 import Image from 'next/image'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
+import NewsGridSection from '@/components/organisms/newsGridSection'
+import type { NewsItem } from '@/api/types/news.type'
 
 interface HomepageTemplateProps {
   cities?: ProvinceStatsItem[]
   categoryStats?: CategoryStatsItem[]
-  diamondListings?: ListingDetail[]
-  goldListings?: ListingDetail[]
-  silverListings?: ListingDetail[]
+  latestNews?: NewsItem[]
 }
 
 const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   cities,
   categoryStats,
-  diamondListings = [],
-  goldListings = [],
-  silverListings = [],
+  latestNews = [],
 }) => {
   const t = useTranslations()
   const { pagination } = useListContext()
@@ -89,27 +83,20 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
               </div>
             </section>
 
+            {/* Latest News Grid - Below Filter */}
+            {latestNews && latestNews.length > 0 && (
+              <NewsGridSection news={latestNews} />
+            )}
+
             <div id='top-interest'>
               <TopInterestSection categoryStats={categoryStats} />
             </div>
 
             {/* VIP Property Sections */}
             <div className='space-y-8'>
-              <VipPropertySection
-                vipType='DIAMOND'
-                listings={diamondListings}
-                isLoading={false}
-              />
-              <VipPropertySection
-                vipType='GOLD'
-                listings={goldListings}
-                isLoading={false}
-              />
-              <VipPropertySection
-                vipType='SILVER'
-                listings={silverListings}
-                isLoading={false}
-              />
+              <VipPropertySection vipType='DIAMOND' />
+              <VipPropertySection vipType='GOLD' />
+              <VipPropertySection vipType='SILVER' />
             </div>
 
             <div className='mt-8 flex flex-col items-center gap-4'>

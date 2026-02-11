@@ -6,6 +6,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { PhoneClickDetailService } from '@/api/services'
+import type { PhoneClickDetail } from '@/api/types/phone-click-detail.type'
 import { phoneClickDetailKeys } from './index'
 
 export interface DashboardPhoneClickStats {
@@ -56,7 +57,7 @@ export const useDashboardPhoneClickStats = () => {
         { title: string; clicks: number }
       >()
 
-      clicks.forEach((click) => {
+      clicks.forEach((click: PhoneClickDetail) => {
         // Count unique users
         uniqueUserIds.add(click.userId)
 

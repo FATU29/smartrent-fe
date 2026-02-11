@@ -36,7 +36,6 @@ export interface NewsItem {
   publishedAt: string
   authorName: string
   viewCount: number
-  createdAt: string
 }
 
 /**

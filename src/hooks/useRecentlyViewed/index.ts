@@ -10,7 +10,10 @@ import {
   type RecentlyViewedListing,
   updateRecentlyViewedFromServer,
 } from '@/utils/localstorage/recentlyViewed'
-import { RECENTLY_VIEWED_QUERY_KEYS } from '@/api/types/recently-viewed.type'
+import {
+  RECENTLY_VIEWED_QUERY_KEYS,
+  type RecentlyViewedItemResponse,
+} from '@/api/types/recently-viewed.type'
 
 export const useRecentlyViewed = () => {
   const { isAuthenticated } = useAuth()
@@ -90,7 +93,9 @@ export const useRecentlyViewed = () => {
     }
 
     const serverListingIds = new Set(
-      apiData.map((item) => String(item.listing.listingId)),
+      apiData.map((item: RecentlyViewedItemResponse) =>
+        String(item.listing.listingId),
+      ),
     )
     const hasNewLocalData = localData.some(
       (item) => !serverListingIds.has(String(item.listingId)),
@@ -108,17 +113,22 @@ export const useRecentlyViewed = () => {
     }))
 
     RecentlyViewedService.sync({ listings: localApiData })
-      .then((response) => {
-        if (response.success && response.data) {
-          updateRecentlyViewedFromServer(response.data)
-          queryClient.setQueryData(
-            RECENTLY_VIEWED_QUERY_KEYS.list(),
-            response.data,
-          )
-          setUpdateTrigger((prev) => prev + 1)
-        }
-      })
-      .catch((error) => {
+      .then(
+        (response: {
+          success: boolean
+          data?: RecentlyViewedItemResponse[]
+        }) => {
+          if (response.success && response.data) {
+            updateRecentlyViewedFromServer(response.data)
+            queryClient.setQueryData(
+              RECENTLY_VIEWED_QUERY_KEYS.list(),
+              response.data,
+            )
+            setUpdateTrigger((prev) => prev + 1)
+          }
+        },
+      )
+      .catch((error: unknown) => {
         console.error('Error syncing recently viewed on login:', error)
       })
   }, [isAuthenticated, isLoadingFromApi, apiData, queryClient])

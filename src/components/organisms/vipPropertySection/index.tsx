@@ -11,14 +11,13 @@ import {
   type CarouselApi,
 } from '@/components/atoms/carousel'
 import { Skeleton } from '@/components/atoms/skeleton'
-import { ListingDetail, VipType } from '@/api/types'
+import { VipType } from '@/api/types'
 import { Crown, Sparkles, Medal, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRecommendedListingsByVip } from '@/hooks/useListings/useRecommendedListingsByVip'
 
 interface VipPropertySectionProps {
   vipType: VipType
-  listings: ListingDetail[]
-  isLoading: boolean
 }
 
 const VIP_CONFIG = {
@@ -56,17 +55,21 @@ const VIP_CONFIG = {
   },
 }
 
-const VipPropertySection: React.FC<VipPropertySectionProps> = ({
-  vipType,
-  listings,
-  isLoading,
-}) => {
+const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
   const t = useTranslations()
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
   const config = VIP_CONFIG[vipType]
   const Icon = config.icon
+
+  // Fetch listings client-side
+  const { listings, isLoading } = useRecommendedListingsByVip({
+    vipType,
+    page: 1,
+    size: 10,
+    enabled: true,
+  })
 
   React.useEffect(() => {
     if (!api) return

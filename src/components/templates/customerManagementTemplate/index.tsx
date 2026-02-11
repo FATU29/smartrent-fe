@@ -60,7 +60,7 @@ const CustomerManagementTemplate = () => {
 
     const query = searchQuery.toLowerCase()
     return data.data.filter(
-      (customer) =>
+      (customer: UserPhoneClickDetail) =>
         customer.firstName?.toLowerCase().includes(query) ||
         customer.lastName?.toLowerCase().includes(query) ||
         customer.email?.toLowerCase().includes(query) ||
@@ -75,15 +75,18 @@ const CustomerManagementTemplate = () => {
 
     return {
       totalCustomers: data.totalElements || 0,
-      totalClicks: data.data.reduce((sum, customer) => {
-        return (
-          sum +
-          customer.clickedListings.reduce(
-            (s, listing) => s + listing.clickCount,
-            0,
+      totalClicks: data.data.reduce(
+        (sum: number, customer: UserPhoneClickDetail) => {
+          return (
+            sum +
+            customer.clickedListings.reduce(
+              (s: number, listing: ListingClickInfo) => s + listing.clickCount,
+              0,
+            )
           )
-        )
-      }, 0),
+        },
+        0,
+      ),
       uniqueUsers: data.data.length || 0,
     }
   }, [data])

@@ -2,7 +2,6 @@ import React, { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { useListContext } from '@/contexts/list'
 import { Button } from '@/components/atoms/button'
-import { Badge } from '@/components/atoms/badge'
 import { Input } from '@/components/atoms/input'
 import { NewsCategory, NewsItem } from '@/api/types/news.type'
 import { Search, X, LayoutGrid, List } from 'lucide-react'
@@ -31,12 +30,6 @@ const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
       { value: undefined, label: t('allCategories') },
       { value: NewsCategory.NEWS, label: tCategories('news') },
       { value: NewsCategory.BLOG, label: tCategories('blog') },
-      { value: NewsCategory.MARKET_TREND, label: tCategories('marketTrend') },
-      { value: NewsCategory.GUIDE, label: tCategories('guide') },
-      {
-        value: NewsCategory.ANNOUNCEMENT,
-        label: tCategories('announcement'),
-      },
     ],
     [t, tCategories],
   )
@@ -127,9 +120,6 @@ const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
           >
             <X className='h-4 w-4 mr-1' />
             {t('clearFilters')}
-            <Badge variant='secondary' className='ml-1'>
-              {totalActiveFilters}
-            </Badge>
           </Button>
         )}
       </div>

@@ -7,8 +7,10 @@
 import { apiRequest } from '@/configs/axios/instance'
 import type { ApiResponse } from '@/configs/axios/types'
 import { PATHS } from '@/api/paths'
+import type { AxiosInstance } from 'axios'
 import type {
   NewsDetail,
+  NewsItem,
   NewsListRequest,
   NewsListResponse,
   NewsCreateRequest,
@@ -89,6 +91,46 @@ export class NewsService {
         code: '500',
         message: String(error),
         data: null,
+        success: false,
+      }
+    }
+  }
+
+  /**
+   * Get the N newest published news articles
+   * @param limit - Number of news articles to return (1-50, default: 10)
+   * @param instance - Optional axios instance for server-side rendering
+   */
+  static async getNewest(
+    limit: number = 10,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<NewsItem[]>> {
+    try {
+      const queryParams = new URLSearchParams()
+      if (limit) {
+        queryParams.append('limit', limit.toString())
+      }
+
+      const queryString = queryParams.toString()
+      const url = queryString
+        ? `${PATHS.NEWS.NEWEST}?${queryString}`
+        : PATHS.NEWS.NEWEST
+
+      const response = await apiRequest<NewsItem[]>(
+        {
+          method: 'GET',
+          url,
+        },
+        instance,
+      )
+
+      return response
+    } catch (error) {
+      console.error('Error fetching newest news:', error)
+      return {
+        code: '500',
+        message: String(error),
+        data: [],
         success: false,
       }
     }
@@ -349,4 +391,14 @@ export async function fetchNewsDetail(
   slug: string,
 ): Promise<ApiResponse<NewsDetail | null>> {
   return NewsService.getBySlug(slug)
+}
+
+/**
+ * Fetch newest news (for use in getServerSideProps)
+ */
+export async function fetchNewestNews(
+  limit: number = 10,
+  instance?: AxiosInstance,
+): Promise<ApiResponse<NewsItem[]>> {
+  return NewsService.getNewest(limit, instance)
 }

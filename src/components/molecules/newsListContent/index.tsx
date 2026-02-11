@@ -9,13 +9,17 @@ import { NewsItem } from '@/api/types/news.type'
 interface NewsListContentProps {
   onNewsClick?: (news: NewsItem) => void
   layout?: 'grid' | 'list'
+  /** Callback to reset all filters including category */
+  onResetAllFilters?: () => void
 }
 
 const NewsListContent: React.FC<NewsListContentProps> = ({
   onNewsClick,
   layout = 'grid',
+  onResetAllFilters,
 }) => {
-  const { items, isLoading } = useListContext<NewsItem>()
+  const { items, isLoading, activeFilterCount, resetFilters } =
+    useListContext<NewsItem>()
 
   const NewsSkeleton = (
     <div
@@ -37,7 +41,19 @@ const NewsListContent: React.FC<NewsListContentProps> = ({
   }
 
   if (items.length === 0) {
-    return <NewsEmptyState />
+    const hasFilters = activeFilterCount > 0
+
+    const handleReset = () => {
+      resetFilters()
+      onResetAllFilters?.()
+    }
+
+    return (
+      <NewsEmptyState
+        hasActiveFilters={hasFilters}
+        onResetFilters={handleReset}
+      />
+    )
   }
 
   return (
