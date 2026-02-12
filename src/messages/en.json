@@ -2190,7 +2190,11 @@
         "PENDING_PAYMENT": "Awaiting Payment",
         "REJECTED": "Rejected",
         "VERIFIED": "Verified",
-        "ARCHIVED": "Archived"
+        "ARCHIVED": "Archived",
+        "MOD_REJECTED": "Rejected by Admin",
+        "MOD_REVISION_REQUIRED": "Revision Required",
+        "MOD_RESUBMITTED": "Resubmitted",
+        "MOD_SUSPENDED": "Suspended"
       },
       "propertyTypes": {
         "0": "All Types",
@@ -2295,7 +2299,9 @@
           "share": "Share",
           "activityHistory": "Activity history",
           "takeDown": "Take down",
-          "delete": "Delete"
+          "delete": "Delete",
+          "resubmit": "Resubmit",
+          "resubmitFull": "Resubmit for Review"
         },
         "deleteConfirm": {
           "title": "Delete Listing",
@@ -2307,6 +2313,49 @@
           "deleteSuccess": "Listing deleted successfully",
           "deleteError": "Failed to delete listing"
         }
+      }
+    },
+    "moderation": {
+      "status": {
+        "PENDING_REVIEW": "Pending Review",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "REVISION_REQUIRED": "Revision Required",
+        "RESUBMITTED": "Resubmitted",
+        "SUSPENDED": "Suspended"
+      },
+      "banner": {
+        "rejectedTitle": "Listing Rejected",
+        "revisionRequiredTitle": "Revision Required",
+        "resubmittedTitle": "Awaiting Re-review",
+        "resubmittedMessage": "Your listing has been resubmitted and is awaiting admin review.",
+        "suspendedTitle": "Listing Suspended",
+        "editAndResubmit": "Edit & Resubmit",
+        "resubmitDirectly": "Resubmit Now",
+        "contactSupport": "Contact Support",
+        "deadlineExpired": "Deadline expired",
+        "daysRemaining": "{days} days remaining"
+      },
+      "timeline": {
+        "title": "Moderation History",
+        "actions": {
+          "REJECT": "Rejected",
+          "APPROVE": "Approved",
+          "REQUEST_REVISION": "Revision Requested",
+          "RESUBMIT": "Resubmitted for Review",
+          "SUBMIT": "Submitted for Review",
+          "SUSPEND": "Suspended"
+        }
+      },
+      "resubmit": {
+        "dialogTitle": "Resubmit Listing",
+        "dialogDescription": "Would you like to resubmit this listing for review?",
+        "notesLabel": "Notes (optional)",
+        "notesPlaceholder": "Describe the changes you've made...",
+        "confirm": "Resubmit",
+        "cancel": "Cancel",
+        "success": "Listing resubmitted successfully",
+        "error": "Failed to resubmit listing"
       }
     },
     "drafts": {

@@ -1,6 +1,12 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { Edit, MoreHorizontal, RefreshCw, Megaphone } from 'lucide-react'
+import {
+  Edit,
+  MoreHorizontal,
+  RefreshCw,
+  Megaphone,
+  SendHorizontal,
+} from 'lucide-react'
 import { createMenuItems } from './index.constants'
 import { Button } from '@/components/atoms/button'
 import {
@@ -14,6 +20,7 @@ export interface ListingCardActionsProps {
   onEdit?: () => void
   onPromote?: () => void
   onRepost?: () => void
+  onResubmit?: () => void
   onViewReport?: () => void
   onRequestVerification?: () => void
   onCopyListing?: () => void
@@ -24,6 +31,7 @@ export interface ListingCardActionsProps {
   onDelete?: () => void
   showPromoteButton?: boolean
   showRepostButton?: boolean
+  showResubmitButton?: boolean
   className?: string
 }
 
@@ -31,6 +39,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
   onEdit,
   onPromote,
   onRepost,
+  onResubmit,
   onViewReport,
   onRequestVerification,
   onCopyListing,
@@ -41,6 +50,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
   onDelete,
   showPromoteButton = true,
   showRepostButton = false,
+  showResubmitButton = false,
   className,
 }) => {
   const t = useTranslations('seller.listingManagement.card.actions')
@@ -120,6 +130,18 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
           <RefreshCw size={14} />
           <span className='hidden xs:inline'>{t('repostFull')}</span>
           <span className='xs:hidden'>{t('repost')}</span>
+        </Button>
+      )}
+
+      {showResubmitButton && (
+        <Button
+          onClick={onResubmit}
+          size='sm'
+          className='gap-1 bg-orange-500 hover:bg-orange-600 text-white text-xs sm:text-sm'
+        >
+          <SendHorizontal size={14} />
+          <span className='hidden xs:inline'>{t('resubmitFull')}</span>
+          <span className='xs:hidden'>{t('resubmit')}</span>
         </Button>
       )}
     </div>

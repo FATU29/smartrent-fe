@@ -90,6 +90,8 @@ export type {
   MyListingsBackendResponse,
   MapBoundsRequest,
   MapBoundsResponse,
+  ModerationTimelineEvent,
+  PendingOwnerAction,
 } from './property.type'
 export {
   PRICE_UNIT,
@@ -98,4 +100,5 @@ export {
   PAYMENT_PROVIDER,
   DURATIONDAYS,
   SortKey,
+  ModerationStatus,
 } from './property.type'

@@ -10,6 +10,7 @@ import {
   Direction,
   Furnishing,
   PriceType,
+  ModerationStatus,
 } from '@/api/types/property.type'
 
 /**
@@ -92,6 +93,13 @@ export function mapMyListingItem(
           lastViewedAt: item.statistics.lastViewedAt || null,
         }
       : undefined,
+
+    // Moderation fields
+    moderationStatus: item.moderationStatus as ModerationStatus | undefined,
+    verificationNotes: item.verificationNotes || null,
+    rejectionReason: item.rejectionReason || null,
+    pendingOwnerAction: item.pendingOwnerAction || null,
+    moderationTimeline: item.moderationTimeline || [],
   }
 }
 
