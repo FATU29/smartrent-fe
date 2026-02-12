@@ -83,8 +83,8 @@ const ResidentialPropertiesPage: NextPageWithLayout<
         },
         {
           pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
-          shallow: false,
-          scroll: true,
+          shallow: true,
+          scroll: false,
         },
       )
     },
