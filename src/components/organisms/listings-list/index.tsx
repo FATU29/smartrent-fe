@@ -10,6 +10,7 @@ export interface ListingsListProps {
   onEditListing?: (listing: ListingOwnerDetail) => void
   onPromoteListing?: (listing: ListingOwnerDetail) => void
   onRepostListing?: (listing: ListingOwnerDetail) => void
+  onResubmitListing?: (listing: ListingOwnerDetail) => void
   onViewReport?: (listing: ListingOwnerDetail) => void
   onRequestVerification?: (listing: ListingOwnerDetail) => void
   onCopyListing?: (listing: ListingOwnerDetail) => void
@@ -28,6 +29,7 @@ export const ListingsList: React.FC<ListingsListProps> = ({
   onEditListing,
   onPromoteListing,
   onRepostListing,
+  onResubmitListing,
   onViewReport,
   onRequestVerification,
   onCopyListing,
@@ -61,6 +63,7 @@ export const ListingsList: React.FC<ListingsListProps> = ({
           onEdit={() => onEditListing?.(listing)}
           onPromote={() => onPromoteListing?.(listing)}
           onRepost={() => onRepostListing?.(listing)}
+          onResubmit={() => onResubmitListing?.(listing)}
           onViewReport={() => onViewReport?.(listing)}
           onRequestVerification={() => onRequestVerification?.(listing)}
           onCopyListing={() => onCopyListing?.(listing)}

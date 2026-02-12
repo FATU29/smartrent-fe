@@ -8,8 +8,10 @@ import dynamic from 'next/dynamic'
 import { ListingsList } from '@/components/organisms/listings-list'
 import { ListingListSkeleton } from '@/components/organisms/listings-list/ListingListSkeleton'
 import { useDeleteListing } from '@/hooks/useListings/useDeleteListing'
+import { useResubmitListing } from '@/hooks/useListings/useResubmitListing'
 import { toast } from 'sonner'
 import { DeleteListingDialog } from '@/components/molecules/deleteListingDialog'
+import { ResubmitListingDialog } from '@/components/molecules/moderation'
 import { MembershipPushDisplay } from '@/components/molecules/listings/MembershipPushDisplay'
 import { usePushListing, usePushQuota } from '@/hooks/usePush'
 
@@ -28,8 +30,14 @@ import {
   ListingOwnerDetail,
   PostStatus,
   POST_STATUS,
+  ModerationStatus,
   ListingFilterRequest,
 } from '@/api/types'
+import {
+  isModerationFilterStatus,
+  extractModerationStatus,
+  type ListingFilterStatus,
+} from '@/constants/postStatus'
 
 const ListingsWithPagination = () => {
   const router = useRouter()
@@ -48,12 +56,17 @@ const ListingsWithPagination = () => {
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tSeller = useTranslations('seller.listingManagement')
+  const tModeration = useTranslations('seller.moderation.resubmit')
   const { currentPage, totalPages } = pagination
   const hasNext = currentPage < totalPages
   const { updateFilters } = useListContext<ListingFilterRequest>()
   const deleteMutation = useDeleteListing()
+  const resubmitMutation = useResubmitListing()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedListingForDelete, setSelectedListingForDelete] =
+    useState<ListingOwnerDetail | null>(null)
+  const [resubmitDialogOpen, setResubmitDialogOpen] = useState(false)
+  const [selectedListingForResubmit, setSelectedListingForResubmit] =
     useState<ListingOwnerDetail | null>(null)
 
   const { ref: loadMoreRef } = useIntersectionObserver({
@@ -115,13 +128,29 @@ const ListingsWithPagination = () => {
           <ListingsList
             listings={listings}
             onEditListing={(listing) => {
-              router.push(`/seller/update-post/${listing.listingId}`)
+              // Redirect to update-post with resubmit context for rejected/revision-required listings
+              const isRejected =
+                listing.moderationStatus === ModerationStatus.REJECTED ||
+                listing.moderationStatus === ModerationStatus.REVISION_REQUIRED
+              if (isRejected) {
+                router.push(
+                  `/seller/update-post/${listing.listingId}?resubmit=true`,
+                )
+              } else {
+                router.push(`/seller/update-post/${listing.listingId}`)
+              }
             }}
             onPromoteListing={(listing) => {
               handlePushListing(listing)
             }}
             onRepostListing={() => {
               // TODO: Implement repost listing
+            }}
+            onResubmitListing={(listing) => {
+              // Redirect to update-post with resubmit context
+              router.push(
+                `/seller/update-post/${listing.listingId}?resubmit=true`,
+              )
             }}
             onViewReport={() => {
               // TODO: Implement view report
@@ -178,6 +207,30 @@ const ListingsWithPagination = () => {
               )
             }}
             isLoading={deleteMutation.isPending}
+          />
+
+          <ResubmitListingDialog
+            listing={selectedListingForResubmit}
+            open={resubmitDialogOpen}
+            onOpenChange={setResubmitDialogOpen}
+            onConfirm={(listing, notes) => {
+              resubmitMutation.mutate(
+                { listingId: listing.listingId, notes },
+                {
+                  onSuccess: () => {
+                    toast.success(tModeration('success'))
+                    setSelectedListingForResubmit(null)
+                    setResubmitDialogOpen(false)
+                    // Refresh listings
+                    updateFilters({ page: 1 })
+                  },
+                  onError: (err) => {
+                    toast.error(err.message || tModeration('error'))
+                  },
+                },
+              )
+            }}
+            isLoading={resubmitMutation.isPending}
           />
 
           {/* Desktop: Show Pagination */}
@@ -265,7 +318,9 @@ const FilterDialogWrapper: React.FC<{
 export const ListingsManagementTemplate: React.FC<
   ListingsManagementTemplateProps
 > = ({ children }) => {
-  const [status, setStatus] = useState<PostStatus>(POST_STATUS.ALL)
+  const [status, setStatus] = useState<ListingFilterStatus>(
+    POST_STATUS.ALL as ListingFilterStatus,
+  )
   const [filterOpen, setFilterOpen] = useState(false)
   const { items: listings, updateFilters } =
     useListContext<ListingFilterRequest>()
@@ -277,10 +332,30 @@ export const ListingsManagementTemplate: React.FC<
           value={status}
           onChange={(newStatus) => {
             setStatus(newStatus)
-            updateFilters({
-              listingStatus:
-                newStatus === POST_STATUS.ALL ? undefined : newStatus,
-            })
+
+            if (
+              newStatus === POST_STATUS.ALL ||
+              newStatus === (POST_STATUS.ALL as ListingFilterStatus)
+            ) {
+              // "All" tab — clear both filters
+              updateFilters({
+                listingStatus: undefined,
+                moderationStatus: undefined,
+              })
+            } else if (isModerationFilterStatus(newStatus)) {
+              // Moderation sub-filter — send both listingStatus=REJECTED + moderationStatus
+              const modStatus = extractModerationStatus(newStatus)
+              updateFilters({
+                listingStatus: POST_STATUS.REJECTED,
+                moderationStatus: modStatus ?? undefined,
+              })
+            } else {
+              // Listing status tab — set listingStatus, clear moderationStatus
+              updateFilters({
+                listingStatus: newStatus as PostStatus,
+                moderationStatus: undefined,
+              })
+            }
           }}
           hideCount
         />

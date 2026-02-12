@@ -72,6 +72,8 @@ export const PATHS = {
     RECENT_PRICE_CHANGES: '/v1/listings/recent-price-changes',
     PROVINCE_STATS: '/v1/listings/stats/provinces',
     CATEGORY_STATS: '/v1/listings/stats/categories',
+    MY_DETAIL: '/v1/listings/:id/my-detail',
+    RESUBMIT_FOR_REVIEW: '/v1/listings/:id/resubmit-for-review',
   },
 
   // Admin endpoints

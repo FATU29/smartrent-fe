@@ -2191,7 +2191,11 @@
         "PENDING_PAYMENT": "Chờ thanh toán",
         "REJECTED": "Bị từ chối",
         "VERIFIED": "Đã xác thực",
-        "ARCHIVED": "Đã lưu trữ"
+        "ARCHIVED": "Đã lưu trữ",
+        "MOD_REJECTED": "Admin từ chối",
+        "MOD_REVISION_REQUIRED": "Cần chỉnh sửa",
+        "MOD_RESUBMITTED": "Đã gửi lại",
+        "MOD_SUSPENDED": "Bị đình chỉ"
       },
       "propertyTypes": {
         "0": "Tất cả Loại",
@@ -2296,7 +2300,9 @@
           "share": "Chia sẻ",
           "activityHistory": "Lịch sử hoạt động",
           "takeDown": "Hạ tin",
-          "delete": "Xóa tin"
+          "delete": "Xóa tin",
+          "resubmit": "Gửi lại",
+          "resubmitFull": "Gửi lại duyệt"
         },
         "deleteConfirm": {
           "title": "Xóa Tin Đăng",
@@ -2308,6 +2314,49 @@
           "deleteSuccess": "Tin đăng đã được xóa thành công",
           "deleteError": "Không thể xóa tin đăng"
         }
+      }
+    },
+    "moderation": {
+      "status": {
+        "PENDING_REVIEW": "Đang chờ duyệt",
+        "APPROVED": "Đã duyệt",
+        "REJECTED": "Bị từ chối",
+        "REVISION_REQUIRED": "Cần chỉnh sửa",
+        "RESUBMITTED": "Đã gửi lại",
+        "SUSPENDED": "Bị tạm ngưng"
+      },
+      "banner": {
+        "rejectedTitle": "Bài đăng bị từ chối",
+        "revisionRequiredTitle": "Yêu cầu chỉnh sửa",
+        "resubmittedTitle": "Đang chờ duyệt lại",
+        "resubmittedMessage": "Bài đăng đã được gửi lại và đang chờ quản trị viên xem xét.",
+        "suspendedTitle": "Bài đăng bị tạm ngưng",
+        "editAndResubmit": "Chỉnh sửa và gửi lại",
+        "resubmitDirectly": "Gửi lại ngay",
+        "contactSupport": "Liên hệ hỗ trợ",
+        "deadlineExpired": "Đã hết hạn",
+        "daysRemaining": "{days} ngày còn lại"
+      },
+      "timeline": {
+        "title": "Lịch sử kiểm duyệt",
+        "actions": {
+          "REJECT": "Bị từ chối",
+          "APPROVE": "Đã duyệt",
+          "REQUEST_REVISION": "Yêu cầu chỉnh sửa",
+          "RESUBMIT": "Gửi lại để duyệt",
+          "SUBMIT": "Gửi để duyệt",
+          "SUSPEND": "Bị tạm ngưng"
+        }
+      },
+      "resubmit": {
+        "dialogTitle": "Gửi lại bài đăng",
+        "dialogDescription": "Bạn có muốn gửi lại bài đăng này để được xem xét?",
+        "notesLabel": "Ghi chú (tùy chọn)",
+        "notesPlaceholder": "Mô tả các thay đổi đã thực hiện...",
+        "confirm": "Gửi lại",
+        "cancel": "Hủy",
+        "success": "Bài đăng đã được gửi lại thành công",
+        "error": "Không thể gửi lại bài đăng"
       }
     },
     "drafts": {

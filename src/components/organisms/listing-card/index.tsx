@@ -13,6 +13,11 @@ import { formatByLocale } from '@/utils/currency/convert'
 import { getPriceUnitTranslationKey } from '@/utils/property'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ListingOwnerDetail } from '@/api/types'
+import { ModerationStatus } from '@/api/types/property.type'
+import {
+  ModerationStatusBadge,
+  ModerationBanner,
+} from '@/components/molecules/moderation'
 import {
   MapPin,
   Calendar,
@@ -37,6 +42,7 @@ export interface ListingCardProps {
   onEdit?: () => void
   onPromote?: () => void
   onRepost?: () => void
+  onResubmit?: () => void
   onViewReport?: () => void
   onRequestVerification?: () => void
   onCopyListing?: () => void
@@ -53,6 +59,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   onEdit,
   onPromote,
   onRepost,
+  onResubmit,
   onViewReport,
   onRequestVerification,
   onCopyListing,
@@ -90,6 +97,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     amenities,
     roomCapacity,
   } = property
+
+  // Moderation fields
+  const moderationStatus = property.moderationStatus
+  const isResubmittable =
+    moderationStatus === ModerationStatus.REJECTED ||
+    moderationStatus === ModerationStatus.REVISION_REQUIRED
 
   const calculatedExpiryDate = React.useMemo(() => {
     if (expiryDate) return toISO(expiryDate)
@@ -171,9 +184,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               </div>
             )}
 
-            {/* Status Badge - Show expired or verified */}
+            {/* Status Badge - Show moderation, expired or verified */}
             <div className='absolute top-3 right-3'>
-              {isExpired ? (
+              {moderationStatus &&
+              moderationStatus !== ModerationStatus.APPROVED ? (
+                <ModerationStatusBadge status={moderationStatus} />
+              ) : isExpired ? (
                 <Badge className='backdrop-blur-md bg-red-500 text-white border-red-600 shadow-md font-medium hover:bg-red-600'>
                   {t('status.expired')}
                 </Badge>
@@ -562,8 +578,20 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               </div>
             </div>
 
+            {/* Moderation Banner */}
+            {moderationStatus && (
+              <ModerationBanner
+                moderationStatus={moderationStatus}
+                verificationNotes={property.verificationNotes}
+                pendingOwnerAction={property.pendingOwnerAction}
+                listingId={property.listingId}
+                onResubmit={isResubmittable ? onResubmit : undefined}
+                className='mb-4'
+              />
+            )}
+
             {/* Status Messages */}
-            {isExpired && (
+            {isExpired && !moderationStatus && (
               <div className='mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900'>
                 <Typography
                   variant='small'
@@ -580,6 +608,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 onEdit={onEdit}
                 onPromote={onPromote}
                 onRepost={onRepost}
+                onResubmit={onResubmit}
                 onViewReport={onViewReport}
                 onRequestVerification={onRequestVerification}
                 onCopyListing={onCopyListing}
@@ -590,6 +619,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 onDelete={onDelete}
                 showPromoteButton={showPromoteButton}
                 showRepostButton={showRepostButton}
+                showResubmitButton={isResubmittable}
               />
             </div>
           </div>
