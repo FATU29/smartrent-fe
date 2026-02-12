@@ -17,6 +17,7 @@ import {
   PublishDraftRequest,
   PublishDraftResponse,
   ListingDetail,
+  ListingOwnerDetail,
   ListingSearchApiRequest,
   ListingSearchBackendResponse,
   ListingFilterRequest,
@@ -416,6 +417,54 @@ export class ListingService {
       instance,
     )
   }
+
+  /**
+   * Get my listing detail with moderation info
+   * GET /v1/listings/{id}/my-detail
+   */
+  static async getMyListingDetail(
+    id: string | number,
+  ): Promise<ApiResponse<ListingOwnerDetail | null>> {
+    try {
+      const url = PATHS.LISTING.MY_DETAIL.replace(':id', id.toString())
+      const response = await apiRequest<ListingOwnerDetail>({
+        method: 'GET',
+        url,
+      })
+
+      if (!response.data || response.code !== '999999') {
+        return { ...response, data: null }
+      }
+
+      return response
+    } catch (error) {
+      console.error(`Error fetching my listing detail ${id}:`, error)
+      return {
+        code: '500',
+        message: String(error),
+        data: null,
+        success: false,
+      }
+    }
+  }
+
+  /**
+   * Resubmit listing for review after rejection or revision request
+   * POST /v1/listings/{id}/resubmit-for-review
+   * @param id - Listing ID
+   * @param notes - Optional notes explaining changes made
+   */
+  static async resubmitForReview(
+    id: string | number,
+    notes?: string,
+  ): Promise<ApiResponse<null>> {
+    const url = PATHS.LISTING.RESUBMIT_FOR_REVIEW.replace(':id', id.toString())
+    return apiRequest<null>({
+      method: 'POST',
+      url,
+      data: notes ? { notes } : {},
+    })
+  }
 }
 
 // ============= EXPORTS =============
@@ -439,4 +488,6 @@ export const {
   publishDraft,
   deleteDraft,
   getMapBounds,
+  getMyListingDetail,
+  resubmitForReview,
 } = ListingService

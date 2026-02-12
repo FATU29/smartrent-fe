@@ -76,6 +76,38 @@ export type PostStatus =
   | POST_STATUS.REJECTED
   | POST_STATUS.VERIFIED
 
+// ── Moderation Types ──
+export enum ModerationStatus {
+  PENDING_REVIEW = 'PENDING_REVIEW',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  REVISION_REQUIRED = 'REVISION_REQUIRED',
+  RESUBMITTED = 'RESUBMITTED',
+  SUSPENDED = 'SUSPENDED',
+}
+
+export interface PendingOwnerAction {
+  actionId: number
+  ownerActionType: string
+  ownerActionStatus: string
+  triggerType: string
+  deadlineAt?: string | null
+  notes?: string | null
+  createdAt: string
+}
+
+export interface ModerationTimelineEvent {
+  eventId: number
+  action: string
+  moderationSource?: string
+  actorType: string
+  actorId?: string
+  reasonCode?: string | null
+  reasonText?: string | null
+  notes?: string | null
+  createdAt: string
+}
+
 export type CategoryType = {
   id: number
   name: string
@@ -234,6 +266,12 @@ export interface ListingOwnerDetail extends ListingApi {
     reportCount: number
     lastViewedAt: string | null
   }
+  // Moderation fields
+  moderationStatus?: ModerationStatus
+  verificationNotes?: string | null
+  rejectionReason?: string | null
+  pendingOwnerAction?: PendingOwnerAction | null
+  moderationTimeline?: ModerationTimelineEvent[]
 }
 
 export interface ListingResponse {
@@ -483,6 +521,7 @@ export interface ListingFilterRequest {
   longitude?: number
 
   listingStatus?: PostStatus
+  moderationStatus?: ModerationStatus
 }
 
 /**
@@ -641,6 +680,10 @@ export interface MyListingBackendItem {
   verificationNotes?: string | null
   rejectionReason?: string | null
   rankOfVipType?: number
+  // Moderation fields
+  moderationStatus?: ModerationStatus
+  pendingOwnerAction?: PendingOwnerAction | null
+  moderationTimeline?: ModerationTimelineEvent[]
 }
 
 /**

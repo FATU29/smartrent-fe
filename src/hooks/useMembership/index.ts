@@ -54,7 +54,7 @@ export const useMyMembership = (userId: string | undefined) => {
     enabled: !!userId,
     staleTime: 0, // No cache - always stale
     gcTime: 0, // No cache - don't keep data
-    retry: 1, // Limit retry attempts
+    retry: false, // Do not retry on failure
   })
 }
 

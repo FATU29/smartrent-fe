@@ -11,16 +11,42 @@ import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/atoms/card'
 import { Loader2 } from 'lucide-react'
 import { mapListingToFormData } from '@/utils/property/mapListingToFormData'
+import { ModerationBanner } from '@/components/molecules/moderation'
+import { ModerationTimeline } from '@/components/molecules/moderation'
+import {
+  ModerationStatus,
+  ListingOwnerDetail,
+  ModerationTimelineEvent,
+  PendingOwnerAction,
+} from '@/api/types/property.type'
+import { useResubmitListing } from '@/hooks/useListings/useResubmitListing'
+import { toast } from 'sonner'
 
 const UpdatePostPageContent = () => {
   const router = useRouter()
-  const { id } = router.query
+  const { id, resubmit } = router.query
   const t = useTranslations('updatePost')
+  const tModeration = useTranslations('seller.moderation.resubmit')
   const { updatePropertyInfo, updateFulltextAddress, setMedia } =
     useCreatePost()
   const hasLoadedRef = React.useRef(false)
   const [isLoading, setIsLoading] = React.useState(true)
   const [listingId, setListingId] = React.useState<string | null>(null)
+
+  // Moderation state
+  const [moderationStatus, setModerationStatus] = React.useState<
+    ModerationStatus | undefined
+  >(undefined)
+  const [verificationNotes, setVerificationNotes] = React.useState<
+    string | null
+  >(null)
+  const [pendingOwnerAction, setPendingOwnerAction] =
+    React.useState<PendingOwnerAction | null>(null)
+  const [moderationTimeline, setModerationTimeline] = React.useState<
+    ModerationTimelineEvent[]
+  >([])
+  const isResubmitMode = resubmit === 'true'
+  const resubmitMutation = useResubmitListing()
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -53,6 +79,22 @@ const UpdatePostPageContent = () => {
         } else {
           hasLoadedRef.current = false
         }
+
+        // Fetch moderation detail if in resubmit mode
+        if (isResubmitMode) {
+          try {
+            const detailRes = await ListingService.getMyListingDetail(id)
+            if (detailRes.success && detailRes.data) {
+              const detail = detailRes.data as ListingOwnerDetail
+              setModerationStatus(detail.moderationStatus)
+              setVerificationNotes(detail.verificationNotes || null)
+              setPendingOwnerAction(detail.pendingOwnerAction || null)
+              setModerationTimeline(detail.moderationTimeline || [])
+            }
+          } catch {
+            // Moderation detail is optional - don't block the page
+          }
+        }
       } catch (error) {
         console.error('❌ Error fetching listing:', error)
         hasLoadedRef.current = false
@@ -75,7 +117,43 @@ const UpdatePostPageContent = () => {
     )
   }
 
-  return <UpdatePostTemplate />
+  const handleResubmit = () => {
+    if (!listingId) return
+    resubmitMutation.mutate(
+      { listingId },
+      {
+        onSuccess: () => {
+          toast.success(tModeration('success'))
+          router.push('/seller/listings')
+        },
+        onError: (err) => {
+          toast.error(err.message || tModeration('error'))
+        },
+      },
+    )
+  }
+
+  return (
+    <div className='space-y-4'>
+      {/* Moderation context banner */}
+      {isResubmitMode && moderationStatus && (
+        <ModerationBanner
+          moderationStatus={moderationStatus}
+          verificationNotes={verificationNotes}
+          pendingOwnerAction={pendingOwnerAction}
+          listingId={Number(listingId)}
+          onResubmit={handleResubmit}
+        />
+      )}
+
+      {/* Moderation timeline */}
+      {isResubmitMode && moderationTimeline.length > 0 && (
+        <ModerationTimeline events={moderationTimeline} />
+      )}
+
+      <UpdatePostTemplate />
+    </div>
+  )
 }
 
 const UpdatePostPage: NextPageWithLayout = () => {
