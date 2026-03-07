@@ -63,11 +63,7 @@ const ImageAtom: NextPage<ImageAtomProps> = ({
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }
-          : {
-              backgroundImage: `url(${placeholderSrc})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }),
+          : {}),
       }}
     />
   )

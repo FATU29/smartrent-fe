@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import { X } from 'lucide-react'
 import Logo from '@/components/atoms/logo'
+import NotificationPanel from '@/components/molecules/notificationPanel'
 import VerticalNav, {
   type VerticalNavItem,
 } from '@/components/molecules/verticalNav/VerticalNav'
@@ -95,7 +96,9 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
                         {activeTitle}
                       </div>
                     </div>
-                    <div className='hidden md:flex items-center justify-end gap-2 sm:gap-3'></div>
+                    <div className='flex items-center justify-end gap-2 sm:gap-3'>
+                      <NotificationPanel />
+                    </div>
                   </div>
                 </div>
               </div>

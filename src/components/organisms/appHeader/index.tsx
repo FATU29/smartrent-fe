@@ -5,6 +5,7 @@ import { Button } from '@/components/atoms/button'
 import LanguageSwitch from '@/components/molecules/languageSwitch'
 import ThemeSwitch from '@/components/molecules/themeSwitch'
 import UserDropdown from '@/components/molecules/userDropdown'
+import NotificationPanel from '@/components/molecules/notificationPanel'
 import { NavigationItemData } from '@/components/atoms/navigation-item'
 import { getNavigationItems } from '@/components/organisms/navigation/navigationItems.helper'
 import Logo from '@/components/atoms/logo'
@@ -65,9 +66,16 @@ const AppHeader: React.FC<AppHeaderProps> = ({
 
   const defaultRightContent = (
     <div className='flex items-center gap-2 sm:gap-3'>
+      {/* Notification bell visible on all screen sizes when authenticated */}
+      {isAuthenticated && (
+        <div className='lg:hidden'>
+          <NotificationPanel />
+        </div>
+      )}
       <div className='hidden lg:flex items-center gap-2 sm:gap-3'>
         <LanguageSwitch />
         <ThemeSwitch />
+        {isAuthenticated && <NotificationPanel />}
       </div>
       <Link href={PUBLIC_ROUTES.MAPS}>
         <Button

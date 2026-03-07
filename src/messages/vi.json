@@ -3180,5 +3180,28 @@
       "items_plural": "{count} tin",
       "compareNow": "So Sánh Ngay"
     }
+  },
+  "notification": {
+    "title": "Thông báo",
+    "empty": "Chưa có thông báo",
+    "emptyDescription": "Bạn đã xem hết! Chúng tôi sẽ thông báo khi có điều gì mới.",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "viewAll": "Xem thêm",
+    "unread": "chưa đọc",
+    "justNow": "Vừa xong",
+    "minutesAgo": "{count} phút trước",
+    "hoursAgo": "{count} giờ trước",
+    "daysAgo": "{count} ngày trước",
+    "type": {
+      "NEW_REPORT": "Báo cáo mới",
+      "REPORT_RESOLVED": "Báo cáo đã xử lý",
+      "REPORT_REJECTED": "Báo cáo bị từ chối",
+      "REPORT_ACTION_REQUIRED": "Yêu cầu xử lý",
+      "LISTING_APPROVED": "Tin đăng được duyệt",
+      "LISTING_REJECTED": "Tin đăng bị từ chối",
+      "LISTING_REVISION_REQUIRED": "Yêu cầu chỉnh sửa",
+      "LISTING_SUSPENDED": "Tin đăng bị tạm ngưng",
+      "LISTING_RESUBMITTED": "Tin đăng đã gửi lại"
+    }
   }
 }

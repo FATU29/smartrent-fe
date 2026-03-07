@@ -244,6 +244,14 @@ export const PATHS = {
     NEWEST: '/v1/news/newest',
   },
 
+  // Notification endpoints
+  NOTIFICATION: {
+    LIST: '/v1/notifications',
+    UNREAD_COUNT: '/v1/notifications/unread-count',
+    MARK_READ: '/v1/notifications/:id/read',
+    MARK_ALL_READ: '/v1/notifications/read-all',
+  },
+
   // News Admin endpoints
   ADMIN_NEWS: {
     LIST: '/v1/admin/news',

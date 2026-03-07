@@ -3179,5 +3179,28 @@
       "items_plural": "{count} items",
       "compareNow": "Compare Now"
     }
+  },
+  "notification": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "emptyDescription": "You're all caught up! We'll notify you when something happens.",
+    "markAllRead": "Mark all as read",
+    "viewAll": "Load more",
+    "unread": "unread",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "type": {
+      "NEW_REPORT": "New Report",
+      "REPORT_RESOLVED": "Report Resolved",
+      "REPORT_REJECTED": "Report Rejected",
+      "REPORT_ACTION_REQUIRED": "Action Required",
+      "LISTING_APPROVED": "Listing Approved",
+      "LISTING_REJECTED": "Listing Rejected",
+      "LISTING_REVISION_REQUIRED": "Revision Required",
+      "LISTING_SUSPENDED": "Listing Suspended",
+      "LISTING_RESUBMITTED": "Listing Resubmitted"
+    }
   }
 }
