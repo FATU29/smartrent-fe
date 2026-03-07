@@ -12,10 +12,13 @@ import {
 import { POST_STATUS } from '@/api/types'
 import {
   STATUS_FILTER_WITH_ALL,
-  MODERATION_FILTER_STATUSES,
+  LISTING_STATUS_MODERATION_MAP,
   getFilterStatusI18nKey,
   getPostStatusI18nKey,
   isModerationFilterStatus,
+  hasSubFilters,
+  getModerationStatuses,
+  toModerationFilterStatus,
   type ListingFilterStatus,
 } from '@/constants/postStatus'
 import type { PostStatus } from '@/api/types'
@@ -35,21 +38,27 @@ export const ListingStatusFilterResponsive: React.FC<
 
   // The main listing statuses (no moderation ones)
   const listingStatuses: PostStatus[] = STATUS_FILTER_WITH_ALL
-  const moderationStatuses = MODERATION_FILTER_STATUSES
 
-  // Determine if "Rejected" tab is active (either REJECTED itself or any MOD_ sub-filter)
-  const isRejectedActive =
-    value === POST_STATUS.REJECTED || isModerationFilterStatus(value)
-
-  // The active main tab — map MOD_ values back to REJECTED for the primary row
+  // Determine which main tab is active — map MOD_ values back to their parent status
   const activeMainStatus: PostStatus = isModerationFilterStatus(value)
-    ? POST_STATUS.REJECTED
+    ? ((Object.entries(LISTING_STATUS_MODERATION_MAP).find(([, mods]) =>
+        (mods as string[]).some(
+          (m: string) => toModerationFilterStatus(m as any) === value,
+        ),
+      )?.[0] as PostStatus) ?? (value as PostStatus))
     : (value as PostStatus)
 
+  // Check if the active main tab has sub-filters
+  const activeHasSubFilters = hasSubFilters(activeMainStatus)
+  const activeSubFilters = getModerationStatuses(activeMainStatus).map(
+    toModerationFilterStatus,
+  )
+
   // For mobile dropdown label
-  const activeLabel = isModerationFilterStatus(value)
-    ? `${t(`status.${getPostStatusI18nKey(POST_STATUS.REJECTED)}`)} › ${t(`status.${getFilterStatusI18nKey(value)}`)}`
-    : t(`status.${getPostStatusI18nKey(activeMainStatus)}`)
+  const activeLabel =
+    isModerationFilterStatus(value) && activeHasSubFilters
+      ? `${t(`status.${getPostStatusI18nKey(activeMainStatus)}`)} › ${t(`status.${getFilterStatusI18nKey(value)}`)}`
+      : t(`status.${getPostStatusI18nKey(activeMainStatus)}`)
 
   return (
     <div className='flex flex-col gap-2'>
@@ -65,7 +74,7 @@ export const ListingStatusFilterResponsive: React.FC<
         {listingStatuses.map((status) => {
           const active = activeMainStatus === status
           const count = counts[status as ListingFilterStatus] ?? 0
-          const isRejectedTab = status === POST_STATUS.REJECTED
+          const showSubIndicator = active && hasSubFilters(status)
 
           return (
             <button
@@ -76,7 +85,7 @@ export const ListingStatusFilterResponsive: React.FC<
               onClick={() => onChange(status as ListingFilterStatus)}
               className={cn(
                 'group relative flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                active && isRejectedTab
+                active && showSubIndicator
                   ? 'bg-orange-50 shadow-sm text-orange-700 ring-1 ring-orange-300 dark:bg-orange-950 dark:text-orange-300 dark:ring-orange-700'
                   : active
                     ? 'bg-background shadow-sm text-foreground ring-1 ring-border'
@@ -84,7 +93,7 @@ export const ListingStatusFilterResponsive: React.FC<
               )}
             >
               <span>{t(`status.${getPostStatusI18nKey(status)}`)}</span>
-              {isRejectedTab && active && (
+              {showSubIndicator && (
                 <ChevronDown className='h-3 w-3 opacity-60' />
               )}
               {!hideCount &&
@@ -92,7 +101,7 @@ export const ListingStatusFilterResponsive: React.FC<
                   <span
                     className={cn(
                       'min-w-5 rounded-full border px-1 text-[10px] leading-none py-1 flex items-center justify-center',
-                      active && isRejectedTab
+                      active && showSubIndicator
                         ? 'bg-orange-100 border-orange-300 text-orange-700 dark:bg-orange-900 dark:border-orange-700 dark:text-orange-300'
                         : active
                           ? 'bg-primary/10 border-primary/30 text-primary'
@@ -106,7 +115,7 @@ export const ListingStatusFilterResponsive: React.FC<
                 <span
                   className={cn(
                     'pointer-events-none absolute inset-x-1 -bottom-px h-0.5 rounded-full bg-gradient-to-r',
-                    isRejectedTab
+                    showSubIndicator
                       ? 'from-orange-300/30 via-orange-500 to-orange-300/30'
                       : 'from-primary/30 via-primary to-primary/30',
                   )}
@@ -117,12 +126,12 @@ export const ListingStatusFilterResponsive: React.FC<
         })}
       </div>
 
-      {/* ═══ DESKTOP: Moderation sub-filters (visible when Rejected is active) ═══ */}
-      {isRejectedActive && (
+      {/* ═══ DESKTOP: Moderation sub-filters (visible when active tab has >1 moderation statuses) ═══ */}
+      {activeHasSubFilters && (
         <div className='hidden sm:flex items-center gap-1.5 pl-1 animate-in fade-in slide-in-from-top-1 duration-200'>
           <ChevronRight className='h-3.5 w-3.5 text-orange-400 shrink-0' />
           <div className='flex flex-wrap gap-1'>
-            {moderationStatuses.map((modStatus) => {
+            {activeSubFilters.map((modStatus) => {
               const active = value === modStatus
               const count = counts[modStatus] ?? 0
               return (
@@ -167,7 +176,7 @@ export const ListingStatusFilterResponsive: React.FC<
               variant='outline'
               className={cn(
                 'w-full justify-between h-11 px-4 rounded-lg border-border/60 hover:bg-muted/70',
-                isRejectedActive
+                activeHasSubFilters
                   ? 'bg-orange-50/80 border-orange-200 dark:bg-orange-950/30 dark:border-orange-800'
                   : 'bg-muted/50',
               )}
@@ -176,7 +185,8 @@ export const ListingStatusFilterResponsive: React.FC<
                 <span
                   className={cn(
                     'text-sm font-medium',
-                    isRejectedActive && 'text-orange-700 dark:text-orange-300',
+                    activeHasSubFilters &&
+                      'text-orange-700 dark:text-orange-300',
                   )}
                 >
                   {activeLabel}
@@ -223,10 +233,10 @@ export const ListingStatusFilterResponsive: React.FC<
       </div>
 
       {/* ═══ MOBILE: Moderation sub-filters (horizontal scroll below dropdown) ═══ */}
-      {isRejectedActive && (
+      {activeHasSubFilters && (
         <div className='sm:hidden flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none animate-in fade-in slide-in-from-top-1 duration-200'>
           <ChevronRight className='h-3.5 w-3.5 text-orange-400 shrink-0' />
-          {moderationStatuses.map((modStatus) => {
+          {activeSubFilters.map((modStatus) => {
             const active = value === modStatus
             const count = counts[modStatus] ?? 0
             return (

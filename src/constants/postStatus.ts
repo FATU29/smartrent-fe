@@ -46,6 +46,46 @@ export const POST_STATUS_OPTIONS: PostStatusOption[] =
     key: getPostStatusI18nKey(s),
   }))
 
+// ── Listing Status → Moderation Status Mapping ──
+// Based on the business rules:
+//   EXPIRED         → N/A
+//   EXPIRING_SOON   → APPROVED
+//   DISPLAYING      → APPROVED
+//   IN_REVIEW       → PENDING_REVIEW | RESUBMITTED
+//   PENDING_PAYMENT → N/A
+//   REJECTED        → REVISION_REQUIRED | SUSPENDED
+//   VERIFIED        → APPROVED
+//
+// When a listing status maps to exactly 1 moderation status → pass it directly.
+// When it maps to >1 → show sub-filter tabs, default to the first entry.
+export const LISTING_STATUS_MODERATION_MAP: Partial<
+  Record<PostStatus, ModerationStatus[]>
+> = {
+  [POST_STATUS.EXPIRING_SOON]: [ModerationStatus.APPROVED],
+  [POST_STATUS.DISPLAYING]: [ModerationStatus.APPROVED],
+  [POST_STATUS.IN_REVIEW]: [
+    ModerationStatus.PENDING_REVIEW,
+    ModerationStatus.RESUBMITTED,
+  ],
+  [POST_STATUS.REJECTED]: [
+    ModerationStatus.REVISION_REQUIRED,
+    ModerationStatus.SUSPENDED,
+  ],
+  [POST_STATUS.VERIFIED]: [ModerationStatus.APPROVED],
+}
+
+// Get the moderation statuses associated with a listing status (empty if N/A)
+export const getModerationStatuses = (
+  status: PostStatus,
+): ModerationStatus[] => {
+  return LISTING_STATUS_MODERATION_MAP[status] ?? []
+}
+
+// Check if a listing status has sub-filter tabs (>1 moderation status)
+export const hasSubFilters = (status: PostStatus): boolean => {
+  return (LISTING_STATUS_MODERATION_MAP[status]?.length ?? 0) > 1
+}
+
 // ── Unified Listing Filter Status ──
 // Combines PostStatus and ModerationStatus for the seller's listing filter tabs.
 // Prefixed moderation values avoid collision with PostStatus values (e.g. both have REJECTED).
@@ -56,28 +96,15 @@ export const toModerationFilterStatus = (
   ms: ModerationStatus,
 ): ListingFilterStatus => `MOD_${ms}` as ListingFilterStatus
 
-// Moderation statuses exposed as filter tabs
-export const MODERATION_FILTER_STATUSES: ListingFilterStatus[] = [
-  toModerationFilterStatus(ModerationStatus.REJECTED),
-  toModerationFilterStatus(ModerationStatus.REVISION_REQUIRED),
-  toModerationFilterStatus(ModerationStatus.RESUBMITTED),
-  toModerationFilterStatus(ModerationStatus.SUSPENDED),
-]
-
 // i18n key mapping for moderation filter statuses
 export const MODERATION_FILTER_I18N_KEY: Record<string, string> = {
-  [`MOD_${ModerationStatus.REJECTED}`]: 'MOD_REJECTED',
-  [`MOD_${ModerationStatus.REVISION_REQUIRED}`]: 'MOD_REVISION_REQUIRED',
+  [`MOD_${ModerationStatus.PENDING_REVIEW}`]: 'MOD_PENDING_REVIEW',
   [`MOD_${ModerationStatus.RESUBMITTED}`]: 'MOD_RESUBMITTED',
+  [`MOD_${ModerationStatus.REVISION_REQUIRED}`]: 'MOD_REVISION_REQUIRED',
   [`MOD_${ModerationStatus.SUSPENDED}`]: 'MOD_SUSPENDED',
+  [`MOD_${ModerationStatus.APPROVED}`]: 'MOD_APPROVED',
+  [`MOD_${ModerationStatus.REJECTED}`]: 'MOD_REJECTED',
 }
-
-// Full ordered list including moderation tabs (appended after listing statuses)
-export const STATUS_FILTER_WITH_MODERATION: ListingFilterStatus[] = [
-  POST_STATUS.ALL as ListingFilterStatus,
-  ...(ORDERED_POST_STATUSES as ListingFilterStatus[]),
-  ...MODERATION_FILTER_STATUSES,
-]
 
 // Resolve i18n key for any ListingFilterStatus value
 export const getFilterStatusI18nKey = (status: ListingFilterStatus): string => {

@@ -41,7 +41,6 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
   verificationNotes,
   pendingOwnerAction,
   listingId,
-  onResubmit,
   className,
 }) => {
   const t = useTranslations('seller.moderation.banner')
@@ -149,25 +148,15 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
               </div>
             )}
 
-            <div className='flex gap-2'>
+            <div className='flex flex-col sm:flex-row gap-2'>
               {!deadlineInfo?.expired && (
                 <Button
                   size='sm'
                   variant={isRejected ? 'destructive' : 'default'}
                   onClick={handleEditAndResubmit}
-                  className='text-xs'
+                  className='text-xs w-full sm:w-auto'
                 >
                   {t('editAndResubmit')}
-                </Button>
-              )}
-              {onResubmit && !deadlineInfo?.expired && (
-                <Button
-                  size='sm'
-                  variant='outline'
-                  onClick={onResubmit}
-                  className='text-xs'
-                >
-                  {t('resubmitDirectly')}
                 </Button>
               )}
             </div>

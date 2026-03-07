@@ -40,13 +40,49 @@ export const usePostValidation = ({
         const fieldError = errors[field as keyof typeof errors]
         if (fieldError) {
           const message = fieldError.message || ''
-          const validationKey = message.replace(/^createPost\.validation\./, '')
+          let validationKey = message.replace(/^createPost\.validation\./, '')
 
-          if (!validationKey || validationKey.includes('.')) {
+          // If validationKey contains dots, it might be a yup-generated message
+          // Try to extract field name and construct a proper key
+          if (validationKey.includes('.')) {
+            const fieldNameMatch = validationKey.match(/^(\w+)/)
+            if (fieldNameMatch) {
+              const fieldName = fieldNameMatch[1]
+              // Check if it's an "invalid" type error (oneOf, etc.)
+              if (
+                validationKey.includes('must be one of') ||
+                validationKey.includes('one of the following')
+              ) {
+                validationKey = `${fieldName}Invalid`
+              } else {
+                // Fallback to original message if we can't determine the key
+                validationKey = message
+              }
+            } else {
+              validationKey = message
+            }
+          }
+
+          if (!validationKey) {
             return
           }
 
-          const translatedMessage = tValidation(validationKey)
+          // Try to translate, fallback to original message if translation doesn't exist
+          let translatedMessage: string
+          try {
+            translatedMessage = tValidation(validationKey)
+            // If translation returns the same key, the key doesn't exist in translations
+            if (
+              translatedMessage === validationKey &&
+              !validationKey.includes('.')
+            ) {
+              // Only use original message if it's not a simple key
+              translatedMessage = message
+            }
+          } catch {
+            translatedMessage = message
+          }
+
           errorList.push({
             key: field,
             message: translatedMessage,

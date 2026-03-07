@@ -7,6 +7,7 @@ import { PriceUnit } from '@/api/types/property.type'
 export const PRICE_UNIT_TRANSLATION_KEYS: Record<PriceUnit, string> = {
   MONTH: 'apartmentDetail.property.pricePerMonth',
   YEAR: 'apartmentDetail.property.pricePerYear',
+  DAY: 'apartmentDetail.property.pricePerDay',
 } as const
 
 /**
@@ -15,5 +16,8 @@ export const PRICE_UNIT_TRANSLATION_KEYS: Record<PriceUnit, string> = {
  * @returns Translation key string
  */
 export const getPriceUnitTranslationKey = (priceUnit: PriceUnit): string => {
-  return PRICE_UNIT_TRANSLATION_KEYS[priceUnit]
+  return (
+    PRICE_UNIT_TRANSLATION_KEYS[priceUnit] ??
+    'apartmentDetail.property.pricePerMonth'
+  )
 }

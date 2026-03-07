@@ -29,25 +29,6 @@ const Home: NextPageWithLayout<HomeProps> = ({
       <SeoHead
         title='SmartRent – Thuê nhà dễ dàng'
         description='Khám phá căn hộ phù hợp nhất với bạn. Tìm kiếm nhanh, lọc thông minh, liên hệ chủ nhà chỉ với một cú nhấp.'
-        preloadImages={[
-          {
-            href: '/images/thue-phong-tro.jpg',
-            as: 'image',
-            type: 'image/jpeg',
-            fetchPriority: 'high',
-            imageSrcSet: '/images/thue-phong-tro.jpg 1920w',
-            imageSizes: '100vw',
-          },
-          {
-            href: '/images/banner-default.jpg',
-            as: 'image',
-            type: 'image/jpeg',
-            fetchPriority: 'high',
-            imageSrcSet: '/images/banner-default.jpg 1920w',
-            imageSizes:
-              '(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1280px',
-          },
-        ]}
       />
       <LocationProvider>
         <List.Provider>

@@ -17,6 +17,7 @@ import OrientationView from '@/components/molecules/mobileFilter/orientationView
 import AmenitiesView from '@/components/molecules/mobileFilter/amenitiesView'
 import PropertyTypeView from '@/components/molecules/mobileFilter/propertyTypeView'
 import { useListContext } from '@/contexts/list/useListContext'
+import { DEFAULT_FILTERS } from '@/contexts/list/index.type'
 import AddressFilterView from '../mobileFilter/addressFilterView'
 import { useRouter } from 'next/router'
 import { navigateToPropertiesWithFilters } from '@/utils/filters'
@@ -122,13 +123,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   const resetAndStay = useCallback(() => {
     resetFilters()
     disableLocation()
-    setDraft((prev) => ({
-      ...prev,
-      keyword: '',
-      page: 1,
-      userLatitude: undefined,
-      userLongitude: undefined,
-    }))
+    setDraft({ ...DEFAULT_FILTERS })
   }, [resetFilters, disableLocation])
 
   const backToParent = useCallback(() => setView('main'), [])

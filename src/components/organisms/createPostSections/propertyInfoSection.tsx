@@ -892,7 +892,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <Controller
                   name='waterPrice'
                   control={control}
-                  render={({ fieldState: { error } }) => (
+                  render={({ field, fieldState: { error } }) => (
                     <div className='space-y-2'>
                       <SelectDropdown
                         label={
@@ -901,11 +901,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                             <span className='text-destructive ml-1'>*</span>
                           </>
                         }
-                        value={propertyInfo?.waterPrice}
+                        value={field.value || propertyInfo?.waterPrice}
                         onValueChange={(value) => {
+                          field.onChange(value)
                           updatePropertyInfo({
                             waterPrice: value as PriceType,
                           })
+                          trigger('waterPrice')
                         }}
                         placeholder={tPlaceholders('selectWaterPrice')}
                         options={getUtilityPriceOptions(tUtilities)}
@@ -921,7 +923,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <Controller
                   name='electricityPrice'
                   control={control}
-                  render={({ fieldState: { error } }) => (
+                  render={({ field, fieldState: { error } }) => (
                     <div className='space-y-2'>
                       <SelectDropdown
                         label={
@@ -930,11 +932,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                             <span className='text-destructive ml-1'>*</span>
                           </>
                         }
-                        value={propertyInfo?.electricityPrice}
+                        value={field.value || propertyInfo?.electricityPrice}
                         onValueChange={(value) => {
+                          field.onChange(value)
                           updatePropertyInfo({
                             electricityPrice: value as PriceType,
                           })
+                          trigger('electricityPrice')
                         }}
                         placeholder={tPlaceholders('selectElectricityPrice')}
                         options={getUtilityPriceOptions(tUtilities)}
@@ -950,7 +954,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <Controller
                   name='internetPrice'
                   control={control}
-                  render={({ fieldState: { error } }) => (
+                  render={({ field, fieldState: { error } }) => (
                     <div className='space-y-2'>
                       <SelectDropdown
                         label={
@@ -959,11 +963,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                             <span className='text-destructive ml-1'>*</span>
                           </>
                         }
-                        value={propertyInfo?.internetPrice}
+                        value={field.value || propertyInfo?.internetPrice}
                         onValueChange={(value) => {
+                          field.onChange(value)
                           updatePropertyInfo({
                             internetPrice: value as PriceType,
                           })
+                          trigger('internetPrice')
                         }}
                         placeholder={tPlaceholders('selectInternetPrice')}
                         options={getInternetOptions(tUtilities)}
@@ -979,7 +985,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <Controller
                   name='serviceFee'
                   control={control}
-                  render={({ fieldState: { error } }) => (
+                  render={({ field, fieldState: { error } }) => (
                     <div className='space-y-2'>
                       <SelectDropdown
                         label={
@@ -988,11 +994,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                             <span className='text-destructive ml-1'>*</span>
                           </>
                         }
-                        value={propertyInfo?.serviceFee}
+                        value={field.value || propertyInfo?.serviceFee}
                         onValueChange={(value) => {
+                          field.onChange(value)
                           updatePropertyInfo({
                             serviceFee: value as PriceType,
                           })
+                          trigger('serviceFee')
                         }}
                         placeholder={tPlaceholders('selectServiceFee')}
                         options={getUtilityPriceOptions(tUtilities)}

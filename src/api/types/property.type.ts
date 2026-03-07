@@ -3,7 +3,7 @@ import { UserApi } from './user.type'
 
 export type PropertyType = 'APARTMENT' | 'HOUSE' | 'ROOM' | 'STUDIO'
 export type VipType = 'NORMAL' | 'SILVER' | 'GOLD' | 'DIAMOND'
-export type PriceUnit = 'MONTH' | 'YEAR'
+export type PriceUnit = 'MONTH' | 'YEAR' | 'DAY'
 export enum PRICE_UNIT {
   'MONTH' = 'MONTH',
   'YEAR' = 'YEAR',
