@@ -372,6 +372,14 @@
         "successMessage": "Đăng nhập thành công!",
         "errorMessage": "Đăng nhập thất bại. Vui lòng thử lại."
       },
+      "verifyAccount": {
+        "title": "Xác Minh Tài Khoản",
+        "description": "Tài khoản của bạn chưa được xác minh. Chúng tôi đã gửi mã xác minh mới đến {email}. Vui lòng nhập mã bên dưới.",
+        "notVerifiedMessage": "Tài khoản của bạn chưa được xác minh. Mã xác minh đã được gửi đến email của bạn.",
+        "successTitle": "Xác Minh Tài Khoản Thành Công!",
+        "successDescription": "Tài khoản của bạn đã được xác minh thành công. Bây giờ bạn có thể đăng nhập.",
+        "backToLogin": "Quay về Đăng nhập"
+      },
       "register": {
         "title": "Đăng ký",
         "description": "Tạo tài khoản mới để bắt đầu sử dụng dịch vụ của chúng tôi.",
@@ -2762,6 +2770,10 @@
       "title": "Vui lòng đăng nhập",
       "description": "Bạn cần đăng nhập để truy cập trang này.",
       "loginButton": "Đăng nhập"
+    },
+    "sessionExpired": {
+      "title": "Phiên đăng nhập đã hết hạn",
+      "description": "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại."
     }
   },
   "paymentStatusPage": {

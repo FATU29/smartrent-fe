@@ -11,10 +11,11 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import dynamic from 'next/dynamic'
 import SeparatorOr from '@/components/atoms/separatorOr'
-import { useRegister } from '@/hooks/useAuth'
+import { useRegister, useResendOtp } from '@/hooks/useAuth'
 import { toast } from 'sonner'
 import { EMAIL_REGEX, PASSWORD_STRENGTH_REGEX } from '@/constants/regex'
 import { googleOAuthURL } from '@/utils/googleOAuth2'
+import { API_ERROR_CODES } from '@/api/types/auth.type'
 
 const ImageAtom = dynamic(() => import('@/components/atoms/imageAtom'), {
   ssr: false,
@@ -38,6 +39,7 @@ const RegisterForm: NextPage<RegisterFormProps> = (props) => {
   const { switchTo, onSuccess } = props
   const t = useTranslations()
   const { registerUser } = useRegister()
+  const { resendOtp } = useResendOtp()
 
   const registerSchema = yup.object({
     firstName: yup
@@ -114,6 +116,17 @@ const RegisterForm: NextPage<RegisterFormProps> = (props) => {
     if (result.success) {
       onSuccess?.(data.email)
       toast.success(t('homePage.auth.register.successMessage'))
+    } else if (result.code === API_ERROR_CODES.USER_NOT_VERIFIED) {
+      // Account exists but not verified — resend OTP and go to verify step
+      toast.info(t('homePage.auth.verifyAccount.notVerifiedMessage'))
+
+      try {
+        await resendOtp(data.email)
+      } catch {
+        // User can manually resend from OTP screen
+      }
+
+      onSuccess?.(data.email)
     } else {
       toast.error(result.message || t('homePage.auth.register.errorMessage'))
     }

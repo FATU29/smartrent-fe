@@ -372,6 +372,14 @@
         "successMessage": "Login successful!",
         "errorMessage": "Login failed. Please try again."
       },
+      "verifyAccount": {
+        "title": "Verify Your Account",
+        "description": "Your account has not been verified yet. We've sent a new verification code to {email}. Please enter it below.",
+        "notVerifiedMessage": "Your account is not verified. A verification code has been sent to your email.",
+        "successTitle": "Account Verified!",
+        "successDescription": "Your account has been verified successfully. You can now log in.",
+        "backToLogin": "Back to Login"
+      },
       "register": {
         "title": "Register",
         "description": "Create a new account to get started with our services.",
@@ -2761,6 +2769,10 @@
       "title": "Please log in",
       "description": "You need to log in to access this page.",
       "loginButton": "Log in"
+    },
+    "sessionExpired": {
+      "title": "Session expired",
+      "description": "Your session has expired. Please log in again."
     }
   },
   "guides": {

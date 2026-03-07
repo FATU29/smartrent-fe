@@ -5,11 +5,14 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
 } from 'react'
 import { useAuthStore } from '@/store/auth/index.store'
 import { AuthTokens } from '@/configs/axios/types'
 import { useValidToken } from '@/hooks/useAuth'
 import { decodeToken } from '@/utils/decode-jwt'
+import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 interface User extends UserApi {}
 
@@ -40,21 +43,35 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   } = useAuthStore()
 
   const { validToken } = useValidToken()
+  const t = useTranslations('auth')
+  const hasHandledUnauthorized = useRef(false)
 
   // Listen for unauthorized events from axios interceptors
   useEffect(() => {
     const handleUnauthorized = () => {
+      if (hasHandledUnauthorized.current) return
+      hasHandledUnauthorized.current = true
+
       console.warn('[Auth] Unauthorized event received, logging out...')
       logout()
+
+      toast.error(t('sessionExpired.title'), {
+        description: t('sessionExpired.description'),
+      })
+
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
     }
 
     if (typeof window !== 'undefined') {
       window.addEventListener('auth:unauthorized', handleUnauthorized)
       return () => {
         window.removeEventListener('auth:unauthorized', handleUnauthorized)
+        hasHandledUnauthorized.current = false
       }
     }
-  }, [logout])
+  }, [logout, t])
 
   // Initialize auth on mount/reload - check cookies sync with store
   useEffect(() => {

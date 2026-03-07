@@ -54,7 +54,12 @@ export const useLogin = () => {
         const errorMessage =
           error instanceof Error ? error.message : 'Login failed'
         setError(errorMessage)
-        return { success: false, message: errorMessage }
+        return {
+          success: false,
+          message: errorMessage,
+          code: '',
+          data: null as unknown,
+        }
       }
     },
     [setLoading, setError, login],
@@ -135,7 +140,12 @@ export const useRegister = () => {
         const errorMessage =
           error instanceof Error ? error.message : 'Registration failed'
         setError(errorMessage)
-        return { success: false, message: errorMessage }
+        return {
+          success: false,
+          message: errorMessage,
+          code: '',
+          data: null as unknown,
+        }
       }
     },
     [setLoading, setError],
