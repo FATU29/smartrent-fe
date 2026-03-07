@@ -907,8 +907,8 @@
         "description": "Đánh giá giá bằng AI thông minh"
       },
       "imagesAndVideo": {
-        "title": "Hình ảnh & Video",
-        "description": "Tải ảnh và video"
+        "title": "Hình ảnh",
+        "description": "Tải ảnh"
       },
       "packageAndConfig": {
         "title": "Gói & Cấu hình",
@@ -1025,8 +1025,8 @@
         }
       },
       "media": {
-        "title": "Hình ảnh & Video",
-        "description": "Tải lên hình ảnh chất lượng cao và video tùy chọn để trình bày bất động sản của bạn",
+        "title": "Hình ảnh",
+        "description": "Tải lên hình ảnh chất lượng cao  để trình bày bất động sản của bạn",
         "downloadSample": "Tải Mẫu",
         "titleWithCount": "{count} / 24 ảnh",
         "dropzone": {

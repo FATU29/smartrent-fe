@@ -906,8 +906,8 @@
         "description": "Smart AI price evaluation"
       },
       "imagesAndVideo": {
-        "title": "Images & Video",
-        "description": "Upload photos and videos"
+        "title": "Images",
+        "description": "Upload photos"
       },
       "packageAndConfig": {
         "title": "Package & Config",
@@ -1503,8 +1503,8 @@
           "districts": {
             "quan1": "District 1",
             "media": {
-              "title": "Images & Video",
-              "description": "Upload high-quality images and optional video to present your property",
+              "title": "Images",
+              "description": "Upload high-quality images to present your property",
               "downloadSample": "Download Sample",
               "titleWithCount": "{count} / 24 images",
               "dropzone": {
