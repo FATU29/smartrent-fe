@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
 import { ListingStatusFilterResponsive } from '@/components/molecules/listings/ListingStatusFilterResponsive'
@@ -36,6 +36,9 @@ import {
 import {
   isModerationFilterStatus,
   extractModerationStatus,
+  toModerationFilterStatus,
+  getModerationStatuses,
+  LISTING_STATUS_MODERATION_MAP,
   type ListingFilterStatus,
 } from '@/constants/postStatus'
 
@@ -284,13 +287,15 @@ export interface ListingsManagementTemplateProps {
 
 const ToolbarWithBadge: React.FC<{
   total: number
+  keyword: string
   onFilterClick: () => void
-}> = ({ total, onFilterClick }) => {
+}> = ({ total, keyword, onFilterClick }) => {
   const { updateFilters } = useListContext()
 
   return (
     <ListingToolbar
       total={total}
+      keyword={keyword}
       onSearch={(query) => updateFilters({ keyword: query, page: 1 })}
       onFilterClick={onFilterClick}
     />
@@ -322,46 +327,96 @@ export const ListingsManagementTemplate: React.FC<
     POST_STATUS.ALL as ListingFilterStatus,
   )
   const [filterOpen, setFilterOpen] = useState(false)
-  const { items: listings, updateFilters } =
-    useListContext<ListingFilterRequest>()
+  const {
+    items: listings,
+    filters,
+    updateFilters,
+  } = useListContext<ListingFilterRequest>()
+
+  // ── Sync tab UI when filters are externally reset ──
+  // e.g. ResidentialFilterDialog "Reset" calls resetFilters() on the context,
+  // which clears listingStatus/moderationStatus but leaves our local `status`
+  // stale. This effect brings the tab back to "All".
+  useEffect(() => {
+    if (!filters.listingStatus && !filters.moderationStatus) {
+      setStatus(POST_STATUS.ALL as ListingFilterStatus)
+    }
+  }, [filters.listingStatus, filters.moderationStatus])
+
+  // ── Centralized status-change handler ──
+  const handleStatusChange = useCallback(
+    (newStatus: ListingFilterStatus) => {
+      if (
+        newStatus === POST_STATUS.ALL ||
+        newStatus === (POST_STATUS.ALL as ListingFilterStatus)
+      ) {
+        // "All" tab — clear both filters
+        setStatus(POST_STATUS.ALL as ListingFilterStatus)
+        updateFilters({
+          listingStatus: undefined,
+          moderationStatus: undefined,
+          page: 1,
+        })
+      } else if (isModerationFilterStatus(newStatus)) {
+        // Moderation sub-filter clicked
+        setStatus(newStatus)
+        const modStatus = extractModerationStatus(newStatus)
+        const parentStatus = Object.entries(LISTING_STATUS_MODERATION_MAP).find(
+          ([, mods]) => (mods as string[]).includes(modStatus ?? ''),
+        )?.[0] as PostStatus | undefined
+
+        updateFilters({
+          listingStatus: parentStatus ?? (newStatus as PostStatus),
+          moderationStatus: modStatus ?? undefined,
+          page: 1,
+        })
+      } else {
+        const listingStatus = newStatus as PostStatus
+        const moderationStatuses = getModerationStatuses(listingStatus)
+
+        if (moderationStatuses.length > 1) {
+          // Has sub-filters → default to first
+          const defaultMod = moderationStatuses[0]
+          setStatus(toModerationFilterStatus(defaultMod))
+          updateFilters({
+            listingStatus,
+            moderationStatus: defaultMod,
+            page: 1,
+          })
+        } else if (moderationStatuses.length === 1) {
+          // Single moderation status → pass directly
+          setStatus(newStatus)
+          updateFilters({
+            listingStatus,
+            moderationStatus: moderationStatuses[0],
+            page: 1,
+          })
+        } else {
+          // No moderation status (EXPIRED, PENDING_PAYMENT)
+          setStatus(newStatus)
+          updateFilters({
+            listingStatus,
+            moderationStatus: undefined,
+            page: 1,
+          })
+        }
+      }
+    },
+    [updateFilters],
+  )
 
   return (
     <div className='p-3 sm:p-4'>
       <div className='mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6'>
         <ListingStatusFilterResponsive
           value={status}
-          onChange={(newStatus) => {
-            setStatus(newStatus)
-
-            if (
-              newStatus === POST_STATUS.ALL ||
-              newStatus === (POST_STATUS.ALL as ListingFilterStatus)
-            ) {
-              // "All" tab — clear both filters
-              updateFilters({
-                listingStatus: undefined,
-                moderationStatus: undefined,
-              })
-            } else if (isModerationFilterStatus(newStatus)) {
-              // Moderation sub-filter — send both listingStatus=REJECTED + moderationStatus
-              const modStatus = extractModerationStatus(newStatus)
-              updateFilters({
-                listingStatus: POST_STATUS.REJECTED,
-                moderationStatus: modStatus ?? undefined,
-              })
-            } else {
-              // Listing status tab — set listingStatus, clear moderationStatus
-              updateFilters({
-                listingStatus: newStatus as PostStatus,
-                moderationStatus: undefined,
-              })
-            }
-          }}
+          onChange={handleStatusChange}
           hideCount
         />
         {children}
         <ToolbarWithBadge
           total={listings.length}
+          keyword={filters.keyword ?? ''}
           onFilterClick={() => {
             setFilterOpen(true)
           }}

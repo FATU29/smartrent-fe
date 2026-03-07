@@ -61,7 +61,7 @@ const AddressFilterView: React.FC<AddressFilterViewProps> = ({
   const value = propValue ?? contextFilters
   const emitChange = propOnChange ?? updateContextFilters
 
-  const isLegacy = value.isLegacy !== false
+  const isLegacy = value.isLegacy === true
 
   const handleStructureToggle = (checked: boolean) => {
     emitChange({

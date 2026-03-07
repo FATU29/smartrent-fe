@@ -70,20 +70,18 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
       </div>
 
       <div className='space-y-1'>
-        {
-          <RadioRow
-            label={
-              filters.provinceId || filters.districtId || filters.wardId
-                ? `${t('dropdowns.address')} (${t('address.added')})`
-                : `${t('dropdowns.address')} (${t('address.add')})`
-            }
-            selected={
-              !!(filters.provinceId || filters.districtId || filters.wardId)
-            }
-            onClick={() => onNavigate('address')}
-            iconLeft={<MapPin className='h-4 w-4 text-muted-foreground' />}
-          />
-        }
+        <RadioRow
+          label={
+            filters.provinceId || filters.districtId || filters.wardId
+              ? `${t('dropdowns.address')} (${t('address.added')})`
+              : `${t('dropdowns.address')} (${t('address.add')})`
+          }
+          selected={
+            !!(filters.provinceId || filters.districtId || filters.wardId)
+          }
+          onClick={() => onNavigate('address')}
+          iconLeft={<MapPin className='h-4 w-4 text-muted-foreground' />}
+        />
         <RadioRow
           label={t('dropdowns.propertyType')}
           selected={!!filters.productType}

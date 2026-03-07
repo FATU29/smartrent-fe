@@ -7,6 +7,7 @@ import { NUMBERS } from '@/constants/numbers'
 
 interface ListingToolbarProps {
   total: number
+  keyword?: string
   onSearch: (q: string) => void
   onFilterClick?: () => void
   className?: string
@@ -14,12 +15,19 @@ interface ListingToolbarProps {
 
 export const ListingToolbar: React.FC<ListingToolbarProps> = ({
   total,
+  keyword,
   onSearch,
   onFilterClick,
   className,
 }) => {
   const t = useTranslations('seller.listingManagement.toolbar')
-  const [value, setValue] = React.useState('')
+  const [value, setValue] = React.useState(keyword ?? '')
+
+  // Sync with external keyword (e.g. on filter reset)
+  React.useEffect(() => {
+    setValue(keyword ?? '')
+  }, [keyword])
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value
     setValue(v)

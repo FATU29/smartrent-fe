@@ -115,19 +115,31 @@ const getPropertyInfoFields = () => ({
   waterPrice: yup
     .string()
     .required('waterPriceRequired')
-    .oneOf(['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE']),
+    .oneOf(
+      ['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE'],
+      'waterPriceInvalid',
+    ),
   electricityPrice: yup
     .string()
     .required('electricityPriceRequired')
-    .oneOf(['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE']),
+    .oneOf(
+      ['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE'],
+      'electricityPriceInvalid',
+    ),
   internetPrice: yup
     .string()
     .required('internetPriceRequired')
-    .oneOf(['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE']),
+    .oneOf(
+      ['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE'],
+      'internetPriceInvalid',
+    ),
   serviceFee: yup
     .string()
     .required('serviceFeeRequired')
-    .oneOf(['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE']),
+    .oneOf(
+      ['NEGOTIABLE', 'SET_BY_OWNER', 'PROVIDER_RATE'],
+      'serviceFeeInvalid',
+    ),
   furnishing: yup
     .string()
     .required('interiorConditionRequired')

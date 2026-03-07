@@ -465,6 +465,26 @@ export class ListingService {
       data: notes ? { notes } : {},
     })
   }
+
+  /**
+   * Update listing and resubmit for review in a single operation
+   * PUT /v1/listings/{id}/update-and-resubmit
+   * @param id - Listing ID
+   * @param data - Partial listing data (only changed fields)
+   * @param notes - Optional notes explaining changes made
+   */
+  static async updateAndResubmit(
+    id: string | number,
+    data: Partial<CreateListingRequest>,
+    notes?: string,
+  ): Promise<ApiResponse<null>> {
+    const url = PATHS.LISTING.UPDATE_AND_RESUBMIT.replace(':id', id.toString())
+    return apiRequest<null>({
+      method: 'PUT',
+      url,
+      data: notes ? { ...data, notes } : data,
+    })
+  }
 }
 
 // ============= EXPORTS =============
@@ -490,4 +510,5 @@ export const {
   getMapBounds,
   getMyListingDetail,
   resubmitForReview,
+  updateAndResubmit,
 } = ListingService
