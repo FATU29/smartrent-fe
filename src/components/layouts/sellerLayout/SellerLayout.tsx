@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
-import { Bell, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { SELLER_ROUTES } from '@/constants'
 import Logo from '@/components/atoms/logo'
+import NotificationPanel from '@/components/molecules/notificationPanel'
 
 import { NAV_ITEMS } from './index.helper'
 import { SELLERNET_NAV } from '@/components/layouts/sellernet/index.helper'
@@ -107,16 +108,7 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
                     </div>
 
                     <div className='flex items-center justify-center md:justify-end gap-2 sm:gap-3'>
-                      <button
-                        type='button'
-                        aria-label={t('notifications')}
-                        className='relative inline-flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full border bg-background hover:bg-accent hover:text-accent-foreground transition-colors'
-                      >
-                        <Bell className='h-5 w-5' />
-                        <span className='absolute -right-1 -top-1 inline-flex items-center justify-center h-4 min-w-4 rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground'>
-                          4
-                        </span>
-                      </button>
+                      <NotificationPanel />
                     </div>
                   </div>
                 </div>

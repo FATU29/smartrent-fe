@@ -126,15 +126,17 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
           <Typography variant='h6' className='text-lg font-semibold'>
             SmartRent
           </Typography>
-          <Button
-            variant='ghost'
-            size='sm'
-            className='p-2 hover:bg-accent hover:text-accent-foreground'
-            onClick={() => setIsOpen(false)}
-            aria-label='Close navigation menu'
-          >
-            <X className='h-4 w-4 sm:h-5 sm:w-5' />
-          </Button>
+          <div className='flex items-center gap-2'>
+            <Button
+              variant='ghost'
+              size='sm'
+              className='p-2 hover:bg-accent hover:text-accent-foreground'
+              onClick={() => setIsOpen(false)}
+              aria-label='Close navigation menu'
+            >
+              <X className='h-4 w-4 sm:h-5 sm:w-5' />
+            </Button>
+          </div>
         </div>
 
         {/* User Section */}

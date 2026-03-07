@@ -45,6 +45,7 @@ export * from './address.type'
 export * from './saved-listing.type'
 export * from './recently-viewed.type'
 export * from './news.type'
+export * from './notification.type'
 
 export type {
   PropertyType,
