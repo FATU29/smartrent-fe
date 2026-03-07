@@ -105,7 +105,8 @@
     "notSupported": "Trình duyệt không hỗ trợ vị trí",
     "priceUnits": {
       "MONTH": "Tháng",
-      "YEAR": "Năm"
+      "YEAR": "Năm",
+      "DAY": "Ngày"
     },
     "listSearch": {
       "placeholder": "Tìm kiếm bằng từ khóa"
@@ -845,9 +846,13 @@
       "phoneNumberRequired": "Số điện thoại là bắt buộc",
       "phoneNumberInvalid": "Số điện thoại không hợp lệ",
       "waterPriceRequired": "Giá nước là bắt buộc",
+      "waterPriceInvalid": "Giá nước phải là một trong các giá trị: Thương lượng, Do chủ nhà quy định, hoặc Theo nhà cung cấp",
       "electricityPriceRequired": "Giá điện là bắt buộc",
+      "electricityPriceInvalid": "Giá điện phải là một trong các giá trị: Thương lượng, Do chủ nhà quy định, hoặc Theo nhà cung cấp",
       "internetPriceRequired": "Giá internet là bắt buộc",
+      "internetPriceInvalid": "Giá internet phải là một trong các giá trị: Thương lượng, Do chủ nhà quy định, hoặc Theo nhà cung cấp",
       "serviceFeeRequired": "Phí dịch vụ là bắt buộc",
+      "serviceFeeInvalid": "Phí dịch vụ phải là một trong các giá trị: Thương lượng, Do chủ nhà quy định, hoặc Theo nhà cung cấp",
       "interiorConditionRequired": "Tình trạng nội thất là bắt buộc",
       "bedroomsRequired": "Số phòng ngủ là bắt buộc",
       "bedroomsMinimum": "Số phòng ngủ phải ít nhất là 1",
@@ -987,7 +992,7 @@
           "description": "Thông tin gói đăng tin hiện tại (có thể điều chỉnh ngày đăng)",
           "endDateAutoCalculated": "Ngày kết thúc (Tự động tính)",
           "endDateNote": "Ngày kết thúc được tự động tính dựa trên ngày bắt đầu + thời hạn",
-          "updateNote": "Lưu ý: Loại gói và thời hạn không thể thay đổi khi cập nhật. Bạn có thể điều chỉnh ngày bắt đầu đăng tin và ngày kết thúc sẽ được tự động tính toán."
+          "updateNote": "Lưu ý: Loại gói và thời hạn không thể thay đổi khi cập nhật"
         }
       },
       "orderSummary": {
@@ -2192,9 +2197,10 @@
         "REJECTED": "Bị từ chối",
         "VERIFIED": "Đã xác thực",
         "ARCHIVED": "Đã lưu trữ",
+        "MOD_PENDING_REVIEW": "Chờ duyệt mới",
+        "MOD_RESUBMITTED": "Đã gửi lại",
         "MOD_REJECTED": "Admin từ chối",
         "MOD_REVISION_REQUIRED": "Cần chỉnh sửa",
-        "MOD_RESUBMITTED": "Đã gửi lại",
         "MOD_SUSPENDED": "Bị đình chỉ"
       },
       "propertyTypes": {
@@ -2356,6 +2362,8 @@
         "confirm": "Gửi lại",
         "cancel": "Hủy",
         "success": "Bài đăng đã được gửi lại thành công",
+        "successTitle": "Đã gửi lại thành công",
+        "successDescription": "Tin đăng của bạn đã được cập nhật và gửi lại để duyệt. Hiện đang chờ quản trị viên phê duyệt.",
         "error": "Không thể gửi lại bài đăng"
       }
     },
@@ -2538,6 +2546,7 @@
       "pricePerSqm": "tr/m²",
       "pricePerMonth": "tháng",
       "pricePerYear": "năm",
+      "pricePerDay": "ngày",
       "area": "Diện tích",
       "bedrooms": "Phòng ngủ",
       "bedroomsAbbr": "PN",

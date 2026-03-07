@@ -103,7 +103,8 @@
     },
     "priceUnits": {
       "MONTH": "Month",
-      "YEAR": "Year"
+      "YEAR": "Year",
+      "DAY": "Day"
     },
     "error": "Location error",
     "enableTooltip": "Click to enable location tracking",
@@ -843,9 +844,13 @@
       "phoneNumberRequired": "Phone number is required",
       "phoneNumberInvalid": "Invalid phone number",
       "waterPriceRequired": "Water price is required",
+      "waterPriceInvalid": "Water price must be one of: Negotiable, Set by owner, or Provider rate",
       "electricityPriceRequired": "Electricity price is required",
+      "electricityPriceInvalid": "Electricity price must be one of: Negotiable, Set by owner, or Provider rate",
       "internetPriceRequired": "Internet price is required",
+      "internetPriceInvalid": "Internet price must be one of: Negotiable, Set by owner, or Provider rate",
       "serviceFeeRequired": "Service fee is required",
+      "serviceFeeInvalid": "Service fee must be one of: Negotiable, Set by owner, or Provider rate",
       "videoUploadInProgress": "Please wait for video upload to complete before continuing",
       "imagesUploadInProgress": "Please wait for images upload to complete before continuing",
       "imageSizeExceeded": "Image size must not exceed 10MB",
@@ -986,7 +991,7 @@
           "description": "Current package information (post date can be adjusted)",
           "endDateAutoCalculated": "End date (Auto-calculated)",
           "endDateNote": "End date is automatically calculated based on start date + duration",
-          "updateNote": "Note: Package type and duration cannot be changed during update. You can adjust the start date and the end date will be automatically calculated."
+          "updateNote": "Note: Package type and duration cannot be changed during update"
         }
       },
       "orderSummary": {
@@ -2191,9 +2196,10 @@
         "REJECTED": "Rejected",
         "VERIFIED": "Verified",
         "ARCHIVED": "Archived",
+        "MOD_PENDING_REVIEW": "New Submission",
+        "MOD_RESUBMITTED": "Resubmitted",
         "MOD_REJECTED": "Rejected by Admin",
         "MOD_REVISION_REQUIRED": "Revision Required",
-        "MOD_RESUBMITTED": "Resubmitted",
         "MOD_SUSPENDED": "Suspended"
       },
       "propertyTypes": {
@@ -2355,6 +2361,8 @@
         "confirm": "Resubmit",
         "cancel": "Cancel",
         "success": "Listing resubmitted successfully",
+        "successTitle": "Resubmitted Successfully",
+        "successDescription": "Your listing has been updated and resubmitted for review. It is now awaiting admin approval.",
         "error": "Failed to resubmit listing"
       }
     },
@@ -2537,6 +2545,7 @@
       "pricePerSqm": "per m²",
       "pricePerMonth": "month",
       "pricePerYear": "year",
+      "pricePerDay": "day",
       "area": "Area",
       "bedrooms": "Bedrooms",
       "bedroomsAbbr": "BR",

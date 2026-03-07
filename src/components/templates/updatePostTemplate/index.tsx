@@ -13,6 +13,7 @@ import { useTranslations } from 'next-intl'
 import NotificationDialog from '@/components/molecules/notifications/NotificationDialog'
 import { getFormDefaultValues } from '@/components/templates/shared/form.utils'
 import { PostTemplateBase } from '@/components/templates/shared/PostTemplateBase'
+import { useUpdateAndResubmitListing } from '@/hooks/useListings/useUpdateAndResubmitListing'
 
 interface UpdatePostTemplateProps {
   className?: string
@@ -51,8 +52,11 @@ const UpdatePostTemplateContent: React.FC<{ className?: string }> = ({
     useCreatePost()
   const router = useRouter()
   const listingId = router.query.id as string | undefined
+  const isResubmitMode = router.query.resubmit === 'true'
   const t = useTranslations('updatePost.submit')
   const tCreate = useTranslations('createPost.submit')
+  const tModeration = useTranslations('seller.moderation.resubmit')
+  const updateAndResubmitMutation = useUpdateAndResubmitListing()
 
   useEffect(() => {
     if (propertyInfo && Object.keys(propertyInfo).length > 1) {
@@ -95,6 +99,40 @@ const UpdatePostTemplateContent: React.FC<{ className?: string }> = ({
     }
 
     try {
+      // Use combined update-and-resubmit endpoint if in resubmit mode
+      if (isResubmitMode) {
+        updateAndResubmitMutation.mutate(
+          {
+            listingId,
+            data: propertyInfo as Partial<CreateListingRequest>,
+            notes: undefined, // Can be added later if needed from form
+          },
+          {
+            onSuccess: () => {
+              setIsSubmitSuccess(true)
+              setSuccessDialog({
+                isOpen: true,
+                title: tModeration('successTitle') || t('successTitle'),
+                description:
+                  tModeration('successDescription') || t('successDescription'),
+              })
+            },
+            onError: (err) => {
+              setErrorDialog({
+                isOpen: true,
+                title: t('errorTitle'),
+                description:
+                  err instanceof Error
+                    ? err.message
+                    : tModeration('error') || t('updateFailed'),
+              })
+            },
+          },
+        )
+        return
+      }
+
+      // Regular update flow
       const { success, message } = await ListingService.update(
         listingId,
         propertyInfo as CreateListingRequest,
@@ -130,10 +168,13 @@ const UpdatePostTemplateContent: React.FC<{ className?: string }> = ({
     topRef,
     listingId,
     t,
+    tModeration,
     propertyInfo,
     setIsSubmitSuccess,
     canProceed,
     currentErrors,
+    isResubmitMode,
+    updateAndResubmitMutation,
   ])
 
   const handleSuccessClose = useCallback(async () => {

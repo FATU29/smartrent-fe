@@ -74,6 +74,7 @@ export const PATHS = {
     CATEGORY_STATS: '/v1/listings/stats/categories',
     MY_DETAIL: '/v1/listings/:id/my-detail',
     RESUBMIT_FOR_REVIEW: '/v1/listings/:id/resubmit-for-review',
+    UPDATE_AND_RESUBMIT: '/v1/listings/:id/update-and-resubmit',
   },
 
   // Admin endpoints

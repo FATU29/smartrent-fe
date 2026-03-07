@@ -172,18 +172,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
             <div className='absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/20' />
 
-            {/* VIP Type Badge */}
-            {vipType && vipType !== 'NORMAL' && (
-              <div className='absolute top-3 left-3'>
-                <Badge
-                  variant='default'
-                  className='backdrop-blur-md bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold shadow-lg border-yellow-600'
-                >
-                  {t(`vipTypes.${vipType}`)}
-                </Badge>
-              </div>
-            )}
-
             {/* Status Badge - Show moderation, expired or verified */}
             <div className='absolute top-3 right-3'>
               {moderationStatus &&
@@ -213,6 +201,22 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               </Typography>
 
               <div className='flex items-center gap-2 flex-wrap'>
+                {vipType && vipType !== 'NORMAL' && (
+                  <Badge
+                    variant='default'
+                    className={cn(
+                      'font-semibold shadow-sm border',
+                      vipType === 'DIAMOND' &&
+                        'bg-gradient-to-r from-violet-500 to-purple-600 text-white border-violet-600',
+                      vipType === 'GOLD' &&
+                        'bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-yellow-600',
+                      vipType === 'SILVER' &&
+                        'bg-gradient-to-r from-gray-300 to-slate-400 text-gray-800 border-gray-400',
+                    )}
+                  >
+                    {t(`vipTypes.${vipType}`)}
+                  </Badge>
+                )}
                 {productType && (
                   <Badge variant='secondary' className='font-medium'>
                     {productType}
