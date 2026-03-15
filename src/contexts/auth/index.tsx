@@ -39,12 +39,19 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     logout,
     updateUser,
     clearError,
-    getStoredTokens,
+    _hasHydrated,
   } = useAuthStore()
 
   const { validToken } = useValidToken()
   const t = useTranslations('auth')
   const hasHandledUnauthorized = useRef(false)
+
+  // Reset the unauthorized flag when user authenticates again
+  useEffect(() => {
+    if (isAuthenticated) {
+      hasHandledUnauthorized.current = false
+    }
+  }, [isAuthenticated])
 
   // Listen for unauthorized events from axios interceptors
   useEffect(() => {
@@ -58,29 +65,28 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       toast.error(t('sessionExpired.title'), {
         description: t('sessionExpired.description'),
       })
-
-      setTimeout(() => {
-        window.location.reload()
-      }, 1500)
     }
 
     if (typeof window !== 'undefined') {
       window.addEventListener('auth:unauthorized', handleUnauthorized)
       return () => {
         window.removeEventListener('auth:unauthorized', handleUnauthorized)
-        hasHandledUnauthorized.current = false
       }
     }
   }, [logout, t])
 
-  // Initialize auth on mount/reload - check cookies sync with store
+  // Initialize auth on mount/reload — wait for zustand hydration first
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const tokens = getStoredTokens()
+    if (!_hasHydrated) return
 
+    const initializeAuth = async () => {
+      // Read latest state from the store (avoid stale closure)
+      const currentState = useAuthStore.getState()
+      const tokens = currentState.getStoredTokens()
+
+      try {
         // If localStorage says authenticated but no cookies → logout
-        if (isAuthenticated && !tokens?.accessToken) {
+        if (currentState.isAuthenticated && !tokens?.accessToken) {
           console.warn('[Auth] Cookies missing on load, logging out...')
           logout()
           return
@@ -103,7 +109,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     }
 
     initializeAuth()
-  }, [])
+  }, [_hasHydrated, login, logout, validToken])
 
   const contextValue: AuthContextType = useMemo(
     () => ({

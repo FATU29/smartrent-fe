@@ -12,6 +12,7 @@ interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
+  _hasHydrated: boolean
 
   // Actions
   setUser: (user: User | null) => void
@@ -36,6 +37,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      _hasHydrated: false,
 
       // Actions
       setUser: (user) => set({ user, isAuthenticated: !!user }),
@@ -97,6 +99,12 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => {
+        return () => {
+          // Mark hydration complete after zustand reads from localStorage
+          useAuthStore.setState({ _hasHydrated: true })
+        }
+      },
     },
   ),
 )
