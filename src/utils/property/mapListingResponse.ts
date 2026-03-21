@@ -31,8 +31,9 @@ export function mapBackendToFrontendResponse(
 export function mapFrontendToBackendRequest(
   frontendFilter: Partial<ListingFilterRequest>,
 ): ListingSearchApiRequest {
-  return {
+  const payload = {
     provinceId: frontendFilter?.provinceId,
+    provinceCodes: frontendFilter?.provinceCodes,
     districtId: frontendFilter?.districtId,
     wardId: frontendFilter?.wardId,
     isLegacy: frontendFilter?.isLegacy,
@@ -55,8 +56,8 @@ export function mapFrontendToBackendRequest(
     serviceFee: frontendFilter?.serviceFee,
     amenityIds: frontendFilter?.amenityIds,
     keyword: frontendFilter?.keyword,
-    page: frontendFilter?.page,
-    size: frontendFilter?.size,
+    page: frontendFilter?.page ?? 0,
+    size: frontendFilter?.size ?? 10,
     status: frontendFilter?.status,
     userId: frontendFilter?.userId,
     sortBy: frontendFilter?.sortBy,
@@ -65,4 +66,6 @@ export function mapFrontendToBackendRequest(
     userLatitude: frontendFilter?.userLatitude,
     userLongitude: frontendFilter?.userLongitude,
   }
+
+  return payload
 }
