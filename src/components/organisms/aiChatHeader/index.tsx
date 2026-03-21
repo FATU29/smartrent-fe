@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { X, Bot, Trash2 } from 'lucide-react'
+import { Minus, Bot } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
@@ -8,17 +8,10 @@ import AiChatButton from '@/components/atoms/aiChatButton'
 
 type TAiChatHeaderProps = {
   onClose?: () => void
-  onClear?: () => void
-  showClear?: boolean
   className?: string
 }
 
-const AiChatHeader: FC<TAiChatHeaderProps> = ({
-  onClose,
-  onClear,
-  showClear = true,
-  className,
-}) => {
+const AiChatHeader: FC<TAiChatHeaderProps> = ({ onClose, className }) => {
   const t = useTranslations('aiChat')
 
   return (
@@ -40,18 +33,6 @@ const AiChatHeader: FC<TAiChatHeaderProps> = ({
       </div>
 
       <div className='flex items-center gap-0.5 md:gap-1'>
-        {showClear && onClear && (
-          <AiChatButton
-            variant='ghost'
-            size='icon'
-            onClick={onClear}
-            className='h-8 w-8 text-primary-foreground transition-all duration-200 hover:scale-105 hover:bg-primary-foreground/10'
-            aria-label={t('clearHistory')}
-          >
-            <Trash2 className='h-4 w-4' />
-          </AiChatButton>
-        )}
-
         {onClose && (
           <AiChatButton
             variant='ghost'
@@ -60,7 +41,7 @@ const AiChatHeader: FC<TAiChatHeaderProps> = ({
             className='h-8 w-8 text-primary-foreground transition-all duration-200 hover:scale-105 hover:bg-primary-foreground/10'
             aria-label={t('close')}
           >
-            <X className='h-4.5 w-4.5 md:h-5 md:w-5' />
+            <Minus className='h-4.5 w-4.5 md:h-5 md:w-5' />
           </AiChatButton>
         )}
       </div>

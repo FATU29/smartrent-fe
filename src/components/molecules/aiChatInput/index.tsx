@@ -1,5 +1,5 @@
 import { FC, KeyboardEvent, useState, useRef, useEffect } from 'react'
-import { Send, Paperclip } from 'lucide-react'
+import { Send } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
@@ -44,10 +44,6 @@ const AiChatInput: FC<TAiChatInputProps> = ({
     }
   }
 
-  const handleAttach = () => {
-    // Future: File attachment functionality
-  }
-
   //Init effect hook
   useEffect(() => {
     if (textareaRef.current) {
@@ -59,22 +55,11 @@ const AiChatInput: FC<TAiChatInputProps> = ({
   return (
     <div
       className={cn(
-        'flex items-end gap-2 bg-background p-3',
+        'flex items-center gap-2 bg-background p-3',
         isMobile ? 'px-3 py-2' : 'p-4',
         className,
       )}
     >
-      <AiChatButton
-        variant='ghost'
-        size='icon'
-        onClick={handleAttach}
-        className='flex-shrink-0 hover:bg-accent'
-        aria-label={t('attachFile')}
-        disabled={isLoading}
-      >
-        <Paperclip className='h-5 w-5 text-muted-foreground' />
-      </AiChatButton>
-
       <div
         className={cn(
           'relative flex-1 rounded-lg border transition-all duration-200',
@@ -105,19 +90,19 @@ const AiChatInput: FC<TAiChatInputProps> = ({
       </div>
 
       <AiChatButton
-        variant='default'
+        variant='ghost'
         size='icon'
         onClick={handleSubmit}
         disabled={!value.trim() || isLoading}
         isLoading={isLoading}
         className={cn(
-          'flex-shrink-0 transition-all duration-200',
+          'flex-shrink-0 transition-all duration-200 text-primary',
           !value.trim() && !isLoading && 'opacity-50',
           value.trim() && !isLoading && 'hover:scale-105',
         )}
         aria-label={t('send')}
       >
-        {!isLoading && <Send className='h-5 w-5' />}
+        {!isLoading && <Send className='h-6 w-6' />}
       </AiChatButton>
     </div>
   )
