@@ -22,8 +22,7 @@ import {
 import { formatByLocale, formatCompactCurrency } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 
-import { usePricingHistory } from '@/hooks/useListings/usePricingHistory'
-import { usePriceStatistics } from '@/hooks/usePricing'
+import { usePricingHistory, usePriceStatistics } from '@/hooks/usePricing'
 
 interface PriceHistoryChartProps {
   listingId: number

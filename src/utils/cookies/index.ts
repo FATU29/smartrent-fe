@@ -18,10 +18,11 @@ export interface AuthTokens {
 }
 
 class CookieManager {
-  private readonly isClient = typeof window !== 'undefined'
+  private readonly isClient = typeof globalThis.window !== 'undefined'
   // Only use secure flag on HTTPS (production). On http://localhost, secure=true prevents the cookie from being stored.
   private readonly isSecure =
-    typeof window !== 'undefined' && window.location.protocol === 'https:'
+    typeof globalThis.window !== 'undefined' &&
+    globalThis.location.protocol === 'https:'
 
   /**
    * Set a cookie with options

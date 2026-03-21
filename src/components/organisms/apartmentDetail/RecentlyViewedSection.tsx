@@ -70,7 +70,7 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
     .filter(
       (l): l is typeof l & { listingId: number } =>
         typeof l.listingId === 'number' &&
-        !isNaN(l.listingId) &&
+        !Number.isNaN(l.listingId) &&
         l.listingId > 0,
     ) as ListingDetail[]
 

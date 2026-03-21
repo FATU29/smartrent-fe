@@ -35,8 +35,6 @@ interface MapSidebarProps {
   error: string | null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tCommon: any
 }
 
 const MapSidebar: React.FC<MapSidebarProps> = ({
@@ -89,12 +87,20 @@ const MapSidebar: React.FC<MapSidebarProps> = ({
             return (
               <div
                 key={listing.listingId}
+                role='button'
+                tabIndex={0}
                 className={`flex flex-col h-full cursor-pointer transition-all duration-200 rounded-xl border bg-card overflow-hidden ${
                   isSelected
                     ? 'border-primary ring-2 ring-primary/20 shadow-md'
                     : 'border-border/50 hover:border-primary/50 hover:shadow-sm'
                 }`}
                 onClick={() => onSelectListing(listing)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onSelectListing(listing)
+                  }
+                }}
               >
                 {/* Ensure standard click won't bubble up improperly from PropertyCard */}
                 <div className='pointer-events-none flex-1'>
@@ -414,7 +420,6 @@ const MapViewTemplate: React.FC = () => {
         onBackToList={handleBackToList}
         error={error}
         t={t}
-        tCommon={tCommon}
       />
 
       {/* Map Area */}
