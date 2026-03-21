@@ -39,6 +39,9 @@ export const navigateToPropertiesWithFilters = (
       amenityIds:
         amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
       provinceId: filters?.provinceId ?? null,
+      provinceCode: filters?.provinceCodes
+        ? filters.provinceCodes.join(',')
+        : null,
       districtId: filters?.districtId ?? null,
       wardId: filters?.wardId ?? null,
       isLegacy: filters?.isLegacy ?? null,
@@ -86,6 +89,7 @@ export const navigateToPropertiesWithClearedFilters = (router: NextRouter) => {
       serviceFee: null,
       amenityIds: null,
       provinceId: null,
+      provinceCode: null,
       districtId: null,
       wardId: null,
       isLegacy: null,

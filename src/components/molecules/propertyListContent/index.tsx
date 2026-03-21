@@ -96,35 +96,37 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
   return (
     <div className='space-y-4'>
       <div className='space-y-4 md:space-y-5'>
-        {items.map((property) =>
-          onPropertyClick ? (
-            <div
-              key={property.listingId}
-              onClick={() => onPropertyClick(property)}
-            >
-              <PropertyCard
-                listing={property}
-                onFavorite={handleFavorite}
-                className='compact'
-                imageLayout='top'
-              />
-            </div>
-          ) : (
-            <Link
-              key={property.listingId}
-              href={`/listing-detail/${property.listingId}`}
-              className='block transition-transform duration-200 active:scale-[0.99]'
-              onClick={(e) => handleLinkClick(e, property)}
-            >
-              <PropertyCard
-                listing={property}
-                onFavorite={handleFavorite}
-                className='compact'
-                imageLayout='top'
-              />
-            </Link>
-          ),
-        )}
+        {items
+          .filter((property) => !!property.listingId)
+          .map((property) =>
+            onPropertyClick ? (
+              <div
+                key={property.listingId}
+                onClick={() => onPropertyClick(property)}
+              >
+                <PropertyCard
+                  listing={property}
+                  onFavorite={handleFavorite}
+                  className='compact'
+                  imageLayout='top'
+                />
+              </div>
+            ) : (
+              <Link
+                key={property.listingId}
+                href={`/listing-detail/${property.listingId}`}
+                className='block transition-transform duration-200 active:scale-[0.99]'
+                onClick={(e) => handleLinkClick(e, property)}
+              >
+                <PropertyCard
+                  listing={property}
+                  onFavorite={handleFavorite}
+                  className='compact'
+                  imageLayout='top'
+                />
+              </Link>
+            ),
+          )}
 
         {/* Show loading skeleton during client-side fetch */}
         {isLoading && items.length > 0 && (

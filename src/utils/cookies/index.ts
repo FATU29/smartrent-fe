@@ -19,6 +19,9 @@ export interface AuthTokens {
 
 class CookieManager {
   private readonly isClient = typeof window !== 'undefined'
+  // Only use secure flag on HTTPS (production). On http://localhost, secure=true prevents the cookie from being stored.
+  private readonly isSecure =
+    typeof window !== 'undefined' && window.location.protocol === 'https:'
 
   /**
    * Set a cookie with options
@@ -152,14 +155,14 @@ class CookieManager {
   setAuthTokens(tokens: AuthTokens): void {
     this.set('access_token', tokens.accessToken, {
       expires: 7, // 7 days
-      secure: true,
+      secure: this.isSecure,
       sameSite: 'strict',
     })
 
     if (tokens.refreshToken) {
       this.set('refresh_token', tokens.refreshToken, {
         expires: 30, // 30 days
-        secure: true,
+        secure: this.isSecure,
         sameSite: 'strict',
       })
     }

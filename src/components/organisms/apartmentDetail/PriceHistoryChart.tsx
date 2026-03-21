@@ -19,20 +19,20 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { PriceHistory, PriceStatistics } from '@/api/types'
 import { formatByLocale, formatCompactCurrency } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 
+import { usePricingHistory } from '@/hooks/useListings/usePricingHistory'
+import { usePriceStatistics } from '@/hooks/usePricing'
+
 interface PriceHistoryChartProps {
-  priceHistory?: PriceHistory[]
-  priceStatistics?: PriceStatistics | null
+  listingId: number
   newAddress?: string
   oldAddress?: string
 }
 
 const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
-  priceHistory,
-  priceStatistics,
+  listingId,
   newAddress,
   oldAddress,
 }) => {
@@ -42,6 +42,11 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
   const [selectedPeriod, setSelectedPeriod] = useState<
     '1year' | '2years' | '5years'
   >('1year')
+
+  const { data: priceHistory } = usePricingHistory(listingId)
+  const { data: priceStatistics } = usePriceStatistics(listingId, {
+    enabled: !!listingId,
+  })
 
   // Transform PriceHistory[] to chart data and calculate statistics
   const { chartData, statistics } = useMemo(() => {

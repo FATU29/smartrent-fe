@@ -69,6 +69,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             defaultImage={DEFAULT_IMAGE}
             alt={`${t('image')} ${currentIndex + 1}`}
             className='w-full h-full object-cover'
+            priority={currentIndex === 0}
           />
         ) : currentMedia?.mediaType === 'VIDEO' ? (
           isYouTube(currentMedia.url) ? (

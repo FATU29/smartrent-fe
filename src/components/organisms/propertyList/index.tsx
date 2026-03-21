@@ -94,7 +94,9 @@ const PropertyList: React.FC<PropertyListProps> = ({
       {!isLoading && displayedProperties.length === 0 && PropertyNotFound}
       {!isLoading && displayedProperties.length > 0 && (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6'>
-          {displayedProperties.map((p) => PropertyItem(p))}
+          {displayedProperties
+            .filter((p) => !!p.listingId)
+            .map((p) => PropertyItem(p))}
         </div>
       )}
       <div className='mt-8' />

@@ -291,7 +291,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1'>
               {assetsImages.slice(0, 5).map((img, idx) => (
                 <span
-                  key={img || `dot-${idx}`}
+                  key={`dot-${idx}-${img || ''}`}
                   className={classNames(
                     'w-1.5 h-1.5 rounded-full transition-all duration-200',
                     currentImageIndex === idx ? 'bg-white w-3' : 'bg-white/50',
@@ -347,7 +347,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           <div className='flex flex-col gap-1.5 w-12 md:w-14'>
             {thumbnails.slice(0, 3).map((img, idx) => (
               <button
-                key={img || `thumb-${idx}`}
+                key={`thumb-${idx}-${img || ''}`}
                 type='button'
                 onClick={(e) => {
                   e.stopPropagation()

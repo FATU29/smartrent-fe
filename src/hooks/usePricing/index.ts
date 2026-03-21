@@ -143,6 +143,7 @@ export const usePriceStatistics = (
       return response.data
     },
     enabled: enabled && !!listingId,
+    retry: false, // Don't retry on server errors (500s) to avoid console spam
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   })

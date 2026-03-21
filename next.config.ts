@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
             hostname: 'picsum.photos',
           },
         ],
-    qualities: [25, 50, 75, 85, 100],
+    qualities: [75, 85, 90, 100],
   },
 }
 

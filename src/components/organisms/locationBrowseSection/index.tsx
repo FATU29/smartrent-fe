@@ -53,7 +53,14 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
   }
 
   // Show empty state when no data
-  if (!cities || cities.length === 0) {
+  const uniqueCities = cities
+    ? cities.filter(
+        (city, idx, arr) =>
+          arr.findIndex((c) => c.provinceId === city.provinceId) === idx,
+      )
+    : []
+
+  if (!cities || uniqueCities.length === 0) {
     return (
       <section className='mt-16'>
         <Typography
@@ -87,11 +94,17 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
         setApi={setApi}
       >
         <CarouselContent>
-          {cities.map((city) => {
-            const provinceUrl = `${PUBLIC_ROUTES.LISTING_LISTING}?provinceId=${city.provinceId}`
+          {uniqueCities.map((city, idx) => {
+            const queryParts = []
+            if (city.provinceCode)
+              queryParts.push(`provinceCode=${city.provinceCode}`)
+            if (city.provinceId)
+              queryParts.push(`provinceId=${city.provinceId}`)
+            const queryParam = queryParts.join('&')
+            const provinceUrl = `${PUBLIC_ROUTES.LISTING_LISTING}?${queryParam}`
             return (
               <CarouselItem
-                key={city.provinceId || city.provinceCode}
+                key={`city-${city.provinceCode ?? city.provinceId ?? idx}`}
                 className='basis-full sm:basis-1/2 lg:basis-1/3'
               >
                 <Link
@@ -101,8 +114,9 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
                   <div className='relative h-[280px] w-full'>
                     <Image
                       src={
-                        imageMap[Number(city?.provinceId)] ||
-                        '/images/default-image.jpg'
+                        imageMap[
+                          Number(city.provinceCode ?? city.provinceId)
+                        ] || '/images/default-image.jpg'
                       }
                       alt={city?.provinceName}
                       fill
