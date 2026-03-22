@@ -65,9 +65,14 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
       )
     : recentlyViewed
 
-  const listingsData = filteredListings.map((listing) =>
-    mapRecentlyViewedToListing(listing),
-  ) as ListingDetail[]
+  const listingsData = filteredListings
+    .map((listing) => mapRecentlyViewedToListing(listing))
+    .filter(
+      (l): l is typeof l & { listingId: number } =>
+        typeof l.listingId === 'number' &&
+        !Number.isNaN(l.listingId) &&
+        l.listingId > 0,
+    ) as ListingDetail[]
 
   const handleFavorite = () => {}
 

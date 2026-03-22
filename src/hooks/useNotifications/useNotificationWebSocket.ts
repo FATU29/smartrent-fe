@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from 'react'
 import SockJS from 'sockjs-client'
 import { Client } from '@stomp/stompjs'
 import { ENV } from '@/constants'
+import { getAccessToken } from '@/utils/cookies'
 import type { NotificationItem } from '@/api/types/notification.type'
 
 /**
@@ -25,8 +26,11 @@ export function useNotificationWebSocket(
 
     const wsBaseUrl = ENV.URL_API_BASE.replace(/\/$/, '')
 
+    const token = getAccessToken()
+
     const client = new Client({
       webSocketFactory: () => new SockJS(`${wsBaseUrl}/ws`),
+      connectHeaders: token ? { Authorization: `Bearer ${token}` } : {},
       reconnectDelay: 5000,
 
       onConnect: () => {

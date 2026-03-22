@@ -474,6 +474,7 @@ export enum SortKey {
 
 export interface ListingFilterRequest {
   provinceId?: number | string
+  provinceCodes?: string[]
   districtId?: number
   wardId?: number | string
   isLegacy?: boolean
@@ -530,6 +531,7 @@ export interface ListingFilterRequest {
  */
 export interface ListingSearchApiRequest {
   provinceId?: number | string
+  provinceCodes?: string[]
   districtId?: number
   wardId?: number | string
   isLegacy?: boolean

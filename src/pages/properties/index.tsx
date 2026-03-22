@@ -72,6 +72,9 @@ const ResidentialPropertiesPage: NextPageWithLayout<
           amenityIds:
             amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
           provinceId: filters.provinceId ?? null,
+          provinceCode: filters.provinceCodes
+            ? filters.provinceCodes.join(',')
+            : null,
           districtId: filters.districtId ?? null,
           wardId: filters.wardId ?? null,
           isLegacy: filters.isLegacy ?? null,

@@ -5,20 +5,43 @@ import {
   PropertyHeader,
   PropertyFeatures,
   PropertyDescription,
-  PriceHistoryChart,
   SellerContact,
-  PropertyMap,
-  RecentlyViewedSection,
-  SimilarPropertiesSection,
 } from '@/components/organisms/apartmentDetail'
 import { Typography } from '@/components/atoms/typography'
+import { Skeleton } from '@/components/atoms/skeleton'
+import dynamic from 'next/dynamic'
+
+// Dynamically import heavy components
+const PropertyMap = dynamic(
+  () => import('@/components/organisms/apartmentDetail/PropertyMap'),
+  {
+    ssr: false,
+    loading: () => <Skeleton className='w-full h-[400px] rounded-xl' />,
+  },
+)
+const PriceHistoryChart = dynamic(
+  () => import('@/components/organisms/apartmentDetail/PriceHistoryChart'),
+  {
+    ssr: false,
+    loading: () => <Skeleton className='w-full h-[300px] rounded-xl' />,
+  },
+)
+const SimilarPropertiesSection = dynamic(
+  () =>
+    import('@/components/organisms/apartmentDetail/SimilarPropertiesSection'),
+  {
+    ssr: false,
+    loading: () => <Skeleton className='w-full h-[300px] rounded-xl' />,
+  },
+)
+const RecentlyViewedSection = dynamic(
+  () => import('@/components/organisms/apartmentDetail/RecentlyViewedSection'),
+  {
+    ssr: false,
+    loading: () => <Skeleton className='w-full h-[150px] rounded-xl' />,
+  },
+)
 import { ListingDetail } from '@/api/types'
-import {
-  usePricingHistory,
-  usePriceStatistics,
-} from '@/hooks/useListings/usePricingHistory'
-import { useSimilarProperties } from '@/hooks/useListings/useSimilarProperties'
-import { mockPricingHistory } from '@/mock'
 import { PhoneClickDetailService } from '@/api/services'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { mapListingToRecentlyViewed } from '@/utils/recentlyViewed/mapper'
@@ -84,31 +107,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   }, [listingId, addListing]) // Only depend on listingId and addListing (addListing is now stable)
 
   const { longitude, latitude } = address || {}
-
-  const { data: pricingHistoryData, isLoading: isPricingHistoryLoading } =
-    usePricingHistory(listingId)
-  const { data: priceStatisticsData } = usePriceStatistics(listingId)
-
-  const {
-    data: fetchedSimilarProperties,
-    isLoading: isLoadingSimilar,
-    isError: isErrorSimilar,
-  } = useSimilarProperties({
-    listingId,
-    vipType,
-    wardId: locationPricing?.wardPricing?.locationId,
-    districtId: locationPricing?.districtPricing?.locationId,
-    provinceId: locationPricing?.provincePricing?.locationId,
-    isLegacy: true,
-    enabled: !!listingId && !!vipType,
-    limit: 10,
-  })
-
-  const similarPropertiesData = fetchedSimilarProperties || []
-  const shouldShowSimilarProperties =
-    isLoadingSimilar ||
-    (similarPropertiesData && similarPropertiesData.length > 0) ||
-    isErrorSimilar
 
   const handleChatZalo = () => {
     onChatZalo?.()
@@ -201,17 +199,12 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         id: 'priceHistory',
         component: (
           <PriceHistoryChart
-            priceHistory={
-              Array.isArray(pricingHistoryData)
-                ? pricingHistoryData
-                : mockPricingHistory
-            }
-            priceStatistics={priceStatisticsData}
+            listingId={listing.listingId}
             newAddress={address?.fullNewAddress}
             oldAddress={address?.fullAddress}
           />
         ),
-        isVisible: mockPricingHistory && mockPricingHistory.length > 0,
+        isVisible: true,
       },
       {
         id: 'map',
@@ -231,14 +224,16 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         id: 'similarProperties',
         component: (
           <SimilarPropertiesSection
-            listings={similarPropertiesData}
+            listingId={listing.listingId}
+            vipType={vipType}
+            wardId={locationPricing?.wardPricing?.locationId}
+            districtId={locationPricing?.districtPricing?.locationId}
+            provinceId={locationPricing?.provincePricing?.locationId}
             onPropertyClick={handleSimilarPropertyClick}
-            isLoading={isLoadingSimilar}
-            showEmptyState={!isLoadingSimilar && !isErrorSimilar}
           />
         ),
         order: 8,
-        isVisible: shouldShowSimilarProperties,
+        isVisible: true,
       },
       {
         id: 'recentlyViewed',
@@ -250,15 +245,14 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     ],
     [
       listing,
-      similarPropertiesData,
       t,
       addressNode,
-      pricingHistoryData,
-      isPricingHistoryLoading,
       address,
       mediaItems,
       amenities,
       description,
+      vipType,
+      locationPricing,
     ],
   )
 
