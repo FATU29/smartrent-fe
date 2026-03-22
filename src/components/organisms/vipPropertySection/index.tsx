@@ -12,7 +12,6 @@ import {
 } from '@/components/atoms/carousel'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { VipType } from '@/api/types'
-import { Crown, Sparkles, Medal, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRecommendedListingsByVip } from '@/hooks/useListings/useRecommendedListingsByVip'
 
@@ -22,34 +21,22 @@ interface VipPropertySectionProps {
 
 const VIP_CONFIG = {
   DIAMOND: {
-    icon: Crown,
-    gradient: 'from-blue-500 to-purple-600',
-    bgGradient:
-      'from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20',
+    emoji: '💎',
     textColor: 'text-blue-600 dark:text-blue-400',
     titleKey: 'homePage.vipSections.diamond',
   },
   GOLD: {
-    icon: Sparkles,
-    gradient: 'from-yellow-500 to-orange-600',
-    bgGradient:
-      'from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20',
+    emoji: '🌟',
     textColor: 'text-yellow-600 dark:text-yellow-400',
     titleKey: 'homePage.vipSections.gold',
   },
   SILVER: {
-    icon: Medal,
-    gradient: 'from-gray-400 to-gray-600',
-    bgGradient:
-      'from-gray-50 to-slate-50 dark:from-gray-950/20 dark:to-slate-950/20',
+    emoji: '🥈',
     textColor: 'text-gray-600 dark:text-gray-400',
     titleKey: 'homePage.vipSections.silver',
   },
   NORMAL: {
-    icon: Star,
-    gradient: 'from-slate-400 to-slate-600',
-    bgGradient:
-      'from-slate-50 to-slate-100 dark:from-slate-950/20 dark:to-slate-900/20',
+    emoji: '⭐',
     textColor: 'text-slate-600 dark:text-slate-400',
     titleKey: 'homePage.vipSections.normal',
   },
@@ -61,7 +48,6 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
   const [current, setCurrent] = React.useState(0)
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
   const config = VIP_CONFIG[vipType]
-  const Icon = config.icon
 
   // Fetch listings client-side
   const { listings, isLoading } = useRecommendedListingsByVip({
@@ -107,12 +93,8 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
     const skeletonItems = Array.from({ length: 4 })
     return (
       <section className='mb-8 sm:mb-10'>
-        <div className='flex items-center gap-3 mb-4 sm:mb-5'>
-          <div
-            className={`p-2 rounded-lg bg-gradient-to-br ${config.gradient}`}
-          >
-            <Icon className='w-5 h-5 text-white' />
-          </div>
+        <div className='flex items-center gap-2 mb-4 sm:mb-5'>
+          <span className='text-xl'>{config.emoji}</span>
           <h2 className='text-xl sm:text-2xl font-semibold'>
             {t(config.titleKey)}
           </h2>
@@ -170,10 +152,8 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
 
   return (
     <section className='mb-8 sm:mb-10'>
-      <div className='flex items-center gap-3 mb-4 sm:mb-5'>
-        <div className={`p-2 rounded-lg bg-gradient-to-br ${config.gradient}`}>
-          <Icon className='w-5 h-5 text-white' />
-        </div>
+      <div className='flex items-center gap-2 mb-4 sm:mb-5'>
+        <span className='text-xl'>{config.emoji}</span>
         <h2 className='text-xl sm:text-2xl font-semibold'>
           {t(config.titleKey)}
         </h2>
@@ -188,20 +168,22 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
         setApi={setApi}
       >
         <CarouselContent>
-          {listings.map((listing) => (
-            <CarouselItem
-              key={listing.listingId}
-              className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'
-            >
-              <Link
-                href={`/listing-detail/${listing.listingId}`}
-                className='block h-full'
-                onClick={handleLinkClick}
+          {listings
+            .filter((listing) => !!listing.listingId)
+            .map((listing) => (
+              <CarouselItem
+                key={listing.listingId}
+                className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'
               >
-                <PropertyCard listing={listing} onFavorite={handleFavorite} />
-              </Link>
-            </CarouselItem>
-          ))}
+                <Link
+                  href={`/listing-detail/${listing.listingId}`}
+                  className='block h-full'
+                  onClick={handleLinkClick}
+                >
+                  <PropertyCard listing={listing} onFavorite={handleFavorite} />
+                </Link>
+              </CarouselItem>
+            ))}
         </CarouselContent>
         <CarouselPrevious className='hidden sm:flex -left-12' />
         <CarouselNext className='hidden sm:flex -right-12' />
