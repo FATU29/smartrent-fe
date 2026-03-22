@@ -14,7 +14,6 @@ import { useChatLogic } from '@/hooks/useChatAi'
 import AiChatHeader from '@/components/organisms/aiChatHeader'
 import AiChatInterface from '@/components/organisms/aiChatInterface'
 import AiChatButton from '@/components/atoms/aiChatButton'
-import AiChatClearDialog from '@/components/molecules/aiChatClearDialog'
 
 type TAiChatWidgetProps = {
   className?: string
@@ -28,8 +27,6 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
   //Init state hook
   const [isOpen, setIsOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
-  const [showClearDialog, setShowClearDialog] = useState(false)
-
   //Init use hook
   const isMobile = useMediaQuery('(max-width: 768px)')
   const t = useTranslations('aiChat')
@@ -41,7 +38,6 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
     scrollRef,
     sendMessage,
     handleInputChange,
-    clearMessages,
   } = useChatLogic()
 
   //Init event handle
@@ -51,19 +47,6 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
 
   const handleClose = () => {
     setIsOpen(false)
-  }
-
-  const handleClear = () => {
-    setShowClearDialog(true)
-  }
-
-  const handleConfirmClear = () => {
-    clearMessages()
-    setShowClearDialog(false)
-  }
-
-  const handleCancelClear = () => {
-    setShowClearDialog(false)
   }
 
   //Init effect hook
@@ -83,21 +66,41 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
 
   // Floating Action Button
   const FloatingButton = (
-    <AiChatButton
-      variant='default'
-      size='icon'
-      onClick={handleToggle}
-      className={cn(
-        'fixed z-50 h-14 w-14 rounded-full shadow-2xl transition-all duration-300',
-        'hover:scale-110 hover:shadow-xl active:scale-95',
-        'animate-in fade-in zoom-in duration-500',
-        positionClasses[position],
-        className,
+    <div className={cn('fixed z-50 group', positionClasses[position])}>
+      {/* Tooltip */}
+      {!isOpen && (
+        <div className='absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-foreground px-3 py-1.5 text-xs font-medium text-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none'>
+          {t('openChat')}
+          <div className='absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-foreground' />
+        </div>
       )}
-      aria-label={t('openChat')}
-    >
-      <MessageCircle className='h-6 w-6 transition-transform duration-300 group-hover:rotate-12' />
-    </AiChatButton>
+
+      {/* Pulse ring */}
+      {!isOpen && (
+        <span className='absolute inset-0 rounded-full bg-primary/30 animate-ping' />
+      )}
+
+      <AiChatButton
+        variant='default'
+        size='icon'
+        onClick={handleToggle}
+        className={cn(
+          'relative h-14 w-14 rounded-full shadow-2xl transition-all duration-300',
+          'hover:scale-110 hover:shadow-xl active:scale-95',
+          !isOpen &&
+            'animate-bounce [animation-duration:2s] [animation-iteration-count:3]',
+          className,
+        )}
+        aria-label={t('openChat')}
+      >
+        <MessageCircle
+          className={cn(
+            'h-6 w-6 transition-transform duration-300',
+            isOpen ? 'rotate-0' : 'group-hover:rotate-12',
+          )}
+        />
+      </AiChatButton>
+    </div>
   )
 
   // Mobile: Full-screen Dialog
@@ -114,12 +117,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
           >
             <DialogTitle className='sr-only'>{t('title')}</DialogTitle>
             <div className='flex h-full w-full flex-col overflow-hidden bg-background'>
-              <AiChatHeader
-                onClose={handleClose}
-                onClear={handleClear}
-                showClear
-                className='flex-shrink-0'
-              />
+              <AiChatHeader onClose={handleClose} className='flex-shrink-0' />
 
               <AiChatInterface
                 messages={messages}
@@ -135,14 +133,6 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
             </div>
           </DialogContent>
         </Dialog>
-
-        {/* Clear History Confirmation Dialog */}
-        <AiChatClearDialog
-          open={showClearDialog}
-          onOpenChange={setShowClearDialog}
-          onConfirm={handleConfirmClear}
-          onCancel={handleCancelClear}
-        />
       </>
     )
   }
@@ -179,8 +169,6 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
               <div className='flex h-full w-full flex-col overflow-hidden bg-background rounded-xl'>
                 <AiChatHeader
                   onClose={handleClose}
-                  onClear={handleClear}
-                  showClear
                   className='flex-shrink-0 rounded-t-xl'
                 />
 
@@ -200,14 +188,6 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
           </ResizablePanelGroup>
         </div>
       )}
-
-      {/* Clear History Confirmation Dialog */}
-      <AiChatClearDialog
-        open={showClearDialog}
-        onOpenChange={setShowClearDialog}
-        onConfirm={handleConfirmClear}
-        onCancel={handleCancelClear}
-      />
     </>
   )
 }
