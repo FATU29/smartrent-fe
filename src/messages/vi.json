@@ -2169,20 +2169,60 @@
       },
       "phoneClicks": {
         "title": "Thống kê lượt click số điện thoại",
-        "description": "Theo dõi số lượng người dùng đã click vào số điện thoại trong tin đăng của bạn",
+        "description": "Theo dõi hiệu suất từng tin đăng với phân tích lượt click số điện thoại",
         "loading": "Đang tải...",
         "totalClicks": "Tổng lượt click",
-        "uniqueUsers": "Người dùng duy nhất",
-        "topListings": "Tin đăng hàng đầu",
+        "totalViews": "Tổng lượt xem",
+        "conversionRate": "Tỷ lệ chuyển đổi",
         "clickTrends": "Xu hướng click",
         "last7Days": "7 ngày qua",
         "noData": "Chưa có dữ liệu",
         "clicks": "Lượt click",
-        "date": "Ngày"
+        "date": "Ngày",
+        "analyticsOverview": "Bảng phân tích chủ tin",
+        "listing": "Tin đăng",
+        "selectListing": "Chọn tin đăng",
+        "noListings": "Không có tin đăng để hiển thị phân tích",
+        "clicksOverTime": "Lượt click theo thời gian",
+        "clicksByDayOfWeek": "Lượt click theo thứ trong tuần",
+        "allListings": "Tổng quan tất cả tin đăng",
+        "action": "Hành động",
+        "viewDetails": "Xem chi tiết",
+        "days": {
+          "MON": "Th 2",
+          "TUE": "Th 3",
+          "WED": "Th 4",
+          "THU": "Th 5",
+          "FRI": "Th 6",
+          "SAT": "Th 7",
+          "SUN": "CN"
+        }
       },
       "phoneClickStats": {
         "title": "Phân tích lượt click số điện thoại",
         "description": "Theo dõi mức độ tương tác với tin đăng của bạn thông qua lượt click số điện thoại"
+      },
+      "savedListingsStats": {
+        "title": "Phân tích lượt lưu tin",
+        "description": "Theo dõi xu hướng người dùng lưu tin đăng của bạn theo thời gian"
+      },
+      "savedListings": {
+        "loading": "Đang tải...",
+        "overview": "Tổng quan lượt lưu tin",
+        "description": "Theo dõi xu hướng lưu và so sánh hiệu suất lượt lưu giữa các tin đăng",
+        "totalSavesAcrossAll": "Tổng lượt lưu trên tất cả tin đăng",
+        "listing": "Tin đăng",
+        "selectListing": "Chọn tin đăng",
+        "noListings": "Không có tin đăng để hiển thị phân tích lượt lưu",
+        "saves": "Lượt lưu",
+        "date": "Ngày",
+        "totalSaves": "Tổng lượt lưu",
+        "savesOverTime": "Lượt lưu theo thời gian",
+        "savesByListing": "Lượt lưu theo tin đăng",
+        "allListings": "Tổng quan lượt lưu tất cả tin đăng",
+        "action": "Hành động",
+        "viewTrend": "Xem xu hướng",
+        "noData": "Chưa có dữ liệu"
       }
     },
     "listingManagement": {

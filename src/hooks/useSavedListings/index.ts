@@ -4,3 +4,7 @@ export { useGetMySavedListings } from './useGetMySavedListings'
 export { useSavedListingsCount } from './useSavedListingsCount'
 export { useToggleSaveListing } from './useToggleSaveListing'
 export { useCheckSavedListing } from './useCheckSavedListing'
+export {
+  useOwnerListingSavesTrend,
+  useOwnerSavedListingsAnalyticsSummary,
+} from './useOwnerSavedListingsAnalytics'

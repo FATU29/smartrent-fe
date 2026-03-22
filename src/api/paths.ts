@@ -216,6 +216,17 @@ export const PATHS = {
     SEARCH_MY_LISTINGS: '/v1/phone-click-details/my-listings/search',
   },
 
+  // Owner listing analytics endpoints
+  OWNER_LISTING_ANALYTICS: {
+    SUMMARY: '/v1/owners/listings/analytics',
+    DETAIL: '/v1/owners/listings/:listingId/analytics',
+  },
+
+  // Listing public social-proof endpoints
+  LISTING_SOCIAL_PROOF: {
+    INTEREST_LEVEL: '/v1/listings/:listingId/interest-level',
+  },
+
   // Exchange Rate endpoints
   EXCHANGE_RATE: {
     LATEST: '/v1/exchange-rates/latest',
@@ -229,6 +240,12 @@ export const PATHS = {
     MY_SAVED: '/v1/saved-listings/my-saved',
     CHECK: '/v1/saved-listings/check/:listingId',
     COUNT: '/v1/saved-listings/count',
+  },
+
+  // Owner saved-listings analytics endpoints
+  OWNER_SAVED_LISTINGS_ANALYTICS: {
+    SUMMARY: '/v1/owners/listings/saves-analytics',
+    TREND: '/v1/owners/listings/:listingId/saves-trend',
   },
 
   // Recently Viewed endpoints
