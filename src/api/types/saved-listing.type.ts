@@ -36,6 +36,29 @@ export interface SavedListingsPageResponse {
   data: SavedListing[]
 }
 
+export interface DailySaveCount {
+  date: string
+  count: number
+}
+
+export interface OwnerListingSavesTrendResponse {
+  listingId: number
+  listingTitle: string
+  totalSaves: number
+  savesOverTime: DailySaveCount[]
+}
+
+export interface ListingSaveSummary {
+  listingId: number
+  listingTitle: string
+  totalSaves: number
+}
+
+export interface OwnerSavedListingsAnalyticsResponse {
+  listings: ListingSaveSummary[]
+  totalSavesAcrossAll: number
+}
+
 // ============= QUERY KEYS =============
 
 export const SAVED_LISTING_QUERY_KEYS = {
@@ -46,4 +69,10 @@ export const SAVED_LISTING_QUERY_KEYS = {
   check: (listingId: number) =>
     [...SAVED_LISTING_QUERY_KEYS.all, 'check', listingId] as const,
   count: () => [...SAVED_LISTING_QUERY_KEYS.all, 'count'] as const,
+  ownerAnalytics: () =>
+    [...SAVED_LISTING_QUERY_KEYS.all, 'owner-analytics'] as const,
+  ownerAnalyticsSummary: () =>
+    [...SAVED_LISTING_QUERY_KEYS.ownerAnalytics(), 'summary'] as const,
+  ownerSavesTrend: (listingId?: number | null) =>
+    [...SAVED_LISTING_QUERY_KEYS.ownerAnalytics(), 'trend', listingId] as const,
 }

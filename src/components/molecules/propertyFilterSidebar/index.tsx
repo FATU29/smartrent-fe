@@ -105,6 +105,9 @@ const PropertyFilterSidebar: React.FC = () => {
         amenityIds:
           amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
         provinceId: newFilters.provinceId ?? null,
+        provinceCode: newFilters.provinceCodes
+          ? newFilters.provinceCodes.join(',')
+          : null,
         districtId: newFilters.districtId ?? null,
         wardId: newFilters.wardId ?? null,
         isLegacy: newFilters.isLegacy ?? null,
@@ -160,6 +163,9 @@ const PropertyFilterSidebar: React.FC = () => {
         amenityIds:
           amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
         provinceId: newFilters.provinceId ?? null,
+        provinceCode: newFilters.provinceCodes
+          ? newFilters.provinceCodes.join(',')
+          : null,
         districtId: newFilters.districtId ?? null,
         wardId: newFilters.wardId ?? null,
         isLegacy: newFilters.isLegacy ?? null,
@@ -215,6 +221,9 @@ const PropertyFilterSidebar: React.FC = () => {
         amenityIds:
           amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
         provinceId: newFilters.provinceId ?? null,
+        provinceCode: newFilters.provinceCodes
+          ? newFilters.provinceCodes.join(',')
+          : null,
         districtId: newFilters.districtId ?? null,
         wardId: newFilters.wardId ?? null,
         isLegacy: newFilters.isLegacy ?? null,

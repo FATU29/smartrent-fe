@@ -14,20 +14,44 @@ import {
 import { Skeleton } from '@/components/atoms/skeleton'
 import { LayoutGrid } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { VipType } from '@/api/types'
+import { useSimilarProperties } from '@/hooks/useListings/useSimilarProperties'
 
 interface SimilarPropertiesSectionProps {
-  listings: ListingDetail[]
+  listingId: number
+  vipType?: VipType
+  wardId?: number
+  districtId?: number
+  provinceId?: number
   onPropertyClick?: (listing: ListingDetail) => void
-  isLoading?: boolean
-  showEmptyState?: boolean
 }
 
 const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
-  listings,
-  isLoading,
-  showEmptyState,
+  listingId,
+  vipType,
+  wardId,
+  districtId,
+  provinceId,
 }) => {
   const t = useTranslations()
+
+  const {
+    data: fetchedSimilarProperties,
+    isLoading,
+    isError,
+  } = useSimilarProperties({
+    listingId,
+    vipType,
+    wardId,
+    districtId,
+    provinceId,
+    isLegacy: true,
+    enabled: !!listingId && !!vipType,
+    limit: 10,
+  })
+
+  const listings = fetchedSimilarProperties || []
+  const showEmptyState = !isLoading && !isError
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
@@ -127,7 +151,9 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
     return null // Don't show section if no listings and empty state is enabled
   }
 
-  if (!listings || listings.length === 0) {
+  const validListings = listings.filter((l) => !!l.listingId)
+
+  if (!validListings || validListings.length === 0) {
     return null
   }
 
@@ -141,7 +167,7 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
           {t('apartmentDetail.sections.similarProperties')}
         </h2>
         <span className='ml-auto text-sm font-medium text-green-600 dark:text-green-400'>
-          {listings.length}
+          {validListings.length}
         </span>
       </div>
 
@@ -151,7 +177,7 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
         setApi={setApi}
       >
         <CarouselContent>
-          {listings.map((listing) => (
+          {validListings.map((listing) => (
             <CarouselItem
               key={listing.listingId}
               className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'

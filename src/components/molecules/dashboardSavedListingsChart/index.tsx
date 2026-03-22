@@ -29,41 +29,55 @@ import {
 } from '@/components/atoms/table'
 import { Button } from '@/components/atoms/button'
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
-  Line,
-  LineChart,
+  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Heart } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import type {
-  OwnerListingAnalytics,
-  OwnerListingAnalyticsSummaryItem,
+  ListingSaveSummary,
+  OwnerListingSavesTrendResponse,
 } from '@/api/types'
 
-interface DashboardPhoneClickChartProps {
-  listings: OwnerListingAnalyticsSummaryItem[]
+interface DashboardSavedListingsChartProps {
+  listings: ListingSaveSummary[]
+  totalSavesAcrossAll: number
   selectedListingId?: number | null
-  analytics?: OwnerListingAnalytics | null
+  trend?: OwnerListingSavesTrendResponse | null
   isSummaryLoading?: boolean
   isDetailLoading?: boolean
   onSelectListing?: (listingId: number) => void
 }
 
-const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
+const BAR_COLORS = [
+  '#f59e0b',
+  '#6366f1',
+  '#10b981',
+  '#ef4444',
+  '#3b82f6',
+  '#8b5cf6',
+]
+
+const DashboardSavedListingsChart: React.FC<
+  DashboardSavedListingsChartProps
+> = ({
   listings,
+  totalSavesAcrossAll,
   selectedListingId,
-  analytics,
+  trend,
   isSummaryLoading = false,
   isDetailLoading = false,
   onSelectListing,
 }) => {
-  const t = useTranslations('seller.dashboard.phoneClicks')
+  const t = useTranslations('seller.dashboard.savedListings')
 
   const handleSelectListing = (listingId: number) => {
     onSelectListing?.(listingId)
@@ -71,7 +85,9 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
     if (typeof window !== 'undefined') {
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
-          const target = document.getElementById('phone-click-analytics-title')
+          const target = document.getElementById(
+            'saved-listings-analytics-title',
+          )
           target?.scrollIntoView({
             behavior: 'smooth',
             block: 'start',
@@ -82,35 +98,35 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
     }
   }
 
-  const clicksOverTimeData = useMemo(() => {
-    if (!analytics?.clicksOverTime || analytics.clicksOverTime.length === 0) {
+  const savesOverTimeData = useMemo(() => {
+    if (!trend?.savesOverTime || trend.savesOverTime.length === 0) {
       return []
     }
 
-    return analytics.clicksOverTime.map((item) => ({
+    return trend.savesOverTime.map((item) => ({
       date: format(parseISO(item.date), 'dd/MM'),
       count: item.count,
     }))
-  }, [analytics?.clicksOverTime])
+  }, [trend?.savesOverTime])
 
-  const dayOrder = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
-  const clicksByDayData = useMemo(() => {
-    if (!analytics?.clicksByDayOfWeek) return []
-
-    return dayOrder.map((day) => ({
-      day,
-      label: t(`days.${day}`),
-      count: analytics.clicksByDayOfWeek[day] || 0,
+  const barChartData = useMemo(() => {
+    return listings.map((item) => ({
+      name:
+        item.listingTitle.length > 25
+          ? `${item.listingTitle.substring(0, 25)}…`
+          : item.listingTitle,
+      totalSaves: item.totalSaves,
+      listingId: item.listingId,
     }))
-  }, [analytics?.clicksByDayOfWeek, t])
+  }, [listings])
 
   const chartConfig: ChartConfig = {
-    count: {
-      label: t('clicks'),
+    saves: {
+      label: t('saves'),
       color: 'var(--chart-1)',
     },
-    weekdayCount: {
-      label: t('clicks'),
+    totalSaves: {
+      label: t('totalSaves'),
       color: 'var(--chart-2)',
     },
   }
@@ -119,7 +135,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('analyticsOverview')}</CardTitle>
+          <CardTitle>{t('overview')}</CardTitle>
           <CardDescription>{t('loading')}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -135,7 +151,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('analyticsOverview')}</CardTitle>
+          <CardTitle>{t('overview')}</CardTitle>
           <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -150,10 +166,20 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('analyticsOverview')}</CardTitle>
+        <CardTitle>{t('overview')}</CardTitle>
         <CardDescription>{t('description')}</CardDescription>
       </CardHeader>
       <CardContent className='space-y-6'>
+        <div className='rounded-lg border bg-muted/20 p-4'>
+          <div className='flex items-center gap-2 text-muted-foreground text-sm'>
+            <Heart className='h-4 w-4 text-amber-500' />
+            {t('totalSavesAcrossAll')}
+          </div>
+          <p className='mt-1 text-3xl font-bold text-foreground'>
+            {totalSavesAcrossAll}
+          </p>
+        </div>
+
         <div className='space-y-2'>
           <p className='text-sm font-medium'>{t('listing')}</p>
           <Select
@@ -176,18 +202,21 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
           </Select>
         </div>
 
-        {isDetailLoading ? (
-          <div className='flex items-center justify-center h-[260px]'>
-            <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
-          </div>
-        ) : analytics ? (
-          <>
+        <div className='min-h-[260px]'>
+          {isDetailLoading ? (
+            <div className='flex items-center justify-center h-[260px]'>
+              <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
+            </div>
+          ) : trend ? (
             <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-              <Card>
+              <Card id='saved-listing-trend-chart'>
                 <CardHeader className='pb-2'>
                   <CardTitle className='text-base'>
-                    {t('clicksOverTime')}
+                    {t('savesOverTime')}
                   </CardTitle>
+                  <CardDescription>
+                    {trend.listingTitle} · {t('totalSaves')}: {trend.totalSaves}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ChartContainer
@@ -195,7 +224,27 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                     className='h-[260px] w-full'
                   >
                     <ResponsiveContainer width='100%' height='100%'>
-                      <LineChart data={clicksOverTimeData}>
+                      <AreaChart data={savesOverTimeData}>
+                        <defs>
+                          <linearGradient
+                            id='colorSavesTrend'
+                            x1='0'
+                            y1='0'
+                            x2='0'
+                            y2='1'
+                          >
+                            <stop
+                              offset='5%'
+                              stopColor='var(--color-saves)'
+                              stopOpacity={0.5}
+                            />
+                            <stop
+                              offset='95%'
+                              stopColor='var(--color-saves)'
+                              stopOpacity={0.05}
+                            />
+                          </linearGradient>
+                        </defs>
                         <CartesianGrid strokeDasharray='3 3' vertical={false} />
                         <XAxis
                           dataKey='date'
@@ -207,6 +256,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                           tickLine={false}
                           axisLine={false}
                           tickMargin={8}
+                          allowDecimals={false}
                         />
                         <Tooltip
                           content={({ active, payload, label }) => {
@@ -228,27 +278,17 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                             )
                           }}
                         />
-                        <Line
+                        <Area
                           type='monotone'
                           dataKey='count'
-                          stroke='var(--color-count)'
-                          strokeWidth={3}
+                          name={t('saves')}
+                          stroke='var(--color-saves)'
+                          fill='url(#colorSavesTrend)'
+                          fillOpacity={1}
+                          strokeWidth={2.5}
                           connectNulls
-                          dot={{
-                            r: 4,
-                            fill: 'var(--color-count)',
-                            stroke: 'hsl(var(--background))',
-                            strokeWidth: 1.5,
-                          }}
-                          activeDot={{
-                            r: 6,
-                            fill: 'var(--color-count)',
-                            stroke: 'hsl(var(--background))',
-                            strokeWidth: 1.5,
-                          }}
-                          name={t('clicks')}
                         />
-                      </LineChart>
+                      </AreaChart>
                     </ResponsiveContainer>
                   </ChartContainer>
                 </CardContent>
@@ -257,7 +297,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
               <Card>
                 <CardHeader className='pb-2'>
                   <CardTitle className='text-base'>
-                    {t('clicksByDayOfWeek')}
+                    {t('savesByListing')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -266,18 +306,24 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                     className='h-[260px] w-full'
                   >
                     <ResponsiveContainer width='100%' height='100%'>
-                      <BarChart data={clicksByDayData}>
-                        <CartesianGrid strokeDasharray='3 3' vertical={false} />
+                      <BarChart data={barChartData} layout='vertical'>
+                        <CartesianGrid
+                          strokeDasharray='3 3'
+                          horizontal={false}
+                        />
                         <XAxis
-                          dataKey='label'
+                          type='number'
                           tickLine={false}
                           axisLine={false}
                           tickMargin={8}
+                          allowDecimals={false}
                         />
                         <YAxis
+                          type='category'
+                          dataKey='name'
+                          width={180}
                           tickLine={false}
                           axisLine={false}
-                          tickMargin={8}
                         />
                         <Tooltip
                           content={({ active, payload, label }) => {
@@ -300,70 +346,72 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                           }}
                         />
                         <Bar
-                          dataKey='count'
-                          fill='var(--color-weekdayCount)'
-                          radius={[6, 6, 0, 0]}
-                          name={t('clicks')}
-                        />
+                          dataKey='totalSaves'
+                          name={t('saves')}
+                          radius={[0, 6, 6, 0]}
+                        >
+                          {barChartData.map((item, index) => (
+                            <Cell
+                              key={`saved-listing-${item.listingId}`}
+                              fill={BAR_COLORS[index % BAR_COLORS.length]}
+                            />
+                          ))}
+                        </Bar>
                       </BarChart>
                     </ResponsiveContainer>
                   </ChartContainer>
                 </CardContent>
               </Card>
             </div>
+          ) : (
+            <div className='flex items-center justify-center h-[260px] text-muted-foreground'>
+              {t('noData')}
+            </div>
+          )}
+        </div>
 
-            <Card>
-              <CardHeader className='pb-2'>
-                <CardTitle className='text-base'>{t('allListings')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('listing')}</TableHead>
-                      <TableHead className='text-right'>
-                        {t('totalClicks')}
-                      </TableHead>
-                      <TableHead className='text-right'>
-                        {t('action')}
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {listings.map((listing) => (
-                      <TableRow key={listing.listingId}>
-                        <TableCell className='font-medium'>
-                          {listing.listingTitle}
-                        </TableCell>
-                        <TableCell className='text-right'>
-                          {listing.totalClicks}
-                        </TableCell>
-                        <TableCell className='text-right'>
-                          <Button
-                            variant='outline'
-                            size='sm'
-                            onClick={() =>
-                              handleSelectListing(listing.listingId)
-                            }
-                          >
-                            {t('viewDetails')}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </>
-        ) : (
-          <div className='flex items-center justify-center h-[260px] text-muted-foreground'>
-            {t('noData')}
-          </div>
-        )}
+        <Card>
+          <CardHeader className='pb-2'>
+            <CardTitle className='text-base'>{t('allListings')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('listing')}</TableHead>
+                  <TableHead className='text-right'>
+                    {t('totalSaves')}
+                  </TableHead>
+                  <TableHead className='text-right'>{t('action')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {listings.map((listing) => (
+                  <TableRow key={listing.listingId}>
+                    <TableCell className='font-medium'>
+                      {listing.listingTitle}
+                    </TableCell>
+                    <TableCell className='text-right'>
+                      {listing.totalSaves}
+                    </TableCell>
+                    <TableCell className='text-right'>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        onClick={() => handleSelectListing(listing.listingId)}
+                      >
+                        {t('viewTrend')}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </CardContent>
     </Card>
   )
 }
 
-export default DashboardPhoneClickChart
+export default DashboardSavedListingsChart

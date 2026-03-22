@@ -5,11 +5,14 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
 } from 'react'
 import { useAuthStore } from '@/store/auth/index.store'
 import { AuthTokens } from '@/configs/axios/types'
 import { useValidToken } from '@/hooks/useAuth'
 import { decodeToken } from '@/utils/decode-jwt'
+import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 interface User extends UserApi {}
 
@@ -36,16 +39,32 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     logout,
     updateUser,
     clearError,
-    getStoredTokens,
+    _hasHydrated,
   } = useAuthStore()
 
   const { validToken } = useValidToken()
+  const t = useTranslations('auth')
+  const hasHandledUnauthorized = useRef(false)
+
+  // Reset the unauthorized flag when user authenticates again
+  useEffect(() => {
+    if (isAuthenticated) {
+      hasHandledUnauthorized.current = false
+    }
+  }, [isAuthenticated])
 
   // Listen for unauthorized events from axios interceptors
   useEffect(() => {
     const handleUnauthorized = () => {
+      if (hasHandledUnauthorized.current) return
+      hasHandledUnauthorized.current = true
+
       console.warn('[Auth] Unauthorized event received, logging out...')
       logout()
+
+      toast.error(t('sessionExpired.title'), {
+        description: t('sessionExpired.description'),
+      })
     }
 
     if (typeof window !== 'undefined') {
@@ -54,16 +73,20 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         window.removeEventListener('auth:unauthorized', handleUnauthorized)
       }
     }
-  }, [logout])
+  }, [logout, t])
 
-  // Initialize auth on mount/reload - check cookies sync with store
+  // Initialize auth on mount/reload — wait for zustand hydration first
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const tokens = getStoredTokens()
+    if (!_hasHydrated) return
 
+    const initializeAuth = async () => {
+      // Read latest state from the store (avoid stale closure)
+      const currentState = useAuthStore.getState()
+      const tokens = currentState.getStoredTokens()
+
+      try {
         // If localStorage says authenticated but no cookies → logout
-        if (isAuthenticated && !tokens?.accessToken) {
+        if (currentState.isAuthenticated && !tokens?.accessToken) {
           console.warn('[Auth] Cookies missing on load, logging out...')
           logout()
           return
@@ -86,7 +109,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     }
 
     initializeAuth()
-  }, [])
+  }, [_hasHydrated, login, logout, validToken])
 
   const contextValue: AuthContextType = useMemo(
     () => ({

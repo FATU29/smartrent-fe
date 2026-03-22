@@ -76,6 +76,7 @@ export const API_ERROR_CODES = {
   TAX_NUMBER_EXISTS: '3004',
   INVALID_CREDENTIALS: '5002',
   INVALID_TOKEN: '5003',
+  USER_NOT_VERIFIED: '5004',
 } as const
 
 export type ApiErrorCode =

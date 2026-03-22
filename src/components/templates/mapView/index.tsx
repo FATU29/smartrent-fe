@@ -15,6 +15,7 @@ import { ListingDetail, VipType } from '@/api/types/property.type'
 import MapMarker from '@/components/molecules/mapMarker'
 import PropertyCard from '@/components/molecules/propertyCard'
 import { ListingService } from '@/api/services/listing.service'
+import { Typography } from '@/components/atoms/typography'
 
 const VIETNAM_CENTER = { lat: 16.0544, lng: 108.2022 }
 const DEFAULT_ZOOM = 12
@@ -22,111 +23,188 @@ const MAP_HEIGHT = 'h-[calc(100vh-80px)]'
 const DEBOUNCE_DELAY_MS = 500
 const MAP_LISTINGS_LIMIT = 200
 
-const MapContent: React.FC = () => {
-  const map = useMap()
-  const router = useRouter()
-  const t = useTranslations('navigation')
-  const tCommon = useTranslations('common')
-  const [listings, setListings] = useState<ListingDetail[]>([])
-  const [selectedListing, setSelectedListing] = useState<ListingDetail | null>(
-    null,
+interface MapSidebarProps {
+  isLoading: boolean
+  listings: ListingDetail[]
+  selectedListing: ListingDetail | null
+  totalCount: number
+  hasMore: boolean
+  onSelectListing: (listing: ListingDetail) => void
+  onViewDetails: (listing: ListingDetail) => void
+  onBackToList: () => void
+  error: string | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: any
+}
+
+const MapSidebar: React.FC<MapSidebarProps> = ({
+  isLoading,
+  listings,
+  selectedListing,
+  totalCount,
+  hasMore,
+  onSelectListing,
+  onViewDetails,
+  onBackToList,
+  error,
+  t,
+}) => {
+  return (
+    <div className='hidden lg:flex flex-col w-[540px] xl:w-[680px] h-full bg-background border-r border-border overflow-hidden z-20 relative shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0'>
+      <div className='p-5 border-b border-border bg-card'>
+        <Button
+          variant='secondary'
+          size='sm'
+          onClick={onBackToList}
+          className='mb-5 w-fit shadow-sm'
+        >
+          <ArrowLeft className='h-4 w-4 mr-2' />
+          {t('backToList')}
+        </Button>
+        <div className='flex items-center justify-between'>
+          <Typography
+            variant='h4'
+            className='text-lg font-semibold tracking-tight'
+          >
+            {listings.length} {t('propertiesFound')}
+          </Typography>
+          {isLoading && (
+            <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
+          )}
+        </div>
+        {!isLoading && hasMore && totalCount > listings.length && (
+          <Typography variant='small' className='text-muted-foreground mt-1'>
+            {`(${totalCount} total, zoom in for more)`}
+          </Typography>
+        )}
+        {error && <p className='text-xs text-destructive mt-1'>{error}</p>}
+      </div>
+
+      <div className='flex-1 overflow-y-auto p-4 bg-muted/20'>
+        <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+          {listings.map((listing) => {
+            const isSelected = selectedListing?.listingId === listing.listingId
+            return (
+              <div
+                key={listing.listingId}
+                role='button'
+                tabIndex={0}
+                className={`flex flex-col h-full cursor-pointer transition-all duration-200 rounded-xl border bg-card overflow-hidden ${
+                  isSelected
+                    ? 'border-primary ring-2 ring-primary/20 shadow-md'
+                    : 'border-border/50 hover:border-primary/50 hover:shadow-sm'
+                }`}
+                onClick={() => onSelectListing(listing)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onSelectListing(listing)
+                  }
+                }}
+              >
+                {/* Ensure standard click won't bubble up improperly from PropertyCard */}
+                <div className='pointer-events-none flex-1'>
+                  <PropertyCard
+                    listing={listing}
+                    onClick={(l) => onViewDetails(l)}
+                    className='compact border-0 shadow-none h-full'
+                    imageLayout='top'
+                  />
+                </div>
+
+                <div className='px-4 pb-4 pt-0'>
+                  <Button
+                    size='sm'
+                    className='w-full pointer-events-auto'
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onViewDetails(listing)
+                    }}
+                  >
+                    {t('properties')}{' '}
+                    {/* Placeholder for view details context if tCommon fails, usually fallback */}
+                  </Button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        {listings.length === 0 && !isLoading && !error && (
+          <div className='flex flex-col items-center justify-center h-40 text-muted-foreground space-y-3'>
+            <Typography variant='p' className='text-sm text-center'>
+              No listings found in this area.
+            </Typography>
+          </div>
+        )}
+      </div>
+    </div>
   )
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [totalCount, setTotalCount] = useState(0)
-  const [hasMore, setHasMore] = useState(false)
+}
+
+interface MapContentProps {
+  listings: ListingDetail[]
+  selectedListing: ListingDetail | null
+  isLoading: boolean
+  error: string | null
+  fetchListings: (
+    neLat: number,
+    neLng: number,
+    swLat: number,
+    swLng: number,
+    zoom: number,
+  ) => void
+  onMarkerClick: (listing: ListingDetail) => void
+  onCloseCard: () => void
+  onViewDetails: (listing: ListingDetail) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tCommon: any
+  handleBackToList: () => void
+}
+
+const MapContent: React.FC<MapContentProps> = ({
+  listings,
+  selectedListing,
+  isLoading,
+  error,
+  fetchListings,
+  onMarkerClick,
+  onCloseCard,
+  onViewDetails,
+  t,
+  tCommon,
+  handleBackToList,
+}) => {
+  const map = useMap()
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const fetchListingsInBounds = useCallback(async () => {
+  const handleMapChange = useCallback(() => {
     if (!map) return
-
     const bounds = map.getBounds()
     const zoom = map.getZoom()
     if (!bounds || !zoom) return
 
-    if (zoom < 3) {
-      setListings([])
-      setTotalCount(0)
-      setHasMore(false)
-      return
-    }
-
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const ne = bounds.getNorthEast()
-      const sw = bounds.getSouthWest()
-
-      const { categoryId, vipType, verifiedOnly } = router.query
-
-      const response = await ListingService.getMapBounds({
-        neLat: ne.lat(),
-        neLng: ne.lng(),
-        swLat: sw.lat(),
-        swLng: sw.lng(),
-        zoom,
-        limit: MAP_LISTINGS_LIMIT,
-        verifiedOnly: verifiedOnly === 'true',
-        categoryId: categoryId ? Number(categoryId) : undefined,
-        vipType: vipType as VipType | undefined,
-      })
-
-      if (response.success && response.data) {
-        setListings(response.data.listings)
-        setTotalCount(response.data.totalCount)
-        setHasMore(response.data.hasMore)
-      } else {
-        setError('Failed to load properties')
-        setListings([])
-        setTotalCount(0)
-        setHasMore(false)
-      }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : 'An error occurred while loading properties'
-      console.error('Error fetching listings:', err)
-      setError(errorMessage)
-      setListings([])
-      setTotalCount(0)
-      setHasMore(false)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [map, router.query])
-
-  const handleMapChange = useCallback(() => {
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current)
     }
 
     debounceTimerRef.current = setTimeout(() => {
-      fetchListingsInBounds()
+      const ne = bounds.getNorthEast()
+      const sw = bounds.getSouthWest()
+      fetchListings(ne.lat(), ne.lng(), sw.lat(), sw.lng(), zoom)
     }, DEBOUNCE_DELAY_MS)
-  }, [fetchListingsInBounds])
+  }, [map, fetchListings])
 
-  // Initial fetch
+  // Initial fetch triggering
   useEffect(() => {
-    fetchListingsInBounds()
-  }, [fetchListingsInBounds])
-
-  // Cleanup debounce timer on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-      }
-    }
+    handleMapChange()
   }, [])
 
-  // Map bounds change listener
+  // Setup bounds listener
   useEffect(() => {
     if (!map) return
-
     const listener = map.addListener('bounds_changed', handleMapChange)
-
     return () => {
       if (listener && typeof google !== 'undefined' && google.maps?.event) {
         google.maps.event.removeListener(listener)
@@ -134,39 +212,21 @@ const MapContent: React.FC = () => {
     }
   }, [map, handleMapChange])
 
-  const handleBackToList = useCallback(() => {
-    router.push(PUBLIC_ROUTES.PROPERTIES_PREFIX)
-  }, [router])
-
-  const handleMarkerClick = useCallback(
-    (listing: ListingDetail) => {
-      setSelectedListing(listing)
-      if (map) {
-        map.panTo({
-          lat: listing.address.latitude,
-          lng: listing.address.longitude,
-        })
-      }
-    },
-    [map],
-  )
-
-  const handleCloseCard = useCallback(() => {
-    setSelectedListing(null)
-  }, [])
-
-  const handleViewDetails = useCallback(
-    (listing: ListingDetail) => {
-      const route = buildApartmentDetailRoute(String(listing.listingId))
-      router.push(route)
-    },
-    [router],
-  )
+  // Auto-pan to selected listing when clicked from sidebar
+  useEffect(() => {
+    if (selectedListing && map) {
+      // Only pan if it's slightly outside the center to prevent jitter on marker click
+      map.panTo({
+        lat: selectedListing.address.latitude,
+        lng: selectedListing.address.longitude,
+      })
+    }
+  }, [selectedListing, map])
 
   return (
     <>
-      {/* Back to List Button */}
-      <div className='absolute top-20 left-4 z-40'>
+      {/* Mobile Back Button */}
+      <div className='absolute top-20 left-4 z-40 lg:hidden'>
         <Button
           variant='secondary'
           size='sm'
@@ -178,12 +238,14 @@ const MapContent: React.FC = () => {
         </Button>
       </div>
 
-      {/* Loading Indicator */}
+      {/* Loading Indicator (Top Center) - Visible when loading */}
       {isLoading && (
         <div className='absolute top-4 left-1/2 -translate-x-1/2 z-10'>
-          <div className='bg-white shadow-lg rounded-lg px-4 py-2 flex items-center gap-2'>
-            <Loader2 className='h-4 w-4 animate-spin' />
-            <span className='text-sm'>{t('loadingProperties')}</span>
+          <div className='bg-white/90 backdrop-blur-md shadow-lg rounded-full px-5 py-2.5 flex items-center gap-3 border border-border/50'>
+            <Loader2 className='h-4 w-4 animate-spin text-primary' />
+            <span className='text-sm font-medium'>
+              {t('loadingProperties')}
+            </span>
           </div>
         </div>
       )}
@@ -191,51 +253,35 @@ const MapContent: React.FC = () => {
       {/* Error Message */}
       {error && !isLoading && (
         <div className='absolute top-4 left-1/2 -translate-x-1/2 z-10'>
-          <div className='bg-red-50 border border-red-200 shadow-lg rounded-lg px-4 py-2 flex items-center gap-2'>
-            <span className='text-sm text-red-600'>{error}</span>
+          <div className='bg-destructive/10 border border-destructive/20 shadow-lg rounded-full px-4 py-2 flex items-center gap-2'>
+            <span className='text-sm text-destructive font-medium'>
+              {error}
+            </span>
           </div>
         </div>
       )}
 
-      {/* Property Count Badge */}
-      {!isLoading && listings.length > 0 && (
-        <div className='absolute top-32 left-4 z-10'>
-          <div className='bg-white shadow-lg rounded-lg px-4 py-2'>
-            <div className='flex flex-col gap-1'>
-              <span className='text-sm font-medium'>
-                {listings.length} {t('propertiesFound')}
-              </span>
-              {hasMore && totalCount > listings.length && (
-                <span className='text-xs text-gray-500'>
-                  ({totalCount} total, zoom in for more)
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Selected Property Card */}
+      {/* Mobile Selected Property Card Overlay */}
       {selectedListing && (
-        <div className='absolute top-4 md:right-4 left-4 right-4 md:left-auto z-20 md:max-w-sm'>
-          <div className='relative bg-background rounded-lg shadow-xl'>
+        <div className='absolute bottom-6 left-4 right-4 z-30 lg:top-4 lg:bottom-auto lg:right-4 lg:left-auto lg:w-80'>
+          <div className='relative bg-background rounded-xl shadow-2xl border border-border/50'>
             <Button
               variant='ghost'
               size='icon'
-              className='absolute -top-2 -right-2 z-30 bg-background hover:bg-background/80 shadow-lg rounded-full w-8 h-8'
-              onClick={handleCloseCard}
+              className='absolute -top-3 -right-3 z-40 bg-background hover:bg-muted shadow-lg rounded-full w-8 h-8 border border-border'
+              onClick={onCloseCard}
             >
               <X className='h-4 w-4' />
             </Button>
             <PropertyCard
               listing={selectedListing}
-              onClick={handleViewDetails}
-              className='compact'
+              onClick={onViewDetails}
+              className='compact border-0 shadow-none'
               imageLayout='top'
               bottomContent={
                 <Button
-                  className='w-full'
-                  onClick={() => handleViewDetails(selectedListing)}
+                  className='w-full shadow-sm'
+                  onClick={() => onViewDetails(selectedListing)}
                   variant='default'
                   size='sm'
                 >
@@ -256,13 +302,13 @@ const MapContent: React.FC = () => {
             lat: listing.address.latitude,
             lng: listing.address.longitude,
           }}
-          onClick={() => handleMarkerClick(listing)}
+          onClick={() => onMarkerClick(listing)}
         >
           <MapMarker
             price={listing.price}
             vipType={listing.vipType}
             isSelected={selectedListing?.listingId === listing.listingId}
-            onClick={() => handleMarkerClick(listing)}
+            onClick={() => onMarkerClick(listing)}
           />
         </AdvancedMarker>
       ))}
@@ -271,20 +317,138 @@ const MapContent: React.FC = () => {
 }
 
 const MapViewTemplate: React.FC = () => {
+  const router = useRouter()
+  const t = useTranslations('navigation')
+  const tCommon = useTranslations('common')
+  const [listings, setListings] = useState<ListingDetail[]>([])
+  const [selectedListing, setSelectedListing] = useState<ListingDetail | null>(
+    null,
+  )
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [totalCount, setTotalCount] = useState(0)
+  const [hasMore, setHasMore] = useState(false)
+
+  const fetchListings = useCallback(
+    async (
+      neLat: number,
+      neLng: number,
+      swLat: number,
+      swLng: number,
+      zoom: number,
+    ) => {
+      // Don't fetch if too zoomed out
+      if (zoom < 3) {
+        setListings([])
+        setTotalCount(0)
+        setHasMore(false)
+        return
+      }
+
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const { categoryId, vipType, verifiedOnly } = router.query
+
+        const response = await ListingService.getMapBounds({
+          neLat,
+          neLng,
+          swLat,
+          swLng,
+          zoom,
+          limit: MAP_LISTINGS_LIMIT,
+          verifiedOnly: verifiedOnly === 'true',
+          categoryId: categoryId ? Number(categoryId) : undefined,
+          vipType: vipType as VipType | undefined,
+        })
+
+        if (response.success && response.data) {
+          setListings(response.data.listings)
+          setTotalCount(response.data.totalCount)
+          setHasMore(response.data.hasMore)
+        } else {
+          setError('Failed to load properties')
+          setListings([])
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'An error occurred while loading properties',
+        )
+        setListings([])
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [router.query],
+  )
+
+  const handleBackToList = useCallback(() => {
+    router.push(PUBLIC_ROUTES.PROPERTIES_PREFIX)
+  }, [router])
+
+  const handleMarkerClick = useCallback((listing: ListingDetail) => {
+    setSelectedListing(listing)
+  }, [])
+
+  const handleCloseCard = useCallback(() => {
+    setSelectedListing(null)
+  }, [])
+
+  const handleViewDetails = useCallback(
+    (listing: ListingDetail) => {
+      router.push(buildApartmentDetailRoute(String(listing.listingId)))
+    },
+    [router],
+  )
+
   return (
-    <div className={`relative w-full ${MAP_HEIGHT}`}>
-      <APIProvider apiKey={ENV.GOOGLE_MAP_KEY}>
-        <Map
-          defaultCenter={VIETNAM_CENTER}
-          defaultZoom={DEFAULT_ZOOM}
-          mapId={ENV.GOOGLE_MAP_KEY}
-          disableDefaultUI={false}
-          gestureHandling='greedy'
-          className='w-full h-full'
-        >
-          <MapContent />
-        </Map>
-      </APIProvider>
+    <div
+      className={`relative flex w-full ${MAP_HEIGHT} overflow-hidden bg-background`}
+    >
+      {/* Sidebar - Hidden on mobile, takes 420px on Desktop */}
+      <MapSidebar
+        isLoading={isLoading}
+        listings={listings}
+        selectedListing={selectedListing}
+        totalCount={totalCount}
+        hasMore={hasMore}
+        onSelectListing={handleMarkerClick}
+        onViewDetails={handleViewDetails}
+        onBackToList={handleBackToList}
+        error={error}
+        t={t}
+      />
+
+      {/* Map Area */}
+      <div className='flex-1 relative h-full'>
+        <APIProvider apiKey={ENV.GOOGLE_MAP_KEY}>
+          <Map
+            defaultCenter={VIETNAM_CENTER}
+            defaultZoom={DEFAULT_ZOOM}
+            mapId={ENV.GOOGLE_MAP_KEY}
+            disableDefaultUI={false}
+            gestureHandling='greedy'
+            className='w-full h-full outline-none'
+          >
+            <MapContent
+              listings={listings}
+              selectedListing={selectedListing}
+              isLoading={isLoading}
+              error={error}
+              fetchListings={fetchListings}
+              onMarkerClick={handleMarkerClick}
+              onCloseCard={handleCloseCard}
+              onViewDetails={handleViewDetails}
+              t={t}
+              tCommon={tCommon}
+              handleBackToList={handleBackToList}
+            />
+          </Map>
+        </APIProvider>
+      </div>
     </div>
   )
 }

@@ -217,3 +217,7 @@ export const useUsersWhoClickedListing = (
 
 export { useDashboardPhoneClickStats } from './useDashboardPhoneClickStats'
 export type { DashboardPhoneClickStats } from './useDashboardPhoneClickStats'
+export {
+  useOwnerListingAnalytics,
+  useOwnerListingsAnalyticsSummary,
+} from './useOwnerListingAnalytics'

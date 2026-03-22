@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import { useTranslations } from 'next-intl'
+import ReactMarkdown from 'react-markdown'
 
 import { cn } from '@/lib/utils'
 import { TChatMessage } from '@/hooks/useChatAi'
@@ -46,9 +47,15 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({ message, className }) => {
               : 'bg-primary text-primary-foreground hover:bg-primary/90',
           )}
         >
-          <p className='whitespace-pre-wrap break-words text-sm leading-relaxed'>
-            {message.content}
-          </p>
+          {isBot ? (
+            <div className='prose prose-sm dark:prose-invert max-w-none break-words text-sm leading-relaxed [&>p]:m-0 [&>ul]:my-1 [&>ol]:my-1 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm [&>h1]:font-semibold [&>h2]:font-semibold [&>h3]:font-semibold [&>h1]:my-1 [&>h2]:my-1 [&>h3]:my-1'>
+              <ReactMarkdown>{message.content}</ReactMarkdown>
+            </div>
+          ) : (
+            <p className='whitespace-pre-wrap break-words text-sm leading-relaxed'>
+              {message.content}
+            </p>
+          )}
         </div>
 
         <AiChatMessageTime timestamp={message.timestamp} className='px-1' />

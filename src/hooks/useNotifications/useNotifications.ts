@@ -161,7 +161,7 @@ export function useNotifications() {
         pages: NotificationListResponse[]
         pageParams: number[]
       }>({ queryKey: NOTIFICATIONS_KEY }, (old) => {
-        if (!old) return old
+        if (!old?.pages) return old
         const firstPage = old.pages[0]
         if (!firstPage) return old
         return {

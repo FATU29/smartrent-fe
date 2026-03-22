@@ -62,8 +62,11 @@ export const useToggleSaveListing = (listingId: number | null | undefined) => {
         previousState,
       )
       // Error handling is done in the mutation hooks
-      // Only log in development
-      if (process.env.NODE_ENV === 'development') {
+      // Only log in development, and skip auth errors (already shown as toast)
+      if (
+        process.env.NODE_ENV === 'development' &&
+        !(error instanceof Error && error.message === 'Authentication required')
+      ) {
         console.error('Error toggling save:', error)
       }
     }

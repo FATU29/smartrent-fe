@@ -6,12 +6,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/atoms/card'
-import { Phone, Users, TrendingUp, Loader2 } from 'lucide-react'
-import { useDashboardPhoneClickStats } from '@/hooks/usePhoneClickDetails'
+import { Phone, Eye, Percent, Loader2 } from 'lucide-react'
+import type { OwnerListingAnalytics } from '@/api/types'
 
-const DashboardPhoneClickStats: React.FC = () => {
+interface DashboardPhoneClickStatsProps {
+  analytics?: OwnerListingAnalytics | null
+  isLoading?: boolean
+}
+
+const DashboardPhoneClickStats: React.FC<DashboardPhoneClickStatsProps> = ({
+  analytics,
+  isLoading = false,
+}) => {
   const t = useTranslations('seller.dashboard.phoneClicks')
-  const { data: stats, isLoading } = useDashboardPhoneClickStats()
 
   if (isLoading) {
     return (
@@ -30,29 +37,29 @@ const DashboardPhoneClickStats: React.FC = () => {
     )
   }
 
-  if (!stats) {
+  if (!analytics) {
     return null
   }
 
   const statCards = [
     {
       title: t('totalClicks'),
-      value: stats.totalClicks,
+      value: analytics.totalClicks,
       icon: Phone,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50 dark:bg-blue-950',
     },
     {
-      title: t('uniqueUsers'),
-      value: stats.uniqueUsers,
-      icon: Users,
+      title: t('totalViews'),
+      value: analytics.totalViews,
+      icon: Eye,
       color: 'text-green-600',
       bgColor: 'bg-green-50 dark:bg-green-950',
     },
     {
-      title: t('topListings'),
-      value: stats.clicksByListing.length,
-      icon: TrendingUp,
+      title: t('conversionRate'),
+      value: `${(analytics.conversionRate * 100).toFixed(2)}%`,
+      icon: Percent,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50 dark:bg-purple-950',
     },

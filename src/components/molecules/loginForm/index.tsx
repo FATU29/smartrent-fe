@@ -10,10 +10,13 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import dynamic from 'next/dynamic'
 import SeparatorOr from '@/components/atoms/separatorOr'
-import { useLogin } from '@/hooks/useAuth'
+import { useLogin, useResendOtp } from '@/hooks/useAuth'
 import { toast } from 'sonner'
-import { VALIDATION_PATTERNS } from '@/api/types/auth.type'
+import { VALIDATION_PATTERNS, API_ERROR_CODES } from '@/api/types/auth.type'
 import { googleOAuthURL } from '@/utils/googleOAuth2'
+import { useState, useCallback } from 'react'
+import OtpInput from '../otpInput'
+import SuccessMessage from '../successMessage'
 
 const ImageAtom = dynamic(() => import('@/components/atoms/imageAtom'), {
   ssr: false,
@@ -30,9 +33,14 @@ type LoginFormData = {
   password: string
 }
 
+type LoginStep = 'login' | 'verifyAccount' | 'verifySuccess'
+
 const LoginForm: NextPage<LoginFormProps> = (props) => {
   const t = useTranslations()
   const { loginUser } = useLogin()
+  const { resendOtp } = useResendOtp()
+  const [currentStep, setCurrentStep] = useState<LoginStep>('login')
+  const [verifyEmail, setVerifyEmail] = useState('')
 
   const { onSuccess } = props
 
@@ -72,6 +80,19 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
       if (result.success) {
         onSuccess?.()
         toast.success(t('homePage.auth.login.successMessage'))
+      } else if (result.code === API_ERROR_CODES.USER_NOT_VERIFIED) {
+        // Account not verified — resend OTP and switch to verify UI
+        setVerifyEmail(data.email)
+        toast.info(t('homePage.auth.verifyAccount.notVerifiedMessage'))
+
+        // Auto-resend verification code
+        try {
+          await resendOtp(data.email)
+        } catch {
+          // Silently handle resend failure — user can manually resend via OTP screen
+        }
+
+        setCurrentStep('verifyAccount')
       } else {
         toast.error(result.message || t('homePage.auth.login.errorMessage'))
       }
@@ -93,6 +114,40 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
       localStorage.setItem('returnUrl', currentPath)
     } catch {}
     window.location.href = googleOAuthURL
+  }
+
+  const handleVerifySuccess = useCallback(() => {
+    setCurrentStep('verifySuccess')
+  }, [])
+
+  const handleBackToLogin = useCallback(() => {
+    setCurrentStep('login')
+    setVerifyEmail('')
+  }, [])
+
+  // Verify account OTP step
+  if (currentStep === 'verifyAccount') {
+    return (
+      <OtpInput
+        email={verifyEmail}
+        onSuccessRegister={handleVerifySuccess}
+        backTo={handleBackToLogin}
+        type='register'
+      />
+    )
+  }
+
+  // Verify success step
+  if (currentStep === 'verifySuccess') {
+    return (
+      <SuccessMessage
+        onClick={handleBackToLogin}
+        title={t('homePage.auth.verifyAccount.successTitle')}
+        description={t('homePage.auth.verifyAccount.successDescription')}
+        buttonText={t('homePage.auth.verifyAccount.backToLogin')}
+        showButton={true}
+      />
+    )
   }
 
   return (

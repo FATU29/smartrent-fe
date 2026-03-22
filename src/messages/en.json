@@ -372,6 +372,14 @@
         "successMessage": "Login successful!",
         "errorMessage": "Login failed. Please try again."
       },
+      "verifyAccount": {
+        "title": "Verify Your Account",
+        "description": "Your account has not been verified yet. We've sent a new verification code to {email}. Please enter it below.",
+        "notVerifiedMessage": "Your account is not verified. A verification code has been sent to your email.",
+        "successTitle": "Account Verified!",
+        "successDescription": "Your account has been verified successfully. You can now log in.",
+        "backToLogin": "Back to Login"
+      },
       "register": {
         "title": "Register",
         "description": "Create a new account to get started with our services.",
@@ -1835,7 +1843,7 @@
     "address": "123 Main Street, Ho Chi Minh City, Vietnam",
     "phone": "+84 123 456 789",
     "email": "info@smartrent.com",
-    "copyright": "© 2024 SmartRent. All rights reserved.",
+    "copyright": "© 2026 SmartRent. All rights reserved.",
     "privacy": "Privacy",
     "terms": "Terms",
     "followUs": "Follow Us",
@@ -2160,20 +2168,60 @@
       },
       "phoneClicks": {
         "title": "Phone Click Statistics",
-        "description": "Track how many users clicked on your listing phone numbers",
+        "description": "Track performance of each listing with phone click analytics",
         "loading": "Loading...",
         "totalClicks": "Total Clicks",
-        "uniqueUsers": "Unique Users",
-        "topListings": "Top Listings",
+        "totalViews": "Total Views",
+        "conversionRate": "Conversion Rate",
         "clickTrends": "Click Trends",
         "last7Days": "Last 7 Days",
         "noData": "No data available",
         "clicks": "Clicks",
-        "date": "Date"
+        "date": "Date",
+        "analyticsOverview": "Owner Analytics Dashboard",
+        "listing": "Listing",
+        "selectListing": "Select a listing",
+        "noListings": "No listings found for analytics",
+        "clicksOverTime": "Clicks Over Time",
+        "clicksByDayOfWeek": "Clicks by Day of Week",
+        "allListings": "All Listings Summary",
+        "action": "Action",
+        "viewDetails": "View Details",
+        "days": {
+          "MON": "Mon",
+          "TUE": "Tue",
+          "WED": "Wed",
+          "THU": "Thu",
+          "FRI": "Fri",
+          "SAT": "Sat",
+          "SUN": "Sun"
+        }
       },
       "phoneClickStats": {
         "title": "Phone Click Analytics",
         "description": "Monitor engagement with your listings through phone clicks"
+      },
+      "savedListingsStats": {
+        "title": "Saved Listings Analytics",
+        "description": "Track how users save your listings over time"
+      },
+      "savedListings": {
+        "loading": "Loading...",
+        "overview": "Saved Listings Overview",
+        "description": "Monitor save trends and compare save performance across your listings",
+        "totalSavesAcrossAll": "Total saves across all listings",
+        "listing": "Listing",
+        "selectListing": "Select a listing",
+        "noListings": "No listings found for save analytics",
+        "saves": "Saves",
+        "date": "Date",
+        "totalSaves": "Total Saves",
+        "savesOverTime": "Saves Over Time",
+        "savesByListing": "Saves by Listing",
+        "allListings": "All Listings Save Summary",
+        "action": "Action",
+        "viewTrend": "View Trend",
+        "noData": "No data available"
       }
     },
     "listingManagement": {
@@ -2761,6 +2809,10 @@
       "title": "Please log in",
       "description": "You need to log in to access this page.",
       "loginButton": "Log in"
+    },
+    "sessionExpired": {
+      "title": "Session expired",
+      "description": "Your session has expired. Please log in again."
     }
   },
   "guides": {

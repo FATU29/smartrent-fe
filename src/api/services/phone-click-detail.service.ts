@@ -14,6 +14,11 @@ import type {
   SearchPhoneClicksRequest,
   UserPhoneClickDetail,
 } from '@/api/types/phone-click-detail.type'
+import type {
+  InterestLevel,
+  OwnerListingAnalytics,
+  OwnerListingAnalyticsSummary,
+} from '@/api/types/owner-listing-analytics.type'
 import type { AxiosInstance } from 'axios'
 
 export class PhoneClickDetailService {
@@ -323,6 +328,67 @@ export class PhoneClickDetailService {
       instance,
     )
   }
+
+  /**
+   * Get analytics summary for all listings owned by the authenticated user
+   * GET /v1/owners/listings/analytics
+   */
+  static async getOwnerListingsAnalyticsSummary(
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<OwnerListingAnalyticsSummary>> {
+    return apiRequest<OwnerListingAnalyticsSummary>(
+      {
+        method: 'GET',
+        url: PATHS.OWNER_LISTING_ANALYTICS.SUMMARY,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Get analytics detail for a specific listing owned by authenticated user
+   * GET /v1/owners/listings/:listingId/analytics
+   */
+  static async getOwnerListingAnalytics(
+    listingId: string | number,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<OwnerListingAnalytics>> {
+    const url = PATHS.OWNER_LISTING_ANALYTICS.DETAIL.replace(
+      ':listingId',
+      listingId.toString(),
+    )
+
+    return apiRequest<OwnerListingAnalytics>(
+      {
+        method: 'GET',
+        url,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Get public interest level for listing social proof
+   * GET /v1/listings/:listingId/interest-level
+   */
+  static async getListingInterestLevel(
+    listingId: string | number,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<InterestLevel>> {
+    const url = PATHS.LISTING_SOCIAL_PROOF.INTEREST_LEVEL.replace(
+      ':listingId',
+      listingId.toString(),
+    )
+
+    return apiRequest<InterestLevel>(
+      {
+        method: 'GET',
+        url,
+        skipAuth: true,
+      },
+      instance,
+    )
+  }
 }
 
 // ============= EXPORTS =============
@@ -336,4 +402,7 @@ export const {
   searchMyListingsClicks,
   getUsersWhoClickedListing,
   getUsersForMyListings,
+  getOwnerListingsAnalyticsSummary,
+  getOwnerListingAnalytics,
+  getListingInterestLevel,
 } = PhoneClickDetailService

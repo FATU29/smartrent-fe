@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { useAuthStore } from '@/store/auth/index.store'
 import { AuthService } from '@/api/services/auth.service'
 import {
@@ -15,8 +16,17 @@ export { useChangePassword } from './useChangePassword'
 export { useUpdateProfile } from './useUpdateProfile'
 
 export const useAuth = () => {
-  const authState = useAuthStore()
-  return authState
+  return useAuthStore(
+    useShallow((state) => ({
+      user: state.user,
+      isAuthenticated: state.isAuthenticated,
+      isLoading: state.isLoading,
+      error: state.error,
+      login: state.login,
+      logout: state.logout,
+      updateUser: state.updateUser,
+    })),
+  )
 }
 
 export const useLogin = () => {
@@ -54,7 +64,12 @@ export const useLogin = () => {
         const errorMessage =
           error instanceof Error ? error.message : 'Login failed'
         setError(errorMessage)
-        return { success: false, message: errorMessage }
+        return {
+          success: false,
+          message: errorMessage,
+          code: '',
+          data: null as unknown,
+        }
       }
     },
     [setLoading, setError, login],
@@ -135,7 +150,12 @@ export const useRegister = () => {
         const errorMessage =
           error instanceof Error ? error.message : 'Registration failed'
         setError(errorMessage)
-        return { success: false, message: errorMessage }
+        return {
+          success: false,
+          message: errorMessage,
+          code: '',
+          data: null as unknown,
+        }
       }
     },
     [setLoading, setError],
@@ -145,7 +165,7 @@ export const useRegister = () => {
 }
 
 export const useLogout = () => {
-  const { logout, setError } = useAuthStore()
+  const { logout } = useAuthStore()
 
   const logoutUser = useCallback(async () => {
     const accessToken = cookieManager.getAccessToken()
@@ -157,35 +177,26 @@ export const useLogout = () => {
       console.warn('[Logout] Failed to clear AI chat session:', error)
     }
 
-    // If no access token, just clear local state and return
+    // Clear local state FIRST (optimistic) — triggers immediate UI update
+    logout()
+
+    // If no access token, nothing to notify the server about
     if (!accessToken) {
-      console.warn('[Logout] No access token found, clearing local state')
-      logout()
-      return { success: true, message: 'Logged out locally (no token found)' }
+      return { success: true, message: 'Logged out' }
     }
 
+    // Notify server in background (fire-and-forget for UX)
     try {
       const result = await AuthService.logout(accessToken)
-      const { success, message } = result
-
-      if (!success) {
-        setError(message)
-        // Still logout locally even if API call fails
-        logout()
-        return result
-      }
-
-      logout()
       return result
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Logout failed'
-      setError(errorMessage)
-      // Always logout locally regardless of API error
-      logout()
-      return { success: false, message: errorMessage }
+      console.warn('[Logout] Server logout failed:', errorMessage)
+      // Already logged out locally — no need to setError or disrupt UX
+      return { success: true, message: 'Logged out locally' }
     }
-  }, [logout, setError])
+  }, [logout])
 
   return { logoutUser }
 }

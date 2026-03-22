@@ -181,13 +181,16 @@ export function getFiltersFromQuery(
   // Location - parse based on isLegacy flag
   const provinceIdParam = parseStringParam(query, 'provinceId')
   if (provinceIdParam) {
-    // If isLegacy is explicitly true, parse as number; otherwise keep as string (for new address)
     if (filters.isLegacy === true) {
       filters.provinceId = Number(provinceIdParam)
     } else {
-      // For new address or when isLegacy is not set, keep as string
       filters.provinceId = provinceIdParam
     }
+  }
+
+  const provinceCodeParam = parseStringParam(query, 'provinceCode')
+  if (provinceCodeParam) {
+    filters.provinceCodes = provinceCodeParam.split(',')
   }
 
   filters.districtId = parseNumberParam(query, 'districtId')

@@ -12,6 +12,8 @@ import {
   SaveListingRequest,
   GetMySavedListingsRequest,
   SavedListingsPageResponse,
+  OwnerSavedListingsAnalyticsResponse,
+  OwnerListingSavesTrendResponse,
 } from '../types'
 
 // ============= SAVED LISTING SERVICE CLASS =============
@@ -126,6 +128,52 @@ export class SavedListingService {
       // Only log in development
       if (process.env.NODE_ENV === 'development') {
         console.error('Error checking saved listing:', error)
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Get save analytics summary for all owner listings
+   * @returns List of owner listings with total saves and aggregated total saves across all listings
+   */
+  static async getOwnerSavesAnalytics(): Promise<
+    ApiResponse<OwnerSavedListingsAnalyticsResponse>
+  > {
+    try {
+      return await apiRequest<OwnerSavedListingsAnalyticsResponse>({
+        method: 'GET',
+        url: PATHS.OWNER_SAVED_LISTINGS_ANALYTICS.SUMMARY,
+      })
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching owner saves analytics:', error)
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Get save trend for a specific owner listing
+   * @param listingId - ID of the listing
+   * @returns Save trend detail for the selected listing
+   */
+  static async getOwnerListingSavesTrend(
+    listingId: number,
+  ): Promise<ApiResponse<OwnerListingSavesTrendResponse>> {
+    try {
+      const url = PATHS.OWNER_SAVED_LISTINGS_ANALYTICS.TREND.replace(
+        ':listingId',
+        String(listingId),
+      )
+
+      return await apiRequest<OwnerListingSavesTrendResponse>({
+        method: 'GET',
+        url,
+      })
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching owner listing saves trend:', error)
       }
       throw error
     }
