@@ -8,7 +8,20 @@ import {
   useMap,
 } from '@vis.gl/react-google-maps'
 import { Button } from '@/components/atoms/button'
-import { ArrowLeft, Loader2, ExternalLink, X } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  VisuallyHidden,
+} from '@/components/atoms/dialog'
+import {
+  ArrowLeft,
+  Loader2,
+  ExternalLink,
+  X,
+  List as ListIcon,
+  ChevronLeft,
+} from 'lucide-react'
 import { ENV } from '@/constants/env'
 import { PUBLIC_ROUTES, buildApartmentDetailRoute } from '@/constants/route'
 import { ListingDetail, VipType } from '@/api/types/property.type'
@@ -22,6 +35,7 @@ const DEFAULT_ZOOM = 12
 const MAP_HEIGHT = 'h-[calc(100vh-80px)]'
 const DEBOUNCE_DELAY_MS = 500
 const MAP_LISTINGS_LIMIT = 200
+const MIN_LISTING_FETCH_ZOOM = 10
 
 interface MapSidebarProps {
   isLoading: boolean
@@ -33,11 +47,12 @@ interface MapSidebarProps {
   onViewDetails: (listing: ListingDetail) => void
   onBackToList: () => void
   error: string | null
+  isBelowMinZoom: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any
 }
 
-const MapSidebar: React.FC<MapSidebarProps> = ({
+const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   isLoading,
   listings,
   selectedListing,
@@ -47,20 +62,23 @@ const MapSidebar: React.FC<MapSidebarProps> = ({
   onViewDetails,
   onBackToList,
   error,
+  isBelowMinZoom,
   t,
 }) => {
   return (
-    <div className='hidden lg:flex flex-col w-[540px] xl:w-[680px] h-full bg-background border-r border-border overflow-hidden z-20 relative shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0'>
+    <div className='flex flex-col h-full bg-background overflow-hidden'>
       <div className='p-5 border-b border-border bg-card'>
-        <Button
-          variant='secondary'
-          size='sm'
-          onClick={onBackToList}
-          className='mb-5 w-fit shadow-sm'
-        >
-          <ArrowLeft className='h-4 w-4 mr-2' />
-          {t('backToList')}
-        </Button>
+        <div className='flex items-center justify-between gap-3 mb-4'>
+          <Button
+            variant='secondary'
+            size='sm'
+            onClick={onBackToList}
+            className='w-fit shadow-sm'
+          >
+            <ArrowLeft className='h-4 w-4 mr-2' />
+            {t('backToList')}
+          </Button>
+        </div>
         <div className='flex items-center justify-between'>
           <Typography
             variant='h4'
@@ -72,11 +90,19 @@ const MapSidebar: React.FC<MapSidebarProps> = ({
             <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
           )}
         </div>
-        {!isLoading && hasMore && totalCount > listings.length && (
+        {!isLoading && isBelowMinZoom && (
           <Typography variant='small' className='text-muted-foreground mt-1'>
-            {`(${totalCount} total, zoom in for more)`}
+            Zoom in to load listings in this area.
           </Typography>
         )}
+        {!isLoading &&
+          !isBelowMinZoom &&
+          hasMore &&
+          totalCount > listings.length && (
+            <Typography variant='small' className='text-muted-foreground mt-1'>
+              {`(${totalCount} total, zoom in for more)`}
+            </Typography>
+          )}
         {error && <p className='text-xs text-destructive mt-1'>{error}</p>}
       </div>
 
@@ -156,6 +182,7 @@ interface MapContentProps {
   onMarkerClick: (listing: ListingDetail) => void
   onCloseCard: () => void
   onViewDetails: (listing: ListingDetail) => void
+  onOpenListingsDrawer: () => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -172,6 +199,7 @@ const MapContent: React.FC<MapContentProps> = ({
   onMarkerClick,
   onCloseCard,
   onViewDetails,
+  onOpenListingsDrawer,
   t,
   tCommon,
   handleBackToList,
@@ -235,6 +263,17 @@ const MapContent: React.FC<MapContentProps> = ({
         >
           <ArrowLeft className='h-4 w-4 mr-2' />
           {t('backToList')}
+        </Button>
+      </div>
+      <div className='absolute top-20 right-4 z-40'>
+        <Button
+          variant='secondary'
+          size='sm'
+          className='shadow-lg'
+          onClick={onOpenListingsDrawer}
+        >
+          <ListIcon className='h-4 w-4 mr-2' />
+          {t('properties')}
         </Button>
       </div>
 
@@ -328,6 +367,8 @@ const MapViewTemplate: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState(0)
   const [hasMore, setHasMore] = useState(false)
+  const [isListingsDrawerOpen, setIsListingsDrawerOpen] = useState(true)
+  const [currentZoom, setCurrentZoom] = useState(DEFAULT_ZOOM)
 
   const fetchListings = useCallback(
     async (
@@ -337,8 +378,11 @@ const MapViewTemplate: React.FC = () => {
       swLng: number,
       zoom: number,
     ) => {
+      setCurrentZoom(zoom)
+
       // Don't fetch if too zoomed out
-      if (zoom < 3) {
+      if (zoom < MIN_LISTING_FETCH_ZOOM) {
+        setError(null)
         setListings([])
         setTotalCount(0)
         setHasMore(false)
@@ -408,22 +452,59 @@ const MapViewTemplate: React.FC = () => {
     <div
       className={`relative flex w-full ${MAP_HEIGHT} overflow-hidden bg-background`}
     >
-      {/* Sidebar - Hidden on mobile, takes 420px on Desktop */}
-      <MapSidebar
-        isLoading={isLoading}
-        listings={listings}
-        selectedListing={selectedListing}
-        totalCount={totalCount}
-        hasMore={hasMore}
-        onSelectListing={handleMarkerClick}
-        onViewDetails={handleViewDetails}
-        onBackToList={handleBackToList}
-        error={error}
-        t={t}
-      />
-
       {/* Map Area */}
       <div className='flex-1 relative h-full'>
+        <Dialog
+          open={isListingsDrawerOpen}
+          onOpenChange={setIsListingsDrawerOpen}
+        >
+          <DialogContent
+            showCloseButton={false}
+            className='!top-0 !left-0 !translate-x-0 !translate-y-0 h-full w-[92vw] md:w-[540px] xl:w-[680px] max-w-[680px] rounded-none border-r border-border p-0 data-[state=open]:slide-in-from-left-3 data-[state=closed]:slide-out-to-left-3'
+          >
+            <VisuallyHidden>
+              <DialogTitle>Map Listings</DialogTitle>
+            </VisuallyHidden>
+            <div className='absolute right-4 top-4 z-10'>
+              <Button
+                variant='ghost'
+                size='icon'
+                onClick={() => setIsListingsDrawerOpen(false)}
+                aria-label='Close listings panel'
+              >
+                <X className='h-4 w-4' />
+              </Button>
+            </div>
+            <MapListingsPanelContent
+              isLoading={isLoading}
+              listings={listings}
+              selectedListing={selectedListing}
+              totalCount={totalCount}
+              hasMore={hasMore}
+              onSelectListing={handleMarkerClick}
+              onViewDetails={handleViewDetails}
+              onBackToList={handleBackToList}
+              error={error}
+              isBelowMinZoom={currentZoom < MIN_LISTING_FETCH_ZOOM}
+              t={t}
+            />
+          </DialogContent>
+        </Dialog>
+
+        {!isListingsDrawerOpen && (
+          <div className='absolute top-20 left-4 z-40 hidden lg:block'>
+            <Button
+              variant='secondary'
+              size='sm'
+              className='shadow-lg'
+              onClick={() => setIsListingsDrawerOpen(true)}
+            >
+              <ChevronLeft className='h-4 w-4 mr-2' />
+              {t('properties')}
+            </Button>
+          </div>
+        )}
+
         <APIProvider apiKey={ENV.GOOGLE_MAP_KEY}>
           <Map
             defaultCenter={VIETNAM_CENTER}
@@ -442,6 +523,7 @@ const MapViewTemplate: React.FC = () => {
               onMarkerClick={handleMarkerClick}
               onCloseCard={handleCloseCard}
               onViewDetails={handleViewDetails}
+              onOpenListingsDrawer={() => setIsListingsDrawerOpen(true)}
               t={t}
               tCommon={tCommon}
               handleBackToList={handleBackToList}

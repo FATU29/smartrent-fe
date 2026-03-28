@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/atoms/button'
+import { NAVIGATION_TEXT_CLASSNAME } from '@/components/organisms/navigation/navigationTypography'
 
 export type VerticalNavItem = {
   key: string
@@ -95,7 +96,7 @@ const VerticalNavNode: React.FC<NodeProps> = ({
           variant='ghost'
           size='sm'
           className={cn(
-            'w-full justify-start gap-2',
+            'w-full min-h-9 justify-start items-center gap-2 px-3 py-2 pr-2 text-left',
             depthPadding,
             isLeafActive && 'bg-accent text-accent-foreground',
             itemClassName,
@@ -105,17 +106,21 @@ const VerticalNavNode: React.FC<NodeProps> = ({
           <Link
             href={item.href || '#'}
             aria-current={isLeafActive ? 'page' : undefined}
+            className='flex h-full w-full min-w-0 items-center gap-2 text-left'
           >
             {Icon ? <Icon className='size-4 shrink-0' /> : null}
-            <span
-              className={cn(
-                'truncate transition-all duration-100 ease-out inline-block',
-                collapsed
-                  ? 'opacity-0 -translate-x-2 w-0 !m-0 overflow-hidden'
-                  : 'opacity-100 translate-x-0 ml-1',
-              )}
-            >
-              {t(item.key)}
+            <span className='min-w-0 flex-1'>
+              <span
+                className={cn(
+                  'truncate transition-all duration-100 ease-out inline-block w-full !text-[14px] leading-5 align-middle',
+                  NAVIGATION_TEXT_CLASSNAME,
+                  collapsed
+                    ? 'opacity-0 -translate-x-2 w-0 !m-0 overflow-hidden'
+                    : 'opacity-100 translate-x-0 ml-1',
+                )}
+              >
+                {t(item.key)}
+              </span>
             </span>
           </Link>
         </Button>
@@ -130,7 +135,7 @@ const VerticalNavNode: React.FC<NodeProps> = ({
         variant='ghost'
         size='sm'
         className={cn(
-          'w-full justify-between',
+          'w-full min-h-9 justify-between items-center px-3 py-2 pr-2 text-left',
           depthPadding,
           (isDescActive || open) && 'bg-accent/70 text-accent-foreground',
           itemClassName,
@@ -139,14 +144,15 @@ const VerticalNavNode: React.FC<NodeProps> = ({
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <span className='inline-flex items-center gap-2'>
+        <span className='inline-flex h-full items-center gap-2 min-w-0 flex-1'>
           {Icon ? <Icon className='size-4 shrink-0' /> : null}
           <span
             className={cn(
-              'truncate transition-all duration-100 ease-out inline-block',
+              'truncate transition-all duration-100 ease-out inline-block min-w-0 flex-1 !text-[14px] leading-5 align-middle',
+              NAVIGATION_TEXT_CLASSNAME,
               collapsed
                 ? 'opacity-0 -translate-x-2 w-0 !m-0 overflow-hidden'
-                : 'opacity-100 translate-x-0',
+                : 'opacity-100 translate-x-0 ml-1',
             )}
           >
             {t(item.key)}
@@ -164,7 +170,7 @@ const VerticalNavNode: React.FC<NodeProps> = ({
       {!collapsed && (
         <ul
           className={cn(
-            'mt-1 ml-2 border-l pl-2 space-y-1 transition-all duration-150 ease-out origin-top',
+            'mt-1 ml-2 border-l pl-2 space-y-1.5 transition-all duration-150 ease-out origin-top',
             open
               ? 'opacity-100 max-h-[600px]'
               : 'opacity-0 max-h-0 overflow-hidden',

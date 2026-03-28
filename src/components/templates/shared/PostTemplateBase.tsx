@@ -45,7 +45,7 @@ export const PostTemplateBase: React.FC<PostTemplateBaseProps> = ({
         className={`min-h-screen bg-background border-0 shadow-none p-0 ${className || ''}`}
       >
         <div ref={topRef} />
-        <Card className='w-full mx-auto md:container md:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4 sm:py-6 lg:py-8 border-0 shadow-none p-0'>
+        <Card className='w-full mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-4 sm:py-6 lg:py-8 border-0 shadow-none p-0'>
           <HeaderModule />
 
           <Card className='mb-6 sm:mb-8 flex justify-center border-0 shadow-none p-0'>

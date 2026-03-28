@@ -62,6 +62,7 @@
     "react-dom": "^19.2.1",
     "react-hook-form": "^7.68.0",
     "react-markdown": "^10.1.0",
+    "react-number-format": "^5.4.5",
     "react-resizable-panels": "^3.0.6",
     "react-slugify": "^5.0.0",
     "recharts": "^2.15.4",

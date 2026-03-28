@@ -131,11 +131,11 @@ const CustomerManagementTemplate = () => {
   if (error) {
     return (
       <div className='container mx-auto py-8'>
-        <div className='rounded-lg border border-red-200 bg-red-50 p-6'>
-          <h3 className='text-lg font-semibold text-red-900 mb-2'>
+        <div className='rounded-lg border border-destructive/30 bg-destructive/10 p-6'>
+          <h3 className='text-lg font-semibold text-destructive mb-2'>
             {t('error')}
           </h3>
-          <p className='text-red-700 mb-4'>{error.message}</p>
+          <p className='text-destructive mb-4'>{error.message}</p>
           <Button onClick={() => refetch()} variant='outline'>
             {t('retry')}
           </Button>
@@ -150,15 +150,15 @@ const CustomerManagementTemplate = () => {
       <div className='container mx-auto py-8'>
         <div className='mb-8'>
           <h1 className='text-3xl font-bold'>{t('title')}</h1>
-          <p className='text-gray-600 mt-2'>{t('subtitle')}</p>
+          <p className='text-muted-foreground mt-2'>{t('subtitle')}</p>
         </div>
 
         <Card className='p-12 text-center'>
-          <Users className='h-16 w-16 text-gray-400 mx-auto mb-4' />
+          <Users className='h-16 w-16 text-muted-foreground/60 mx-auto mb-4' />
           <h3 className='text-xl font-semibold mb-2'>
             {t('emptyState.customers.title')}
           </h3>
-          <p className='text-gray-600 max-w-md mx-auto'>
+          <p className='text-muted-foreground max-w-md mx-auto'>
             {t('emptyState.customers.description')}
           </p>
         </Card>
@@ -171,14 +171,14 @@ const CustomerManagementTemplate = () => {
       {/* Header */}
       <div>
         <h1 className='text-3xl font-bold'>{t('title')}</h1>
-        <p className='text-gray-600 mt-2'>{t('subtitle')}</p>
+        <p className='text-muted-foreground mt-2'>{t('subtitle')}</p>
       </div>
 
       {/* Stats Cards - Desktop Grid */}
       <div className='hidden md:grid gap-4 md:grid-cols-3'>
-        <Card className='p-6 hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-primary/10 to-white border-primary/20'>
+        <Card className='p-6 hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-primary/10 to-background border-primary/20'>
           <div className='flex items-center justify-between mb-2'>
-            <p className='text-sm font-medium text-gray-700'>
+            <p className='text-sm font-medium text-muted-foreground'>
               {t('stats.totalCustomers')}
             </p>
             <Users className='h-6 w-6 text-primary' />
@@ -188,9 +188,9 @@ const CustomerManagementTemplate = () => {
           </p>
         </Card>
 
-        <Card className='p-6 hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-primary/10 to-white border-primary/20'>
+        <Card className='p-6 hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-primary/10 to-background border-primary/20'>
           <div className='flex items-center justify-between mb-2'>
-            <p className='text-sm font-medium text-gray-700'>
+            <p className='text-sm font-medium text-muted-foreground'>
               {t('stats.totalClicks')}
             </p>
             <MousePointerClick className='h-6 w-6 text-primary' />
@@ -198,9 +198,9 @@ const CustomerManagementTemplate = () => {
           <p className='text-3xl font-bold text-primary'>{stats.totalClicks}</p>
         </Card>
 
-        <Card className='p-6 hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-primary/10 to-white border-primary/20'>
+        <Card className='p-6 hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-primary/10 to-background border-primary/20'>
           <div className='flex items-center justify-between mb-2'>
-            <p className='text-sm font-medium text-gray-700'>
+            <p className='text-sm font-medium text-muted-foreground'>
               {t('stats.uniqueUsers')}
             </p>
             <TrendingUp className='h-6 w-6 text-primary' />
@@ -218,21 +218,21 @@ const CustomerManagementTemplate = () => {
               value: stats.totalCustomers,
               label: t('stats.totalCustomers'),
               gradient:
-                'bg-gradient-to-br from-primary/10 to-white border-primary/20',
+                'bg-gradient-to-br from-primary/10 to-background border-primary/20',
             },
             {
               icon: <MousePointerClick className='h-6 w-6 text-primary' />,
               value: stats.totalClicks,
               label: t('stats.totalClicks'),
               gradient:
-                'bg-gradient-to-br from-primary/10 to-white border-primary/20',
+                'bg-gradient-to-br from-primary/10 to-background border-primary/20',
             },
             {
               icon: <TrendingUp className='h-6 w-6 text-primary' />,
               value: stats.uniqueUsers,
               label: t('stats.uniqueUsers'),
               gradient:
-                'bg-gradient-to-br from-primary/10 to-white border-primary/20',
+                'bg-gradient-to-br from-primary/10 to-background border-primary/20',
             },
           ]}
         />
@@ -241,13 +241,13 @@ const CustomerManagementTemplate = () => {
       {/* Search */}
       <Card className='p-4 shadow-sm hover:shadow-md transition-shadow duration-200'>
         <div className='relative'>
-          <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400' />
+          <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground' />
           <input
             type='text'
             placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+            className='w-full pl-10 pr-4 py-2 border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
           />
         </div>
       </Card>
@@ -256,7 +256,7 @@ const CustomerManagementTemplate = () => {
       <Card className='overflow-hidden'>
         <div className='p-6 border-b'>
           <h3 className='text-lg font-semibold'>{t('table.customer')}</h3>
-          <p className='text-sm text-gray-600 mt-1'>
+          <p className='text-sm text-muted-foreground mt-1'>
             {t('pagination.showing')} {filteredData.length}{' '}
             {t('pagination.results')}
           </p>
@@ -267,36 +267,36 @@ const CustomerManagementTemplate = () => {
             <h3 className='text-lg font-semibold mb-2'>
               {t('emptyState.search.title')}
             </h3>
-            <p className='text-gray-600'>
+            <p className='text-muted-foreground'>
               {t('emptyState.search.description')}
             </p>
           </div>
         ) : (
           <div className='overflow-x-auto'>
             <table className='w-full'>
-              <thead className='bg-gray-50'>
+              <thead className='bg-muted/50'>
                 <tr>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
                     {t('table.customer')}
                   </th>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
                     {t('table.email')}
                   </th>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
                     {t('table.phone')}
                   </th>
-                  <th className='px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider'>
                     {t('table.totalClicks')}
                   </th>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
                     {t('table.clickedListings')}
                   </th>
-                  <th className='px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider'>
                     {t('table.actions')}
                   </th>
                 </tr>
               </thead>
-              <tbody className='bg-white divide-y divide-gray-200'>
+              <tbody className='bg-background divide-y divide-border'>
                 {filteredData.map((customer: UserPhoneClickDetail) => {
                   const totalClicks = customer.clickedListings.reduce(
                     (sum, l) => sum + l.clickCount,
@@ -326,7 +326,7 @@ const CustomerManagementTemplate = () => {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className='font-medium text-gray-900 group-hover:text-primary transition-colors'>
+                            <div className='font-medium text-foreground group-hover:text-primary transition-colors'>
                               {customer.firstName} {customer.lastName}
                             </div>
                           </div>
@@ -334,22 +334,22 @@ const CustomerManagementTemplate = () => {
                       </td>
                       <td className='px-6 py-4'>
                         <div className='flex items-center gap-2'>
-                          <Mail className='h-4 w-4 text-gray-400' />
-                          <span className='text-sm text-gray-900'>
+                          <Mail className='h-4 w-4 text-muted-foreground' />
+                          <span className='text-sm text-foreground'>
                             {customer.email}
                           </span>
                         </div>
                       </td>
                       <td className='px-6 py-4'>
                         <div className='flex items-center gap-2'>
-                          <Phone className='h-4 w-4 text-gray-400' />
-                          <span className='text-sm text-gray-900'>
+                          <Phone className='h-4 w-4 text-muted-foreground' />
+                          <span className='text-sm text-foreground'>
                             {customer.contactPhone || 'N/A'}
                           </span>
                           {customer.contactPhoneVerified ? (
-                            <CheckCircle2 className='h-4 w-4 text-green-600' />
+                            <CheckCircle2 className='h-4 w-4 text-primary' />
                           ) : (
-                            <XCircle className='h-4 w-4 text-gray-400' />
+                            <XCircle className='h-4 w-4 text-muted-foreground' />
                           )}
                         </div>
                       </td>
@@ -390,10 +390,10 @@ const CustomerManagementTemplate = () => {
                                   onKeyDown={handleListingKeyDown}
                                   aria-label={`View listing: ${listing.listingTitle}`}
                                 >
-                                  <div className='font-medium truncate text-gray-900 hover:text-primary transition-colors'>
+                                  <div className='font-medium truncate text-foreground hover:text-primary transition-colors'>
                                     {listing.listingTitle}
                                   </div>
-                                  <div className='text-xs text-gray-500 flex items-center gap-2'>
+                                  <div className='text-xs text-muted-foreground flex items-center gap-2'>
                                     <span>{formatDate(listing.clickedAt)}</span>
                                     <span>·</span>
                                     <Badge
@@ -455,7 +455,7 @@ const CustomerManagementTemplate = () => {
       {/* Pagination */}
       {data && data.totalPages > 1 && (
         <div className='flex items-center justify-between'>
-          <p className='text-sm text-gray-600'>
+          <p className='text-sm text-muted-foreground'>
             {t('pagination.page')} {data.page} {t('pagination.of')}{' '}
             {data.totalPages}
           </p>

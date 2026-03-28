@@ -21,23 +21,19 @@ interface VipPropertySectionProps {
 
 const VIP_CONFIG = {
   DIAMOND: {
-    emoji: '💎',
-    textColor: 'text-blue-600 dark:text-blue-400',
+    titleClassName: 'text-blue-600 dark:text-blue-400',
     titleKey: 'homePage.vipSections.diamond',
   },
   GOLD: {
-    emoji: '🌟',
-    textColor: 'text-yellow-600 dark:text-yellow-400',
+    titleClassName: 'text-yellow-600 dark:text-yellow-400',
     titleKey: 'homePage.vipSections.gold',
   },
   SILVER: {
-    emoji: '🥈',
-    textColor: 'text-gray-600 dark:text-gray-400',
+    titleClassName: 'text-gray-600 dark:text-gray-400',
     titleKey: 'homePage.vipSections.silver',
   },
   NORMAL: {
-    emoji: '⭐',
-    textColor: 'text-slate-600 dark:text-slate-400',
+    titleClassName: 'text-slate-600 dark:text-slate-400',
     titleKey: 'homePage.vipSections.normal',
   },
 }
@@ -94,8 +90,12 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
     return (
       <section className='mb-8 sm:mb-10'>
         <div className='flex items-center gap-2 mb-4 sm:mb-5'>
-          <span className='text-xl'>{config.emoji}</span>
-          <h2 className='text-xl sm:text-2xl font-semibold'>
+          <h2
+            className={cn(
+              'text-xl sm:text-2xl font-semibold',
+              config.titleClassName,
+            )}
+          >
             {t(config.titleKey)}
           </h2>
         </div>
@@ -108,7 +108,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
             {skeletonItems.map((_, index) => (
               <CarouselItem
                 key={index}
-                className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'
+                className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 min-w-[320px] sm:min-w-[360px]'
               >
                 <div className='w-full space-y-2 md:space-y-3'>
                   <Skeleton className='aspect-[4/3] rounded-lg w-full' />
@@ -153,11 +153,17 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
   return (
     <section className='mb-8 sm:mb-10'>
       <div className='flex items-center gap-2 mb-4 sm:mb-5'>
-        <span className='text-xl'>{config.emoji}</span>
-        <h2 className='text-xl sm:text-2xl font-semibold'>
+        <h2
+          className={cn(
+            'text-xl sm:text-2xl font-semibold',
+            config.titleClassName,
+          )}
+        >
           {t(config.titleKey)}
         </h2>
-        <span className={`ml-auto text-sm font-medium ${config.textColor}`}>
+        <span
+          className={cn('ml-auto text-sm font-medium', config.titleClassName)}
+        >
           {listings.length}
         </span>
       </div>
@@ -173,7 +179,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
             .map((listing) => (
               <CarouselItem
                 key={listing.listingId}
-                className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'
+                className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 min-w-[320px] sm:min-w-[360px]'
               >
                 <Link
                   href={`/listing-detail/${listing.listingId}`}

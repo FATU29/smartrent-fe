@@ -1,6 +1,7 @@
 import React from 'react'
 import { ChevronRight, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { NAVIGATION_TEXT_CLASSNAME } from '@/components/organisms/navigation/navigationTypography'
 
 export interface NavigationItemData {
   id: string
@@ -58,8 +59,9 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
     <div className={cn('relative', className)}>
       <div
         className={cn(
-          'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 w-full',
+          'group flex items-center justify-between px-3 py-2 rounded-md transition-all duration-200 w-full',
           'hover:bg-accent hover:text-accent-foreground',
+          NAVIGATION_TEXT_CLASSNAME,
           item.isActive && 'bg-accent text-accent-foreground',
           level > 0 && 'ml-4',
           level === 1 && 'ml-6',

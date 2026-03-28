@@ -134,197 +134,8 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
 
   return (
     <div className={className}>
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-        {/* Left Section - Property Information Input */}
-        <Card className='shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
-          <CardHeader className='pb-4'>
-            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
-              <div className='p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg'>
-                <Home className='w-6 h-6 text-blue-600 dark:text-blue-400' />
-              </div>
-              {t('propertyInfo.title')}
-            </CardTitle>
-            <p className='text-sm text-gray-600 dark:text-gray-400 mt-2'>
-              {t('propertyInfo.subtitle')}
-            </p>
-          </CardHeader>
-          <CardContent className='space-y-6'>
-            {/* New Address (Read-only) */}
-            {composedNewAddress && (
-              <div className='space-y-3'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
-                  <MapPin className='w-4 h-4 text-blue-500' />
-                  {tPropertyInfo('displayAddress')} (
-                  {tAddress('structureType.newShort') || 'Mới'})
-                </label>
-                <div className='relative group'>
-                  <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 z-10' />
-                  <Input
-                    type='text'
-                    readOnly
-                    className='pl-12 bg-gray-50 dark:bg-gray-800/50 cursor-text'
-                    placeholder={tPropertyInfo('displayAddressPlaceholder')}
-                    value={composedNewAddress}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Legacy Address (Read-only) */}
-            {composedLegacyAddress && (
-              <div className='space-y-3'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
-                  <MapPin className='w-4 h-4 text-orange-500' />
-                  {tAddress('legacyAddress') ||
-                    'Địa chỉ hiển thị trên tin đăng (phiên bản cũ)'}
-                </label>
-                <div className='relative group'>
-                  <MapPin className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 z-10' />
-                  <Input
-                    type='text'
-                    readOnly
-                    className='pl-12 bg-gray-50 dark:bg-gray-800/50 cursor-text'
-                    placeholder={
-                      tAddress('legacyAddressPlaceholder') ||
-                      'Địa chỉ cũ sẽ hiển thị ở đây'
-                    }
-                    value={composedLegacyAddress}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Main Layout: One row for Type + Area (applies on mobile) */}
-            <div className='grid grid-cols-2 gap-3 w-full'>
-              <div className='space-y-2'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                  {t('propertyInfo.type')}
-                </label>
-                <Input
-                  type='text'
-                  value={propertyTypeLabel}
-                  readOnly
-                  placeholder={t('propertyInfo.type')}
-                />
-              </div>
-              <div className='space-y-2'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                  {t('propertyInfo.area')}
-                </label>
-                <div className='relative'>
-                  <Input
-                    type='text'
-                    value={propertyInfo.area}
-                    readOnly
-                    placeholder='0'
-                    className='pr-12'
-                  />
-                  <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400'>
-                    m²
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Second row for Bedrooms + Bathrooms (read-only) */}
-            <div className='grid grid-cols-2 gap-3 w-full'>
-              <div className='space-y-2'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                  {t('propertyInfo.bedrooms')}
-                </label>
-                <Input
-                  type='text'
-                  value={propertyInfo.bedrooms}
-                  readOnly
-                  placeholder='0'
-                />
-              </div>
-              <div className='space-y-2'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                  {t('propertyInfo.bathrooms')}
-                </label>
-                <Input
-                  type='text'
-                  value={propertyInfo.bathrooms}
-                  readOnly
-                  placeholder='0'
-                />
-              </div>
-            </div>
-
-            {/* Amenities - Full width below grid */}
-            <div className='space-y-4'>
-              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
-                <CheckCircle className='w-4 h-4 text-green-500' />
-                {t('propertyInfo.amenities')}
-              </label>
-              <div className='max-h-[400px] overflow-y-auto overflow-x-hidden pr-2'>
-                <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3'>
-                  {getAmenityItems(tPropertyInfo).map((amenity) => {
-                    const amenityConfig = getAmenityByCode(amenity.key)
-                    const IconComponent = amenityConfig?.icon
-                    const hasAmenity =
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      (propertyInfo as any).amenities?.includes(amenity.id) ||
-                      propertyInfo.amenityIds?.includes(amenity.id)
-
-                    return (
-                      <label
-                        key={amenity.key}
-                        className={`grid grid-cols-[auto,auto,1fr] items-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-colors duration-200 w-full min-w-0 min-h-12 ${
-                          hasAmenity
-                            ? amenity.color
-                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        {IconComponent && (
-                          <IconComponent className='w-4 h-4 shrink-0' />
-                        )}
-                        <input
-                          type='checkbox'
-                          className='w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 shrink-0'
-                          checked={hasAmenity}
-                          disabled
-                        />
-                        <span className='text-sm font-medium whitespace-normal break-words leading-snug min-w-0'>
-                          {amenity.label}
-                        </span>
-                      </label>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Re-evaluate Button */}
-            <Button
-              onClick={handleReevaluate}
-              disabled={!canPredict || isPredicting}
-              className='w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
-            >
-              {isPredicting ? (
-                <>
-                  <Loader2 className='w-5 h-5 mr-2 animate-spin' />
-                  {t('propertyInfo.predicting') || 'Đang dự đoán...'}
-                </>
-              ) : (
-                <>
-                  <RefreshCw className='w-5 h-5 mr-2' />
-                  {t('propertyInfo.reevaluate')}
-                </>
-              )}
-            </Button>
-            {!canPredict && (
-              <p className='text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1'>
-                <AlertCircle className='w-3 h-3' />
-                {t('propertyInfo.incompleteData') ||
-                  'Vui lòng điền đầy đủ thông tin địa chỉ, diện tích và tọa độ GPS'}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Right Section - AI Valuation Results */}
+      <div className='grid grid-cols-1 gap-8'>
+        {/* Top Section - AI Valuation Results */}
         <Card className='shadow-lg border-0 bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-blue-900/20'>
           <CardHeader className='pb-3'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
@@ -431,7 +242,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                 <BarChart3 className='w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4' />
                 <p className='text-sm text-gray-500 dark:text-gray-400'>
                   {t('results.noPrediction') ||
-                    'Nhấn "Đánh giá lại" để xem dự đoán giá từ AI'}
+                    'Nhấn \"Đánh giá lại\" để xem dự đoán giá từ AI'}
                 </p>
               </div>
             )}
@@ -451,6 +262,194 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             )}
           </CardContent>
         </Card>
+
+        {/* Bottom Section - Property Information Input */}
+        <Card className='shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+          <CardHeader className='pb-4'>
+            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
+              <div className='p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg'>
+                <Home className='w-6 h-6 text-blue-600 dark:text-blue-400' />
+              </div>
+              {t('propertyInfo.title')}
+            </CardTitle>
+            <p className='text-sm text-gray-600 dark:text-gray-400 mt-2'>
+              {t('propertyInfo.subtitle')}
+            </p>
+          </CardHeader>
+          <CardContent className='space-y-6'>
+            {/* New Address (Read-only) */}
+            {composedNewAddress && (
+              <div className='space-y-3'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                  <MapPin className='w-4 h-4 text-blue-500' />
+                  {tPropertyInfo('displayAddress')} (
+                  {tAddress('structureType.newShort') || 'Mới'})
+                </label>
+                <div className='relative group'>
+                  <Input
+                    type='text'
+                    disabled
+                    className='pl-12 h-12 px-4 pr-10 border-2 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                    placeholder={tPropertyInfo('displayAddressPlaceholder')}
+                    value={composedNewAddress}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Legacy Address (Read-only) */}
+            {composedLegacyAddress && (
+              <div className='space-y-3'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                  <MapPin className='w-4 h-4 text-orange-500' />
+                  {tAddress('legacyAddress') ||
+                    'Địa chỉ hiển thị trên tin đăng (phiên bản cũ)'}
+                </label>
+                <div className='relative group'>
+                  <Input
+                    type='text'
+                    disabled
+                    className='pl-12 h-12 px-4 pr-10 border-2 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                    placeholder={
+                      tAddress('legacyAddressPlaceholder') ||
+                      'Địa chỉ cũ sẽ hiển thị ở đây'
+                    }
+                    value={composedLegacyAddress}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Main Layout: One row for Type + Area (applies on mobile) */}
+            <div className='grid grid-cols-2 gap-3 w-full'>
+              <div className='space-y-2'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                  {t('propertyInfo.type')}
+                </label>
+                <Input
+                  type='text'
+                  value={propertyTypeLabel}
+                  disabled
+                  placeholder={t('propertyInfo.type')}
+                  className='h-12 px-4 pr-10 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                />
+              </div>
+              <div className='space-y-2'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                  {t('propertyInfo.area')}
+                </label>
+                <div className='relative'>
+                  <Input
+                    type='text'
+                    value={propertyInfo.area}
+                    disabled
+                    placeholder='0'
+                    className='h-12 px-4 pr-12 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                  />
+                  <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400'>
+                    m²
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Second row for Bedrooms + Bathrooms (read-only) */}
+            <div className='grid grid-cols-2 gap-3 w-full'>
+              <div className='space-y-2'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                  {t('propertyInfo.bedrooms')}
+                </label>
+                <Input
+                  type='text'
+                  value={propertyInfo.bedrooms}
+                  disabled
+                  placeholder='0'
+                  className='h-12 px-4 pr-10 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                />
+              </div>
+              <div className='space-y-2'>
+                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                  {t('propertyInfo.bathrooms')}
+                </label>
+                <Input
+                  type='text'
+                  value={propertyInfo.bathrooms}
+                  disabled
+                  placeholder='0'
+                  className='h-12 px-4 pr-10 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                />
+              </div>
+            </div>
+
+            {/* Amenities - Full width below grid */}
+            <div className='space-y-4'>
+              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                <CheckCircle className='w-4 h-4 text-green-500' />
+                {t('propertyInfo.amenities')}
+              </label>
+              <div className='max-h-[400px] overflow-y-auto overflow-x-hidden pr-2'>
+                <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3'>
+                  {getAmenityItems(tPropertyInfo).map((amenity) => {
+                    const amenityConfig = getAmenityByCode(amenity.key)
+                    const IconComponent = amenityConfig?.icon
+                    const hasAmenity =
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (propertyInfo as any).amenities?.includes(amenity.id) ||
+                      propertyInfo.amenityIds?.includes(amenity.id)
+
+                    return (
+                      <label
+                        key={amenity.key}
+                        className='flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 focus-within:border-primary focus-within:bg-primary/5 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus-within:border-primary w-full'
+                      >
+                        {IconComponent && (
+                          <IconComponent className='w-4 h-4 flex-shrink-0' />
+                        )}
+                        <input
+                          type='checkbox'
+                          className='w-4 h-4 rounded border-2 border-gray-300 text-primary focus:ring-0 focus:outline-none focus-visible:outline-none flex-shrink-0 pointer-events-none'
+                          checked={hasAmenity}
+                          readOnly
+                        />
+                        <span className='text-sm font-medium whitespace-normal break-words leading-snug'>
+                          {amenity.label}
+                        </span>
+                      </label>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Re-evaluate Button */}
+            <Button
+              onClick={handleReevaluate}
+              disabled={!canPredict || isPredicting}
+              className='w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
+            >
+              {isPredicting ? (
+                <>
+                  <Loader2 className='w-5 h-5 mr-2 animate-spin' />
+                  {t('propertyInfo.predicting') || 'Đang dự đoán...'}
+                </>
+              ) : (
+                <>
+                  <RefreshCw className='w-5 h-5 mr-2' />
+                  {t('propertyInfo.reevaluate')}
+                </>
+              )}
+            </Button>
+            {!canPredict && (
+              <p className='text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1'>
+                <AlertCircle className='w-3 h-3' />
+                {t('propertyInfo.incompleteData') ||
+                  'Vui lòng điền đầy đủ thông tin địa chỉ, diện tích và tọa độ GPS'}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* End Top Section */}
       </div>
     </div>
   )

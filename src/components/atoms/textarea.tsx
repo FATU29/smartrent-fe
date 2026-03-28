@@ -10,9 +10,16 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <textarea
         className={cn(
-          'placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex min-h-[60px] w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-          'focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-          'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+          // Base appearance
+          'flex min-h-[60px] w-full rounded-xl border-2 bg-white dark:bg-gray-800 px-4 py-3 text-base shadow-sm transition-all outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+          // Default border colors
+          'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600',
+          // Selection colors
+          'placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground',
+          // Focus state (single subtle ring)
+          'focus:outline-none focus-visible:outline-none focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50',
+          // Error state via aria-invalid
+          'aria-invalid:border-destructive aria-invalid:focus:ring-destructive/50 dark:aria-invalid:border-destructive',
           className,
         )}
         ref={ref}

@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useTranslations } from 'next-intl'
 import PropertyListContent from '@/components/molecules/propertyListContent'
 
 import PropertyFilterSidebar from '@/components/molecules/propertyFilterSidebar'
 import { Typography } from '@/components/atoms/typography'
-import { Switch } from '@/components/atoms/switch'
 import { useListContext } from '@/contexts/list'
 import { ListingDetail } from '@/api/types/property.type'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
@@ -12,7 +11,6 @@ import ResidentialFilterResponsive from '@/components/molecules/residentialFilte
 const ResidentialPropertiesTemplate: React.FC = () => {
   const t = useTranslations('propertiesPage')
   const { pagination } = useListContext<ListingDetail>()
-  const [emailNotification, setEmailNotification] = useState(false)
 
   return (
     <>
@@ -31,19 +29,8 @@ const ResidentialPropertiesTemplate: React.FC = () => {
             </Typography>
           </div>
 
-          <div className='flex items-center gap-4'>
-            {/* Email Notification Toggle */}
-            <div className='flex items-center gap-2'>
-              <Switch
-                checked={emailNotification}
-                onCheckedChange={setEmailNotification}
-                size='sm'
-              />
-              <Typography variant='small' className='text-sm whitespace-nowrap'>
-                {t('emailNotification')}
-              </Typography>
-            </div>
-          </div>
+          {/* Controls placeholder (removed email notification switch) */}
+          <div className='flex items-center gap-4' />
         </div>
       </header>
 

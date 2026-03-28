@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
   const t = useTranslations()
 
   return (
-    <footer className='bg-muted/50 border-t border-border'>
+    <footer className='bg-muted/50'>
       <div className='w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10'>
         {/* Slightly reduced mobile vertical padding, increased large screen breathing space */}
         <div className='py-6 sm:py-10 lg:py-14'>
@@ -184,7 +184,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Bottom Bar */}
-          <div className='mt-10 lg:mt-12 pt-6 lg:pt-8 border-t border-border'>
+          <div className='mt-8'>
             <div className='flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4'>
               <Typography
                 variant='small'

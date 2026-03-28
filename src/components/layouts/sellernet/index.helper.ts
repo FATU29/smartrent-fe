@@ -25,7 +25,6 @@ export const SELLERNET_NAV: SellernetNavItem[] = [
     key: 'sellernet.overview',
     href: SELLERNET_ROUTES.OVERVIEW,
     icon: ListOrdered,
-    className: 'text-base',
   },
   {
     key: 'sellernet.postManagement',
@@ -57,7 +56,6 @@ export const SELLERNET_NAV: SellernetNavItem[] = [
     key: 'sellernet.customers',
     href: SELLERNET_ROUTES.CUSTOMERS,
     icon: Users,
-    className: 'text-base',
   },
   {
     key: 'sellernet.membership',

@@ -278,7 +278,7 @@ export default function UnifiedDetailDialog({
                           {customer.contactPhoneVerified && (
                             <Badge
                               variant='outline'
-                              className='text-[10px] h-5 px-1.5 border-green-600 text-green-600'
+                              className='text-[10px] h-5 px-1.5 border-primary text-primary'
                             >
                               <CheckCircle2 className='h-2.5 w-2.5 mr-0.5' />
                               {t('table.verified')}

@@ -106,12 +106,12 @@ export default function StatsCarousel({ stats }: StatsCarouselProps) {
             <div key={index} className='min-w-full px-2'>
               <Card className={`p-6 ${stat.gradient}`}>
                 <div className='flex items-center justify-between mb-2'>
-                  <div className='text-gray-600'>{stat.icon}</div>
+                  <div className='text-muted-foreground'>{stat.icon}</div>
                 </div>
-                <p className='text-3xl font-bold text-gray-900 mb-1'>
+                <p className='text-3xl font-bold text-foreground mb-1'>
                   {stat.value}
                 </p>
-                <p className='text-sm font-medium text-gray-600'>
+                <p className='text-sm font-medium text-muted-foreground'>
                   {stat.label}
                 </p>
               </Card>
@@ -126,19 +126,19 @@ export default function StatsCarousel({ stats }: StatsCarouselProps) {
           <button
             onClick={goToPrev}
             disabled={currentIndex === 0}
-            className='absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-white rounded-full p-2 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors z-10'
+            className='absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-background border border-border rounded-full p-2 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:bg-muted transition-colors z-10'
             aria-label='Previous stat'
           >
-            <ChevronLeft className='h-5 w-5 text-gray-700' />
+            <ChevronLeft className='h-5 w-5 text-foreground' />
           </button>
 
           <button
             onClick={goToNext}
             disabled={currentIndex === stats.length - 1}
-            className='absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-white rounded-full p-2 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors z-10'
+            className='absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-background border border-border rounded-full p-2 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:bg-muted transition-colors z-10'
             aria-label='Next stat'
           >
-            <ChevronRight className='h-5 w-5 text-gray-700' />
+            <ChevronRight className='h-5 w-5 text-foreground' />
           </button>
         </>
       )}
@@ -153,7 +153,7 @@ export default function StatsCarousel({ stats }: StatsCarouselProps) {
               className={`h-2 rounded-full transition-all duration-300 ${
                 index === currentIndex
                   ? 'w-6 bg-primary'
-                  : 'w-2 bg-gray-300 hover:bg-gray-400'
+                  : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
               }`}
               aria-label={`Go to stat ${index + 1}`}
             />

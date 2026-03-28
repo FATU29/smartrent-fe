@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { NAVIGATION_TEXT_CLASSNAME } from '@/components/organisms/navigation/navigationTypography'
 
 type IconType = React.ComponentType<{ className?: string }>
 
@@ -37,7 +38,7 @@ const MobileNavItem: React.FC<MobileNavItemProps> = ({
   )
 
   return (
-    <li className='flex flex-col items-stretch text-xs'>
+    <li className='flex flex-col items-stretch'>
       {href ? (
         <Link
           href={href}
@@ -45,7 +46,12 @@ const MobileNavItem: React.FC<MobileNavItemProps> = ({
           aria-current={active ? 'page' : undefined}
         >
           <Icon className='h-6 w-6 mx-auto' />
-          <span className='block w-full text-center leading-tight whitespace-nowrap truncate'>
+          <span
+            className={cn(
+              'block w-full text-center leading-tight truncate',
+              NAVIGATION_TEXT_CLASSNAME,
+            )}
+          >
             {label}
           </span>
         </Link>
@@ -57,7 +63,12 @@ const MobileNavItem: React.FC<MobileNavItemProps> = ({
           aria-label={ariaLabel}
         >
           <Icon className='h-6 w-6 mx-auto' />
-          <span className='block w-full text-center leading-tight whitespace-nowrap truncate'>
+          <span
+            className={cn(
+              'block w-full text-center leading-tight truncate',
+              NAVIGATION_TEXT_CLASSNAME,
+            )}
+          >
             {label}
           </span>
         </button>

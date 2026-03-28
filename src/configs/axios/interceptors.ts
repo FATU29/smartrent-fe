@@ -94,6 +94,16 @@ export function createAuthResponseInterceptor() {
   return {
     onFulfilled: (response: AxiosResponse) => response,
     onRejected: async (error: AxiosError) => {
+      const requestConfig = error.config as CustomAxiosRequestConfig | undefined
+      const isSkipAuthRequest = Boolean(requestConfig?.skipAuth)
+
+      // Skip auth-expired handling for endpoints that explicitly bypass auth.
+      // Example: OAuth callback / token introspection can return 401 without meaning
+      // the current browser session must be force-logged-out.
+      if (isSkipAuthRequest) {
+        return Promise.reject(error)
+      }
+
       // Handle 401 errors - token refresh failed or unauthorized
       if (error.response?.status === 401) {
         const refreshTokenValue = getRefreshToken()

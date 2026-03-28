@@ -356,6 +356,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
             onChange={(e) => {
               setStreetInput(e.target.value)
             }}
+            className='h-12 px-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
           />
         </div>
 
@@ -368,7 +369,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
             type='text'
             readOnly
             value={composedNewAddress}
-            className='bg-gray-50 dark:bg-gray-800 cursor-text'
+            className='h-12 px-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-800 cursor-text text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
             placeholder={
               tRoot('displayAddressPlaceholder') ||
               'Địa chỉ sẽ tự động tạo từ đường/phố, phường/xã, tỉnh/thành'
@@ -394,7 +395,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
                 type='text'
                 readOnly
                 value={composedLegacyAddress}
-                className='flex-1 bg-gray-50 dark:bg-gray-800 cursor-text'
+                className='flex-1 h-12 px-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-800 cursor-text text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
                 placeholder={
                   tAddress('legacyAddressPlaceholder') ||
                   'Địa chỉ cũ sẽ hiển thị ở đây'

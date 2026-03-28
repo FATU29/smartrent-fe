@@ -77,6 +77,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   const {
     control,
     handleSubmit,
+    reset,
     setValue,
     watch,
     formState: { errors, isValid, isDirty },
@@ -96,6 +97,19 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     },
     mode: 'onChange',
   })
+
+  React.useEffect(() => {
+    reset({
+      firstName: initialData?.firstName || '',
+      lastName: initialData?.lastName || '',
+      email: initialData?.email || '',
+      phoneNumber: initialData?.phoneNumber || '',
+      idDocument: initialData?.idDocument || '',
+      taxNumber: initialData?.taxNumber || '',
+      address: initialData?.address || '',
+      avatarUrl: initialData?.avatarUrl || '',
+    })
+  }, [initialData, reset])
 
   // Controllers for simple FormField inputs
   const firstNameController = useController({ name: 'firstName', control })

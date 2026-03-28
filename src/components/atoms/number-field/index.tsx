@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { NumericFormat } from 'react-number-format'
 
 export interface NumberFieldProps {
   label?: string
@@ -11,6 +12,7 @@ export interface NumberFieldProps {
   min?: number
   max?: number
   step?: number
+  decimals?: number
   disabled?: boolean
   required?: boolean
   compact?: boolean
@@ -26,7 +28,7 @@ export const NumberField: React.FC<NumberFieldProps> = ({
   className,
   min = 0,
   max,
-  step = 1,
+  decimals = 0,
   disabled,
   required,
   compact,
@@ -35,15 +37,8 @@ export const NumberField: React.FC<NumberFieldProps> = ({
   const [touched, setTouched] = useState(false)
   const invalid = (touched && value < (min ?? 0)) || !!error
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^0-9.,-]/g, '')
-    if (raw === '') {
-      onChange(0)
-      return
-    }
-    const numeric = Number.parseFloat(raw.replace(',', '.'))
-    if (Number.isNaN(numeric)) return
-    let next = numeric
+  const handleValueChange = (floatValue?: number) => {
+    let next = floatValue ?? 0
     if (min !== undefined && next < min) next = min
     if (max !== undefined && next > max) next = max
     onChange(next)
@@ -58,9 +53,16 @@ export const NumberField: React.FC<NumberFieldProps> = ({
         </label>
       )}
       <div className='relative'>
-        <input
-          type='text'
-          inputMode='decimal'
+        <NumericFormat
+          value={value === 0 ? undefined : value}
+          onValueChange={(v) => handleValueChange(v.floatValue)}
+          thousandSeparator='.'
+          decimalSeparator=','
+          allowNegative={false}
+          decimalScale={decimals}
+          allowLeadingZeros={false}
+          inputMode='numeric'
+          placeholder={placeholder}
           className={cn(
             'w-full h-12 px-4 pr-10 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600',
             (invalid || error) &&
@@ -68,12 +70,8 @@ export const NumberField: React.FC<NumberFieldProps> = ({
             disabled && 'opacity-60 cursor-not-allowed',
             compact && 'h-10 text-sm',
           )}
-          placeholder={placeholder}
-          value={value === 0 ? '' : value}
-          onChange={handleChange}
-          onBlur={() => setTouched(true)}
           disabled={disabled}
-          step={step}
+          onBlur={() => setTouched(true)}
         />
         {suffix && (
           <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400'>

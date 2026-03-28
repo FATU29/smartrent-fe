@@ -1,9 +1,16 @@
 import * as React from 'react'
+import dynamic from 'next/dynamic'
 import type { NextPageWithLayout } from '@/types/next-page'
-import AccountManagementTemplate from '@/components/templates/accountManagementTemplate'
 import SellernetLayout from '@/components/layouts/sellernet/SellernetLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useUpdateProfile } from '@/hooks/useAuth'
+
+const AccountManagementTemplate = dynamic(
+  () => import('@/components/templates/accountManagementTemplate'),
+  {
+    ssr: false,
+  },
+)
 
 type PersonalInfoFormData = {
   firstName?: string

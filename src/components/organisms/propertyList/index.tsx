@@ -51,7 +51,7 @@ const PropertyList: React.FC<PropertyListProps> = ({
   )
 
   const PropertySkeleton = (
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6'>
+    <div className='grid [grid-template-columns:repeat(auto-fill,minmax(320px,1fr))] gap-4 md:gap-6'>
       {Array.from({ length: 8 }).map((_, index) => (
         <div key={index} className='w-full space-y-2 md:space-y-3'>
           <Skeleton className='aspect-[4/3] rounded-lg w-full' />
@@ -93,7 +93,7 @@ const PropertyList: React.FC<PropertyListProps> = ({
       {isLoading && PropertySkeleton}
       {!isLoading && displayedProperties.length === 0 && PropertyNotFound}
       {!isLoading && displayedProperties.length > 0 && (
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6'>
+        <div className='grid [grid-template-columns:repeat(auto-fill,minmax(320px,1fr))] gap-4 md:gap-6'>
           {displayedProperties
             .filter((p) => !!p.listingId)
             .map((p) => PropertyItem(p))}
