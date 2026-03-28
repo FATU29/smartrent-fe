@@ -14,6 +14,8 @@ import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useAuth } from '@/hooks/useAuth'
+import { UserService } from '@/api/services/user.service'
+import { useQuery } from '@tanstack/react-query'
 
 type PersonalInfoData = {
   firstName: string
@@ -41,25 +43,42 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
   className,
 }) => {
   const t = useTranslations()
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
   const [activeTab, setActiveTab] = React.useState('personal-info')
   const [isUpdatingPersonalInfo, setIsUpdatingPersonalInfo] =
     React.useState(false)
   const [isChangingPassword, setIsChangingPassword] = React.useState(false)
+  const { data: profileResponse, isLoading: isProfileLoading } = useQuery({
+    queryKey: ['sellernet', 'personal-edit-profile'],
+    queryFn: () => UserService.getProfile(),
+    enabled: Boolean(user),
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
+    retry: false,
+  })
+
+  React.useEffect(() => {
+    if (profileResponse?.data) {
+      updateUser(profileResponse.data)
+    }
+  }, [profileResponse?.data, updateUser])
+
+  const profileUser = profileResponse?.data ?? user
 
   const getUserInitialData = React.useMemo(() => {
-    if (!user) return undefined
+    if (!profileUser) return undefined
 
     return {
-      firstName: user.firstName || '',
-      lastName: user.lastName || '',
-      email: user.email,
-      phoneNumber: user.phoneNumber || '',
-      idDocument: user.idDocument || '',
-      taxNumber: user.taxNumber || '',
-      avatarUrl: user.avatarUrl,
+      firstName: profileUser.firstName || '',
+      lastName: profileUser.lastName || '',
+      email: profileUser.email,
+      phoneNumber: profileUser.phoneNumber || '',
+      idDocument: profileUser.idDocument || '',
+      taxNumber: profileUser.taxNumber || '',
+      avatarUrl: profileUser.avatarUrl,
     }
-  }, [user])
+  }, [profileUser])
 
   const handlePersonalInfoSubmit = async (data: PersonalInfoData) => {
     if (!onPersonalInfoUpdate) {
@@ -135,11 +154,15 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
         </TabsList>
 
         <TabsContent value='personal-info' className='space-y-6'>
-          <PersonalInfoForm
-            initialData={getUserInitialData}
-            onSubmit={handlePersonalInfoSubmit}
-            loading={isUpdatingPersonalInfo}
-          />
+          {isProfileLoading ? (
+            <PersonalInfoFormSkeleton />
+          ) : (
+            <PersonalInfoForm
+              initialData={getUserInitialData}
+              onSubmit={handlePersonalInfoSubmit}
+              loading={isUpdatingPersonalInfo}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value='account-settings' className='space-y-6'>
@@ -149,6 +172,30 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
           />
         </TabsContent>
       </Tabs>
+    </div>
+  )
+}
+
+const PersonalInfoFormSkeleton = () => {
+  return (
+    <div className='rounded-lg border bg-card p-6'>
+      <div className='space-y-6 animate-pulse'>
+        <div className='h-6 w-56 rounded-md bg-muted' />
+        <div className='mx-auto h-28 w-28 rounded-full bg-muted' />
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
+          <div className='h-10 rounded-md bg-muted' />
+          <div className='h-10 rounded-md bg-muted' />
+        </div>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
+          <div className='h-10 rounded-md bg-muted' />
+          <div className='h-10 rounded-md bg-muted' />
+        </div>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
+          <div className='h-10 rounded-md bg-muted' />
+          <div className='h-10 rounded-md bg-muted' />
+        </div>
+        <div className='h-10 rounded-md bg-muted' />
+      </div>
     </div>
   )
 }

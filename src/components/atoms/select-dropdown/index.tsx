@@ -122,12 +122,12 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
         >
           <SelectTrigger
             className={cn(
-              'rounded-xl transition-all duration-200 shadow-sm',
+              'rounded-xl transition-all duration-200 shadow-sm py-5',
               sizeClasses[size],
               variantClasses[variant],
-              icon && iconPosition === 'left' && 'pl-10',
-              icon && iconPosition === 'right' && 'pr-10',
-              loading && 'pr-10',
+              icon && iconPosition === 'left' && 'pl-12 pr-5',
+              icon && iconPosition === 'right' && 'pl-5 pr-12',
+              loading && 'pr-12',
               error && 'border-destructive dark:border-destructive',
               disabled && 'opacity-50 cursor-not-allowed',
               loading && 'opacity-70 cursor-wait',
@@ -153,7 +153,7 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
                 key={option.value}
                 value={option.value}
                 disabled={option.disabled}
-                className='cursor-pointer'
+                className='cursor-pointer px-4 py-3'
               >
                 {option.label}
               </SelectItem>

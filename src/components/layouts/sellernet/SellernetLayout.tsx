@@ -7,7 +7,7 @@ import NotificationPanel from '@/components/molecules/notificationPanel'
 import VerticalNav, {
   type VerticalNavItem,
 } from '@/components/molecules/verticalNav/VerticalNav'
-import MainLayout from '@/components/layouts/homePageLayout'
+import ThemeSwitch from '@/components/molecules/themeSwitch'
 import { SELLERNET_NAV, SellernetNavItem } from './index.helper'
 import { NAV_ITEMS } from '@/components/layouts/sellerLayout/index.helper'
 import MobileNavItem from '@/components/atoms/nav/MobileNavItem'
@@ -70,12 +70,12 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
   }, [isActive, t, router.pathname])
 
   return (
-    <MainLayout>
+    <div>
       <div className='relative min-h-[100dvh] md:min-h-screen bg-background'>
         <div className='w-full'>
-          <div className='grid grid-cols-1 md:grid-cols-[auto_1fr] md:gap-0 pt-0 pb-4 md:pb-6'>
+          <div className='md:pb-6 pb-4 md:gap-0'>
             <aside className='hidden md:block'>
-              <div className='sticky top-0 h-screen border-r bg-card overflow-y-auto overflow-x-hidden flex flex-col z-40 w-fit min-w-[180px] p-3 pr-5'>
+              <div className='fixed left-0 top-0 z-30 h-screen w-[220px] rounded-none border-r bg-card p-3 shadow-sm overflow-y-auto overflow-x-hidden pr-2 flex flex-col'>
                 <div className='px-2 py-2 mb-1.5'>
                   <Logo size='small' />
                 </div>
@@ -87,7 +87,7 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
               </div>
             </aside>
 
-            <section className='min-h-[60vh] pb-[calc(env(safe-area-inset-bottom)+64px)] md:pb-0 pt-[calc(env(safe-area-inset-top)+56px)] md:pt-0 flex flex-col'>
+            <section className='min-h-[60vh] pb-[calc(env(safe-area-inset-bottom)+64px)] md:pb-0 pt-[calc(env(safe-area-inset-top)+56px)] md:pt-0 md:pl-[220px] flex flex-col'>
               <div className='fixed inset-x-0 top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 border-b shadow-sm md:shadow md:sticky md:inset-x-auto md:top-0'>
                 <div className='px-4 sm:px-6 pt-[max(env(safe-area-inset-top),0px)] md:px-6 md:pt-0'>
                   <div className='flex h-14 items-center justify-between gap-2 md:gap-3 md:h-auto md:py-4'>
@@ -97,6 +97,7 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
                       </div>
                     </div>
                     <div className='flex items-center justify-end gap-2 sm:gap-3'>
+                      <ThemeSwitch />
                       <NotificationPanel />
                     </div>
                   </div>
@@ -186,7 +187,7 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
           </div>
         </div>
       )}
-    </MainLayout>
+    </div>
   )
 }
 

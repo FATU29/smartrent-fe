@@ -1,8 +1,8 @@
 import { UserApi } from '@/api/types/user.type'
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
 import { AuthTokens } from '@/configs/axios/types'
 import { cookieManager } from '@/utils/cookies'
+import { clearLegacyAuthStorage } from '@/utils/authLocalStorage'
 
 interface User extends UserApi {}
 
@@ -29,82 +29,68 @@ interface AuthState {
   clearTokens: () => void
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      // Initial state
+export const useAuthStore = create<AuthState>()((set, get) => ({
+  // Initial state
+  user: null,
+  isAuthenticated: false,
+  isLoading: false,
+  error: null,
+  _hasHydrated: true,
+
+  // Actions
+  setUser: (user) => set({ user, isAuthenticated: !!user }),
+
+  setLoading: (isLoading) => set({ isLoading }),
+
+  setError: (error) => set({ error }),
+
+  login: (user, tokens) => {
+    // Cleanup legacy auth values from localStorage before storing new session
+    clearLegacyAuthStorage()
+    // Store tokens using cookie utility
+    cookieManager.setAuthTokens(tokens)
+
+    set({
+      user,
+      isAuthenticated: true,
+      isLoading: false,
+      error: null,
+    })
+  },
+
+  logout: () => {
+    // Clear tokens using cookie utility
+    cookieManager.clearAuthTokens()
+    // Ensure no legacy auth tokens remain in localStorage
+    clearLegacyAuthStorage()
+
+    set({
       user: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
-      _hasHydrated: false,
+    })
+  },
 
-      // Actions
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
+  updateUser: (userData) => {
+    const currentUser = get().user
+    if (currentUser) {
+      set({ user: { ...currentUser, ...userData } })
+    }
+  },
 
-      setLoading: (isLoading) => set({ isLoading }),
+  clearError: () => set({ error: null }),
 
-      setError: (error) => set({ error }),
+  getStoredTokens: () => {
+    return cookieManager.getAuthTokens()
+  },
 
-      login: (user, tokens) => {
-        // Store tokens using cookie utility
-        cookieManager.setAuthTokens(tokens)
+  refreshTokens: (tokens) => {
+    cookieManager.setAuthTokens(tokens)
+  },
 
-        set({
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-        })
-      },
-
-      logout: () => {
-        // Clear tokens using cookie utility
-        cookieManager.clearAuthTokens()
-
-        set({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: null,
-        })
-      },
-
-      updateUser: (userData) => {
-        const currentUser = get().user
-        if (currentUser) {
-          set({ user: { ...currentUser, ...userData } })
-        }
-      },
-
-      clearError: () => set({ error: null }),
-
-      getStoredTokens: () => {
-        return cookieManager.getAuthTokens()
-      },
-
-      refreshTokens: (tokens) => {
-        cookieManager.setAuthTokens(tokens)
-      },
-
-      clearTokens: () => {
-        cookieManager.clearAuthTokens()
-      },
-    }),
-    {
-      name: 'auth-storage',
-      storage: createJSONStorage(() => localStorage),
-      // Only persist user data, not tokens (tokens are in cookies)
-      partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-      }),
-      onRehydrateStorage: () => {
-        return () => {
-          // Mark hydration complete after zustand reads from localStorage
-          useAuthStore.setState({ _hasHydrated: true })
-        }
-      },
-    },
-  ),
-)
+  clearTokens: () => {
+    cookieManager.clearAuthTokens()
+    clearLegacyAuthStorage()
+  },
+}))

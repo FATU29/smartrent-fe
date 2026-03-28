@@ -4,9 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useListContext } from '@/contexts/list'
 import PropertyCard from '@/components/molecules/propertyCard'
 import { PropertyCardSkeleton } from '@/components/molecules/propertyCard/PropertyCardSkeleton'
-import ListPagination from '@/contexts/list/index.pagination'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
-import { useIsMobile } from '@/hooks/useIsMobile'
 import { Typography } from '@/components/atoms/typography'
 import { ListingDetail } from '@/api/types'
 
@@ -22,16 +20,15 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
   const t = useTranslations('propertiesPage')
   const { items, isLoading, pagination, loadMore } =
     useListContext<ListingDetail>()
-  const isMobile = useIsMobile()
 
   const { currentPage, totalPages } = pagination
   const hasNext = currentPage < totalPages
 
   const handleLoadMoreCallback = useCallback(() => {
-    if (isMobile && hasNext && !isLoading) {
+    if (hasNext && !isLoading) {
       loadMore()
     }
-  }, [isMobile, hasNext, isLoading, loadMore])
+  }, [hasNext, isLoading, loadMore])
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: handleLoadMoreCallback,
@@ -137,8 +134,8 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
           />
         )}
 
-        {/* Infinite Scroll Trigger - Mobile Only */}
-        {isMobile && hasNext && (
+        {/* Infinite Scroll Trigger */}
+        {hasNext && (
           <div
             ref={loadMoreRef as React.RefObject<HTMLDivElement>}
             className='flex justify-center py-4'
@@ -151,13 +148,6 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
           </div>
         )}
       </div>
-
-      {/* Pagination - Desktop Only */}
-      {!isMobile && items.length > 0 && (
-        <div className='mt-8'>
-          <ListPagination />
-        </div>
-      )}
     </div>
   )
 }

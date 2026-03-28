@@ -19,7 +19,6 @@ interface NavigationButtonsProps {
 export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   currentStep,
   totalSteps,
-  canProceed,
   onBack,
   onNext,
   onSubmit,
@@ -82,8 +81,8 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
         {!isLastStep ? (
           <Button
             onClick={onNext}
-            disabled={!canProceed || isUpdatingDraft}
-            className='w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
+            disabled={isUpdatingDraft}
+            className='w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90'
           >
             {t('next')}
             <ArrowRight className='w-4 h-4 ml-2' />
@@ -91,8 +90,8 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
         ) : (
           <Button
             onClick={handleSubmit}
-            disabled={!canProceed || isUpdatingDraft}
-            className='w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
+            disabled={isUpdatingDraft}
+            className='w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90'
           >
             <CreditCard className='w-4 h-4 mr-2' />
             {getSubmitButtonText()}

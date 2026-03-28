@@ -1,4 +1,4 @@
-import { SELLER_ROUTES } from '@/constants'
+import { SELLER_ROUTES, SELLERNET_ROUTES } from '@/constants'
 import {
   BadgePercent,
   FileText,
@@ -90,7 +90,7 @@ export const NAV_ITEMS: SellerNavItem[] = [
   },
   {
     key: 'account',
-    href: SELLER_ROUTES.ACCOUNT,
+    href: SELLERNET_ROUTES.PERSONAL_EDIT,
     icon: User,
     showOnDesktop: true,
     showOnMobile: true,

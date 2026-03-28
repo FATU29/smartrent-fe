@@ -456,7 +456,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             <Controller
               name='categoryId'
               control={control}
-              render={({ fieldState: { error } }) => (
+              render={({ field, fieldState: { error } }) => (
                 <div className='space-y-2'>
                   <SelectDropdown
                     label={
@@ -465,11 +465,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         <span className='text-destructive ml-1'>*</span>
                       </>
                     }
-                    value={categoryId?.toString()}
+                    value={(field.value ?? categoryId)?.toString()}
                     onValueChange={(value) => {
+                      field.onChange(Number(value))
                       updatePropertyInfo({
                         categoryId: Number(value),
                       })
+                      trigger('categoryId')
                     }}
                     placeholder={tPlaceholders('selectCategoryType')}
                     options={getCategoryOptions(tCommon, categories)}
@@ -486,7 +488,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             <Controller
               name='productType'
               control={control}
-              render={({ fieldState: { error } }) => (
+              render={({ field, fieldState: { error } }) => (
                 <div className='space-y-2'>
                   <SelectDropdown
                     label={
@@ -495,12 +497,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         <span className='text-destructive ml-1'>*</span>
                       </>
                     }
-                    value={productType?.toLowerCase()}
+                    value={(field.value ?? productType)?.toLowerCase()}
                     onValueChange={(value) => {
                       const upperValue = value.toUpperCase() as PropertyType
+                      field.onChange(upperValue)
                       updatePropertyInfo({
                         productType: upperValue,
                       })
+                      trigger('productType')
                     }}
                     placeholder={tPlaceholders('selectPropertyType')}
                     options={getPropertyTypeOptions(tDetails)}
@@ -684,13 +688,15 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
               <Controller
                 name='priceUnit'
                 control={control}
-                render={({ fieldState: { error } }) => (
+                render={({ field, fieldState: { error } }) => (
                   <div className='space-y-2'>
                     <SelectDropdown
                       label={tDetails('priceUnit')}
-                      value={propertyInfo?.priceUnit}
+                      value={field.value || propertyInfo?.priceUnit}
                       onValueChange={(v) => {
+                        field.onChange(v)
                         updatePropertyInfo({ priceUnit: v as PriceUnit })
+                        trigger('priceUnit')
                       }}
                       placeholder={tPlaceholders('selectPriceUnit')}
                       options={getPriceUnitOptions(tCommon)}
@@ -709,7 +715,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             <Controller
               name='furnishing'
               control={control}
-              render={({ fieldState: { error } }) => (
+              render={({ field, fieldState: { error } }) => (
                 <div className='space-y-2'>
                   <SelectDropdown
                     label={
@@ -718,11 +724,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         <span className='text-destructive ml-1'>*</span>
                       </>
                     }
-                    value={furnishing}
+                    value={field.value || furnishing}
                     onValueChange={(value) => {
+                      field.onChange(value)
                       updatePropertyInfo({
                         furnishing: value as FURNISHING,
                       })
+                      trigger('furnishing')
                     }}
                     placeholder={tPlaceholders('selectInteriorCondition')}
                     options={getInteriorConditionOptions(t)}
@@ -833,14 +841,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     return (
                       <label
                         key={amenity.key}
-                        className='flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
+                        className='flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 focus-within:border-primary focus-within:bg-primary/5 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus-within:border-primary'
                       >
                         {IconComponent && (
                           <IconComponent className='w-4 h-4 flex-shrink-0' />
                         )}
                         <input
                           type='checkbox'
-                          className='w-4 h-4 rounded border-2 border-gray-300 text-primary focus:ring-primary focus:ring-2 flex-shrink-0'
+                          className='w-4 h-4 rounded border-2 border-gray-300 text-primary focus:ring-0 focus:outline-none focus-visible:outline-none flex-shrink-0'
                           checked={amenityIds?.includes(amenity.id)}
                           onChange={(e) => {
                             if (e.target.checked) {
@@ -1025,7 +1033,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
               <Controller
                 name='direction'
                 control={control}
-                render={({ fieldState: { error } }) => (
+                render={({ field, fieldState: { error } }) => (
                   <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                     <SelectDropdown
                       label={
@@ -1034,11 +1042,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                           <span className='text-destructive ml-1'>*</span>
                         </>
                       }
-                      value={propertyInfo?.direction}
+                      value={field.value || propertyInfo?.direction}
                       onValueChange={(value) => {
+                        field.onChange(value)
                         updatePropertyInfo({
                           direction: value as Direction,
                         })
+                        trigger('direction')
                       }}
                       placeholder={tPlaceholders('selectHouseDirection')}
                       options={getDirectionOptions(tUtilities)}
@@ -1114,7 +1124,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     }}
                     onBlur={() => setTitleTouched(true)}
                     aria-invalid={!!error}
-                    className='h-12'
+                    className='h-12 px-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
                   />
                   {error && (
                     <p className='text-xs text-destructive' role='alert'>
@@ -1164,7 +1174,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     }}
                     onBlur={() => setDescriptionTouched(true)}
                     aria-invalid={!!error}
-                    className='min-h-[128px] resize-none'
+                    className='min-h-[128px] resize-none px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
                   />
                   {error && (
                     <p className='text-xs text-destructive' role='alert'>

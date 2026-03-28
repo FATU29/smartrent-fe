@@ -4,6 +4,7 @@ import { NavigationItemData } from '@/components/atoms/navigation-item'
 import { Button } from '@/components/atoms/button'
 import { ChevronDown } from 'lucide-react'
 import Link from 'next/link'
+import { NAVIGATION_TEXT_CLASSNAME } from '@/components/organisms/navigation/navigationTypography'
 
 interface DesktopNavigationProps {
   items: NavigationItemData[]
@@ -82,29 +83,31 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
                   <Link
                     href={child.href}
                     className={cn(
-                      'w-full text-left px-3 py-2 text-sm rounded-sm transition-colors block',
+                      'w-full text-left px-3 py-2 rounded-sm transition-colors block',
                       'hover:bg-accent hover:text-accent-foreground',
                       'focus:outline-none focus:bg-accent focus:text-accent-foreground',
+                      NAVIGATION_TEXT_CLASSNAME,
                       child.isActive && 'bg-accent text-accent-foreground',
                     )}
                     onClick={() => handleItemClick(child)}
                   >
                     <div className='flex items-center justify-between'>
-                      <span>{child.label}</span>
+                      <span className='truncate'>{child.label}</span>
                     </div>
                   </Link>
                 ) : (
                   <button
                     className={cn(
-                      'w-full text-left px-3 py-2 text-sm rounded-sm transition-colors',
+                      'w-full text-left px-3 py-2 rounded-sm transition-colors',
                       'hover:bg-accent hover:text-accent-foreground',
                       'focus:outline-none focus:bg-accent focus:text-accent-foreground',
+                      NAVIGATION_TEXT_CLASSNAME,
                       child.isActive && 'bg-accent text-accent-foreground',
                     )}
                     onClick={() => handleItemClick(child)}
                   >
                     <div className='flex items-center justify-between'>
-                      <span>{child.label}</span>
+                      <span className='truncate'>{child.label}</span>
                     </div>
                   </button>
                 )}
@@ -131,11 +134,12 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
             <Link
               href={item.href}
               className={cn(
-                'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors',
+                'inline-flex items-center justify-center gap-2 rounded-md transition-colors',
                 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
                 'disabled:pointer-events-none disabled:opacity-50',
                 'hover:bg-accent hover:text-accent-foreground',
                 'h-9 px-3 py-2',
+                NAVIGATION_TEXT_CLASSNAME,
                 item.isActive && 'bg-accent text-accent-foreground',
               )}
               onClick={() => handleItemClick(item)}
@@ -146,8 +150,9 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
             <Button
               variant='ghost'
               className={cn(
-                'relative px-3 py-2 h-auto font-normal',
+                'relative px-3 py-2 h-auto',
                 'hover:bg-accent hover:text-accent-foreground',
+                NAVIGATION_TEXT_CLASSNAME,
                 item.isActive && 'bg-accent text-accent-foreground',
               )}
               onClick={() => handleItemClick(item)}

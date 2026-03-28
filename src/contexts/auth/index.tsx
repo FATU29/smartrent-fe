@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/auth/index.store'
 import { AuthTokens } from '@/configs/axios/types'
 import { useValidToken } from '@/hooks/useAuth'
 import { decodeToken } from '@/utils/decode-jwt'
+import { clearLegacyAuthStorage } from '@/utils/authLocalStorage'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 
@@ -80,6 +81,9 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     if (!_hasHydrated) return
 
     const initializeAuth = async () => {
+      // Cleanup legacy localStorage auth keys from previous implementations
+      clearLegacyAuthStorage()
+
       // Read latest state from the store (avoid stale closure)
       const currentState = useAuthStore.getState()
       const tokens = currentState.getStoredTokens()

@@ -221,6 +221,24 @@ export function getFiltersFromQuery(
   const userIdParam = parseStringParam(query, 'userId')
   filters.userId = userIdParam
 
+  // Status filters (owner dashboard)
+  const statusParam = parseStringParam(query, 'status')
+  if (statusParam) {
+    filters.status = statusParam as ListingFilterRequest['status']
+  }
+
+  const listingStatusParam = parseStringParam(query, 'listingStatus')
+  if (listingStatusParam) {
+    filters.listingStatus =
+      listingStatusParam as ListingFilterRequest['listingStatus']
+  }
+
+  const moderationStatusParam = parseStringParam(query, 'moderationStatus')
+  if (moderationStatusParam) {
+    filters.moderationStatus =
+      moderationStatusParam as ListingFilterRequest['moderationStatus']
+  }
+
   const userLongitudeParam = parseStringParam(query, 'userLongitude')
   if (userLongitudeParam) {
     filters.userLongitude = Number(userLongitudeParam)
