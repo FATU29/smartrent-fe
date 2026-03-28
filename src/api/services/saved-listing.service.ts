@@ -154,12 +154,71 @@ export class SavedListingService {
   }
 
   /**
+   * Get paginated saves analytics for owner listings
+   * @param page zero-based page
+   * @param size page size
+   */
+  static async getOwnerSavesAnalyticsPage(
+    page = 0,
+    size = 10,
+  ): Promise<
+    import('@/configs/axios/types').ApiResponse<
+      import('../types').OwnerSavedListingsAnalyticsPageResponse
+    >
+  > {
+    try {
+      return await apiRequest({
+        method: 'GET',
+        url: PATHS.OWNER_SAVED_LISTINGS_ANALYTICS.SUMMARY,
+        params: { page, size },
+      })
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching owner saves analytics page:', error)
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Search saves analytics by listing title (paginated)
+   * @param payload { keyword, page, size }
+   */
+  static async searchOwnerSavesAnalytics(
+    payload: import('../types').SavesAnalyticsSearchRequest,
+  ): Promise<
+    import('@/configs/axios/types').ApiResponse<
+      import('../types').OwnerSavedListingsAnalyticsPageResponse
+    >
+  > {
+    try {
+      const body = {
+        keyword: payload.keyword ?? null,
+        page: payload.page ?? 0,
+        size: payload.size ?? 10,
+      }
+      return await apiRequest({
+        method: 'POST',
+        url: PATHS.OWNER_SAVED_LISTINGS_ANALYTICS.SEARCH,
+        data: body,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error searching owner saves analytics:', error)
+      }
+      throw error
+    }
+  }
+
+  /**
    * Get save trend for a specific owner listing
    * @param listingId - ID of the listing
    * @returns Save trend detail for the selected listing
    */
   static async getOwnerListingSavesTrend(
     listingId: number,
+    period: '7d' | '30d' | '90d' | '180d' | '365d' | 'all' = '30d',
   ): Promise<ApiResponse<OwnerListingSavesTrendResponse>> {
     try {
       const url = PATHS.OWNER_SAVED_LISTINGS_ANALYTICS.TREND.replace(
@@ -170,6 +229,7 @@ export class SavedListingService {
       return await apiRequest<OwnerListingSavesTrendResponse>({
         method: 'GET',
         url,
+        params: { period },
       })
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {

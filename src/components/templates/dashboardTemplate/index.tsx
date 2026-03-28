@@ -13,6 +13,9 @@ import {
   useOwnerListingSavesTrend,
   useOwnerSavedListingsAnalyticsSummary,
 } from '@/hooks/useSavedListings'
+import { useOwnerSavedListingsAnalyticsPage } from '@/hooks/useSavedListings/useOwnerSavedListingsAnalytics'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useOwnerListingsAnalyticsPage } from '@/hooks/usePhoneClickDetails/useOwnerListingAnalytics'
 
 const DashboardTemplate: React.FC = () => {
   const t = useTranslations('seller.dashboard')
@@ -21,6 +24,22 @@ const DashboardTemplate: React.FC = () => {
   const [selectedListingId, setSelectedListingId] = React.useState<
     number | null
   >(null)
+  const [clicksPeriod, setClicksPeriod] = React.useState<
+    '7d' | '30d' | '90d' | '180d' | '365d' | 'all'
+  >('30d')
+  const [clicksPage, setClicksPage] = React.useState(0)
+  const [clicksSize, setClicksSize] = React.useState(10)
+  const [clicksKeyword, setClicksKeyword] = React.useState('')
+  const debouncedClicksKeyword = useDebounce(clicksKeyword, 300)
+  const { data: clicksListingsPage, isLoading: isClicksPageLoading } =
+    useOwnerListingsAnalyticsPage({
+      page: clicksPage,
+      size: clicksSize,
+      keyword: debouncedClicksKeyword,
+    })
+  const pagedClickListings = Array.from(
+    clicksListingsPage?.listings || listings,
+  )
 
   React.useEffect(() => {
     if (listings.length === 0) {
@@ -45,14 +64,28 @@ const DashboardTemplate: React.FC = () => {
   }, [listings, selectedListingId])
 
   const { data: selectedListingAnalytics, isLoading: isDetailLoading } =
-    useOwnerListingAnalytics(selectedListingId)
+    useOwnerListingAnalytics(selectedListingId, clicksPeriod)
 
   const { data: savedListingsSummary, isLoading: isSavedSummaryLoading } =
     useOwnerSavedListingsAnalyticsSummary()
-  const savedListings = savedListingsSummary?.listings || []
+  // paging + search state for saved listings
+  const [savesPage, setSavesPage] = React.useState(0)
+  const [savesSize, setSavesSize] = React.useState(10)
+  const [savesKeyword, setSavesKeyword] = React.useState('')
+  const debouncedSavesKeyword = useDebounce(savesKeyword, 300)
+  const { data: savedListingsPage, isLoading: isSavedPageLoading } =
+    useOwnerSavedListingsAnalyticsPage({
+      page: savesPage,
+      size: savesSize,
+      keyword: debouncedSavesKeyword,
+    })
+  const savedListings = savedListingsPage?.listings || []
   const [selectedSavedListingId, setSelectedSavedListingId] = React.useState<
     number | null
   >(null)
+  const [savesPeriod, setSavesPeriod] = React.useState<
+    '7d' | '30d' | '90d' | '180d' | '365d' | 'all'
+  >('30d')
 
   React.useEffect(() => {
     if (savedListings.length === 0) {
@@ -68,7 +101,8 @@ const DashboardTemplate: React.FC = () => {
     }
 
     const stillExists = savedListings.some(
-      (listing) => listing.listingId === selectedSavedListingId,
+      (listing: { listingId: number }) =>
+        listing.listingId === selectedSavedListingId,
     )
 
     if (!stillExists) {
@@ -77,7 +111,7 @@ const DashboardTemplate: React.FC = () => {
   }, [savedListings, selectedSavedListingId])
 
   const { data: selectedSavedListingTrend, isLoading: isSavedTrendLoading } =
-    useOwnerListingSavesTrend(selectedSavedListingId)
+    useOwnerListingSavesTrend(selectedSavedListingId, savesPeriod)
 
   return (
     <div className='space-y-6'>
@@ -121,12 +155,28 @@ const DashboardTemplate: React.FC = () => {
 
         {/* Chart */}
         <DashboardPhoneClickChart
-          listings={listings}
+          listings={pagedClickListings}
           selectedListingId={selectedListingId}
           analytics={selectedListingAnalytics}
-          isSummaryLoading={isSummaryLoading}
+          isSummaryLoading={isSummaryLoading || isClicksPageLoading}
           isDetailLoading={isDetailLoading}
           onSelectListing={setSelectedListingId}
+          currentPage={clicksListingsPage?.currentPage}
+          totalPages={clicksListingsPage?.totalPages}
+          totalElements={clicksListingsPage?.totalElements}
+          pageSize={clicksListingsPage?.pageSize}
+          onPageChange={(p) => setClicksPage(Math.max(0, p))}
+          onPageSizeChange={(s) => {
+            setClicksSize(s)
+            setClicksPage(0)
+          }}
+          searchKeyword={clicksKeyword}
+          onSearchKeywordChange={(kw) => {
+            setClicksKeyword(kw)
+            setClicksPage(0)
+          }}
+          period={clicksPeriod}
+          onPeriodChange={setClicksPeriod}
         />
       </div>
 
@@ -146,12 +196,32 @@ const DashboardTemplate: React.FC = () => {
 
         <DashboardSavedListingsChart
           listings={savedListings}
-          totalSavesAcrossAll={savedListingsSummary?.totalSavesAcrossAll || 0}
+          totalSavesAcrossAll={
+            savedListingsPage?.totalSavesAcrossAll ||
+            savedListingsSummary?.totalSavesAcrossAll ||
+            0
+          }
           selectedListingId={selectedSavedListingId}
           trend={selectedSavedListingTrend}
-          isSummaryLoading={isSavedSummaryLoading}
+          isSummaryLoading={isSavedSummaryLoading || isSavedPageLoading}
           isDetailLoading={isSavedTrendLoading}
           onSelectListing={setSelectedSavedListingId}
+          currentPage={savedListingsPage?.currentPage}
+          totalPages={savedListingsPage?.totalPages}
+          totalElements={savedListingsPage?.totalElements}
+          pageSize={savedListingsPage?.pageSize}
+          onPageChange={(p) => setSavesPage(Math.max(0, p))}
+          onPageSizeChange={(s) => {
+            setSavesSize(s)
+            setSavesPage(0)
+          }}
+          searchKeyword={savesKeyword}
+          onSearchKeywordChange={(kw) => {
+            setSavesKeyword(kw)
+            setSavesPage(0)
+          }}
+          period={savesPeriod}
+          onPeriodChange={setSavesPeriod}
         />
       </div>
     </div>

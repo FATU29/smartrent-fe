@@ -44,17 +44,23 @@ export const useOwnerListingsAnalyticsSummary = () => {
   })
 }
 
-export const useOwnerListingAnalytics = (listingId?: number | null) => {
+export const useOwnerListingAnalytics = (
+  listingId?: number | null,
+  period: '7d' | '30d' | '90d' | '180d' | '365d' | 'all' = '30d',
+) => {
   return useQuery({
     queryKey: [
       ...phoneClickDetailKeys.all,
       'owner-listing-analytics',
       listingId,
+      period,
     ],
     queryFn: async (): Promise<OwnerListingAnalytics> => {
       const targetListingId = listingId as number
-      const response =
-        await PhoneClickDetailService.getOwnerListingAnalytics(targetListingId)
+      const response = await PhoneClickDetailService.getOwnerListingAnalytics(
+        targetListingId,
+        period,
+      )
 
       if (!response.data || response.code !== '999999') {
         throw new Error(mapAnalyticsError(response.message))
@@ -65,6 +71,48 @@ export const useOwnerListingAnalytics = (listingId?: number | null) => {
     enabled: !!listingId,
     retry: false,
     staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
+  })
+}
+
+export const useOwnerListingsAnalyticsPage = (params: {
+  page?: number
+  size?: number
+  keyword?: string
+}) => {
+  const page = params.page ?? 0
+  const size = params.size ?? 10
+  const keyword = (params.keyword || '').trim()
+
+  return useQuery({
+    queryKey: [
+      ...phoneClickDetailKeys.all,
+      'owner-listing-analytics',
+      'page',
+      page,
+      size,
+      keyword || '',
+    ],
+    queryFn: async () => {
+      const response = keyword
+        ? await PhoneClickDetailService.searchOwnerListingsAnalytics({
+            keyword,
+            page,
+            size,
+          })
+        : await PhoneClickDetailService.getOwnerListingsAnalyticsPage(
+            page,
+            size,
+          )
+
+      if (!response.data || response.code !== '999999') {
+        throw new Error(mapAnalyticsError(response.message))
+      }
+
+      return response.data
+    },
+    retry: false,
+    staleTime: 10 * 1000,
     gcTime: 5 * 60 * 1000,
   })
 }

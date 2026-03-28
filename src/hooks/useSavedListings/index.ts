@@ -8,3 +8,4 @@ export {
   useOwnerListingSavesTrend,
   useOwnerSavedListingsAnalyticsSummary,
 } from './useOwnerSavedListingsAnalytics'
+export { useOwnerSavedListingsAnalyticsPage } from './useOwnerSavedListingsAnalytics'

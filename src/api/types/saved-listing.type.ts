@@ -59,6 +59,21 @@ export interface OwnerSavedListingsAnalyticsResponse {
   totalSavesAcrossAll: number
 }
 
+export interface OwnerSavedListingsAnalyticsPageResponse {
+  listings: ListingSaveSummary[]
+  totalSavesAcrossAll: number
+  currentPage: number
+  totalPages: number
+  totalElements: number
+  pageSize: number
+}
+
+export type SavesAnalyticsSearchRequest = {
+  keyword?: string | null
+  page?: number
+  size?: number
+}
+
 // ============= QUERY KEYS =============
 
 export const SAVED_LISTING_QUERY_KEYS = {
@@ -75,4 +90,12 @@ export const SAVED_LISTING_QUERY_KEYS = {
     [...SAVED_LISTING_QUERY_KEYS.ownerAnalytics(), 'summary'] as const,
   ownerSavesTrend: (listingId?: number | null) =>
     [...SAVED_LISTING_QUERY_KEYS.ownerAnalytics(), 'trend', listingId] as const,
+  ownerAnalyticsPage: (page: number, size: number, keyword?: string) =>
+    [
+      ...SAVED_LISTING_QUERY_KEYS.ownerAnalytics(),
+      'page',
+      page,
+      size,
+      keyword || '',
+    ] as const,
 }
