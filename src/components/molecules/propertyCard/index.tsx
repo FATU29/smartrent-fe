@@ -225,7 +225,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     return (
       <div className='flex gap-2'>
         {/* Main Image */}
-        <div className='relative flex-1 aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg'>
+        <div className='relative flex-1 aspect-[4/3] overflow-hidden'>
           {assetsVideo && currentImageIndex === 0 ? (
             isYouTube(assetsVideo) ? (
               <div className='w-full h-full'>
@@ -499,7 +499,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     <TooltipProvider delayDuration={0}>
       <Card
         className={classNames(
-          'group/card cursor-pointer overflow-hidden transition-all duration-300',
+          'group/card cursor-pointer overflow-hidden transition-all duration-300 py-0',
           'hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5',
           'border-border/60 hover:border-primary/30',
           getVipCardBorder(),
@@ -513,7 +513,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
         onClick={onClick ? handleClick : undefined}
       >
         {/* Image Gallery - Top Layout */}
-        {isTopLayout && <div className='p-2 pb-1'>{renderImageGallery()}</div>}
+        {isTopLayout && renderImageGallery()}
 
         {/* Single Image - Left Layout */}
         {renderSingleImage()}
