@@ -163,13 +163,13 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
         >
           <ResizablePanelGroup
             direction='vertical'
-            className='h-full w-full rounded-xl border-2 border-primary/20 shadow-2xl bg-background hover:border-primary/40 transition-colors'
+            className='h-full w-full rounded-2xl border-2 border-primary/20 shadow-2xl bg-background hover:border-primary/40 transition-colors overflow-hidden'
           >
             <ResizablePanel defaultSize={100} minSize={50} maxSize={100}>
-              <div className='flex h-full w-full flex-col overflow-hidden bg-background rounded-xl'>
+              <div className='flex h-full w-full flex-col overflow-hidden bg-background rounded-2xl'>
                 <AiChatHeader
                   onClose={handleClose}
-                  className='flex-shrink-0 rounded-t-xl'
+                  className='flex-shrink-0 rounded-t-2xl'
                 />
 
                 <AiChatInterface

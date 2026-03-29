@@ -102,7 +102,7 @@ const AiChatInput: FC<TAiChatInputProps> = ({
         )}
         aria-label={t('send')}
       >
-        {!isLoading && <Send className='h-6 w-6' />}
+        {!isLoading && <Send className='h-7 w-7' />}
       </AiChatButton>
     </div>
   )
