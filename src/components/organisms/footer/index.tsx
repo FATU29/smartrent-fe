@@ -2,15 +2,8 @@ import React from 'react'
 import { Typography } from '@/components/atoms/typography'
 import Logo from '@/components/atoms/logo'
 import { useTranslations } from 'next-intl'
-import {
-  Facebook,
-  Instagram,
-  Twitter,
-  Youtube,
-  Mail,
-  Phone,
-  MapPin,
-} from 'lucide-react'
+import { Mail, Phone, MapPin } from 'lucide-react'
+import Image from 'next/image'
 
 const Footer: React.FC = () => {
   const t = useTranslations()
@@ -29,28 +22,43 @@ const Footer: React.FC = () => {
               </Typography>
               <div className='flex space-x-4 mt-5 sm:mt-6'>
                 <button
-                  className='text-muted-foreground hover:text-primary transition-colors'
+                  className='hover:opacity-70 transition-opacity'
                   aria-label='Facebook'
                 >
-                  <Facebook className='h-5 w-5' />
+                  <Image
+                    src='/svg/facebook.svg'
+                    alt='Facebook'
+                    width={24}
+                    height={24}
+                  />
                 </button>
                 <button
-                  className='text-muted-foreground hover:text-primary transition-colors'
+                  className='hover:opacity-70 transition-opacity'
                   aria-label='Instagram'
                 >
-                  <Instagram className='h-5 w-5' />
+                  <Image
+                    src='/svg/instagram.svg'
+                    alt='Instagram'
+                    width={24}
+                    height={24}
+                  />
                 </button>
                 <button
-                  className='text-muted-foreground hover:text-primary transition-colors'
-                  aria-label='Twitter'
+                  className='hover:opacity-70 transition-opacity'
+                  aria-label='X'
                 >
-                  <Twitter className='h-5 w-5' />
+                  <Image src='/svg/x.svg' alt='X' width={24} height={24} />
                 </button>
                 <button
-                  className='text-muted-foreground hover:text-primary transition-colors'
-                  aria-label='Youtube'
+                  className='hover:opacity-70 transition-opacity'
+                  aria-label='Zalo'
                 >
-                  <Youtube className='h-5 w-5' />
+                  <Image
+                    src='/svg/zalo.svg'
+                    alt='Zalo'
+                    width={24}
+                    height={24}
+                  />
                 </button>
               </div>
             </div>
