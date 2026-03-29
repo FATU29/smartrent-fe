@@ -2782,6 +2782,46 @@
       }
     }
   },
+  "sellerDetailPage": {
+    "title": "Trang người bán",
+    "subtitle": "Thông tin công khai của người bán và các tin đăng liên quan",
+    "seo": {
+      "title": "Tin đăng của {name}",
+      "description": "Khám phá các tin đăng công khai từ người bán {name} trên SmartRent."
+    },
+    "profile": {
+      "title": "Thông tin người bán",
+      "sellerBadge": "Người bán",
+      "listingCount": "{count} tin đăng",
+      "defaultSellerName": "Người bán",
+      "copiedPhone": "Đã sao chép số điện thoại",
+      "copiedEmail": "Đã sao chép email"
+    },
+    "tiers": {
+      "diamond": "Kim cương",
+      "gold": "Vàng",
+      "silver": "Bạc",
+      "normal": "Thường"
+    },
+    "sections": {
+      "relatedListings": "Tin đăng liên quan ({count})",
+      "topListingLove": "Tin đăng nổi bật được yêu thích",
+      "listingsByTier": "Tin đăng theo hạng",
+      "totalListings": "Tổng: {count}",
+      "tierSummary": "Tin {tier}: {count}",
+      "pageLabel": "Trang {page}/{totalPages}"
+    },
+    "states": {
+      "emptyListingsTitle": "Người bán chưa có tin đăng nào",
+      "emptyListingsDescription": "Vui lòng quay lại sau để xem các tin đăng mới.",
+      "errorTitle": "Không thể tải trang người bán",
+      "errorDescription": "Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại."
+    },
+    "actions": {
+      "backToProperties": "Quay lại danh sách bất động sản",
+      "retry": "Thử lại"
+    }
+  },
   "newsPage": {
     "title": "Tin Tức & Blog",
     "subtitle": "Cập nhật tin tức bất động sản mới nhất, mẹo và xu hướng thị trường",
