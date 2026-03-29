@@ -46,6 +46,7 @@ export type SellernetRouteKey = keyof typeof SELLERNET_ROUTES
 export const PUBLIC_ROUTES = {
   HOME: '/',
   PROPERTIES_PREFIX: '/properties',
+  SELLER_DETAIL_PREFIX: '/properties/seller',
   APARTMENT_DETAIL_PREFIX: '/listing-detail', // dynamic [...slug]
   PAYMENT_STATUS: '/payment/status',
   LISTING_LISTING: '/properties',
@@ -63,4 +64,8 @@ export const buildApartmentDetailRoute = (slugParts: string | string[]) => {
   return `${PUBLIC_ROUTES.APARTMENT_DETAIL_PREFIX}/${parts
     .map(encodeURIComponent)
     .join('/')}`
+}
+
+export const buildSellerDetailRoute = (userId: string) => {
+  return `${PUBLIC_ROUTES.SELLER_DETAIL_PREFIX}/${encodeURIComponent(userId)}`
 }

@@ -8,7 +8,7 @@
 import { apiRequest } from '@/configs/axios/instance'
 import type { ApiResponse } from '@/configs/axios/types'
 import { PATHS } from '@/api/paths'
-import { AxiosInstance } from 'axios'
+import { AxiosInstance, isAxiosError } from 'axios'
 import {
   CreateListingRequest,
   CreateVipListingRequest,
@@ -21,6 +21,7 @@ import {
   ListingSearchApiRequest,
   ListingSearchBackendResponse,
   ListingFilterRequest,
+  VipType,
   MyListingsBackendResponse,
   ProvinceStatsItem,
   ProvinceStatsRequest,
@@ -29,11 +30,53 @@ import {
   QuotaCheckResponse,
   MapBoundsRequest,
   MapBoundsResponse,
+  SortKey,
 } from '../types'
 
 // ============= LISTING SERVICE CLASS =============
 
 export class ListingService {
+  private static isMissingSellerTierEndpoint(error: unknown): boolean {
+    if (isAxiosError(error)) {
+      const status = error.response?.status
+      const responseMessage = String(error.response?.data?.message || '')
+      return status === 404 || /No static resource/i.test(responseMessage)
+    }
+
+    return /No static resource/i.test(String(error))
+  }
+
+  private static async searchSellerListingsByVipType(
+    userId: string,
+    vipType: VipType,
+    page = 1,
+    size = 12,
+    sortBy: SortKey = SortKey.NEWEST,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    return this.search(
+      {
+        userId,
+        vipType,
+        page,
+        size,
+        sortBy,
+      },
+      instance,
+    )
+  }
+
+  private static buildSellerTierPath(userId: string, vipType: VipType): string {
+    const vipPathMap: Record<VipType, string> = {
+      DIAMOND: PATHS.LISTING.SELLER_DIAMOND,
+      GOLD: PATHS.LISTING.SELLER_GOLD,
+      SILVER: PATHS.LISTING.SELLER_SILVER,
+      NORMAL: PATHS.LISTING.SELLER_NORMAL,
+    }
+
+    return vipPathMap[vipType].replace(':userId', userId)
+  }
+
   static async getById(
     id: string | number,
   ): Promise<ApiResponse<ListingDetail | null>> {
@@ -261,6 +304,186 @@ export class ListingService {
       },
       instance,
     )
+  }
+
+  /**
+   * Get seller listings by a specific VIP tier (public)
+   * GET /v1/listings/sellers/:userId/{diamond|gold|silver|normal}
+   */
+  static async getSellerListingsByVipType(
+    userId: string,
+    vipType: VipType,
+    page = 1,
+    size = 12,
+    sortBy: SortKey = SortKey.NEWEST,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    const url = this.buildSellerTierPath(userId, vipType)
+
+    try {
+      const response = await apiRequest<ListingSearchBackendResponse>(
+        {
+          method: 'GET',
+          url,
+          params: { page, size, sortBy },
+          skipAuth: true,
+        },
+        instance,
+      )
+
+      if (
+        response.success ||
+        !/No static resource/i.test(String(response.message || ''))
+      ) {
+        return response
+      }
+
+      return this.searchSellerListingsByVipType(
+        userId,
+        vipType,
+        page,
+        size,
+        sortBy,
+        instance,
+      )
+    } catch (error) {
+      if (this.isMissingSellerTierEndpoint(error)) {
+        return this.searchSellerListingsByVipType(
+          userId,
+          vipType,
+          page,
+          size,
+          sortBy,
+          instance,
+        )
+      }
+
+      throw error
+    }
+  }
+
+  static async getSellerDiamondListings(
+    userId: string,
+    page = 1,
+    size = 12,
+    sortBy: SortKey = SortKey.NEWEST,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    return this.getSellerListingsByVipType(
+      userId,
+      'DIAMOND',
+      page,
+      size,
+      sortBy,
+      instance,
+    )
+  }
+
+  static async getSellerGoldListings(
+    userId: string,
+    page = 1,
+    size = 12,
+    sortBy: SortKey = SortKey.NEWEST,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    return this.getSellerListingsByVipType(
+      userId,
+      'GOLD',
+      page,
+      size,
+      sortBy,
+      instance,
+    )
+  }
+
+  static async getSellerSilverListings(
+    userId: string,
+    page = 1,
+    size = 12,
+    sortBy: SortKey = SortKey.NEWEST,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    return this.getSellerListingsByVipType(
+      userId,
+      'SILVER',
+      page,
+      size,
+      sortBy,
+      instance,
+    )
+  }
+
+  static async getSellerNormalListings(
+    userId: string,
+    page = 1,
+    size = 12,
+    sortBy: SortKey = SortKey.NEWEST,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    return this.getSellerListingsByVipType(
+      userId,
+      'NORMAL',
+      page,
+      size,
+      sortBy,
+      instance,
+    )
+  }
+
+  /**
+   * Get top saved listings for a seller (public)
+   * GET /v1/listings/sellers/:userId/top-saved
+   */
+  static async getSellerTopSavedListings(
+    userId: string,
+    limit = 5,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    const url = PATHS.LISTING.SELLER_TOP_SAVED.replace(':userId', userId)
+    const safeLimit = Math.min(Math.max(limit, 1), 20)
+
+    try {
+      const response = await apiRequest<ListingSearchBackendResponse>(
+        {
+          method: 'GET',
+          url,
+          params: { limit: safeLimit },
+          skipAuth: true,
+        },
+        instance,
+      )
+
+      if (
+        response.success ||
+        !/No static resource/i.test(String(response.message || ''))
+      ) {
+        return response
+      }
+
+      return this.search(
+        {
+          userId,
+          page: 1,
+          size: safeLimit,
+          sortBy: SortKey.NEWEST,
+        },
+        instance,
+      )
+    } catch (error) {
+      if (this.isMissingSellerTierEndpoint(error)) {
+        return this.search(
+          {
+            userId,
+            page: 1,
+            size: safeLimit,
+            sortBy: SortKey.NEWEST,
+          },
+          instance,
+        )
+      }
+
+      throw error
+    }
   }
 
   /**
@@ -501,6 +724,12 @@ export const {
   getProvinceStats,
   getCategoryStats,
   search,
+  getSellerListingsByVipType,
+  getSellerDiamondListings,
+  getSellerGoldListings,
+  getSellerSilverListings,
+  getSellerNormalListings,
+  getSellerTopSavedListings,
   getMyListings,
   getMyDrafts,
   getDraft,

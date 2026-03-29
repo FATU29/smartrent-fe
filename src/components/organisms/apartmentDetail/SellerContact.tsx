@@ -7,7 +7,7 @@ import { Avatar } from '@/components/atoms/avatar'
 import { Phone } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { PUBLIC_ROUTES } from '@/constants/route'
+import { PUBLIC_ROUTES, buildSellerDetailRoute } from '@/constants/route'
 import { UserApi } from '@/api/types'
 
 interface SellerContactProps {
@@ -39,9 +39,9 @@ const SellerContact: React.FC<SellerContactProps> = ({
   const name = `${firstName} ${lastName}`.trim() || 'Người bán'
   const phone = `${phoneCode} ${phoneNumber}`.trim()
   const zaloLink = phone ? `https://zalo.me/${phoneCode}${phoneNumber}` : ''
-  const sellerListingsUrl = `${PUBLIC_ROUTES.PROPERTIES_PREFIX}?userId=${encodeURIComponent(
-    host.userId || '',
-  )}`
+  const sellerListingsUrl = host.userId
+    ? buildSellerDetailRoute(host.userId)
+    : PUBLIC_ROUTES.PROPERTIES_PREFIX
 
   const getInitials = (name: string) => {
     return name

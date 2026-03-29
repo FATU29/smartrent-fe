@@ -46,6 +46,11 @@ export const PATHS = {
   LISTING: {
     LIST: '/v1/listings',
     SEARCH: '/v1/listings/search',
+    SELLER_DIAMOND: '/v1/listings/sellers/:userId/diamond',
+    SELLER_GOLD: '/v1/listings/sellers/:userId/gold',
+    SELLER_SILVER: '/v1/listings/sellers/:userId/silver',
+    SELLER_NORMAL: '/v1/listings/sellers/:userId/normal',
+    SELLER_TOP_SAVED: '/v1/listings/sellers/:userId/top-saved',
     MAP_BOUNDS: '/v1/listings/map-bounds',
     MY_LISTINGS: '/v1/listings/my-listings',
     MY_DRAFTS: '/v1/listings/my-drafts',

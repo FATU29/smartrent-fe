@@ -2781,6 +2781,46 @@
       }
     }
   },
+  "sellerDetailPage": {
+    "title": "Seller profile",
+    "subtitle": "Public seller information and related listings",
+    "seo": {
+      "title": "Listings by {name}",
+      "description": "Explore public listings posted by seller {name} on SmartRent."
+    },
+    "profile": {
+      "title": "Seller information",
+      "sellerBadge": "Seller",
+      "listingCount": "{count} listings",
+      "defaultSellerName": "Seller",
+      "copiedPhone": "Phone number copied to clipboard",
+      "copiedEmail": "Email copied to clipboard"
+    },
+    "tiers": {
+      "diamond": "Diamond",
+      "gold": "Gold",
+      "silver": "Silver",
+      "normal": "Normal"
+    },
+    "sections": {
+      "relatedListings": "Related listings ({count})",
+      "topListingLove": "Top listing loved by users",
+      "listingsByTier": "Listings by tier",
+      "totalListings": "Total: {count}",
+      "tierSummary": "{tier} listings: {count}",
+      "pageLabel": "Page {page}/{totalPages}"
+    },
+    "states": {
+      "emptyListingsTitle": "This seller has no listings yet",
+      "emptyListingsDescription": "Please check back later for new listings.",
+      "errorTitle": "Unable to load seller page",
+      "errorDescription": "Something went wrong while loading data. Please try again."
+    },
+    "actions": {
+      "backToProperties": "Back to properties",
+      "retry": "Retry"
+    }
+  },
   "newsPage": {
     "title": "News & Blog",
     "subtitle": "Stay updated with the latest real estate news, tips, and market trends",
