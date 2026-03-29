@@ -28,7 +28,8 @@ export class UserService {
   static async getProfile(): Promise<ApiResponse<UserApi>> {
     return apiRequest<UserApi>({
       method: 'GET',
-      url: ENV.API.USER.PROFILE,
+      // Backend maps GET /v1/users to profile
+      url: ENV.API.USER.CREATE,
     })
   }
 
