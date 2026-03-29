@@ -19,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/atoms/select'
+import Combobox from '@/components/atoms/combobox'
+import { Input } from '@/components/atoms/input'
 import {
   Table,
   TableBody,
@@ -40,11 +42,13 @@ import {
   YAxis,
 } from 'recharts'
 import { Loader2 } from 'lucide-react'
-import { format, parseISO } from 'date-fns'
+import { format, parseISO, eachDayOfInterval, subDays } from 'date-fns'
 import type {
   OwnerListingAnalytics,
   OwnerListingAnalyticsSummaryItem,
 } from '@/api/types'
+import { PhoneClickDetailService } from '@/api/services'
+import { Skeleton } from '@/components/atoms/skeleton'
 
 interface DashboardPhoneClickChartProps {
   listings: OwnerListingAnalyticsSummaryItem[]
@@ -53,6 +57,18 @@ interface DashboardPhoneClickChartProps {
   isSummaryLoading?: boolean
   isDetailLoading?: boolean
   onSelectListing?: (listingId: number) => void
+  // paging + search
+  currentPage?: number
+  totalPages?: number
+  totalElements?: number
+  pageSize?: number
+  onPageChange?: (page: number) => void
+  onPageSizeChange?: (size: number) => void
+  searchKeyword?: string
+  onSearchKeywordChange?: (kw: string) => void
+  // period filter
+  period?: '7d' | '30d' | '90d' | '180d' | '365d' | 'all'
+  onPeriodChange?: (p: '7d' | '30d' | '90d' | '180d' | '365d' | 'all') => void
 }
 
 const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
@@ -62,8 +78,76 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
   isSummaryLoading = false,
   isDetailLoading = false,
   onSelectListing,
+  currentPage,
+  totalPages,
+  totalElements,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
+  searchKeyword,
+  onSearchKeywordChange,
+  period = '30d',
+  onPeriodChange,
 }) => {
   const t = useTranslations('seller.dashboard.phoneClicks')
+  // Independent dropdown paging state (decoupled from table)
+  const [selectKeyword, setSelectKeyword] = React.useState('')
+  const [selectPage, setSelectPage] = React.useState(0)
+  const [selectPageSize] = React.useState(20)
+  const [selectHasMore, setSelectHasMore] = React.useState(true)
+  const [selectLoading, setSelectLoading] = React.useState(false)
+  const [selectLoadingMore, setSelectLoadingMore] = React.useState(false)
+  const [selectOptions, setSelectOptions] = React.useState<
+    OwnerListingAnalyticsSummaryItem[]
+  >([])
+
+  const loadSelectPage = React.useCallback(
+    async (page: number, append: boolean) => {
+      try {
+        if (append) {
+          setSelectLoadingMore(true)
+        } else {
+          setSelectLoading(true)
+        }
+        const resp = selectKeyword.trim()
+          ? await PhoneClickDetailService.searchOwnerListingsAnalytics({
+              keyword: selectKeyword.trim(),
+              page,
+              size: selectPageSize,
+            })
+          : await PhoneClickDetailService.getOwnerListingsAnalyticsPage(
+              page,
+              selectPageSize,
+            )
+        if (resp.code !== '999999' || !resp.data) {
+          throw new Error(resp.message || 'Failed to load options')
+        }
+        const nextListings = Array.from(resp.data.listings || [])
+        setSelectOptions((prev) =>
+          append ? [...prev, ...nextListings] : nextListings,
+        )
+        const hasMore =
+          typeof resp.data.currentPage === 'number' &&
+          typeof resp.data.totalPages === 'number'
+            ? resp.data.currentPage + 1 < resp.data.totalPages
+            : nextListings.length === selectPageSize
+        setSelectHasMore(hasMore)
+        setSelectPage(page)
+      } finally {
+        setSelectLoading(false)
+        setSelectLoadingMore(false)
+      }
+    },
+    [selectKeyword, selectPageSize],
+  )
+
+  // Initialize dropdown options on mount and when keyword changes
+  React.useEffect(() => {
+    loadSelectPage(0, false).catch(() => {
+      setSelectOptions([])
+      setSelectHasMore(false)
+    })
+  }, [loadSelectPage])
 
   const handleSelectListing = (listingId: number) => {
     onSelectListing?.(listingId)
@@ -83,15 +167,61 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
   }
 
   const clicksOverTimeData = useMemo(() => {
-    if (!analytics?.clicksOverTime || analytics.clicksOverTime.length === 0) {
+    if (!analytics?.clicksOverTime) {
+      return []
+    }
+    const raw = analytics.clicksOverTime
+    if (raw.length === 0) {
       return []
     }
 
-    return analytics.clicksOverTime.map((item) => ({
-      date: format(parseISO(item.date), 'dd/MM'),
-      count: item.count,
-    }))
-  }, [analytics?.clicksOverTime])
+    const periodToDays = (p: typeof period): number | null => {
+      switch (p) {
+        case '7d':
+          return 7
+        case '30d':
+          return 30
+        case '90d':
+          return 90
+        case '180d':
+          return 180
+        case '365d':
+          return 365
+        default:
+          return null
+      }
+    }
+    const days = periodToDays(period)
+    if (!days) {
+      return raw
+        .map((item) => ({
+          date: format(parseISO(item.date), 'dd/MM'),
+          count: item.count,
+        }))
+        .sort((a, b) => {
+          const [ad, am] = a.date.split('/').map(Number)
+          const [bd, bm] = b.date.split('/').map(Number)
+          return (
+            new Date(2000, am - 1, ad).getTime() -
+            new Date(2000, bm - 1, bd).getTime()
+          )
+        })
+    }
+
+    const today = new Date()
+    const start = subDays(today, days - 1)
+    const map = new Map<string, number>()
+    for (const item of raw) {
+      map.set(item.date, item.count)
+    }
+    return eachDayOfInterval({ start, end: today }).map((d) => {
+      const key = format(d, 'yyyy-MM-dd')
+      return {
+        date: format(d, 'dd/MM'),
+        count: map.get(key) ?? 0,
+      }
+    })
+  }, [analytics?.clicksOverTime, period])
 
   const dayOrder = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
   const clicksByDayData = useMemo(() => {
@@ -115,38 +245,6 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
     },
   }
 
-  if (isSummaryLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('analyticsOverview')}</CardTitle>
-          <CardDescription>{t('loading')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className='flex items-center justify-center h-[260px]'>
-            <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (listings.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('analyticsOverview')}</CardTitle>
-          <CardDescription>{t('description')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className='flex items-center justify-center h-[260px] text-muted-foreground'>
-            {t('noListings')}
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -156,24 +254,34 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
       <CardContent className='space-y-6'>
         <div className='space-y-2'>
           <p className='text-sm font-medium'>{t('listing')}</p>
-          <Select
-            value={selectedListingId ? String(selectedListingId) : undefined}
-            onValueChange={(value) => handleSelectListing(Number(value))}
-          >
-            <SelectTrigger className='w-full md:w-[360px]'>
-              <SelectValue placeholder={t('selectListing')} />
-            </SelectTrigger>
-            <SelectContent>
-              {listings.map((listing) => (
-                <SelectItem
-                  key={listing.listingId}
-                  value={String(listing.listingId)}
-                >
-                  {listing.listingTitle}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className='w-full md:w-[360px]'>
+            <Combobox
+              value={selectedListingId ? String(selectedListingId) : ''}
+              onValueChange={(v) => {
+                if (!v) return
+                handleSelectListing(Number(v))
+              }}
+              onSearchChange={(v) => {
+                setSelectKeyword(v)
+                loadSelectPage(0, false).catch(() => {})
+              }}
+              loading={selectLoading}
+              isLoadingMore={selectLoadingMore}
+              hasMore={selectHasMore}
+              onLoadMore={() => {
+                if (selectHasMore && !selectLoadingMore) {
+                  loadSelectPage(selectPage + 1, true).catch(() => {})
+                }
+              }}
+              options={selectOptions.map((l) => ({
+                value: String(l.listingId),
+                label: l.listingTitle,
+              }))}
+              placeholder={t('selectListing')}
+              searchPlaceholder={t('searchPlaceholder')}
+              fullWidth
+            />
+          </div>
         </div>
 
         {isDetailLoading ? (
@@ -182,12 +290,34 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
           </div>
         ) : analytics ? (
           <>
-            <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
+            <div className='space-y-6'>
               <Card>
                 <CardHeader className='pb-2'>
                   <CardTitle className='text-base'>
                     {t('clicksOverTime')}
                   </CardTitle>
+                  <div className='mt-2'>
+                    <Select
+                      value={period}
+                      onValueChange={(v) =>
+                        onPeriodChange?.(
+                          v as '7d' | '30d' | '90d' | '180d' | '365d' | 'all',
+                        )
+                      }
+                    >
+                      <SelectTrigger className='w-[200px]'>
+                        <SelectValue placeholder={t('period')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value='7d'>{t('period7d')}</SelectItem>
+                        <SelectItem value='30d'>{t('period30d')}</SelectItem>
+                        <SelectItem value='90d'>{t('period90d')}</SelectItem>
+                        <SelectItem value='180d'>{t('period180d')}</SelectItem>
+                        <SelectItem value='365d'>{t('period365d')}</SelectItem>
+                        <SelectItem value='all'>{t('periodAll')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <ChartContainer
@@ -317,6 +447,35 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                 <CardTitle className='text-base'>{t('allListings')}</CardTitle>
               </CardHeader>
               <CardContent>
+                <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3'>
+                  <div className='flex items-center gap-2'>
+                    <Input
+                      className='w-[260px]'
+                      placeholder={t('searchPlaceholder')}
+                      value={searchKeyword || ''}
+                      onChange={(e) => onSearchKeywordChange?.(e.target.value)}
+                    />
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-sm text-muted-foreground'>
+                      {t('rowsPerPage')}
+                    </span>
+                    <Select
+                      value={String(pageSize || 10)}
+                      onValueChange={(v) => onPageSizeChange?.(Number(v))}
+                    >
+                      <SelectTrigger className='w-[100px]'>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value='5'>5</SelectItem>
+                        <SelectItem value='10'>10</SelectItem>
+                        <SelectItem value='20'>20</SelectItem>
+                        <SelectItem value='50'>50</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -330,29 +489,111 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {listings.map((listing) => (
-                      <TableRow key={listing.listingId}>
-                        <TableCell className='font-medium'>
-                          {listing.listingTitle}
-                        </TableCell>
-                        <TableCell className='text-right'>
-                          {listing.totalClicks}
-                        </TableCell>
-                        <TableCell className='text-right'>
-                          <Button
-                            variant='outline'
-                            size='sm'
-                            onClick={() =>
-                              handleSelectListing(listing.listingId)
-                            }
-                          >
-                            {t('viewDetails')}
-                          </Button>
+                    {isSummaryLoading ? (
+                      <>
+                        {Array.from({
+                          length: Math.max(3, Math.min(10, pageSize || 10)),
+                        }).map((_, idx) => (
+                          <TableRow key={`sk-${idx}`}>
+                            <TableCell>
+                              <Skeleton className='h-4 w-[70%]' />
+                            </TableCell>
+                            <TableCell className='text-right'>
+                              <div className='flex justify-end'>
+                                <Skeleton className='h-4 w-12' />
+                              </div>
+                            </TableCell>
+                            <TableCell className='text-right'>
+                              <div className='flex justify-end'>
+                                <Skeleton className='h-6 w-24 rounded-md' />
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </>
+                    ) : listings.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={3}>
+                          <div className='flex items-center justify-center h-[120px] text-muted-foreground'>
+                            {t('noListings')}
+                          </div>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      listings.map((listing) => (
+                        <TableRow key={listing.listingId}>
+                          <TableCell className='font-medium'>
+                            {listing.listingTitle}
+                          </TableCell>
+                          <TableCell className='text-right'>
+                            {listing.totalClicks}
+                          </TableCell>
+                          <TableCell className='text-right'>
+                            <Button
+                              variant='outline'
+                              size='sm'
+                              onClick={() =>
+                                handleSelectListing(listing.listingId)
+                              }
+                            >
+                              {t('viewDetails')}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
+                <div className='flex items-center justify-between mt-4'>
+                  <div className='text-sm text-muted-foreground'>
+                    {typeof totalElements === 'number' &&
+                    typeof currentPage === 'number' &&
+                    typeof pageSize === 'number'
+                      ? t('paginationInfo', {
+                          from: currentPage * pageSize + 1,
+                          to: Math.min(
+                            (currentPage + 1) * pageSize,
+                            totalElements,
+                          ),
+                          total: totalElements,
+                        })
+                      : null}
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      disabled={
+                        isSummaryLoading ||
+                        !onPageChange ||
+                        (currentPage ?? 0) <= 0
+                      }
+                      onClick={() => onPageChange?.((currentPage ?? 0) - 1)}
+                    >
+                      {t('prev')}
+                    </Button>
+                    <span className='text-sm'>
+                      {typeof currentPage === 'number' &&
+                      typeof totalPages === 'number'
+                        ? `${currentPage + 1} / ${totalPages}`
+                        : ''}
+                    </span>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      disabled={
+                        isSummaryLoading ||
+                        !onPageChange ||
+                        typeof currentPage !== 'number' ||
+                        typeof totalPages !== 'number' ||
+                        currentPage + 1 >= totalPages
+                      }
+                      onClick={() => onPageChange?.((currentPage ?? 0) + 1)}
+                    >
+                      {t('next')}
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </>

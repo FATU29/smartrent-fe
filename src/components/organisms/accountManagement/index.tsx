@@ -21,9 +21,8 @@ type PersonalInfoData = {
   firstName: string
   lastName: string
   email: string
-  phoneNumber: string
+  contactPhoneNumber: string
   idDocument: string
-  taxNumber?: string
   avatar?: File
 }
 
@@ -48,7 +47,11 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
   const [isUpdatingPersonalInfo, setIsUpdatingPersonalInfo] =
     React.useState(false)
   const [isChangingPassword, setIsChangingPassword] = React.useState(false)
-  const { data: profileResponse, isLoading: isProfileLoading } = useQuery({
+  const {
+    data: profileResponse,
+    isLoading: isProfileLoading,
+    refetch: refetchProfile,
+  } = useQuery({
     queryKey: ['sellernet', 'personal-edit-profile'],
     queryFn: () => UserService.getProfile(),
     enabled: Boolean(user),
@@ -73,9 +76,9 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
       firstName: profileUser.firstName || '',
       lastName: profileUser.lastName || '',
       email: profileUser.email,
-      phoneNumber: profileUser.phoneNumber || '',
+      contactPhoneNumber:
+        profileUser.contactPhoneNumber || profileUser.phoneNumber || '',
       idDocument: profileUser.idDocument || '',
-      taxNumber: profileUser.taxNumber || '',
       avatarUrl: profileUser.avatarUrl,
     }
   }, [profileUser])
@@ -90,6 +93,8 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
       const success = await onPersonalInfoUpdate(data)
 
       if (success) {
+        // Refetch profile to re-populate the form with latest values
+        await refetchProfile()
         toast.success(
           t('homePage.auth.accountManagement.personalInfo.updateSuccess'),
         )
@@ -141,14 +146,14 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
             value='personal-info'
             className='flex items-center gap-2'
           >
-            <User className='h-4 w-4' />
+            <User className='hidden sm:inline-block h-4 w-4' />
             {t('homePage.auth.accountManagement.personalInfoTab')}
           </TabsTrigger>
           <TabsTrigger
             value='account-settings'
             className='flex items-center gap-2'
           >
-            <Lock className='h-4 w-4' />
+            <Lock className='hidden sm:inline-block h-4 w-4' />
             {t('homePage.auth.accountManagement.accountSettingsTab')}
           </TabsTrigger>
         </TabsList>

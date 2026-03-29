@@ -60,17 +60,18 @@ const UserDropdown: React.FC = () => {
         sideOffset={8}
         className='p-0 overflow-hidden rounded-xl overflow-x-hidden w-auto min-w-[16rem] max-w-[20rem]'
       >
-        <div className='p-5 bg-gradient-to-br from-primary via-blue-500 to-blue-600 text-white relative overflow-hidden'>
-          <div className='absolute inset-0 opacity-30 mix-blend-lighten'>
+        <div className='p-5 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white relative overflow-hidden'>
+          <div className='absolute inset-0'>
             <Image
               src='/images/banner-default.jpg'
               alt='Background pattern'
               fill
-              className='object-cover object-right-top'
+              className='object-cover object-right-top saturate-0 opacity-30'
               priority={false}
               sizes='20rem'
             />
           </div>
+          <div className='absolute inset-0 bg-black/10 dark:bg-black/30' />
           <div className='relative'>
             <h3 className='text-base font-semibold mb-1'>
               {t('userMenu.membershipPackage')}
@@ -78,7 +79,11 @@ const UserDropdown: React.FC = () => {
             <p className='text-xs leading-snug opacity-90 mb-3 max-w-[200px]'>
               {t('userMenu.membershipBenefit')}
             </p>
-            <Button size='sm' className='bg-primary hover:bg-blue-600' asChild>
+            <Button
+              size='sm'
+              className='bg-primary text-white hover:bg-primary/90'
+              asChild
+            >
               <Link href={SELLER_ROUTES.MEMBERSHIP}>
                 {t('common.learnMore')}
               </Link>

@@ -346,11 +346,63 @@ export class PhoneClickDetailService {
   }
 
   /**
+   * Get paginated analytics summary for owner listings
+   * GET /v1/owners/listings/analytics?page=&size=
+   */
+  static async getOwnerListingsAnalyticsPage(
+    page = 0,
+    size = 10,
+    instance?: AxiosInstance,
+  ): Promise<
+    ApiResponse<
+      import('@/api/types/owner-listing-analytics.type').OwnerListingAnalyticsPageResponse
+    >
+  > {
+    return apiRequest(
+      {
+        method: 'GET',
+        url: PATHS.OWNER_LISTING_ANALYTICS.SUMMARY,
+        params: { page, size },
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Search analytics summary by listing title (paginated)
+   * POST /v1/owners/listings/analytics/search
+   */
+  static async searchOwnerListingsAnalytics(
+    payload: import('@/api/types/owner-listing-analytics.type').ListingsAnalyticsSearchRequest,
+    instance?: AxiosInstance,
+  ): Promise<
+    ApiResponse<
+      import('@/api/types/owner-listing-analytics.type').OwnerListingAnalyticsPageResponse
+    >
+  > {
+    const body = {
+      keyword: payload.keyword ?? null,
+      page: payload.page ?? 0,
+      size: payload.size ?? 10,
+    }
+    return apiRequest(
+      {
+        method: 'POST',
+        url: PATHS.OWNER_LISTING_ANALYTICS.SEARCH,
+        data: body,
+        headers: { 'Content-Type': 'application/json' },
+      },
+      instance,
+    )
+  }
+
+  /**
    * Get analytics detail for a specific listing owned by authenticated user
    * GET /v1/owners/listings/:listingId/analytics
    */
   static async getOwnerListingAnalytics(
     listingId: string | number,
+    period: '7d' | '30d' | '90d' | '180d' | '365d' | 'all' = '30d',
     instance?: AxiosInstance,
   ): Promise<ApiResponse<OwnerListingAnalytics>> {
     const url = PATHS.OWNER_LISTING_ANALYTICS.DETAIL.replace(
@@ -362,6 +414,7 @@ export class PhoneClickDetailService {
       {
         method: 'GET',
         url,
+        params: { period },
       },
       instance,
     )

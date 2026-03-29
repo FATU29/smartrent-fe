@@ -4,6 +4,7 @@ import {
   SAVED_LISTING_QUERY_KEYS,
   type ListingSaveSummary,
   type OwnerListingSavesTrendResponse,
+  type OwnerSavedListingsAnalyticsPageResponse,
 } from '@/api/types'
 
 const mapOwnerSavesAnalyticsError = (message?: string | null) => {
@@ -39,12 +40,16 @@ export const useOwnerSavedListingsAnalyticsSummary = () => {
   })
 }
 
-export const useOwnerListingSavesTrend = (listingId?: number | null) => {
+export const useOwnerListingSavesTrend = (
+  listingId?: number | null,
+  period: '7d' | '30d' | '90d' | '180d' | '365d' | 'all' = '30d',
+) => {
   return useQuery({
-    queryKey: SAVED_LISTING_QUERY_KEYS.ownerSavesTrend(listingId),
+    queryKey: [...SAVED_LISTING_QUERY_KEYS.ownerSavesTrend(listingId), period],
     queryFn: async (): Promise<OwnerListingSavesTrendResponse> => {
       const response = await SavedListingService.getOwnerListingSavesTrend(
         listingId as number,
+        period,
       )
 
       if (!response.data || response.code !== '999999') {
@@ -56,6 +61,42 @@ export const useOwnerListingSavesTrend = (listingId?: number | null) => {
     enabled: !!listingId,
     retry: false,
     staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
+  })
+}
+
+export const useOwnerSavedListingsAnalyticsPage = (params: {
+  page?: number
+  size?: number
+  keyword?: string
+}) => {
+  const page = params.page ?? 0
+  const size = params.size ?? 10
+  const keyword = (params.keyword || '').trim()
+
+  return useQuery({
+    queryKey: SAVED_LISTING_QUERY_KEYS.ownerAnalyticsPage(
+      page,
+      size,
+      keyword || undefined,
+    ),
+    queryFn: async (): Promise<OwnerSavedListingsAnalyticsPageResponse> => {
+      const response = keyword
+        ? await SavedListingService.searchOwnerSavesAnalytics({
+            keyword,
+            page,
+            size,
+          })
+        : await SavedListingService.getOwnerSavesAnalyticsPage(page, size)
+
+      if (!response.data || response.code !== '999999') {
+        throw new Error(mapOwnerSavesAnalyticsError(response.message))
+      }
+
+      return response.data
+    },
+    retry: false,
+    staleTime: 10 * 1000,
     gcTime: 5 * 60 * 1000,
   })
 }

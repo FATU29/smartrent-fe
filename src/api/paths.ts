@@ -220,6 +220,7 @@ export const PATHS = {
   OWNER_LISTING_ANALYTICS: {
     SUMMARY: '/v1/owners/listings/analytics',
     DETAIL: '/v1/owners/listings/:listingId/analytics',
+    SEARCH: '/v1/owners/listings/analytics/search',
   },
 
   // Listing public social-proof endpoints
@@ -246,6 +247,7 @@ export const PATHS = {
   OWNER_SAVED_LISTINGS_ANALYTICS: {
     SUMMARY: '/v1/owners/listings/saves-analytics',
     TREND: '/v1/owners/listings/:listingId/saves-trend',
+    SEARCH: '/v1/owners/listings/saves-analytics/search',
   },
 
   // Recently Viewed endpoints

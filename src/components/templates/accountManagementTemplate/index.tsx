@@ -8,9 +8,8 @@ type PersonalInfoData = {
   firstName: string
   lastName: string
   email: string
-  phoneNumber: string
+  contactPhoneNumber: string
   idDocument: string
-  taxNumber?: string
   avatar?: File
 }
 

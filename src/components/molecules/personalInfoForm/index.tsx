@@ -19,11 +19,9 @@ type PersonalInfoFormData = {
   firstName: string
   lastName: string
   email: string
-  phoneNumber: string
+  contactPhoneNumber: string
   idDocument: string
-  taxNumber?: string
   avatar?: File
-  address?: string
   avatarUrl?: string
 }
 
@@ -59,7 +57,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
         VALIDATION_PATTERNS.EMAIL,
         t('homePage.auth.validation.emailInvalid'),
       ),
-    phoneNumber: yup
+    contactPhoneNumber: yup
       .string()
       .required(t('homePage.auth.validation.phoneNumberRequired'))
       .matches(/^[0-9+\-\s()]+$/, t('homePage.auth.validation.phoneInvalid')),
@@ -67,10 +65,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       .string()
       .required(t('homePage.auth.validation.idDocumentRequired'))
       .min(9, t('homePage.auth.validation.idDocumentMinLength')),
-    taxNumber: yup
-      .string()
-      .optional()
-      .matches(/^[0-9\-]*$/, t('homePage.auth.validation.taxNumberInvalid')),
     avatar: yup.mixed().optional(),
   })
 
@@ -89,10 +83,8 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       firstName: initialData?.firstName || '',
       lastName: initialData?.lastName || '',
       email: initialData?.email || '',
-      phoneNumber: initialData?.phoneNumber || '',
+      contactPhoneNumber: (initialData as any)?.contactPhoneNumber || '',
       idDocument: initialData?.idDocument || '',
-      taxNumber: initialData?.taxNumber || '',
-      address: initialData?.address || '',
       avatarUrl: initialData?.avatarUrl || '',
     },
     mode: 'onChange',
@@ -103,10 +95,8 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       firstName: initialData?.firstName || '',
       lastName: initialData?.lastName || '',
       email: initialData?.email || '',
-      phoneNumber: initialData?.phoneNumber || '',
+      contactPhoneNumber: (initialData as any)?.contactPhoneNumber || '',
       idDocument: initialData?.idDocument || '',
-      taxNumber: initialData?.taxNumber || '',
-      address: initialData?.address || '',
       avatarUrl: initialData?.avatarUrl || '',
     })
   }, [initialData, reset])
@@ -115,8 +105,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   const firstNameController = useController({ name: 'firstName', control })
   const lastNameController = useController({ name: 'lastName', control })
   const idDocumentController = useController({ name: 'idDocument', control })
-  const taxNumberController = useController({ name: 'taxNumber', control })
-  const addressController = useController({ name: 'address', control })
 
   const watchedValues = watch()
 
@@ -200,13 +188,13 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
               <PhoneField
-                name='phoneNumber'
+                name='contactPhoneNumber'
                 control={control}
                 label={t(
                   'homePage.auth.accountManagement.personalInfo.phoneNumber',
                 )}
                 placeholder={t('homePage.auth.common.phoneNumberPlaceholder')}
-                error={errors.phoneNumber?.message}
+                error={errors.contactPhoneNumber?.message}
               />
               <EmailField
                 name='email'
@@ -218,12 +206,11 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             </div>
           </div>
 
-          {/* Business Information */}
+          {/* Identification */}
           <div className='space-y-4'>
             <Typography variant='h4' className='font-medium text-foreground'>
               {t('homePage.auth.accountManagement.personalInfo.businessInfo')}
             </Typography>
-
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
               <FormField
                 label={t(
@@ -233,22 +220,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                 error={errors.idDocument?.message}
                 {...idDocumentController.field}
               />
-              <FormField
-                label={t(
-                  'homePage.auth.accountManagement.personalInfo.taxNumber',
-                )}
-                placeholder={t('homePage.auth.register.taxNumberPlaceholder')}
-                error={errors.taxNumber?.message}
-                {...taxNumberController.field}
-              />
             </div>
-
-            <FormField
-              label={t('homePage.auth.accountManagement.personalInfo.address')}
-              placeholder='Việt Nam'
-              className='md:col-span-2'
-              {...addressController.field}
-            />
           </div>
 
           {/* Submit Button */}

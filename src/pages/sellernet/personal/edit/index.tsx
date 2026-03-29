@@ -16,9 +16,8 @@ type PersonalInfoFormData = {
   firstName?: string
   lastName?: string
   email?: string
-  phoneNumber?: string
+  contactPhoneNumber?: string
   idDocument?: string
-  taxNumber?: string
   avatar?: File
 }
 
@@ -33,8 +32,7 @@ const PersonalEditPage: NextPageWithLayout = () => {
         firstName: data.firstName,
         lastName: data.lastName,
         idDocument: data.idDocument,
-        taxNumber: data.taxNumber,
-        contactPhoneNumber: data.phoneNumber,
+        contactPhoneNumber: data.contactPhoneNumber,
         avatar: data.avatar, // Include avatar file
       })
 
