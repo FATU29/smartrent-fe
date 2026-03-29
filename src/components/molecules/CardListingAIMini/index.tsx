@@ -114,15 +114,17 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
       <CardContent className={cn('p-0', isCompact && 'text-xs')}>
         <div
           className={cn(
-            'flex gap-2',
-            isCompact ? 'flex-col p-2' : 'flex-col sm:flex-row gap-3 p-3',
+            'flex',
+            isCompact
+              ? 'flex-col gap-1.5 p-1.5'
+              : 'flex-col sm:flex-row gap-3 p-3',
           )}
         >
           {/* Image Section */}
           <div
             className={cn(
               'relative rounded-lg overflow-hidden flex-shrink-0',
-              isCompact ? 'w-full h-32' : 'w-full sm:w-32 h-32 sm:h-24',
+              isCompact ? 'w-full h-40' : 'w-full sm:w-32 h-40 sm:h-24',
             )}
           >
             <Image
@@ -138,17 +140,21 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
               <div
                 className={cn(
                   'absolute',
-                  isCompact ? 'top-1 left-1' : 'top-2 left-2',
+                  isCompact ? 'top-1.5 left-1.5' : 'top-2 left-2',
                 )}
               >
                 <Badge
-                  variant={
-                    vipType === 'DIAMOND' || vipType === 'GOLD'
-                      ? 'destructive'
-                      : 'default'
-                  }
                   className={cn(
-                    isCompact ? 'text-[10px] px-1 py-0' : 'text-xs',
+                    'rounded-full shadow-md font-medium backdrop-blur-sm',
+                    isCompact
+                      ? 'text-[10px] px-2 py-0.5'
+                      : 'text-xs px-2.5 py-1',
+                    vipType === 'DIAMOND' &&
+                      'bg-gradient-to-r from-blue-400 to-indigo-500 text-white',
+                    vipType === 'GOLD' &&
+                      'bg-gradient-to-r from-yellow-400 to-amber-500 text-white',
+                    vipType === 'SILVER' &&
+                      'bg-gradient-to-r from-gray-400 to-gray-500 text-white',
                   )}
                 >
                   {vipType}
@@ -365,13 +371,18 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
                 size='sm'
                 variant='outline'
                 className={cn(
-                  'w-full whitespace-nowrap',
-                  isCompact && 'text-[10px] h-6 px-2 py-1',
+                  'w-full whitespace-nowrap rounded-lg',
+                  isCompact
+                    ? 'text-xs h-8 px-3 py-1.5'
+                    : 'text-sm h-9 px-4 py-2',
                 )}
               >
                 {t('viewDetails')}
                 <ExternalLink
-                  className={cn('ml-1', isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3')}
+                  className={cn(
+                    'ml-1.5',
+                    isCompact ? 'w-3 h-3' : 'w-3.5 h-3.5',
+                  )}
                 />
               </Button>
             </Link>
