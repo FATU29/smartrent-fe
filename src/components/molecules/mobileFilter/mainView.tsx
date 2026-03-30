@@ -29,6 +29,8 @@ interface MobileFilterMainViewProps {
   onNavigate: (view: string) => void
   onUpdate: (partial: Partial<ListingFilterRequest>) => void
   hideLocationFilter?: boolean
+  hideVerifiedFilter?: boolean
+  hideViewMapButton?: boolean
 }
 
 const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
@@ -36,6 +38,8 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
   onNavigate,
   onUpdate,
   hideLocationFilter = false,
+  hideVerifiedFilter = false,
+  hideViewMapButton = false,
 }) => {
   const t = useTranslations('residentialFilter')
 
@@ -61,13 +65,15 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
   return (
     <div className='pb-20'>
       {/* View Map Button */}
-      <div className='p-4 pb-3'>
-        <Link href={PUBLIC_ROUTES.MAPS} className='block'>
-          <Button variant='secondary' className='w-full h-10' type='button'>
-            <MapIcon className='h-4 w-4 mr-2' /> {t('actions.viewMap')}
-          </Button>
-        </Link>
-      </div>
+      {!hideViewMapButton && (
+        <div className='p-4 pb-3'>
+          <Link href={PUBLIC_ROUTES.MAPS} className='block'>
+            <Button variant='secondary' className='w-full h-10' type='button'>
+              <MapIcon className='h-4 w-4 mr-2' /> {t('actions.viewMap')}
+            </Button>
+          </Link>
+        </div>
+      )}
 
       <div className='space-y-1'>
         <RadioRow
@@ -145,16 +151,18 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
       </div>
 
       <div className='p-4 space-y-6'>
-        <ToggleSection
-          icon={<ShieldCheck className='h-4 w-4 text-muted-foreground' />}
-          title={t('toggles.verified')}
-        >
-          <ToggleChip
-            label={t('toggles.verified')}
-            active={!!filters.verified}
-            onClick={() => onUpdate({ verified: !filters.verified })}
-          />
-        </ToggleSection>
+        {!hideVerifiedFilter && (
+          <ToggleSection
+            icon={<ShieldCheck className='h-4 w-4 text-muted-foreground' />}
+            title={t('toggles.verified')}
+          >
+            <ToggleChip
+              label={t('toggles.verified')}
+              active={!!filters.verified}
+              onClick={() => onUpdate({ verified: !filters.verified })}
+            />
+          </ToggleSection>
+        )}
 
         {!hideLocationFilter && (
           <ToggleSection

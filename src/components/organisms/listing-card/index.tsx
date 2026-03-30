@@ -163,6 +163,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               src={imageUrl}
               alt={title}
               fill
+              sizes='(max-width: 640px) 100vw, 224px'
               className={cn(
                 'object-cover transition-all duration-300',
                 hasImage && 'group-hover:scale-105',

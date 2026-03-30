@@ -316,6 +316,8 @@ const FilterDialogWrapper: React.FC<{
       title={t('filter.title')}
       onApply={onApply}
       hideLocationFilter
+      hideVerifiedFilter
+      hideViewMapButton
     />
   )
 }

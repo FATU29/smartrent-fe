@@ -69,29 +69,36 @@ const SellerContact: React.FC<SellerContactProps> = ({
       <CardContent className='p-5 md:p-6 space-y-5'>
         {/* Seller Info */}
         <div className='flex items-start gap-4'>
-          <Avatar className='w-14 h-14 md:w-16 md:h-16 flex-shrink-0 ring-2 ring-primary/10'>
-            {avatarUrl ? (
-              <Image
-                src={avatarUrl}
-                alt={name}
-                width={64}
-                height={64}
-                className='object-cover'
-              />
-            ) : (
-              <div className='w-full h-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center text-lg md:text-xl font-bold'>
-                {getInitials(name)}
-              </div>
-            )}
-          </Avatar>
+          <Link href={sellerListingsUrl} className='cursor-pointer'>
+            <Avatar className='w-14 h-14 md:w-16 md:h-16 flex-shrink-0 ring-2 ring-primary/10 cursor-pointer'>
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={name}
+                  width={64}
+                  height={64}
+                  className='object-cover'
+                />
+              ) : (
+                <div className='w-full h-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center text-lg md:text-xl font-bold'>
+                  {getInitials(name)}
+                </div>
+              )}
+            </Avatar>
+          </Link>
 
           <div className='flex-1 min-w-0'>
-            <Typography
-              variant='h5'
-              className='font-bold mb-2 truncate text-basemd:text-lg '
+            <Link
+              href={sellerListingsUrl}
+              className='cursor-pointer inline-block max-w-full'
             >
-              {name}
-            </Typography>
+              <Typography
+                variant='h5'
+                className='font-bold mb-2 truncate text-basemd:text-lg hover:text-primary transition-colors cursor-pointer'
+              >
+                {name}
+              </Typography>
+            </Link>
             <Typography variant='small' className='text-primary'>
               <Link
                 href={sellerListingsUrl}

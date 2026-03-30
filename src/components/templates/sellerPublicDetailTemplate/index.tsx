@@ -32,6 +32,7 @@ import { ListingDetail, UserApi, VipType } from '@/api/types'
 import { AlertCircle } from 'lucide-react'
 import { buildApartmentDetailRoute } from '@/constants/route'
 import Link from 'next/link'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 
 interface SellerListingsSection {
   vipType: VipType
@@ -75,6 +76,7 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
   onRetryAll,
 }) => {
   const t = useTranslations('sellerDetailPage')
+  const isMobile = useMediaQuery('(max-width: 767px)')
 
   const [activeTier, setActiveTier] = React.useState<VipType>('DIAMOND')
   const sectionRefs = React.useRef<
@@ -352,7 +354,19 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
                       totalPages: section.totalPages,
                     }}
                     currentSize={section.pageSize}
-                    pageSizeOptions={pageSizeOptions}
+                    pageSizeOptions={
+                      isMobile
+                        ? Array.from(
+                            new Set([
+                              '4',
+                              '6',
+                              '8',
+                              '12',
+                              section.pageSize.toString(),
+                            ]),
+                          )
+                        : pageSizeOptions
+                    }
                     showPerPageSelector
                     onPageChange={(page) => {
                       section.onPageChange?.(page)

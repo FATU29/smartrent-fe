@@ -14,7 +14,6 @@ import { Separator } from '@/components/atoms/separator'
 import { AlertTriangle, ArrowRight, CheckCircle2, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
-import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import type { UpgradePreview } from '@/api/types/membership.type'
 import { Alert, AlertDescription, AlertTitle } from '@/components/atoms/alert'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -35,8 +34,6 @@ export const UpgradePreviewModal: React.FC<UpgradePreviewModalProps> = ({
   isLoading = false,
 }) => {
   const t = useTranslations('membershipUpgrade.preview')
-  const { language } = useSwitchLanguage()
-  const locale = language
   const isMobile = useMediaQuery('(max-width: 767px)')
 
   const handleClose = useCallback(() => {
@@ -74,13 +71,13 @@ export const UpgradePreviewModal: React.FC<UpgradePreviewModalProps> = ({
 
   const formattedOriginalPrice = formatByLocale(
     preview.targetPackagePrice || 0,
-    locale,
+    'vi',
   )
   const formattedDiscountAmount = formatByLocale(
     preview.discountAmount || 0,
-    locale,
+    'vi',
   )
-  const formattedFinalPrice = formatByLocale(preview.finalPrice || 0, locale)
+  const formattedFinalPrice = formatByLocale(preview.finalPrice || 0, 'vi')
 
   const isFreeUpgrade = (preview.finalPrice || 0) === 0
 

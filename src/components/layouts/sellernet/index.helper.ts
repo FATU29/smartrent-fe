@@ -72,10 +72,6 @@ export const SELLERNET_NAV: SellernetNavItem[] = [
     icon: User,
     children: [
       { key: 'sellernet.editPersonal', href: SELLERNET_ROUTES.PERSONAL_EDIT },
-      {
-        key: 'sellernet.accountSettings',
-        href: SELLERNET_ROUTES.PERSONAL_SETTINGS,
-      },
     ],
   },
   {

@@ -144,7 +144,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           </Typography>
         </div>
 
-        <form onSubmit={handleSubmit(handleFormSubmit)} className='space-y-6'>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className='space-y-5'>
           {/* Avatar Upload */}
           <div className='flex justify-center'>
             <AvatarUpload
@@ -180,47 +180,36 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             />
           </div>
 
-          {/* Contact Information */}
-          <div className='space-y-4'>
-            <Typography variant='h4' className='font-medium text-foreground'>
-              {t('homePage.auth.accountManagement.personalInfo.contactInfo')}
-            </Typography>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
-              <PhoneField
-                name='contactPhoneNumber'
-                control={control}
-                label={t(
-                  'homePage.auth.accountManagement.personalInfo.phoneNumber',
-                )}
-                placeholder={t('homePage.auth.common.phoneNumberPlaceholder')}
-                error={errors.contactPhoneNumber?.message}
-              />
-              <EmailField
-                name='email'
-                control={control}
-                label={t('homePage.auth.accountManagement.personalInfo.email')}
-                placeholder={t('homePage.auth.common.emailPlaceholder')}
-                error={errors.email?.message}
-              />
-            </div>
+          {/* Contact Fields */}
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
+            <PhoneField
+              name='contactPhoneNumber'
+              control={control}
+              label={t(
+                'homePage.auth.accountManagement.personalInfo.phoneNumber',
+              )}
+              placeholder={t('homePage.auth.common.phoneNumberPlaceholder')}
+              error={errors.contactPhoneNumber?.message}
+            />
+            <EmailField
+              name='email'
+              control={control}
+              label={t('homePage.auth.accountManagement.personalInfo.email')}
+              placeholder={t('homePage.auth.common.emailPlaceholder')}
+              error={errors.email?.message}
+            />
           </div>
 
           {/* Identification */}
-          <div className='space-y-4'>
-            <Typography variant='h4' className='font-medium text-foreground'>
-              {t('homePage.auth.accountManagement.personalInfo.businessInfo')}
-            </Typography>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
-              <FormField
-                label={t(
-                  'homePage.auth.accountManagement.personalInfo.idDocument',
-                )}
-                placeholder={t('homePage.auth.register.idDocumentPlaceholder')}
-                error={errors.idDocument?.message}
-                {...idDocumentController.field}
-              />
-            </div>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
+            <FormField
+              label={t(
+                'homePage.auth.accountManagement.personalInfo.idDocument',
+              )}
+              placeholder={t('homePage.auth.register.idDocumentPlaceholder')}
+              error={errors.idDocument?.message}
+              {...idDocumentController.field}
+            />
           </div>
 
           {/* Submit Button */}

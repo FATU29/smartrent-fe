@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import classNames from 'classnames'
+import React from 'react'
 
 export interface PaginationData {
   currentPage: number
@@ -50,11 +51,24 @@ const PaginationControls = ({
   const t = useTranslations('pagination')
 
   const { currentPage, pageSize, totalItems, totalPages } = pagination
+  const [mobilePageInput, setMobilePageInput] = React.useState(
+    currentPage.toString(),
+  )
+
+  React.useEffect(() => {
+    setMobilePageInput(currentPage.toString())
+  }, [currentPage])
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
       onPageChange(newPage)
     }
+  }
+
+  const handleMobilePageSubmit = () => {
+    const targetPage = Number(mobilePageInput)
+    if (!Number.isFinite(targetPage)) return
+    handlePageChange(targetPage)
   }
 
   const getVisiblePages = () => {
@@ -131,9 +145,32 @@ const PaginationControls = ({
           <>
             {/* Mobile */}
             <div className='flex items-center gap-1 sm:hidden'>
-              <span className='px-2 text-sm font-medium min-w-[60px] text-center'>
-                {currentPage} / {totalPages}
+              <input
+                type='number'
+                min={1}
+                max={totalPages}
+                value={mobilePageInput}
+                onChange={(e) => setMobilePageInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    handleMobilePageSubmit()
+                  }
+                }}
+                className='h-8 w-[60px] rounded-md border border-input bg-background px-2 text-center text-sm'
+                aria-label='Page number'
+              />
+              <span className='text-xs text-muted-foreground min-w-[32px]'>
+                / {totalPages}
               </span>
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={handleMobilePageSubmit}
+                className='h-8 px-2'
+              >
+                Go
+              </Button>
             </div>
 
             {/* Desktop */}
@@ -144,7 +181,7 @@ const PaginationControls = ({
                     variant='outline'
                     size='sm'
                     onClick={() => handlePageChange(1)}
-                    className='h-8 w-8 p-0'
+                    className='h-8 min-w-8 px-2.5'
                   >
                     1
                   </Button>
@@ -160,7 +197,7 @@ const PaginationControls = ({
                   variant={page === currentPage ? 'default' : 'outline'}
                   size='sm'
                   onClick={() => handlePageChange(page)}
-                  className='h-8 w-8 p-0'
+                  className='h-8 min-w-8 px-2.5'
                 >
                   {page}
                 </Button>
@@ -175,7 +212,7 @@ const PaginationControls = ({
                     variant='outline'
                     size='sm'
                     onClick={() => handlePageChange(totalPages)}
-                    className='h-8 w-8 p-0'
+                    className='h-8 min-w-8 px-2.5'
                   >
                     {totalPages}
                   </Button>

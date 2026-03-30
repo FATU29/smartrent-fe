@@ -42,6 +42,18 @@ export const ListingsList: React.FC<ListingsListProps> = ({
   skeletonCount = 3,
   className,
 }) => {
+  const uniqueListings = React.useMemo(() => {
+    const seen = new Set<string>()
+    return listings.filter((listing) => {
+      const id = listing?.listingId
+      if (id === undefined || id === null) return false
+      const key = String(id)
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  }, [listings])
+
   if (loading) {
     return (
       <div className={cn(LISTINGS_LIST_STYLES.container, className)}>
@@ -50,13 +62,13 @@ export const ListingsList: React.FC<ListingsListProps> = ({
     )
   }
 
-  if (listings.length === 0) {
+  if (uniqueListings.length === 0) {
     return null
   }
 
   return (
     <div className={cn(LISTINGS_LIST_STYLES.container, className)}>
-      {listings.map((listing) => (
+      {uniqueListings.map((listing) => (
         <ListingCard
           key={`${LISTINGS_LIST_CONFIG.itemKeyPrefix}${listing.listingId}`}
           property={listing}

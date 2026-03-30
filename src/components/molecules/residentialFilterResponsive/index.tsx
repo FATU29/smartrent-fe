@@ -11,11 +11,17 @@ const ResidentialFilterDialog = dynamic(
 
 interface ResidentialFilterResponsiveProps {
   onApply?: () => void
+  hideVerifiedFilterInDialog?: boolean
+  hideViewMapInDialog?: boolean
 }
 
 const ResidentialFilterResponsive: React.FC<
   ResidentialFilterResponsiveProps
-> = ({ onApply }) => {
+> = ({
+  onApply,
+  hideVerifiedFilterInDialog = false,
+  hideViewMapInDialog = false,
+}) => {
   const [dialogOpen, setDialogOpen] = React.useState(false)
 
   const openDialog = useCallback(() => setDialogOpen(true), [])
@@ -32,6 +38,8 @@ const ResidentialFilterResponsive: React.FC<
         onOpenChange={setDialogOpen}
         title={undefined}
         onApply={onApply}
+        hideVerifiedFilter={hideVerifiedFilterInDialog}
+        hideViewMapButton={hideViewMapInDialog}
       />
     </div>
   )

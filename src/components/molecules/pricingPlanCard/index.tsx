@@ -77,11 +77,8 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
 
   const translations = getPricingTranslations(t)
   const hasDiscount = membership.discountPercentage > 0
-  const formattedSalePrice = formatByLocale(membership.salePrice, locale)
-  const formattedOriginalPrice = formatByLocale(
-    membership.originalPrice,
-    locale,
-  )
+  const formattedSalePrice = formatByLocale(membership.salePrice, 'vi')
+  const formattedOriginalPrice = formatByLocale(membership.originalPrice, 'vi')
   const resolvedPricePeriod = getPricePeriodByLocale(locale)
   const resolvedCta = translations.buyNow
   const discountText = formatDiscountText(membership.discountPercentage)
@@ -125,7 +122,7 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
             resolvedPricePeriod={resolvedPricePeriod}
             discountText={discountText}
             saveUpToText={translations.saveUpTo}
-            locale={locale}
+            locale='vi'
             compact={compact}
             headingId={headingId}
           />

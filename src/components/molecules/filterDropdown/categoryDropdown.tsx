@@ -55,16 +55,19 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant='outline'
-          className={`flex items-center gap-2 h-9 px-3 ${className}`}
+          className={`flex items-center gap-2 h-9 px-3 w-auto max-w-none shrink-0 ${className}`}
         >
           <selectedType.icon className='h-4 w-4' />
-          <Typography variant='small' className='text-sm'>
+          <Typography variant='small' className='text-sm whitespace-nowrap'>
             {displayText}
           </Typography>
           <ChevronDown className='h-3 w-3 opacity-50' />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='start' className='w-48'>
+      <DropdownMenuContent
+        align='start'
+        className='w-auto min-w-max max-w-none'
+      >
         <DropdownMenuLabel className='text-xs font-medium text-muted-foreground'>
           {t('title')}
         </DropdownMenuLabel>
@@ -73,10 +76,10 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
           <DropdownMenuItem
             key={type.value}
             onClick={() => onChange(type.value)}
-            className='flex items-center gap-2 cursor-pointer'
+            className='flex items-center gap-2 cursor-pointer whitespace-nowrap'
           >
             <type.icon className='h-4 w-4' />
-            <Typography variant='small' className='text-sm'>
+            <Typography variant='small' className='text-sm whitespace-nowrap'>
               {type.displayValue}
             </Typography>
           </DropdownMenuItem>

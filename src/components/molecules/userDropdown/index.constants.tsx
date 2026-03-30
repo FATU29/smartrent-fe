@@ -51,7 +51,7 @@ export const getMenuItems = (t: any): MenuItem[] => [
     label: t('userMenu.membership'),
     href: SELLER_ROUTES.MEMBERSHIP,
     badge: {
-      text: t('userMenu.savePercent', { percent: '-39%' }),
+      text: t('userMenu.savePercent', { percent: '-30%' }),
       variant: 'neutral',
     },
   },

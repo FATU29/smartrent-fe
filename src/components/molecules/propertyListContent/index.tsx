@@ -21,6 +21,18 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
   const { items, isLoading, pagination, loadMore } =
     useListContext<ListingDetail>()
 
+  const uniqueItems = React.useMemo(() => {
+    const seen = new Set<string>()
+    return items.filter((property) => {
+      const id = property.listingId
+      if (!id) return false
+      const key = String(id)
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  }, [items])
+
   const { currentPage, totalPages } = pagination
   const hasNext = currentPage < totalPages
 
@@ -82,48 +94,46 @@ const PropertyListContent: React.FC<PropertyListContentProps> = ({
     </div>
   )
 
-  if (isLoading && items.length === 0) {
+  if (isLoading && uniqueItems.length === 0) {
     return PropertySkeleton
   }
 
-  if (items.length === 0) {
+  if (uniqueItems.length === 0) {
     return PropertyNotFound
   }
 
   return (
     <div className='space-y-4'>
       <div className='space-y-4 md:space-y-5'>
-        {items
-          .filter((property) => !!property.listingId)
-          .map((property) =>
-            onPropertyClick ? (
-              <div
-                key={property.listingId}
-                onClick={() => onPropertyClick(property)}
-              >
-                <PropertyCard
-                  listing={property}
-                  onFavorite={handleFavorite}
-                  className='compact'
-                  imageLayout='top'
-                />
-              </div>
-            ) : (
-              <Link
-                key={property.listingId}
-                href={`/listing-detail/${property.listingId}`}
-                className='block transition-transform duration-200 active:scale-[0.99]'
-                onClick={(e) => handleLinkClick(e, property)}
-              >
-                <PropertyCard
-                  listing={property}
-                  onFavorite={handleFavorite}
-                  className='compact'
-                  imageLayout='top'
-                />
-              </Link>
-            ),
-          )}
+        {uniqueItems.map((property) =>
+          onPropertyClick ? (
+            <div
+              key={property.listingId}
+              onClick={() => onPropertyClick(property)}
+            >
+              <PropertyCard
+                listing={property}
+                onFavorite={handleFavorite}
+                className='compact'
+                imageLayout='top'
+              />
+            </div>
+          ) : (
+            <Link
+              key={property.listingId}
+              href={`/listing-detail/${property.listingId}`}
+              className='block transition-transform duration-200 active:scale-[0.99]'
+              onClick={(e) => handleLinkClick(e, property)}
+            >
+              <PropertyCard
+                listing={property}
+                onFavorite={handleFavorite}
+                className='compact'
+                imageLayout='top'
+              />
+            </Link>
+          ),
+        )}
 
         {/* Show loading skeleton during client-side fetch */}
         {isLoading && items.length > 0 && (
