@@ -40,13 +40,12 @@ const PriceRangeDropdown: React.FC<PriceRangeDropdownProps> = ({
   const minSliderValue = 0
   const maxSliderValue = 100000000
 
-  const formatPrice = (price: number) => {
-    if (price >= 1000000) {
-      return `${(price / 1000000).toFixed(1)}M`
-    } else if (price >= 1000) {
-      return `${(price / 1000).toFixed(0)}K`
-    }
-    return price.toString()
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat('vi-VN').format(price)
+
+  const parsePriceInput = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, '')
+    return digitsOnly ? parseInt(digitsOnly, 10) : 0
   }
 
   const getDisplayText = () => {
@@ -128,10 +127,11 @@ const PriceRangeDropdown: React.FC<PriceRangeDropdownProps> = ({
                 {t('minPrice')}
               </Typography>
               <Input
-                type='number'
-                value={localMinPrice}
+                type='text'
+                inputMode='numeric'
+                value={formatPrice(localMinPrice)}
                 onChange={(e) =>
-                  setLocalMinPrice(parseInt(e.target.value) || 0)
+                  setLocalMinPrice(parsePriceInput(e.target.value))
                 }
                 placeholder='0'
                 className='h-8'
@@ -146,12 +146,15 @@ const PriceRangeDropdown: React.FC<PriceRangeDropdownProps> = ({
                 {t('maxPrice')}
               </Typography>
               <Input
-                type='number'
-                value={localMaxPrice}
+                type='text'
+                inputMode='numeric'
+                value={formatPrice(localMaxPrice)}
                 onChange={(e) =>
-                  setLocalMaxPrice(parseInt(e.target.value) || maxSliderValue)
+                  setLocalMaxPrice(
+                    parsePriceInput(e.target.value) || maxSliderValue,
+                  )
                 }
-                placeholder='100000000'
+                placeholder='100.000.000'
                 className='h-8'
               />
             </div>

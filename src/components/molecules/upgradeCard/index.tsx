@@ -27,7 +27,6 @@ import {
 } from '@/components/atoms/tooltip'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
-import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { motion } from 'framer-motion'
 import type { UpgradePreview } from '@/api/types/membership.type'
 import { getMembershipLevelIcon } from '@/components/molecules/pricingPlanCard'
@@ -45,18 +44,16 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
   className,
 }) => {
   const t = useTranslations('membershipUpgrade')
-  const { language } = useSwitchLanguage()
-  const locale = language
 
   const formattedOriginalPrice = formatByLocale(
     upgrade.targetPackagePrice || 0,
-    locale,
+    'vi',
   )
   const formattedDiscountAmount = formatByLocale(
     upgrade.discountAmount || 0,
-    locale,
+    'vi',
   )
-  const formattedFinalPrice = formatByLocale(upgrade.finalPrice || 0, locale)
+  const formattedFinalPrice = formatByLocale(upgrade.finalPrice || 0, 'vi')
 
   const targetIcon = getMembershipLevelIcon(
     upgrade.targetPackageLevel as MembershipPackageLevel,

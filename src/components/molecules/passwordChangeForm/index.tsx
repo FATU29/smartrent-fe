@@ -71,8 +71,8 @@ const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({
   }
 
   return (
-    <Card className={cn('p-6', className)}>
-      <div className='space-y-6'>
+    <Card className={cn('p-6 max-w-xl mx-auto', className)}>
+      <div className='space-y-6 max-w-xl mx-auto'>
         {/* Header */}
         <div className='flex items-center gap-3'>
           <Lock className='h-5 w-5 text-primary' />

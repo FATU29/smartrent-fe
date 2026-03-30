@@ -223,168 +223,172 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     const displayImage = assetsImages?.[currentImageIndex] || mainImage
 
     return (
-      <div className='flex gap-2'>
-        {/* Main Image */}
-        <div className='relative flex-1 aspect-[4/3] overflow-hidden'>
-          {assetsVideo && currentImageIndex === 0 ? (
-            isYouTube(assetsVideo) ? (
-              <div className='w-full h-full'>
-                <iframe
-                  src={toYouTubeEmbed(assetsVideo) || ''}
-                  className='w-full h-full'
-                  title={`video-${listing.listingId}`}
-                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                  allowFullScreen
-                />
-              </div>
-            ) : (
-              <video
-                src={assetsVideo}
-                controls
-                className='w-full h-full object-cover object-center transition-transform duration-500 group-hover/card:scale-105'
-              />
-            )
-          ) : (
-            <ImageAtom
-              src={displayImage || `${basePath}/images/default-image.jpg`}
-              defaultImage={DEFAULT_IMAGE}
-              alt={title}
-              className='w-full h-full object-cover object-center transition-all duration-500 group-hover/card:scale-105'
-            />
-          )}
-
-          {/* Bottom gradient overlay */}
-          <div className='absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent pointer-events-none' />
-
-          {/* Image navigation arrows - only show on hover */}
-          {totalImages > 1 && (
-            <>
-              <button
-                type='button'
-                onClick={handlePrevImage}
-                className='absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-black/80 shadow-sm z-10'
-                aria-label='Previous image'
-              >
-                <ChevronLeft className='w-4 h-4 text-gray-800 dark:text-gray-200' />
-              </button>
-              <button
-                type='button'
-                onClick={handleNextImage}
-                className='absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-black/80 shadow-sm z-10'
-                aria-label='Next image'
-              >
-                <ChevronRight className='w-4 h-4 text-gray-800 dark:text-gray-200' />
-              </button>
-            </>
-          )}
-
-          {/* Image Count Badge */}
-          {totalImages > 0 && (
-            <div className='absolute bottom-2 left-2 flex items-center gap-1.5 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-md'>
-              <Camera className='w-3.5 h-3.5' />
-              <span className='font-medium'>{totalImages}</span>
-            </div>
-          )}
-
-          {/* Image dots indicator */}
-          {totalImages > 1 && totalImages <= 5 && (
-            <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1'>
-              {assetsImages.slice(0, 5).map((img, idx) => (
-                <span
-                  key={`dot-${idx}-${img || ''}`}
-                  className={classNames(
-                    'w-1.5 h-1.5 rounded-full transition-all duration-200',
-                    currentImageIndex === idx ? 'bg-white w-3' : 'bg-white/50',
-                  )}
-                />
-              ))}
-            </div>
-          )}
-
-          <div className='absolute top-2 right-2 flex gap-1.5 z-10'>
-            <CompareToggleBtn
-              listing={listing}
-              variant='ghost'
-              size='icon'
-              className='bg-white/80 dark:bg-black/60 backdrop-blur-md hover:bg-white dark:hover:bg-black/80 shadow-sm rounded-full transition-all duration-200'
-            />
-            <SaveListingButton
-              listingId={listing.listingId}
-              variant='icon'
-              className='bg-white/80 dark:bg-black/60 backdrop-blur-md hover:bg-white dark:hover:bg-black/80 shadow-sm rounded-full transition-all duration-200'
-            />
-          </div>
-
-          {/* Badges - Top Left */}
-          <div className='absolute top-2 left-2 flex flex-col gap-1.5 z-10'>
-            {verified && (
-              <Badge className='bg-emerald-500/90 text-white text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm'>
-                <Check className='w-3 h-3' />
-                <span className='font-medium text-[11px]'>
-                  {t('homePage.property.verified')}
-                </span>
-              </Badge>
-            )}
-            {vipBadgeConfig &&
-              (() => {
-                const VipIcon = vipBadgeConfig.icon
-                return (
-                  <Badge
-                    className={`${vipBadgeConfig.className} text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm`}
-                  >
-                    <VipIcon className='w-3 h-3' />
-                    <span className='font-medium text-[11px]'>
-                      {vipBadgeConfig.label}
-                    </span>
-                  </Badge>
-                )
-              })()}
-          </div>
-        </div>
-
-        {/* Thumbnails */}
-        {thumbnails.length > 1 && (
-          <div className='flex flex-col gap-1.5 w-12 md:w-14'>
-            {thumbnails.slice(0, 3).map((img, idx) => (
-              <button
-                key={`thumb-${idx}-${img || ''}`}
-                type='button'
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setCurrentImageIndex(idx)
-                }}
-                className={classNames(
-                  'relative aspect-square overflow-hidden rounded-lg border-2 transition-all duration-200',
-                  {
-                    'border-primary ring-2 ring-primary/20 scale-105':
-                      currentImageIndex === idx,
-                    'border-transparent hover:border-primary/40 opacity-70 hover:opacity-100':
-                      currentImageIndex !== idx,
-                  },
-                )}
-              >
-                <ImageAtom
-                  src={img || `${basePath}/images/default-image.jpg`}
-                  defaultImage={DEFAULT_IMAGE}
-                  alt={`${title} ${idx + 1}`}
-                  className='w-full h-full object-cover'
-                />
-              </button>
-            ))}
-            {totalImages > 3 && (
-              <div className='relative aspect-square overflow-hidden rounded-lg border border-border bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'>
-                <div className='text-center'>
-                  <Typography
-                    variant='small'
-                    className='text-xs font-bold text-muted-foreground'
-                  >
-                    +{totalImages - 3}
-                  </Typography>
+      <div className='p-2 pb-1'>
+        <div className='flex gap-2'>
+          {/* Main Image */}
+          <div className='relative flex-1 aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg'>
+            {assetsVideo && currentImageIndex === 0 ? (
+              isYouTube(assetsVideo) ? (
+                <div className='w-full h-full'>
+                  <iframe
+                    src={toYouTubeEmbed(assetsVideo) || ''}
+                    className='w-full h-full'
+                    title={`video-${listing.listingId}`}
+                    allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                    allowFullScreen
+                  />
                 </div>
+              ) : (
+                <video
+                  src={assetsVideo}
+                  controls
+                  className='w-full h-full object-cover object-center transition-transform duration-500 group-hover/card:scale-105'
+                />
+              )
+            ) : (
+              <ImageAtom
+                src={displayImage || `${basePath}/images/default-image.jpg`}
+                defaultImage={DEFAULT_IMAGE}
+                alt={title}
+                className='w-full h-full object-cover object-center transition-all duration-500 group-hover/card:scale-105'
+              />
+            )}
+
+            {/* Bottom gradient overlay */}
+            <div className='absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent pointer-events-none' />
+
+            {/* Image navigation arrows - only show on hover */}
+            {totalImages > 1 && (
+              <>
+                <button
+                  type='button'
+                  onClick={handlePrevImage}
+                  className='absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-black/80 shadow-sm z-10'
+                  aria-label='Previous image'
+                >
+                  <ChevronLeft className='w-4 h-4 text-gray-800 dark:text-gray-200' />
+                </button>
+                <button
+                  type='button'
+                  onClick={handleNextImage}
+                  className='absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-black/80 shadow-sm z-10'
+                  aria-label='Next image'
+                >
+                  <ChevronRight className='w-4 h-4 text-gray-800 dark:text-gray-200' />
+                </button>
+              </>
+            )}
+
+            {/* Image Count Badge */}
+            {totalImages > 0 && (
+              <div className='absolute bottom-2 left-2 flex items-center gap-1.5 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-md'>
+                <Camera className='w-3.5 h-3.5' />
+                <span className='font-medium'>{totalImages}</span>
               </div>
             )}
+
+            {/* Image dots indicator */}
+            {totalImages > 1 && totalImages <= 5 && (
+              <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1'>
+                {assetsImages.slice(0, 5).map((img, idx) => (
+                  <span
+                    key={`dot-${idx}-${img || ''}`}
+                    className={classNames(
+                      'w-1.5 h-1.5 rounded-full transition-all duration-200',
+                      currentImageIndex === idx
+                        ? 'bg-white w-3'
+                        : 'bg-white/50',
+                    )}
+                  />
+                ))}
+              </div>
+            )}
+
+            <div className='absolute top-2 right-2 flex gap-1.5 z-10'>
+              <CompareToggleBtn
+                listing={listing}
+                variant='ghost'
+                size='icon'
+                className='bg-white/80 dark:bg-black/60 backdrop-blur-md hover:bg-white dark:hover:bg-black/80 shadow-sm rounded-full transition-all duration-200'
+              />
+              <SaveListingButton
+                listingId={listing.listingId}
+                variant='icon'
+                className='bg-white/80 dark:bg-black/60 backdrop-blur-md hover:bg-white dark:hover:bg-black/80 shadow-sm rounded-full transition-all duration-200'
+              />
+            </div>
+
+            {/* Badges - Top Left */}
+            <div className='absolute top-2 left-2 flex flex-col gap-1.5 z-10'>
+              {verified && (
+                <Badge className='bg-emerald-500/90 text-white text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm'>
+                  <Check className='w-3 h-3' />
+                  <span className='font-medium text-[11px]'>
+                    {t('homePage.property.verified')}
+                  </span>
+                </Badge>
+              )}
+              {vipBadgeConfig &&
+                (() => {
+                  const VipIcon = vipBadgeConfig.icon
+                  return (
+                    <Badge
+                      className={`${vipBadgeConfig.className} text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm`}
+                    >
+                      <VipIcon className='w-3 h-3' />
+                      <span className='font-medium text-[11px]'>
+                        {vipBadgeConfig.label}
+                      </span>
+                    </Badge>
+                  )
+                })()}
+            </div>
           </div>
-        )}
+
+          {/* Thumbnails */}
+          {thumbnails.length > 1 && (
+            <div className='flex flex-col gap-1.5 w-12 md:w-14'>
+              {thumbnails.slice(0, 3).map((img, idx) => (
+                <button
+                  key={`thumb-${idx}-${img || ''}`}
+                  type='button'
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setCurrentImageIndex(idx)
+                  }}
+                  className={classNames(
+                    'relative aspect-square overflow-hidden rounded-lg border-2 transition-all duration-200',
+                    {
+                      'border-primary ring-2 ring-primary/20 scale-105':
+                        currentImageIndex === idx,
+                      'border-transparent hover:border-primary/40 opacity-70 hover:opacity-100':
+                        currentImageIndex !== idx,
+                    },
+                  )}
+                >
+                  <ImageAtom
+                    src={img || `${basePath}/images/default-image.jpg`}
+                    defaultImage={DEFAULT_IMAGE}
+                    alt={`${title} ${idx + 1}`}
+                    className='w-full h-full object-cover'
+                  />
+                </button>
+              ))}
+              {totalImages > 3 && (
+                <div className='relative aspect-square overflow-hidden rounded-lg border border-border bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'>
+                  <div className='text-center'>
+                    <Typography
+                      variant='small'
+                      className='text-xs font-bold text-muted-foreground'
+                    >
+                      +{totalImages - 3}
+                    </Typography>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     )
   }

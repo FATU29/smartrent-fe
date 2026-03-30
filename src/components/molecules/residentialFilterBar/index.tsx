@@ -6,9 +6,8 @@ import {
 } from '@/components/molecules/filterDropdown'
 import AreaRangeDropdown from '@/components/molecules/areaRangeDropdown'
 import { Button } from '@/components/atoms/button'
-import Switch from '@/components/atoms/switch'
 import { useTranslations } from 'next-intl'
-import { Filter, MapIcon, ShieldCheck } from 'lucide-react'
+import { Filter, MapIcon } from 'lucide-react'
 import Link from 'next/link'
 
 import { LocationSwitch } from '@/components/atoms'
@@ -240,17 +239,6 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
             }}
           />
           <div className='flex items-center gap-4 ml-2'>
-            <div className='flex items-center gap-1'>
-              <Switch
-                size='sm'
-                checked={!!filters.verified}
-                onCheckedChange={(v) => updateFilter({ verified: v, page: 1 })}
-              />
-              <span className='text-sm flex items-center gap-1'>
-                <ShieldCheck className='h-3.5 w-3.5 text-muted-foreground' />
-                {t('toggles.verified')}
-              </span>
-            </div>
             <div className='flex items-center gap-1'>
               <LocationSwitch
                 onLocationChange={handleLocationChange}
