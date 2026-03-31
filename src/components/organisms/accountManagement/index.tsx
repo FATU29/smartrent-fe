@@ -8,14 +8,24 @@ import {
 } from '@/components/atoms/tabs'
 import { PersonalInfoForm } from '@/components/molecules/personalInfoForm'
 import { PasswordChangeForm } from '@/components/molecules/passwordChangeForm'
+import { BrokerVerificationForm } from '@/components/molecules/brokerVerificationForm'
 import { useChangePassword } from '@/hooks/useAuth/useChangePassword'
-import { User, Lock } from 'lucide-react'
+import {
+  User,
+  Lock,
+  ShieldCheck,
+  Search,
+  Gift,
+  BadgeCheck,
+  Sparkles,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useAuth } from '@/hooks/useAuth'
 import { UserService } from '@/api/services/user.service'
 import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'next/router'
 
 type PersonalInfoData = {
   firstName: string
@@ -42,6 +52,11 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
   className,
 }) => {
   const t = useTranslations()
+  const router = useRouter()
+  const safeT = React.useCallback(
+    (key: string, fallback: string) => (t.has(key) ? t(key) : fallback),
+    [t],
+  )
   const { user, updateUser } = useAuth()
   const [activeTab, setActiveTab] = React.useState('personal-info')
   const [isUpdatingPersonalInfo, setIsUpdatingPersonalInfo] =
@@ -68,6 +83,19 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
   }, [profileResponse?.data, updateUser])
 
   const profileUser = profileResponse?.data ?? user
+
+  const isPersonalInfoComplete = React.useMemo(() => {
+    if (!profileUser) return false
+
+    const hasFirstName = Boolean(profileUser.firstName?.trim())
+    const hasLastName = Boolean(profileUser.lastName?.trim())
+    const hasPhone = Boolean(
+      (profileUser.contactPhoneNumber || profileUser.phoneNumber || '').trim(),
+    )
+    const hasAvatar = Boolean(profileUser.avatarUrl?.trim())
+
+    return hasFirstName && hasLastName && hasPhone && hasAvatar
+  }, [profileUser])
 
   const getUserInitialData = React.useMemo(() => {
     if (!profileUser) return undefined
@@ -137,24 +165,66 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
     }
   }
 
+  const handleRequirePersonalInfo = React.useCallback(() => {
+    setActiveTab('personal-info')
+  }, [])
+
+  React.useEffect(() => {
+    const queryTab = router.query.tab
+    const tabFromQuery = Array.isArray(queryTab) ? queryTab[0] : queryTab
+
+    if (tabFromQuery === 'broker-verification') {
+      setActiveTab('broker-verification')
+      return
+    }
+
+    if (tabFromQuery === 'account-settings') {
+      setActiveTab('account-settings')
+      return
+    }
+
+    if (tabFromQuery === 'personal-info') {
+      setActiveTab('personal-info')
+    }
+  }, [router.query.tab])
+
   return (
     <div className={cn('w-full max-w-4xl mx-auto', className)}>
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
-        <TabsList className='grid w-full grid-cols-2 mb-6'>
+        <TabsList className='grid w-full grid-cols-3 mb-6 h-auto gap-1'>
           <TabsTrigger
             value='personal-info'
-            className='flex items-center gap-2'
+            className='flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-[11px] leading-tight sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm'
           >
             <User className='hidden sm:inline-block h-4 w-4' />
-            {t('homePage.auth.accountManagement.personalInfoTab')}
+            <span className='truncate sm:hidden'>Thông tin</span>
+            <span className='hidden sm:inline truncate'>
+              {t('homePage.auth.accountManagement.personalInfoTab')}
+            </span>
           </TabsTrigger>
           <TabsTrigger
             value='account-settings'
-            className='flex items-center gap-2'
+            className='flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-[11px] leading-tight sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm'
           >
             <Lock className='hidden sm:inline-block h-4 w-4' />
-            {t('homePage.auth.accountManagement.accountSettingsTab')}
+            <span className='truncate sm:hidden'>Mật khẩu</span>
+            <span className='hidden sm:inline truncate'>
+              {t('homePage.auth.accountManagement.accountSettingsTab')}
+            </span>
+          </TabsTrigger>
+          <TabsTrigger
+            value='broker-verification'
+            className='flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-[11px] leading-tight sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm'
+          >
+            <ShieldCheck className='hidden sm:inline-block h-4 w-4' />
+            <span className='truncate sm:hidden'>Môi giới</span>
+            <span className='hidden sm:inline truncate'>
+              {safeT(
+                'homePage.auth.accountManagement.brokerVerificationTab',
+                'Môi giới BĐS',
+              )}
+            </span>
           </TabsTrigger>
         </TabsList>
 
@@ -174,6 +244,68 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
           <PasswordChangeForm
             onSubmit={handlePasswordChangeSubmit}
             loading={isChangingPassword || isChanging}
+          />
+        </TabsContent>
+
+        <TabsContent value='broker-verification' className='space-y-6'>
+          <div className='rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-blue-500/10 to-purple-500/10 p-5 md:p-6 shadow-sm'>
+            <div className='flex items-start gap-3'>
+              <div className='size-9 rounded-full bg-primary/15 flex items-center justify-center shrink-0 mt-0.5'>
+                <Sparkles className='size-4.5 text-primary' />
+              </div>
+              <div className='space-y-1.5'>
+                <span className='inline-flex items-center rounded-full border bg-background/70 px-2.5 py-0.5 text-xs font-medium text-muted-foreground'>
+                  SellerNet Pro
+                </span>
+                <h3 className='text-base md:text-lg font-semibold leading-snug text-foreground'>
+                  {safeT(
+                    'homePage.auth.accountManagement.brokerHookBanner.title',
+                    'Bật hồ sơ môi giới để tăng độ tin cậy và tiếp cận khách hàng nhanh hơn.',
+                  )}
+                </h3>
+              </div>
+            </div>
+
+            <div className='mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3'>
+              <div className='rounded-xl border bg-background/85 px-3.5 py-3.5 flex items-center gap-2.5 transition-all hover:-translate-y-0.5 hover:shadow-md'>
+                <div className='size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0'>
+                  <Search className='size-4 text-primary' />
+                </div>
+                <span className='text-sm font-medium leading-snug'>
+                  {safeT(
+                    'homePage.auth.accountManagement.brokerHookBanner.items.featuredSearch',
+                    'Nổi bật trên trang tìm kiếm',
+                  )}
+                </span>
+              </div>
+              <div className='rounded-xl border bg-background/85 px-3.5 py-3.5 flex items-center gap-2.5 transition-all hover:-translate-y-0.5 hover:shadow-md'>
+                <div className='size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0'>
+                  <Gift className='size-4 text-primary' />
+                </div>
+                <span className='text-sm font-medium leading-snug'>
+                  {safeT(
+                    'homePage.auth.accountManagement.brokerHookBanner.items.joinFree',
+                    'Tham gia miễn phí',
+                  )}
+                </span>
+              </div>
+              <div className='rounded-xl border bg-background/85 px-3.5 py-3.5 flex items-center gap-2.5 transition-all hover:-translate-y-0.5 hover:shadow-md'>
+                <div className='size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0'>
+                  <BadgeCheck className='size-4 text-primary' />
+                </div>
+                <span className='text-sm font-medium leading-snug'>
+                  {safeT(
+                    'homePage.auth.accountManagement.brokerHookBanner.items.credibilityBoost',
+                    'Tăng độ uy tín với hồ sơ xác thực',
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <BrokerVerificationForm
+            isPersonalInfoComplete={isPersonalInfoComplete}
+            onRequirePersonalInfo={handleRequirePersonalInfo}
           />
         </TabsContent>
       </Tabs>

@@ -46,6 +46,7 @@ import {
 } from 'recharts'
 import { Loader2, Heart } from 'lucide-react'
 import { format, parseISO, eachDayOfInterval, subDays } from 'date-fns'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import type {
   ListingSaveSummary,
   OwnerListingSavesTrendResponse,
@@ -104,6 +105,7 @@ const DashboardSavedListingsChart: React.FC<
   onPeriodChange,
 }) => {
   const t = useTranslations('seller.dashboard.savedListings')
+  const isMobile = useIsMobile() ?? false
   // Independent dropdown paging state (decoupled from table)
   const [selectKeyword, setSelectKeyword] = React.useState('')
   const [selectPage, setSelectPage] = React.useState(0)
@@ -341,7 +343,7 @@ const DashboardSavedListingsChart: React.FC<
                         )
                       }
                     >
-                      <SelectTrigger className='w-[200px]'>
+                      <SelectTrigger className='w-full sm:w-[200px]'>
                         <SelectValue placeholder={t('period')} />
                       </SelectTrigger>
                       <SelectContent>
@@ -358,7 +360,9 @@ const DashboardSavedListingsChart: React.FC<
                 <CardContent>
                   <ChartContainer
                     config={chartConfig}
-                    className='h-[260px] w-full'
+                    className={
+                      isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+                    }
                   >
                     <ResponsiveContainer width='100%' height='100%'>
                       <AreaChart data={savesOverTimeData}>
@@ -388,6 +392,7 @@ const DashboardSavedListingsChart: React.FC<
                           tickLine={false}
                           axisLine={false}
                           tickMargin={8}
+                          minTickGap={isMobile ? 24 : 12}
                         />
                         <YAxis
                           tickLine={false}
@@ -440,7 +445,9 @@ const DashboardSavedListingsChart: React.FC<
                 <CardContent>
                   <ChartContainer
                     config={chartConfig}
-                    className='h-[260px] w-full'
+                    className={
+                      isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+                    }
                   >
                     <ResponsiveContainer width='100%' height='100%'>
                       <BarChart data={barChartData} layout='vertical'>
@@ -458,7 +465,7 @@ const DashboardSavedListingsChart: React.FC<
                         <YAxis
                           type='category'
                           dataKey='name'
-                          width={180}
+                          width={isMobile ? 120 : 180}
                           tickLine={false}
                           axisLine={false}
                         />
@@ -513,9 +520,9 @@ const DashboardSavedListingsChart: React.FC<
           </CardHeader>
           <CardContent>
             <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3'>
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-2 w-full md:w-auto'>
                 <Input
-                  className='w-[260px]'
+                  className='w-full md:w-[260px]'
                   placeholder={t('searchPlaceholder')}
                   value={searchKeyword || ''}
                   onChange={(e) => onSearchKeywordChange?.(e.target.value)}
@@ -541,57 +548,41 @@ const DashboardSavedListingsChart: React.FC<
                 </Select>
               </div>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('listing')}</TableHead>
-                  <TableHead className='text-right'>
-                    {t('totalSaves')}
-                  </TableHead>
-                  <TableHead className='text-right'>{t('action')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            {isMobile ? (
+              <div className='space-y-2'>
                 {isSummaryLoading ? (
-                  <>
-                    {Array.from({
-                      length: Math.max(3, Math.min(10, pageSize || 10)),
-                    }).map((_, idx) => (
-                      <TableRow key={`sk-${idx}`}>
-                        <TableCell>
-                          <Skeleton className='h-4 w-[70%]' />
-                        </TableCell>
-                        <TableCell className='text-right'>
-                          <div className='flex justify-end'>
-                            <Skeleton className='h-4 w-12' />
-                          </div>
-                        </TableCell>
-                        <TableCell className='text-right'>
-                          <div className='flex justify-end'>
-                            <Skeleton className='h-6 w-24 rounded-md' />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </>
-                ) : listings.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3}>
-                      <div className='flex items-center justify-center h-[120px] text-muted-foreground'>
-                        {t('noListings')}
+                  Array.from({
+                    length: Math.max(3, Math.min(10, pageSize || 10)),
+                  }).map((_, idx) => (
+                    <div
+                      key={`m-sk-${idx}`}
+                      className='rounded-lg border p-3 space-y-2'
+                    >
+                      <Skeleton className='h-4 w-[70%]' />
+                      <div className='flex items-center justify-between'>
+                        <Skeleton className='h-4 w-12' />
+                        <Skeleton className='h-8 w-24 rounded-md' />
                       </div>
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                  ))
+                ) : listings.length === 0 ? (
+                  <div className='flex items-center justify-center h-[120px] text-muted-foreground rounded-lg border'>
+                    {t('noListings')}
+                  </div>
                 ) : (
                   listings.map((listing) => (
-                    <TableRow key={listing.listingId}>
-                      <TableCell className='font-medium'>
+                    <div
+                      key={listing.listingId}
+                      className='rounded-lg border p-3 space-y-2'
+                    >
+                      <p className='font-medium text-sm line-clamp-2'>
                         {listing.listingTitle}
-                      </TableCell>
-                      <TableCell className='text-right'>
-                        {listing.totalSaves}
-                      </TableCell>
-                      <TableCell className='text-right'>
+                      </p>
+                      <div className='flex items-center justify-between gap-3'>
+                        <p className='text-sm text-muted-foreground'>
+                          {t('totalSaves')}:{' '}
+                          <strong>{listing.totalSaves}</strong>
+                        </p>
                         <Button
                           variant='outline'
                           size='sm'
@@ -599,13 +590,80 @@ const DashboardSavedListingsChart: React.FC<
                         >
                           {t('viewTrend')}
                         </Button>
-                      </TableCell>
-                    </TableRow>
+                      </div>
+                    </div>
                   ))
                 )}
-              </TableBody>
-            </Table>
-            <div className='flex items-center justify-between mt-4'>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('listing')}</TableHead>
+                    <TableHead className='text-right'>
+                      {t('totalSaves')}
+                    </TableHead>
+                    <TableHead className='text-right'>{t('action')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isSummaryLoading ? (
+                    <>
+                      {Array.from({
+                        length: Math.max(3, Math.min(10, pageSize || 10)),
+                      }).map((_, idx) => (
+                        <TableRow key={`sk-${idx}`}>
+                          <TableCell>
+                            <Skeleton className='h-4 w-[70%]' />
+                          </TableCell>
+                          <TableCell className='text-right'>
+                            <div className='flex justify-end'>
+                              <Skeleton className='h-4 w-12' />
+                            </div>
+                          </TableCell>
+                          <TableCell className='text-right'>
+                            <div className='flex justify-end'>
+                              <Skeleton className='h-6 w-24 rounded-md' />
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </>
+                  ) : listings.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={3}>
+                        <div className='flex items-center justify-center h-[120px] text-muted-foreground'>
+                          {t('noListings')}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    listings.map((listing) => (
+                      <TableRow key={listing.listingId}>
+                        <TableCell className='font-medium'>
+                          {listing.listingTitle}
+                        </TableCell>
+                        <TableCell className='text-right'>
+                          {listing.totalSaves}
+                        </TableCell>
+                        <TableCell className='text-right'>
+                          <Button
+                            variant='outline'
+                            size='sm'
+                            onClick={() =>
+                              handleSelectListing(listing.listingId)
+                            }
+                          >
+                            {t('viewTrend')}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            )}
+            <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-4'>
               <div className='text-sm text-muted-foreground'>
                 {typeof totalElements === 'number' &&
                 typeof currentPage === 'number' &&
@@ -617,7 +675,7 @@ const DashboardSavedListingsChart: React.FC<
                     })
                   : null}
               </div>
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center justify-between sm:justify-end gap-2'>
                 <Button
                   variant='outline'
                   size='sm'

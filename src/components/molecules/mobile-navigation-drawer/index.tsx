@@ -7,13 +7,13 @@ import {
   UserPlus,
   LogOut,
   User,
-  Settings,
+  ShieldCheck,
   MapIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
-import { Avatar } from '@/components/atoms/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
 import Link from 'next/link'
 import NavigationMenu from '@/components/molecules/navigation-menu'
 import { NavigationItemData } from '@/components/atoms/navigation-item'
@@ -24,7 +24,7 @@ import { useTranslations } from 'next-intl'
 import { useAuth, useLogout } from '@/hooks/useAuth'
 import { useAuthDialog } from '@/contexts/authDialog'
 import { useRouter } from 'next/router'
-import { PUBLIC_ROUTES } from '@/constants/route'
+import { PUBLIC_ROUTES, SELLERNET_ROUTES } from '@/constants/route'
 
 interface MobileNavigationDrawerProps {
   items: NavigationItemData[]
@@ -85,11 +85,6 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
-  }
-
-  const getUserRole = () => {
-    // For now, return 'user' role. In real app, this would come from user data
-    return 'user'
   }
 
   return (
@@ -153,9 +148,14 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
               {/* User Info */}
               <div className='flex items-center gap-3 p-3 bg-muted/50 rounded-lg'>
                 <Avatar className='h-10 w-10'>
-                  <div className='flex items-center justify-center h-full w-full bg-primary text-primary-foreground text-sm font-medium'>
+                  <AvatarImage
+                    src={user.avatarUrl}
+                    alt={`${user.firstName} ${user.lastName}`}
+                    className='object-cover'
+                  />
+                  <AvatarFallback className='bg-primary text-primary-foreground text-sm font-medium'>
                     {getInitials(user.firstName, user.lastName)}
-                  </div>
+                  </AvatarFallback>
                 </Avatar>
                 <div className='flex-1 min-w-0'>
                   <Typography
@@ -169,12 +169,6 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
                     className='text-xs text-muted-foreground truncate'
                   >
                     {user.email}
-                  </Typography>
-                  <Typography
-                    variant='p'
-                    className='text-xs text-primary font-medium'
-                  >
-                    {t(`homePage.auth.user.role.${getUserRole()}`)}
                   </Typography>
                 </div>
               </div>
@@ -206,22 +200,32 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
                     {t('common.createPost')}
                   </Button>
                 </Link>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='w-full justify-start gap-2 text-left'
+                <Link
+                  href={SELLERNET_ROUTES.PERSONAL_EDIT}
+                  onClick={() => setIsOpen(false)}
                 >
-                  <User className='h-4 w-4' />
-                  {t('homePage.auth.profile')}
-                </Button>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='w-full justify-start gap-2 text-left'
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    className='w-full justify-start gap-2 text-left'
+                  >
+                    <User className='h-4 w-4' />
+                    {t('homePage.auth.profile')}
+                  </Button>
+                </Link>
+                <Link
+                  href={SELLER_ROUTES.MEMBERSHIP}
+                  onClick={() => setIsOpen(false)}
                 >
-                  <Settings className='h-4 w-4' />
-                  {t('homePage.auth.settings')}
-                </Button>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    className='w-full justify-start gap-2 text-left'
+                  >
+                    <ShieldCheck className='h-4 w-4' />
+                    {t('navigation.seller.membership')}
+                  </Button>
+                </Link>
                 <Button
                   variant='ghost'
                   size='sm'

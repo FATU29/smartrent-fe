@@ -598,6 +598,7 @@
         "title": "Account Management",
         "personalInfoTab": "Edit Information",
         "accountSettingsTab": "Account Settings",
+        "brokerVerificationTab": "Real Estate Broker",
         "personalInfo": {
           "title": "Personal Information",
           "contactInfo": "Contact Information",
@@ -617,6 +618,35 @@
           "updateError": "Failed to update information. Please try again.",
           "updateErrorGeneral": "An error occurred while updating information",
           "updateNotImplemented": "Update information feature is not implemented yet"
+        },
+        "brokerVerification": {
+          "title": "Real estate broker verification",
+          "section1Title": "Section 1: Broker license image",
+          "section1Description": "Please upload a clear photo of your broker practicing certificate for verification.",
+          "section2Title": "Section 2: Vietnam ID verification",
+          "section2Description": "You must update Full Name, Phone Number, and Avatar in the Edit Information tab before uploading ID images.",
+          "certificateLabel": "Broker license photo",
+          "citizenIdLabel": "Citizen ID number",
+          "citizenIdPlaceholder": "Enter Citizen ID number (9-12 digits)",
+          "idFrontLabel": "Citizen ID front side",
+          "idBackLabel": "Citizen ID back side",
+          "uploadCta": "Click to upload image",
+          "uploadHint": "Supported formats: JPEG, PNG, WebP • Max 10MB",
+          "personalInfoIncompleteTitle": "Missing basic information",
+          "personalInfoIncompleteDescription": "Please complete First Name, Last Name, Phone Number, and Avatar in the Edit Information tab.",
+          "personalInfoIncompleteToast": "Please complete the Edit Information tab first.",
+          "goToPersonalInfo": "Go back to provide information",
+          "submit": "Submit verification profile",
+          "submitting": "Submitting profile...",
+          "submitSuccess": "Verification profile submitted successfully. We'll review it shortly.",
+          "errors": {
+            "fileSize": "Image must not exceed {maxSize}MB.",
+            "fileFormat": "Image must be in JPEG, PNG, or WebP format.",
+            "certificateRequired": "Please upload your broker license photo.",
+            "idNumberRequired": "Please enter your Citizen ID number.",
+            "idNumberInvalid": "Invalid Citizen ID number. Please review and try again.",
+            "idImagesRequired": "Please upload both front and back images of your Citizen ID."
+          }
         },
         "passwordChange": {
           "title": "Change Password",
@@ -645,6 +675,14 @@
             "timing": "VAT invoices will be issued on the same day for all payment transactions.",
             "service": "The service content displayed on the invoice is advertising service fees on the website batdongsan.com.vn.",
             "support": "For any issues requiring support regarding invoices for payment transactions during the day, please contact hotline 1900 1881 before 6 PM."
+          }
+        },
+        "brokerHookBanner": {
+          "title": "Enable your broker profile to build trust, stand out across the platform, and reach clients faster.",
+          "items": {
+            "featuredSearch": "Featured on search results",
+            "joinFree": "Join for free",
+            "credibilityBoost": "Boost credibility with a verified profile"
           }
         },
         "loginRequired": {
