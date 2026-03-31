@@ -65,7 +65,7 @@ export const getMenuItems = (t: any): MenuItem[] => [
     id: 'proBroker',
     icon: <BadgeCheck className='h-4 w-4' />,
     label: t('userMenu.proBroker'),
-    href: SELLERNET_ROUTES.PERSONAL_PRO_BROKER,
+    href: `${SELLERNET_ROUTES.PERSONAL_EDIT}?tab=broker-verification`,
     badge: { text: t('common.new'), variant: 'primary' },
   },
 ]

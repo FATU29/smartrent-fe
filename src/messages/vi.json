@@ -599,6 +599,7 @@
         "title": "Quản lý tài khoản",
         "personalInfoTab": "Chỉnh sửa thông tin",
         "accountSettingsTab": "Cài đặt tài khoản",
+        "brokerVerificationTab": "Môi giới BĐS",
         "personalInfo": {
           "title": "Thông tin cá nhân",
           "contactInfo": "Thông tin liên hệ",
@@ -618,6 +619,35 @@
           "updateError": "Cập nhật thông tin thất bại. Vui lòng thử lại.",
           "updateErrorGeneral": "Có lỗi xảy ra khi cập nhật thông tin",
           "updateNotImplemented": "Chức năng cập nhật thông tin chưa được cài đặt"
+        },
+        "brokerVerification": {
+          "title": "Xác thực môi giới bất động sản",
+          "section1Title": "Phần 1: Ảnh chứng chỉ môi giới",
+          "section1Description": "Vui lòng tải ảnh chụp rõ nét chứng chỉ hành nghề môi giới để hệ thống đối soát.",
+          "section2Title": "Phần 2: Xác minh CCCD/CMND Việt Nam",
+          "section2Description": "Bạn cần cập nhật đủ Họ tên, Số điện thoại và Ảnh đại diện ở tab Chỉnh sửa thông tin trước khi cung cấp ảnh CCCD/CMND.",
+          "certificateLabel": "Ảnh chụp chứng chỉ môi giới",
+          "citizenIdLabel": "Số CCCD/CMND",
+          "citizenIdPlaceholder": "Nhập số CCCD/CMND (9-12 số)",
+          "idFrontLabel": "Mặt trước CCCD/CMND",
+          "idBackLabel": "Mặt sau CCCD/CMND",
+          "uploadCta": "Nhấn để tải ảnh",
+          "uploadHint": "Định dạng hỗ trợ: JPEG, PNG, WebP • Tối đa 10MB",
+          "personalInfoIncompleteTitle": "Thiếu thông tin cơ bản",
+          "personalInfoIncompleteDescription": "Bạn cần điền đầy đủ Họ, Tên, Số điện thoại và Ảnh đại diện trong tab Chỉnh sửa thông tin.",
+          "personalInfoIncompleteToast": "Vui lòng hoàn tất thông tin ở tab Chỉnh sửa thông tin trước.",
+          "goToPersonalInfo": "Quay về cung cấp thông tin",
+          "submit": "Gửi hồ sơ xác thực",
+          "submitting": "Đang gửi hồ sơ...",
+          "submitSuccess": "Đã gửi hồ sơ xác thực. Chúng tôi sẽ phản hồi sớm nhất.",
+          "errors": {
+            "fileSize": "Ảnh không được vượt quá {maxSize}MB.",
+            "fileFormat": "Ảnh phải thuộc định dạng JPEG, PNG hoặc WebP.",
+            "certificateRequired": "Vui lòng tải ảnh chứng chỉ môi giới.",
+            "idNumberRequired": "Vui lòng nhập số CCCD/CMND.",
+            "idNumberInvalid": "Số CCCD/CMND không hợp lệ. Vui lòng kiểm tra lại.",
+            "idImagesRequired": "Vui lòng tải đầy đủ ảnh mặt trước và mặt sau CCCD/CMND."
+          }
         },
         "passwordChange": {
           "title": "Đổi mật khẩu",
@@ -646,6 +676,14 @@
             "timing": "Hóa đơn GTGT sẽ được xuất trong ngày và cho tất cả các giao dịch nộp tiền.",
             "service": "Nội dung dịch vụ được thể hiện trên hóa đơn là Phí dịch vụ quảng cáo trên website batdongsan.com.vn.",
             "support": "Mọi vấn đề cần hỗ trợ về hóa đơn của giao dịch nộp tiền trong ngày, vui lòng liên hệ hotline 1900 1881 trước 18h."
+          }
+        },
+        "brokerHookBanner": {
+          "title": "Bật hồ sơ môi giới để tăng độ tin cậy, nổi bật hơn trên hệ thống và tiếp cận khách hàng nhanh hơn.",
+          "items": {
+            "featuredSearch": "Nổi bật trên trang tìm kiếm",
+            "joinFree": "Tham gia miễn phí",
+            "credibilityBoost": "Tăng độ uy tín với hồ sơ xác thực"
           }
         },
         "loginRequired": {

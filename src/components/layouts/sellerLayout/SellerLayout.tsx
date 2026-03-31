@@ -63,7 +63,7 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
             <aside className='hidden md:block'>
               <div className='fixed left-0 top-0 z-30 h-screen w-[200px] rounded-none border-r bg-card p-3 shadow-sm overflow-y-auto overflow-x-hidden pr-1 flex flex-col'>
                 <div className='px-2 py-2 mb-1.5'>
-                  <Logo size='small' />
+                  <Logo size='medium' />
                 </div>
 
                 <VerticalNav
@@ -80,7 +80,7 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
                   <div className='flex h-14 items-center justify-between gap-2 md:justify-between md:gap-3 md:h-auto md:py-4'>
                     <div className='flex items-center gap-3 min-w-0'>
                       <div className='md:hidden'>
-                        <Logo size='small' showText={false} />
+                        <Logo size='medium' showText />
                       </div>
                       <div className='min-w-0'>
                         <div className='hidden md:block text-base md:text-lg font-semibold truncate'>

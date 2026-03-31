@@ -77,7 +77,7 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
             <aside className='hidden md:block'>
               <div className='fixed left-0 top-0 z-30 h-screen w-[220px] rounded-none border-r bg-card p-3 shadow-sm overflow-y-auto overflow-x-hidden pr-2 flex flex-col'>
                 <div className='px-2 py-2 mb-1.5'>
-                  <Logo size='small' />
+                  <Logo size='medium' />
                 </div>
                 <VerticalNav
                   items={items}
@@ -91,7 +91,10 @@ const SellernetLayout: React.FC<SellernetLayoutProps> = ({ children }) => {
               <div className='fixed inset-x-0 top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 border-b shadow-sm md:shadow md:sticky md:inset-x-auto md:top-0'>
                 <div className='px-4 sm:px-6 pt-[max(env(safe-area-inset-top),0px)] md:px-6 md:pt-0'>
                   <div className='flex h-14 items-center justify-between gap-2 md:gap-3 md:h-auto md:py-4'>
-                    <div className='min-w-0'>
+                    <div className='min-w-0 flex items-center gap-3'>
+                      <div className='md:hidden'>
+                        <Logo size='medium' showText />
+                      </div>
                       <div className='hidden md:block text-base md:text-lg font-semibold truncate'>
                         {activeTitle}
                       </div>
