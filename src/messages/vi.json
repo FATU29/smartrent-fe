@@ -2659,6 +2659,12 @@
       "chatZalo": "Chat qua Zalo",
       "showPhone": "Hiện số"
     },
+    "phoneAccess": {
+      "loginRequiredTitle": "Đăng nhập để xem số điện thoại",
+      "loginRequiredDescription": "Bạn cần đăng nhập để hiển thị và liên hệ qua số điện thoại của người đăng tin.",
+      "cancel": "Để sau",
+      "loginNow": "Đăng nhập ngay"
+    },
     "property": {
       "roomCapacity": "Sức chứa phòng",
       "price": "Khoảng giá",

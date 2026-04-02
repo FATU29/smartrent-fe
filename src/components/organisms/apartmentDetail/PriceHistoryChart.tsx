@@ -20,7 +20,6 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { formatByLocale, formatCompactCurrency } from '@/utils/currency/convert'
-import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 
 import { usePricingHistory, usePriceStatistics } from '@/hooks/usePricing'
 
@@ -36,8 +35,6 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
   oldAddress,
 }) => {
   const t = useTranslations()
-  const { language } = useSwitchLanguage()
-  const locale = useMemo(() => language || 'vi', [language])
   const [selectedPeriod, setSelectedPeriod] = useState<
     '1year' | '2years' | '5years'
   >('1year')
@@ -119,7 +116,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
         pricePerSqm: currentPrice,
       },
     }
-  }, [priceHistory, priceStatistics, locale])
+  }, [priceHistory, priceStatistics])
 
   if (
     !priceHistory ||
@@ -175,7 +172,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
               variant='h2'
               className='text-xl sm:text-2xl font-bold mb-1 break-words'
             >
-              {formatByLocale(statistics.current, locale)}{' '}
+              {formatByLocale(statistics.current, 'vi')}{' '}
             </Typography>
             <Typography variant='small' className='text-muted-foreground'>
               {t('apartmentDetail.priceHistory.statistics.avgPrice')}
@@ -300,7 +297,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                   axisLine={false}
                   tickMargin={8}
                   tickFormatter={(value) => {
-                    return formatCompactCurrency(value, locale)
+                    return formatCompactCurrency(value, 'vi')
                   }}
                 />
                 <Tooltip
@@ -315,10 +312,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                           color: item.color,
                           dataKey: String(item.dataKey || ''),
                           name: String(item.name || ''),
-                          value: formatByLocale(
-                            Number(item.value) || 0,
-                            locale,
-                          ),
+                          value: formatByLocale(Number(item.value) || 0, 'vi'),
                         }))}
                       />
                     )
@@ -375,7 +369,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
           <Badge className='w-3 h-3 bg-red-500 rounded-full p-0' />
           <Typography variant='small'>
             {t('apartmentDetail.priceHistory.chartLabels.searching', {
-              price: formatByLocale(statistics.pricePerSqm, locale),
+              price: formatByLocale(statistics.pricePerSqm, 'vi'),
             })}
           </Typography>
         </div>
@@ -399,7 +393,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 variant='p'
                 className='font-bold text-sm sm:text-base break-words'
               >
-                {formatByLocale(statistics.minPrice, locale)}{' '}
+                {formatByLocale(statistics.minPrice, 'vi')}{' '}
               </Typography>
             </div>
             <div>
@@ -413,7 +407,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 variant='p'
                 className='font-bold text-sm sm:text-base break-words'
               >
-                {formatByLocale(statistics.maxPrice, locale)}{' '}
+                {formatByLocale(statistics.maxPrice, 'vi')}{' '}
               </Typography>
             </div>
             <div>
@@ -427,7 +421,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
                 variant='p'
                 className='font-bold text-sm sm:text-base break-words'
               >
-                {formatByLocale(statistics.avgPrice, locale)}{' '}
+                {formatByLocale(statistics.avgPrice, 'vi')}{' '}
               </Typography>
             </div>
             <div>

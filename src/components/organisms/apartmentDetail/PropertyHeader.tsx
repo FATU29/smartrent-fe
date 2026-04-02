@@ -4,7 +4,6 @@ import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
 import { ListingDetail } from '@/api/types'
 import { formatByLocale } from '@/utils/currency/convert'
-import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { getPriceUnitTranslationKey } from '@/utils/property'
 import { Button } from '@/components/atoms/button'
 import SaveListingButton from '@/components/molecules/saveListingButton'
@@ -20,7 +19,6 @@ interface PropertyHeaderProps {
 
 const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   const t = useTranslations()
-  const { language: locale } = useSwitchLanguage()
   const [reportDialogOpen, setReportDialogOpen] = useState(false)
 
   const { listing } = props
@@ -169,7 +167,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
               variant='h2'
               className='text-3xl md:text-4xl lg:text-5xl font-bold text-primary'
             >
-              {formatByLocale(price || 0, locale)}
+              {formatByLocale(price || 0, 'vi')}
             </Typography>
             <Typography
               variant='h5'

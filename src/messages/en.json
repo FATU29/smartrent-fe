@@ -2658,6 +2658,12 @@
       "chatZalo": "Chat via Zalo",
       "showPhone": "Show phone"
     },
+    "phoneAccess": {
+      "loginRequiredTitle": "Log in to view phone number",
+      "loginRequiredDescription": "Please log in to reveal and contact the seller via phone number.",
+      "cancel": "Maybe later",
+      "loginNow": "Log in now"
+    },
     "property": {
       "roomCapacity": "Room Capacity",
       "price": "Price Range",
