@@ -198,7 +198,12 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
             className='flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-[11px] leading-tight sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm'
           >
             <User className='hidden sm:inline-block h-4 w-4' />
-            <span className='truncate sm:hidden'>Thông tin</span>
+            <span className='truncate sm:hidden'>
+              {safeT(
+                'homePage.auth.accountManagement.personalInfoTabShort',
+                'Info',
+              )}
+            </span>
             <span className='hidden sm:inline truncate'>
               {t('homePage.auth.accountManagement.personalInfoTab')}
             </span>
@@ -208,7 +213,12 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
             className='flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-[11px] leading-tight sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm'
           >
             <Lock className='hidden sm:inline-block h-4 w-4' />
-            <span className='truncate sm:hidden'>Mật khẩu</span>
+            <span className='truncate sm:hidden'>
+              {safeT(
+                'homePage.auth.accountManagement.accountSettingsTabShort',
+                'Password',
+              )}
+            </span>
             <span className='hidden sm:inline truncate'>
               {t('homePage.auth.accountManagement.accountSettingsTab')}
             </span>
@@ -218,7 +228,12 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
             className='flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-[11px] leading-tight sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm'
           >
             <ShieldCheck className='hidden sm:inline-block h-4 w-4' />
-            <span className='truncate sm:hidden'>Môi giới</span>
+            <span className='truncate sm:hidden'>
+              {safeT(
+                'homePage.auth.accountManagement.brokerVerificationTabShort',
+                'Broker',
+              )}
+            </span>
             <span className='hidden sm:inline truncate'>
               {safeT(
                 'homePage.auth.accountManagement.brokerVerificationTab',
@@ -255,7 +270,10 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
               </div>
               <div className='space-y-1.5'>
                 <span className='inline-flex items-center rounded-full border bg-background/70 px-2.5 py-0.5 text-xs font-medium text-muted-foreground'>
-                  SellerNet Pro
+                  {safeT(
+                    'homePage.auth.accountManagement.brokerHookBanner.badge',
+                    'SellerNet Pro',
+                  )}
                 </span>
                 <h3 className='text-base md:text-lg font-semibold leading-snug text-foreground'>
                   {safeT(

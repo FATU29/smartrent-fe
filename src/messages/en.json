@@ -597,8 +597,11 @@
       "accountManagement": {
         "title": "Account Management",
         "personalInfoTab": "Edit Information",
+        "personalInfoTabShort": "Info",
         "accountSettingsTab": "Account Settings",
+        "accountSettingsTabShort": "Password",
         "brokerVerificationTab": "Real Estate Broker",
+        "brokerVerificationTabShort": "Broker",
         "personalInfo": {
           "title": "Personal Information",
           "contactInfo": "Contact Information",
@@ -678,6 +681,7 @@
           }
         },
         "brokerHookBanner": {
+          "badge": "SellerNet Pro",
           "title": "Enable your broker profile to build trust, stand out across the platform, and reach clients faster.",
           "items": {
             "featuredSearch": "Featured on search results",

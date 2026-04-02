@@ -598,8 +598,11 @@
       "accountManagement": {
         "title": "Quản lý tài khoản",
         "personalInfoTab": "Chỉnh sửa thông tin",
+        "personalInfoTabShort": "Thông tin",
         "accountSettingsTab": "Cài đặt tài khoản",
+        "accountSettingsTabShort": "Mật khẩu",
         "brokerVerificationTab": "Môi giới BĐS",
+        "brokerVerificationTabShort": "Môi giới",
         "personalInfo": {
           "title": "Thông tin cá nhân",
           "contactInfo": "Thông tin liên hệ",
@@ -679,6 +682,7 @@
           }
         },
         "brokerHookBanner": {
+          "badge": "SellerNet Pro",
           "title": "Bật hồ sơ môi giới để tăng độ tin cậy, nổi bật hơn trên hệ thống và tiếp cận khách hàng nhanh hơn.",
           "items": {
             "featuredSearch": "Nổi bật trên trang tìm kiếm",
