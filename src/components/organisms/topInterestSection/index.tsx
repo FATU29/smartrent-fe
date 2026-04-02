@@ -15,6 +15,7 @@ import {
 import { cn } from '@/lib/utils'
 import { CATEGORY_CODE, imageMapCategory } from '@/utils/mapper'
 import type { CategoryStatsItem } from '@/api/types'
+import { Skeleton } from '@/components/atoms/skeleton'
 
 interface TopInterestItem {
   id: number
@@ -32,6 +33,7 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
   categoryStats,
 }) => {
   const t = useTranslations('homePage.topInterest')
+  const isLoading = categoryStats === undefined
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
@@ -92,7 +94,9 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
         </Link>
       </div>
 
-      {items.length === 0 ? (
+      {isLoading ? (
+        <TopInterestSectionSkeleton />
+      ) : items.length === 0 ? (
         <div className='text-center py-12 px-4 border rounded-lg bg-muted/30'>
           <div className='max-w-md mx-auto'>
             <svg
@@ -178,6 +182,25 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
         </Carousel>
       )}
     </section>
+  )
+}
+
+const TopInterestSectionSkeleton = () => {
+  return (
+    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+      {[0, 1, 2].map((item) => (
+        <div
+          key={item}
+          className='w-full rounded-lg overflow-hidden border bg-background shadow-sm'
+        >
+          <Skeleton className='h-40 sm:h-44 lg:h-48 w-full rounded-none' />
+          <div className='p-3 space-y-2'>
+            <Skeleton className='h-4 w-3/4' />
+            <Skeleton className='h-3 w-1/2' />
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 

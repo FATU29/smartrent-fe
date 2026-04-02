@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
@@ -6,6 +6,12 @@ import ImageAtom from '@/components/atoms/imageAtom'
 import { DEFAULT_IMAGE } from '@/constants'
 import { isYouTube, toYouTubeEmbed } from '@/utils/video/url'
 import { MediaItem } from '@/api/types/property.type'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from '@/components/atoms/carousel'
 
 interface ImageSliderProps {
   media: MediaItem[]
@@ -14,30 +20,57 @@ interface ImageSliderProps {
 const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
   const t = useTranslations('apartmentDetail.imageSlider')
 
-  const video = media.find((item) => item.mediaType === 'VIDEO' && item.url)
-  const images = media.filter((item) => item.mediaType === 'IMAGE' && item.url)
-
-  const thumbnailMedia = media.find(
-    (item) => item.mediaType === 'IMAGE' && item.isPrimary && item.url,
-  )
-
-  const sortedMedia = [video, thumbnailMedia, ...images].filter(Boolean)
-
-  const [currentIndex, setCurrentIndex] = useState(0)
-
-  const nextMedia = () => {
-    setCurrentIndex((prev) => (prev + 1) % sortedMedia.length)
-  }
-
-  const prevMedia = () => {
-    setCurrentIndex(
-      (prev) => (prev - 1 + sortedMedia.length) % sortedMedia.length,
+  const sortedMedia = React.useMemo(() => {
+    const video = media.find((item) => item.mediaType === 'VIDEO' && item.url)
+    const thumbnailMedia = media.find(
+      (item) => item.mediaType === 'IMAGE' && item.isPrimary && item.url,
     )
-  }
+    const images = media.filter(
+      (item) => item.mediaType === 'IMAGE' && item.url,
+    )
+
+    const merged = [video, thumbnailMedia, ...images].filter(
+      Boolean,
+    ) as MediaItem[]
+
+    const seen = new Set<string>()
+    return merged.filter((item) => {
+      const key = `${item.mediaType}:${item.url}`
+      if (!item.url || seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  }, [media])
+
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [currentIndex, setCurrentIndex] = React.useState(0)
+
+  const nextMedia = () => api?.scrollNext()
+
+  const prevMedia = () => api?.scrollPrev()
 
   const selectMedia = (index: number) => {
     setCurrentIndex(index)
+    api?.scrollTo(index)
   }
+
+  React.useEffect(() => {
+    if (!api) return
+
+    setCurrentIndex(api.selectedScrollSnap())
+
+    const onSelect = () => {
+      setCurrentIndex(api.selectedScrollSnap())
+    }
+
+    api.on('select', onSelect)
+    api.on('reInit', onSelect)
+
+    return () => {
+      api.off('select', onSelect)
+      api.off('reInit', onSelect)
+    }
+  }, [api])
 
   if (sortedMedia.length === 0) {
     return (
@@ -62,34 +95,49 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
   return (
     <div className='space-y-3 md:space-y-4'>
       {/* Main Media Display */}
-      <div className='relative w-full aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden bg-muted shadow-lg'>
-        {currentMedia?.mediaType === 'IMAGE' ? (
-          <ImageAtom
-            src={currentMedia.url}
-            defaultImage={DEFAULT_IMAGE}
-            alt={`${t('image')} ${currentIndex + 1}`}
-            className='w-full h-full object-cover'
-            priority={currentIndex === 0}
-          />
-        ) : currentMedia?.mediaType === 'VIDEO' ? (
-          isYouTube(currentMedia.url) ? (
-            <div className='w-full h-full'>
-              <iframe
-                src={toYouTubeEmbed(currentMedia.url) || ''}
-                className='w-full h-full'
-                title={`video-${currentIndex + 1}`}
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                allowFullScreen
-              />
-            </div>
-          ) : (
-            <video
-              src={currentMedia.url}
-              controls
-              className='w-full h-full object-cover'
-            />
-          )
-        ) : null}
+      <div className='relative w-full rounded-xl md:rounded-2xl overflow-hidden bg-muted shadow-lg'>
+        <Carousel
+          setApi={setApi}
+          opts={{ align: 'start', loop: sortedMedia.length > 1 }}
+          className='w-full'
+        >
+          <CarouselContent className='ml-0'>
+            {sortedMedia.map((item, index) => (
+              <CarouselItem
+                key={`${item.mediaType}-${item.url}-${index}`}
+                className='pl-0'
+              >
+                <div className='relative w-full aspect-[16/9] overflow-hidden'>
+                  {item.mediaType === 'IMAGE' ? (
+                    <ImageAtom
+                      src={item.url || DEFAULT_IMAGE}
+                      defaultImage={DEFAULT_IMAGE}
+                      alt={`${t('image')} ${index + 1}`}
+                      className='w-full h-full object-cover'
+                      priority={index === 0}
+                    />
+                  ) : isYouTube(item.url || '') ? (
+                    <div className='w-full h-full'>
+                      <iframe
+                        src={toYouTubeEmbed(item.url || '') || ''}
+                        className='w-full h-full'
+                        title={`video-${index + 1}`}
+                        allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                        allowFullScreen
+                      />
+                    </div>
+                  ) : (
+                    <video
+                      src={item.url}
+                      controls
+                      className='w-full h-full object-cover'
+                    />
+                  )}
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
 
         {/* Navigation Arrows */}
         {sortedMedia.length > 1 && (
