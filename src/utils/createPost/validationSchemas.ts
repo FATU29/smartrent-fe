@@ -36,15 +36,13 @@ const getPropertyInfoFields = () => ({
             const address = value as
               | { provinceCode?: string; wardCode?: string }
               | undefined
-            // If newAddress exists, check if it has provinceCode and wardCode
-            if (address && typeof address === 'object') {
-              const hasProvince = !!address.provinceCode
-              const hasWard = !!address.wardCode
-              return hasProvince && hasWard
+            if (!address || typeof address !== 'object') {
+              return false
             }
-            // If newAddress doesn't exist, check if legacy exists
-            const legacy = this.parent.legacy
-            return !!legacy
+
+            const hasProvince = !!address.provinceCode
+            const hasWard = !!address.wardCode
+            return hasProvince && hasWard
           },
         ),
     })
@@ -58,29 +56,24 @@ const getPropertyInfoFields = () => ({
       }
       if (!address) return false
 
-      // Check if coordinates are valid
+      const hasNewAddress =
+        address.newAddress?.provinceCode && address.newAddress?.wardCode
+      if (!hasNewAddress) {
+        return this.createError({
+          path: this.path,
+          message: 'addressRequired',
+        })
+      }
+
       const hasValidCoords =
         address.latitude !== undefined &&
         address.longitude !== undefined &&
         address.latitude !== 0 &&
         address.longitude !== 0
-
       if (!hasValidCoords) {
         return this.createError({
           path: this.path,
           message: 'locationRequired',
-        })
-      }
-
-      // Check if address structure is provided (either newAddress or legacy)
-      const hasNewAddress =
-        address.newAddress?.provinceCode && address.newAddress?.wardCode
-      const hasLegacy = !!address.legacy
-
-      if (!hasNewAddress && !hasLegacy) {
-        return this.createError({
-          path: this.path,
-          message: 'addressRequired',
         })
       }
 

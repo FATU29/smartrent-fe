@@ -52,7 +52,11 @@ export const useAddressComposition = (
       (propertyInfo?.address?.newAddress?.provinceCode
         ? String(propertyInfo.address.newAddress.provinceCode)
         : undefined)
-    const province = newProvinces.find((p) => p.key === provinceCode)
+    const province = newProvinces.find(
+      (p) =>
+        p.key === provinceCode ||
+        String((p as { id?: string }).id) === provinceCode,
+    )
     if (province?.name) parts.push(province.name)
 
     return parts.join(', ')

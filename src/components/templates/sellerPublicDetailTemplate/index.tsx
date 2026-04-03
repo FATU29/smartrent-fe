@@ -147,7 +147,7 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
   )
 
   return (
-    <div className='container mx-auto px-4 py-6 space-y-6'>
+    <div className='mx-auto w-full max-w-6xl px-4 py-6 space-y-6'>
       <div className='space-y-3'>
         <div>
           <Typography variant='h2' className='text-xl md:text-2xl'>
@@ -159,7 +159,9 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
         </div>
       </div>
 
-      <SellerPublicProfileCard seller={seller} listingCount={listingCount} />
+      <section className='max-w-4xl mx-auto'>
+        <SellerPublicProfileCard seller={seller} listingCount={listingCount} />
+      </section>
 
       {isError &&
         !isLoading &&

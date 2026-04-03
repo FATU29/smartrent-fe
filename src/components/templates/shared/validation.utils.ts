@@ -45,8 +45,7 @@ export const validateStep0 = (
   const hasNewAddress = !!(
     address?.newAddress?.provinceCode && address?.newAddress?.wardCode
   )
-  const hasLegacy = !!address?.legacy
-  const hasAddressStructure = hasNewAddress || hasLegacy
+  const hasAddressStructure = hasNewAddress
 
   const hasAllRequiredFields =
     !!propertyInfo.categoryId &&
