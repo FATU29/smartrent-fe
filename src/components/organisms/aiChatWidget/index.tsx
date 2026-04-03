@@ -75,11 +75,6 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
         </div>
       )}
 
-      {/* Pulse ring */}
-      {!isOpen && (
-        <span className='absolute inset-0 rounded-full bg-primary/30 animate-ping' />
-      )}
-
       <AiChatButton
         variant='default'
         size='icon'
@@ -93,9 +88,13 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
         )}
         aria-label={t('openChat')}
       >
+        {/* Pulse ring - inside button so it bounces together */}
+        {!isOpen && (
+          <span className='absolute inset-0 rounded-full bg-primary/30 animate-ping' />
+        )}
         <MessageCircle
           className={cn(
-            'h-6 w-6 transition-transform duration-300',
+            'h-6 w-6 transition-transform duration-300 relative z-10',
             isOpen ? 'rotate-0' : 'group-hover:rotate-12',
           )}
         />

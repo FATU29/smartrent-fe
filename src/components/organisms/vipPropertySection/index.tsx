@@ -173,17 +173,17 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
         opts={{ align: 'start', loop: true }}
         setApi={setApi}
       >
-        <CarouselContent>
+        <CarouselContent className='items-stretch'>
           {listings
             .filter((listing) => !!listing.listingId)
             .map((listing) => (
               <CarouselItem
                 key={listing.listingId}
-                className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 min-w-[320px] sm:min-w-[360px]'
+                className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 min-w-[320px] sm:min-w-[360px] flex'
               >
                 <Link
                   href={`/listing-detail/${listing.listingId}`}
-                  className='block h-full'
+                  className='block w-full'
                   onClick={handleLinkClick}
                 >
                   <PropertyCard listing={listing} onFavorite={handleFavorite} />

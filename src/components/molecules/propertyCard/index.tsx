@@ -509,9 +509,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           getVipCardBorder(),
           isCompact
             ? isTopLayout
-              ? 'flex flex-col'
+              ? 'flex flex-col h-full'
               : 'flex flex-row h-auto min-h-[140px] md:min-h-[160px]'
-            : 'flex flex-col',
+            : 'flex flex-col h-full',
           className,
         )}
         onClick={onClick ? handleClick : undefined}
