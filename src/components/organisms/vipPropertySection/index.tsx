@@ -61,7 +61,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
     page: 1,
     size: 10,
     enabled: true,
-    ...(isNewest ? { sortBy: 'NEWEST', skipVipFilter: true } : {}),
+    ...(isNewest ? { sortBy: 'NEWEST' } : {}),
   })
 
   React.useEffect(() => {
