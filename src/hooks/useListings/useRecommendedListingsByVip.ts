@@ -9,7 +9,6 @@ interface UseRecommendedListingsByVipOptions {
   size?: number
   enabled?: boolean
   sortBy?: string
-  skipVipFilter?: boolean
 }
 
 interface UseRecommendedListingsByVipReturn {
@@ -28,19 +27,13 @@ export const useRecommendedListingsByVip = (
   options: UseRecommendedListingsByVipOptions,
 ): UseRecommendedListingsByVipReturn => {
   const { coordinates } = useLocationContext()
-  const {
-    vipType,
-    page = 1,
-    size = 4,
-    enabled = true,
-    sortBy,
-    skipVipFilter = false,
-  } = options
+  const { vipType, page = 1, size = 4, enabled = true, sortBy } = options
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: [
       'recommended-listings-by-vip',
-      skipVipFilter ? 'newest' : vipType,
+      vipType,
+      sortBy,
       coordinates?.latitude,
       coordinates?.longitude,
       page,
@@ -48,7 +41,7 @@ export const useRecommendedListingsByVip = (
     ],
     queryFn: async () => {
       const response = await ListingService.search({
-        ...(skipVipFilter ? {} : { vipType }),
+        vipType,
         userLatitude: coordinates?.latitude,
         userLongitude: coordinates?.longitude,
         verified: true,
@@ -62,8 +55,8 @@ export const useRecommendedListingsByVip = (
       return listings
     },
     enabled: enabled,
-    staleTime: skipVipFilter ? 0 : 5 * 60 * 1000,
-    gcTime: skipVipFilter ? 60 * 1000 : 10 * 60 * 1000,
+    staleTime: sortBy ? 0 : 5 * 60 * 1000,
+    gcTime: sortBy ? 60 * 1000 : 10 * 60 * 1000,
   })
 
   return {
