@@ -2687,6 +2687,9 @@
       "amenities": "Amenities",
       "newAddress": "New Address",
       "legacyAddress": "Legacy Address",
+      "waterPrice": "Water Price",
+      "electricityPrice": "Electricity Price",
+      "internetPrice": "Internet Price",
       "smartPrice": {
         "title": "Smart Price Evaluation",
         "description": "AI compares market data to help you decide.",
