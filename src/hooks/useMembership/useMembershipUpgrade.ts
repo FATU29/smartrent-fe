@@ -53,8 +53,8 @@ export const useUpgradePreview = (
       return data || null
     },
     enabled: !!userId && !!targetMembershipId,
-    staleTime: 0, // No cache - always fresh
-    gcTime: 1 * 60 * 1000, // Keep in cache for 1 minute
+    staleTime: 60 * 1000, // 1 minute
+    gcTime: 2 * 60 * 1000, // 2 minutes
   })
 }
 

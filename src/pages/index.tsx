@@ -12,10 +12,9 @@ import { fetchNewestNews } from '@/api/services/news.service'
 import type { NewsItem } from '@/api/types/news.type'
 import { useQuery } from '@tanstack/react-query'
 
-const NO_CACHE_QUERY_CONFIG = {
-  staleTime: 0,
-  gcTime: 0,
-  refetchOnMount: 'always' as const,
+const HOMEPAGE_QUERY_CONFIG = {
+  staleTime: 5 * 60 * 1000, // 5 minutes
+  gcTime: 10 * 60 * 1000, // 10 minutes
 }
 
 const TOP_PROVINCE_IDS = [
@@ -43,7 +42,7 @@ const Home: NextPageWithLayout = () => {
       return response?.data || []
     },
     enabled: isClientSide,
-    ...NO_CACHE_QUERY_CONFIG,
+    ...HOMEPAGE_QUERY_CONFIG,
   })
 
   const { data: categoryStats } = useQuery<CategoryStatsItem[]>({
@@ -56,7 +55,7 @@ const Home: NextPageWithLayout = () => {
       return response?.data || []
     },
     enabled: isClientSide,
-    ...NO_CACHE_QUERY_CONFIG,
+    ...HOMEPAGE_QUERY_CONFIG,
   })
 
   const { data: latestNews } = useQuery<NewsItem[]>({
@@ -66,7 +65,7 @@ const Home: NextPageWithLayout = () => {
       return response?.success && response?.data ? response.data : []
     },
     enabled: isClientSide,
-    ...NO_CACHE_QUERY_CONFIG,
+    ...HOMEPAGE_QUERY_CONFIG,
   })
 
   return (

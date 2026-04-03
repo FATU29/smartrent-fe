@@ -21,8 +21,8 @@ export function usePushQuota() {
   return useQuery({
     queryKey: ['quota', 'PUSH'],
     queryFn: () => QuotaService.checkPushQuota(),
-    staleTime: 0, // Always fetch fresh data
-    gcTime: 1000 * 60, // Cache for 1 minute
+    staleTime: 60 * 1000, // 1 minute
+    gcTime: 2 * 60 * 1000, // 2 minutes
   })
 }
 
@@ -97,8 +97,8 @@ export function useAllQuotas() {
   return useQuery({
     queryKey: ['quota', 'all'],
     queryFn: () => QuotaService.checkAllQuotas(),
-    staleTime: 0,
-    gcTime: 1000 * 60,
+    staleTime: 60 * 1000, // 1 minute
+    gcTime: 2 * 60 * 1000, // 2 minutes
   })
 }
 
@@ -115,8 +115,8 @@ export function useQuota(benefitType: string) {
   return useQuery({
     queryKey: ['quota', benefitType],
     queryFn: () => QuotaService.checkQuota(benefitType),
-    staleTime: 0,
-    gcTime: 1000 * 60,
+    staleTime: 60 * 1000, // 1 minute
+    gcTime: 2 * 60 * 1000, // 2 minutes
     enabled: !!benefitType,
   })
 }
