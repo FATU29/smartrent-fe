@@ -70,9 +70,8 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
     queryKey: ['sellernet', 'personal-edit-profile'],
     queryFn: () => UserService.getProfile(),
     enabled: Boolean(user),
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: 'always',
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   })
 

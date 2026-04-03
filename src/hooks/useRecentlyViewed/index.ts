@@ -37,11 +37,8 @@ export const useRecentlyViewed = () => {
       return []
     },
     enabled: isAuthenticated,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
   })
 
   // Sync mutation - sync localStorage with server

@@ -19,7 +19,7 @@ export const useGetMyDrafts = () => {
       const drafts = response.data as unknown as DraftListingResponse[]
       return mapDraftsArrayBackendToFrontend(drafts)
     },
-    staleTime: 0, // No cache for draft data
-    gcTime: 0, // Previously cacheTime, no cache retention
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 2 * 60 * 1000, // 2 minutes
   })
 }

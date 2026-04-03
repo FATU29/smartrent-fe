@@ -24,11 +24,9 @@ const DEFAULT_PAGE_SIZE = 12
 const PAGE_SIZE_OPTIONS = ['6', '12', '24']
 const VIP_SECTION_ORDER: VipType[] = ['DIAMOND', 'GOLD', 'SILVER', 'NORMAL']
 
-const NO_CACHE_QUERY_CONFIG = {
-  staleTime: 0,
-  gcTime: 0,
-  refetchOnMount: 'always' as const,
-  refetchOnWindowFocus: true,
+const SELLER_QUERY_CONFIG = {
+  staleTime: 5 * 60 * 1000, // 5 minutes
+  gcTime: 10 * 60 * 1000, // 10 minutes
 }
 
 const SellerDetailPage: NextPageWithLayout = () => {
@@ -131,7 +129,7 @@ const SellerDetailPage: NextPageWithLayout = () => {
         placeholderData: (
           previousData: SellerVipSectionQueryData | undefined,
         ) => previousData,
-        ...NO_CACHE_QUERY_CONFIG,
+        ...SELLER_QUERY_CONFIG,
       }
     }),
   })
@@ -155,7 +153,7 @@ const SellerDetailPage: NextPageWithLayout = () => {
     },
     enabled: Boolean(userId),
     retry: 1,
-    ...NO_CACHE_QUERY_CONFIG,
+    ...SELLER_QUERY_CONFIG,
   })
 
   const {
@@ -179,7 +177,7 @@ const SellerDetailPage: NextPageWithLayout = () => {
     },
     enabled: Boolean(userId),
     retry: 1,
-    ...NO_CACHE_QUERY_CONFIG,
+    ...SELLER_QUERY_CONFIG,
   })
 
   const sectionMap = React.useMemo(() => {
