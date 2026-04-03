@@ -2867,11 +2867,21 @@
     },
     "profile": {
       "title": "Thông tin người bán",
+      "subtitle": "Kết nối nhanh với người bán qua điện thoại, Zalo hoặc email",
       "sellerBadge": "Người bán",
       "listingCount": "{count} tin đăng",
       "defaultSellerName": "Người bán",
+      "phoneLabel": "Số điện thoại",
+      "emailLabel": "Email",
+      "contactVerified": "Đã xác minh",
+      "contactNotAvailable": "Chưa có thông tin liên hệ",
       "copiedPhone": "Đã sao chép số điện thoại",
-      "copiedEmail": "Đã sao chép email"
+      "copiedEmail": "Đã sao chép email",
+      "actions": {
+        "call": "Gọi điện",
+        "chatZalo": "Nhắn Zalo",
+        "sendEmail": "Gửi email"
+      }
     },
     "tiers": {
       "diamond": "Nổi bật",

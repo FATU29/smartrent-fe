@@ -2866,11 +2866,21 @@
     },
     "profile": {
       "title": "Seller information",
+      "subtitle": "Connect quickly with this seller via phone, Zalo, or email",
       "sellerBadge": "Seller",
       "listingCount": "{count} listings",
       "defaultSellerName": "Seller",
+      "phoneLabel": "Phone number",
+      "emailLabel": "Email",
+      "contactVerified": "Verified",
+      "contactNotAvailable": "No contact information available",
       "copiedPhone": "Phone number copied to clipboard",
-      "copiedEmail": "Email copied to clipboard"
+      "copiedEmail": "Email copied to clipboard",
+      "actions": {
+        "call": "Call",
+        "chatZalo": "Chat Zalo",
+        "sendEmail": "Send email"
+      }
     },
     "tiers": {
       "diamond": "Featured",
