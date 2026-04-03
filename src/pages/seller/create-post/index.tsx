@@ -34,9 +34,8 @@ const CreatePostPage: NextPageWithLayout = () => {
     queryFn: () => UserService.getProfile(),
     enabled: isAuthenticated,
     retry: false,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: 'always',
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
   })
 
   const hasPhoneNumber = React.useMemo(() => {

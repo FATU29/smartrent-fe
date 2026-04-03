@@ -54,29 +54,9 @@ export const useSimilarProperties = (options: UseSimilarPropertiesOptions) => {
         size: limit,
       }
 
-      console.log('🔍 Fetching similar properties with request:', {
-        listingId,
-        searchRequest,
-        locationInfo: {
-          wardId,
-          districtId,
-          provinceId,
-        },
-      })
-
       const response = await ListingService.search(searchRequest)
 
-      console.log('📦 Similar properties API response:', {
-        code: response.code,
-        totalListings: response.data?.listings?.length,
-        totalCount: response.data?.totalCount,
-      })
-
       if (response.code !== '999999' || !response.data) {
-        console.error(
-          '❌ Failed to fetch similar properties:',
-          response.message,
-        )
         throw new Error(
           response.message || 'Failed to fetch similar properties',
         )
@@ -86,12 +66,6 @@ export const useSimilarProperties = (options: UseSimilarPropertiesOptions) => {
       const filteredListings = response.data.listings.filter(
         (listing) => listing.listingId !== Number(listingId),
       )
-
-      console.log('✅ Similar properties filtered:', {
-        totalFetched: response.data.listings.length,
-        afterFilter: filteredListings.length,
-        currentListingId: listingId,
-      })
 
       return filteredListings.slice(0, limit)
     },
