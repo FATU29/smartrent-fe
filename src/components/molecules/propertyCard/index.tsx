@@ -26,7 +26,6 @@ import {
   Users,
   Compass,
   Sofa,
-  Crown,
   Sparkles,
   MapPin,
   Calendar,
@@ -156,39 +155,14 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   const ProductTypeIcon = ProductTypeIconMap[productType || ''] || Home
 
   const getVipBadgeConfig = () => {
-    if (!vipType || vipType === 'NORMAL') return null
-    const configs: Record<
-      string,
-      {
-        label: string
-        className: string
-        borderClassName: string
-        icon: React.ComponentType<{ className?: string }>
-      }
-    > = {
-      SILVER: {
-        label: 'VIP Silver',
-        className:
-          'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-sm',
-        borderClassName: 'ring-1 ring-gray-300',
-        icon: Sparkles,
-      },
-      GOLD: {
-        label: 'VIP Gold',
-        className:
-          'bg-gradient-to-r from-yellow-400 to-amber-500 text-white shadow-sm',
-        borderClassName: 'ring-1 ring-yellow-300',
-        icon: Crown,
-      },
-      DIAMOND: {
-        label: 'VIP Diamond',
-        className:
-          'bg-gradient-to-r from-blue-400 to-indigo-500 text-white shadow-sm',
-        borderClassName: 'ring-1 ring-blue-300',
-        icon: Crown,
-      },
+    if (!vipType || vipType === 'NORMAL' || vipType === 'SILVER') return null
+    return {
+      label: t('homePage.priorityBadge'),
+      className:
+        'bg-gradient-to-r from-primary to-primary/80 text-white shadow-sm',
+      borderClassName: 'ring-1 ring-primary/30',
+      icon: Sparkles,
     }
-    return configs[vipType]
   }
 
   const vipBadgeConfig = getVipBadgeConfig()

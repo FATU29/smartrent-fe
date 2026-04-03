@@ -21,19 +21,19 @@ interface VipPropertySectionProps {
 
 const VIP_CONFIG = {
   DIAMOND: {
-    titleClassName: 'text-blue-600 dark:text-blue-400',
+    titleClassName: 'text-foreground',
     titleKey: 'homePage.vipSections.diamond',
   },
   GOLD: {
-    titleClassName: 'text-yellow-600 dark:text-yellow-400',
+    titleClassName: 'text-foreground',
     titleKey: 'homePage.vipSections.gold',
   },
   SILVER: {
-    titleClassName: 'text-gray-600 dark:text-gray-400',
+    titleClassName: 'text-foreground',
     titleKey: 'homePage.vipSections.silver',
   },
   NORMAL: {
-    titleClassName: 'text-slate-600 dark:text-slate-400',
+    titleClassName: 'text-foreground',
     titleKey: 'homePage.vipSections.normal',
   },
 }
