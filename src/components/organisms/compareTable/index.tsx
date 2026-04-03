@@ -265,13 +265,17 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
       {
         label: t('table.vipType'),
         getValue: (listing: ListingApi) => {
-          if (!listing.vipType || listing.vipType === 'NORMAL') {
+          if (
+            !listing.vipType ||
+            listing.vipType === 'NORMAL' ||
+            listing.vipType === 'SILVER'
+          ) {
             return t('table.notAvailable')
           }
           return (
             <VipTypeBadge
               vipType={listing.vipType}
-              vipTypeLabel={tSeller(`vipTypes.${listing.vipType}`)}
+              vipTypeLabel={t('table.priority')}
             />
           )
         },

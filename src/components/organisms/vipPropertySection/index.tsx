@@ -17,33 +17,43 @@ import { useRecommendedListingsByVip } from '@/hooks/useListings/useRecommendedL
 
 interface VipPropertySectionProps {
   vipType: VipType
+  mode?: 'vip' | 'newest'
 }
 
-const VIP_CONFIG = {
-  DIAMOND: {
-    titleClassName: 'text-blue-600 dark:text-blue-400',
-    titleKey: 'homePage.vipSections.diamond',
-  },
-  GOLD: {
-    titleClassName: 'text-yellow-600 dark:text-yellow-400',
-    titleKey: 'homePage.vipSections.gold',
-  },
-  SILVER: {
-    titleClassName: 'text-gray-600 dark:text-gray-400',
-    titleKey: 'homePage.vipSections.silver',
-  },
-  NORMAL: {
-    titleClassName: 'text-slate-600 dark:text-slate-400',
-    titleKey: 'homePage.vipSections.normal',
-  },
-}
+const VIP_CONFIG: Record<string, { titleClassName: string; titleKey: string }> =
+  {
+    DIAMOND: {
+      titleClassName: 'text-foreground',
+      titleKey: 'homePage.vipSections.diamond',
+    },
+    GOLD: {
+      titleClassName: 'text-foreground',
+      titleKey: 'homePage.vipSections.gold',
+    },
+    SILVER: {
+      titleClassName: 'text-foreground',
+      titleKey: 'homePage.vipSections.silver',
+    },
+    NORMAL: {
+      titleClassName: 'text-foreground',
+      titleKey: 'homePage.vipSections.normal',
+    },
+    NEWEST: {
+      titleClassName: 'text-foreground',
+      titleKey: 'homePage.vipSections.newest',
+    },
+  }
 
-const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
+const VipPropertySection: React.FC<VipPropertySectionProps> = ({
+  vipType,
+  mode = 'vip',
+}) => {
   const t = useTranslations()
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
-  const config = VIP_CONFIG[vipType]
+  const isNewest = mode === 'newest'
+  const config = VIP_CONFIG[isNewest ? 'NEWEST' : vipType]
 
   // Fetch listings client-side
   const { listings, isLoading } = useRecommendedListingsByVip({
@@ -51,6 +61,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
     page: 1,
     size: 10,
     enabled: true,
+    ...(isNewest ? { sortBy: 'NEWEST', skipVipFilter: true } : {}),
   })
 
   React.useEffect(() => {
@@ -88,14 +99,10 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
   if (isLoading) {
     const skeletonItems = Array.from({ length: 4 })
     return (
-      <section className='mb-8 sm:mb-10'>
-        <div className='flex items-center gap-2 mb-4 sm:mb-5'>
-          <h2
-            className={cn(
-              'text-xl sm:text-2xl font-semibold',
-              config.titleClassName,
-            )}
-          >
+      <section className='mb-10 sm:mb-14'>
+        <div className='flex items-center gap-3 mb-5 sm:mb-6'>
+          <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
+          <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
             {t(config.titleKey)}
           </h2>
         </div>
@@ -151,21 +158,14 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
   }
 
   return (
-    <section className='mb-8 sm:mb-10'>
-      <div className='flex items-center gap-2 mb-4 sm:mb-5'>
-        <h2
-          className={cn(
-            'text-xl sm:text-2xl font-semibold',
-            config.titleClassName,
-          )}
-        >
-          {t(config.titleKey)}
-        </h2>
-        <span
-          className={cn('ml-auto text-sm font-medium', config.titleClassName)}
-        >
-          {listings.length}
-        </span>
+    <section className='mb-10 sm:mb-14'>
+      <div className='flex items-center justify-between mb-5 sm:mb-6'>
+        <div className='flex items-center gap-3'>
+          <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
+          <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
+            {t(config.titleKey)}
+          </h2>
+        </div>
       </div>
 
       <Carousel

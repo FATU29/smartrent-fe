@@ -69,34 +69,16 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     PROVIDER_RATE: 'residentialFilter.utilitiesPrice.electricity.provider',
   } as const
 
-  const vipBadgeConfig: Record<
-    string,
-    { className: string; text: string; variant: 'default' | 'secondary' }
-  > = {
-    DIAMOND: {
+  const getVipBadge = () => {
+    if (!vipType || vipType === 'NORMAL' || vipType === 'SILVER') return null
+    return {
       className:
-        'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-transparent',
-      text: t('apartmentDetail.property.vipTypes.DIAMOND'),
-      variant: 'default',
-    },
-    GOLD: {
-      className:
-        'bg-gradient-to-r from-yellow-400 to-amber-500 text-white border-transparent',
-      text: t('apartmentDetail.property.vipTypes.GOLD'),
-      variant: 'default',
-    },
-    SILVER: {
-      className:
-        'bg-gradient-to-r from-gray-400 to-gray-500 text-white border-transparent',
-      text: t('apartmentDetail.property.vipTypes.SILVER'),
-      variant: 'default',
-    },
-    NORMAL: {
-      className: '',
-      text: t('apartmentDetail.property.vipTypes.NORMAL'),
-      variant: 'secondary',
-    },
+        'bg-gradient-to-r from-primary to-primary/80 text-white border-transparent',
+      text: t('homePage.priorityBadge'),
+      variant: 'default' as const,
+    }
   }
+  const vipBadge = getVipBadge()
 
   const normalizeUtilityValue = (
     utilityValue?: string | number | null,
@@ -249,16 +231,14 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
             </Typography>
 
             <div className='flex flex-wrap items-center gap-2 mb-3'>
-              <Badge
-                variant={
-                  vipBadgeConfig[vipType || 'NORMAL']?.variant || 'secondary'
-                }
-                className={vipBadgeConfig[vipType || 'NORMAL']?.className}
-              >
-                {t('apartmentDetail.property.vipType')}:&nbsp;
-                {vipBadgeConfig[vipType || 'NORMAL']?.text ||
-                  t('apartmentDetail.property.vipTypes.NORMAL')}
-              </Badge>
+              {vipBadge && (
+                <Badge
+                  variant={vipBadge.variant}
+                  className={vipBadge.className}
+                >
+                  {vipBadge.text}
+                </Badge>
+              )}
 
               {topMeta.map((meta) => (
                 <Badge
