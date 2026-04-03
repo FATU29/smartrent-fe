@@ -78,24 +78,24 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     DIAMOND: {
       className:
         'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-transparent',
-      text: t('sellerListing.card.vipTypes.DIAMOND'),
+      text: t('listingManagement.card.vipTypes.DIAMOND'),
       variant: 'default',
     },
     GOLD: {
       className:
         'bg-gradient-to-r from-yellow-400 to-amber-500 text-white border-transparent',
-      text: t('sellerListing.card.vipTypes.GOLD'),
+      text: t('listingManagement.card.vipTypes.GOLD'),
       variant: 'default',
     },
     SILVER: {
       className:
         'bg-gradient-to-r from-gray-400 to-gray-500 text-white border-transparent',
-      text: t('sellerListing.card.vipTypes.SILVER'),
+      text: t('listingManagement.card.vipTypes.SILVER'),
       variant: 'default',
     },
     NORMAL: {
       className: '',
-      text: t('sellerListing.card.vipTypes.NORMAL'),
+      text: t('listingManagement.card.vipTypes.NORMAL'),
       variant: 'secondary',
     },
   }
@@ -163,7 +163,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     {
       key: 'verified',
       label: t('common.status.VERIFIED'),
-      value: verified ? t('compareTable.table.yes') : null,
+      value: verified ? t('compare.table.yes') : null,
     },
   ].filter((item) => item.value)
 
@@ -269,7 +269,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
               >
                 {t('apartmentDetail.property.vipType')}:&nbsp;
                 {vipBadgeConfig[vipType || 'NORMAL']?.text ||
-                  t('sellerListing.card.vipTypes.NORMAL')}
+                  t('listingManagement.card.vipTypes.NORMAL')}
               </Badge>
 
               {topMeta.map((meta) => (
