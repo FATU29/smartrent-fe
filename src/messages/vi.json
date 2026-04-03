@@ -705,11 +705,13 @@
       "exploreButton": "Khám phá"
     },
     "vipSections": {
-      "diamond": "Bất động sản Kim Cương",
-      "gold": "Bất động sản Vàng",
-      "silver": "Bất động sản Bạc",
-      "normal": "Bất động sản Thường"
+      "diamond": "Tin nổi bật",
+      "gold": "Tin đề xuất",
+      "silver": "Đáng chú ý",
+      "newest": "Tin mới",
+      "normal": "Khám phá thêm"
     },
+    "priorityBadge": "Ưu tiên",
     "features": {
       "title": "Tại sao nên chọn chúng tôi",
       "buyOrRent": {
@@ -2870,10 +2872,10 @@
       "copiedEmail": "Đã sao chép email"
     },
     "tiers": {
-      "diamond": "Kim cương",
-      "gold": "Vàng",
-      "silver": "Bạc",
-      "normal": "Thường"
+      "diamond": "Nổi bật",
+      "gold": "Quan tâm",
+      "silver": "Mới",
+      "normal": "Khác"
     },
     "sections": {
       "relatedListings": "Tin đăng liên quan ({count})",
@@ -3357,7 +3359,8 @@
       "direction": "Hướng",
       "propertyType": "Loại BĐS",
       "verified": "Đã xác thực",
-      "vipType": "Gói VIP",
+      "vipType": "Ưu tiên",
+      "priority": "Ưu tiên",
       "amenities": "Tiện ích",
       "notAvailable": "N/A",
       "yes": "Có",

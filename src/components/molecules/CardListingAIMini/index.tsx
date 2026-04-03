@@ -35,6 +35,7 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
   variant = 'default',
 }) => {
   const t = useTranslations('chat.listing')
+  const tHome = useTranslations('homePage')
   const tCompare = useTranslations('compare')
   const tSaved = useTranslations('savedListings')
   const { language } = useLanguage()
@@ -135,8 +136,8 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
               sizes={isCompact ? '100vw' : '(max-width: 640px) 100vw, 128px'}
             />
 
-            {/* VIP Badge */}
-            {vipType && vipType !== 'NORMAL' && (
+            {/* Priority Badge - only for Diamond/Gold */}
+            {vipType && (vipType === 'DIAMOND' || vipType === 'GOLD') && (
               <div
                 className={cn(
                   'absolute',
@@ -146,18 +147,13 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
                 <Badge
                   className={cn(
                     'rounded-full shadow-md font-medium backdrop-blur-sm',
+                    'bg-gradient-to-r from-primary to-primary/80 text-white',
                     isCompact
                       ? 'text-[10px] px-2 py-0.5'
                       : 'text-xs px-2.5 py-1',
-                    vipType === 'DIAMOND' &&
-                      'bg-gradient-to-r from-blue-400 to-indigo-500 text-white',
-                    vipType === 'GOLD' &&
-                      'bg-gradient-to-r from-yellow-400 to-amber-500 text-white',
-                    vipType === 'SILVER' &&
-                      'bg-gradient-to-r from-gray-400 to-gray-500 text-white',
                   )}
                 >
-                  {vipType}
+                  {tHome('priorityBadge')}
                 </Badge>
               </div>
             )}

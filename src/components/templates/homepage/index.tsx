@@ -97,6 +97,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
               <VipPropertySection vipType='DIAMOND' />
               <VipPropertySection vipType='GOLD' />
               <VipPropertySection vipType='SILVER' />
+              <VipPropertySection vipType='NORMAL' mode='newest' />
             </div>
 
             <div className='mt-8 flex flex-col items-center gap-4'>

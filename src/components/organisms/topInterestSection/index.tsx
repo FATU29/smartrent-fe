@@ -84,9 +84,14 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
   }, [api])
 
   return (
-    <section className='mb-8 sm:mb-10'>
-      <div className='flex items-center justify-between mb-4 sm:mb-5'>
-        <h2 className='text-xl sm:text-2xl font-semibold'>{t('title')}</h2>
+    <section className='mb-10 sm:mb-14'>
+      <div className='flex items-center justify-between mb-5 sm:mb-6'>
+        <div className='flex items-center gap-3'>
+          <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
+          <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
+            {t('title')}
+          </h2>
+        </div>
         <Link href={PUBLIC_ROUTES.LISTING_LISTING}>
           <Button variant='ghost' size='sm' className='text-sm'>
             {t('viewAll')}

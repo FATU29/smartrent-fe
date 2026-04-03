@@ -704,11 +704,13 @@
       "exploreButton": "Explore"
     },
     "vipSections": {
-      "diamond": "Diamond Premium Properties",
-      "gold": "Gold Featured Properties",
-      "silver": "Silver Quality Properties",
-      "normal": "Standard Properties"
+      "diamond": "Featured Listings",
+      "gold": "Recommended",
+      "silver": "Noteworthy",
+      "newest": "New Listings",
+      "normal": "Explore More"
     },
+    "priorityBadge": "Priority",
     "features": {
       "title": "Why Choose Us",
       "buyOrRent": {
@@ -2869,10 +2871,10 @@
       "copiedEmail": "Email copied to clipboard"
     },
     "tiers": {
-      "diamond": "Diamond",
-      "gold": "Gold",
-      "silver": "Silver",
-      "normal": "Normal"
+      "diamond": "Featured",
+      "gold": "Popular",
+      "silver": "New",
+      "normal": "Other"
     },
     "sections": {
       "relatedListings": "Related listings ({count})",
@@ -3356,7 +3358,8 @@
       "direction": "Direction",
       "propertyType": "Property Type",
       "verified": "Verified",
-      "vipType": "VIP Type",
+      "vipType": "Priority",
+      "priority": "Priority",
       "amenities": "Amenities",
       "notAvailable": "N/A",
       "yes": "Yes",
