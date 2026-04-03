@@ -78,24 +78,24 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     DIAMOND: {
       className:
         'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-transparent',
-      text: t('listingManagement.card.vipTypes.DIAMOND'),
+      text: t('apartmentDetail.property.vipTypes.DIAMOND'),
       variant: 'default',
     },
     GOLD: {
       className:
         'bg-gradient-to-r from-yellow-400 to-amber-500 text-white border-transparent',
-      text: t('listingManagement.card.vipTypes.GOLD'),
+      text: t('apartmentDetail.property.vipTypes.GOLD'),
       variant: 'default',
     },
     SILVER: {
       className:
         'bg-gradient-to-r from-gray-400 to-gray-500 text-white border-transparent',
-      text: t('listingManagement.card.vipTypes.SILVER'),
+      text: t('apartmentDetail.property.vipTypes.SILVER'),
       variant: 'default',
     },
     NORMAL: {
       className: '',
-      text: t('listingManagement.card.vipTypes.NORMAL'),
+      text: t('apartmentDetail.property.vipTypes.NORMAL'),
       variant: 'secondary',
     },
   }
@@ -164,6 +164,8 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
       key: 'verified',
       label: t('common.status.VERIFIED'),
       value: verified ? t('compare.table.yes') : null,
+      className:
+        'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800',
     },
   ].filter((item) => item.value)
 
@@ -269,11 +271,15 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
               >
                 {t('apartmentDetail.property.vipType')}:&nbsp;
                 {vipBadgeConfig[vipType || 'NORMAL']?.text ||
-                  t('listingManagement.card.vipTypes.NORMAL')}
+                  t('apartmentDetail.property.vipTypes.NORMAL')}
               </Badge>
 
               {topMeta.map((meta) => (
-                <Badge key={meta.key} variant='outline' className='px-2.5 py-1'>
+                <Badge
+                  key={meta.key}
+                  variant='outline'
+                  className={`px-2.5 py-1 ${meta.className || ''}`}
+                >
                   {meta.label}: {meta.value}
                 </Badge>
               ))}

@@ -2693,6 +2693,12 @@
       "legacyAddress": "Địa chỉ cũ",
       "serviceFee": "Phí dịch vụ",
       "vipType": "Gói VIP",
+      "vipTypes": {
+        "NORMAL": "Tin thường",
+        "SILVER": "VIP Bạc",
+        "GOLD": "VIP Vàng",
+        "DIAMOND": "VIP Kim cương"
+      },
       "listingTypes": {
         "RENT": "Cho thuê",
         "SHARE": "Ở ghép"
