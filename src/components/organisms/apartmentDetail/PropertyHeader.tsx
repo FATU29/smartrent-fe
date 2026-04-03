@@ -1,10 +1,16 @@
 import React, { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
+import { Badge } from '@/components/atoms/badge'
 import { ListingDetail } from '@/api/types'
 import { formatByLocale } from '@/utils/currency/convert'
-import { getPriceUnitTranslationKey } from '@/utils/property'
+import {
+  getDirectionTranslationKey,
+  getFurnishingTranslationKey,
+  getPriceUnitTranslationKey,
+  getProductTypeTranslationKey,
+} from '@/utils/property'
 import { Button } from '@/components/atoms/button'
 import SaveListingButton from '@/components/molecules/saveListingButton'
 import CompareToggleBtn from '@/components/molecules/compareToggleBtn'
@@ -19,6 +25,7 @@ interface PropertyHeaderProps {
 
 const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   const t = useTranslations()
+  const locale = useLocale()
   const [reportDialogOpen, setReportDialogOpen] = useState(false)
 
   const { listing } = props
@@ -32,9 +39,17 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     bedrooms,
     bathrooms,
     roomCapacity,
+    vipType,
+    productType,
+    listingType,
+    listingStatus,
+    direction,
+    furnishing,
     waterPrice,
     electricityPrice,
     internetPrice,
+    serviceFee,
+    verified,
     listingId,
   } = listing || {}
 
@@ -56,14 +71,101 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     PROVIDER_RATE: 'residentialFilter.utilitiesPrice.electricity.provider',
   } as const
 
-  const getUtilityPriceLabel = (
-    utilityPrice?: keyof typeof utilityPriceTranslationKeys,
-  ) => {
-    if (!utilityPrice) return null
-    const translationKey = utilityPriceTranslationKeys[utilityPrice]
-    if (!translationKey) return null
-    return t(translationKey)
+  const vipBadgeConfig: Record<
+    string,
+    { className: string; text: string; variant: 'default' | 'secondary' }
+  > = {
+    DIAMOND: {
+      className:
+        'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-transparent',
+      text: t('sellerListing.card.vipTypes.DIAMOND'),
+      variant: 'default',
+    },
+    GOLD: {
+      className:
+        'bg-gradient-to-r from-yellow-400 to-amber-500 text-white border-transparent',
+      text: t('sellerListing.card.vipTypes.GOLD'),
+      variant: 'default',
+    },
+    SILVER: {
+      className:
+        'bg-gradient-to-r from-gray-400 to-gray-500 text-white border-transparent',
+      text: t('sellerListing.card.vipTypes.SILVER'),
+      variant: 'default',
+    },
+    NORMAL: {
+      className: '',
+      text: t('sellerListing.card.vipTypes.NORMAL'),
+      variant: 'secondary',
+    },
   }
+
+  const normalizeUtilityValue = (
+    utilityValue?: string | number | null,
+  ): string | null => {
+    if (utilityValue === undefined || utilityValue === null) return null
+
+    if (typeof utilityValue === 'number') {
+      if (!Number.isFinite(utilityValue)) return null
+      return formatByLocale(utilityValue, locale)
+    }
+
+    const rawValue = utilityValue.toString().trim()
+    if (!rawValue) return null
+
+    const enumTranslationKey =
+      utilityPriceTranslationKeys[
+        rawValue as keyof typeof utilityPriceTranslationKeys
+      ]
+
+    if (enumTranslationKey) {
+      return t(enumTranslationKey)
+    }
+
+    if (/^[\d.,\s]+$/.test(rawValue)) {
+      const parsedValue = Number(rawValue.replace(/[\s.,]/g, ''))
+      if (Number.isFinite(parsedValue)) {
+        return formatByLocale(parsedValue, locale)
+      }
+    }
+
+    return rawValue
+  }
+
+  const topMeta = [
+    {
+      key: 'productType',
+      label: t('apartmentDetail.property.productType'),
+      value: productType ? t(getProductTypeTranslationKey(productType)) : null,
+    },
+    {
+      key: 'listingType',
+      label: t('apartmentDetail.property.listingType'),
+      value: listingType
+        ? t(`apartmentDetail.property.listingTypes.${listingType}`)
+        : null,
+    },
+    {
+      key: 'status',
+      label: t('apartmentDetail.property.status'),
+      value: listingStatus ? t(`common.status.${listingStatus}`) : null,
+    },
+    {
+      key: 'direction',
+      label: t('apartmentDetail.property.direction'),
+      value: direction ? t(getDirectionTranslationKey(direction)) : null,
+    },
+    {
+      key: 'furnishing',
+      label: t('apartmentDetail.property.furnishing'),
+      value: furnishing ? t(getFurnishingTranslationKey(furnishing)) : null,
+    },
+    {
+      key: 'verified',
+      label: t('common.status.VERIFIED'),
+      value: verified ? t('compareTable.table.yes') : null,
+    },
+  ].filter((item) => item.value)
 
   const metrics = [
     {
@@ -99,17 +201,22 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     {
       key: 'waterPrice',
       label: t('apartmentDetail.property.waterPrice'),
-      value: getUtilityPriceLabel(waterPrice),
+      value: normalizeUtilityValue(waterPrice),
     },
     {
       key: 'electricityPrice',
       label: t('apartmentDetail.property.electricityPrice'),
-      value: getUtilityPriceLabel(electricityPrice),
+      value: normalizeUtilityValue(electricityPrice),
     },
     {
       key: 'internetPrice',
       label: t('apartmentDetail.property.internetPrice'),
-      value: getUtilityPriceLabel(internetPrice),
+      value: normalizeUtilityValue(internetPrice),
+    },
+    {
+      key: 'serviceFee',
+      label: t('apartmentDetail.property.serviceFee'),
+      value: normalizeUtilityValue(serviceFee),
     },
   ].filter((metric) => metric.value)
 
@@ -152,6 +259,25 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
             >
               {title}
             </Typography>
+
+            <div className='flex flex-wrap items-center gap-2 mb-3'>
+              <Badge
+                variant={
+                  vipBadgeConfig[vipType || 'NORMAL']?.variant || 'secondary'
+                }
+                className={vipBadgeConfig[vipType || 'NORMAL']?.className}
+              >
+                {t('apartmentDetail.property.vipType')}:&nbsp;
+                {vipBadgeConfig[vipType || 'NORMAL']?.text ||
+                  t('sellerListing.card.vipTypes.NORMAL')}
+              </Badge>
+
+              {topMeta.map((meta) => (
+                <Badge key={meta.key} variant='outline' className='px-2.5 py-1'>
+                  {meta.label}: {meta.value}
+                </Badge>
+              ))}
+            </div>
 
             {/* Address */}
             <div className='space-y-2'>
@@ -234,7 +360,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
                 variant='h2'
                 className='text-3xl md:text-4xl lg:text-5xl font-bold text-primary'
               >
-                {formatByLocale(price, 'vi')}
+                {formatByLocale(price, locale)}
               </Typography>
               <Typography
                 variant='h5'
@@ -248,7 +374,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
 
         {/* Other Metrics in Grid */}
         {metrics.length > 0 && (
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3'>
+          <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3'>
             {metrics.map((metric) => (
               <Card
                 key={metric.key}

@@ -70,9 +70,9 @@ export interface RecentlyViewedListing {
   direction?: string
   roomCapacity?: number
   // Utilities
-  waterPrice?: string
-  electricityPrice?: string
-  internetPrice?: string
+  waterPrice?: string | number
+  electricityPrice?: string | number
+  internetPrice?: string | number
   priceType?: string
   // Amenities
   amenities?: Array<{

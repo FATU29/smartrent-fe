@@ -218,10 +218,12 @@ export interface ListingApi {
   user: UserApi
   postDate: Date
   expiryDate: string
+  listingType?: listingType
   verified?: boolean
   expired?: boolean
   vipType: VipType
   isDraft?: boolean
+  listingStatus?: PostStatus
   category: CategoryType
   productType: PropertyType
   price: number
@@ -239,9 +241,14 @@ export interface ListingApi {
   furnishing?: Furnishing
   propertyType?: PropertyType
   roomCapacity?: number
-  waterPrice?: PriceType
-  electricityPrice?: PriceType
-  internetPrice?: PriceType
+  waterPrice?: PriceType | string | number
+  electricityPrice?: PriceType | string | number
+  internetPrice?: PriceType | string | number
+  serviceFee?: PriceType | string | number
+  contactAvailable?: boolean
+  ownerZaloLink?: string | null
+  ownerContactPhoneNumber?: string | null
+  ownerContactPhoneVerified?: boolean
   amenities?: Amenity[]
   priceType?: PriceType
   createdAt: string
