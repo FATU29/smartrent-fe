@@ -8,6 +8,8 @@ interface UseRecommendedListingsByVipOptions {
   page?: number
   size?: number
   enabled?: boolean
+  sortBy?: string
+  skipVipFilter?: boolean
 }
 
 interface UseRecommendedListingsByVipReturn {
@@ -26,12 +28,19 @@ export const useRecommendedListingsByVip = (
   options: UseRecommendedListingsByVipOptions,
 ): UseRecommendedListingsByVipReturn => {
   const { coordinates } = useLocationContext()
-  const { vipType, page = 1, size = 4, enabled = true } = options
+  const {
+    vipType,
+    page = 1,
+    size = 4,
+    enabled = true,
+    sortBy,
+    skipVipFilter = false,
+  } = options
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: [
       'recommended-listings-by-vip',
-      vipType,
+      skipVipFilter ? 'newest' : vipType,
       coordinates?.latitude,
       coordinates?.longitude,
       page,
@@ -39,21 +48,22 @@ export const useRecommendedListingsByVip = (
     ],
     queryFn: async () => {
       const response = await ListingService.search({
-        vipType,
+        ...(skipVipFilter ? {} : { vipType }),
         userLatitude: coordinates?.latitude,
         userLongitude: coordinates?.longitude,
         verified: true,
         page,
         size,
+        ...(sortBy ? { sortBy: sortBy as any } : {}),
       })
 
       const listings = response.data?.listings || []
 
       return listings
     },
-    enabled: enabled, // Always enabled for public API, regardless of location
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    enabled: enabled,
+    staleTime: skipVipFilter ? 0 : 5 * 60 * 1000,
+    gcTime: skipVipFilter ? 60 * 1000 : 10 * 60 * 1000,
   })
 
   return {

@@ -705,8 +705,9 @@
     },
     "vipSections": {
       "diamond": "Featured Listings",
-      "gold": "Popular Listings",
-      "silver": "New Listings",
+      "gold": "Recommended",
+      "silver": "Noteworthy",
+      "newest": "New Listings",
       "normal": "Explore More"
     },
     "priorityBadge": "Priority",

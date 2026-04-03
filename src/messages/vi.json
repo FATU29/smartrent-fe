@@ -706,8 +706,9 @@
     },
     "vipSections": {
       "diamond": "Tin nổi bật",
-      "gold": "Tin được quan tâm",
-      "silver": "Tin mới",
+      "gold": "Tin đề xuất",
+      "silver": "Đáng chú ý",
+      "newest": "Tin mới",
       "normal": "Khám phá thêm"
     },
     "priorityBadge": "Ưu tiên",

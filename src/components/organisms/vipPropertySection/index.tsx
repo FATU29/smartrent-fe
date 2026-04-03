@@ -17,33 +17,43 @@ import { useRecommendedListingsByVip } from '@/hooks/useListings/useRecommendedL
 
 interface VipPropertySectionProps {
   vipType: VipType
+  mode?: 'vip' | 'newest'
 }
 
-const VIP_CONFIG = {
-  DIAMOND: {
-    titleClassName: 'text-foreground',
-    titleKey: 'homePage.vipSections.diamond',
-  },
-  GOLD: {
-    titleClassName: 'text-foreground',
-    titleKey: 'homePage.vipSections.gold',
-  },
-  SILVER: {
-    titleClassName: 'text-foreground',
-    titleKey: 'homePage.vipSections.silver',
-  },
-  NORMAL: {
-    titleClassName: 'text-foreground',
-    titleKey: 'homePage.vipSections.normal',
-  },
-}
+const VIP_CONFIG: Record<string, { titleClassName: string; titleKey: string }> =
+  {
+    DIAMOND: {
+      titleClassName: 'text-foreground',
+      titleKey: 'homePage.vipSections.diamond',
+    },
+    GOLD: {
+      titleClassName: 'text-foreground',
+      titleKey: 'homePage.vipSections.gold',
+    },
+    SILVER: {
+      titleClassName: 'text-foreground',
+      titleKey: 'homePage.vipSections.silver',
+    },
+    NORMAL: {
+      titleClassName: 'text-foreground',
+      titleKey: 'homePage.vipSections.normal',
+    },
+    NEWEST: {
+      titleClassName: 'text-foreground',
+      titleKey: 'homePage.vipSections.newest',
+    },
+  }
 
-const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
+const VipPropertySection: React.FC<VipPropertySectionProps> = ({
+  vipType,
+  mode = 'vip',
+}) => {
   const t = useTranslations()
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
-  const config = VIP_CONFIG[vipType]
+  const isNewest = mode === 'newest'
+  const config = VIP_CONFIG[isNewest ? 'NEWEST' : vipType]
 
   // Fetch listings client-side
   const { listings, isLoading } = useRecommendedListingsByVip({
@@ -51,6 +61,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({ vipType }) => {
     page: 1,
     size: 10,
     enabled: true,
+    ...(isNewest ? { sortBy: 'NEWEST', skipVipFilter: true } : {}),
   })
 
   React.useEffect(() => {
