@@ -388,7 +388,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       priceUnit: propertyInfo.priceUnit,
       addressText: {
         newAddress: composedNewAddress || '',
-        legacy: composedLegacyAddress,
+        legacy: composedLegacyAddress || composedNewAddress || '',
       },
       area: propertyInfo.area,
       bedrooms: propertyInfo.bedrooms,
@@ -522,16 +522,32 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             <Controller
               name='address'
               control={control}
-              render={() => (
-                <div className='space-y-3'>
-                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
-                    <MapPin className='w-4 h-4 text-blue-500' />
-                    {t('propertyAddress')}
-                    <span className='text-destructive ml-1'>*</span>
-                  </label>
-                  <AddressInput className='w-full' />
-                </div>
-              )}
+              render={({ fieldState: { error } }) => {
+                const addressErrorKey = getValidationKey(error?.message)
+                const shouldShowAddressInputError =
+                  attemptedSubmit &&
+                  ['addressRequired', 'legacyAddressRequired'].includes(
+                    addressErrorKey,
+                  )
+
+                return (
+                  <div className='space-y-3'>
+                    <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                      <MapPin className='w-4 h-4 text-blue-500' />
+                      {t('propertyAddress')}
+                      <span className='text-destructive ml-1'>*</span>
+                    </label>
+                    <AddressInput
+                      className='w-full'
+                      error={
+                        shouldShowAddressInputError
+                          ? tValidation(addressErrorKey)
+                          : undefined
+                      }
+                    />
+                  </div>
+                )
+              }}
             />
 
             {/* Map Preview */}
@@ -647,6 +663,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                       value={propertyInfo?.area ?? 0}
                       onChange={(v) => {
                         updatePropertyInfo({ area: v })
+                        setValue('area', v, {
+                          shouldDirty: true,
+                          shouldTouch: true,
+                          shouldValidate: true,
+                        })
+                        trigger('area')
                       }}
                       placeholder={tPlaceholders('enterArea')}
                       suffix='m²'
@@ -671,6 +693,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                       value={propertyInfo?.price ?? 0}
                       onChange={(v) => {
                         updatePropertyInfo({ price: v })
+                        setValue('price', v, {
+                          shouldDirty: true,
+                          shouldTouch: true,
+                          shouldValidate: true,
+                        })
+                        trigger('price')
                       }}
                       placeholder={tPlaceholders('enterPrice')}
                       suffix='VND'
@@ -761,6 +789,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         value={propertyInfo?.bedrooms ?? 0}
                         onChange={(v) => {
                           updatePropertyInfo({ bedrooms: v })
+                          setValue('bedrooms', v, {
+                            shouldDirty: true,
+                            shouldTouch: true,
+                            shouldValidate: true,
+                          })
+                          trigger('bedrooms')
                         }}
                         placeholder='0'
                         min={1}
@@ -785,6 +819,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         value={propertyInfo?.bathrooms ?? 0}
                         onChange={(v) => {
                           updatePropertyInfo({ bathrooms: v })
+                          setValue('bathrooms', v, {
+                            shouldDirty: true,
+                            shouldTouch: true,
+                            shouldValidate: true,
+                          })
+                          trigger('bathrooms')
                         }}
                         placeholder='0'
                         min={1}
@@ -809,6 +849,12 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         value={propertyInfo?.roomCapacity ?? 0}
                         onChange={(v) => {
                           updatePropertyInfo({ roomCapacity: v })
+                          setValue('roomCapacity', v, {
+                            shouldDirty: true,
+                            shouldTouch: true,
+                            shouldValidate: true,
+                          })
+                          trigger('roomCapacity')
                         }}
                         placeholder='0'
                         min={1}

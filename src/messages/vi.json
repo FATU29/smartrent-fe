@@ -873,6 +873,7 @@
       "propertyTypeRequired": "Loại bất động sản là bắt buộc",
       "propertyTypeInvalid": "Loại bất động sản không hợp lệ",
       "addressRequired": "Vui lòng chọn tỉnh/thành phố và phường/xã",
+      "legacyAddressRequired": "Vui lòng chọn địa chỉ cũ từ danh sách",
       "locationRequired": "Vui lòng chọn vị trí trên bản đồ",
       "areaRequired": "Diện tích là bắt buộc",
       "priceRequired": "Giá là bắt buộc",
@@ -1005,6 +1006,7 @@
           }
         },
         "perDay": "ngày",
+        "priceShownPerDay": "Giá hiển thị theo ngày",
         "days": "ngày",
         "startDate": "Ngày bắt đầu",
         "selectStartDate": "Chọn ngày bắt đầu",
@@ -1307,7 +1309,7 @@
           "legacyAddress": "Địa chỉ hiển thị trên tin đăng (phiên bản cũ)",
           "legacyAddressPlaceholder": "Địa chỉ cũ sẽ hiển thị ở đây",
           "legacySelection": {
-            "label": "Chọn địa chỉ cũ (Tuỳ chọn)",
+            "label": "Chọn địa chỉ cũ",
             "description": "Địa chỉ mới này được gộp từ nhiều địa chỉ cũ. Vui lòng chọn địa chỉ phù hợp với bất động sản của bạn.",
             "placeholder": "Chọn địa chỉ cũ...",
             "searchPlaceholder": "Tìm kiếm địa chỉ cũ...",

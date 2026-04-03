@@ -871,6 +871,7 @@
       "propertyTypeRequired": "Property type is required",
       "propertyTypeInvalid": "Invalid property type",
       "addressRequired": "Please select province/city and ward/commune",
+      "legacyAddressRequired": "Please select a legacy address from the dropdown",
       "locationRequired": "Please select location on map",
       "areaRequired": "Area is required",
       "priceRequired": "Price is required",
@@ -1004,6 +1005,7 @@
           }
         },
         "perDay": "day",
+        "priceShownPerDay": "Prices are shown per day",
         "days": "days",
         "startDate": "Start date",
         "selectStartDate": "Select start date",
@@ -1354,7 +1356,7 @@
           "legacyAddress": "Display Address on Listing (Legacy Version)",
           "legacyAddressPlaceholder": "Legacy address will be displayed here",
           "legacySelection": {
-            "label": "Select Legacy Address (Optional)",
+            "label": "Select Legacy Address",
             "description": "This new address was merged from multiple legacy addresses. Select the one that matches your property.",
             "placeholder": "Select legacy address...",
             "searchPlaceholder": "Search legacy address...",

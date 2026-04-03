@@ -56,14 +56,38 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   } = useHousingPredictor()
 
   const predictionRequest = useMemo(() => {
-    const [provinces, district, ward] = composedLegacyAddress.split(' - ')
-    if (!provinces || !district || !ward) return null
+    const legacyParts = composedLegacyAddress
+      .split(' - ')
+      .map((item) => item.trim())
+      .filter(Boolean)
+
+    let city = ''
+    let district = ''
+    let ward = ''
+
+    if (legacyParts.length >= 3) {
+      ;[city, district, ward] = legacyParts
+    } else {
+      const newParts = composedNewAddress
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+
+      if (newParts.length === 0) return null
+
+      city = newParts[newParts.length - 1] || ''
+      ward = newParts[newParts.length - 2] || ''
+      district = newParts[newParts.length - 3] || ward || city
+    }
+
+    if (!city || !district || !ward) return null
+
     return buildHousingPredictorRequest(propertyInfo, {
-      city: provinces,
+      city,
       district,
       ward,
     })
-  }, [propertyInfo, composedLegacyAddress])
+  }, [propertyInfo, composedLegacyAddress, composedNewAddress])
 
   const requestKey = useMemo(() => {
     return predictionRequest ? JSON.stringify(predictionRequest) : null

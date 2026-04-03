@@ -70,6 +70,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
 
   const hasBenefits =
     !!propertyInfo?.benefitIds && propertyInfo.benefitIds.length > 0
+  const canOpenBenefits = !isMembershipLoading && !!membership
 
   const useMembershipQuota = hasBenefits
   const useMembership = useMembershipQuota
@@ -86,46 +87,85 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   }, [propertyInfo.postDate])
 
   useEffect(() => {
-    if (vipTiers.length > 0 && !propertyInfo.vipType) {
-      const firstTier = vipTiers[0]
-      const defaultStartDate = new Date()
+    if (vipTiers.length === 0) return
 
-      const defaultDuration = useMembershipQuota ? 30 : 10
+    const firstTier = vipTiers[0]
+    const hasCurrentTier = !!vipTiers.find(
+      (tier) => tier.tierCode === propertyInfo.vipType,
+    )
+    const resolvedVipType = hasCurrentTier
+      ? (propertyInfo.vipType as VipType)
+      : (firstTier.tierCode as VipType)
 
-      const startDateObj = new Date(defaultStartDate)
-      const expiryDateObj = new Date(
-        startDateObj.getTime() + defaultDuration * 24 * 60 * 60 * 1000,
-      )
-      const defaultExpiryDate = expiryDateObj
+    const resolvedDuration =
+      propertyInfo.durationDays ?? (useMembershipQuota ? 30 : 10)
 
-      updatePropertyInfo({
-        vipType: firstTier.tierCode as VipType,
-        durationDays: defaultDuration,
-        postDate: defaultStartDate,
-        expiryDate: defaultExpiryDate,
-      })
+    const resolvedPostDate =
+      propertyInfo.postDate instanceof Date
+        ? propertyInfo.postDate
+        : propertyInfo.postDate
+          ? new Date(propertyInfo.postDate)
+          : new Date()
 
-      setValue('vipType', firstTier.tierCode, {
-        shouldValidate: true,
-        shouldDirty: true,
-      })
-      setValue('durationDays', defaultDuration, {
-        shouldValidate: true,
-        shouldDirty: true,
-      })
-      setValue('postDate', defaultStartDate, {
-        shouldValidate: true,
-        shouldDirty: true,
-      })
-      setValue('expiryDate', defaultExpiryDate, {
-        shouldValidate: true,
-        shouldDirty: true,
-      })
-      trigger()
-    }
+    const isPostDateValid = !isNaN(resolvedPostDate.getTime())
+    const safePostDate = isPostDateValid ? resolvedPostDate : new Date()
+
+    const resolvedExpiryDate =
+      propertyInfo.expiryDate instanceof Date
+        ? propertyInfo.expiryDate
+        : propertyInfo.expiryDate
+          ? new Date(propertyInfo.expiryDate)
+          : new Date(
+              safePostDate.getTime() + resolvedDuration * 24 * 60 * 60 * 1000,
+            )
+
+    const isExpiryValid = !isNaN(resolvedExpiryDate.getTime())
+    const safeExpiryDate = isExpiryValid
+      ? resolvedExpiryDate
+      : new Date(
+          safePostDate.getTime() + resolvedDuration * 24 * 60 * 60 * 1000,
+        )
+
+    const shouldHydrateDefaults =
+      !hasCurrentTier ||
+      !propertyInfo.durationDays ||
+      !propertyInfo.postDate ||
+      !propertyInfo.expiryDate ||
+      !isPostDateValid ||
+      !isExpiryValid
+
+    if (!shouldHydrateDefaults) return
+
+    updatePropertyInfo({
+      vipType: resolvedVipType,
+      durationDays: resolvedDuration,
+      postDate: safePostDate,
+      expiryDate: safeExpiryDate,
+    })
+
+    setValue('vipType', resolvedVipType, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    setValue('durationDays', resolvedDuration, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    setValue('postDate', safePostDate, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    setValue('expiryDate', safeExpiryDate, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    trigger()
   }, [
     vipTiers,
     propertyInfo.vipType,
+    propertyInfo.durationDays,
+    propertyInfo.postDate,
+    propertyInfo.expiryDate,
     updatePropertyInfo,
     setValue,
     trigger,
@@ -321,6 +361,9 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         <Card>
           <CardHeader>
             <CardTitle className='text-lg'>{t('selectPackageType')}</CardTitle>
+            <CardDescription className='pt-1 text-xs leading-relaxed text-muted-foreground'>
+              {t('priceShownPerDay')}
+            </CardDescription>
           </CardHeader>
           <CardContent className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
             {vipTiers.map((tier) => (
@@ -359,7 +402,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                   {tier.tierNameEn}
                 </Typography>
                 <Typography className='font-bold text-lg mt-auto text-center sm:text-left w-full break-words'>
-                  {tier.pricePerDay.toLocaleString('vi-VN')} đ/{t('perDay')}
+                  {tier.pricePerDay.toLocaleString('vi-VN')} đ
                 </Typography>
                 {selectedTier?.tierId === tier.tierId && (
                   <Card className='absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center border-0 p-0'>
@@ -442,27 +485,48 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
             )}
           </CardContent>
 
-          <CardContent className='space-y-2 p-0'>
+          <CardContent className='p-0 flex flex-col items-start gap-2 text-left'>
             <Label className='text-sm font-medium flex items-center gap-2'>
               <Tag className='w-4 h-4' />
               {t('promotionCode')}
             </Label>
-            <Button
-              variant='link'
-              className='text-sm text-primary hover:underline p-0 h-auto flex items-center gap-1'
-              onClick={() => setBenefitDialogOpen(true)}
-              disabled={isMembershipLoading || !membership}
+            <div
+              role='button'
+              tabIndex={canOpenBenefits ? 0 : -1}
+              aria-disabled={!canOpenBenefits}
+              onClick={() => {
+                if (canOpenBenefits) setBenefitDialogOpen(true)
+              }}
+              onKeyDown={(e) => {
+                if (!canOpenBenefits) return
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setBenefitDialogOpen(true)
+                }
+              }}
+              className={cn(
+                'text-sm p-0 h-auto inline-flex items-center gap-1 select-none',
+                canOpenBenefits
+                  ? 'text-primary hover:underline cursor-pointer'
+                  : 'text-muted-foreground/70 cursor-not-allowed',
+              )}
             >
               {t('usePromotion')}
               <ChevronRight className='w-4 h-4' />
-            </Button>
+            </div>
             {propertyInfo.benefitIds && propertyInfo.benefitIds.length > 0 && (
-              <Typography variant='muted' className='text-xs'>
+              <Typography
+                variant='muted'
+                className='text-xs text-primary bg-primary/10 px-2 py-1 rounded-md'
+              >
                 {t('promotionApplied')}: 1 benefit
               </Typography>
             )}
             {!membership && !isMembershipLoading && (
-              <Typography variant='muted' className='text-xs text-orange-600'>
+              <Typography
+                variant='muted'
+                className='text-xs text-primary bg-primary/10 px-2 py-1 rounded-md'
+              >
                 {t('benefit.noMembership')}
               </Typography>
             )}

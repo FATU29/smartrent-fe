@@ -82,6 +82,28 @@ const toPriceType = (value: unknown): PriceType | undefined => {
     : undefined
 }
 
+const toNumber = (value: unknown): number | undefined => {
+  if (typeof value === 'number' && !Number.isNaN(value)) return value
+  if (typeof value === 'string') {
+    const parsed = Number(value)
+    return Number.isNaN(parsed) ? undefined : parsed
+  }
+  return undefined
+}
+
+const toTrimmedString = (value: unknown): string => {
+  if (value === null || value === undefined) return ''
+  return String(value).trim()
+}
+
+const pickFirstString = (...values: unknown[]): string => {
+  for (const value of values) {
+    const normalized = toTrimmedString(value)
+    if (normalized) return normalized
+  }
+  return ''
+}
+
 /**
  * Maps a ListingDetail (from update post) to form data structure
  * Used by UpdatePostContext to populate the form with existing listing data
@@ -220,6 +242,14 @@ export function mapListingToFormData(listing: ListingDetail): MappedFormData {
 export function mapDraftToFormData(
   draft: DraftListingResponse,
 ): MappedFormData {
+  const draftAny = draft as DraftListingResponse & {
+    durationDays?: number | string | null
+    postDate?: string | Date | null
+    expiryDate?: string | Date | null
+    benefitIds?: Array<number | string> | null
+    useMembershipQuota?: boolean | null
+  }
+
   const amenityIds =
     draft.amenities?.map((a) => {
       if (typeof a === 'object' && a !== null) {
@@ -244,6 +274,23 @@ export function mapDraftToFormData(
     typeof draft.listingType === 'string'
       ? (draft.listingType.toUpperCase() as LISTING_TYPE)
       : LISTING_TYPE.RENT
+
+  const vipType =
+    typeof draft.vipType === 'string' && draft.vipType.trim()
+      ? (draft.vipType.toUpperCase() as CreateListingRequest['vipType'])
+      : undefined
+
+  const draftDurationDays = toNumber(draftAny.durationDays)
+  const draftPostDate = draftAny.postDate ? new Date(draftAny.postDate) : null
+  const draftExpiryDate = draftAny.expiryDate
+    ? new Date(draftAny.expiryDate)
+    : null
+
+  const draftBenefitIds = Array.isArray(draftAny.benefitIds)
+    ? draftAny.benefitIds
+        .map((id) => toNumber(id))
+        .filter((id): id is number => typeof id === 'number' && !isNaN(id))
+    : undefined
 
   const mappedPropertyInfo: Partial<CreateListingRequest> = {
     title: draft.title || '',
@@ -295,7 +342,21 @@ export function mapDraftToFormData(
     internetPrice: draft.internetPrice as CreateListingRequest['internetPrice'],
     serviceFee: draft.serviceFee as CreateListingRequest['serviceFee'],
     amenityIds: validAmenityIds,
-    vipType: draft.vipType as CreateListingRequest['vipType'],
+    vipType,
+    durationDays: draftDurationDays as CreateListingRequest['durationDays'],
+    postDate:
+      draftPostDate && !isNaN(draftPostDate.getTime())
+        ? draftPostDate
+        : undefined,
+    expiryDate:
+      draftExpiryDate && !isNaN(draftExpiryDate.getTime())
+        ? draftExpiryDate
+        : undefined,
+    benefitIds: draftBenefitIds,
+    useMembershipQuota:
+      typeof draftAny.useMembershipQuota === 'boolean'
+        ? draftAny.useMembershipQuota
+        : undefined,
   }
 
   // Prepare fulltext address
@@ -309,9 +370,66 @@ export function mapDraftToFormData(
 
   // Map address from draft
   if (draft.address) {
-    const newProvinceCode = draft.address.newProvinceCode || ''
-    const newWardCode = draft.address.newWardCode || ''
-    const street = draft.address.newStreet || ''
+    const address = draft.address as DraftListingResponse['address'] & {
+      // Unified address fields returned by current backend
+      provinceCode?: string | number | null
+      districtCode?: string | number | null
+      wardCode?: string | number | null
+      provinceName?: string | null
+      wardName?: string | null
+      street?: string | null
+      districtName?: string | null
+      // Legacy expanded fields from older response shape
+      legacyProvinceId?: number | null
+      legacyDistrictId?: number | null
+      legacyWardId?: number | null
+      legacyProvinceName?: string | null
+      legacyDistrictName?: string | null
+      legacyWardName?: string | null
+      legacyStreet?: string | null
+      newProvinceCode?: string | null
+      newWardCode?: string | null
+      newStreet?: string | null
+      streetName?: string | null
+      addressType?: string | null
+      fullAddress?: string | null
+      fullNewAddress?: string | null
+      latitude?: number | string | null
+      longitude?: number | string | null
+    }
+
+    const addressType = toTrimmedString(address.addressType).toUpperCase()
+    const isLikelyLegacy =
+      addressType === 'OLD' ||
+      !!address.legacyProvinceId ||
+      !!address.legacyDistrictId ||
+      !!address.legacyWardId ||
+      !!address.districtCode
+    const isLikelyNew =
+      addressType === 'NEW' ||
+      (!isLikelyLegacy &&
+        (!!address.newProvinceCode ||
+          !!address.newWardCode ||
+          !!address.fullNewAddress ||
+          (!!address.provinceCode && !address.districtCode)))
+
+    const newProvinceCode = pickFirstString(
+      address.newProvinceCode,
+      isLikelyNew ? address.provinceCode : undefined,
+    )
+    const newWardCode = pickFirstString(
+      address.newWardCode,
+      isLikelyNew ? address.wardCode : undefined,
+    )
+    const street = pickFirstString(
+      address.newStreet,
+      address.streetName,
+      address.street,
+      address.legacyStreet,
+    )
+
+    const latitude = toNumber(address.latitude) ?? 0
+    const longitude = toNumber(address.longitude) ?? 0
 
     mappedPropertyInfo.address = {
       newAddress: {
@@ -319,32 +437,46 @@ export function mapDraftToFormData(
         wardCode: newWardCode,
         street: street || undefined,
       },
-      latitude: draft.address.latitude ?? 0,
-      longitude: draft.address.longitude ?? 0,
+      latitude,
+      longitude,
     }
 
-    if (
-      draft.address.legacyProvinceId &&
-      draft.address.legacyDistrictId &&
-      draft.address.legacyWardId
-    ) {
+    const legacyProvinceId =
+      toNumber(address.legacyProvinceId) ??
+      (isLikelyLegacy ? toNumber(address.provinceCode) : undefined)
+    const legacyDistrictId =
+      toNumber(address.legacyDistrictId) ??
+      (isLikelyLegacy ? toNumber(address.districtCode) : undefined)
+    const legacyWardId =
+      toNumber(address.legacyWardId) ??
+      (isLikelyLegacy ? toNumber(address.wardCode) : undefined)
+
+    if (legacyProvinceId && legacyDistrictId && legacyWardId) {
       mappedPropertyInfo.address.legacy = {
-        provinceId: draft.address.legacyProvinceId,
-        districtId: draft.address.legacyDistrictId,
-        wardId: draft.address.legacyWardId,
+        provinceId: legacyProvinceId,
+        districtId: legacyDistrictId,
+        wardId: legacyWardId,
       }
 
-      const legacyAddressId = `${draft.address.legacyProvinceId}-${draft.address.legacyDistrictId}-${draft.address.legacyWardId}`
+      const legacyAddressId = `${legacyProvinceId}-${legacyDistrictId}-${legacyWardId}`
       const legacyAddressText = [
-        draft.address.legacyProvinceName,
-        draft.address.legacyDistrictName,
-        draft.address.legacyWardName,
+        address.legacyProvinceName ||
+          (isLikelyLegacy ? address.provinceName : null),
+        address.legacyDistrictName ||
+          (isLikelyLegacy ? address.districtName : null),
+        address.legacyWardName || (isLikelyLegacy ? address.wardName : null),
       ]
         .filter(Boolean)
         .join(' - ')
 
       fulltextAddressUpdate.legacyAddressId = legacyAddressId
-      fulltextAddressUpdate.legacyAddressText = legacyAddressText
+      fulltextAddressUpdate.legacyAddressText =
+        legacyAddressText || pickFirstString(address.fullAddress)
+    } else {
+      const fallbackLegacyText = pickFirstString(address.fullAddress)
+      if (fallbackLegacyText) {
+        fulltextAddressUpdate.legacyAddressText = fallbackLegacyText
+      }
     }
 
     fulltextAddressUpdate.newProvinceCode = newProvinceCode

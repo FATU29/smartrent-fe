@@ -4,6 +4,8 @@ import { useCreatePost } from '@/contexts/createPost'
 import { useVipTiers } from '@/hooks/useVipTiers'
 import { useAuthContext } from '@/contexts/auth'
 import { useMyMembership } from '@/hooks/useMembership'
+import { useQuery } from '@tanstack/react-query'
+import { UserService } from '@/api/services/user.service'
 import {
   Card,
   CardContent,
@@ -26,6 +28,9 @@ import {
   MapPin,
   Sparkles,
   Award,
+  User as UserIcon,
+  Mail,
+  Phone,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
@@ -55,6 +60,17 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
   const { data: vipTiers = [] } = useVipTiers()
   const { user } = useAuthContext()
   const { data: myMembership } = useMyMembership(user?.userId)
+
+  const { data: profileResponse, isLoading: isCheckingProfile } = useQuery({
+    queryKey: ['create-post-order-summary-profile'],
+    queryFn: () => UserService.getProfile(),
+    enabled: !!user?.userId,
+    retry: false,
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  })
+
+  const profile = profileResponse?.data
 
   const mediaArray = Array.isArray(media) ? media : []
 
@@ -122,6 +138,31 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
     return endDate.toLocaleDateString('vi-VN')
   }
 
+  const contactFullName =
+    [profile?.firstName, profile?.lastName].filter(Boolean).join(' ').trim() ||
+    [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim()
+
+  const contactEmail =
+    profile?.email?.trim() || user?.email?.trim() || tCommon('notAvailable')
+
+  const contactPhone =
+    profile?.contactPhoneNumber?.trim() ||
+    profile?.phoneNumber?.trim() ||
+    user?.contactPhoneNumber?.trim() ||
+    user?.phoneNumber?.trim() ||
+    tCommon('notAvailable')
+
+  const latitude = propertyInfo?.address?.latitude
+  const longitude = propertyInfo?.address?.longitude
+  const hasValidCoordinates =
+    typeof latitude === 'number' &&
+    typeof longitude === 'number' &&
+    latitude !== 0 &&
+    longitude !== 0
+  const embeddedMapUrl = hasValidCoordinates
+    ? `https://www.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`
+    : ''
+
   return (
     <Card className={cn('border-0 shadow-none', className)}>
       <CardHeader className='px-0'>
@@ -134,10 +175,182 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
       </CardHeader>
 
       <CardContent className='px-0'>
-        {/* Flex Layout: Left Content + Right Payment Summary */}
-        <div className='flex flex-col md:flex-row gap-6'>
-          {/* Left Side - Main Content */}
-          <div className='flex-1 space-y-6  md:w-[calc(100%-444px)]'>
+        {/* Stacked Layout: Main Content on top, Payment Summary below */}
+        <div className='flex flex-col gap-6'>
+          {/* Top - Main Content */}
+          <div className='space-y-6'>
+            {/* Contact Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className='text-lg'>
+                  {tCommon('contactInformation')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'>
+                  <div className='h-full min-h-[92px] rounded-lg border bg-muted/30 p-3'>
+                    <div className='flex flex-col items-center justify-center gap-2 h-full text-center'>
+                      <div className='flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 flex-shrink-0'>
+                        <UserIcon className='w-4 h-4 text-primary' />
+                      </div>
+                      <div className='min-w-0'>
+                        <Typography variant='muted' className='text-xs'>
+                          {tCommon('fullName')}
+                        </Typography>
+                        <Typography className='mt-1 text-sm font-semibold leading-5 break-words'>
+                          {contactFullName || tCommon('notAvailable')}
+                        </Typography>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='h-full min-h-[92px] rounded-lg border bg-muted/30 p-3'>
+                    <div className='flex flex-col items-center justify-center gap-2 h-full text-center'>
+                      <div className='flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 flex-shrink-0'>
+                        <Mail className='w-4 h-4 text-primary' />
+                      </div>
+                      <div className='min-w-0'>
+                        <Typography variant='muted' className='text-xs'>
+                          {tCommon('email')}
+                        </Typography>
+                        <Typography className='mt-1 text-sm font-semibold leading-5 break-all'>
+                          {contactEmail}
+                        </Typography>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='h-full min-h-[92px] rounded-lg border bg-muted/30 p-3'>
+                    <div className='flex flex-col items-center justify-center gap-2 h-full text-center'>
+                      <div className='flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 flex-shrink-0'>
+                        <Phone className='w-4 h-4 text-primary' />
+                      </div>
+                      <div className='min-w-0'>
+                        <Typography variant='muted' className='text-xs'>
+                          {tCommon('phoneNumber')}
+                        </Typography>
+                        <Typography className='mt-1 text-sm font-semibold leading-5 break-words'>
+                          {isCheckingProfile &&
+                          contactPhone === tCommon('notAvailable')
+                            ? tCommon('checking')
+                            : contactPhone}
+                        </Typography>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Package & Payment Summary */}
+            <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+              {/* Package Details */}
+              <Card className='h-fit'>
+                <CardHeader className='pb-4'>
+                  <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                    <Package className='w-5 h-5 text-primary' />
+                    <CardTitle className='text-lg'>
+                      {tCreatePost('sections.orderSummary.packageDetails')}
+                    </CardTitle>
+                  </Card>
+                </CardHeader>
+
+                <CardContent className='space-y-3'>
+                  <OrderSummaryRow
+                    label={tCreatePost(
+                      'sections.packageConfig.selectedPackage',
+                    )}
+                    value={
+                      <Badge variant='default' className='font-medium'>
+                        {packageName}
+                      </Badge>
+                    }
+                    variant='highlight'
+                  />
+                  {(usingMembershipQuota || usingPromotion) && (
+                    <>
+                      <Separator />
+                      <OrderSummaryRow
+                        label={tCreatePost(
+                          'sections.packageConfig.usingMembershipQuota',
+                        )}
+                        value={
+                          <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                            <Award className='w-4 h-4 text-primary' />
+                            <Typography className='text-sm text-primary font-medium'>
+                              {tCreatePost(
+                                'sections.packageConfig.freePosting',
+                              )}
+                            </Typography>
+                          </Card>
+                        }
+                      />
+                    </>
+                  )}
+                  <Separator />
+                  <OrderSummaryRow
+                    label={tCreatePost('sections.packageConfig.duration')}
+                    value={`${propertyInfo.durationDays || 0} ${tCreatePost('sections.packageConfig.days')}`}
+                  />
+                  <Separator />
+                  <OrderSummaryRow
+                    label={tCreatePost('sections.packageConfig.startDate')}
+                    value={
+                      <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                        <Calendar className='w-4 h-4 text-muted-foreground' />
+                        <Typography className='text-sm'>
+                          {formatDate(propertyInfo.postDate)}
+                        </Typography>
+                      </Card>
+                    }
+                  />
+                  <Separator />
+                  <OrderSummaryRow
+                    label={tCreatePost('sections.packageConfig.endDate')}
+                    value={
+                      <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                        <Calendar className='w-4 h-4 text-muted-foreground' />
+                        <Typography className='text-sm'>
+                          {getEndDate()}
+                        </Typography>
+                      </Card>
+                    }
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Price Breakdown */}
+              <Card className='h-fit'>
+                <CardHeader className='pb-4'>
+                  <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                    <CreditCard className='w-5 h-5 text-primary' />
+                    <CardTitle className='text-lg'>
+                      {tCreatePost('sections.packageConfig.priceBreakdown')}
+                    </CardTitle>
+                  </Card>
+                </CardHeader>
+
+                <CardContent className='space-y-3'>
+                  <OrderSummaryRow
+                    label={tCreatePost('sections.packageConfig.packagePrice')}
+                    value={`${totalPrice.toLocaleString('vi-VN')} đ`}
+                  />
+                  <Separator className='my-4' />
+                  <OrderSummaryRow
+                    label={tCreatePost('sections.packageConfig.totalAmount')}
+                    value={
+                      <Card className='text-right border-0 shadow-none p-0'>
+                        <Typography className='text-2xl font-bold text-primary'>
+                          {totalPrice.toLocaleString('vi-VN')} đ
+                        </Typography>
+                      </Card>
+                    }
+                    variant='total'
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
             {/* Property Preview with Media */}
             <Card>
               <CardHeader>
@@ -190,36 +403,42 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                 )}
 
                 {/* Property Details */}
-                <div className='space-y-3'>
+                <div className='space-y-4'>
                   <Typography
                     variant='h3'
-                    className='font-bold text-xl break-words'
+                    className='font-bold text-xl sm:text-2xl break-words leading-tight'
                   >
                     {propertyInfo.title ||
                       tCreatePost('sections.propertyInfo.noTitle')}
                   </Typography>
 
                   {propertyInfo.description && (
-                    <Typography
-                      variant='muted'
-                      className='text-sm line-clamp-3 break-words'
-                    >
-                      {propertyInfo.description}
-                    </Typography>
+                    <div className='rounded-lg border bg-muted/20 p-3'>
+                      <Typography
+                        variant='muted'
+                        className='text-sm leading-6 line-clamp-4 break-words'
+                      >
+                        {propertyInfo.description}
+                      </Typography>
+                    </div>
                   )}
 
                   <Separator />
 
                   {/* Key Information Grid */}
-                  <div className='grid grid-cols-2 gap-3'>
+                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
                     {propertyInfo.price && (
-                      <div className='flex items-center gap-2'>
-                        <CreditCard className='w-4 h-4 text-muted-foreground flex-shrink-0' />
-                        <div className='min-w-0'>
+                      <div className='rounded-lg border bg-background/70 p-3'>
+                        <div className='flex items-center gap-2'>
+                          <div className='flex h-7 w-7 items-center justify-center rounded-md bg-primary/10'>
+                            <CreditCard className='w-4 h-4 text-primary flex-shrink-0' />
+                          </div>
                           <Typography variant='muted' className='text-xs'>
                             {tCreatePost('sections.propertyInfo.price')}
                           </Typography>
-                          <Typography className='font-semibold text-sm truncate'>
+                        </div>
+                        <div className='min-w-0'>
+                          <Typography className='mt-2 font-semibold text-sm break-words'>
                             {propertyInfo.price.toLocaleString('vi-VN')} đ
                             {propertyInfo.priceUnit &&
                               `/${propertyInfo.priceUnit}`}
@@ -229,13 +448,17 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                     )}
 
                     {propertyInfo.area && (
-                      <div className='flex items-center gap-2'>
-                        <Ruler className='w-4 h-4 text-muted-foreground flex-shrink-0' />
-                        <div className='min-w-0'>
+                      <div className='rounded-lg border bg-background/70 p-3'>
+                        <div className='flex items-center gap-2'>
+                          <div className='flex h-7 w-7 items-center justify-center rounded-md bg-primary/10'>
+                            <Ruler className='w-4 h-4 text-primary flex-shrink-0' />
+                          </div>
                           <Typography variant='muted' className='text-xs'>
                             {tCreatePost('sections.propertyInfo.area')}
                           </Typography>
-                          <Typography className='font-semibold text-sm'>
+                        </div>
+                        <div className='min-w-0'>
+                          <Typography className='mt-2 font-semibold text-sm'>
                             {propertyInfo.area} m²
                           </Typography>
                         </div>
@@ -243,13 +466,17 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                     )}
 
                     {propertyInfo.bedrooms && (
-                      <div className='flex items-center gap-2'>
-                        <Bed className='w-4 h-4 text-muted-foreground flex-shrink-0' />
-                        <div className='min-w-0'>
+                      <div className='rounded-lg border bg-background/70 p-3'>
+                        <div className='flex items-center gap-2'>
+                          <div className='flex h-7 w-7 items-center justify-center rounded-md bg-primary/10'>
+                            <Bed className='w-4 h-4 text-primary flex-shrink-0' />
+                          </div>
                           <Typography variant='muted' className='text-xs'>
                             {tCreatePost('sections.propertyInfo.bedrooms')}
                           </Typography>
-                          <Typography className='font-semibold text-sm'>
+                        </div>
+                        <div className='min-w-0'>
+                          <Typography className='mt-2 font-semibold text-sm'>
                             {propertyInfo.bedrooms}
                           </Typography>
                         </div>
@@ -257,13 +484,17 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                     )}
 
                     {propertyInfo.bathrooms && (
-                      <div className='flex items-center gap-2'>
-                        <Bath className='w-4 h-4 text-muted-foreground flex-shrink-0' />
-                        <div className='min-w-0'>
+                      <div className='rounded-lg border bg-background/70 p-3'>
+                        <div className='flex items-center gap-2'>
+                          <div className='flex h-7 w-7 items-center justify-center rounded-md bg-primary/10'>
+                            <Bath className='w-4 h-4 text-primary flex-shrink-0' />
+                          </div>
                           <Typography variant='muted' className='text-xs'>
                             {tCreatePost('sections.propertyInfo.bathrooms')}
                           </Typography>
-                          <Typography className='font-semibold text-sm'>
+                        </div>
+                        <div className='min-w-0'>
+                          <Typography className='mt-2 font-semibold text-sm'>
                             {propertyInfo.bathrooms}
                           </Typography>
                         </div>
@@ -275,30 +506,81 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                   {(composedNewAddress || composedLegacyAddress) && (
                     <>
                       <Separator />
-                      <div className='flex items-start gap-2'>
-                        <MapPin className='w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0' />
-                        <div className='min-w-0 flex-1 space-y-1'>
-                          {composedNewAddress && (
-                            <Typography className='text-sm break-words'>
-                              <span className='font-medium'>
+                      <div className='rounded-lg border bg-muted/20 p-3 space-y-3'>
+                        <div className='flex items-start gap-2'>
+                          <div className='flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 mt-0.5 flex-shrink-0'>
+                            <MapPin className='w-4 h-4 text-primary' />
+                          </div>
+                          <div className='min-w-0 flex-1 space-y-1'>
+                            {composedNewAddress && (
+                              <Typography className='text-sm break-words mt-1'>
+                                <span className='font-medium'>
+                                  {tCreatePost(
+                                    'sections.propertyInfo.address.structureType.newShort',
+                                  )}
+                                  :
+                                </span>{' '}
+                                {composedNewAddress}
+                              </Typography>
+                            )}
+                            {composedLegacyAddress && (
+                              <Typography className='text-xs text-muted-foreground break-words'>
+                                <span className='font-medium'>
+                                  {tCreatePost(
+                                    'sections.propertyInfo.address.structureType.legacyShort',
+                                  )}
+                                  :
+                                </span>{' '}
+                                {composedLegacyAddress}
+                              </Typography>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className='space-y-2'>
+                          <Typography
+                            variant='muted'
+                            className='text-xs flex items-center gap-1'
+                          >
+                            <MapPin className='w-3 h-3' />
+                            {tCreatePost('sections.propertyInfo.mapPreview')}
+                          </Typography>
+
+                          {hasValidCoordinates ? (
+                            <>
+                              <div className='overflow-hidden rounded-lg border bg-background'>
+                                <iframe
+                                  src={embeddedMapUrl}
+                                  title={tCreatePost(
+                                    'sections.propertyInfo.mapPreview',
+                                  )}
+                                  className='w-full h-52'
+                                  loading='lazy'
+                                  referrerPolicy='no-referrer-when-downgrade'
+                                />
+                              </div>
+                              <Typography
+                                variant='muted'
+                                className='text-xs break-words'
+                              >
                                 {tCreatePost(
-                                  'sections.propertyInfo.address.structureType.newShort',
+                                  'sections.propertyInfo.coordinates',
                                 )}
-                                :
-                              </span>{' '}
-                              {composedNewAddress}
-                            </Typography>
-                          )}
-                          {composedLegacyAddress && (
-                            <Typography className='text-xs text-muted-foreground break-words'>
-                              <span className='font-medium'>
+                                :&nbsp;
+                                {latitude?.toFixed(6)}, {longitude?.toFixed(6)}
+                              </Typography>
+                            </>
+                          ) : (
+                            <div className='rounded-lg border border-dashed bg-background p-3'>
+                              <Typography
+                                variant='muted'
+                                className='text-xs text-center'
+                              >
                                 {tCreatePost(
-                                  'sections.propertyInfo.address.structureType.legacyShort',
+                                  'sections.propertyInfo.mapNotSelected',
                                 )}
-                                :
-                              </span>{' '}
-                              {composedLegacyAddress}
-                            </Typography>
+                              </Typography>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -309,7 +591,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                   <Separator />
                   <div className='flex flex-wrap gap-2'>
                     {propertyInfo.productType && (
-                      <Badge variant='secondary' className='gap-1'>
+                      <Badge variant='secondary' className='gap-1 px-2.5 py-1'>
                         <Home className='w-3 h-3' />
                         {tNormal(
                           getProductTypeTranslationKey(
@@ -319,14 +601,14 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                       </Badge>
                     )}
                     {propertyInfo.direction && (
-                      <Badge variant='outline'>
+                      <Badge variant='outline' className='px-2.5 py-1'>
                         {tNormal(
                           getDirectionTranslationKey(propertyInfo.direction),
                         )}
                       </Badge>
                     )}
                     {propertyInfo.furnishing && (
-                      <Badge variant='outline'>
+                      <Badge variant='outline' className='px-2.5 py-1'>
                         {tNormal(
                           getFurnishingTranslationKey(propertyInfo.furnishing),
                         )}
@@ -362,7 +644,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                                   <Badge
                                     key={id}
                                     variant='secondary'
-                                    className='text-xs flex items-center gap-1'
+                                    className='text-xs flex items-center gap-1 px-2 py-1'
                                   >
                                     {IconComponent && (
                                       <IconComponent className='w-3 h-3' />
@@ -376,7 +658,10 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                                 )
                               })}
                             {propertyInfo.amenityIds.length > 6 && (
-                              <Badge variant='secondary' className='text-xs'>
+                              <Badge
+                                variant='secondary'
+                                className='text-xs px-2 py-1'
+                              >
                                 +{propertyInfo.amenityIds.length - 6}
                               </Badge>
                             )}
@@ -387,137 +672,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                 </div>
               </CardContent>
             </Card>
-
-            {/* Contact Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-lg'>
-                  {tCommon('contactInformation')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-3'>
-                <OrderSummaryRow
-                  label={tCommon('fullName')}
-                  value={
-                    user?.firstName && user?.lastName
-                      ? `${user.firstName} ${user.lastName}`
-                      : tCommon('notAvailable')
-                  }
-                />
-                <Separator />
-                <OrderSummaryRow
-                  label={tCommon('email')}
-                  value={user?.email || tCommon('notAvailable')}
-                />
-                <Separator />
-                <OrderSummaryRow
-                  label={tCommon('phoneNumber')}
-                  value={user?.phoneNumber || tCommon('notAvailable')}
-                />
-              </CardContent>
-            </Card>
           </div>
-
-          {/* Right Side - Package & Payment Summary (Sticky) */}
-          <Card className='md:w-[380px] xl:w-[420px] h-fit md:sticky md:top-[100px] space-y-0'>
-            {/* Package Details */}
-            <CardHeader className='pb-4'>
-              <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                <Package className='w-5 h-5 text-primary' />
-                <CardTitle className='text-lg'>
-                  {tCreatePost('sections.orderSummary.packageDetails')}
-                </CardTitle>
-              </Card>
-            </CardHeader>
-
-            <CardContent className='space-y-3 pb-6'>
-              <OrderSummaryRow
-                label={tCreatePost('sections.packageConfig.selectedPackage')}
-                value={
-                  <Badge variant='default' className='font-medium'>
-                    {packageName}
-                  </Badge>
-                }
-                variant='highlight'
-              />
-              {(usingMembershipQuota || usingPromotion) && (
-                <>
-                  <Separator />
-                  <OrderSummaryRow
-                    label={tCreatePost(
-                      'sections.packageConfig.usingMembershipQuota',
-                    )}
-                    value={
-                      <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                        <Award className='w-4 h-4 text-primary' />
-                        <Typography className='text-sm text-primary font-medium'>
-                          {tCreatePost('sections.packageConfig.freePosting')}
-                        </Typography>
-                      </Card>
-                    }
-                  />
-                </>
-              )}
-              <Separator />
-              <OrderSummaryRow
-                label={tCreatePost('sections.packageConfig.duration')}
-                value={`${propertyInfo.durationDays || 0} ${tCreatePost('sections.packageConfig.days')}`}
-              />
-              <Separator />
-              <OrderSummaryRow
-                label={tCreatePost('sections.packageConfig.startDate')}
-                value={
-                  <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                    <Calendar className='w-4 h-4 text-muted-foreground' />
-                    <Typography className='text-sm'>
-                      {formatDate(propertyInfo.postDate)}
-                    </Typography>
-                  </Card>
-                }
-              />
-              <Separator />
-              <OrderSummaryRow
-                label={tCreatePost('sections.packageConfig.endDate')}
-                value={
-                  <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                    <Calendar className='w-4 h-4 text-muted-foreground' />
-                    <Typography className='text-sm'>{getEndDate()}</Typography>
-                  </Card>
-                }
-              />
-            </CardContent>
-
-            <Separator className='my-0' />
-
-            {/* Price Breakdown */}
-            <CardHeader className='pt-6 pb-4'>
-              <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                <CreditCard className='w-5 h-5 text-primary' />
-                <CardTitle className='text-lg'>
-                  {tCreatePost('sections.packageConfig.priceBreakdown')}
-                </CardTitle>
-              </Card>
-            </CardHeader>
-
-            <CardContent className='space-y-3'>
-              <OrderSummaryRow
-                label={tCreatePost('sections.packageConfig.packagePrice')}
-                value={`${totalPrice.toLocaleString('vi-VN')} đ`}
-              />
-              <Separator className='my-4' />
-              <OrderSummaryRow
-                label={tCreatePost('sections.packageConfig.totalAmount')}
-                value={
-                  <Card className='text-right border-0 shadow-none p-0'>
-                    <Typography className='text-2xl font-bold text-primary'>
-                      {totalPrice.toLocaleString('vi-VN')} đ
-                    </Typography>
-                  </Card>
-                }
-                variant='total'
-              />
-            </CardContent>
-          </Card>
         </div>
       </CardContent>
     </Card>

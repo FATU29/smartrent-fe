@@ -11,6 +11,8 @@ import { AddressService } from '@/api/services/address.service'
 import { LegacyAddressSelector } from './LegacyAddressSelector'
 import { useDebounce } from '@/hooks/useDebounce'
 import type { ListingAddress } from '@/api/types'
+import type { CreateListingRequest } from '@/api/types/property.type'
+import { useFormContext } from 'react-hook-form'
 
 export interface AddressInputProps {
   className?: string
@@ -21,6 +23,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   className,
   error,
 }) => {
+  const { setValue, trigger } = useFormContext<Partial<CreateListingRequest>>()
   const tAddress = useTranslations('createPost.sections.propertyInfo.address')
   const tRoot = useTranslations('createPost.sections.propertyInfo')
 
@@ -97,8 +100,20 @@ export const AddressInput: React.FC<AddressInputProps> = ({
         longitude: prev?.longitude ?? 0,
       }
       updatePropertyInfo({ address: nextAddress })
+      setValue('address', nextAddress, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      })
+      trigger('address')
     }
-  }, [debouncedStreet])
+  }, [
+    debouncedStreet,
+    propertyInfo?.address,
+    setValue,
+    trigger,
+    updatePropertyInfo,
+  ])
 
   // Sync local state with external updates
   useEffect(() => {
@@ -128,6 +143,12 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       longitude: prev?.longitude ?? 0,
     }
     updatePropertyInfo({ address: nextAddress })
+    setValue('address', nextAddress, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    })
+    trigger('address')
   }
 
   const handleWardChange = (value: string) => {
@@ -148,6 +169,12 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       longitude: prev?.longitude ?? 0,
     }
     updatePropertyInfo({ address: nextAddress })
+    setValue('address', nextAddress, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    })
+    trigger('address')
   }
 
   const handleWardSearchChange = (value: string) => {
@@ -176,6 +203,12 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       legacyAddressId: value,
       legacyAddressText: label,
     })
+    setValue('address', nextAddress, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    })
+    trigger('address')
   }
 
   const handleGeocodeAddress = async () => {
@@ -207,6 +240,20 @@ export const AddressInput: React.FC<AddressInputProps> = ({
             longitude,
           },
         })
+        setValue(
+          'address',
+          {
+            ...prev,
+            latitude,
+            longitude,
+          },
+          {
+            shouldDirty: true,
+            shouldTouch: true,
+            shouldValidate: true,
+          },
+        )
+        trigger('address')
 
         toast.success(
           tAddress('geocode.success') ||
