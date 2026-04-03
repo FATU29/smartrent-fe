@@ -63,12 +63,15 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
   if (!cities || uniqueCities.length === 0) {
     return (
       <section className='mt-16'>
-        <Typography
-          variant='h2'
-          className='text-xl sm:text-2xl font-semibold mb-6'
-        >
-          {t('title')}
-        </Typography>
+        <div className='flex items-center gap-3 mb-6'>
+          <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
+          <Typography
+            variant='h2'
+            className='text-xl sm:text-2xl font-bold text-foreground'
+          >
+            {t('title')}
+          </Typography>
+        </div>
         <div className='text-center py-12 px-4 bg-muted/50 rounded-lg border border-border'>
           <p className='text-muted-foreground text-base mb-2'>{t('noData')}</p>
           <p className='text-muted-foreground/80 text-sm'>

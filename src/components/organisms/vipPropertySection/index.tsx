@@ -99,14 +99,10 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
   if (isLoading) {
     const skeletonItems = Array.from({ length: 4 })
     return (
-      <section className='mb-8 sm:mb-10'>
-        <div className='flex items-center gap-2 mb-4 sm:mb-5'>
-          <h2
-            className={cn(
-              'text-xl sm:text-2xl font-semibold',
-              config.titleClassName,
-            )}
-          >
+      <section className='mb-10 sm:mb-14'>
+        <div className='flex items-center gap-3 mb-5 sm:mb-6'>
+          <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
+          <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
             {t(config.titleKey)}
           </h2>
         </div>
@@ -162,21 +158,14 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
   }
 
   return (
-    <section className='mb-8 sm:mb-10'>
-      <div className='flex items-center gap-2 mb-4 sm:mb-5'>
-        <h2
-          className={cn(
-            'text-xl sm:text-2xl font-semibold',
-            config.titleClassName,
-          )}
-        >
-          {t(config.titleKey)}
-        </h2>
-        <span
-          className={cn('ml-auto text-sm font-medium', config.titleClassName)}
-        >
-          {listings.length}
-        </span>
+    <section className='mb-10 sm:mb-14'>
+      <div className='flex items-center justify-between mb-5 sm:mb-6'>
+        <div className='flex items-center gap-3'>
+          <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
+          <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
+            {t(config.titleKey)}
+          </h2>
+        </div>
       </div>
 
       <Carousel
