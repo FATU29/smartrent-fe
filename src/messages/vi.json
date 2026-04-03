@@ -2701,7 +2701,8 @@
       },
       "listingTypes": {
         "RENT": "Cho thuê",
-        "SHARE": "Ở ghép"
+        "SHARE": "Ở ghép",
+        "SALE": "Mua bán"
       },
       "waterPrice": "Giá nước",
       "electricityPrice": "Giá điện",

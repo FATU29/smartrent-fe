@@ -2700,7 +2700,8 @@
       },
       "listingTypes": {
         "RENT": "For Rent",
-        "SHARE": "Shared"
+        "SHARE": "Shared",
+        "SALE": "For Sale"
       },
       "waterPrice": "Water Price",
       "electricityPrice": "Electricity Price",

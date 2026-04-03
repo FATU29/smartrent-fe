@@ -41,8 +41,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     roomCapacity,
     vipType,
     productType,
-    listingType,
-    listingStatus,
     direction,
     furnishing,
     waterPrice,
@@ -137,18 +135,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
       key: 'productType',
       label: t('apartmentDetail.property.productType'),
       value: productType ? t(getProductTypeTranslationKey(productType)) : null,
-    },
-    {
-      key: 'listingType',
-      label: t('apartmentDetail.property.listingType'),
-      value: listingType
-        ? t(`apartmentDetail.property.listingTypes.${listingType}`)
-        : null,
-    },
-    {
-      key: 'status',
-      label: t('apartmentDetail.property.status'),
-      value: listingStatus ? t(`common.status.${listingStatus}`) : null,
     },
     {
       key: 'direction',
