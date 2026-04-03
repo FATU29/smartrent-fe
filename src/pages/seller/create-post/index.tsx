@@ -25,13 +25,14 @@ import React from 'react'
 const CreatePostPage: NextPageWithLayout = () => {
   const router = useRouter()
   const t = useTranslations('createPost.profilePhoneRequiredDialog')
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   const [openPhoneRequiredDialog, setOpenPhoneRequiredDialog] =
     React.useState(false)
 
   const { data: profileResponse, isLoading: isCheckingProfile } = useQuery({
     queryKey: ['create-post-profile-phone-check'],
     queryFn: () => UserService.getProfile(),
+    enabled: isAuthenticated,
     retry: false,
     staleTime: 0,
     gcTime: 0,
@@ -54,10 +55,10 @@ const CreatePostPage: NextPageWithLayout = () => {
   }, [router])
 
   React.useEffect(() => {
-    if (!isCheckingProfile && !hasPhoneNumber) {
+    if (isAuthenticated && !isCheckingProfile && !hasPhoneNumber) {
       setOpenPhoneRequiredDialog(true)
     }
-  }, [hasPhoneNumber, isCheckingProfile])
+  }, [hasPhoneNumber, isAuthenticated, isCheckingProfile])
 
   const handleDialogOpenChange = (nextOpen: boolean) => {
     setOpenPhoneRequiredDialog(nextOpen)
