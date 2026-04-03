@@ -32,6 +32,9 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     bedrooms,
     bathrooms,
     roomCapacity,
+    waterPrice,
+    electricityPrice,
+    internetPrice,
     listingId,
   } = listing || {}
 
@@ -46,6 +49,69 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   const handleReport = () => {
     setReportDialogOpen(true)
   }
+
+  const utilityPriceTranslationKeys = {
+    NEGOTIABLE: 'residentialFilter.utilitiesPrice.electricity.negotiable',
+    SET_BY_OWNER: 'residentialFilter.utilitiesPrice.electricity.owner',
+    PROVIDER_RATE: 'residentialFilter.utilitiesPrice.electricity.provider',
+  } as const
+
+  const getUtilityPriceLabel = (
+    utilityPrice?: keyof typeof utilityPriceTranslationKeys,
+  ) => {
+    if (!utilityPrice) return null
+    const translationKey = utilityPriceTranslationKeys[utilityPrice]
+    if (!translationKey) return null
+    return t(translationKey)
+  }
+
+  const metrics = [
+    {
+      key: 'area',
+      label: t('apartmentDetail.property.area'),
+      value:
+        area !== undefined && area !== null ? `${area.toString()} m²` : null,
+    },
+    {
+      key: 'bedrooms',
+      label: t('apartmentDetail.property.bedrooms'),
+      value:
+        bedrooms !== undefined && bedrooms !== null
+          ? bedrooms.toString()
+          : null,
+    },
+    {
+      key: 'bathrooms',
+      label: t('apartmentDetail.property.bathrooms'),
+      value:
+        bathrooms !== undefined && bathrooms !== null
+          ? bathrooms.toString()
+          : null,
+    },
+    {
+      key: 'roomCapacity',
+      label: t('apartmentDetail.property.roomCapacity'),
+      value:
+        roomCapacity !== undefined && roomCapacity !== null
+          ? roomCapacity.toString()
+          : null,
+    },
+    {
+      key: 'waterPrice',
+      label: t('apartmentDetail.property.waterPrice'),
+      value: getUtilityPriceLabel(waterPrice),
+    },
+    {
+      key: 'electricityPrice',
+      label: t('apartmentDetail.property.electricityPrice'),
+      value: getUtilityPriceLabel(electricityPrice),
+    },
+    {
+      key: 'internetPrice',
+      label: t('apartmentDetail.property.internetPrice'),
+      value: getUtilityPriceLabel(internetPrice),
+    },
+  ].filter((metric) => metric.value)
 
   const listingForCompare: ListingApi = {
     listingId: listing.listingId,
@@ -162,100 +228,50 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
           >
             {t('apartmentDetail.property.price')}
           </Typography>
-          <div className='flex items-baseline gap-2 flex-wrap'>
-            <Typography
-              variant='h2'
-              className='text-3xl md:text-4xl lg:text-5xl font-bold text-primary'
-            >
-              {formatByLocale(price || 0, 'vi')}
-            </Typography>
-            <Typography
-              variant='h5'
-              className='text-lg md:text-xl text-muted-foreground font-medium'
-            >
-              / {t(getPriceUnitTranslationKey(priceUnit))}
-            </Typography>
-          </div>
+          {price !== undefined && price !== null && (
+            <div className='flex items-baseline gap-2 flex-wrap'>
+              <Typography
+                variant='h2'
+                className='text-3xl md:text-4xl lg:text-5xl font-bold text-primary'
+              >
+                {formatByLocale(price, 'vi')}
+              </Typography>
+              <Typography
+                variant='h5'
+                className='text-lg md:text-xl text-muted-foreground font-medium'
+              >
+                / {t(getPriceUnitTranslationKey(priceUnit))}
+              </Typography>
+            </div>
+          )}
         </div>
 
         {/* Other Metrics in Grid */}
-        <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3'>
-          {/* Area */}
-          <Card className='hover:shadow-md hover:border-primary/30 transition-all'>
-            <CardContent className='p-4 md:p-5'>
-              <Typography
-                variant='small'
-                className='text-muted-foreground mb-1.5 font-semibold text-xs uppercase tracking-wider'
+        {metrics.length > 0 && (
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3'>
+            {metrics.map((metric) => (
+              <Card
+                key={metric.key}
+                className='hover:shadow-md hover:border-primary/30 transition-all'
               >
-                {t('apartmentDetail.property.area')}
-              </Typography>
-              <Typography
-                variant='h4'
-                className='text-xl md:text-2xl font-bold'
-              >
-                {area} m²
-              </Typography>
-            </CardContent>
-          </Card>
-
-          {/* Bedrooms */}
-          <Card className='hover:shadow-md hover:border-primary/30 transition-all'>
-            <CardContent className='p-4 md:p-5'>
-              <Typography
-                variant='small'
-                className='text-muted-foreground mb-1.5 font-semibold text-xs uppercase tracking-wider'
-              >
-                {t('apartmentDetail.property.bedrooms')}
-              </Typography>
-              <Typography
-                variant='h4'
-                className='text-xl md:text-2xl font-bold'
-              >
-                {bedrooms}
-              </Typography>
-            </CardContent>
-          </Card>
-
-          {/* Bathrooms */}
-          {bathrooms && (
-            <Card className='hover:shadow-md hover:border-primary/30 transition-all'>
-              <CardContent className='p-4 md:p-5'>
-                <Typography
-                  variant='small'
-                  className='text-muted-foreground mb-1.5 font-semibold text-xs uppercase tracking-wider'
-                >
-                  {t('apartmentDetail.property.bathrooms')}
-                </Typography>
-                <Typography
-                  variant='h4'
-                  className='text-xl md:text-2xl font-bold'
-                >
-                  {bathrooms}
-                </Typography>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Room Capacity */}
-          {roomCapacity && (
-            <Card className='hover:shadow-md hover:border-primary/30 transition-all'>
-              <CardContent className='p-4 md:p-5'>
-                <Typography
-                  variant='small'
-                  className='text-muted-foreground mb-1.5 font-semibold text-xs uppercase tracking-wider'
-                >
-                  {t('apartmentDetail.property.roomCapacity')}
-                </Typography>
-                <Typography
-                  variant='h4'
-                  className='text-xl md:text-2xl font-bold'
-                >
-                  {roomCapacity}
-                </Typography>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+                <CardContent className='p-4 md:p-5'>
+                  <Typography
+                    variant='small'
+                    className='text-muted-foreground mb-1.5 font-semibold text-xs uppercase tracking-wider'
+                  >
+                    {metric.label}
+                  </Typography>
+                  <Typography
+                    variant='h4'
+                    className='text-xl md:text-2xl font-bold break-words'
+                  >
+                    {metric.value}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Report Dialog */}

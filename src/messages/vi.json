@@ -2688,6 +2688,9 @@
       "amenities": "Tiện ích",
       "newAddress": "Địa chỉ mới",
       "legacyAddress": "Địa chỉ cũ",
+      "waterPrice": "Giá nước",
+      "electricityPrice": "Giá điện",
+      "internetPrice": "Giá internet",
       "smartPrice": {
         "title": "Đánh giá giá thông minh",
         "description": "AI so sánh dữ liệu thị trường để giúp bạn quyết định.",

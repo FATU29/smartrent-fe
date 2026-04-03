@@ -6,7 +6,6 @@ import DetailPostTemplate from '@/components/templates/detailPostTemplate'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import type { ListingDetail } from '@/api/types'
 import { ListingService } from '@/api/services'
-import { mockListingDetail, mockSimilarProperties } from '@/mock'
 import { PUBLIC_ROUTES } from '@/constants'
 
 interface ListingDetailProps {
@@ -31,8 +30,12 @@ const ListingDetail: NextPageWithLayout<ListingDetailProps> = (props) => {
     onSimilarPropertyClick,
   } = props
 
-  const listingData = listing || mockListingDetail
-  const similarPropertiesData = similarProperties || mockSimilarProperties
+  if (!listing) {
+    return null
+  }
+
+  const listingData = listing
+  const similarPropertiesData = similarProperties || []
 
   const { title, description, media } = listingData || {}
   const images =
