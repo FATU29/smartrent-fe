@@ -2,6 +2,7 @@ import type {
   CreateListingRequest,
   ListingDetail,
   MediaItem,
+  PriceType,
 } from '@/api/types/property.type'
 import { LISTING_TYPE } from '@/api/types/property.type'
 import type { DraftListingResponse } from '@/api/types/draft.type'
@@ -68,6 +69,19 @@ export interface MappedFormData {
   media: Partial<MediaItem>[]
 }
 
+const PRICE_TYPE_VALUES: readonly PriceType[] = [
+  'NEGOTIABLE',
+  'SET_BY_OWNER',
+  'PROVIDER_RATE',
+] as const
+
+const toPriceType = (value: unknown): PriceType | undefined => {
+  if (typeof value !== 'string') return undefined
+  return PRICE_TYPE_VALUES.includes(value as PriceType)
+    ? (value as PriceType)
+    : undefined
+}
+
 /**
  * Maps a ListingDetail (from update post) to form data structure
  * Used by UpdatePostContext to populate the form with existing listing data
@@ -90,13 +104,10 @@ export function mapListingToFormData(listing: ListingDetail): MappedFormData {
     direction: listing.direction,
     furnishing: listing.furnishing,
     roomCapacity: listing.roomCapacity ?? undefined,
-    waterPrice: listing.waterPrice,
-    electricityPrice: listing.electricityPrice,
-    internetPrice: listing.internetPrice,
-    serviceFee:
-      'serviceFee' in listing
-        ? (listing.serviceFee as CreateListingRequest['serviceFee'] | undefined)
-        : undefined,
+    waterPrice: toPriceType(listing.waterPrice),
+    electricityPrice: toPriceType(listing.electricityPrice),
+    internetPrice: toPriceType(listing.internetPrice),
+    serviceFee: toPriceType(listing.serviceFee),
     amenityIds: amenityIds,
     mediaIds: mediaIds,
     vipType: listing.vipType as CreateListingRequest['vipType'],
