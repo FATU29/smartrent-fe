@@ -2692,6 +2692,12 @@
       "legacyAddress": "Legacy Address",
       "serviceFee": "Service Fee",
       "vipType": "VIP Type",
+      "vipTypes": {
+        "NORMAL": "Standard",
+        "SILVER": "VIP Silver",
+        "GOLD": "VIP Gold",
+        "DIAMOND": "VIP Diamond"
+      },
       "listingTypes": {
         "RENT": "For Rent",
         "SHARE": "Shared"
