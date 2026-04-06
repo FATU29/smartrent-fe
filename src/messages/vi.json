@@ -2242,7 +2242,11 @@
         "noData": "Chưa có dữ liệu",
         "emptyState": {
           "title": "Chưa có dữ liệu phân tích lượt click",
-          "description": "Biểu đồ và bảng tin đăng sẽ hiển thị sau khi người dùng bắt đầu click số điện thoại trên tin của bạn."
+          "description": "Biểu đồ và bảng tin đăng sẽ hiển thị sau khi người dùng bắt đầu click số điện thoại trên tin của bạn.",
+          "hintTitle": "Gợi ý để bắt đầu có dữ liệu",
+          "tip1": "Chia sẻ tin đăng để tăng lượt tiếp cận nhanh hơn",
+          "tip2": "Đảm bảo số điện thoại hiển thị rõ và dễ thao tác trên mobile",
+          "tip3": "Theo dõi theo từng khoảng thời gian để nhận biết xu hướng sớm"
         },
         "clicks": "Lượt click",
         "date": "Ngày",
@@ -2292,7 +2296,11 @@
         "noData": "Chưa có dữ liệu",
         "emptyState": {
           "title": "Chưa có dữ liệu phân tích lượt lưu",
-          "description": "Biểu đồ và bảng tin đăng sẽ hiển thị sau khi người dùng bắt đầu lưu tin của bạn."
+          "description": "Biểu đồ và bảng tin đăng sẽ hiển thị sau khi người dùng bắt đầu lưu tin của bạn.",
+          "hintTitle": "Gợi ý để tăng lượt lưu tin",
+          "tip1": "Tối ưu tiêu đề và ảnh đại diện để tăng độ thu hút",
+          "tip2": "Cập nhật giá và mô tả rõ ràng để người dùng dễ quyết định lưu",
+          "tip3": "Theo dõi xu hướng lưu theo thời gian để điều chỉnh nội dung"
         },
         "searchPlaceholder": "Tìm theo tiêu đề tin...",
         "rowsPerPage": "Số dòng mỗi trang",

@@ -1,5 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import { Locale } from '@/types'
+import Image from 'next/image'
 import {
   Select,
   SelectContent,
@@ -8,34 +10,66 @@ import {
 } from '@/components/atoms/select'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 
+type LanguageOption = {
+  code: Locale
+  flagSrc: string
+  name: string
+}
+
 const LanguageSwitch = () => {
   const { language, updateLanguage } = useSwitchLanguage()
   const t = useTranslations('homePage.settings.language')
 
-  const languages = [
-    { code: 'vi', flag: '🇻🇳', name: t('vietnamese') },
-    { code: 'en', flag: '🇺🇸', name: t('english') },
+  const languages: LanguageOption[] = [
+    {
+      code: 'vi',
+      flagSrc: '/images/flags/vn.svg',
+      name: t('vietnamese'),
+    },
+    {
+      code: 'en',
+      flagSrc: '/images/flags/us.svg',
+      name: t('english'),
+    },
   ]
 
-  const currentLanguage = languages.find((lang) => lang.code === language)
+  const currentLanguage =
+    languages.find((lang) => lang.code === language) || languages[0]
+
+  const isLanguageCode = (value: string): value is Locale => {
+    return languages.some((lang) => lang.code === value)
+  }
 
   const handleLanguageChange = (value: string) => {
-    updateLanguage(value as 'vi' | 'en')
+    if (!isLanguageCode(value)) return
+    updateLanguage(value)
+  }
+
+  const renderFlagIcon = (flagSrc: string, name: string) => {
+    return (
+      <Image
+        src={flagSrc}
+        alt={name}
+        width={24}
+        height={18}
+        className='block h-[18px] w-6 shrink-0 rounded-[3px] border border-border/60 object-cover'
+      />
+    )
   }
 
   return (
     <Select value={language} onValueChange={handleLanguageChange}>
-      <SelectTrigger className='w-auto gap-2'>
-        <span className='text-lg'>{currentLanguage?.flag}</span>
-        {currentLanguage?.name}
+      <SelectTrigger className='w-auto min-w-[128px] gap-2 px-2.5'>
+        {renderFlagIcon(currentLanguage.flagSrc, currentLanguage.name)}
+        <span className='truncate text-sm'>{currentLanguage.name}</span>
       </SelectTrigger>
       <SelectContent>
         {languages.map((lang) => (
           <SelectItem key={lang.code} value={lang.code}>
-            <div className='flex items-center gap-2'>
-              <span className='text-lg'>{lang.flag}</span>
-              {lang.name}
-            </div>
+            <span className='flex items-center gap-2'>
+              {renderFlagIcon(lang.flagSrc, lang.name)}
+              <span>{lang.name}</span>
+            </span>
           </SelectItem>
         ))}
       </SelectContent>
