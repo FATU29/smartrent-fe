@@ -50,6 +50,7 @@ interface SellerListingsSection {
 
 interface SellerPublicDetailTemplateProps {
   seller?: UserApi | null
+  isSellerLoading?: boolean
   listingCount: number
   sections: SellerListingsSection[]
   topSavedListings?: ListingDetail[]
@@ -64,6 +65,7 @@ interface SellerPublicDetailTemplateProps {
 
 const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
   seller,
+  isSellerLoading = false,
   listingCount,
   sections,
   topSavedListings = [],
@@ -160,7 +162,11 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
       </div>
 
       <section className='max-w-4xl mx-auto'>
-        <SellerPublicProfileCard seller={seller} listingCount={listingCount} />
+        <SellerPublicProfileCard
+          seller={seller}
+          listingCount={listingCount}
+          isLoading={isSellerLoading}
+        />
       </section>
 
       {isError &&
