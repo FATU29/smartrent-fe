@@ -10,6 +10,10 @@ export default function Document() {
           content='width=device-width, initial-scale=1, viewport-fit=cover'
         />
         <meta name='theme-color' content='#ffffff' />
+        <meta
+          name='google-site-verification'
+          content='k_QMBVsA1j9RsDzbW9KBzxL6Dc9wa0vNWlVxGyh3zwU'
+        />
 
         {/* Favicon and Icons */}
         <link rel='icon' href='/images/logo-smartrent.jpg' sizes='any' />
