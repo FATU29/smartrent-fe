@@ -51,7 +51,10 @@
     "chatMessages": "Chat messages",
     "messageInput": "Message input",
     "attachFile": "Attach file",
-    "loginRequired": "Please log in to use the AI assistant. Logging in helps us provide a better experience and save your conversation history."
+    "loginRequired": "Please log in to use the AI assistant. Logging in helps us provide a better experience and save your conversation history.",
+    "scrollToBottom": "Scroll to bottom",
+    "expandTable": "View full",
+    "expandTableTitle": "Comparison Details"
   },
   "chat": {
     "title": "AI Property Assistant",
@@ -64,7 +67,25 @@
       "viewDetails": "View Details",
       "month": "month",
       "year": "year"
-    }
+    },
+    "compare": {
+      "title": "Property Comparison",
+      "price": "Price",
+      "area": "Area",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "furnishing": "Furnishing",
+      "direction": "Direction",
+      "address": "Address",
+      "viewFullComparison": "View full comparison",
+      "pricePerArea": "Price/m²"
+    },
+    "contact": {
+      "landlord": "Landlord",
+      "viewSellerPage": "View seller page"
+    },
+    "showMore": "Show {count} more results",
+    "showLess": "Show less"
   },
   "common": {
     "or": "Or",
@@ -1902,7 +1923,7 @@
     "newsletterDescription": "Subscribe to receive the latest real estate news",
     "subscribe": "Subscribe",
     "emailPlaceholder": "Enter your email",
-    "disclaimer": "This platform is developed solely for the Capstone Graduation Project of the University of Science. It is an academic prototype and not an operational commercial service."
+    "disclaimer": "Data is collected for scientific research/capstone thesis purposes at VNU-HCM University of Science. For any removal requests, please contact and CC both emails [smartrent.tools@gmail.com, lqm550@gmail.com]."
   },
   "navigation": {
     "home": "Home",

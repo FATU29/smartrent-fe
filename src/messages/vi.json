@@ -51,7 +51,10 @@
     "chatMessages": "Tin nhắn chat",
     "messageInput": "Nhập tin nhắn",
     "attachFile": "Đính kèm tệp",
-    "loginRequired": "Vui lòng đăng nhập để sử dụng trợ lý AI. Đăng nhập giúp chúng tôi cung cấp trải nghiệm tốt hơn và lưu lịch sử trò chuyện của bạn."
+    "loginRequired": "Vui lòng đăng nhập để sử dụng trợ lý AI. Đăng nhập giúp chúng tôi cung cấp trải nghiệm tốt hơn và lưu lịch sử trò chuyện của bạn.",
+    "scrollToBottom": "Cuộn xuống cuối",
+    "expandTable": "Xem đầy đủ",
+    "expandTableTitle": "Chi tiết so sánh"
   },
   "chat": {
     "title": "Trợ Lý Tìm Nhà AI",
@@ -64,7 +67,25 @@
       "viewDetails": "Xem Chi Tiết",
       "month": "tháng",
       "year": "năm"
-    }
+    },
+    "compare": {
+      "title": "So sánh bất động sản",
+      "price": "Giá",
+      "area": "Diện tích",
+      "bedrooms": "Phòng ngủ",
+      "bathrooms": "Phòng tắm",
+      "furnishing": "Nội thất",
+      "direction": "Hướng",
+      "address": "Địa chỉ",
+      "viewFullComparison": "Xem so sánh đầy đủ",
+      "pricePerArea": "Giá/m²"
+    },
+    "contact": {
+      "landlord": "Người cho thuê",
+      "viewSellerPage": "Xem trang người cho thuê"
+    },
+    "showMore": "Xem thêm {count} kết quả",
+    "showLess": "Thu gọn"
   },
   "common": {
     "or": "Hoặc",
@@ -1721,7 +1742,7 @@
     "newsletterDescription": "Đăng ký để nhận tin tức bất động sản mới nhất",
     "subscribe": "Đăng ký",
     "emailPlaceholder": "Nhập email của bạn",
-    "disclaimer": "Nền tảng này được phát triển phục vụ duy nhất cho Đồ án Tốt nghiệp của Trường Đại học Khoa học Tự nhiên. Đây là sản phẩm học thuật thử nghiệm, không phải dịch vụ thương mại."
+    "disclaimer": "Dữ liệu được thu thập phục vụ nghiên cứu khoa học/đồ án tốt nghiệp tại VNU-HCM University of Science. Mọi yêu cầu gỡ bỏ vui lòng liên hệ CC 2 mails [smartrent.tools@gmail.com, lqm550@gmail.com]."
   },
   "navigation": {
     "home": "Trang chủ",
