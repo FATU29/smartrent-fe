@@ -125,7 +125,7 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
           <div
             className={cn(
               'relative rounded-lg overflow-hidden flex-shrink-0',
-              isCompact ? 'w-full h-40' : 'w-full sm:w-32 h-40 sm:h-24',
+              isCompact ? 'w-full h-28' : 'w-full sm:w-32 h-40 sm:h-24',
             )}
           >
             <Image
@@ -197,68 +197,63 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
               </div>
             )}
 
-            {/* Action buttons overlay */}
-            <div
-              className={cn(
-                'absolute flex gap-1',
-                isCompact ? 'bottom-1 left-1' : 'bottom-2 left-2',
-              )}
-            >
-              {/* Save button */}
-              <button
-                onClick={handleSaveClick}
-                disabled={isSaveLoading}
-                className={cn(
-                  'flex items-center justify-center',
-                  'rounded-full bg-background/80 backdrop-blur-sm',
-                  'hover:bg-background transition-all duration-200',
-                  'hover:scale-110 active:scale-95',
-                  'disabled:opacity-50 disabled:cursor-not-allowed',
-                  isCompact ? 'h-6 w-6' : 'h-7 w-7',
-                )}
-                aria-label={
-                  isSaved ? tSaved('actions.saved') : tSaved('actions.save')
-                }
-              >
-                <Heart
+            {/* Action buttons overlay - hidden in compact (chat) mode */}
+            {!isCompact && (
+              <div className='absolute flex gap-1 bottom-2 left-2'>
+                {/* Save button */}
+                <button
+                  onClick={handleSaveClick}
+                  disabled={isSaveLoading}
                   className={cn(
-                    'transition-all duration-200',
-                    isSaved
-                      ? 'fill-red-500 stroke-red-500'
-                      : 'fill-none stroke-muted-foreground hover:stroke-red-500',
-                    isSaveLoading && 'animate-pulse',
-                    isCompact ? 'w-3 h-3' : 'w-4 h-4',
+                    'flex items-center justify-center',
+                    'rounded-full bg-background/80 backdrop-blur-sm',
+                    'hover:bg-background transition-all duration-200',
+                    'hover:scale-110 active:scale-95',
+                    'disabled:opacity-50 disabled:cursor-not-allowed',
+                    'h-7 w-7',
                   )}
-                />
-              </button>
+                  aria-label={
+                    isSaved ? tSaved('actions.saved') : tSaved('actions.save')
+                  }
+                >
+                  <Heart
+                    className={cn(
+                      'w-4 h-4 transition-all duration-200',
+                      isSaved
+                        ? 'fill-red-500 stroke-red-500'
+                        : 'fill-none stroke-muted-foreground hover:stroke-red-500',
+                      isSaveLoading && 'animate-pulse',
+                    )}
+                  />
+                </button>
 
-              {/* Compare button */}
-              <button
-                onClick={handleCompareClick}
-                className={cn(
-                  'flex items-center justify-center',
-                  'rounded-full bg-background/80 backdrop-blur-sm',
-                  'hover:bg-background transition-all duration-200',
-                  'hover:scale-110 active:scale-95',
-                  isCompact ? 'h-6 w-6' : 'h-7 w-7',
-                )}
-                aria-label={
-                  isInCompareList
-                    ? tCompare('actions.removeFromCompare')
-                    : tCompare('actions.addToCompare')
-                }
-              >
-                <Plus
+                {/* Compare button */}
+                <button
+                  onClick={handleCompareClick}
                   className={cn(
-                    'transition-all duration-200',
-                    isInCompareList
-                      ? 'rotate-45 stroke-primary'
-                      : 'stroke-muted-foreground hover:stroke-primary',
-                    isCompact ? 'w-3 h-3' : 'w-4 h-4',
+                    'flex items-center justify-center',
+                    'rounded-full bg-background/80 backdrop-blur-sm',
+                    'hover:bg-background transition-all duration-200',
+                    'hover:scale-110 active:scale-95',
+                    'h-7 w-7',
                   )}
-                />
-              </button>
-            </div>
+                  aria-label={
+                    isInCompareList
+                      ? tCompare('actions.removeFromCompare')
+                      : tCompare('actions.addToCompare')
+                  }
+                >
+                  <Plus
+                    className={cn(
+                      'w-4 h-4 transition-all duration-200',
+                      isInCompareList
+                        ? 'rotate-45 stroke-primary'
+                        : 'stroke-muted-foreground hover:stroke-primary',
+                    )}
+                  />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Content Section */}

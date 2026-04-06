@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import classNames from 'classnames'
 import { Card, CardContent } from '@/components/atoms/card'
 import { Badge } from '@/components/atoms/badge'
-import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import {
   Tooltip,
@@ -33,7 +32,6 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import { ListingDetail } from '@/api/types'
-import { getAmenityIcon } from '@/constants/amenities'
 import { formatDate } from 'date-fns'
 import { isYouTube, toYouTubeEmbed } from '@/utils/video/url'
 import { formatByLocale } from '@/utils/currency/convert'
@@ -97,7 +95,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     bathrooms,
     verified,
     user,
-    amenities,
     address,
     postDate,
     productType,
@@ -746,56 +743,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           {bottomContent && (
             <div className={classNames(isCompact ? 'mt-2' : 'mt-auto')}>
               {bottomContent}
-            </div>
-          )}
-
-          {!isCompact && amenities && amenities.length > 0 && (
-            <div className='flex items-start flex-wrap gap-1.5 mt-auto'>
-              {amenities.slice(0, 2).map((amenity) => {
-                const IconComponent = getAmenityIcon(amenity.name)
-                return (
-                  <Button
-                    key={amenity.name}
-                    variant='secondary'
-                    size='sm'
-                    className='h-7 px-3 py-0 text-xs rounded-full hover:bg-secondary/80 transition-colors duration-200 min-w-[80px] flex items-center justify-center'
-                  >
-                    {IconComponent ? (
-                      <IconComponent className='w-3 h-3' />
-                    ) : null}
-                    <span className='ml-1 truncate'>{amenity.name}</span>
-                  </Button>
-                )
-              })}
-              {amenities.length > 2 && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant='secondary'
-                      size='sm'
-                      className='h-7 px-3 py-0 text-xs rounded-full hover:bg-secondary/80 transition-colors duration-200 cursor-help min-w-[80px] flex items-center justify-center'
-                    >
-                      +{amenities.length - 2} {t('homePage.property.more')}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side='top' className='max-w-xs z-50'>
-                    <div className='space-y-1'>
-                      <Typography variant='small' className='font-medium'>
-                        {t('homePage.property.additionalAmenities')}:
-                      </Typography>
-                      {amenities.slice(2).map((amenity) => (
-                        <Typography
-                          key={amenity.name}
-                          variant='small'
-                          className='block'
-                        >
-                          • {amenity.name}
-                        </Typography>
-                      ))}
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              )}
             </div>
           )}
         </CardContent>

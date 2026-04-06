@@ -36,6 +36,9 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
     isTyping,
     inputValue,
     scrollRef,
+    bottomRef,
+    isAtBottom,
+    scrollToBottom,
     sendMessage,
     handleInputChange,
   } = useChatLogic()
@@ -124,6 +127,9 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                 isLoading={isLoading}
                 isTyping={isTyping}
                 scrollRef={scrollRef}
+                bottomRef={bottomRef}
+                isAtBottom={isAtBottom}
+                onScrollToBottom={scrollToBottom}
                 onInputChange={handleInputChange}
                 onSendMessage={sendMessage}
                 isMobile
@@ -177,6 +183,9 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                   isLoading={isLoading}
                   isTyping={isTyping}
                   scrollRef={scrollRef}
+                  bottomRef={bottomRef}
+                  isAtBottom={isAtBottom}
+                  onScrollToBottom={scrollToBottom}
                   onInputChange={handleInputChange}
                   onSendMessage={sendMessage}
                   isMobile={false}

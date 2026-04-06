@@ -1,4 +1,4 @@
-import { FC, RefObject } from 'react'
+import { FC, RefObject, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
@@ -7,6 +7,7 @@ import { TChatMessage } from '@/hooks/useChatAi'
 import AiChatBubble from '@/components/molecules/aiChatBubble'
 import AiChatInput from '@/components/molecules/aiChatInput'
 import AiChatTypingIndicator from '@/components/atoms/aiChatTypingIndicator'
+import AiChatScrollButton from '@/components/atoms/aiChatScrollButton'
 
 type TAiChatInterfaceProps = {
   messages: TChatMessage[]
@@ -14,6 +15,9 @@ type TAiChatInterfaceProps = {
   isLoading: boolean
   isTyping: boolean
   scrollRef: RefObject<HTMLDivElement | null>
+  bottomRef: RefObject<HTMLDivElement | null>
+  isAtBottom: boolean
+  onScrollToBottom: () => void
   onInputChange: (value: string) => void
   onSendMessage: (value: string) => void
   isMobile?: boolean
@@ -26,12 +30,18 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
   isLoading,
   isTyping,
   scrollRef,
+  bottomRef,
+  isAtBottom,
+  onScrollToBottom,
   onInputChange,
   onSendMessage,
   isMobile = false,
   className,
 }) => {
   const t = useTranslations('aiChat')
+
+  // Track initial message count at mount to avoid animating restored messages
+  const initialCountRef = useRef(messages.length)
 
   return (
     <div
@@ -42,42 +52,65 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
       )}
     >
       {/* Messages area */}
-      <div
-        ref={scrollRef}
-        className={cn(
-          'flex-1 overflow-y-auto overflow-x-hidden',
-          'scroll-smooth scrollbar-thin scrollbar-thumb-rounded-full',
-          'scrollbar-track-transparent scrollbar-thumb-gray-300',
-          isMobile ? 'pb-2' : '',
-        )}
-        role='log'
-        aria-live='polite'
-        aria-label={t('chatMessages')}
-      >
-        <div className='flex min-h-full flex-col justify-end'>
-          <div
-            className={cn('flex flex-col py-2', isMobile ? 'gap-1' : 'gap-2')}
-          >
-            {messages.map((message, index) => (
-              <div
-                key={message.id}
-                className='animate-in fade-in slide-in-from-bottom-4 duration-300'
-                style={{
-                  animationDelay: `${index * 50}ms`,
-                  animationFillMode: 'backwards',
-                }}
-              >
-                <AiChatBubble message={message} />
-              </div>
-            ))}
+      <div className='relative flex-1 min-h-0'>
+        <div
+          ref={scrollRef}
+          className={cn(
+            'h-full overflow-y-auto overflow-x-hidden',
+            'scroll-smooth scrollbar-thin scrollbar-thumb-rounded-full',
+            'scrollbar-track-transparent scrollbar-thumb-gray-300',
+            isMobile ? 'pb-2' : '',
+          )}
+          role='log'
+          aria-live='polite'
+          aria-label={t('chatMessages')}
+        >
+          <div className='flex min-h-full flex-col justify-end'>
+            <div
+              className={cn('flex flex-col py-2', isMobile ? 'gap-1' : 'gap-2')}
+            >
+              {messages.map((message, index) => {
+                // Only animate messages added after mount (not session-restored)
+                const isNew = index >= initialCountRef.current - 1
+                return (
+                  <div
+                    key={message.id}
+                    data-message-id={message.id}
+                    className={
+                      isNew
+                        ? 'animate-in fade-in slide-in-from-bottom-4 duration-300'
+                        : undefined
+                    }
+                    style={
+                      isNew
+                        ? {
+                            animationDelay: `${(index - initialCountRef.current + 1) * 50}ms`,
+                            animationFillMode: 'backwards',
+                          }
+                        : undefined
+                    }
+                  >
+                    <AiChatBubble message={message} />
+                  </div>
+                )
+              })}
 
-            {isTyping && (
-              <div className='animate-in fade-in slide-in-from-bottom-2 duration-200'>
-                <AiChatTypingIndicator />
-              </div>
-            )}
+              {isTyping && (
+                <div className='animate-in fade-in slide-in-from-bottom-2 duration-200'>
+                  <AiChatTypingIndicator />
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Bottom sentinel for IntersectionObserver */}
+          <div ref={bottomRef} className='h-px' />
         </div>
+
+        {/* Scroll-to-bottom button */}
+        {!isAtBottom && (
+          <AiChatScrollButton onScrollToBottom={onScrollToBottom} />
+        )}
       </div>
 
       {/* Input area - Fixed on mobile */}

@@ -1,9 +1,10 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { AiService } from '@/api/services/ai.service'
 import type { ChatMessage, ChatListing } from '@/api/types/ai.type'
 import { useChatSession } from './useChatSession'
+import { useChatScroll } from './useChatScroll'
 import { useAuth } from '@/hooks/useAuth'
 
 export type TChatMessage = {
@@ -18,6 +19,7 @@ export type TChatMessage = {
     score: number
     reason: string
   }>
+  toolsUsed?: string[]
 }
 
 export type TChatState = {
@@ -54,7 +56,8 @@ export const useChatLogic = () => {
   const [isTyping, setIsTyping] = useState(false)
   const [inputValue, setInputValue] = useState('')
 
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const { scrollRef, bottomRef, isAtBottom, scrollToMessage, scrollToBottom } =
+    useChatScroll()
 
   const generateMessageId = useCallback(() => {
     const timestamp = Date.now()
@@ -64,17 +67,6 @@ export const useChatLogic = () => {
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('')
     return `msg-${timestamp}-${random}`
-  }, [])
-
-  const scrollToBottom = useCallback(() => {
-    if (scrollRef.current) {
-      setTimeout(() => {
-        scrollRef.current?.scrollTo({
-          top: scrollRef.current.scrollHeight,
-          behavior: 'smooth',
-        })
-      }, 100)
-    }
   }, [])
 
   //Init event handle
@@ -92,7 +84,7 @@ export const useChatLogic = () => {
           timestamp: new Date(),
         }
         addMessage(loginRequiredMessage)
-        scrollToBottom()
+        scrollToMessage(loginRequiredMessage.id)
         return
       }
 
@@ -132,6 +124,7 @@ export const useChatLogic = () => {
 
         const aiMessage = chatResponse?.message
         const listings = chatResponse?.listings
+        const toolsUsed = chatResponse?.metadata?.tools_used || []
 
         if (!aiMessage || !aiMessage.content) {
           const errorMessage: TChatMessage = {
@@ -147,7 +140,7 @@ export const useChatLogic = () => {
           setIsTyping(false)
           setIsLoading(false)
           addMessage(errorMessage)
-          scrollToBottom()
+          scrollToMessage(errorMessage.id)
           return
         }
         // Check if listings exist and have data
@@ -162,6 +155,7 @@ export const useChatLogic = () => {
           content: aiMessage.content.trim(),
           sender: 'bot',
           timestamp: new Date(),
+          toolsUsed,
           ...(hasListings && {
             listings: listings.listings,
             totalCount: listings.totalCount || listings.listings.length,
@@ -174,7 +168,7 @@ export const useChatLogic = () => {
 
         // Add bot message to session (always add, even if no listings)
         addMessage(botMessage)
-        scrollToBottom()
+        scrollToMessage(botMessage.id)
       } catch (error: unknown) {
         // Handle network errors or actual exceptions
         console.error('[useChatLogic] Chat API error:', error)
@@ -199,13 +193,14 @@ export const useChatLogic = () => {
         setIsTyping(false)
         setIsLoading(false)
         addMessage(errorMessage)
-        scrollToBottom()
+        scrollToMessage(errorMessage.id)
       }
     },
     [
       isLoading,
       isAuthenticated,
       scrollToBottom,
+      scrollToMessage,
       messages,
       addMessage,
       generateMessageId,
@@ -223,17 +218,15 @@ export const useChatLogic = () => {
     clearSession()
   }, [clearSession])
 
-  //Init effect hook
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages, scrollToBottom])
-
   return {
     messages,
     isLoading,
     isTyping,
     inputValue,
     scrollRef,
+    bottomRef,
+    isAtBottom,
+    scrollToBottom,
     sendMessage,
     handleInputChange,
     clearMessages,
