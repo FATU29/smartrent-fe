@@ -50,6 +50,7 @@ import type {
 } from '@/api/types'
 import { PhoneClickDetailService } from '@/api/services'
 import { Skeleton } from '@/components/atoms/skeleton'
+import DashboardNoDataState from '@/components/molecules/dashboardNoDataState'
 
 interface DashboardPhoneClickChartProps {
   listings: OwnerListingAnalyticsSummaryItem[]
@@ -247,6 +248,18 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
     },
   }
 
+  const hasClicksOverTimeData = clicksOverTimeData.some(
+    (item) => item.count > 0,
+  )
+  const hasClicksByDayData = clicksByDayData.some((item) => item.count > 0)
+  const hasSummaryMetrics =
+    (analytics?.totalClicks || 0) > 0 || (analytics?.totalViews || 0) > 0
+  const hasPhoneClickData =
+    Boolean(analytics) &&
+    (hasSummaryMetrics || hasClicksOverTimeData || hasClicksByDayData)
+  const showEmptyState =
+    !isSummaryLoading && !isDetailLoading && !hasPhoneClickData
+
   return (
     <Card>
       <CardHeader>
@@ -254,411 +267,455 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
         <CardDescription>{t('description')}</CardDescription>
       </CardHeader>
       <CardContent className='space-y-6'>
-        <div className='space-y-2'>
-          <p className='text-sm font-medium'>{t('listing')}</p>
-          <div className='w-full md:w-[360px]'>
-            <Combobox
-              value={selectedListingId ? String(selectedListingId) : ''}
-              onValueChange={(v) => {
-                if (!v) return
-                handleSelectListing(Number(v))
-              }}
-              onSearchChange={(v) => {
-                setSelectKeyword(v)
-                loadSelectPage(0, false).catch(() => {})
-              }}
-              loading={selectLoading}
-              isLoadingMore={selectLoadingMore}
-              hasMore={selectHasMore}
-              onLoadMore={() => {
-                if (selectHasMore && !selectLoadingMore) {
-                  loadSelectPage(selectPage + 1, true).catch(() => {})
-                }
-              }}
-              options={selectOptions.map((l) => ({
-                value: String(l.listingId),
-                label: l.listingTitle,
-              }))}
-              placeholder={t('selectListing')}
-              searchPlaceholder={t('searchPlaceholder')}
-              fullWidth
-            />
-          </div>
-        </div>
-
-        {isDetailLoading ? (
-          <div className='flex items-center justify-center h-[260px]'>
-            <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
-          </div>
-        ) : analytics ? (
+        {showEmptyState ? (
+          <DashboardNoDataState
+            title={t('emptyState.title')}
+            description={t('emptyState.description')}
+          />
+        ) : (
           <>
-            <div className='space-y-6'>
-              <Card>
-                <CardHeader className='pb-2'>
-                  <CardTitle className='text-base'>
-                    {t('clicksOverTime')}
-                  </CardTitle>
-                  <div className='mt-2'>
-                    <Select
-                      value={period}
-                      onValueChange={(v) =>
-                        onPeriodChange?.(
-                          v as '7d' | '30d' | '90d' | '180d' | '365d' | 'all',
-                        )
-                      }
-                    >
-                      <SelectTrigger className='w-full sm:w-[200px]'>
-                        <SelectValue placeholder={t('period')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value='7d'>{t('period7d')}</SelectItem>
-                        <SelectItem value='30d'>{t('period30d')}</SelectItem>
-                        <SelectItem value='90d'>{t('period90d')}</SelectItem>
-                        <SelectItem value='180d'>{t('period180d')}</SelectItem>
-                        <SelectItem value='365d'>{t('period365d')}</SelectItem>
-                        <SelectItem value='all'>{t('periodAll')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <ChartContainer
-                    config={chartConfig}
-                    className={
-                      isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+            <div className='space-y-2'>
+              <p className='text-sm font-medium'>{t('listing')}</p>
+              <div className='w-full md:w-[360px]'>
+                <Combobox
+                  value={selectedListingId ? String(selectedListingId) : ''}
+                  onValueChange={(v) => {
+                    if (!v) return
+                    handleSelectListing(Number(v))
+                  }}
+                  onSearchChange={(v) => {
+                    setSelectKeyword(v)
+                    loadSelectPage(0, false).catch(() => {})
+                  }}
+                  loading={selectLoading}
+                  isLoadingMore={selectLoadingMore}
+                  hasMore={selectHasMore}
+                  onLoadMore={() => {
+                    if (selectHasMore && !selectLoadingMore) {
+                      loadSelectPage(selectPage + 1, true).catch(() => {})
                     }
-                  >
-                    <ResponsiveContainer width='100%' height='100%'>
-                      <LineChart data={clicksOverTimeData}>
-                        <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                        <XAxis
-                          dataKey='date'
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                          minTickGap={isMobile ? 24 : 12}
-                        />
-                        <YAxis
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                        />
-                        <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (!active || !payload || payload.length === 0) {
-                              return null
-                            }
-
-                            return (
-                              <ChartTooltipContent
-                                active={active}
-                                payload={payload.map((item) => ({
-                                  color: item.color,
-                                  dataKey: String(item.dataKey || ''),
-                                  name: String(item.name || ''),
-                                  value: item.value,
-                                }))}
-                                labelFormatter={() => `${t('date')}: ${label}`}
-                              />
-                            )
-                          }}
-                        />
-                        <Line
-                          type='monotone'
-                          dataKey='count'
-                          stroke='var(--color-count)'
-                          strokeWidth={3}
-                          connectNulls
-                          dot={{
-                            r: 4,
-                            fill: 'var(--color-count)',
-                            stroke: 'hsl(var(--background))',
-                            strokeWidth: 1.5,
-                          }}
-                          activeDot={{
-                            r: 6,
-                            fill: 'var(--color-count)',
-                            stroke: 'hsl(var(--background))',
-                            strokeWidth: 1.5,
-                          }}
-                          name={t('clicks')}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className='pb-2'>
-                  <CardTitle className='text-base'>
-                    {t('clicksByDayOfWeek')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ChartContainer
-                    config={chartConfig}
-                    className={
-                      isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
-                    }
-                  >
-                    <ResponsiveContainer width='100%' height='100%'>
-                      <BarChart data={clicksByDayData}>
-                        <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                        <XAxis
-                          dataKey='label'
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                        />
-                        <YAxis
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                        />
-                        <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (!active || !payload || payload.length === 0) {
-                              return null
-                            }
-
-                            return (
-                              <ChartTooltipContent
-                                active={active}
-                                payload={payload.map((item) => ({
-                                  color: item.color,
-                                  dataKey: String(item.dataKey || ''),
-                                  name: String(item.name || ''),
-                                  value: item.value,
-                                }))}
-                                labelFormatter={() => String(label)}
-                              />
-                            )
-                          }}
-                        />
-                        <Bar
-                          dataKey='count'
-                          fill='var(--color-weekdayCount)'
-                          radius={[6, 6, 0, 0]}
-                          name={t('clicks')}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
+                  }}
+                  options={selectOptions.map((l) => ({
+                    value: String(l.listingId),
+                    label: l.listingTitle,
+                  }))}
+                  placeholder={t('selectListing')}
+                  searchPlaceholder={t('searchPlaceholder')}
+                  fullWidth
+                />
+              </div>
             </div>
 
-            <Card>
-              <CardHeader className='pb-2'>
-                <CardTitle className='text-base'>{t('allListings')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3'>
-                  <div className='flex items-center gap-2 w-full md:w-auto'>
-                    <Input
-                      className='w-full md:w-[260px]'
-                      placeholder={t('searchPlaceholder')}
-                      value={searchKeyword || ''}
-                      onChange={(e) => onSearchKeywordChange?.(e.target.value)}
-                    />
-                  </div>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-sm text-muted-foreground'>
-                      {t('rowsPerPage')}
-                    </span>
-                    <Select
-                      value={String(pageSize || 10)}
-                      onValueChange={(v) => onPageSizeChange?.(Number(v))}
-                    >
-                      <SelectTrigger className='w-[100px]'>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value='5'>5</SelectItem>
-                        <SelectItem value='10'>10</SelectItem>
-                        <SelectItem value='20'>20</SelectItem>
-                        <SelectItem value='50'>50</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                {isMobile ? (
-                  <div className='space-y-2'>
-                    {isSummaryLoading ? (
-                      Array.from({
-                        length: Math.max(3, Math.min(10, pageSize || 10)),
-                      }).map((_, idx) => (
-                        <div
-                          key={`m-sk-${idx}`}
-                          className='rounded-lg border p-3 space-y-2'
+            {isDetailLoading || (isSummaryLoading && !analytics) ? (
+              <div className='flex items-center justify-center h-[260px]'>
+                <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
+              </div>
+            ) : analytics ? (
+              <>
+                <div className='space-y-6'>
+                  <Card>
+                    <CardHeader className='pb-2'>
+                      <CardTitle className='text-base'>
+                        {t('clicksOverTime')}
+                      </CardTitle>
+                      <div className='mt-2'>
+                        <Select
+                          value={period}
+                          onValueChange={(v) =>
+                            onPeriodChange?.(
+                              v as
+                                | '7d'
+                                | '30d'
+                                | '90d'
+                                | '180d'
+                                | '365d'
+                                | 'all',
+                            )
+                          }
                         >
-                          <Skeleton className='h-4 w-[70%]' />
-                          <div className='flex items-center justify-between'>
-                            <Skeleton className='h-4 w-12' />
-                            <Skeleton className='h-8 w-24 rounded-md' />
-                          </div>
-                        </div>
-                      ))
-                    ) : listings.length === 0 ? (
-                      <div className='flex items-center justify-center h-[120px] text-muted-foreground rounded-lg border'>
-                        {t('noListings')}
+                          <SelectTrigger className='w-full sm:w-[200px]'>
+                            <SelectValue placeholder={t('period')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value='7d'>{t('period7d')}</SelectItem>
+                            <SelectItem value='30d'>
+                              {t('period30d')}
+                            </SelectItem>
+                            <SelectItem value='90d'>
+                              {t('period90d')}
+                            </SelectItem>
+                            <SelectItem value='180d'>
+                              {t('period180d')}
+                            </SelectItem>
+                            <SelectItem value='365d'>
+                              {t('period365d')}
+                            </SelectItem>
+                            <SelectItem value='all'>
+                              {t('periodAll')}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                    ) : (
-                      listings.map((listing) => (
-                        <div
-                          key={listing.listingId}
-                          className='rounded-lg border p-3 space-y-2'
+                    </CardHeader>
+                    <CardContent>
+                      <ChartContainer
+                        config={chartConfig}
+                        className={
+                          isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+                        }
+                      >
+                        <ResponsiveContainer width='100%' height='100%'>
+                          <LineChart data={clicksOverTimeData}>
+                            <CartesianGrid
+                              strokeDasharray='3 3'
+                              vertical={false}
+                            />
+                            <XAxis
+                              dataKey='date'
+                              tickLine={false}
+                              axisLine={false}
+                              tickMargin={8}
+                              minTickGap={isMobile ? 24 : 12}
+                            />
+                            <YAxis
+                              tickLine={false}
+                              axisLine={false}
+                              tickMargin={8}
+                            />
+                            <Tooltip
+                              content={({ active, payload, label }) => {
+                                if (
+                                  !active ||
+                                  !payload ||
+                                  payload.length === 0
+                                ) {
+                                  return null
+                                }
+
+                                return (
+                                  <ChartTooltipContent
+                                    active={active}
+                                    payload={payload.map((item) => ({
+                                      color: item.color,
+                                      dataKey: String(item.dataKey || ''),
+                                      name: String(item.name || ''),
+                                      value: item.value,
+                                    }))}
+                                    labelFormatter={() =>
+                                      `${t('date')}: ${label}`
+                                    }
+                                  />
+                                )
+                              }}
+                            />
+                            <Line
+                              type='monotone'
+                              dataKey='count'
+                              stroke='var(--color-count)'
+                              strokeWidth={3}
+                              connectNulls
+                              dot={{
+                                r: 4,
+                                fill: 'var(--color-count)',
+                                stroke: 'hsl(var(--background))',
+                                strokeWidth: 1.5,
+                              }}
+                              activeDot={{
+                                r: 6,
+                                fill: 'var(--color-count)',
+                                stroke: 'hsl(var(--background))',
+                                strokeWidth: 1.5,
+                              }}
+                              name={t('clicks')}
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </ChartContainer>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className='pb-2'>
+                      <CardTitle className='text-base'>
+                        {t('clicksByDayOfWeek')}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ChartContainer
+                        config={chartConfig}
+                        className={
+                          isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+                        }
+                      >
+                        <ResponsiveContainer width='100%' height='100%'>
+                          <BarChart data={clicksByDayData}>
+                            <CartesianGrid
+                              strokeDasharray='3 3'
+                              vertical={false}
+                            />
+                            <XAxis
+                              dataKey='label'
+                              tickLine={false}
+                              axisLine={false}
+                              tickMargin={8}
+                            />
+                            <YAxis
+                              tickLine={false}
+                              axisLine={false}
+                              tickMargin={8}
+                            />
+                            <Tooltip
+                              content={({ active, payload, label }) => {
+                                if (
+                                  !active ||
+                                  !payload ||
+                                  payload.length === 0
+                                ) {
+                                  return null
+                                }
+
+                                return (
+                                  <ChartTooltipContent
+                                    active={active}
+                                    payload={payload.map((item) => ({
+                                      color: item.color,
+                                      dataKey: String(item.dataKey || ''),
+                                      name: String(item.name || ''),
+                                      value: item.value,
+                                    }))}
+                                    labelFormatter={() => String(label)}
+                                  />
+                                )
+                              }}
+                            />
+                            <Bar
+                              dataKey='count'
+                              fill='var(--color-weekdayCount)'
+                              radius={[6, 6, 0, 0]}
+                              name={t('clicks')}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </ChartContainer>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Card>
+                  <CardHeader className='pb-2'>
+                    <CardTitle className='text-base'>
+                      {t('allListings')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3'>
+                      <div className='flex items-center gap-2 w-full md:w-auto'>
+                        <Input
+                          className='w-full md:w-[260px]'
+                          placeholder={t('searchPlaceholder')}
+                          value={searchKeyword || ''}
+                          onChange={(e) =>
+                            onSearchKeywordChange?.(e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className='flex items-center gap-2'>
+                        <span className='text-sm text-muted-foreground'>
+                          {t('rowsPerPage')}
+                        </span>
+                        <Select
+                          value={String(pageSize || 10)}
+                          onValueChange={(v) => onPageSizeChange?.(Number(v))}
                         >
-                          <p className='font-medium text-sm line-clamp-2'>
-                            {listing.listingTitle}
-                          </p>
-                          <div className='flex items-center justify-between gap-3'>
-                            <p className='text-sm text-muted-foreground'>
-                              {t('totalClicks')}:{' '}
-                              <strong>{listing.totalClicks}</strong>
-                            </p>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              onClick={() =>
-                                handleSelectListing(listing.listingId)
-                              }
-                            >
-                              {t('viewDetails')}
-                            </Button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t('listing')}</TableHead>
-                        <TableHead className='text-right'>
-                          {t('totalClicks')}
-                        </TableHead>
-                        <TableHead className='text-right'>
-                          {t('action')}
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {isSummaryLoading ? (
-                        <>
-                          {Array.from({
+                          <SelectTrigger className='w-[100px]'>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value='5'>5</SelectItem>
+                            <SelectItem value='10'>10</SelectItem>
+                            <SelectItem value='20'>20</SelectItem>
+                            <SelectItem value='50'>50</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    {isMobile ? (
+                      <div className='space-y-2'>
+                        {isSummaryLoading ? (
+                          Array.from({
                             length: Math.max(3, Math.min(10, pageSize || 10)),
                           }).map((_, idx) => (
-                            <TableRow key={`sk-${idx}`}>
-                              <TableCell>
-                                <Skeleton className='h-4 w-[70%]' />
-                              </TableCell>
-                              <TableCell className='text-right'>
-                                <div className='flex justify-end'>
-                                  <Skeleton className='h-4 w-12' />
-                                </div>
-                              </TableCell>
-                              <TableCell className='text-right'>
-                                <div className='flex justify-end'>
-                                  <Skeleton className='h-6 w-24 rounded-md' />
+                            <div
+                              key={`m-sk-${idx}`}
+                              className='rounded-lg border p-3 space-y-2'
+                            >
+                              <Skeleton className='h-4 w-[70%]' />
+                              <div className='flex items-center justify-between'>
+                                <Skeleton className='h-4 w-12' />
+                                <Skeleton className='h-8 w-24 rounded-md' />
+                              </div>
+                            </div>
+                          ))
+                        ) : listings.length === 0 ? (
+                          <div className='flex items-center justify-center h-[120px] text-muted-foreground rounded-lg border'>
+                            {t('noListings')}
+                          </div>
+                        ) : (
+                          listings.map((listing) => (
+                            <div
+                              key={listing.listingId}
+                              className='rounded-lg border p-3 space-y-2'
+                            >
+                              <p className='font-medium text-sm line-clamp-2'>
+                                {listing.listingTitle}
+                              </p>
+                              <div className='flex items-center justify-between gap-3'>
+                                <p className='text-sm text-muted-foreground'>
+                                  {t('totalClicks')}:{' '}
+                                  <strong>{listing.totalClicks}</strong>
+                                </p>
+                                <Button
+                                  variant='outline'
+                                  size='sm'
+                                  onClick={() =>
+                                    handleSelectListing(listing.listingId)
+                                  }
+                                >
+                                  {t('viewDetails')}
+                                </Button>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t('listing')}</TableHead>
+                            <TableHead className='text-right'>
+                              {t('totalClicks')}
+                            </TableHead>
+                            <TableHead className='text-right'>
+                              {t('action')}
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {isSummaryLoading ? (
+                            <>
+                              {Array.from({
+                                length: Math.max(
+                                  3,
+                                  Math.min(10, pageSize || 10),
+                                ),
+                              }).map((_, idx) => (
+                                <TableRow key={`sk-${idx}`}>
+                                  <TableCell>
+                                    <Skeleton className='h-4 w-[70%]' />
+                                  </TableCell>
+                                  <TableCell className='text-right'>
+                                    <div className='flex justify-end'>
+                                      <Skeleton className='h-4 w-12' />
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className='text-right'>
+                                    <div className='flex justify-end'>
+                                      <Skeleton className='h-6 w-24 rounded-md' />
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </>
+                          ) : listings.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={3}>
+                                <div className='flex items-center justify-center h-[120px] text-muted-foreground'>
+                                  {t('noListings')}
                                 </div>
                               </TableCell>
                             </TableRow>
-                          ))}
-                        </>
-                      ) : listings.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={3}>
-                            <div className='flex items-center justify-center h-[120px] text-muted-foreground'>
-                              {t('noListings')}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        listings.map((listing) => (
-                          <TableRow key={listing.listingId}>
-                            <TableCell className='font-medium'>
-                              {listing.listingTitle}
-                            </TableCell>
-                            <TableCell className='text-right'>
-                              {listing.totalClicks}
-                            </TableCell>
-                            <TableCell className='text-right'>
-                              <Button
-                                variant='outline'
-                                size='sm'
-                                onClick={() =>
-                                  handleSelectListing(listing.listingId)
-                                }
-                              >
-                                {t('viewDetails')}
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                )}
-                <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-4'>
-                  <div className='text-sm text-muted-foreground'>
-                    {typeof totalElements === 'number' &&
-                    typeof currentPage === 'number' &&
-                    typeof pageSize === 'number'
-                      ? t('paginationInfo', {
-                          from: currentPage * pageSize + 1,
-                          to: Math.min(
-                            (currentPage + 1) * pageSize,
-                            totalElements,
-                          ),
-                          total: totalElements,
-                        })
-                      : null}
-                  </div>
-                  <div className='flex items-center justify-between sm:justify-end gap-2'>
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      disabled={
-                        isSummaryLoading ||
-                        !onPageChange ||
-                        (currentPage ?? 0) <= 0
-                      }
-                      onClick={() => onPageChange?.((currentPage ?? 0) - 1)}
-                    >
-                      {t('prev')}
-                    </Button>
-                    <span className='text-sm'>
-                      {typeof currentPage === 'number' &&
-                      typeof totalPages === 'number'
-                        ? `${currentPage + 1} / ${totalPages}`
-                        : ''}
-                    </span>
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      disabled={
-                        isSummaryLoading ||
-                        !onPageChange ||
-                        typeof currentPage !== 'number' ||
-                        typeof totalPages !== 'number' ||
-                        currentPage + 1 >= totalPages
-                      }
-                      onClick={() => onPageChange?.((currentPage ?? 0) + 1)}
-                    >
-                      {t('next')}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                          ) : (
+                            listings.map((listing) => (
+                              <TableRow key={listing.listingId}>
+                                <TableCell className='font-medium'>
+                                  {listing.listingTitle}
+                                </TableCell>
+                                <TableCell className='text-right'>
+                                  {listing.totalClicks}
+                                </TableCell>
+                                <TableCell className='text-right'>
+                                  <Button
+                                    variant='outline'
+                                    size='sm'
+                                    onClick={() =>
+                                      handleSelectListing(listing.listingId)
+                                    }
+                                  >
+                                    {t('viewDetails')}
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          )}
+                        </TableBody>
+                      </Table>
+                    )}
+                    <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-4'>
+                      <div className='text-sm text-muted-foreground'>
+                        {typeof totalElements === 'number' &&
+                        typeof currentPage === 'number' &&
+                        typeof pageSize === 'number'
+                          ? t('paginationInfo', {
+                              from: currentPage * pageSize + 1,
+                              to: Math.min(
+                                (currentPage + 1) * pageSize,
+                                totalElements,
+                              ),
+                              total: totalElements,
+                            })
+                          : null}
+                      </div>
+                      <div className='flex items-center justify-between sm:justify-end gap-2'>
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          disabled={
+                            isSummaryLoading ||
+                            !onPageChange ||
+                            (currentPage ?? 0) <= 0
+                          }
+                          onClick={() => onPageChange?.((currentPage ?? 0) - 1)}
+                        >
+                          {t('prev')}
+                        </Button>
+                        <span className='text-sm'>
+                          {typeof currentPage === 'number' &&
+                          typeof totalPages === 'number'
+                            ? `${currentPage + 1} / ${totalPages}`
+                            : ''}
+                        </span>
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          disabled={
+                            isSummaryLoading ||
+                            !onPageChange ||
+                            typeof currentPage !== 'number' ||
+                            typeof totalPages !== 'number' ||
+                            currentPage + 1 >= totalPages
+                          }
+                          onClick={() => onPageChange?.((currentPage ?? 0) + 1)}
+                        >
+                          {t('next')}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            ) : null}
           </>
-        ) : (
-          <div className='flex items-center justify-center h-[260px] text-muted-foreground'>
-            {t('noData')}
-          </div>
         )}
       </CardContent>
     </Card>

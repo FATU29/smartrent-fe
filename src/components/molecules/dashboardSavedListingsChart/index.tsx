@@ -51,6 +51,7 @@ import type {
   ListingSaveSummary,
   OwnerListingSavesTrendResponse,
 } from '@/api/types'
+import DashboardNoDataState from '@/components/molecules/dashboardNoDataState'
 
 interface DashboardSavedListingsChartProps {
   listings: ListingSaveSummary[]
@@ -269,6 +270,15 @@ const DashboardSavedListingsChart: React.FC<
     },
   }
 
+  const hasSavesOverTimeData = savesOverTimeData.some((item) => item.count > 0)
+  const hasListingBarData = barChartData.some((item) => item.totalSaves > 0)
+  const hasSavedMetrics =
+    totalSavesAcrossAll > 0 || (trend?.totalSaves || 0) > 0
+  const hasSavedListingsData =
+    hasSavedMetrics || hasSavesOverTimeData || hasListingBarData
+  const showEmptyState =
+    !isSummaryLoading && !isDetailLoading && !hasSavedListingsData
+
   return (
     <Card>
       <CardHeader>
@@ -276,440 +286,488 @@ const DashboardSavedListingsChart: React.FC<
         <CardDescription>{t('description')}</CardDescription>
       </CardHeader>
       <CardContent className='space-y-6'>
-        <div className='rounded-lg border bg-muted/20 p-4'>
-          <div className='flex items-center gap-2 text-muted-foreground text-sm'>
-            <Heart className='h-4 w-4 text-amber-500' />
-            {t('totalSavesAcrossAll')}
-          </div>
-          <p className='mt-1 text-3xl font-bold text-foreground'>
-            {totalSavesAcrossAll}
-          </p>
-        </div>
-
-        <div className='space-y-2'>
-          <p className='text-sm font-medium'>{t('listing')}</p>
-          <div className='w-full md:w-[360px]'>
-            <Combobox
-              value={selectedListingId ? String(selectedListingId) : ''}
-              onValueChange={(v) => {
-                if (!v) return
-                handleSelectListing(Number(v))
-              }}
-              onSearchChange={(v) => {
-                setSelectKeyword(v)
-                // reset and reload first page
-                loadSelectPage(0, false).catch(() => {})
-              }}
-              loading={selectLoading}
-              isLoadingMore={selectLoadingMore}
-              hasMore={selectHasMore}
-              onLoadMore={() => {
-                if (selectHasMore && !selectLoadingMore) {
-                  loadSelectPage(selectPage + 1, true).catch(() => {})
-                }
-              }}
-              options={selectOptions.map((l) => ({
-                value: String(l.listingId),
-                label: l.listingTitle,
-              }))}
-              placeholder={t('selectListing')}
-              searchPlaceholder={t('searchPlaceholder')}
-              fullWidth
-            />
-          </div>
-        </div>
-
-        <div className='min-h-[260px]'>
-          {isDetailLoading ? (
-            <div className='flex items-center justify-center h-[260px]'>
-              <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
+        {showEmptyState ? (
+          <DashboardNoDataState
+            title={t('emptyState.title')}
+            description={t('emptyState.description')}
+          />
+        ) : (
+          <>
+            <div className='rounded-lg border bg-muted/20 p-4'>
+              <div className='flex items-center gap-2 text-muted-foreground text-sm'>
+                <Heart className='h-4 w-4 text-amber-500' />
+                {t('totalSavesAcrossAll')}
+              </div>
+              <p className='mt-1 text-3xl font-bold text-foreground'>
+                {totalSavesAcrossAll}
+              </p>
             </div>
-          ) : trend ? (
-            <div className='space-y-6'>
-              <Card id='saved-listing-trend-chart'>
-                <CardHeader className='pb-2'>
-                  <CardTitle className='text-base'>
-                    {t('savesOverTime')}
-                  </CardTitle>
-                  <CardDescription>
-                    {trend.listingTitle} · {t('totalSaves')}: {trend.totalSaves}
-                  </CardDescription>
-                  <div className='mt-2'>
+
+            <div className='space-y-2'>
+              <p className='text-sm font-medium'>{t('listing')}</p>
+              <div className='w-full md:w-[360px]'>
+                <Combobox
+                  value={selectedListingId ? String(selectedListingId) : ''}
+                  onValueChange={(v) => {
+                    if (!v) return
+                    handleSelectListing(Number(v))
+                  }}
+                  onSearchChange={(v) => {
+                    setSelectKeyword(v)
+                    // reset and reload first page
+                    loadSelectPage(0, false).catch(() => {})
+                  }}
+                  loading={selectLoading}
+                  isLoadingMore={selectLoadingMore}
+                  hasMore={selectHasMore}
+                  onLoadMore={() => {
+                    if (selectHasMore && !selectLoadingMore) {
+                      loadSelectPage(selectPage + 1, true).catch(() => {})
+                    }
+                  }}
+                  options={selectOptions.map((l) => ({
+                    value: String(l.listingId),
+                    label: l.listingTitle,
+                  }))}
+                  placeholder={t('selectListing')}
+                  searchPlaceholder={t('searchPlaceholder')}
+                  fullWidth
+                />
+              </div>
+            </div>
+
+            <div className='min-h-[260px]'>
+              {isDetailLoading || (isSummaryLoading && !trend) ? (
+                <div className='flex items-center justify-center h-[260px]'>
+                  <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
+                </div>
+              ) : trend ? (
+                <div className='space-y-6'>
+                  <Card id='saved-listing-trend-chart'>
+                    <CardHeader className='pb-2'>
+                      <CardTitle className='text-base'>
+                        {t('savesOverTime')}
+                      </CardTitle>
+                      <CardDescription>
+                        {trend.listingTitle} · {t('totalSaves')}:{' '}
+                        {trend.totalSaves}
+                      </CardDescription>
+                      <div className='mt-2'>
+                        <Select
+                          value={period}
+                          onValueChange={(v) =>
+                            onPeriodChange?.(
+                              v as
+                                | '7d'
+                                | '30d'
+                                | '90d'
+                                | '180d'
+                                | '365d'
+                                | 'all',
+                            )
+                          }
+                        >
+                          <SelectTrigger className='w-full sm:w-[200px]'>
+                            <SelectValue placeholder={t('period')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value='7d'>{t('period7d')}</SelectItem>
+                            <SelectItem value='30d'>
+                              {t('period30d')}
+                            </SelectItem>
+                            <SelectItem value='90d'>
+                              {t('period90d')}
+                            </SelectItem>
+                            <SelectItem value='180d'>
+                              {t('period180d')}
+                            </SelectItem>
+                            <SelectItem value='365d'>
+                              {t('period365d')}
+                            </SelectItem>
+                            <SelectItem value='all'>
+                              {t('periodAll')}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <ChartContainer
+                        config={chartConfig}
+                        className={
+                          isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+                        }
+                      >
+                        <ResponsiveContainer width='100%' height='100%'>
+                          <AreaChart data={savesOverTimeData}>
+                            <defs>
+                              <linearGradient
+                                id='colorSavesTrend'
+                                x1='0'
+                                y1='0'
+                                x2='0'
+                                y2='1'
+                              >
+                                <stop
+                                  offset='5%'
+                                  stopColor='var(--color-saves)'
+                                  stopOpacity={0.5}
+                                />
+                                <stop
+                                  offset='95%'
+                                  stopColor='var(--color-saves)'
+                                  stopOpacity={0.05}
+                                />
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid
+                              strokeDasharray='3 3'
+                              vertical={false}
+                            />
+                            <XAxis
+                              dataKey='date'
+                              tickLine={false}
+                              axisLine={false}
+                              tickMargin={8}
+                              minTickGap={isMobile ? 24 : 12}
+                            />
+                            <YAxis
+                              tickLine={false}
+                              axisLine={false}
+                              tickMargin={8}
+                              allowDecimals={false}
+                            />
+                            <Tooltip
+                              content={({ active, payload, label }) => {
+                                if (
+                                  !active ||
+                                  !payload ||
+                                  payload.length === 0
+                                ) {
+                                  return null
+                                }
+
+                                return (
+                                  <ChartTooltipContent
+                                    active={active}
+                                    payload={payload.map((item) => ({
+                                      color: item.color,
+                                      dataKey: String(item.dataKey || ''),
+                                      name: String(item.name || ''),
+                                      value: item.value,
+                                    }))}
+                                    labelFormatter={() =>
+                                      `${t('date')}: ${label}`
+                                    }
+                                  />
+                                )
+                              }}
+                            />
+                            <Area
+                              type='monotone'
+                              dataKey='count'
+                              name={t('saves')}
+                              stroke='var(--color-saves)'
+                              fill='url(#colorSavesTrend)'
+                              fillOpacity={1}
+                              strokeWidth={2.5}
+                              connectNulls
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </ChartContainer>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className='pb-2'>
+                      <CardTitle className='text-base'>
+                        {t('savesByListing')}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ChartContainer
+                        config={chartConfig}
+                        className={
+                          isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+                        }
+                      >
+                        <ResponsiveContainer width='100%' height='100%'>
+                          <BarChart data={barChartData} layout='vertical'>
+                            <CartesianGrid
+                              strokeDasharray='3 3'
+                              horizontal={false}
+                            />
+                            <XAxis
+                              type='number'
+                              tickLine={false}
+                              axisLine={false}
+                              tickMargin={8}
+                              allowDecimals={false}
+                            />
+                            <YAxis
+                              type='category'
+                              dataKey='name'
+                              width={isMobile ? 120 : 180}
+                              tickLine={false}
+                              axisLine={false}
+                            />
+                            <Tooltip
+                              content={({ active, payload, label }) => {
+                                if (
+                                  !active ||
+                                  !payload ||
+                                  payload.length === 0
+                                ) {
+                                  return null
+                                }
+
+                                return (
+                                  <ChartTooltipContent
+                                    active={active}
+                                    payload={payload.map((item) => ({
+                                      color: item.color,
+                                      dataKey: String(item.dataKey || ''),
+                                      name: String(item.name || ''),
+                                      value: item.value,
+                                    }))}
+                                    labelFormatter={() => String(label)}
+                                  />
+                                )
+                              }}
+                            />
+                            <Bar
+                              dataKey='totalSaves'
+                              name={t('saves')}
+                              radius={[0, 6, 6, 0]}
+                            >
+                              {barChartData.map((item, index) => (
+                                <Cell
+                                  key={`saved-listing-${item.listingId}`}
+                                  fill={BAR_COLORS[index % BAR_COLORS.length]}
+                                />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </ChartContainer>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <div className='flex items-center justify-center h-[260px] text-muted-foreground'>
+                  {t('noListings')}
+                </div>
+              )}
+            </div>
+
+            <Card>
+              <CardHeader className='pb-2'>
+                <CardTitle className='text-base'>{t('allListings')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3'>
+                  <div className='flex items-center gap-2 w-full md:w-auto'>
+                    <Input
+                      className='w-full md:w-[260px]'
+                      placeholder={t('searchPlaceholder')}
+                      value={searchKeyword || ''}
+                      onChange={(e) => onSearchKeywordChange?.(e.target.value)}
+                    />
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-sm text-muted-foreground'>
+                      {t('rowsPerPage')}
+                    </span>
                     <Select
-                      value={period}
-                      onValueChange={(v) =>
-                        onPeriodChange?.(
-                          v as '7d' | '30d' | '90d' | '180d' | '365d' | 'all',
-                        )
-                      }
+                      value={String(pageSize || 10)}
+                      onValueChange={(v) => onPageSizeChange?.(Number(v))}
                     >
-                      <SelectTrigger className='w-full sm:w-[200px]'>
-                        <SelectValue placeholder={t('period')} />
+                      <SelectTrigger className='w-[100px]'>
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value='7d'>{t('period7d')}</SelectItem>
-                        <SelectItem value='30d'>{t('period30d')}</SelectItem>
-                        <SelectItem value='90d'>{t('period90d')}</SelectItem>
-                        <SelectItem value='180d'>{t('period180d')}</SelectItem>
-                        <SelectItem value='365d'>{t('period365d')}</SelectItem>
-                        <SelectItem value='all'>{t('periodAll')}</SelectItem>
+                        <SelectItem value='5'>5</SelectItem>
+                        <SelectItem value='10'>10</SelectItem>
+                        <SelectItem value='20'>20</SelectItem>
+                        <SelectItem value='50'>50</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <ChartContainer
-                    config={chartConfig}
-                    className={
-                      isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
-                    }
-                  >
-                    <ResponsiveContainer width='100%' height='100%'>
-                      <AreaChart data={savesOverTimeData}>
-                        <defs>
-                          <linearGradient
-                            id='colorSavesTrend'
-                            x1='0'
-                            y1='0'
-                            x2='0'
-                            y2='1'
-                          >
-                            <stop
-                              offset='5%'
-                              stopColor='var(--color-saves)'
-                              stopOpacity={0.5}
-                            />
-                            <stop
-                              offset='95%'
-                              stopColor='var(--color-saves)'
-                              stopOpacity={0.05}
-                            />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                        <XAxis
-                          dataKey='date'
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                          minTickGap={isMobile ? 24 : 12}
-                        />
-                        <YAxis
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                          allowDecimals={false}
-                        />
-                        <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (!active || !payload || payload.length === 0) {
-                              return null
-                            }
-
-                            return (
-                              <ChartTooltipContent
-                                active={active}
-                                payload={payload.map((item) => ({
-                                  color: item.color,
-                                  dataKey: String(item.dataKey || ''),
-                                  name: String(item.name || ''),
-                                  value: item.value,
-                                }))}
-                                labelFormatter={() => `${t('date')}: ${label}`}
-                              />
-                            )
-                          }}
-                        />
-                        <Area
-                          type='monotone'
-                          dataKey='count'
-                          name={t('saves')}
-                          stroke='var(--color-saves)'
-                          fill='url(#colorSavesTrend)'
-                          fillOpacity={1}
-                          strokeWidth={2.5}
-                          connectNulls
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className='pb-2'>
-                  <CardTitle className='text-base'>
-                    {t('savesByListing')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ChartContainer
-                    config={chartConfig}
-                    className={
-                      isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
-                    }
-                  >
-                    <ResponsiveContainer width='100%' height='100%'>
-                      <BarChart data={barChartData} layout='vertical'>
-                        <CartesianGrid
-                          strokeDasharray='3 3'
-                          horizontal={false}
-                        />
-                        <XAxis
-                          type='number'
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                          allowDecimals={false}
-                        />
-                        <YAxis
-                          type='category'
-                          dataKey='name'
-                          width={isMobile ? 120 : 180}
-                          tickLine={false}
-                          axisLine={false}
-                        />
-                        <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (!active || !payload || payload.length === 0) {
-                              return null
-                            }
-
-                            return (
-                              <ChartTooltipContent
-                                active={active}
-                                payload={payload.map((item) => ({
-                                  color: item.color,
-                                  dataKey: String(item.dataKey || ''),
-                                  name: String(item.name || ''),
-                                  value: item.value,
-                                }))}
-                                labelFormatter={() => String(label)}
-                              />
-                            )
-                          }}
-                        />
-                        <Bar
-                          dataKey='totalSaves'
-                          name={t('saves')}
-                          radius={[0, 6, 6, 0]}
-                        >
-                          {barChartData.map((item, index) => (
-                            <Cell
-                              key={`saved-listing-${item.listingId}`}
-                              fill={BAR_COLORS[index % BAR_COLORS.length]}
-                            />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            <div className='flex items-center justify-center h-[260px] text-muted-foreground'>
-              {t('noData')}
-            </div>
-          )}
-        </div>
-
-        <Card>
-          <CardHeader className='pb-2'>
-            <CardTitle className='text-base'>{t('allListings')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3'>
-              <div className='flex items-center gap-2 w-full md:w-auto'>
-                <Input
-                  className='w-full md:w-[260px]'
-                  placeholder={t('searchPlaceholder')}
-                  value={searchKeyword || ''}
-                  onChange={(e) => onSearchKeywordChange?.(e.target.value)}
-                />
-              </div>
-              <div className='flex items-center gap-2'>
-                <span className='text-sm text-muted-foreground'>
-                  {t('rowsPerPage')}
-                </span>
-                <Select
-                  value={String(pageSize || 10)}
-                  onValueChange={(v) => onPageSizeChange?.(Number(v))}
-                >
-                  <SelectTrigger className='w-[100px]'>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='5'>5</SelectItem>
-                    <SelectItem value='10'>10</SelectItem>
-                    <SelectItem value='20'>20</SelectItem>
-                    <SelectItem value='50'>50</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            {isMobile ? (
-              <div className='space-y-2'>
-                {isSummaryLoading ? (
-                  Array.from({
-                    length: Math.max(3, Math.min(10, pageSize || 10)),
-                  }).map((_, idx) => (
-                    <div
-                      key={`m-sk-${idx}`}
-                      className='rounded-lg border p-3 space-y-2'
-                    >
-                      <Skeleton className='h-4 w-[70%]' />
-                      <div className='flex items-center justify-between'>
-                        <Skeleton className='h-4 w-12' />
-                        <Skeleton className='h-8 w-24 rounded-md' />
-                      </div>
-                    </div>
-                  ))
-                ) : listings.length === 0 ? (
-                  <div className='flex items-center justify-center h-[120px] text-muted-foreground rounded-lg border'>
-                    {t('noListings')}
-                  </div>
-                ) : (
-                  listings.map((listing) => (
-                    <div
-                      key={listing.listingId}
-                      className='rounded-lg border p-3 space-y-2'
-                    >
-                      <p className='font-medium text-sm line-clamp-2'>
-                        {listing.listingTitle}
-                      </p>
-                      <div className='flex items-center justify-between gap-3'>
-                        <p className='text-sm text-muted-foreground'>
-                          {t('totalSaves')}:{' '}
-                          <strong>{listing.totalSaves}</strong>
-                        </p>
-                        <Button
-                          variant='outline'
-                          size='sm'
-                          onClick={() => handleSelectListing(listing.listingId)}
-                        >
-                          {t('viewTrend')}
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('listing')}</TableHead>
-                    <TableHead className='text-right'>
-                      {t('totalSaves')}
-                    </TableHead>
-                    <TableHead className='text-right'>{t('action')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isSummaryLoading ? (
-                    <>
-                      {Array.from({
+                </div>
+                {isMobile ? (
+                  <div className='space-y-2'>
+                    {isSummaryLoading ? (
+                      Array.from({
                         length: Math.max(3, Math.min(10, pageSize || 10)),
                       }).map((_, idx) => (
-                        <TableRow key={`sk-${idx}`}>
-                          <TableCell>
-                            <Skeleton className='h-4 w-[70%]' />
-                          </TableCell>
-                          <TableCell className='text-right'>
-                            <div className='flex justify-end'>
-                              <Skeleton className='h-4 w-12' />
-                            </div>
-                          </TableCell>
-                          <TableCell className='text-right'>
-                            <div className='flex justify-end'>
-                              <Skeleton className='h-6 w-24 rounded-md' />
+                        <div
+                          key={`m-sk-${idx}`}
+                          className='rounded-lg border p-3 space-y-2'
+                        >
+                          <Skeleton className='h-4 w-[70%]' />
+                          <div className='flex items-center justify-between'>
+                            <Skeleton className='h-4 w-12' />
+                            <Skeleton className='h-8 w-24 rounded-md' />
+                          </div>
+                        </div>
+                      ))
+                    ) : listings.length === 0 ? (
+                      <div className='flex items-center justify-center h-[120px] text-muted-foreground rounded-lg border'>
+                        {t('noListings')}
+                      </div>
+                    ) : (
+                      listings.map((listing) => (
+                        <div
+                          key={listing.listingId}
+                          className='rounded-lg border p-3 space-y-2'
+                        >
+                          <p className='font-medium text-sm line-clamp-2'>
+                            {listing.listingTitle}
+                          </p>
+                          <div className='flex items-center justify-between gap-3'>
+                            <p className='text-sm text-muted-foreground'>
+                              {t('totalSaves')}:{' '}
+                              <strong>{listing.totalSaves}</strong>
+                            </p>
+                            <Button
+                              variant='outline'
+                              size='sm'
+                              onClick={() =>
+                                handleSelectListing(listing.listingId)
+                              }
+                            >
+                              {t('viewTrend')}
+                            </Button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('listing')}</TableHead>
+                        <TableHead className='text-right'>
+                          {t('totalSaves')}
+                        </TableHead>
+                        <TableHead className='text-right'>
+                          {t('action')}
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {isSummaryLoading ? (
+                        <>
+                          {Array.from({
+                            length: Math.max(3, Math.min(10, pageSize || 10)),
+                          }).map((_, idx) => (
+                            <TableRow key={`sk-${idx}`}>
+                              <TableCell>
+                                <Skeleton className='h-4 w-[70%]' />
+                              </TableCell>
+                              <TableCell className='text-right'>
+                                <div className='flex justify-end'>
+                                  <Skeleton className='h-4 w-12' />
+                                </div>
+                              </TableCell>
+                              <TableCell className='text-right'>
+                                <div className='flex justify-end'>
+                                  <Skeleton className='h-6 w-24 rounded-md' />
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </>
+                      ) : listings.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={3}>
+                            <div className='flex items-center justify-center h-[120px] text-muted-foreground'>
+                              {t('noListings')}
                             </div>
                           </TableCell>
                         </TableRow>
-                      ))}
-                    </>
-                  ) : listings.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={3}>
-                        <div className='flex items-center justify-center h-[120px] text-muted-foreground'>
-                          {t('noListings')}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    listings.map((listing) => (
-                      <TableRow key={listing.listingId}>
-                        <TableCell className='font-medium'>
-                          {listing.listingTitle}
-                        </TableCell>
-                        <TableCell className='text-right'>
-                          {listing.totalSaves}
-                        </TableCell>
-                        <TableCell className='text-right'>
-                          <Button
-                            variant='outline'
-                            size='sm'
-                            onClick={() =>
-                              handleSelectListing(listing.listingId)
-                            }
-                          >
-                            {t('viewTrend')}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            )}
-            <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-4'>
-              <div className='text-sm text-muted-foreground'>
-                {typeof totalElements === 'number' &&
-                typeof currentPage === 'number' &&
-                typeof pageSize === 'number'
-                  ? t('paginationInfo', {
-                      from: currentPage * pageSize + 1,
-                      to: Math.min((currentPage + 1) * pageSize, totalElements),
-                      total: totalElements,
-                    })
-                  : null}
-              </div>
-              <div className='flex items-center justify-between sm:justify-end gap-2'>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  disabled={
-                    isSummaryLoading || !onPageChange || (currentPage ?? 0) <= 0
-                  }
-                  onClick={() => onPageChange?.((currentPage ?? 0) - 1)}
-                >
-                  {t('prev')}
-                </Button>
-                <span className='text-sm'>
-                  {typeof currentPage === 'number' &&
-                  typeof totalPages === 'number'
-                    ? `${currentPage + 1} / ${totalPages}`
-                    : ''}
-                </span>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  disabled={
-                    isSummaryLoading ||
-                    !onPageChange ||
-                    typeof currentPage !== 'number' ||
-                    typeof totalPages !== 'number' ||
-                    currentPage + 1 >= totalPages
-                  }
-                  onClick={() => onPageChange?.((currentPage ?? 0) + 1)}
-                >
-                  {t('next')}
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                      ) : (
+                        listings.map((listing) => (
+                          <TableRow key={listing.listingId}>
+                            <TableCell className='font-medium'>
+                              {listing.listingTitle}
+                            </TableCell>
+                            <TableCell className='text-right'>
+                              {listing.totalSaves}
+                            </TableCell>
+                            <TableCell className='text-right'>
+                              <Button
+                                variant='outline'
+                                size='sm'
+                                onClick={() =>
+                                  handleSelectListing(listing.listingId)
+                                }
+                              >
+                                {t('viewTrend')}
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                )}
+                <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-4'>
+                  <div className='text-sm text-muted-foreground'>
+                    {typeof totalElements === 'number' &&
+                    typeof currentPage === 'number' &&
+                    typeof pageSize === 'number'
+                      ? t('paginationInfo', {
+                          from: currentPage * pageSize + 1,
+                          to: Math.min(
+                            (currentPage + 1) * pageSize,
+                            totalElements,
+                          ),
+                          total: totalElements,
+                        })
+                      : null}
+                  </div>
+                  <div className='flex items-center justify-between sm:justify-end gap-2'>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      disabled={
+                        isSummaryLoading ||
+                        !onPageChange ||
+                        (currentPage ?? 0) <= 0
+                      }
+                      onClick={() => onPageChange?.((currentPage ?? 0) - 1)}
+                    >
+                      {t('prev')}
+                    </Button>
+                    <span className='text-sm'>
+                      {typeof currentPage === 'number' &&
+                      typeof totalPages === 'number'
+                        ? `${currentPage + 1} / ${totalPages}`
+                        : ''}
+                    </span>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      disabled={
+                        isSummaryLoading ||
+                        !onPageChange ||
+                        typeof currentPage !== 'number' ||
+                        typeof totalPages !== 'number' ||
+                        currentPage + 1 >= totalPages
+                      }
+                      onClick={() => onPageChange?.((currentPage ?? 0) + 1)}
+                    >
+                      {t('next')}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </CardContent>
     </Card>
   )

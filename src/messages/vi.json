@@ -2240,6 +2240,10 @@
         "clickTrends": "Xu hướng click",
         "last7Days": "7 ngày qua",
         "noData": "Chưa có dữ liệu",
+        "emptyState": {
+          "title": "Chưa có dữ liệu phân tích lượt click",
+          "description": "Biểu đồ và bảng tin đăng sẽ hiển thị sau khi người dùng bắt đầu click số điện thoại trên tin của bạn."
+        },
         "clicks": "Lượt click",
         "date": "Ngày",
         "analyticsOverview": "Bảng phân tích chủ tin",
@@ -2286,6 +2290,10 @@
         "action": "Hành động",
         "viewTrend": "Xem xu hướng",
         "noData": "Chưa có dữ liệu",
+        "emptyState": {
+          "title": "Chưa có dữ liệu phân tích lượt lưu",
+          "description": "Biểu đồ và bảng tin đăng sẽ hiển thị sau khi người dùng bắt đầu lưu tin của bạn."
+        },
         "searchPlaceholder": "Tìm theo tiêu đề tin...",
         "rowsPerPage": "Số dòng mỗi trang",
         "prev": "Trước",
