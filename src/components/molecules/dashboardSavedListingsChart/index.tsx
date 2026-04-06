@@ -290,6 +290,18 @@ const DashboardSavedListingsChart: React.FC<
           <DashboardNoDataState
             title={t('emptyState.title')}
             description={t('emptyState.description')}
+            badgeLabel={t('noData')}
+            hintTitle={t('emptyState.hintTitle')}
+            hints={[
+              t('emptyState.tip1'),
+              t('emptyState.tip2'),
+              t('emptyState.tip3'),
+            ]}
+            metricChips={[
+              t('savesOverTime'),
+              t('savesByListing'),
+              t('allListings'),
+            ]}
           />
         ) : (
           <>

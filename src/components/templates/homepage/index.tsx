@@ -74,7 +74,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                 </div>
                 <div className='backdrop-blur-sm bg-white/75 dark:bg-black/50 p-3 sm:p-4 rounded-xl shadow-lg ring-1 ring-white/40 dark:ring-white/10'>
                   <div className='flex flex-col gap-3'>
-                    <ResidentialFilterResponsive />
+                    <ResidentialFilterResponsive hideVerifiedFilterInDialog />
                     <div className='flex justify-between items-center'>
                       <ClearFilterButton show={false} onClick={() => {}} />
                     </div>

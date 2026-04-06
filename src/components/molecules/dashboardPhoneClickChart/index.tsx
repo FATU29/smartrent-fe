@@ -271,6 +271,18 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
           <DashboardNoDataState
             title={t('emptyState.title')}
             description={t('emptyState.description')}
+            badgeLabel={t('noData')}
+            hintTitle={t('emptyState.hintTitle')}
+            hints={[
+              t('emptyState.tip1'),
+              t('emptyState.tip2'),
+              t('emptyState.tip3'),
+            ]}
+            metricChips={[
+              t('clicksOverTime'),
+              t('clicksByDayOfWeek'),
+              t('allListings'),
+            ]}
           />
         ) : (
           <>
