@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from '@/components/atoms/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
+import { Skeleton } from '@/components/atoms/skeleton'
 import { Typography } from '@/components/atoms/typography'
 import CopyButton from '@/components/atoms/copy-button'
 import { UserApi } from '@/api/types'
@@ -23,6 +24,7 @@ import {
 interface SellerPublicProfileCardProps {
   seller?: UserApi | null
   listingCount: number
+  isLoading?: boolean
 }
 
 const getInitials = (fullName: string) =>
@@ -37,8 +39,60 @@ const getInitials = (fullName: string) =>
 const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
   seller,
   listingCount,
+  isLoading = false,
 }) => {
   const t = useTranslations('sellerDetailPage')
+
+  if (isLoading) {
+    return (
+      <Card className='border-primary/20 overflow-hidden bg-gradient-to-br from-background via-primary/[0.02] to-primary/[0.06] shadow-sm'>
+        <CardHeader className='pb-3 space-y-2'>
+          <Skeleton className='h-6 w-48' />
+          <Skeleton className='h-4 w-72 max-w-full' />
+        </CardHeader>
+        <CardContent className='space-y-4 pt-4'>
+          <div className='flex items-start gap-4'>
+            <Skeleton className='h-16 w-16 rounded-full' />
+
+            <div className='min-w-0 flex-1 space-y-2'>
+              <Skeleton className='h-6 w-52 max-w-full' />
+              <div className='flex flex-wrap items-center gap-2'>
+                <Skeleton className='h-6 w-28 rounded-full' />
+                <Skeleton className='h-6 w-24 rounded-full' />
+                <Skeleton className='h-6 w-20 rounded-full' />
+              </div>
+            </div>
+          </div>
+
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2'>
+            <Skeleton className='h-10 w-full rounded-md' />
+            <Skeleton className='h-10 w-full rounded-md' />
+            <Skeleton className='h-10 w-full rounded-md sm:col-span-2 lg:col-span-1' />
+          </div>
+
+          <div className='space-y-2'>
+            <div className='flex items-center gap-2 rounded-lg border border-primary/25 p-2.5 bg-background/85'>
+              <Skeleton className='h-4 w-4 rounded-full shrink-0' />
+              <div className='min-w-0 flex-1 space-y-1'>
+                <Skeleton className='h-3 w-20' />
+                <Skeleton className='h-4 w-40 max-w-full' />
+              </div>
+              <Skeleton className='h-7 w-7 rounded-md shrink-0' />
+            </div>
+
+            <div className='flex items-center gap-2 rounded-lg border border-primary/25 p-2.5 bg-background/85'>
+              <Skeleton className='h-4 w-4 rounded-full shrink-0' />
+              <div className='min-w-0 flex-1 space-y-1'>
+                <Skeleton className='h-3 w-16' />
+                <Skeleton className='h-4 w-56 max-w-full' />
+              </div>
+              <Skeleton className='h-7 w-7 rounded-md shrink-0' />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   const firstName = seller?.firstName || ''
   const lastName = seller?.lastName || ''

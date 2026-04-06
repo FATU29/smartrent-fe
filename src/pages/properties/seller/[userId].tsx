@@ -134,7 +134,11 @@ const SellerDetailPage: NextPageWithLayout = () => {
     }),
   })
 
-  const { data: sellerProfileData, refetch: refetchSellerProfile } = useQuery({
+  const {
+    data: sellerProfileData,
+    isLoading: isSellerProfileLoading,
+    refetch: refetchSellerProfile,
+  } = useQuery({
     queryKey: ['public-seller-profile', userId],
     queryFn: async () => {
       const response = await ListingService.search({
@@ -199,6 +203,12 @@ const SellerDetailPage: NextPageWithLayout = () => {
       null
     )
   }, [sectionMap, sellerProfileData])
+
+  const isSellerLoading =
+    Boolean(userId) &&
+    !seller &&
+    (isSellerProfileLoading ||
+      sectionQueries.some((query) => Boolean(query.isLoading)))
 
   const sectionStats = React.useMemo(() => {
     return VIP_SECTION_ORDER.map((vipType) => {
@@ -271,6 +281,7 @@ const SellerDetailPage: NextPageWithLayout = () => {
 
       <SellerPublicDetailTemplate
         seller={seller}
+        isSellerLoading={isSellerLoading}
         listingCount={totalListingCount}
         sections={sectionStats}
         topSavedListings={topSavedData || []}
