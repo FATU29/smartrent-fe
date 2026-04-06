@@ -92,6 +92,14 @@ export default function SeoHead(
   const description = isValidString(props.description)
     ? props.description
     : DEFAULTS.description
+  const keywords = Array.isArray(props.keywords)
+    ? props.keywords
+        .map((keyword) => keyword.trim())
+        .filter(Boolean)
+        .join(', ') || undefined
+    : isValidString(props.keywords)
+      ? props.keywords.trim()
+      : undefined
   const preloadImages = props.preloadImages || []
 
   // Open Graph with validation
@@ -155,6 +163,7 @@ export default function SeoHead(
       {/* Basic Meta Tags */}
       <title>{title}</title>
       <meta name='description' content={description} />
+      {keywords && <meta name='keywords' content={keywords} />}
 
       {/* Viewport - Essential for responsive design */}
       <meta

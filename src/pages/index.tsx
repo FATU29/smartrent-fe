@@ -25,6 +25,20 @@ const TOP_PROVINCE_IDS = [
   PROVINCE_CODE.DONG_NAI,
 ]
 
+const HOMEPAGE_VI_KEYWORDS = [
+  'thuê nhà',
+  'thuê căn hộ',
+  'thuê chung cư',
+  'phòng trọ',
+  'nhà trọ giá rẻ',
+  'cho thuê nhà nguyên căn',
+  'bất động sản cho thuê',
+  'tìm nhà cho thuê',
+  'tìm phòng trọ',
+  'SmartRent',
+  'Smartrent tìm nhà trọ',
+]
+
 const Home: NextPageWithLayout = () => {
   const isClientSide = typeof window !== 'undefined'
 
@@ -73,6 +87,7 @@ const Home: NextPageWithLayout = () => {
       <SeoHead
         title='SmartRent – Thuê nhà dễ dàng'
         description='Khám phá căn hộ phù hợp nhất với bạn. Tìm kiếm nhanh, lọc thông minh, liên hệ chủ nhà chỉ với một cú nhấp.'
+        keywords={HOMEPAGE_VI_KEYWORDS}
       />
       <LocationProvider>
         <List.Provider>

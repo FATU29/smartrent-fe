@@ -15,6 +15,7 @@ export type OpenGraphImage = {
 export interface SeoProps {
   title?: string
   description?: string
+  keywords?: string | string[]
   canonical?: string
   noindex?: boolean
   openGraph?: {
