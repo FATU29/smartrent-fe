@@ -31,7 +31,7 @@ type TAiChatBubbleProps = {
 // Convert [Mã tin: xxx] to clickable links
 const processListingIds = (text: string): string => {
   return text.replace(
-    /\[Mã tin:\s*([^\]]+)\]/g,
+    /\[Mã tin:\s*([^\]]{1,50})\]/g,
     (_, id) => `[Mã tin: ${id.trim()}](/listing-detail/${id.trim()})`,
   )
 }
@@ -56,7 +56,7 @@ const processContent = (text: string): string => {
 // Detect if markdown contains a table
 const hasMarkdownTable = (text: string): boolean => {
   // Match markdown table pattern: line with | separators followed by alignment row
-  return /\|.+\|[\r\n]+\|[\s:|-]+\|/m.test(text)
+  return /\|[^|\r\n]+\|[\r\n]+\|[\s:|-]+\|/m.test(text)
 }
 
 // Shared link renderer
