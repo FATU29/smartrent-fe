@@ -16,6 +16,43 @@ import {
 import { useOwnerSavedListingsAnalyticsPage } from '@/hooks/useSavedListings/useOwnerSavedListingsAnalytics'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useOwnerListingsAnalyticsPage } from '@/hooks/usePhoneClickDetails/useOwnerListingAnalytics'
+import { Card, CardContent, CardHeader } from '@/components/atoms/card'
+import { Skeleton } from '@/components/atoms/skeleton'
+
+const MEMBERSHIP_INTRO_STORAGE_KEY = 'seller-dashboard-membership-intro-seen'
+const MEMBERSHIP_INTRO_DURATION_MS = 900
+
+const MembershipSectionSkeleton: React.FC = () => {
+  return (
+    <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <Card className='lg:col-span-2'>
+        <CardHeader className='space-y-2'>
+          <Skeleton className='h-6 w-52' />
+          <Skeleton className='h-4 w-40' />
+        </CardHeader>
+        <CardContent className='space-y-4'>
+          <Skeleton className='h-20 w-full rounded-lg' />
+          <Skeleton className='h-16 w-full rounded-lg' />
+          <Skeleton className='h-16 w-full rounded-lg' />
+          <Skeleton className='h-11 w-full rounded-lg' />
+        </CardContent>
+      </Card>
+
+      <Card className='lg:col-span-1'>
+        <CardHeader className='space-y-2'>
+          <Skeleton className='h-6 w-40' />
+          <Skeleton className='h-4 w-full' />
+        </CardHeader>
+        <CardContent className='space-y-3'>
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-[90%]' />
+          <Skeleton className='h-4 w-[80%]' />
+          <Skeleton className='h-11 w-full rounded-lg' />
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
 
 const DashboardTemplate: React.FC = () => {
   const t = useTranslations('seller.dashboard')
@@ -66,6 +103,28 @@ const DashboardTemplate: React.FC = () => {
   const { data: selectedListingAnalytics, isLoading: isDetailLoading } =
     useOwnerListingAnalytics(selectedListingId, clicksPeriod)
 
+  const [showMembershipIntroLoader, setShowMembershipIntroLoader] =
+    React.useState(false)
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const hasSeenIntro =
+      window.sessionStorage.getItem(MEMBERSHIP_INTRO_STORAGE_KEY) === '1'
+
+    if (hasSeenIntro) return
+
+    setShowMembershipIntroLoader(true)
+    const timer = window.setTimeout(() => {
+      setShowMembershipIntroLoader(false)
+      window.sessionStorage.setItem(MEMBERSHIP_INTRO_STORAGE_KEY, '1')
+    }, MEMBERSHIP_INTRO_DURATION_MS)
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [])
+
   const { data: savedListingsSummary, isLoading: isSavedSummaryLoading } =
     useOwnerSavedListingsAnalyticsSummary()
   // paging + search state for saved listings
@@ -113,6 +172,22 @@ const DashboardTemplate: React.FC = () => {
   const { data: selectedSavedListingTrend, isLoading: isSavedTrendLoading } =
     useOwnerListingSavesTrend(selectedSavedListingId, savesPeriod)
 
+  const hasPhoneClickAnalyticsData = React.useMemo(() => {
+    if (!selectedListingAnalytics) return false
+
+    const hasSummaryMetrics =
+      selectedListingAnalytics.totalClicks > 0 ||
+      selectedListingAnalytics.totalViews > 0
+    const hasTrendData = selectedListingAnalytics.clicksOverTime.some(
+      (item) => item.count > 0,
+    )
+    const hasDayData = Object.values(
+      selectedListingAnalytics.clicksByDayOfWeek || {},
+    ).some((count) => count > 0)
+
+    return hasSummaryMetrics || hasTrendData || hasDayData
+  }, [selectedListingAnalytics])
+
   return (
     <div className='space-y-6'>
       {/* Header */}
@@ -124,14 +199,18 @@ const DashboardTemplate: React.FC = () => {
       </div>
 
       {/* Membership Section */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-        <div className='lg:col-span-2'>
-          <DashboardMembershipCard />
+      {showMembershipIntroLoader ? (
+        <MembershipSectionSkeleton />
+      ) : (
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+          <div className='lg:col-span-2'>
+            <DashboardMembershipCard />
+          </div>
+          <div className='lg:col-span-1'>
+            <DashboardMembershipNavCard />
+          </div>
         </div>
-        <div className='lg:col-span-1'>
-          <DashboardMembershipNavCard />
-        </div>
-      </div>
+      )}
 
       {/* Phone Click Statistics */}
       <div id='phone-click-analytics' className='space-y-6'>
@@ -148,10 +227,16 @@ const DashboardTemplate: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <DashboardPhoneClickStats
-          analytics={selectedListingAnalytics}
-          isLoading={isSummaryLoading || isDetailLoading}
-        />
+        {(isSummaryLoading ||
+          isDetailLoading ||
+          hasPhoneClickAnalyticsData) && (
+          <DashboardPhoneClickStats
+            analytics={
+              hasPhoneClickAnalyticsData ? selectedListingAnalytics : null
+            }
+            isLoading={isSummaryLoading || isDetailLoading}
+          />
+        )}
 
         {/* Chart */}
         <DashboardPhoneClickChart

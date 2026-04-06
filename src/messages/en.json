@@ -2239,6 +2239,10 @@
         "clickTrends": "Click Trends",
         "last7Days": "Last 7 Days",
         "noData": "No data available",
+        "emptyState": {
+          "title": "No phone-click analytics yet",
+          "description": "Charts and listing tables will appear after users start clicking phone numbers on your listings."
+        },
         "clicks": "Clicks",
         "date": "Date",
         "analyticsOverview": "Owner Analytics Dashboard",
@@ -2285,6 +2289,10 @@
         "action": "Action",
         "viewTrend": "View Trend",
         "noData": "No data available",
+        "emptyState": {
+          "title": "No saved-listing analytics yet",
+          "description": "Charts and listing tables will appear after users start saving your listings."
+        },
         "searchPlaceholder": "Search by listing title...",
         "rowsPerPage": "Rows per page",
         "prev": "Previous",
