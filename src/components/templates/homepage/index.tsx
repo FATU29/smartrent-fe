@@ -83,11 +83,6 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
               </div>
             </section>
 
-            {/* Latest News Grid - Below Filter */}
-            {latestNews && latestNews.length > 0 && (
-              <NewsGridSection news={latestNews} />
-            )}
-
             <div id='top-interest'>
               <TopInterestSection categoryStats={categoryStats} />
             </div>
@@ -110,10 +105,16 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                 </Link>
               )}
             </div>
+
             <LocationBrowseSection
               cities={cities}
               loading={cities === undefined}
             />
+
+            {latestNews && latestNews.length > 0 && (
+              <NewsGridSection news={latestNews} />
+            )}
+
             <PromoFeaturesSection />
           </div>
         </div>
