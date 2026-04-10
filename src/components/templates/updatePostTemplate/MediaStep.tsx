@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { Card } from '@/components/atoms/card'
 import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
@@ -20,6 +21,12 @@ export const MediaStep: React.FC<MediaStepProps> = ({
   onValidationComplete,
 }) => {
   const t = useTranslations('createPost')
+  const router = useRouter()
+  // Update flow has the listingId in the URL — pass it to the upload helper
+  // so BE can associate uploaded media with the existing listing immediately.
+  const listingIdFromQuery = router.query.id
+    ? Number(router.query.id)
+    : undefined
   const {
     media,
     updateMedia,
@@ -66,8 +73,10 @@ export const MediaStep: React.FC<MediaStepProps> = ({
     setIsUploading(true)
 
     try {
-      // Upload all pending images
-      const uploadedResults = await uploadPendingImagesFromContext()
+      // Upload all pending images. listingId is known here (update flow),
+      // so BE can attach the media to the listing on confirm.
+      const uploadedResults =
+        await uploadPendingImagesFromContext(listingIdFromQuery)
 
       uploadedResults.forEach((img) => {
         updateMedia(img)

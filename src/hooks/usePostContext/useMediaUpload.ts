@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { MediaService } from '@/api/services'
 import type { MediaItem } from '@/api/types/property.type'
+import type { MediaItem as ApiMediaItem } from '@/api/types/media.type'
 
 export interface VideoUploadProgressState {
   isUploading: boolean
@@ -129,60 +130,69 @@ export const useMediaUpload = () => {
     setPendingImagesState([])
   }, [pendingImagesState])
 
-  const uploadPendingImages = useCallback(async (): Promise<
-    Array<Partial<MediaItem>>
-  > => {
-    if (pendingImagesState.length === 0) return []
+  const uploadPendingImages = useCallback(
+    async (listingId?: number): Promise<Array<Partial<MediaItem>>> => {
+      if (pendingImagesState.length === 0) return []
 
-    const uploaded: Array<Partial<MediaItem>> = []
-    let uploadedCount = 0
+      const uploaded: Array<Partial<MediaItem>> = []
+      let uploadedCount = 0
 
-    startImagesUpload(pendingImagesState.length)
+      startImagesUpload(pendingImagesState.length)
 
-    for (const pending of pendingImagesState) {
-      try {
-        const res = await MediaService.upload({
-          file: pending.file,
-          mediaType: 'IMAGE',
-          isPrimary: pending.isCover || false,
-        })
-
-        if (res?.success && res?.data?.url) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { status, durationSeconds, ...restData } = res.data
-          const mediaItem: Partial<MediaItem> = {
-            ...restData,
-            durationSeconds:
-              durationSeconds !== undefined
-                ? Number(durationSeconds)
-                : undefined,
-            mediaId: Number(res.data.mediaId),
-            isPrimary: pending.isCover || false,
+      for (const pending of pendingImagesState) {
+        try {
+          // Upload file directly to R2 via presigned URL (bypasses Vercel
+          // 4.5MB body limit). listingId is optional for create-post flow —
+          // BE associates the media with the listing on submit.
+          const res = await MediaService.uploadViaPresign({
+            file: pending.file,
             mediaType: 'IMAGE',
-          }
-          uploaded.push(mediaItem)
-          uploadedCount++
-          updateImagesUploadProgress(uploadedCount)
-        } else {
-          throw new Error('Upload failed')
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : `Failed to upload ${pending.file.name}`
-        setImagesUploadError(errorMessage)
-        throw new Error(errorMessage)
-      }
-    }
+            purpose: 'LISTING',
+            listingId,
+            isPrimary: pending.isCover || false,
+          })
 
-    return uploaded
-  }, [
-    pendingImagesState,
-    startImagesUpload,
-    updateImagesUploadProgress,
-    setImagesUploadError,
-  ])
+          if (res?.success && res?.data?.url) {
+            const data = res.data as ApiMediaItem
+            // status enum differs between media.type.ts (PENDING/ACTIVE/...)
+            // and property.type.ts (PostStatus), so we drop it on conversion.
+            const { status, durationSeconds, ...restData } = data
+            void status
+            const mediaItem: Partial<MediaItem> = {
+              ...restData,
+              durationSeconds:
+                durationSeconds !== undefined
+                  ? Number(durationSeconds)
+                  : undefined,
+              mediaId: Number(data.mediaId),
+              isPrimary: pending.isCover || false,
+              mediaType: 'IMAGE',
+            }
+            uploaded.push(mediaItem)
+            uploadedCount++
+            updateImagesUploadProgress(uploadedCount)
+          } else {
+            throw new Error('Upload failed')
+          }
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : `Failed to upload ${pending.file.name}`
+          setImagesUploadError(errorMessage)
+          throw new Error(errorMessage)
+        }
+      }
+
+      return uploaded
+    },
+    [
+      pendingImagesState,
+      startImagesUpload,
+      updateImagesUploadProgress,
+      setImagesUploadError,
+    ],
+  )
 
   return {
     videoUploadProgress,
