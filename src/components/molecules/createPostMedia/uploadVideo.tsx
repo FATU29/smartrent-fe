@@ -1,4 +1,5 @@
 import React, { useRef } from 'react'
+import { useRouter } from 'next/router'
 import { ENV } from '@/constants'
 import {
   Card,
@@ -31,6 +32,13 @@ interface UploadVideoProps {
 
 const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
   const t = useTranslations('createPost.sections.media')
+  const router = useRouter()
+  // Update flow has the listing id in the URL — pass it through so BE can
+  // associate the uploaded video with the listing on confirm. Create flow
+  // leaves it undefined and BE associates on listing submit.
+  const listingIdFromQuery = router.query.id
+    ? Number(router.query.id)
+    : undefined
   const {
     updateMedia,
     removeMedia,
@@ -86,8 +94,16 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
     startVideoUpload(file.name)
 
     try {
-      const response = await MediaService.upload(
-        { file, mediaType: 'VIDEO', isPrimary: true },
+      // Upload directly to R2 via presigned URL — bypasses Vercel's 4.5MB
+      // body limit so we can ship 100MB videos.
+      const response = await MediaService.uploadViaPresign(
+        {
+          file,
+          mediaType: 'VIDEO',
+          purpose: 'LISTING',
+          listingId: listingIdFromQuery,
+          isPrimary: true,
+        },
         {
           onUploadProgress: (e) => {
             if (!e.total) return
@@ -108,7 +124,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
           mediaId: mediaId ? Number(mediaId) : undefined,
           mediaType: 'VIDEO',
           isPrimary: true,
-          sourceType: 'UPLOADED',
+          sourceType: 'UPLOAD',
         })
       }
       updateVideoUploadProgress(100)
@@ -154,7 +170,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
   const isBlobUrl = videoUrl.startsWith('blob:')
   const isExternalVideo = video?.sourceType === 'EXTERNAL'
   const isUploadedVideo =
-    video?.sourceType === 'UPLOADED' && videoUrl && !isBlobUrl
+    video?.sourceType === 'UPLOAD' && videoUrl && !isBlobUrl
   const showVideoPreview = videoUrl && (isBlobUrl || isUploadedVideo)
 
   return (

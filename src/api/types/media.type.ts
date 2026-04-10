@@ -1,26 +1,28 @@
 export type MediaType = 'IMAGE' | 'VIDEO'
-export type MediaSourceType = 'UPLOADED' | 'EXTERNAL'
-export type MediaStatus = 'PENDING' | 'ACTIVE' | 'DELETED'
+// UPLOAD = our R2 flow; YOUTUBE/TIKTOK/EXTERNAL come from saveExternal endpoint
+export type MediaSourceType = 'UPLOAD' | 'YOUTUBE' | 'TIKTOK' | 'EXTERNAL'
+export type MediaStatus = 'PENDING' | 'ACTIVE' | 'ARCHIVED' | 'DELETED'
+export type MediaPurpose = 'LISTING' | 'AVATAR'
 
 export interface MediaItem {
-  mediaId: string
-  listingId: number
+  mediaId: number
+  listingId: number | null
   userId: string
   mediaType: MediaType
   sourceType: MediaSourceType
   status: MediaStatus
   url: string
-  thumbnailUrl?: string
-  title?: string
-  description?: string
-  altText?: string
+  thumbnailUrl: string | null
+  title: string | null
+  description: string | null
+  altText: string | null
   isPrimary: boolean
   sortOrder: number
-  fileSize: number
-  mimeType?: string
-  originalFilename?: string
-  durationSeconds?: string
-  uploadConfirmed?: boolean
+  fileSize: number | null
+  mimeType: string | null
+  originalFilename: string | null
+  durationSeconds: number | null
+  uploadConfirmed: boolean
   createdAt: string
   updatedAt: string
 }
@@ -28,9 +30,10 @@ export interface MediaItem {
 // Step 1: request upload URL
 export interface CreateUploadUrlRequest {
   mediaType: MediaType
+  purpose: MediaPurpose
   filename: string
   contentType: string
-  fileSize: string | number
+  fileSize: number
   listingId?: number
   title?: string
   description?: string
@@ -40,7 +43,7 @@ export interface CreateUploadUrlRequest {
 }
 
 export interface CreateUploadUrlResponse {
-  mediaId: string
+  mediaId: number
   uploadUrl: string
   expiresIn: number
   storageKey: string

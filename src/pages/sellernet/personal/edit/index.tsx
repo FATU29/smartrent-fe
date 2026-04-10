@@ -1,5 +1,6 @@
 import * as React from 'react'
 import dynamic from 'next/dynamic'
+import { toast } from 'sonner'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SellernetLayout from '@/components/layouts/sellernet/SellernetLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
@@ -21,8 +22,28 @@ type PersonalInfoFormData = {
   avatar?: File
 }
 
+const TOAST_ID = 'profile-update'
+
 const PersonalEditPage: NextPageWithLayout = () => {
-  const { updateProfile } = useUpdateProfile()
+  const { updateProfile, phase, avatarUploadProgress } = useUpdateProfile()
+
+  // Surface the two-step flow (R2 upload → JSON profile save) via a single
+  // dynamic toast so the user gets meaningful feedback during large avatar
+  // uploads instead of an opaque spinner. The hook stays decoupled from UI.
+  React.useEffect(() => {
+    if (phase === 'uploading-avatar') {
+      toast.loading(
+        avatarUploadProgress > 0
+          ? `Đang tải ảnh đại diện lên... ${avatarUploadProgress}%`
+          : 'Đang tải ảnh đại diện lên...',
+        { id: TOAST_ID },
+      )
+    } else if (phase === 'saving-profile') {
+      toast.loading('Đang lưu thông tin...', { id: TOAST_ID })
+    } else {
+      toast.dismiss(TOAST_ID)
+    }
+  }, [phase, avatarUploadProgress])
 
   const handlePersonalInfoUpdate = async (
     data: PersonalInfoFormData,
@@ -33,7 +54,7 @@ const PersonalEditPage: NextPageWithLayout = () => {
         lastName: data.lastName,
         idDocument: data.idDocument,
         contactPhoneNumber: data.contactPhoneNumber,
-        avatar: data.avatar, // Include avatar file
+        avatar: data.avatar, // Hook uploads to R2 then PATCHes the profile
       })
 
       return result.success
