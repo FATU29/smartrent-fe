@@ -3102,7 +3102,7 @@
         },
         "wallet": {
           "title": "E-Wallet",
-          "description": "Momo, ZaloPay, VNPay",
+          "description": "ZaloPay, VNPay",
           "feature1": "Fast and convenient",
           "feature2": "Available wallet promotions"
         },

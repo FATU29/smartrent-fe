@@ -265,7 +265,12 @@ export function parseQueryParams(search: string): Record<string, string> {
  * @returns true if supported
  */
 export function isPaymentProviderSupported(provider: string): boolean {
-  const supportedProviders: PaymentProvider[] = ['VNPAY', 'PAYPAL', 'MOMO']
+  const supportedProviders: PaymentProvider[] = [
+    'VNPAY',
+    'PAYPAL',
+    'MOMO',
+    'ZALOPAY',
+  ]
   return supportedProviders.includes(provider as PaymentProvider)
 }
 

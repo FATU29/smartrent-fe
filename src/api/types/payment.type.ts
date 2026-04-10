@@ -4,6 +4,7 @@ export enum PaymentProviderCode {
   VNPAY = 'VNPAY',
   PAYPAL = 'PAYPAL',
   MOMO = 'MOMO',
+  ZALOPAY = 'ZALOPAY',
 }
 
 export type PaymentProvider =

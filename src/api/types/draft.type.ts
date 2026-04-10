@@ -161,7 +161,7 @@ export interface PublishDraftRequest extends Partial<DraftListingRequest> {
   // Option 2: Direct payment
   vipType?: 'SILVER' | 'GOLD' | 'DIAMOND'
   durationDays?: number
-  paymentProvider?: 'VNPAY' | 'MOMO' | 'PAYPAL'
+  paymentProvider?: 'VNPAY' | 'MOMO' | 'PAYPAL' | 'ZALOPAY'
 }
 
 /**
