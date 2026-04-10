@@ -9,8 +9,13 @@
 export enum NewsCategory {
   NEWS = 'NEWS',
   BLOG = 'BLOG',
-  MARKET_TREND = 'MARKET_TREND',
+  POLICY = 'POLICY',
+  MARKET = 'MARKET',
+  PROJECT = 'PROJECT',
+  INVESTMENT = 'INVESTMENT',
   GUIDE = 'GUIDE',
+  // Legacy categories kept for backward compatibility
+  MARKET_TREND = 'MARKET_TREND',
   ANNOUNCEMENT = 'ANNOUNCEMENT',
 }
 
@@ -33,9 +38,10 @@ export interface NewsItem {
   category: NewsCategory
   tags: string[]
   thumbnailUrl: string
-  publishedAt: string
+  publishedAt: string | null
   authorName: string
   viewCount: number
+  createdAt?: string
 }
 
 /**

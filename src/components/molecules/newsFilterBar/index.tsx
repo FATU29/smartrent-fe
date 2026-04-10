@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useListContext } from '@/contexts/list'
 import { Button } from '@/components/atoms/button'
 import { Input } from '@/components/atoms/input'
+import { Badge } from '@/components/atoms/badge'
 import { NewsCategory, NewsItem } from '@/api/types/news.type'
 import { Search, X, LayoutGrid, List } from 'lucide-react'
 import classNames from 'classnames'
@@ -12,6 +13,8 @@ interface NewsFilterBarProps {
   onLayoutChange: (layout: 'grid' | 'list') => void
   selectedCategory?: string
   onCategoryChange?: (category: string | undefined) => void
+  selectedTag?: string
+  onTagClear?: () => void
 }
 
 const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
@@ -19,6 +22,8 @@ const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
   onLayoutChange,
   selectedCategory,
   onCategoryChange,
+  selectedTag,
+  onTagClear,
 }) => {
   const t = useTranslations('newsPage')
   const tCategories = useTranslations('newsPage.categories')
@@ -30,6 +35,11 @@ const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
       { value: undefined, label: t('allCategories') },
       { value: NewsCategory.NEWS, label: tCategories('news') },
       { value: NewsCategory.BLOG, label: tCategories('blog') },
+      { value: NewsCategory.POLICY, label: tCategories('policy') },
+      { value: NewsCategory.MARKET, label: tCategories('market') },
+      { value: NewsCategory.PROJECT, label: tCategories('project') },
+      { value: NewsCategory.INVESTMENT, label: tCategories('investment') },
+      { value: NewsCategory.GUIDE, label: tCategories('guide') },
     ],
     [t, tCategories],
   )
@@ -45,9 +55,11 @@ const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
   const handleClearFilters = () => {
     resetFilters()
     onCategoryChange?.(undefined)
+    onTagClear?.()
   }
 
-  const totalActiveFilters = activeFilterCount + (selectedCategory ? 1 : 0)
+  const totalActiveFilters =
+    activeFilterCount + (selectedCategory ? 1 : 0) + (selectedTag ? 1 : 0)
 
   return (
     <div className='space-y-4'>
@@ -123,6 +135,25 @@ const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
           </Button>
         )}
       </div>
+
+      {selectedTag && (
+        <div className='flex items-center gap-2'>
+          <span className='text-sm text-muted-foreground'>
+            {t('activeTag')}
+          </span>
+          <Badge variant='secondary' className='rounded-full px-3 py-1 gap-2'>
+            <span>#{selectedTag}</span>
+            <button
+              type='button'
+              onClick={onTagClear}
+              aria-label={t('clearTag')}
+              className='inline-flex items-center text-muted-foreground hover:text-foreground'
+            >
+              <X className='h-3.5 w-3.5' />
+            </button>
+          </Badge>
+        </div>
+      )}
     </div>
   )
 }

@@ -25,6 +25,10 @@ interface NewsGridSectionProps {
 const CATEGORY_LABEL_MAP: Record<string, string> = {
   NEWS: 'news',
   BLOG: 'blog',
+  POLICY: 'policy',
+  MARKET: 'market',
+  PROJECT: 'project',
+  INVESTMENT: 'investment',
   MARKET_TREND: 'marketTrend',
   GUIDE: 'guide',
   ANNOUNCEMENT: 'announcement',

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { GetServerSideProps } from 'next'
 import MainLayout from '@/components/layouts/homePageLayout'
@@ -22,6 +22,12 @@ interface NewsPageProps {
   initialPagination: Pagination
   initialFilters: Partial<ListingFilterRequest>
   initialCategory?: string | null
+  initialTag?: string | null
+}
+
+type NewsListUIFilters = ListingFilterRequest & {
+  tag?: string
+  _t?: number
 }
 
 const NewsPage: NextPageWithLayout<NewsPageProps> = ({
@@ -29,6 +35,7 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
   initialPagination,
   initialFilters,
   initialCategory,
+  initialTag,
 }) => {
   const t = useTranslations('newsPage')
   const router = useRouter()
@@ -36,12 +43,17 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     initialCategory ?? undefined,
   )
+  const [selectedTag, setSelectedTag] = useState<string | undefined>(
+    initialTag ?? undefined,
+  )
   const selectedCategoryRef = useRef(selectedCategory)
+  const selectedTagRef = useRef(selectedTag)
   selectedCategoryRef.current = selectedCategory
+  selectedTagRef.current = selectedTag
 
   const pushFiltersToQuery = useCallback(
-    (filters: ListingFilterRequest, category?: string) => {
-      const filtersKey = JSON.stringify({ ...filters, category })
+    (filters: NewsListUIFilters, category?: string, tag?: string) => {
+      const filtersKey = JSON.stringify({ ...filters, category, tag })
       if (lastPushedFiltersRef.current === filtersKey) {
         return
       }
@@ -53,6 +65,9 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
       }
       if (category) {
         queryParams.category = category
+      }
+      if (tag) {
+        queryParams.tag = tag
       }
       if (filters.keyword) {
         queryParams.keyword = filters.keyword
@@ -74,9 +89,10 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
 
   const fetcher = useCallback(
     async (
-      filters: ListingFilterRequest,
+      filters: NewsListUIFilters,
     ): Promise<ApiResponse<ListingSearchResponse<NewsItem>>> => {
       const category = selectedCategoryRef.current
+      const tag = selectedTagRef.current
 
       // Map ListingFilterRequest to NewsFilterRequest
       const newsFilters: NewsFilterRequest = {
@@ -84,9 +100,10 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
         size: filters.size || 20,
         keyword: filters.keyword || undefined,
         category: category || undefined,
+        tag: tag || undefined,
       }
 
-      pushFiltersToQuery(filters, category)
+      pushFiltersToQuery(filters, category, tag)
 
       const response = await NewsService.getList(newsFilters)
 
@@ -128,46 +145,91 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
     [pushFiltersToQuery],
   )
 
-  const handleCategoryChange = useCallback(
-    (category: string | undefined) => {
-      setSelectedCategory(category)
-      selectedCategoryRef.current = category
+  const handleCategoryChange = useCallback((category: string | undefined) => {
+    setSelectedCategory(category)
+    selectedCategoryRef.current = category
 
-      // Update URL shallowly (no SSR reload)
-      const queryParams: Record<string, string> = {}
-      if (category) queryParams.category = category
+    // Trigger client-side re-fetch via ListContext
+    // Use _t to force a new filtersKey even if page was already 1
+    if (listActionsRef.current) {
+      listActionsRef.current.updateFilters({
+        page: 1,
+        _t: Date.now(),
+      } as Partial<NewsListUIFilters>)
+    }
+  }, [])
 
-      router.push(
-        {
-          pathname: PUBLIC_ROUTES.NEWS,
-          query: Object.keys(queryParams).length > 0 ? queryParams : undefined,
-        },
-        undefined,
-        { shallow: true },
-      )
+  const handleTagClear = useCallback(() => {
+    setSelectedTag(undefined)
+    selectedTagRef.current = undefined
 
-      // Trigger client-side re-fetch via ListContext
-      // Use _t to force a new filtersKey even if page was already 1
-      if (listActionsRef.current) {
-        listActionsRef.current.updateFilters({
-          page: 1,
-          _t: Date.now(),
-        } as Partial<ListingFilterRequest>)
-      }
-    },
-    [router],
-  )
+    if (listActionsRef.current) {
+      listActionsRef.current.updateFilters({
+        tag: undefined,
+        page: 1,
+        _t: Date.now(),
+      } as Partial<NewsListUIFilters>)
+    }
+  }, [])
+
+  const handleTagChange = useCallback((tag: string | undefined) => {
+    setSelectedTag(tag)
+    selectedTagRef.current = tag
+
+    if (listActionsRef.current) {
+      listActionsRef.current.updateFilters({
+        tag,
+        page: 1,
+        _t: Date.now(),
+      } as Partial<NewsListUIFilters>)
+    }
+  }, [])
+
+  useEffect(() => {
+    const nextTag =
+      typeof router.query.tag === 'string' && router.query.tag.trim().length > 0
+        ? router.query.tag
+        : undefined
+
+    if (selectedTagRef.current === nextTag) return
+
+    handleTagChange(nextTag)
+  }, [router.query.tag, handleTagChange])
+
+  useEffect(() => {
+    const nextCategory =
+      typeof router.query.category === 'string' &&
+      router.query.category.trim().length > 0
+        ? router.query.category
+        : undefined
+
+    if (selectedCategoryRef.current === nextCategory) return
+
+    setSelectedCategory(nextCategory)
+    selectedCategoryRef.current = nextCategory
+
+    if (listActionsRef.current) {
+      listActionsRef.current.updateFilters({
+        page: 1,
+        _t: Date.now(),
+      } as Partial<NewsListUIFilters>)
+    }
+  }, [router.query.category])
 
   // Capture ListContext actions so category change can trigger re-fetch
   const listActionsRef = useRef<{
-    updateFilters: (f: Partial<ListingFilterRequest>) => void
+    updateFilters: (f: Partial<NewsListUIFilters>) => void
   } | null>(null)
 
   const handleListReady = useCallback(
-    (actions: {
-      updateFilters: (f: Partial<ListingFilterRequest>) => void
-    }) => {
+    (actions: { updateFilters: (f: Partial<NewsListUIFilters>) => void }) => {
       listActionsRef.current = actions
+
+      if (selectedTagRef.current) {
+        listActionsRef.current.updateFilters({
+          tag: selectedTagRef.current,
+        })
+      }
     },
     [],
   )
@@ -185,6 +247,8 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
           <NewsListTemplate
             selectedCategory={selectedCategory}
             onCategoryChange={handleCategoryChange}
+            selectedTag={selectedTag}
+            onTagClear={handleTagClear}
             onListReady={handleListReady}
           />
         </ListProvider>
@@ -208,19 +272,22 @@ export const getServerSideProps: GetServerSideProps<NewsPageProps> = async (
     const size = query.size ? Number.parseInt(query.size as string, 10) : 20
     const category = (query.category as string) || null
     const keyword = (query.keyword as string) || null
+    const tag = (query.tag as string) || null
 
     const newsFilters: NewsFilterRequest = {
       page,
       size,
       ...(category ? { category } : {}),
+      ...(tag ? { tag } : {}),
       ...(keyword ? { keyword } : {}),
     }
 
     const response = await NewsService.getList(newsFilters)
 
-    const initialFilters: Partial<ListingFilterRequest> = {
+    const initialFilters: Partial<NewsListUIFilters> = {
       page,
       size,
+      ...(tag ? { tag } : {}),
       ...(keyword ? { keyword } : {}),
     }
 
@@ -236,6 +303,7 @@ export const getServerSideProps: GetServerSideProps<NewsPageProps> = async (
           },
           initialFilters,
           initialCategory: category ?? null,
+          initialTag: tag ?? null,
         },
       }
     }
@@ -254,6 +322,7 @@ export const getServerSideProps: GetServerSideProps<NewsPageProps> = async (
         },
         initialFilters,
         initialCategory: category ?? null,
+        initialTag: tag ?? null,
       },
     }
   } catch (error) {

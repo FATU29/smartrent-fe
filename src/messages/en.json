@@ -459,7 +459,8 @@
         "resetLinkSent": "We've sent a password reset link to your email",
         "switchToLogin": "Remembered your password? <u>Log In</u>",
         "successTitle": "Password Reset Successful!",
-        "successDescription": "Your password has been reset successfully. You can now log in with your new password."
+        "successDescription": "Your password has been reset successfully. You can now log in with your new password.",
+        "error": "Could not send the verification code. Please try again."
       },
       "resetPassword": {
         "title": "Reset Password",
@@ -2955,6 +2956,8 @@
     "allCategories": "All",
     "searchPlaceholder": "Search articles...",
     "clearFilters": "Clear filters",
+    "activeTag": "Active tag:",
+    "clearTag": "Clear tag",
     "resultCount": "{count, plural, =0 {No articles found} one {# article found} other {# articles found}}",
     "noNews": "No articles found",
     "noNewsDescription": "Try adjusting your search criteria or check back later for new articles.",
@@ -2974,6 +2977,9 @@
     "notFound": "Article not found",
     "notFoundDescription": "The article you're looking for doesn't exist or has been removed.",
     "backToNews": "Back to News",
+    "tagsLabel": "Tags",
+    "authorFallback": "Editorial Team",
+    "dateUnavailable": "Not updated",
     "views": "views",
     "share": "Share",
     "shareSuccess": "Shared successfully!",
@@ -2983,6 +2989,10 @@
     "categories": {
       "news": "News",
       "blog": "Blog",
+      "policy": "Policy",
+      "market": "Market",
+      "project": "Project",
+      "investment": "Investment",
       "marketTrend": "Market Trends",
       "guide": "Guides",
       "announcement": "Announcements"

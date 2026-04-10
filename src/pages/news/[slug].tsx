@@ -35,7 +35,10 @@ const NewsDetailPage: NextPageWithLayout<NewsDetailPageProps> = ({
           <meta property='og:description' content={news.summary} />
           <meta property='og:image' content={news.thumbnailUrl} />
           <meta property='og:type' content='article' />
-          <meta property='article:published_time' content={news.publishedAt} />
+          <meta
+            property='article:published_time'
+            content={news.publishedAt || undefined}
+          />
           <meta property='article:author' content={news.authorName} />
 
           {/* Twitter Card tags */}

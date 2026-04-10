@@ -20,6 +20,7 @@ type ForgotPasswordFormData = {
 const ForgotPasswordForm: NextPage<ForgotPasswordFormProps> = (props) => {
   const { onSuccess } = props
   const t = useTranslations()
+  const fallbackErrorMessage = t('homePage.auth.forgotPassword.error')
 
   const {
     control,
@@ -38,10 +39,12 @@ const ForgotPasswordForm: NextPage<ForgotPasswordFormProps> = (props) => {
       if (response.success) {
         onSuccess?.(data.email)
       } else {
-        toast.error(response.message)
+        toast.error(response.message?.trim() || fallbackErrorMessage)
       }
     } catch (error) {
       console.error('Forgot password error:', error)
+      const errorMessage = error instanceof Error ? error.message?.trim() : ''
+      toast.error(errorMessage || fallbackErrorMessage)
     }
   }
 

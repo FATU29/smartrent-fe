@@ -11,6 +11,7 @@ import { NewsItem } from '@/api/types/news.type'
 import { Calendar, Eye, User, ArrowRight } from 'lucide-react'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import {
+  formatAuthorDisplayName,
   getCategoryConfig,
   formatPublishedDate,
   formatViewCount,
@@ -28,6 +29,7 @@ const LatestNewsSection: React.FC<LatestNewsSectionProps> = ({
 }) => {
   const t = useTranslations('homePage.latestNews')
   const tCategories = useTranslations('newsPage.categories')
+  const tNews = useTranslations('newsPage')
 
   if (isLoading) {
     return (
@@ -89,6 +91,12 @@ const LatestNewsSection: React.FC<LatestNewsSectionProps> = ({
           const categoryConfig = getCategoryConfig(item.category, tCategories)
           const newsUrl = `${PUBLIC_ROUTES.NEWS}/${item.slug}`
           const imageUrl = item.thumbnailUrl || `${basePath}${DEFAULT_IMAGE}`
+          const displayAuthor = formatAuthorDisplayName(
+            item.authorName,
+            tNews('authorFallback'),
+          )
+          const displayPublishedAt =
+            formatPublishedDate(item.publishedAt) || tNews('dateUnavailable')
 
           return (
             <Link
@@ -155,19 +163,17 @@ const LatestNewsSection: React.FC<LatestNewsSectionProps> = ({
                   {/* Meta Info */}
                   <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground pt-3 border-t'>
                     {/* Author */}
-                    {item.authorName && (
-                      <span className='inline-flex items-center gap-1'>
-                        <User className='w-3 h-3' />
-                        <span className='truncate max-w-[80px]'>
-                          {item.authorName}
-                        </span>
+                    <span className='inline-flex items-center gap-1'>
+                      <User className='w-3 h-3' />
+                      <span className='truncate max-w-[80px]'>
+                        {displayAuthor}
                       </span>
-                    )}
+                    </span>
 
                     {/* Date */}
                     <span className='inline-flex items-center gap-1'>
                       <Calendar className='w-3 h-3' />
-                      {formatPublishedDate(item.publishedAt)}
+                      {displayPublishedAt}
                     </span>
 
                     {/* View Count */}

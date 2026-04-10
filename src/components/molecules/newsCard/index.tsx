@@ -12,6 +12,7 @@ import { Calendar, Eye, User, Tag } from 'lucide-react'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import {
   getCategoryConfig,
+  formatAuthorDisplayName,
   formatPublishedDate,
   formatViewCount,
 } from '@/utils/news'
@@ -42,6 +43,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
   } = news
 
   const tCategories = useTranslations('newsPage.categories')
+  const tNews = useTranslations('newsPage')
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
@@ -51,6 +53,12 @@ const NewsCard: React.FC<NewsCardProps> = ({
   }
 
   const categoryConfig = getCategoryConfig(category, tCategories)
+  const displayAuthor = formatAuthorDisplayName(
+    authorName,
+    tNews('authorFallback'),
+  )
+  const displayPublishedAt =
+    formatPublishedDate(publishedAt) || tNews('dateUnavailable')
 
   const newsUrl = `${PUBLIC_ROUTES.NEWS}/${slug}`
   const imageUrl = thumbnailUrl || `${basePath}${DEFAULT_IMAGE}`
@@ -169,17 +177,15 @@ const NewsCard: React.FC<NewsCardProps> = ({
             )}
           >
             {/* Author */}
-            {authorName && (
-              <span className='inline-flex items-center gap-1'>
-                <User className='w-3.5 h-3.5' />
-                <span className='truncate max-w-[100px]'>{authorName}</span>
-              </span>
-            )}
+            <span className='inline-flex items-center gap-1'>
+              <User className='w-3.5 h-3.5' />
+              <span className='truncate max-w-[100px]'>{displayAuthor}</span>
+            </span>
 
             {/* Date */}
             <span className='inline-flex items-center gap-1'>
               <Calendar className='w-3.5 h-3.5' />
-              {formatPublishedDate(publishedAt)}
+              {displayPublishedAt}
             </span>
 
             {/* View Count */}
