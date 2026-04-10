@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import Combobox from '@/components/atoms/combobox'
@@ -43,15 +43,31 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   const [streetInput, setStreetInput] = useState<string>(
     propertyInfo?.address?.newAddress?.street || '',
   )
+  const streetTouchedRef = useRef(false)
+
+  const selectedProvinceCode = useMemo(
+    () =>
+      fulltextAddress?.newProvinceCode ||
+      (propertyInfo?.address?.newAddress?.provinceCode
+        ? String(propertyInfo.address.newAddress.provinceCode)
+        : undefined),
+    [
+      fulltextAddress?.newProvinceCode,
+      propertyInfo?.address?.newAddress?.provinceCode,
+    ],
+  )
+
+  const selectedWardCode = useMemo(
+    () =>
+      fulltextAddress?.newWardCode ||
+      (propertyInfo?.address?.newAddress?.wardCode
+        ? String(propertyInfo.address.newAddress.wardCode)
+        : undefined),
+    [fulltextAddress?.newWardCode, propertyInfo?.address?.newAddress?.wardCode],
+  )
 
   // Debounce street input to optimize performance
   const debouncedStreet = useDebounce(streetInput, 500)
-
-  // Extract province code to avoid unnecessary re-renders
-  const provinceCode = useMemo(
-    () => fulltextAddress?.newProvinceCode,
-    [fulltextAddress?.newProvinceCode],
-  )
 
   // Init address hooks
   const {
@@ -68,7 +84,11 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     fetchNextPage: fetchMoreWards,
     hasNextPage: hasMoreWards,
     isFetchingNextPage: isFetchingMoreWards,
-  } = useNewWardsInfinite(provinceCode, wardSearchKeyword || undefined, 20)
+  } = useNewWardsInfinite(
+    selectedProvinceCode,
+    wardSearchKeyword || undefined,
+    20,
+  )
 
   const newWards = useMemo(() => {
     if (!newWardsPages?.pages) return []
@@ -87,6 +107,8 @@ export const AddressInput: React.FC<AddressInputProps> = ({
 
   // Update property info when debounced street value changes
   useEffect(() => {
+    if (!streetTouchedRef.current) return
+
     if (debouncedStreet !== propertyInfo?.address?.newAddress?.street) {
       const prev = propertyInfo.address
       const nextAddress: ListingAddress = {
@@ -119,14 +141,20 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   useEffect(() => {
     const currentStreet = propertyInfo?.address?.newAddress?.street || ''
     if (currentStreet !== streetInput) {
+      streetTouchedRef.current = false
       setStreetInput(currentStreet)
     }
   }, [propertyInfo?.address?.newAddress?.street])
 
   const handleProvinceChange = (value: string) => {
+    const nextProvinceName =
+      newProvinces.find((p) => String(p.id) === value)?.name || ''
+
     updateFulltextAddress({
       newProvinceCode: value,
+      newProvinceName: nextProvinceName,
       newWardCode: '',
+      newWardName: '',
       legacyAddressId: '',
       propertyAddressEdited: false,
     })
@@ -152,8 +180,12 @@ export const AddressInput: React.FC<AddressInputProps> = ({
   }
 
   const handleWardChange = (value: string) => {
+    const nextWardName =
+      newWards.find((w) => String(w.code) === value)?.name || ''
+
     updateFulltextAddress({
       newWardCode: value,
+      newWardName: nextWardName,
       legacyAddressId: '',
     })
 
@@ -310,17 +342,84 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     }
   }, [wardsError, tAddress])
 
-  const provinceOptions = useMemo(
-    () => newProvinces.map((p) => ({ value: String(p.id), label: p.name })),
-    [newProvinces],
-  )
-  const wardOptions = useMemo(
-    () => newWards.map((w) => ({ value: String(w.code), label: w.name })),
-    [newWards],
-  )
+  useEffect(() => {
+    if (!selectedProvinceCode) return
+    const currentProvince = newProvinces.find(
+      (p) => String(p.id) === selectedProvinceCode,
+    )
+    if (
+      currentProvince?.name &&
+      currentProvince.name !== fulltextAddress?.newProvinceName
+    ) {
+      updateFulltextAddress({ newProvinceName: currentProvince.name })
+    }
+  }, [
+    selectedProvinceCode,
+    newProvinces,
+    fulltextAddress?.newProvinceName,
+    updateFulltextAddress,
+  ])
+
+  useEffect(() => {
+    if (!selectedWardCode) return
+    const currentWard = newWards.find(
+      (w) => String(w.code) === selectedWardCode,
+    )
+    if (
+      currentWard?.name &&
+      currentWard.name !== fulltextAddress?.newWardName
+    ) {
+      updateFulltextAddress({ newWardName: currentWard.name })
+    }
+  }, [
+    selectedWardCode,
+    newWards,
+    fulltextAddress?.newWardName,
+    updateFulltextAddress,
+  ])
+
+  const provinceOptions = useMemo(() => {
+    const options = newProvinces.map((p) => ({
+      value: String(p.id),
+      label: p.name,
+    }))
+
+    if (
+      selectedProvinceCode &&
+      fulltextAddress?.newProvinceName &&
+      !options.some((opt) => opt.value === selectedProvinceCode)
+    ) {
+      return [
+        { value: selectedProvinceCode, label: fulltextAddress.newProvinceName },
+        ...options,
+      ]
+    }
+
+    return options
+  }, [newProvinces, selectedProvinceCode, fulltextAddress?.newProvinceName])
+
+  const wardOptions = useMemo(() => {
+    const options = newWards.map((w) => ({
+      value: String(w.code),
+      label: w.name,
+    }))
+
+    if (
+      selectedWardCode &&
+      fulltextAddress?.newWardName &&
+      !options.some((opt) => opt.value === selectedWardCode)
+    ) {
+      return [
+        { value: selectedWardCode, label: fulltextAddress.newWardName },
+        ...options,
+      ]
+    }
+
+    return options
+  }, [newWards, selectedWardCode, fulltextAddress?.newWardName])
 
   const legacyAddressText = fulltextAddress?.legacyAddressText || ''
-  const showLegacySelector = provinceCode && fulltextAddress?.newWardCode
+  const showLegacySelector = selectedProvinceCode && selectedWardCode
   const showLegacyAddress = !!legacyAddressText
 
   return (
@@ -330,7 +429,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
           <Combobox
             label={tAddress('province')}
-            value={provinceCode || undefined}
+            value={selectedProvinceCode || undefined}
             onValueChange={handleProvinceChange}
             options={provinceOptions}
             disabled={loadingProvinces}
@@ -351,10 +450,10 @@ export const AddressInput: React.FC<AddressInputProps> = ({
           />
           <Combobox
             label={tAddress('ward')}
-            value={fulltextAddress?.newWardCode || undefined}
+            value={selectedWardCode || undefined}
             onValueChange={handleWardChange}
             options={wardOptions}
-            disabled={loadingWards || !provinceCode}
+            disabled={loadingWards || !selectedProvinceCode}
             loading={loadingWards}
             placeholder={
               loadingWards
@@ -379,8 +478,8 @@ export const AddressInput: React.FC<AddressInputProps> = ({
         {/* Legacy Address Selector */}
         {showLegacySelector && (
           <LegacyAddressSelector
-            provinceCode={provinceCode!}
-            wardCode={fulltextAddress.newWardCode!}
+            provinceCode={selectedProvinceCode!}
+            wardCode={selectedWardCode!}
             value={fulltextAddress?.legacyAddressId}
             onLegacySelect={handleLegacySelect}
           />
@@ -401,6 +500,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
             }
             value={streetInput}
             onChange={(e) => {
+              streetTouchedRef.current = true
               setStreetInput(e.target.value)
             }}
             className='h-12 px-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'

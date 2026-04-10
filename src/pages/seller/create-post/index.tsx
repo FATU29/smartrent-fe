@@ -24,6 +24,13 @@ import React from 'react'
 
 const CreatePostPage: NextPageWithLayout = () => {
   const router = useRouter()
+  const rawDraftId = router.query.draftId
+  const draftContextKey =
+    typeof rawDraftId === 'string'
+      ? rawDraftId
+      : Array.isArray(rawDraftId)
+        ? rawDraftId[0] || ''
+        : ''
   const t = useTranslations('createPost.profilePhoneRequiredDialog')
   const { user, isAuthenticated } = useAuth()
   const [openPhoneRequiredDialog, setOpenPhoneRequiredDialog] =
@@ -84,7 +91,7 @@ const CreatePostPage: NextPageWithLayout = () => {
         </DialogContent>
       </Dialog>
       <LocationProvider>
-        <CreatePostProvider>
+        <CreatePostProvider key={draftContextKey || 'create-post-empty'}>
           <CreatePostDraftGuard>
             <CreatePostTemplate />
           </CreatePostDraftGuard>

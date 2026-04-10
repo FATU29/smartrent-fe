@@ -13,14 +13,17 @@ const Footer: React.FC = () => {
       <div className='w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10'>
         {/* Slightly reduced mobile vertical padding, increased large screen breathing space */}
         <div className='py-6 sm:py-10 lg:py-14'>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12'>
+          <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 lg:gap-12'>
             {/* Company Info */}
-            <div className='space-y-3'>
-              <Logo size='medium' clickable={false} />
-              <Typography variant='muted' className='text-sm leading-relaxed'>
+            <div className='col-span-2 sm:col-span-2 lg:col-span-1 space-y-3 flex flex-col items-center text-center sm:items-start sm:text-left'>
+              <Logo size='large' clickable={false} />
+              <Typography
+                variant='muted'
+                className='text-sm leading-relaxed max-w-md sm:max-w-none'
+              >
                 {t('footer.description')}
               </Typography>
-              <div className='flex space-x-4 mt-5 sm:mt-6'>
+              <div className='flex space-x-4 mt-5 sm:mt-6 justify-center sm:justify-start'>
                 <button
                   className='hover:opacity-70 transition-opacity'
                   aria-label='Facebook'
@@ -64,42 +67,42 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Quick Links */}
-            <div className='space-y-4'>
+            <div className='space-y-4 flex flex-col items-center lg:items-start'>
               <Typography
                 variant='h6'
-                className='text-foreground font-semibold'
+                className='text-foreground font-semibold text-center lg:text-left text-sm sm:text-base'
               >
                 {t('footer.quickLinks')}
               </Typography>
-              <div className='space-y-2'>
-                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
+              <div className='space-y-2 w-full'>
+                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground hover:text-primary transition-colors'
+                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.aboutUs')}
                   </Typography>
                 </button>
-                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
+                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground hover:text-primary transition-colors'
+                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.properties')}
                   </Typography>
                 </button>
-                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
+                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground hover:text-primary transition-colors'
+                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.services')}
                   </Typography>
                 </button>
-                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
+                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground hover:text-primary transition-colors'
+                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.contact')}
                   </Typography>
@@ -108,42 +111,42 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Support */}
-            <div className='space-y-4'>
+            <div className='space-y-4 flex flex-col items-center lg:items-start'>
               <Typography
                 variant='h6'
-                className='text-foreground font-semibold'
+                className='text-foreground font-semibold text-center lg:text-left text-sm sm:text-base'
               >
                 {t('footer.support')}
               </Typography>
-              <div className='space-y-2'>
-                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
+              <div className='space-y-2 w-full'>
+                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground hover:text-primary transition-colors'
+                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.helpCenter')}
                   </Typography>
                 </button>
-                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
+                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground hover:text-primary transition-colors'
+                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.privacyPolicy')}
                   </Typography>
                 </button>
-                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
+                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground hover:text-primary transition-colors'
+                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.termsOfService')}
                   </Typography>
                 </button>
-                <button className='block text-left text-sm text-muted-foreground hover:text-primary transition-colors'>
+                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground hover:text-primary transition-colors'
+                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
                   >
                     {t('footer.faq')}
                   </Typography>
@@ -152,37 +155,37 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Contact Info */}
-            <div className='space-y-4'>
+            <div className='col-span-2 lg:col-span-1 space-y-4 flex flex-col items-center lg:items-start'>
               <Typography
                 variant='h6'
-                className='text-foreground font-semibold'
+                className='text-foreground font-semibold text-center lg:text-left text-sm sm:text-base'
               >
                 {t('footer.contactInfo')}
               </Typography>
-              <div className='space-y-2'>
-                <div className='flex items-center gap-2'>
+              <div className='grid grid-cols-1 min-[420px]:grid-cols-3 lg:grid-cols-1 gap-2 w-full'>
+                <div className='flex items-start justify-center lg:justify-start gap-2 rounded-md bg-background/70 px-3 py-2'>
                   <MapPin className='h-4 w-4 text-muted-foreground' />
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground'
+                    className='text-xs sm:text-sm text-muted-foreground text-center lg:text-left leading-relaxed'
                   >
                     {t('footer.address')}
                   </Typography>
                 </div>
-                <div className='flex items-center gap-2'>
+                <div className='flex items-start justify-center lg:justify-start gap-2 rounded-md bg-background/70 px-3 py-2'>
                   <Phone className='h-4 w-4 text-muted-foreground' />
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground'
+                    className='text-xs sm:text-sm text-muted-foreground text-center lg:text-left leading-relaxed'
                   >
                     {t('footer.phone')}
                   </Typography>
                 </div>
-                <div className='flex items-center gap-2'>
+                <div className='flex items-start justify-center lg:justify-start gap-2 rounded-md bg-background/70 px-3 py-2'>
                   <Mail className='h-4 w-4 text-muted-foreground' />
                   <Typography
                     variant='small'
-                    className='text-sm text-muted-foreground'
+                    className='text-xs sm:text-sm text-muted-foreground text-center lg:text-left leading-relaxed'
                   >
                     {t('footer.email')}
                   </Typography>

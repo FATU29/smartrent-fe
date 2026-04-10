@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import React, { useEffect } from 'react'
 import { Card } from '@/components/atoms/card'
 import { Typography } from '@/components/atoms/typography'
-import { Button } from '@/components/atoms/button'
 import { MediaSection } from '@/components/organisms/createPostSections/mediaSection'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { toast } from 'sonner'
-import { Upload, CheckCircle2 } from 'lucide-react'
+import { Upload } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/atoms/alert'
 import { Progress } from '@/components/atoms/progress'
 
@@ -21,140 +19,34 @@ export const MediaStep: React.FC<MediaStepProps> = ({
   onValidationComplete,
 }) => {
   const t = useTranslations('createPost')
-  const router = useRouter()
-  // Update flow has the listingId in the URL — pass it to the upload helper
-  // so BE can associate uploaded media with the existing listing immediately.
-  const listingIdFromQuery = router.query.id
-    ? Number(router.query.id)
-    : undefined
-  const {
-    media,
-    updateMedia,
-    videoUploadProgress,
-    imagesUploadProgress,
-    uploadPendingImages: uploadPendingImagesFromContext,
-    clearPendingImages,
-    resetImagesUploadProgress,
-    pendingImages,
-  } = useCreatePost()
-
-  const [isMediaUploaded, setIsMediaUploaded] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
+  const { media, videoUploadProgress, imagesUploadProgress } = useCreatePost()
 
   // Count uploaded images from media array - must be IMAGE type
   const uploadedImages = media.filter((m) => m.mediaType === 'IMAGE')
   const uploadedImagesCount = uploadedImages.length
-
-  const pendingImagesCount = pendingImages.length
-  const totalImagesCount = uploadedImagesCount + pendingImagesCount
-
-  // Validation: Need at least 4 images including 1 cover (isPrimary)
-  const canUpload = totalImagesCount >= 4 && pendingImagesCount > 0
-  const isUploadDisabled =
-    !canUpload || isUploading || videoUploadProgress.isUploading
-
-  const handleMediaUpload = async () => {
-    if (videoUploadProgress.isUploading) {
-      toast.error(
-        t('validation.videoUploadInProgress') ||
-          'Please wait for video upload to complete before continuing',
-      )
-      return false
-    }
-
-    if (imagesUploadProgress.isUploading) {
-      toast.error(
-        t('validation.imagesUploadInProgress') ||
-          'Please wait for images upload to complete before continuing',
-      )
-      return false
-    }
-
-    setIsUploading(true)
-
-    try {
-      // Upload all pending images. listingId is known here (update flow),
-      // so BE can attach the media to the listing on confirm.
-      const uploadedResults =
-        await uploadPendingImagesFromContext(listingIdFromQuery)
-
-      uploadedResults.forEach((img) => {
-        updateMedia(img)
-      })
-
-      // Validate: must have at least 4 images including 1 cover (isPrimary)
-      const allImages = [...media, ...uploadedResults].filter(
-        (m) => m.mediaType === 'IMAGE',
-      )
-      const allImagesCount = allImages.length
-      const hasCover = allImages.some((m) => m.isPrimary === true)
-
-      if (allImagesCount < 4) {
-        toast.error(
-          t('validation.imagesMinimum') || 'At least 4 photos are required',
-        )
-        setIsUploading(false)
-        setIsMediaUploaded(false)
-        onValidationComplete?.(false)
-        return false
-      }
-
-      if (!hasCover) {
-        toast.error(
-          t('validation.coverImageRequired') ||
-            'Cover image (primary) is required',
-        )
-        setIsUploading(false)
-        setIsMediaUploaded(false)
-        onValidationComplete?.(false)
-        return false
-      }
-
-      clearPendingImages()
-      resetImagesUploadProgress()
-
-      // Show success message
-      toast.success(
-        t('sections.media.upload.success') || 'Media uploaded successfully',
-      )
-
-      setIsMediaUploaded(true)
-      setIsUploading(false)
-      onValidationComplete?.(true)
-      return true
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : t('sections.media.upload.failed') || 'Failed to upload media'
-      toast.error(errorMessage)
-      setIsUploading(false)
-      setIsMediaUploaded(false)
-      onValidationComplete?.(false)
-      return false
-    }
-  }
+  const hasCover = uploadedImages.some((m) => m.isPrimary === true)
+  const isMediaValid = uploadedImagesCount >= 4 && hasCover
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(window as any).__validateMediaStep = async () => {
-      if (isMediaUploaded) {
-        return true
-      }
-
-      if (pendingImages.length > 0) {
+      if (videoUploadProgress.isUploading) {
         toast.error(
-          t('sections.media.validation.pendingImages') ||
-            'Please upload pending images before proceeding',
+          t('validation.videoUploadInProgress') ||
+            'Please wait for video upload to complete before continuing',
         )
         return false
       }
 
-      const uploadedImagesList = media.filter((m) => m.mediaType === 'IMAGE')
-      const uploadedCount = uploadedImagesList.length
-      const hasCover = uploadedImagesList.some((m) => m.isPrimary === true)
+      if (imagesUploadProgress.isUploading) {
+        toast.error(
+          t('validation.imagesUploadInProgress') ||
+            'Please wait for images upload to complete before continuing',
+        )
+        return false
+      }
 
-      if (uploadedCount < 4) {
+      if (uploadedImagesCount < 4) {
         toast.error(
           t('validation.imagesMinimum') || 'At least 4 photos are required',
         )
@@ -171,7 +63,26 @@ export const MediaStep: React.FC<MediaStepProps> = ({
 
       return true
     }
-  }, [isMediaUploaded, pendingImages.length, media, t])
+  }, [
+    hasCover,
+    imagesUploadProgress.isUploading,
+    t,
+    uploadedImagesCount,
+    videoUploadProgress.isUploading,
+  ])
+
+  useEffect(() => {
+    onValidationComplete?.(
+      isMediaValid &&
+        !imagesUploadProgress.isUploading &&
+        !videoUploadProgress.isUploading,
+    )
+  }, [
+    imagesUploadProgress.isUploading,
+    isMediaValid,
+    onValidationComplete,
+    videoUploadProgress.isUploading,
+  ])
 
   return (
     <Card
@@ -222,46 +133,16 @@ export const MediaStep: React.FC<MediaStepProps> = ({
 
         <MediaSection className='w-full' showHeader={false} />
 
-        {/* Upload Media Button */}
         <div className='mt-6 flex flex-col gap-4'>
-          {isMediaUploaded && (
-            <Alert className='border-green-200 bg-green-50'>
-              <CheckCircle2 className='h-4 w-4 text-green-600' />
-              <AlertDescription className='text-green-800'>
-                {t('sections.media.uploaded.success')}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <Button
-            type='button'
-            onClick={handleMediaUpload}
-            disabled={isUploadDisabled}
-            className='w-full sm:w-auto'
-            size='lg'
-          >
-            {isUploading ? (
-              <>
-                <Upload className='mr-2 h-4 w-4 animate-pulse' />
-                {t('sections.media.upload.uploading')}
-              </>
-            ) : (
-              <>
-                <Upload className='mr-2 h-4 w-4' />
-                {t('sections.media.uploadButton')}
-              </>
-            )}
-          </Button>
-
-          {!canUpload && pendingImagesCount > 0 && (
+          {uploadedImagesCount < 4 && (
             <Typography variant='small' className='text-muted-foreground'>
-              {t('validation.imagesMinimum')} ({totalImagesCount}/4)
+              {t('validation.imagesMinimum')} ({uploadedImagesCount}/4)
             </Typography>
           )}
 
-          {canUpload && !isMediaUploaded && (
+          {!hasCover && (
             <Typography variant='small' className='text-muted-foreground'>
-              {pendingImagesCount} {t('sections.media.upload.images')}
+              {t('validation.coverImageRequired')}
             </Typography>
           )}
         </div>

@@ -16,6 +16,13 @@ interface ExtendedAddress {
   latitude?: number
   longitude?: number
   addressType?: string
+  street?: string | null
+  provinceCode?: string
+  provinceName?: string
+  wardCode?: string
+  wardName?: string
+  districtCode?: string
+  districtName?: string
   legacyProvinceId?: number
   legacyProvinceName?: string
   legacyDistrictId?: number
@@ -148,7 +155,9 @@ export function mapListingToFormData(listing: ListingDetail): MappedFormData {
   // Prepare fulltext address
   const fulltextAddressUpdate: FulltextAddress = {
     newProvinceCode: '',
+    newProvinceName: '',
     newWardCode: '',
+    newWardName: '',
     legacyAddressId: '',
     legacyAddressText: '',
     propertyAddressEdited: false,
@@ -158,11 +167,23 @@ export function mapListingToFormData(listing: ListingDetail): MappedFormData {
   const addr = listing.address as ExtendedAddress
 
   if (addr) {
-    const newProvinceCode = addr.newProvinceCode
-      ? String(addr.newProvinceCode)
-      : ''
-    const newWardCode = addr.newWardCode ? String(addr.newWardCode) : ''
-    const street = addr.newStreet || addr.streetName || ''
+    const newProvinceCode = pickFirstString(
+      addr.newProvinceCode,
+      addr.provinceCode,
+    )
+    const newWardCode = pickFirstString(addr.newWardCode, addr.wardCode)
+    const newProvinceName = pickFirstString(
+      addr.newProvinceName,
+      addr.provinceName,
+    )
+    const newWardName = pickFirstString(addr.newWardName, addr.wardName)
+    const street = pickFirstString(
+      addr.streetName,
+      addr.newStreet,
+      addr.street,
+      addr.legacyStreet,
+    )
+    const backendDisplayAddress = pickFirstString(addr.fullNewAddress)
 
     // Set coordinates
     mappedPropertyInfo.address = {
@@ -185,24 +206,30 @@ export function mapListingToFormData(listing: ListingDetail): MappedFormData {
 
       // Compose legacy address text for display
       const legacyAddressId = `${addr.legacyProvinceId}-${addr.legacyDistrictId}-${addr.legacyWardId}`
-      const legacyAddressText =
-        addr.fullAddress || addr.legacyWardName
-          ? [
-              addr.legacyProvinceName,
-              addr.legacyDistrictName,
-              addr.legacyWardName,
-            ]
-              .filter(Boolean)
-              .join(' - ')
-          : ''
+      const legacyAddressText = [
+        addr.legacyProvinceName,
+        addr.legacyDistrictName,
+        addr.legacyWardName,
+      ]
+        .filter(Boolean)
+        .join(' - ')
 
       fulltextAddressUpdate.legacyAddressId = legacyAddressId
-      fulltextAddressUpdate.legacyAddressText = legacyAddressText
+      fulltextAddressUpdate.legacyAddressText =
+        legacyAddressText || pickFirstString(addr.fullAddress)
     }
 
     // Set fulltext address codes
     fulltextAddressUpdate.newProvinceCode = newProvinceCode
+    fulltextAddressUpdate.newProvinceName = newProvinceName
     fulltextAddressUpdate.newWardCode = newWardCode
+    fulltextAddressUpdate.newWardName = newWardName
+
+    if (backendDisplayAddress) {
+      fulltextAddressUpdate.displayAddress = backendDisplayAddress
+      fulltextAddressUpdate.propertyAddress = backendDisplayAddress
+      fulltextAddressUpdate.fullAddressNew = backendDisplayAddress
+    }
   }
 
   // Map media
@@ -362,7 +389,9 @@ export function mapDraftToFormData(
   // Prepare fulltext address
   const fulltextAddressUpdate: FulltextAddress = {
     newProvinceCode: '',
+    newProvinceName: '',
     newWardCode: '',
+    newWardName: '',
     legacyAddressId: '',
     legacyAddressText: '',
     propertyAddressEdited: false,
@@ -416,14 +445,27 @@ export function mapDraftToFormData(
     const newProvinceCode = pickFirstString(
       address.newProvinceCode,
       isLikelyNew ? address.provinceCode : undefined,
+      address.provinceCode,
     )
     const newWardCode = pickFirstString(
       address.newWardCode,
       isLikelyNew ? address.wardCode : undefined,
+      address.wardCode,
     )
+    const newProvinceName = pickFirstString(
+      address.newProvinceName,
+      isLikelyNew ? address.provinceName : undefined,
+      address.provinceName,
+    )
+    const newWardName = pickFirstString(
+      address.newWardName,
+      isLikelyNew ? address.wardName : undefined,
+      address.wardName,
+    )
+    const backendDisplayAddress = pickFirstString(address.fullNewAddress)
     const street = pickFirstString(
-      address.newStreet,
       address.streetName,
+      address.newStreet,
       address.street,
       address.legacyStreet,
     )
@@ -480,7 +522,15 @@ export function mapDraftToFormData(
     }
 
     fulltextAddressUpdate.newProvinceCode = newProvinceCode
+    fulltextAddressUpdate.newProvinceName = newProvinceName
     fulltextAddressUpdate.newWardCode = newWardCode
+    fulltextAddressUpdate.newWardName = newWardName
+
+    if (backendDisplayAddress) {
+      fulltextAddressUpdate.displayAddress = backendDisplayAddress
+      fulltextAddressUpdate.propertyAddress = backendDisplayAddress
+      fulltextAddressUpdate.fullAddressNew = backendDisplayAddress
+    }
   }
 
   // Map media from draft

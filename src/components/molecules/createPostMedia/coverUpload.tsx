@@ -1,5 +1,6 @@
 import React, { useRef } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
 import {
@@ -10,7 +11,9 @@ import {
 } from '@/components/atoms/card'
 import { ImagePlus, Trash2 } from 'lucide-react'
 import type { MediaItem } from '@/api/types/property.type'
+import type { MediaItem as ApiMediaItem } from '@/api/types/media.type'
 import { useCreatePost } from '@/contexts/createPost'
+import { MediaService } from '@/api/services'
 import { toast } from 'sonner'
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
@@ -21,9 +24,39 @@ interface CoverUploadProps {
 
 const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
   const t = useTranslations('createPost.sections.media.cover')
+  const router = useRouter()
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const { addPendingImages, removePendingImage, removeMedia, pendingImages } =
-    useCreatePost()
+  const listingIdFromQuery = router.query.id
+    ? Number(router.query.id)
+    : undefined
+  const {
+    updateMedia,
+    removeMedia,
+    startImagesUpload,
+    updateImagesUploadProgress,
+    setImagesUploadError,
+    resetImagesUploadProgress,
+    imagesUploadProgress,
+  } = useCreatePost()
+
+  const mapUploadedImage = (
+    data: ApiMediaItem,
+    isPrimary: boolean,
+  ): Partial<MediaItem> => ({
+    mediaId: Number(data.mediaId),
+    listingId: data.listingId ?? undefined,
+    mediaType: 'IMAGE',
+    sourceType: data.sourceType,
+    url: data.url,
+    thumbnailUrl: data.thumbnailUrl ?? undefined,
+    isPrimary,
+    sortOrder: data.sortOrder,
+    fileSize: data.fileSize ?? undefined,
+    mimeType: data.mimeType ?? undefined,
+    originalFilename: data.originalFilename ?? undefined,
+    durationSeconds: data.durationSeconds ?? undefined,
+    createdAt: data.createdAt,
+  })
 
   const validateImageFile = (file: File): boolean => {
     // Validate file size (10MB)
@@ -47,8 +80,16 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
     return true
   }
 
-  const handleFiles = (files: FileList | null) => {
+  const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return
+
+    if (imagesUploadProgress.isUploading) {
+      toast.error(
+        t('validation.uploadInProgress') ||
+          'Please wait for current image upload to finish',
+      )
+      return
+    }
 
     const file = files[0]
 
@@ -57,41 +98,73 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
       return
     }
 
-    const coverIndex = pendingImages.findIndex((img) => img.isCover)
-    if (coverIndex !== -1) {
-      removePendingImage(coverIndex, true)
+    startImagesUpload(1)
+
+    try {
+      const previousCoverId = coverImage?.mediaId
+      const response = await MediaService.uploadViaPresign(
+        {
+          file,
+          mediaType: 'IMAGE',
+          purpose: 'LISTING',
+          listingId: listingIdFromQuery,
+          isPrimary: true,
+        },
+        {
+          onUploadProgress: (e) => {
+            if (!e.total) return
+            if (e.loaded >= e.total) {
+              updateImagesUploadProgress(1)
+            }
+          },
+        },
+      )
+
+      if (!response?.success || !response?.data) {
+        throw new Error(response?.message || 'Failed to upload cover image')
+      }
+
+      const uploadedCover = mapUploadedImage(
+        response.data as ApiMediaItem,
+        true,
+      )
+      updateMedia(uploadedCover)
+
+      if (
+        previousCoverId &&
+        Number(previousCoverId) !== Number(uploadedCover.mediaId)
+      ) {
+        removeMedia(Number(previousCoverId))
+      }
+
+      updateImagesUploadProgress(1)
+      toast.success(
+        t('uploaded.success') || 'Cover image uploaded successfully',
+      )
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t('uploaded.failed') || 'Failed to upload cover image'
+      setImagesUploadError(errorMessage)
+      toast.error(errorMessage)
+    } finally {
+      if (inputRef.current) {
+        inputRef.current.value = ''
+      }
+      setTimeout(() => {
+        resetImagesUploadProgress()
+      }, 400)
     }
-
-    const newPending = [
-      {
-        file,
-        previewUrl: URL.createObjectURL(file),
-        isCover: true,
-      },
-    ]
-    addPendingImages(newPending)
-
-    // Reset input value to allow selecting the same file again
-    if (inputRef.current) {
-      inputRef.current.value = ''
-    }
-
-    toast.success(t('uploaded.success') || 'Cover image added successfully')
   }
 
   const handleDeleteCover = () => {
-    const coverIndex = pendingImages.findIndex((img) => img.isCover)
-    if (coverIndex !== -1) {
-      // Remove pending cover
-      removePendingImage(coverIndex, true)
-    } else if (coverImage?.mediaId) {
-      // Remove uploaded cover
+    if (coverImage?.mediaId) {
       removeMedia(coverImage.mediaId)
     }
   }
 
-  const pendingCover = pendingImages.find((img) => img.isCover)
-  const displayImage = pendingCover?.previewUrl || coverImage?.url
+  const displayImage = coverImage?.url
 
   return (
     <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
@@ -120,6 +193,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
                   size='sm'
                   className='rounded-md'
                   onClick={() => inputRef.current?.click()}
+                  disabled={imagesUploadProgress.isUploading}
                 >
                   <ImagePlus className='w-4 h-4 mr-2' />
                   {t('replaceCta')}
@@ -129,6 +203,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
                   variant='destructive'
                   className='rounded-md'
                   onClick={handleDeleteCover}
+                  disabled={imagesUploadProgress.isUploading}
                 >
                   <Trash2 className='w-4 h-4 mr-2' />
                   {t('deleteCta')}
@@ -143,6 +218,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
               <Button
                 className='mt-4 rounded-lg'
                 onClick={() => inputRef.current?.click()}
+                disabled={imagesUploadProgress.isUploading}
               >
                 <ImagePlus className='w-4 h-4 mr-2' />
                 {t('uploadCta')}

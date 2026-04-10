@@ -1,5 +1,6 @@
 import React, { useRef } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import {
   Card,
   CardContent,
@@ -10,7 +11,9 @@ import { Button } from '@/components/atoms/button'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
 import { ImagePlus, Upload, Trash2 } from 'lucide-react'
+import { MediaService } from '@/api/services'
 import type { MediaItem } from '@/api/types/property.type'
+import type { MediaItem as ApiMediaItem } from '@/api/types/media.type'
 import { toast } from 'sonner'
 
 const MAX_IMAGES = 24
@@ -22,11 +25,42 @@ interface UploadImagesProps {
 
 const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
   const t = useTranslations('createPost.sections.media')
-  const { pendingImages, addPendingImages, removePendingImage, removeMedia } =
-    useCreatePost()
+  const router = useRouter()
+  const listingIdFromQuery = router.query.id
+    ? Number(router.query.id)
+    : undefined
+  const {
+    media,
+    updateMedia,
+    removeMedia,
+    startImagesUpload,
+    updateImagesUploadProgress,
+    setImagesUploadError,
+    resetImagesUploadProgress,
+    imagesUploadProgress,
+  } = useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const totalImages = images.length + pendingImages.length
+  const totalImages = media.filter((item) => item.mediaType === 'IMAGE').length
+
+  const mapUploadedImage = (
+    data: ApiMediaItem,
+    isPrimary: boolean,
+  ): Partial<MediaItem> => ({
+    mediaId: Number(data.mediaId),
+    listingId: data.listingId ?? undefined,
+    mediaType: 'IMAGE',
+    sourceType: data.sourceType,
+    url: data.url,
+    thumbnailUrl: data.thumbnailUrl ?? undefined,
+    isPrimary,
+    sortOrder: data.sortOrder,
+    fileSize: data.fileSize ?? undefined,
+    mimeType: data.mimeType ?? undefined,
+    originalFilename: data.originalFilename ?? undefined,
+    durationSeconds: data.durationSeconds ?? undefined,
+    createdAt: data.createdAt,
+  })
 
   const validateImageFile = (file: File): boolean => {
     // Validate file size (10MB)
@@ -51,8 +85,17 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
     return true
   }
 
-  const handleFiles = (files: FileList | null) => {
+  const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return
+
+    if (imagesUploadProgress.isUploading) {
+      toast.error(
+        t('validation.uploadInProgress') ||
+          'Please wait for current image upload to finish',
+      )
+      return
+    }
+
     const remaining = Math.max(0, MAX_IMAGES - totalImages)
 
     // Validate all files first
@@ -83,26 +126,46 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
       return
     }
 
-    const newPending = slice.map((file) => ({
-      file,
-      previewUrl: URL.createObjectURL(file),
-    }))
+    startImagesUpload(slice.length)
 
-    addPendingImages(newPending)
+    let uploadedCount = 0
+    try {
+      for (const file of slice) {
+        const response = await MediaService.uploadViaPresign({
+          file,
+          mediaType: 'IMAGE',
+          purpose: 'LISTING',
+          listingId: listingIdFromQuery,
+          isPrimary: false,
+        })
 
-    if (inputRef.current) {
-      inputRef.current.value = ''
-    }
-  }
+        if (!response?.success || !response?.data) {
+          throw new Error(response?.message || `Failed to upload ${file.name}`)
+        }
 
-  const handleRemovePendingImage = (index: number) => {
-    const nonCoverPending = pendingImages.filter((img) => !img.isCover)
-    const targetImage = nonCoverPending[index]
-    if (!targetImage) return
+        updateMedia(mapUploadedImage(response.data as ApiMediaItem, false))
+        uploadedCount += 1
+        updateImagesUploadProgress(uploadedCount)
+      }
 
-    const actualIndex = pendingImages.findIndex((img) => img === targetImage)
-    if (actualIndex !== -1) {
-      removePendingImage(actualIndex)
+      toast.success(
+        t('uploaded.batchSuccess', { count: uploadedCount }) ||
+          `${uploadedCount} image(s) uploaded successfully`,
+      )
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t('uploaded.failed') || 'Failed to upload images'
+      setImagesUploadError(errorMessage)
+      toast.error(errorMessage)
+    } finally {
+      if (inputRef.current) {
+        inputRef.current.value = ''
+      }
+      setTimeout(() => {
+        resetImagesUploadProgress()
+      }, 400)
     }
   }
 
@@ -131,9 +194,12 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
             <Button
               className='rounded-lg w-full sm:w-auto'
               onClick={() => inputRef.current?.click()}
+              disabled={imagesUploadProgress.isUploading}
             >
               <ImagePlus className='w-4 h-4 mr-2' />
-              {t('dropzone.uploadFromDevice')}
+              {imagesUploadProgress.isUploading
+                ? t('upload.uploading') || 'Uploading...'
+                : t('dropzone.uploadFromDevice')}
             </Button>
           </div>
           <input
@@ -142,6 +208,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
             accept='image/*'
             multiple
             className='hidden'
+            disabled={imagesUploadProgress.isUploading}
             onChange={(e) => handleFiles(e.target.files)}
           />
           <p className='text-xs text-gray-500 dark:text-gray-500 mt-3'>
@@ -177,15 +244,13 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
                 </div>
                 <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
                   <p className='text-sm truncate mb-3'>{`Image ${index + 1}`}</p>
-                  <div className='flex items-center justify-between gap-2'>
-                    <p className='text-xs text-green-600 dark:text-green-400'>
-                      {t('uploaded.success')}
-                    </p>
+                  <div className='flex items-center justify-end gap-2'>
                     <Button
                       size='sm'
                       variant='ghost'
                       className='h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950'
                       onClick={() => img.mediaId && removeMedia(img.mediaId)}
+                      disabled={imagesUploadProgress.isUploading}
                       title={t('uploaded.remove')}
                     >
                       <Trash2 className='w-4 h-4' />
@@ -194,39 +259,6 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
                 </div>
               </div>
             ))}
-            {/* Pending images (not uploaded yet) */}
-            {pendingImages
-              .filter((img) => !img.isCover)
-              .map((img, index) => (
-                <div
-                  key={`pending-${index}`}
-                  className='group relative rounded-xl border border-blue-300 dark:border-blue-700 bg-white dark:bg-gray-900 overflow-hidden'
-                >
-                  <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-800'>
-                    <Image
-                      src={img.previewUrl}
-                      alt={`Pending ${index + 1}`}
-                      fill
-                      sizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
-                      className='object-cover'
-                    />
-                  </div>
-                  <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
-                    <p className='text-sm truncate mb-3'>
-                      {`Image ${images.length + index + 1}`}
-                    </p>
-                    <Button
-                      size='sm'
-                      variant='destructive'
-                      className='h-8 px-2 rounded-md w-full text-sm'
-                      onClick={() => handleRemovePendingImage(index)}
-                    >
-                      <Trash2 className='w-4 h-4 mr-1' />
-                      {t('uploaded.remove')}
-                    </Button>
-                  </div>
-                </div>
-              ))}
           </div>
         </div>
       </CardContent>
