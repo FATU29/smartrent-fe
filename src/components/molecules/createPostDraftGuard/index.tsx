@@ -20,7 +20,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   const router = useRouter()
   const t = useTranslations('createPost.draftDialog')
   const { propertyInfo, isSubmitSuccess, draftId } = useCreatePost()
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   const { mutate: createDraft, isPending: isCreating } = useCreateDraft()
   const { mutate: updateDraft, isPending: isUpdating } = useUpdateDraft()
 
@@ -34,6 +34,9 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   const blockedUrlRef = useRef<string | null>(null)
 
   const hasUnsavedChanges = useCallback((): boolean => {
+    // Draft save flow only applies to authenticated users.
+    if (!isAuthenticated) return false
+
     // Don't block if submit was successful
     if (isSubmitSuccess) return false
 
@@ -60,7 +63,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
     if (!hasAnyData) return false
 
     return true
-  }, [propertyInfo, isSubmitSuccess, draftId])
+  }, [propertyInfo, isSubmitSuccess, draftId, isAuthenticated])
 
   useEffect(() => {
     shouldBlockRef.current = hasUnsavedChanges()

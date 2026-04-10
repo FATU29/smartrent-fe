@@ -3,7 +3,9 @@ import type { CreateListingRequest } from '@/api/types/property.type'
 
 export interface FulltextAddress {
   newProvinceCode?: string
+  newProvinceName?: string
   newWardCode?: string
+  newWardName?: string
   legacyAddressId?: string
   legacyAddressText?: string
   propertyAddress?: string
@@ -45,7 +47,8 @@ export const useAddressComposition = (
         ? String(propertyInfo.address.newAddress.wardCode)
         : undefined)
     const ward = newWards.find((w) => w.code === wardCode)
-    if (ward?.name) parts.push(ward.name)
+    const wardName = ward?.name || fulltextAddress?.newWardName?.trim()
+    if (wardName) parts.push(wardName)
 
     const provinceCode =
       fulltextAddress?.newProvinceCode ||
@@ -57,15 +60,28 @@ export const useAddressComposition = (
         p.key === provinceCode ||
         String((p as { id?: string }).id) === provinceCode,
     )
-    if (province?.name) parts.push(province.name)
+    const provinceName =
+      province?.name || fulltextAddress?.newProvinceName?.trim()
+    if (provinceName) parts.push(provinceName)
 
-    return parts.join(', ')
+    const composed = parts.join(', ')
+    if (composed) return composed
+
+    return (
+      fulltextAddress?.fullAddressNew?.trim() ||
+      fulltextAddress?.displayAddress?.trim() ||
+      ''
+    )
   }, [
     propertyInfo?.address?.newAddress?.street,
     propertyInfo?.address?.newAddress?.wardCode,
     propertyInfo?.address?.newAddress?.provinceCode,
     fulltextAddress?.newWardCode,
+    fulltextAddress?.newWardName,
     fulltextAddress?.newProvinceCode,
+    fulltextAddress?.newProvinceName,
+    fulltextAddress?.fullAddressNew,
+    fulltextAddress?.displayAddress,
     newWards,
     newProvinces,
   ])

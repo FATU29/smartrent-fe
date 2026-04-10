@@ -1,18 +1,19 @@
 import { SELLER_ROUTES } from '@/constants'
-import React, { useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import {
   X,
   Menu,
-  LogIn,
-  UserPlus,
   LogOut,
   User,
   ShieldCheck,
   MapIcon,
+  Languages,
+  Palette,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
+import Logo from '@/components/atoms/logo'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
 import Link from 'next/link'
 import NavigationMenu from '@/components/molecules/navigation-menu'
@@ -44,6 +45,27 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
   const t = useTranslations()
   const { user, isAuthenticated } = useAuth()
   const { logoutUser } = useLogout()
+
+  const mobileMenuItems = useMemo(() => {
+    const isMapsItem = (item: NavigationItemData) =>
+      item.id === 'maps' || item.href === PUBLIC_ROUTES.MAPS
+
+    const existingMapsItem = items.find(isMapsItem)
+    const nonMapsItems = items.filter((item) => !isMapsItem(item))
+    const mapsItemWithIcon = existingMapsItem
+      ? {
+          ...existingMapsItem,
+          icon: existingMapsItem.icon ?? <MapIcon className='h-4 w-4' />,
+        }
+      : {
+          id: 'maps',
+          label: t('navigation.maps'),
+          href: PUBLIC_ROUTES.MAPS,
+          icon: <MapIcon className='h-4 w-4' />,
+        }
+
+    return [...nonMapsItems, mapsItemWithIcon]
+  }, [items, t])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -118,9 +140,7 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
         )}
       >
         <div className='flex items-center justify-between p-4 border-b border-border'>
-          <Typography variant='h6' className='text-lg font-semibold'>
-            SmartRent
-          </Typography>
+          <Logo size='medium' />
           <div className='flex items-center gap-2'>
             <Button
               variant='ghost'
@@ -136,100 +156,92 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
 
         {/* User Section */}
         <div className='p-4 border-b border-border bg-background'>
-          <Typography
-            variant='small'
-            className='text-sm font-medium text-muted-foreground mb-3'
-          >
-            {t('navigation.account')}
-          </Typography>
-
           {isAuthenticated && user ? (
             <div className='space-y-3'>
-              {/* User Info */}
-              <div className='flex items-center gap-3 p-3 bg-muted/50 rounded-lg'>
-                <Avatar className='h-10 w-10'>
-                  <AvatarImage
-                    src={user.avatarUrl}
-                    alt={`${user.firstName} ${user.lastName}`}
-                    className='object-cover'
-                  />
-                  <AvatarFallback className='bg-primary text-primary-foreground text-sm font-medium'>
-                    {getInitials(user.firstName, user.lastName)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className='flex-1 min-w-0'>
-                  <Typography
-                    variant='p'
-                    className='text-sm font-medium text-foreground truncate'
-                  >
-                    {user.firstName} {user.lastName}
-                  </Typography>
-                  <Typography
-                    variant='p'
-                    className='text-xs text-muted-foreground truncate'
-                  >
-                    {user.email}
-                  </Typography>
+              <div className='overflow-hidden rounded-2xl border border-border bg-card shadow-sm'>
+                <div className='bg-muted/40 p-4'>
+                  <div className='flex items-start gap-3'>
+                    <Avatar className='h-12 w-12 ring-2 ring-border'>
+                      <AvatarImage
+                        src={user.avatarUrl}
+                        alt={`${user.firstName} ${user.lastName}`}
+                        className='object-cover'
+                      />
+                      <AvatarFallback className='bg-primary text-primary-foreground text-sm font-semibold'>
+                        {getInitials(user.firstName, user.lastName)}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className='min-w-0 flex-1'>
+                      <Typography
+                        variant='p'
+                        className='truncate text-base font-semibold text-foreground'
+                      >
+                        {user.firstName} {user.lastName}
+                      </Typography>
+                      <Typography
+                        variant='p'
+                        className='truncate text-xs text-muted-foreground'
+                      >
+                        {user.email}
+                      </Typography>
+                    </div>
+
+                    <span className='rounded-full bg-accent px-2 py-1 text-[11px] font-medium text-accent-foreground'>
+                      {t('navigation.account')}
+                    </span>
+                  </div>
+
+                  <div className='mt-3 grid grid-cols-2 gap-2'>
+                    <Button
+                      asChild
+                      variant='secondary'
+                      className='h-10 justify-start rounded-lg px-3'
+                    >
+                      <Link
+                        href={SELLERNET_ROUTES.PERSONAL_EDIT}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <User className='h-4 w-4' />
+                        {t('homePage.auth.profile')}
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant='secondary'
+                      className='h-10 justify-start rounded-lg px-3'
+                    >
+                      <Link
+                        href={SELLER_ROUTES.MEMBERSHIP}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <ShieldCheck className='h-4 w-4' />
+                        {t('navigation.seller.membership')}
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
 
-              {/* User Actions */}
-              <div className='flex flex-col gap-2'>
-                <Link
-                  href={PUBLIC_ROUTES.MAPS}
-                  onClick={() => setIsOpen(false)}
+              <div className='rounded-2xl border border-border bg-card p-2 shadow-sm'>
+                <Button
+                  asChild
+                  variant='default'
+                  className='h-12 w-full justify-start rounded-xl px-4 text-sm font-semibold shadow-sm'
                 >
-                  <Button
-                    variant='secondary'
-                    size='sm'
-                    className='w-full justify-start gap-2'
-                  >
-                    <MapIcon className='h-4 w-4' />
-                    {t('navigation.maps')}
-                  </Button>
-                </Link>
-                <Link
-                  href={SELLER_ROUTES.CREATE}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Button
-                    variant='default'
-                    size='sm'
-                    className='w-full justify-start gap-2'
+                  <Link
+                    href={SELLER_ROUTES.CREATE}
+                    onClick={() => setIsOpen(false)}
                   >
                     {t('common.createPost')}
-                  </Button>
-                </Link>
-                <Link
-                  href={SELLERNET_ROUTES.PERSONAL_EDIT}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='w-full justify-start gap-2 text-left'
-                  >
-                    <User className='h-4 w-4' />
-                    {t('homePage.auth.profile')}
-                  </Button>
-                </Link>
-                <Link
-                  href={SELLER_ROUTES.MEMBERSHIP}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='w-full justify-start gap-2 text-left'
-                  >
-                    <ShieldCheck className='h-4 w-4' />
-                    {t('navigation.seller.membership')}
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
+
+                <div className='my-2 border-t border-border/70' />
+
                 <Button
                   variant='ghost'
-                  size='sm'
-                  className='w-full justify-start gap-2 text-left text-red-600 hover:text-red-700 hover:bg-red-50'
+                  className='h-11 w-full justify-start gap-2 rounded-xl px-3 text-left text-destructive hover:bg-destructive/10 hover:text-destructive'
                   onClick={handleLogout}
                 >
                   <LogOut className='h-4 w-4' />
@@ -238,46 +250,35 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
               </div>
             </div>
           ) : (
-            <div className='flex flex-col gap-2'>
-              <Link href={PUBLIC_ROUTES.MAPS} onClick={() => setIsOpen(false)}>
+            <div className='space-y-4'>
+              <div className='grid grid-cols-2 gap-4'>
                 <Button
-                  variant='secondary'
-                  size='sm'
-                  className='w-full justify-start gap-2'
+                  variant='outline'
+                  className='h-14 rounded-2xl border-border bg-background text-base font-semibold shadow-none hover:bg-muted/50'
+                  onClick={() => handleAuthClick('login')}
                 >
-                  <MapIcon className='h-4 w-4' />
-                  {t('navigation.maps')}
+                  {t('navigation.login')}
                 </Button>
-              </Link>
-              <Link
-                href={SELLER_ROUTES.CREATE}
-                onClick={() => setIsOpen(false)}
-              >
                 <Button
                   variant='default'
-                  size='sm'
-                  className='w-full justify-start gap-2'
+                  className='h-14 rounded-2xl bg-primary text-base font-semibold text-primary-foreground shadow-sm hover:bg-primary/90'
+                  onClick={() => handleAuthClick('register')}
+                >
+                  {t('navigation.register')}
+                </Button>
+              </div>
+
+              <Button
+                asChild
+                variant='outline'
+                className='h-14 w-full rounded-2xl border-border bg-background text-base font-semibold shadow-none hover:bg-muted/50'
+              >
+                <Link
+                  href={SELLER_ROUTES.CREATE}
+                  onClick={() => setIsOpen(false)}
                 >
                   {t('common.createPost')}
-                </Button>
-              </Link>
-              <Button
-                variant='outline'
-                size='sm'
-                className='w-full justify-start gap-2'
-                onClick={() => handleAuthClick('login')}
-              >
-                <LogIn className='h-4 w-4' />
-                {t('navigation.login')}
-              </Button>
-              <Button
-                variant='outline'
-                size='sm'
-                className='w-full justify-start gap-2'
-                onClick={() => handleAuthClick('register')}
-              >
-                <UserPlus className='h-4 w-4' />
-                {t('navigation.register')}
+                </Link>
               </Button>
             </div>
           )}
@@ -285,43 +286,53 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
 
         <div className='flex flex-col h-full'>
           <div className='flex-1'>
-            <div className='p-4 border-b border-border'>
-              <Typography
-                variant='small'
-                className='text-sm font-medium text-muted-foreground mb-3'
-              >
-                {t('homePage.settings.title')}
-              </Typography>
-              <div className='flex flex-col gap-3'>
-                <div className='flex items-center justify-between'>
-                  <Typography
-                    variant='small'
-                    className='text-sm text-foreground'
-                  >
-                    {t('homePage.settings.language.title')}
-                  </Typography>
-                  <LanguageSwitch />
-                </div>
-                <div className='flex items-center justify-between'>
-                  <Typography
-                    variant='small'
-                    className='text-sm text-foreground'
-                  >
-                    {t('homePage.settings.theme.title')}
-                  </Typography>
-                  <ThemeSwitch />
-                </div>
-              </div>
-            </div>
-
             <div className='p-4'>
               <NavigationMenu
-                items={items}
+                items={mobileMenuItems}
                 onItemClick={handleItemClick}
                 defaultExpanded={[]}
                 isMobile={true}
-                className='space-y-1'
+                className='space-y-2'
               />
+            </div>
+
+            <div className='p-4 border-t border-border'>
+              <div className='rounded-2xl border border-border bg-card p-4 shadow-sm'>
+                <Typography
+                  variant='small'
+                  className='mb-3 text-sm font-semibold text-foreground'
+                >
+                  {t('homePage.settings.title')}
+                </Typography>
+
+                <div className='space-y-3'>
+                  <div className='flex min-h-12 items-center justify-between rounded-xl border border-border bg-muted/40 px-3'>
+                    <div className='flex items-center gap-2'>
+                      <Languages className='h-4 w-4 text-muted-foreground' />
+                      <Typography
+                        variant='small'
+                        className='text-sm font-medium text-foreground'
+                      >
+                        {t('homePage.settings.language.title')}
+                      </Typography>
+                    </div>
+                    <LanguageSwitch />
+                  </div>
+
+                  <div className='flex min-h-12 items-center justify-between rounded-xl border border-border bg-muted/40 px-3'>
+                    <div className='flex items-center gap-2'>
+                      <Palette className='h-4 w-4 text-muted-foreground' />
+                      <Typography
+                        variant='small'
+                        className='text-sm font-medium text-foreground'
+                      >
+                        {t('homePage.settings.theme.title')}
+                      </Typography>
+                    </div>
+                    <ThemeSwitch />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

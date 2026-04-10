@@ -47,7 +47,7 @@ export const DeleteDraftDialog: React.FC<DeleteDraftDialogProps> = ({
           <DialogTitle>{t('confirmTitle')}</DialogTitle>
           <DialogDescription>{t('confirmMessage')}</DialogDescription>
         </DialogHeader>
-        <DialogFooter className='gap-2 sm:gap-0'>
+        <DialogFooter>
           <Button variant='outline' onClick={onCancel} disabled={isDeleting}>
             {t('cancel')}
           </Button>

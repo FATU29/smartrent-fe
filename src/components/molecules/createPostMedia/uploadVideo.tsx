@@ -168,7 +168,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
 
   // Determine video state based on sourceType and url
   const isBlobUrl = videoUrl.startsWith('blob:')
-  const isExternalVideo = video?.sourceType === 'EXTERNAL'
+  const isExternalVideo = !!video?.sourceType && video?.sourceType !== 'UPLOAD'
   const isUploadedVideo =
     video?.sourceType === 'UPLOAD' && videoUrl && !isBlobUrl
   const showVideoPreview = videoUrl && (isBlobUrl || isUploadedVideo)
@@ -183,11 +183,18 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
       </CardHeader>
       <CardContent>
         {isExternalVideo ? (
-          <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700'>
+          <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 space-y-3'>
             <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>
               {t('video.external.uploadedNote') ||
-                'Bạn đã thêm link YouTube/TikTok. Xóa link để tải video lên.'}
+                'Video hiện tại không thuộc luồng upload file. Vui lòng xóa video để tải video mới từ thiết bị.'}
             </p>
+            <Button
+              variant='outline'
+              onClick={handleRemoveVideo}
+              className='w-full'
+            >
+              {t('video.external.remove') || 'Xóa video hiện tại'}
+            </Button>
           </div>
         ) : !showVideoPreview ? (
           <>

@@ -1124,7 +1124,9 @@
           "setCover": "Set Cover",
           "remove": "Remove",
           "success": "Uploaded successfully",
-          "added": "{count} image(s) added successfully"
+          "added": "{count} image(s) added successfully",
+          "batchSuccess": "{count} image(s) uploaded successfully",
+          "failed": "Failed to upload images"
         },
         "upload": {
           "button": "Upload {count} images",
@@ -1912,9 +1914,9 @@
     "termsOfService": "Terms of Service",
     "faq": "FAQ",
     "contactInfo": "Contact Info",
-    "address": "123 Main Street, Ho Chi Minh City, Vietnam",
+    "address": "University of Science, Ho Chi Minh City",
     "phone": "+84 123 456 789",
-    "email": "info@smartrent.com",
+    "email": "smartrent.tools@gmail.com",
     "copyright": "© 2026 SmartRent. All rights reserved.",
     "privacy": "Privacy",
     "terms": "Terms",
@@ -1940,6 +1942,7 @@
     "login": "Log In",
     "register": "Register",
     "account": "Account",
+    "menu": "Menu",
     "accountManagement": "Account Management",
     "residential": "Residential",
     "commercial": "Commercial",
