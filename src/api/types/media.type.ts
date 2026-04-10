@@ -1,9 +1,10 @@
 export type MediaType = 'IMAGE' | 'VIDEO'
-export type MediaSourceType = 'UPLOADED' | 'EXTERNAL'
+export type MediaSourceType = 'UPLOAD' | 'EXTERNAL'
 export type MediaStatus = 'PENDING' | 'ACTIVE' | 'DELETED'
+export type MediaPurpose = 'LISTING' | 'AVATAR'
 
 export interface MediaItem {
-  mediaId: string
+  mediaId: number
   listingId: number
   userId: string
   mediaType: MediaType
@@ -28,9 +29,10 @@ export interface MediaItem {
 // Step 1: request upload URL
 export interface CreateUploadUrlRequest {
   mediaType: MediaType
+  purpose: MediaPurpose
   filename: string
   contentType: string
-  fileSize: string | number
+  fileSize: number
   listingId?: number
   title?: string
   description?: string
@@ -40,7 +42,7 @@ export interface CreateUploadUrlRequest {
 }
 
 export interface CreateUploadUrlResponse {
-  mediaId: string
+  mediaId: number
   uploadUrl: string
   expiresIn: number
   storageKey: string

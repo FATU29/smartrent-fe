@@ -238,7 +238,7 @@ export const mapRecentlyViewedToListing = (
                 mediaId: 0,
                 listingId: Number(recentlyViewed.listingId),
                 mediaType: 'IMAGE' as const,
-                sourceType: 'UPLOADED',
+                sourceType: 'UPLOAD',
                 url: recentlyViewed.thumbnail,
                 isPrimary: true,
                 sortOrder: 0,

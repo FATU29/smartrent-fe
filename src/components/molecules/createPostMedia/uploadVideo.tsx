@@ -108,7 +108,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
           mediaId: mediaId ? Number(mediaId) : undefined,
           mediaType: 'VIDEO',
           isPrimary: true,
-          sourceType: 'UPLOADED',
+          sourceType: 'UPLOAD',
         })
       }
       updateVideoUploadProgress(100)
@@ -154,7 +154,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
   const isBlobUrl = videoUrl.startsWith('blob:')
   const isExternalVideo = video?.sourceType === 'EXTERNAL'
   const isUploadedVideo =
-    video?.sourceType === 'UPLOADED' && videoUrl && !isBlobUrl
+    video?.sourceType === 'UPLOAD' && videoUrl && !isBlobUrl
   const showVideoPreview = videoUrl && (isBlobUrl || isUploadedVideo)
 
   return (
