@@ -16,28 +16,40 @@ import {
   isTokenExpired,
 } from './helpers'
 
+// Deduplication: prevent multiple concurrent refresh calls from racing
+let refreshPromise: Promise<string | null> | null = null
+
 const refreshToken = async (): Promise<string | null> => {
-  try {
-    const refreshTokenValue = getRefreshToken()
-    if (!refreshTokenValue) return null
+  // If a refresh is already in progress, wait for it instead of firing another
+  if (refreshPromise) return refreshPromise
 
-    const result = await AuthService.refreshToken(refreshTokenValue)
-    const { data, success } = result
+  refreshPromise = (async () => {
+    try {
+      const refreshTokenValue = getRefreshToken()
+      if (!refreshTokenValue) return null
 
-    if (!success) return null
+      const result = await AuthService.refreshToken(refreshTokenValue)
+      const { data, success } = result
 
-    if (typeof document !== 'undefined') {
-      cookieManager.setAuthTokens(data)
+      if (!success) return null
+
+      if (typeof document !== 'undefined') {
+        cookieManager.setAuthTokens(data)
+      }
+
+      return data.accessToken
+    } catch (error) {
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Token refresh failed:', error)
+      }
+      return null
+    } finally {
+      refreshPromise = null
     }
+  })()
 
-    return data.accessToken
-  } catch (error) {
-    // Only log in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Token refresh failed:', error)
-    }
-    return null
-  }
+  return refreshPromise
 }
 
 const handleTokenRefresh = async (
