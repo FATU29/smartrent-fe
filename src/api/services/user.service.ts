@@ -4,8 +4,11 @@ import { UserApi } from '@/api/types/user.type'
 import { ENV } from '@/constants/env'
 
 /**
- * Request body for updating user profile
- * Uses query params + multipart/form-data for avatar
+ * JSON request body for PATCH /v1/users/profile.
+ *
+ * The avatar binary is no longer sent here — clients first upload it
+ * directly to R2 via the presigned-URL flow and then pass the resulting
+ * `avatarMediaId` to associate it with the user.
  */
 export interface UpdateUserProfileRequest {
   firstName?: string
@@ -13,7 +16,7 @@ export interface UpdateUserProfileRequest {
   idDocument?: string
   taxNumber?: string
   contactPhoneNumber?: string
-  avatar?: File
+  avatarMediaId?: number
 }
 
 /**
@@ -34,55 +37,22 @@ export class UserService {
   }
 
   /**
-   * Update user profile with PATCH method
-   * Supports multipart/form-data for avatar upload
-   * Avatar file: max 10MB, allowed formats: jpeg, png, webp
+   * Update user profile via JSON PATCH /v1/users/profile.
    *
-   * @param data - Profile data to update (as query params)
-   * @param avatarFile - Avatar file to upload (optional, max 10MB)
-   * @returns Updated user profile with avatarUrl
+   * The legacy multipart endpoint accepted an avatar file directly, but
+   * Vercel's 4.5MB body limit blocks anything larger. Avatars now go to R2
+   * via presigned URL first; only the resulting mediaId is sent here.
+   *
+   * @param data - Profile fields to update (and optional avatarMediaId)
+   * @returns Updated user profile with resolved avatarUrl
    */
   static async updateProfile(
     data: UpdateUserProfileRequest,
   ): Promise<ApiResponse<UserApi>> {
-    const formData = new FormData()
-
-    // Add avatar file if provided
-    if (data.avatar) {
-      // Validate file size (10MB)
-      const maxSize = 10 * 1024 * 1024 // 10MB in bytes
-      if (data.avatar.size > maxSize) {
-        throw new Error('Avatar file size must not exceed 10MB')
-      }
-
-      // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
-      if (!allowedTypes.includes(data.avatar.type)) {
-        throw new Error('Avatar must be jpeg, png, or webp format')
-      }
-
-      formData.append('avatar', data.avatar)
-    }
-
-    // Build query params for other fields
-    const queryParams = new URLSearchParams()
-    if (data.firstName) queryParams.append('firstName', data.firstName)
-    if (data.lastName) queryParams.append('lastName', data.lastName)
-    if (data.idDocument) queryParams.append('idDocument', data.idDocument)
-    if (data.taxNumber) queryParams.append('taxNumber', data.taxNumber)
-    if (data.contactPhoneNumber) {
-      queryParams.append('contactPhoneNumber', data.contactPhoneNumber)
-    }
-
-    const url = `${ENV.API.USER.PROFILE}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
-
     return apiRequest<UserApi>({
       method: 'PATCH',
-      url,
-      data: formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      url: ENV.API.USER.PROFILE,
+      data,
     })
   }
 }
