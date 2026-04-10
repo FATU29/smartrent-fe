@@ -154,19 +154,23 @@ export const useMediaUpload = () => {
 
           if (res?.success && res?.data?.url) {
             const data = res.data as ApiMediaItem
-            // status enum differs between media.type.ts (PENDING/ACTIVE/...)
-            // and property.type.ts (PostStatus), so we drop it on conversion.
-            const { status, durationSeconds, ...restData } = data
-            void status
+            // The legacy property MediaItem only carries the fields the
+            // create-post UI actually consumes, so we explicitly project the
+            // R2 response onto it (and coerce null -> undefined).
             const mediaItem: Partial<MediaItem> = {
-              ...restData,
-              durationSeconds:
-                durationSeconds !== undefined
-                  ? Number(durationSeconds)
-                  : undefined,
               mediaId: Number(data.mediaId),
-              isPrimary: pending.isCover || false,
+              listingId: data.listingId ?? undefined,
               mediaType: 'IMAGE',
+              sourceType: data.sourceType,
+              url: data.url,
+              thumbnailUrl: data.thumbnailUrl ?? undefined,
+              isPrimary: pending.isCover || false,
+              sortOrder: data.sortOrder,
+              fileSize: data.fileSize ?? undefined,
+              mimeType: data.mimeType ?? undefined,
+              originalFilename: data.originalFilename ?? undefined,
+              durationSeconds: data.durationSeconds ?? undefined,
+              createdAt: data.createdAt,
             }
             uploaded.push(mediaItem)
             uploadedCount++
