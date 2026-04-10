@@ -64,7 +64,9 @@ interface CreatePostContextType {
   addPendingImages: (images: PendingImage[]) => void
   removePendingImage: (index: number, isCover?: boolean) => void
   clearPendingImages: () => void
-  uploadPendingImages: () => Promise<Array<Partial<MediaItem>>>
+  uploadPendingImages: (
+    listingId?: number,
+  ) => Promise<Array<Partial<MediaItem>>>
   isSubmitSuccess: boolean
   setIsSubmitSuccess: (value: boolean) => void
   // Draft editing
