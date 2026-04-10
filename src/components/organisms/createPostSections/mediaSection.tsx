@@ -39,7 +39,7 @@ const MediaSection: React.FC<MediaSectionProps> = ({
     (item) =>
       item.mediaType === 'VIDEO' &&
       item.isPrimary === true &&
-      (item.sourceType === 'UPLOAD' || item.sourceType === 'UPLOADED'),
+      item.sourceType === 'UPLOAD',
   )
   const hasUploadedVideo = !!uploadedVideo
 

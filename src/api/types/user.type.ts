@@ -11,4 +11,5 @@ export interface UserApi {
   contactPhoneNumber: string
   contactPhoneVerified: boolean
   avatarUrl?: string
+  avatarMediaId?: number
 }
