@@ -12,6 +12,9 @@ import { AuthTokens } from '@/configs/axios/types'
 import { useValidToken } from '@/hooks/useAuth'
 import { decodeToken } from '@/utils/decode-jwt'
 import { clearLegacyAuthStorage } from '@/utils/authLocalStorage'
+import { isTokenExpired } from '@/configs/axios/helpers'
+import { AuthService } from '@/api/services/auth.service'
+import { cookieManager } from '@/utils/cookies'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 
@@ -86,7 +89,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
       // Read latest state from the store (avoid stale closure)
       const currentState = useAuthStore.getState()
-      const tokens = currentState.getStoredTokens()
+      let tokens = currentState.getStoredTokens()
 
       try {
         // If localStorage says authenticated but no cookies → logout
@@ -98,9 +101,34 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
         // If we have tokens, validate them
         if (tokens?.accessToken) {
-          const result = await validToken(tokens.accessToken)
+          // If access token is expired, try refreshing before calling introspect
+          let activeAccessToken = tokens.accessToken
+          if (
+            isTokenExpired(activeAccessToken) &&
+            tokens.refreshToken &&
+            !isTokenExpired(tokens.refreshToken)
+          ) {
+            try {
+              const refreshResult = await AuthService.refreshToken(
+                tokens.refreshToken,
+              )
+              if (refreshResult.success && refreshResult.data) {
+                cookieManager.setAuthTokens(refreshResult.data)
+                activeAccessToken = refreshResult.data.accessToken
+                tokens = { ...tokens, ...refreshResult.data }
+              } else {
+                logout()
+                return
+              }
+            } catch {
+              logout()
+              return
+            }
+          }
+
+          const result = await validToken(activeAccessToken)
           if (result.success && 'data' in result && result.data?.valid) {
-            const { user } = decodeToken(tokens.accessToken)
+            const { user } = decodeToken(activeAccessToken)
             login(user, tokens)
           } else {
             logout()
