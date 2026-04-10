@@ -45,6 +45,8 @@ const NewsResultCount: React.FC = () => {
 interface NewsListTemplateProps {
   selectedCategory?: string
   onCategoryChange?: (category: string | undefined) => void
+  selectedTag?: string
+  onTagClear?: () => void
   onListReady?: (actions: {
     updateFilters: (f: Partial<ListingFilterRequest>) => void
   }) => void
@@ -53,6 +55,8 @@ interface NewsListTemplateProps {
 const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
   selectedCategory,
   onCategoryChange,
+  selectedTag,
+  onTagClear,
   onListReady,
 }) => {
   const [layout, setLayout] = useState<'grid' | 'list'>('grid')
@@ -66,7 +70,8 @@ const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
   /** Clear category when empty state triggers a full reset */
   const handleResetAllFilters = useCallback(() => {
     onCategoryChange?.(undefined)
-  }, [onCategoryChange])
+    onTagClear?.()
+  }, [onCategoryChange, onTagClear])
 
   return (
     <>
@@ -80,6 +85,8 @@ const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
           onLayoutChange={setLayout}
           selectedCategory={selectedCategory}
           onCategoryChange={onCategoryChange}
+          selectedTag={selectedTag}
+          onTagClear={onTagClear}
         />
       </div>
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import classNames from 'classnames'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/atoms/card'
 import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
@@ -9,7 +10,11 @@ import { basePath, DEFAULT_IMAGE } from '@/constants'
 import { NewsItem } from '@/api/types/news.type'
 import { Calendar, Eye, User } from 'lucide-react'
 import { PUBLIC_ROUTES } from '@/constants/route'
-import { formatPublishedDate, formatViewCount } from '@/utils/news'
+import {
+  formatAuthorDisplayName,
+  formatPublishedDate,
+  formatViewCount,
+} from '@/utils/news'
 
 export interface NewsGridItemProps {
   news: NewsItem
@@ -29,6 +34,10 @@ export interface NewsGridItemProps {
 const CATEGORY_STYLES: Record<string, string> = {
   NEWS: 'bg-primary/10 text-primary border-primary/20',
   BLOG: 'bg-secondary text-secondary-foreground border-secondary/20',
+  POLICY: 'bg-orange-500/10 text-orange-700 border-orange-500/20',
+  MARKET: 'bg-amber-500/10 text-amber-700 border-amber-500/20',
+  PROJECT: 'bg-cyan-600/10 text-cyan-700 border-cyan-600/20',
+  INVESTMENT: 'bg-pink-600/10 text-pink-700 border-pink-600/20',
   MARKET_TREND: 'bg-chart-1/10 text-chart-1 border-chart-1/20',
   GUIDE: 'bg-chart-2/10 text-chart-2 border-chart-2/20',
   ANNOUNCEMENT: 'bg-destructive/10 text-destructive border-destructive/20',
@@ -42,6 +51,8 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
   showMeta = true,
   getCategoryLabel,
 }) => {
+  const t = useTranslations('newsPage')
+
   const isFeatured = variant === 'featured'
   const {
     title,
@@ -60,6 +71,9 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
   const catLabel = getCategoryLabel
     ? getCategoryLabel(category)
     : category.replace('_', ' ')
+  const displayAuthor = formatAuthorDisplayName(authorName, t('authorFallback'))
+  const displayPublishedAt =
+    formatPublishedDate(publishedAt) || t('dateUnavailable')
 
   return (
     <Link
@@ -146,15 +160,13 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
                 isFeatured ? 'gap-2 text-xs pt-3' : 'gap-1.5 text-[11px] pt-2',
               )}
             >
-              {authorName && (
-                <span className='inline-flex items-center gap-1'>
-                  <User className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
-                  <span className='truncate max-w-[80px]'>{authorName}</span>
-                </span>
-              )}
+              <span className='inline-flex items-center gap-1'>
+                <User className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
+                <span className='truncate max-w-[80px]'>{displayAuthor}</span>
+              </span>
               <span className='inline-flex items-center gap-1'>
                 <Calendar className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
-                {formatPublishedDate(publishedAt)}
+                {displayPublishedAt}
               </span>
               <span className='inline-flex items-center gap-1'>
                 <Eye className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />

@@ -58,43 +58,22 @@ export const PaymentMethodDialog: React.FC<PaymentMethodDialogProps> = ({
       ),
     },
     {
-      provider: PaymentProvider.MOMO,
-      label: t('momo'),
+      provider: PaymentProvider.ZALOPAY,
+      label: t('zalopay'),
       logo: (
         <>
           <Image
-            src='/images/momo-logo.png'
-            alt='MoMo'
+            src='/images/zalopay-icon.png'
+            alt='ZaloPay'
             width={64}
             height={64}
-            className='object-contain w-16 h-16 rounded-md'
+            className='object-contain bg-white p-2 w-16 h-16 rounded-md'
           />
           <Typography
             as='div'
-            className='hidden size-16 items-center justify-center bg-pink-600 text-white font-bold text-lg rounded-lg'
+            className='hidden size-16 items-center justify-center bg-cyan-600 text-white font-bold text-lg rounded-lg'
           >
-            MM
-          </Typography>
-        </>
-      ),
-    },
-    {
-      provider: PaymentProvider.PAYPAL,
-      label: t('paypal'),
-      logo: (
-        <>
-          <Image
-            src='/images/paypal-logo.png'
-            alt='PayPal'
-            width={64}
-            height={64}
-            className='object-contain bg-white w-16 h-16 rounded-md'
-          />
-          <Typography
-            as='div'
-            className='hidden size-16 items-center justify-center bg-blue-500 text-white font-bold text-lg rounded-lg'
-          >
-            PP
+            ZP
           </Typography>
         </>
       ),

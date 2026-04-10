@@ -25,6 +25,7 @@ type NewPasswordFormData = {
 const NewPasswordForm: NextPage<NewPasswordFormProps> = (props) => {
   const { onSuccess, onBack, resetPasswordToken } = props
   const t = useTranslations()
+  const fallbackErrorMessage = t('homePage.auth.newPassword.error')
 
   const passwordSchema = yup.object({
     newPassword: yup
@@ -57,16 +58,22 @@ const NewPasswordForm: NextPage<NewPasswordFormProps> = (props) => {
   })
 
   const onSubmit = async (data: NewPasswordFormData) => {
-    const result = await resetPassword({
-      resetPasswordToken: resetPasswordToken || '',
-      newPassword: data.newPassword,
-    })
+    try {
+      const result = await resetPassword({
+        resetPasswordToken: resetPasswordToken || '',
+        newPassword: data.newPassword,
+      })
 
-    if (result.success) {
-      toast.success(t('homePage.auth.newPassword.success'))
-      onSuccess?.()
-    } else {
-      toast.error(result.message)
+      if (result.success) {
+        toast.success(t('homePage.auth.newPassword.success'))
+        onSuccess?.()
+      } else {
+        toast.error(result.message?.trim() || fallbackErrorMessage)
+      }
+    } catch (error) {
+      console.error('Reset password error:', error)
+      const errorMessage = error instanceof Error ? error.message?.trim() : ''
+      toast.error(errorMessage || fallbackErrorMessage)
     }
   }
 

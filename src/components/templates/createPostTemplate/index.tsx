@@ -119,11 +119,8 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           case MembershipPaymentProvider.VNPAY:
             paymentProvider = PAYMENT_PROVIDER.VNPAY
             break
-          case MembershipPaymentProvider.MOMO:
-            paymentProvider = PAYMENT_PROVIDER.MOMO
-            break
-          case MembershipPaymentProvider.PAYPAL:
-            paymentProvider = PAYMENT_PROVIDER.PAYPAL
+          case MembershipPaymentProvider.ZALOPAY:
+            paymentProvider = PAYMENT_PROVIDER.ZALOPAY
             break
         }
       }

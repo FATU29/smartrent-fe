@@ -1,12 +1,39 @@
 import { formatDistanceToNow, format } from 'date-fns'
 import type { NewsCategory } from '@/api/types/news.type'
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+const NUMERIC_ID_PATTERN = /^\d{6,}$/
+const OBJECT_ID_PATTERN = /^[a-f0-9]{24}$/i
+
+const looksLikeIdentifier = (value: string): boolean => {
+  const normalized = value.trim()
+  return (
+    UUID_PATTERN.test(normalized) ||
+    NUMERIC_ID_PATTERN.test(normalized) ||
+    OBJECT_ID_PATTERN.test(normalized)
+  )
+}
+
+export const formatAuthorDisplayName = (
+  authorName: string | null | undefined,
+  fallback: string,
+): string => {
+  if (!authorName) return fallback
+  const trimmed = authorName.trim()
+  if (!trimmed || looksLikeIdentifier(trimmed)) {
+    return fallback
+  }
+  return trimmed
+}
+
 /**
  * Format a published date string to a human-readable format.
  * Shows relative time (e.g. "3 days ago") for dates within the last 7 days,
  * otherwise shows dd/MM/yyyy format.
  */
-export const formatPublishedDate = (dateString: string): string => {
+export const formatPublishedDate = (dateString: string | null): string => {
+  if (!dateString) return ''
   try {
     const date = new Date(dateString)
     const now = new Date()
@@ -59,8 +86,24 @@ export const getCategoryConfig = (
       label: tCategories('blog'),
       className: 'bg-violet-500 text-white border-violet-500',
     },
+    POLICY: {
+      label: tCategories('policy'),
+      className: 'bg-orange-500 text-white border-orange-500',
+    },
+    MARKET: {
+      label: tCategories('market'),
+      className: 'bg-amber-500 text-white border-amber-500',
+    },
+    PROJECT: {
+      label: tCategories('project'),
+      className: 'bg-cyan-600 text-white border-cyan-600',
+    },
+    INVESTMENT: {
+      label: tCategories('investment'),
+      className: 'bg-pink-600 text-white border-pink-600',
+    },
     MARKET_TREND: {
-      label: tCategories('marketTrend'),
+      label: tCategories('market'),
       className: 'bg-amber-500 text-white border-amber-500',
     },
     GUIDE: {
@@ -68,7 +111,7 @@ export const getCategoryConfig = (
       className: 'bg-emerald-500 text-white border-emerald-500',
     },
     ANNOUNCEMENT: {
-      label: tCategories('announcement'),
+      label: tCategories('news'),
       className: 'bg-red-500 text-white border-red-500',
     },
   }

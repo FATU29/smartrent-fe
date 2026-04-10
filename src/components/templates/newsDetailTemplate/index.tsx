@@ -1,5 +1,5 @@
 import React from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
 import NewsNotFound from '@/components/atoms/newsNotFound'
@@ -21,6 +21,15 @@ const NewsDetailTemplate: React.FC<NewsDetailTemplateProps> = ({
   error,
 }) => {
   const t = useTranslations('newsPage')
+  const router = useRouter()
+
+  const handleBack = () => {
+    if (typeof globalThis.window !== 'undefined' && window.history.length > 1) {
+      router.back()
+      return
+    }
+    router.push(PUBLIC_ROUTES.NEWS)
+  }
 
   if (error || !news) {
     return <NewsNotFound />
@@ -33,13 +42,13 @@ const NewsDetailTemplate: React.FC<NewsDetailTemplateProps> = ({
         <Button
           variant='ghost'
           size='sm'
-          asChild
+          onClick={handleBack}
           className='rounded-full gap-1.5 text-muted-foreground hover:text-foreground transition-colors -ml-2'
         >
-          <Link href={PUBLIC_ROUTES.NEWS}>
+          <>
             <ArrowLeft className='w-4 h-4' />
             {t('backToNews')}
-          </Link>
+          </>
         </Button>
       </nav>
 

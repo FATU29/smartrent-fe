@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Badge } from '@/components/atoms/badge'
 import { Tag } from 'lucide-react'
 import { PUBLIC_ROUTES } from '@/constants/route'
@@ -10,13 +11,17 @@ interface NewsTagListProps {
 }
 
 const NewsTagList: React.FC<NewsTagListProps> = ({ tags, className }) => {
+  const t = useTranslations('newsPage')
+
   if (!tags || tags.length === 0) return null
 
   return (
     <div className={`pt-6 border-t border-border/60 ${className || ''}`}>
       <div className='flex items-center gap-2 mb-3'>
         <Tag className='w-4 h-4 text-muted-foreground' />
-        <span className='text-sm font-medium text-muted-foreground'>Tags</span>
+        <span className='text-sm font-medium text-muted-foreground'>
+          {t('tagsLabel')}
+        </span>
       </div>
       <div className='flex flex-wrap gap-2'>
         {tags.map((tag) => (

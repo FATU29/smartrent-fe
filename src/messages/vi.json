@@ -459,7 +459,8 @@
         "resetLinkSent": "Chúng tôi đã gửi liên kết đặt lại mật khẩu đến email của bạn",
         "switchToLogin": "Nhớ mật khẩu? <u>Đăng nhập</u>",
         "successTitle": "Đặt lại Mật khẩu thành công!",
-        "successDescription": "Mật khẩu của bạn đã được đặt lại thành công. Bạn có thể đăng nhập bằng mật khẩu mới của mình."
+        "successDescription": "Mật khẩu của bạn đã được đặt lại thành công. Bạn có thể đăng nhập bằng mật khẩu mới của mình.",
+        "error": "Không thể gửi mã xác minh. Vui lòng thử lại."
       },
       "resetPassword": {
         "title": "Đặt lại Mật khẩu",
@@ -2956,6 +2957,8 @@
     "allCategories": "Tất cả",
     "searchPlaceholder": "Tìm kiếm bài viết...",
     "clearFilters": "Xóa bộ lọc",
+    "activeTag": "Tag đang lọc:",
+    "clearTag": "Xóa tag",
     "resultCount": "{count, plural, =0 {Không tìm thấy bài viết} one {# bài viết} other {# bài viết}}",
     "noNews": "Không tìm thấy bài viết",
     "noNewsDescription": "Hãy thử điều chỉnh tiêu chí tìm kiếm hoặc quay lại sau để xem bài viết mới.",
@@ -2975,6 +2978,9 @@
     "notFound": "Không tìm thấy bài viết",
     "notFoundDescription": "Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
     "backToNews": "Quay lại Tin tức",
+    "tagsLabel": "Thẻ",
+    "authorFallback": "Ban biên tập",
+    "dateUnavailable": "Chưa cập nhật",
     "views": "lượt xem",
     "share": "Chia sẻ",
     "shareSuccess": "Chia sẻ thành công!",
@@ -2984,6 +2990,10 @@
     "categories": {
       "news": "Tin tức",
       "blog": "Blog",
+      "policy": "Chính sách",
+      "market": "Thị trường",
+      "project": "Dự án",
+      "investment": "Đầu tư",
       "marketTrend": "Xu hướng thị trường",
       "guide": "Hướng dẫn",
       "announcement": "Thông báo"
@@ -3202,7 +3212,7 @@
         },
         "wallet": {
           "title": "Ví điện tử",
-          "description": "Momo, ZaloPay, VNPay",
+          "description": "ZaloPay, VNPay",
           "feature1": "Nhanh chóng, tiện lợi",
           "feature2": "Có khuyến mãi từ ví"
         },

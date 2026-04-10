@@ -83,14 +83,77 @@ const PaymentResultPage: NextPageWithLayout = () => {
   const [paymentType, setPaymentType] = useState<PaymentType | null>(null)
 
   useEffect(() => {
-    // Retrieve membership upgrade info from session storage (check first - upgrade takes priority)
+    const clearPendingPaymentStorage = () => {
+      sessionStorage.removeItem('pendingMembership')
+      sessionStorage.removeItem('pendingMembershipUpgrade')
+      sessionStorage.removeItem('pendingListingCreation')
+    }
+
+    const getSuccessMessageByPaymentType = (type: PaymentType | null) => {
+      if (type === 'listing') {
+        return t('success.messageListing')
+      }
+
+      if (type === 'membership') {
+        return t('success.messageMembership')
+      }
+
+      if (type === 'membershipUpgrade') {
+        return t('success.messageMembershipUpgrade')
+      }
+
+      return t('success.messageDefault')
+    }
+
+    const isVNPayCallback = (params: URLSearchParams) =>
+      Array.from(params.keys()).some((key) => key.startsWith('vnp_'))
+
+    const isZaloPayCallback = (params: URLSearchParams) =>
+      params.has('resultCode')
+
+    const extractZaloPayTransactionInfo = (params: URLSearchParams) => ({
+      transactionRef: params.get('orderId') || params.get('apptransid') || '',
+      amount: Number(params.get('amount') || '0'),
+      responseCode: params.get('resultCode') || '',
+      transactionStatus: params.get('resultCode') || '',
+      transactionNo: params.get('orderId') || params.get('apptransid') || '',
+      bankCode: 'ZALOPAY',
+      payDate: '',
+      orderInfo: params.get('description') || '',
+    })
+
+    const deleteDraftAfterSuccessfulListingPayment = async (
+      type: PaymentType | null,
+      storedListingRaw: string | null,
+    ) => {
+      if (type !== 'listing' || !storedListingRaw) {
+        return
+      }
+
+      try {
+        const parsedListing = JSON.parse(storedListingRaw) as StoredListingInfo
+        if (parsedListing.draftId) {
+          await ListingService.deleteDraft(parsedListing.draftId)
+          console.log(
+            '✅ Draft deleted successfully after payment:',
+            parsedListing.draftId,
+          )
+        }
+      } catch (error) {
+        console.error('❌ Failed to delete draft after payment:', error)
+      }
+    }
+
     const storedUpgrade = sessionStorage.getItem('pendingMembershipUpgrade')
+    const storedMembership = sessionStorage.getItem('pendingMembership')
+    const storedListing = sessionStorage.getItem('pendingListingCreation')
+
+    let detectedPaymentType: PaymentType | null = null
+
     if (storedUpgrade) {
       try {
-        // Verify it's valid JSON (we don't need to store it, just check if it exists)
         JSON.parse(storedUpgrade) as StoredMembershipUpgradeInfo
-        setPaymentType('membershipUpgrade')
-        // Clear other info when upgrade payment is detected
+        detectedPaymentType = 'membershipUpgrade'
         setMembershipInfo(null)
         setListingInfo(null)
       } catch (error) {
@@ -98,41 +161,34 @@ const PaymentResultPage: NextPageWithLayout = () => {
       }
     }
 
-    // Retrieve membership purchase info from session storage
-    const storedMembership = sessionStorage.getItem('pendingMembership')
-    if (storedMembership && !storedUpgrade) {
+    if (!detectedPaymentType && storedMembership) {
       try {
         const parsedMembership = JSON.parse(
           storedMembership,
         ) as StoredMembershipInfo
+        detectedPaymentType = 'membership'
         setMembershipInfo(parsedMembership)
-        setPaymentType('membership')
-        // Clear listing info when membership payment is detected
         setListingInfo(null)
       } catch (error) {
         console.error('Error parsing stored membership:', error)
       }
     }
 
-    // Retrieve listing creation info from session storage
-    const storedListing = sessionStorage.getItem('pendingListingCreation')
-    if (storedListing && !storedUpgrade && !storedMembership) {
+    if (!detectedPaymentType && storedListing) {
       try {
         const parsedListing = JSON.parse(storedListing) as StoredListingInfo
+        detectedPaymentType = 'listing'
         setListingInfo(parsedListing)
-        setPaymentType('listing')
-        // Clear membership info when listing payment is detected
         setMembershipInfo(null)
       } catch (error) {
         console.error('Error parsing stored listing:', error)
       }
     }
 
+    setPaymentType(detectedPaymentType)
+
     const processPaymentResult = async () => {
       try {
-        // ✅ CRITICAL: Use the RAW query string from window.location.search
-        // DO NOT use useSearchParams() or URLSearchParams as they decode the values
-        // which breaks VNPay's signature verification
         const rawQueryString = window.location.search
 
         if (!rawQueryString || rawQueryString === '?') {
@@ -143,137 +199,156 @@ const PaymentResultPage: NextPageWithLayout = () => {
           return
         }
 
-        // Create URLSearchParams only for validation and display purposes
-        // The raw query string is what we pass to the backend
-        const vnpParams = new URLSearchParams(rawQueryString)
+        const queryParams = new URLSearchParams(rawQueryString)
 
-        // Validate VNPay callback parameters
-        const validation = validateVNPayCallback(vnpParams)
-        if (!validation.isValid) {
-          setResult({
-            status: 'failed',
-            message: `${t('failed.invalidData')}: ${validation.errors.join(', ')}`,
-          })
-          return
-        }
-
-        // Extract transaction info for display
-        const transactionInfo = extractVNPayTransactionInfo(vnpParams)
-
-        // ✅ Pass the RAW query string directly to the backend
-        // This preserves the original URL encoding that VNPay used for signature calculation
-        const response = await PaymentService.vnpayCallback(rawQueryString)
-
-        // Handle response based on code
-        if (response.code === '200000') {
-          // Check if signature is valid
-          if (!response.data?.signatureValid) {
+        if (isVNPayCallback(queryParams)) {
+          const validation = validateVNPayCallback(queryParams)
+          if (!validation.isValid) {
             setResult({
               status: 'failed',
-              message: t('failed.signatureFailed'),
-              details: response.data,
-              transactionInfo,
+              message: `${t('failed.invalidData')}: ${validation.errors.join(', ')}`,
             })
             return
           }
 
-          // Check if payment was successful
-          if (response.data?.success) {
-            // Check VNPay response code for additional context
-            const isSuccess = isVNPaySuccess(transactionInfo.responseCode)
-            const isCancelled = isVNPayCancelled(transactionInfo.responseCode)
+          const transactionInfo = extractVNPayTransactionInfo(queryParams)
+          const response = await PaymentService.vnpayCallback(rawQueryString)
 
-            if (isCancelled) {
-              setResult({
-                status: 'cancelled',
-                message: t('cancelled.message'),
-                details: response.data,
-                transactionInfo,
-              })
-              // Clear stored info on cancellation
-              sessionStorage.removeItem('pendingMembership')
-              sessionStorage.removeItem('pendingMembershipUpgrade')
-              sessionStorage.removeItem('pendingListingCreation')
-            } else if (isSuccess) {
-              // Determine success message based on payment type
-              let successMessage = t('success.messageDefault')
-              if (paymentType === 'listing') {
-                successMessage = t('success.messageListing')
-              } else if (paymentType === 'membership') {
-                successMessage = t('success.messageMembership')
-              } else if (paymentType === 'membershipUpgrade') {
-                successMessage = t('success.messageMembershipUpgrade')
-              }
-
-              setResult({
-                status: 'success',
-                message: successMessage,
-                details: response.data,
-                transactionInfo,
-              })
-
-              // Delete draft if payment was for listing creation from draft
-              if (paymentType === 'listing' && storedListing) {
-                try {
-                  const parsedListing = JSON.parse(
-                    storedListing,
-                  ) as StoredListingInfo
-                  if (parsedListing.draftId) {
-                    await ListingService.deleteDraft(parsedListing.draftId)
-                    console.log(
-                      '✅ Draft deleted successfully after payment:',
-                      parsedListing.draftId,
-                    )
-                  }
-                } catch (error) {
-                  console.error(
-                    '❌ Failed to delete draft after payment:',
-                    error,
-                  )
-                }
-              }
-
-              // Clear stored info on success
-              sessionStorage.removeItem('pendingMembership')
-              sessionStorage.removeItem('pendingMembershipUpgrade')
-              sessionStorage.removeItem('pendingListingCreation')
-            } else {
-              const errorMessage = getVNPayResponseMessage(
-                transactionInfo.responseCode,
-              )
+          if (response.code === '200000') {
+            if (!response.data?.signatureValid) {
               setResult({
                 status: 'failed',
-                message: `Payment failed: ${errorMessage}`,
+                message: t('failed.signatureFailed'),
                 details: response.data,
                 transactionInfo,
               })
-              // Clear stored info on failure
-              sessionStorage.removeItem('pendingMembership')
-              sessionStorage.removeItem('pendingMembershipUpgrade')
-              sessionStorage.removeItem('pendingListingCreation')
+              return
+            }
+
+            if (response.data?.success) {
+              const isSuccess = isVNPaySuccess(transactionInfo.responseCode)
+              const isCancelled = isVNPayCancelled(transactionInfo.responseCode)
+
+              if (isCancelled) {
+                setResult({
+                  status: 'cancelled',
+                  message: t('cancelled.message'),
+                  details: response.data,
+                  transactionInfo,
+                })
+                clearPendingPaymentStorage()
+              } else if (isSuccess) {
+                const successMessage =
+                  getSuccessMessageByPaymentType(detectedPaymentType)
+
+                setResult({
+                  status: 'success',
+                  message: successMessage,
+                  details: response.data,
+                  transactionInfo,
+                })
+
+                await deleteDraftAfterSuccessfulListingPayment(
+                  detectedPaymentType,
+                  storedListing,
+                )
+                clearPendingPaymentStorage()
+              } else {
+                const errorMessage = getVNPayResponseMessage(
+                  transactionInfo.responseCode,
+                )
+                setResult({
+                  status: 'failed',
+                  message: `Payment failed: ${errorMessage}`,
+                  details: response.data,
+                  transactionInfo,
+                })
+                clearPendingPaymentStorage()
+              }
+            } else {
+              setResult({
+                status: 'failed',
+                message: response.data?.message || 'Payment was not successful',
+                details: response.data,
+                transactionInfo,
+              })
+              clearPendingPaymentStorage()
             }
           } else {
             setResult({
               status: 'failed',
-              message: response.data?.message || 'Payment was not successful',
+              message: response.message || 'Payment processing failed',
               details: response.data,
               transactionInfo,
             })
-            sessionStorage.removeItem('pendingMembership')
-            sessionStorage.removeItem('pendingMembershipUpgrade')
-            sessionStorage.removeItem('pendingListingCreation')
+            clearPendingPaymentStorage()
           }
-        } else {
+
+          return
+        }
+
+        if (isZaloPayCallback(queryParams)) {
+          const transactionInfo = extractZaloPayTransactionInfo(queryParams)
+          const resultCode = queryParams.get('resultCode') || ''
+          let callbackData: PaymentCallbackResponse | undefined
+
+          try {
+            const callbackResponse = await PaymentService.callback(
+              'ZALOPAY',
+              Object.fromEntries(queryParams.entries()),
+            )
+            callbackData = callbackResponse.data
+          } catch (error) {
+            console.error('ZaloPay callback verification failed:', error)
+          }
+
+          const isSuccess = callbackData?.success ?? resultCode === '1'
+          const isFailed = callbackData?.success === false || resultCode === '2'
+
+          if (isSuccess) {
+            const successMessage =
+              getSuccessMessageByPaymentType(detectedPaymentType)
+
+            setResult({
+              status: 'success',
+              message: successMessage,
+              details: callbackData,
+              transactionInfo,
+            })
+            await deleteDraftAfterSuccessfulListingPayment(
+              detectedPaymentType,
+              storedListing,
+            )
+            clearPendingPaymentStorage()
+            return
+          }
+
+          if (isFailed) {
+            setResult({
+              status: 'failed',
+              message: callbackData?.message || t('failed.errorProcessing'),
+              details: callbackData,
+              transactionInfo,
+            })
+            clearPendingPaymentStorage()
+            return
+          }
+
           setResult({
-            status: 'failed',
-            message: response.message || 'Payment processing failed',
-            details: response.data,
+            status: 'cancelled',
+            message: t('cancelled.message'),
+            details: callbackData,
             transactionInfo,
           })
-          sessionStorage.removeItem('pendingMembership')
-          sessionStorage.removeItem('pendingMembershipUpgrade')
-          sessionStorage.removeItem('pendingListingCreation')
+          clearPendingPaymentStorage()
+          return
         }
+
+        setResult({
+          status: 'failed',
+          message: t('failed.invalidData'),
+        })
+        clearPendingPaymentStorage()
       } catch (error) {
         console.error('Payment result processing error:', error)
         setResult({
@@ -283,9 +358,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
               ? error.message
               : t('failed.errorProcessing'),
         })
-        sessionStorage.removeItem('pendingMembership')
-        sessionStorage.removeItem('pendingMembershipUpgrade')
-        sessionStorage.removeItem('pendingListingCreation')
+        clearPendingPaymentStorage()
       }
     }
 
