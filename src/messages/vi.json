@@ -2921,6 +2921,8 @@
       "emailLabel": "Email",
       "contactVerified": "Đã xác minh",
       "contactNotAvailable": "Chưa có thông tin liên hệ",
+      "quickActionsTitle": "Hành động nhanh",
+      "contactInformationTitle": "Thông tin liên hệ",
       "copiedPhone": "Đã sao chép số điện thoại",
       "copiedEmail": "Đã sao chép email",
       "actions": {

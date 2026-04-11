@@ -1,7 +1,7 @@
 export enum PROVINCE_CODE {
   HANOI = 1,
   HO_CHI_MINH = 79,
-  DA_NANG = 32,
+  DA_NANG = 48,
   BINH_DUONG = 47,
   DONG_NAI = 92,
 }

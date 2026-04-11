@@ -105,6 +105,16 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
               queryParts.push(`provinceId=${city.provinceId}`)
             const queryParam = queryParts.join('&')
             const provinceUrl = `${PUBLIC_ROUTES.LISTING_LISTING}?${queryParam}`
+            const imageByProvinceCode = city.provinceCode
+              ? imageMap[Number(city.provinceCode)]
+              : undefined
+            const imageByProvinceId = city.provinceId
+              ? imageMap[Number(city.provinceId)]
+              : undefined
+            const cityImage =
+              imageByProvinceCode ||
+              imageByProvinceId ||
+              '/images/default-image.jpg'
             return (
               <CarouselItem
                 key={`city-${city.provinceCode ?? city.provinceId ?? idx}`}
@@ -116,11 +126,7 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
                 >
                   <div className='relative h-[280px] w-full'>
                     <Image
-                      src={
-                        imageMap[
-                          Number(city.provinceCode ?? city.provinceId)
-                        ] || '/images/default-image.jpg'
-                      }
+                      src={cityImage}
                       alt={city?.provinceName}
                       fill
                       className='object-cover'

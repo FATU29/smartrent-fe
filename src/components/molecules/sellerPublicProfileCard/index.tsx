@@ -70,23 +70,17 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
             <Skeleton className='h-10 w-full rounded-md sm:col-span-2 lg:col-span-1' />
           </div>
 
-          <div className='space-y-2'>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-2'>
             <div className='flex items-center gap-2 rounded-lg border border-primary/25 p-2.5 bg-background/85'>
-              <Skeleton className='h-4 w-4 rounded-full shrink-0' />
-              <div className='min-w-0 flex-1 space-y-1'>
-                <Skeleton className='h-3 w-20' />
-                <Skeleton className='h-4 w-40 max-w-full' />
-              </div>
-              <Skeleton className='h-7 w-7 rounded-md shrink-0' />
+              <Skeleton className='h-8 w-8 rounded-full shrink-0' />
+              <Skeleton className='h-4 w-40 max-w-full flex-1' />
+              <Skeleton className='h-8 w-8 rounded-md shrink-0' />
             </div>
 
             <div className='flex items-center gap-2 rounded-lg border border-primary/25 p-2.5 bg-background/85'>
-              <Skeleton className='h-4 w-4 rounded-full shrink-0' />
-              <div className='min-w-0 flex-1 space-y-1'>
-                <Skeleton className='h-3 w-16' />
-                <Skeleton className='h-4 w-56 max-w-full' />
-              </div>
-              <Skeleton className='h-7 w-7 rounded-md shrink-0' />
+              <Skeleton className='h-8 w-8 rounded-full shrink-0' />
+              <Skeleton className='h-4 w-56 max-w-full flex-1' />
+              <Skeleton className='h-8 w-8 rounded-md shrink-0' />
             </div>
           </div>
         </CardContent>
@@ -153,86 +147,118 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
         </div>
 
         {(hasPhone || hasEmail) && (
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2'>
-            {hasPhone && (
-              <Button
-                asChild
-                variant='outline'
-                className='justify-start bg-background/90 hover:bg-primary/10 border-primary/30 hover:border-primary/45'
-              >
-                <a href={`tel:${dialPhone}`}>
-                  <Phone className='h-4 w-4' />
-                  {t('profile.actions.call')}
-                </a>
-              </Button>
-            )}
-
-            {zaloPhone && (
-              <Button
-                asChild
-                variant='outline'
-                className='justify-start bg-background/90 hover:bg-primary/10 border-primary/30 hover:border-primary/45'
-              >
-                <a
-                  href={`https://zalo.me/${zaloPhone}`}
-                  target='_blank'
-                  rel='noreferrer'
+          <div className='space-y-2'>
+            <Typography variant='small' className='font-medium text-foreground'>
+              {t('profile.quickActionsTitle')}
+            </Typography>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2'>
+              {hasPhone && (
+                <Button
+                  asChild
+                  variant='outline'
+                  className='justify-start bg-background/90 hover:bg-primary/10 border-primary/30 hover:border-primary/45'
                 >
-                  <MessageCircle className='h-4 w-4' />
-                  {t('profile.actions.chatZalo')}
-                </a>
-              </Button>
-            )}
+                  <a href={`tel:${dialPhone}`}>
+                    <Phone className='h-4 w-4' />
+                    {t('profile.actions.call')}
+                  </a>
+                </Button>
+              )}
 
-            {hasEmail && (
-              <Button
-                asChild
-                variant='outline'
-                className='justify-start bg-background/90 hover:bg-primary/10 border-primary/30 hover:border-primary/45'
-              >
-                <a href={`mailto:${seller?.email}`}>
-                  <Mail className='h-4 w-4' />
-                  {t('profile.actions.sendEmail')}
-                </a>
-              </Button>
-            )}
+              {zaloPhone && (
+                <Button
+                  asChild
+                  variant='outline'
+                  className='justify-start bg-background/90 hover:bg-primary/10 border-primary/30 hover:border-primary/45'
+                >
+                  <a
+                    href={`https://zalo.me/${zaloPhone}`}
+                    target='_blank'
+                    rel='noreferrer'
+                  >
+                    <MessageCircle className='h-4 w-4' />
+                    {t('profile.actions.chatZalo')}
+                  </a>
+                </Button>
+              )}
+
+              {hasEmail && (
+                <Button
+                  asChild
+                  variant='outline'
+                  className='justify-start bg-background/90 hover:bg-primary/10 border-primary/30 hover:border-primary/45'
+                >
+                  <a href={`mailto:${seller?.email}`}>
+                    <Mail className='h-4 w-4' />
+                    {t('profile.actions.sendEmail')}
+                  </a>
+                </Button>
+              )}
+            </div>
           </div>
         )}
 
         <div className='space-y-2'>
-          {phone && (
-            <div className='flex items-center gap-2 text-sm rounded-lg border border-primary/25 p-2.5 bg-background/85'>
-              <Phone className='h-4 w-4 text-primary shrink-0' />
-              <div className='min-w-0 flex-1'>
-                <Typography variant='small' className='text-muted-foreground'>
-                  {t('profile.phoneLabel')}
-                </Typography>
-                <span className='truncate block'>{phone}</span>
+          <Typography variant='small' className='font-medium text-foreground'>
+            {t('profile.contactInformationTitle')}
+          </Typography>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-2'>
+            {phone && (
+              <div className='flex items-center gap-2.5 text-sm rounded-lg border border-primary/25 p-2.5 bg-background/85 transition-colors hover:border-primary/45'>
+                <div className='h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0'>
+                  <Phone className='h-4 w-4' />
+                </div>
+                <div className='min-w-0 flex-1 flex items-center gap-1.5'>
+                  <Typography
+                    variant='small'
+                    className='text-muted-foreground whitespace-nowrap'
+                  >
+                    {t('profile.phoneLabel')}:
+                  </Typography>
+                  <a
+                    href={`tel:${dialPhone}`}
+                    className='truncate font-medium transition-colors hover:text-primary'
+                    title={phone}
+                  >
+                    {phone}
+                  </a>
+                </div>
+                <CopyButton
+                  text={phone}
+                  successMessage={t('profile.copiedPhone')}
+                  className='h-8 w-8'
+                />
               </div>
-              <CopyButton
-                text={phone}
-                successMessage={t('profile.copiedPhone')}
-                className='h-7 w-7'
-              />
-            </div>
-          )}
+            )}
 
-          {seller?.email && (
-            <div className='flex items-center gap-2 text-sm rounded-lg border border-primary/25 p-2.5 bg-background/85'>
-              <Mail className='h-4 w-4 text-primary shrink-0' />
-              <div className='min-w-0 flex-1'>
-                <Typography variant='small' className='text-muted-foreground'>
-                  {t('profile.emailLabel')}
-                </Typography>
-                <span className='truncate block'>{seller.email}</span>
+            {seller?.email && (
+              <div className='flex items-center gap-2.5 text-sm rounded-lg border border-primary/25 p-2.5 bg-background/85 transition-colors hover:border-primary/45'>
+                <div className='h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0'>
+                  <Mail className='h-4 w-4' />
+                </div>
+                <div className='min-w-0 flex-1 flex items-center gap-1.5'>
+                  <Typography
+                    variant='small'
+                    className='text-muted-foreground whitespace-nowrap'
+                  >
+                    {t('profile.emailLabel')}:
+                  </Typography>
+                  <a
+                    href={`mailto:${seller.email}`}
+                    className='truncate font-medium transition-colors hover:text-primary'
+                    title={seller.email}
+                  >
+                    {seller.email}
+                  </a>
+                </div>
+                <CopyButton
+                  text={seller.email}
+                  successMessage={t('profile.copiedEmail')}
+                  className='h-8 w-8'
+                />
               </div>
-              <CopyButton
-                text={seller.email}
-                successMessage={t('profile.copiedEmail')}
-                className='h-7 w-7'
-              />
-            </div>
-          )}
+            )}
+          </div>
 
           {!phone && !seller?.email && (
             <Typography variant='small' className='text-muted-foreground'>
