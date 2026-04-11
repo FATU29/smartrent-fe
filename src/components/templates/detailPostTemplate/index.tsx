@@ -7,7 +7,6 @@ import {
   PropertyDescription,
   SellerContact,
 } from '@/components/organisms/apartmentDetail'
-import { Typography } from '@/components/atoms/typography'
 import { Skeleton } from '@/components/atoms/skeleton'
 import dynamic from 'next/dynamic'
 
@@ -126,30 +125,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     onSimilarPropertyClick?.(property)
   }
 
-  const addressNode = useMemo(() => {
-    if (!address) return null
-
-    const newAddress = address.fullNewAddress
-    const oldAddress = address.fullAddress
-
-    if (!newAddress && !oldAddress) return null
-
-    return (
-      <div className='space-y-1'>
-        {newAddress && (
-          <Typography variant='p' className='text-base'>
-            {newAddress}
-          </Typography>
-        )}
-        {oldAddress && (
-          <Typography variant='small' className='text-muted-foreground'>
-            {oldAddress}
-          </Typography>
-        )}
-      </div>
-    )
-  }, [address])
-
   const sections: Section[] = useMemo(
     () => [
       {
@@ -215,7 +190,8 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
                 ? { coordinates: { latitude, longitude } }
                 : undefined
             }
-            address={addressNode}
+            newAddress={address?.fullNewAddress}
+            legacyAddress={address?.fullAddress}
           />
         ),
         isVisible: true,
@@ -246,7 +222,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     [
       listing,
       t,
-      addressNode,
       address,
       mediaItems,
       amenities,

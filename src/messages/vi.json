@@ -2840,7 +2840,12 @@
     },
     "map": {
       "viewLarger": "Xem bản đồ lớn hơn",
-      "openInGoogleMaps": "Mở trên Google Maps"
+      "openInGoogleMaps": "Mở trên Google Maps",
+      "description": "Xem vị trí thực tế và đối chiếu địa chỉ nhanh chóng trước khi liên hệ.",
+      "addressTitle": "Địa chỉ hiển thị",
+      "copyAddress": "Sao chép địa chỉ",
+      "addressCopied": "Đã sao chép",
+      "coordinates": "Tọa độ"
     },
     "imageSlider": {
       "noMediaAvailable": "Không có hình ảnh",
