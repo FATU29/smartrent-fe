@@ -111,6 +111,39 @@ const pickFirstString = (...values: unknown[]): string => {
   return ''
 }
 
+const isYouTubeUrl = (value: unknown): boolean => {
+  const url = toTrimmedString(value).toLowerCase()
+  return Boolean(
+    url && (url.includes('youtube.com') || url.includes('youtu.be')),
+  )
+}
+
+const normalizeMediaSourceType = (
+  mediaType: unknown,
+  sourceType: unknown,
+  url: unknown,
+): string => {
+  const normalizedMediaType = toTrimmedString(mediaType).toUpperCase()
+  const normalizedSourceType = toTrimmedString(sourceType).toUpperCase()
+
+  if (normalizedMediaType !== 'VIDEO') {
+    return normalizedSourceType
+  }
+
+  if (normalizedSourceType === 'YOUTUBE') return 'YOUTUBE'
+  if (normalizedSourceType === 'UPLOAD') return 'UPLOAD'
+
+  if (normalizedSourceType) {
+    // Keep create/update media UI behavior stable for non-YouTube videos.
+    return 'UPLOAD'
+  }
+
+  const normalizedUrl = toTrimmedString(url)
+  if (!normalizedUrl) return ''
+
+  return isYouTubeUrl(normalizedUrl) ? 'YOUTUBE' : 'UPLOAD'
+}
+
 /**
  * Maps a ListingDetail (from update post) to form data structure
  * Used by UpdatePostContext to populate the form with existing listing data
@@ -241,7 +274,7 @@ export function mapListingToFormData(listing: ListingDetail): MappedFormData {
       mediaId: m.mediaId,
       listingId: m.listingId,
       mediaType: m.mediaType as MediaItem['mediaType'],
-      sourceType: m.sourceType,
+      sourceType: normalizeMediaSourceType(m.mediaType, m.sourceType, m.url),
       url: m.url,
       thumbnailUrl: m.thumbnailUrl,
       isPrimary: m.isPrimary,
@@ -539,7 +572,7 @@ export function mapDraftToFormData(
     mediaItems = draft.media.map((m) => ({
       mediaId: m.mediaId,
       mediaType: m.mediaType as MediaItem['mediaType'],
-      sourceType: m.sourceType,
+      sourceType: normalizeMediaSourceType(m.mediaType, m.sourceType, m.url),
       url: m.url,
       thumbnailUrl: m.thumbnailUrl,
       isPrimary: m.isPrimary,

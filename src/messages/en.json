@@ -2839,7 +2839,12 @@
     },
     "map": {
       "viewLarger": "View larger map",
-      "openInGoogleMaps": "Open in Google Maps"
+      "openInGoogleMaps": "Open in Google Maps",
+      "description": "Check the exact pin location and review the full address before contacting.",
+      "addressTitle": "Displayed address",
+      "copyAddress": "Copy address",
+      "addressCopied": "Copied",
+      "coordinates": "Coordinates"
     },
     "imageSlider": {
       "noMediaAvailable": "No images available",
