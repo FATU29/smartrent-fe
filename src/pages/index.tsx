@@ -7,7 +7,7 @@ import SeoHead from '@/components/atoms/seo/SeoHead'
 import LocationProvider from '@/contexts/location'
 import type { ProvinceStatsItem, CategoryStatsItem } from '@/api/types'
 import { List } from '@/contexts/list'
-import { PROVINCE_CODE } from '@/utils/mapper'
+import { PROVINCE_CODE, PROVINCE_ID } from '@/utils/mapper'
 import { fetchNewestNews } from '@/api/services/news.service'
 import type { NewsItem } from '@/api/types/news.type'
 import { useQuery } from '@tanstack/react-query'
@@ -18,6 +18,14 @@ const HOMEPAGE_QUERY_CONFIG = {
 }
 
 const TOP_PROVINCE_IDS = [
+  PROVINCE_ID.HANOI,
+  PROVINCE_ID.HO_CHI_MINH,
+  PROVINCE_ID.DA_NANG,
+  PROVINCE_ID.BINH_DUONG,
+  PROVINCE_ID.DONG_NAI,
+]
+
+const TOP_PROVINCE_CODES = [
   PROVINCE_CODE.HANOI,
   PROVINCE_CODE.HO_CHI_MINH,
   PROVINCE_CODE.DA_NANG,
@@ -47,7 +55,7 @@ const Home: NextPageWithLayout = () => {
     queryFn: async () => {
       const response = await ListingService.getProvinceStats({
         provinceIds: TOP_PROVINCE_IDS,
-        provinceCodes: TOP_PROVINCE_IDS.map((provinceCode) =>
+        provinceCodes: TOP_PROVINCE_CODES.map((provinceCode) =>
           provinceCode.toString(),
         ),
         addressType: 'NEW',

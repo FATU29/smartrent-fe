@@ -128,7 +128,7 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
       ) : (
         <Carousel
           className='group'
-          opts={{ align: 'start', loop: true }}
+          opts={{ align: 'start', loop: false }}
           setApi={setApi}
         >
           <CarouselContent>
