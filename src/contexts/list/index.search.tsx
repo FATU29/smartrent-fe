@@ -43,7 +43,7 @@ const ListSearch: React.FC<ListSearchProps> = ({
     // Only update if different from current filter
     // Use ref to access latest filters without adding it to dependencies
     if (debouncedValue !== filtersRef.current.keyword) {
-      updateFilters({ keyword: debouncedValue })
+      updateFilters({ keyword: debouncedValue, page: 1 })
     }
   }, [debouncedValue, updateFilters, mode])
 
@@ -61,7 +61,7 @@ const ListSearch: React.FC<ListSearchProps> = ({
 
   const handleClear = useCallback(() => {
     setInputValue('')
-    updateFilters({ keyword: '' })
+    updateFilters({ keyword: '', page: 1 })
   }, [updateFilters])
 
   const handleSearch = useCallback(() => {
