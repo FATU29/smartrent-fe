@@ -13,6 +13,7 @@ import { ListingService } from '@/api/services/listing.service'
 import { mapMyListingsBackendToFrontend } from '@/utils/property/mapMyListingsResponse'
 import { getFiltersFromQuery, pushQueryParams } from '@/utils/queryParams'
 import { SELLER_ROUTES } from '@/constants/route'
+import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@/contexts/list/index.type'
 
 // Real fetcher using POST /v1/listings/my-listings
 const fetchMyListings = async (
@@ -44,7 +45,7 @@ const fetchMyListings = async (
         pagination: {
           totalCount: 0,
           currentPage: filters.page || 0,
-          pageSize: filters.size || 20,
+          pageSize: filters.size || DEFAULT_PER_PAGE,
           totalPages: 0,
         },
       },
@@ -108,8 +109,8 @@ const ListingsPage: NextPageWithLayout = () => {
           status: filters.status ?? null,
           listingStatus: filters.listingStatus ?? null,
           moderationStatus: filters.moderationStatus ?? null,
-          page: filters.page ?? null,
-          size: filters.size ?? null,
+          page: filters.page ?? DEFAULT_PAGE,
+          size: filters.size ?? DEFAULT_PER_PAGE,
         },
         {
           pathname: SELLER_ROUTES.LISTINGS,
@@ -154,7 +155,7 @@ const ListingsPage: NextPageWithLayout = () => {
           }
           initialPagination={{
             currentPage: 0,
-            pageSize: 20,
+            pageSize: DEFAULT_PER_PAGE,
             totalCount: 0,
             totalPages: 0,
           }}

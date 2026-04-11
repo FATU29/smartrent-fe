@@ -93,7 +93,10 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
 
   const updateFilter = useCallback(
     (partial: Partial<ListingFilterRequest>) => {
-      updateFilters(partial)
+      updateFilters({
+        ...partial,
+        page: partial.page ?? 1,
+      })
     },
     [updateFilters],
   )

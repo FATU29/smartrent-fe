@@ -1,12 +1,9 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/router'
 import { useListContext } from '@/contexts/list'
 import { Typography } from '@/components/atoms/typography'
 import { Checkbox } from '@/components/atoms/checkbox'
 import { Card } from '@/components/atoms/card'
-import { pushQueryParams } from '@/utils/queryParams'
-import { PUBLIC_ROUTES } from '@/constants/route'
 
 interface FilterOption {
   label: string
@@ -17,7 +14,6 @@ interface FilterOption {
 
 const PropertyFilterSidebar: React.FC = () => {
   const t = useTranslations('propertiesPage.filter')
-  const router = useRouter()
   const { filters, updateFilters } = useListContext()
 
   const priceOptions: FilterOption[] = [
@@ -67,7 +63,6 @@ const PropertyFilterSidebar: React.FC = () => {
   ]
 
   const handlePriceChange = (option: FilterOption, checked: boolean) => {
-    const amenityIds = filters.amenityIds
     const newFilters = checked
       ? {
           ...filters,
@@ -83,49 +78,9 @@ const PropertyFilterSidebar: React.FC = () => {
         }
 
     updateFilters(newFilters)
-
-    pushQueryParams(
-      router,
-      {
-        categoryId: newFilters.categoryId ?? null,
-        productType: newFilters.productType ?? null,
-        keyword: newFilters.keyword || null,
-        minPrice: newFilters.minPrice ?? null,
-        maxPrice: newFilters.maxPrice ?? null,
-        minArea: newFilters.minArea ?? null,
-        maxArea: newFilters.maxArea ?? null,
-        minBedrooms: newFilters.minBedrooms ?? null,
-        maxBedrooms: newFilters.maxBedrooms ?? null,
-        bathrooms: newFilters.bathrooms ?? null,
-        verified: newFilters.verified || null,
-        direction: newFilters.direction ?? null,
-        electricityPrice: newFilters.electricityPrice ?? null,
-        waterPrice: newFilters.waterPrice ?? null,
-        internetPrice: newFilters.internetPrice ?? null,
-        amenityIds:
-          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
-        provinceId: newFilters.provinceId ?? null,
-        provinceCode: newFilters.provinceCodes
-          ? newFilters.provinceCodes.join(',')
-          : null,
-        districtId: newFilters.districtId ?? null,
-        wardId: newFilters.wardId ?? null,
-        isLegacy: newFilters.isLegacy ?? null,
-        userLatitude: newFilters.userLatitude ?? null,
-        userLongitude: newFilters.userLongitude ?? null,
-        sortBy: newFilters.sortBy ?? null,
-        page: null,
-      },
-      {
-        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
-        shallow: false,
-        scroll: true,
-      },
-    )
   }
 
   const handleAreaChange = (option: FilterOption, checked: boolean) => {
-    const amenityIds = filters.amenityIds
     const newFilters = checked
       ? {
           ...filters,
@@ -141,49 +96,9 @@ const PropertyFilterSidebar: React.FC = () => {
         }
 
     updateFilters(newFilters)
-
-    pushQueryParams(
-      router,
-      {
-        categoryId: newFilters.categoryId ?? null,
-        productType: newFilters.productType ?? null,
-        keyword: newFilters.keyword || null,
-        minPrice: newFilters.minPrice ?? null,
-        maxPrice: newFilters.maxPrice ?? null,
-        minArea: newFilters.minArea ?? null,
-        maxArea: newFilters.maxArea ?? null,
-        minBedrooms: newFilters.minBedrooms ?? null,
-        maxBedrooms: newFilters.maxBedrooms ?? null,
-        bathrooms: newFilters.bathrooms ?? null,
-        verified: newFilters.verified || null,
-        direction: newFilters.direction ?? null,
-        electricityPrice: newFilters.electricityPrice ?? null,
-        waterPrice: newFilters.waterPrice ?? null,
-        internetPrice: newFilters.internetPrice ?? null,
-        amenityIds:
-          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
-        provinceId: newFilters.provinceId ?? null,
-        provinceCode: newFilters.provinceCodes
-          ? newFilters.provinceCodes.join(',')
-          : null,
-        districtId: newFilters.districtId ?? null,
-        wardId: newFilters.wardId ?? null,
-        isLegacy: newFilters.isLegacy ?? null,
-        latitude: newFilters.latitude ?? null,
-        longitude: newFilters.longitude ?? null,
-        sortBy: newFilters.sortBy ?? null,
-        page: null,
-      },
-      {
-        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
-        shallow: false,
-        scroll: true,
-      },
-    )
   }
 
   const handleBedroomChange = (option: FilterOption, checked: boolean) => {
-    const amenityIds = filters.amenityIds
     const newFilters = checked
       ? {
           ...filters,
@@ -199,45 +114,6 @@ const PropertyFilterSidebar: React.FC = () => {
         }
 
     updateFilters(newFilters)
-
-    pushQueryParams(
-      router,
-      {
-        categoryId: newFilters.categoryId ?? null,
-        productType: newFilters.productType ?? null,
-        keyword: newFilters.keyword || null,
-        minPrice: newFilters.minPrice ?? null,
-        maxPrice: newFilters.maxPrice ?? null,
-        minArea: newFilters.minArea ?? null,
-        maxArea: newFilters.maxArea ?? null,
-        minBedrooms: newFilters.minBedrooms ?? null,
-        maxBedrooms: newFilters.maxBedrooms ?? null,
-        bathrooms: newFilters.bathrooms ?? null,
-        verified: newFilters.verified || null,
-        direction: newFilters.direction ?? null,
-        electricityPrice: newFilters.electricityPrice ?? null,
-        waterPrice: newFilters.waterPrice ?? null,
-        internetPrice: newFilters.internetPrice ?? null,
-        amenityIds:
-          amenityIds && amenityIds.length > 0 ? amenityIds.join(',') : null,
-        provinceId: newFilters.provinceId ?? null,
-        provinceCode: newFilters.provinceCodes
-          ? newFilters.provinceCodes.join(',')
-          : null,
-        districtId: newFilters.districtId ?? null,
-        wardId: newFilters.wardId ?? null,
-        isLegacy: newFilters.isLegacy ?? null,
-        latitude: newFilters.latitude ?? null,
-        longitude: newFilters.longitude ?? null,
-        sortBy: newFilters.sortBy ?? null,
-        page: null,
-      },
-      {
-        pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
-        shallow: false,
-        scroll: true,
-      },
-    )
   }
 
   const isPriceSelected = (option: FilterOption) => {

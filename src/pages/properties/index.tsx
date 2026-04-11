@@ -9,6 +9,7 @@ import ResidentialPropertiesTemplate from '@/components/templates/residentialPro
 import { ListProvider } from '@/contexts/list/index.context'
 import LocationProvider from '@/contexts/location'
 import { getFiltersFromQuery, pushQueryParams } from '@/utils/queryParams'
+import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@/contexts/list/index.type'
 import {
   ListingDetail,
   ListingFilterRequest,
@@ -81,8 +82,8 @@ const ResidentialPropertiesPage: NextPageWithLayout<
           userLongitude: filters.userLongitude ?? null,
           userLatitude: filters.userLatitude ?? null,
           sortBy: filters.sortBy ?? null,
-          page: filters.page ?? null,
-          size: filters.size ?? null,
+          page: filters.page ?? DEFAULT_PAGE,
+          size: filters.size ?? DEFAULT_PER_PAGE,
         },
         {
           pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
