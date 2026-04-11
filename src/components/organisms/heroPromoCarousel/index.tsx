@@ -80,11 +80,12 @@ const HeroPromoCarousel = () => {
     <div className='relative rounded-xl overflow-hidden shadow-sm'>
       <Carousel
         className='group'
-        opts={{ align: 'start', loop: true }}
+        opts={{ align: 'start', loop: false }}
         plugins={[
           Autoplay({
             delay: 5000,
             stopOnInteraction: true,
+            stopOnLastSnap: true,
           }),
         ]}
         setApi={setApi}

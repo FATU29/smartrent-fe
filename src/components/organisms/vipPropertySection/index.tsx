@@ -108,7 +108,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
         </div>
         <Carousel
           className='group'
-          opts={{ align: 'start', loop: true }}
+          opts={{ align: 'start', loop: false }}
           setApi={setApi}
         >
           <CarouselContent>
@@ -170,7 +170,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
 
       <Carousel
         className='group'
-        opts={{ align: 'start', loop: true }}
+        opts={{ align: 'start', loop: false }}
         setApi={setApi}
       >
         <CarouselContent className='items-stretch'>

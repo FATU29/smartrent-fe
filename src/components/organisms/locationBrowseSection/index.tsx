@@ -15,7 +15,7 @@ import Image from 'next/image'
 import { Button } from '@/components/atoms/button'
 import Link from 'next/link'
 import { PUBLIC_ROUTES } from '@/constants/route'
-import { imageMap } from '@/utils/mapper'
+import { imageMap, imageMapByProvinceId } from '@/utils/mapper'
 import { cn } from '@/lib/utils'
 
 interface LocationBrowseSectionProps {
@@ -93,7 +93,7 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
 
       <Carousel
         className='group'
-        opts={{ align: 'start', loop: true }}
+        opts={{ align: 'start', loop: false }}
         setApi={setApi}
       >
         <CarouselContent>
@@ -109,7 +109,7 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
               ? imageMap[Number(city.provinceCode)]
               : undefined
             const imageByProvinceId = city.provinceId
-              ? imageMap[Number(city.provinceId)]
+              ? imageMapByProvinceId[Number(city.provinceId)]
               : undefined
             const cityImage =
               imageByProvinceCode ||
