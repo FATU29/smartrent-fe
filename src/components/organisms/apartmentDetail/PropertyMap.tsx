@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
 import { Card, CardContent } from '@/components/atoms/card'
+import { Separator } from '@/components/atoms/separator'
 import { Check, Copy, ExternalLink, MapPin } from 'lucide-react'
 
 interface PropertyMapProps {
@@ -33,8 +34,6 @@ const Marker: React.FC<{ lat: number; lng: number }> = () => (
 
 const normalizeAddress = (value?: string | null): string =>
   value?.trim() ? value.trim() : ''
-
-const formatCoordinate = (value: number): string => value.toFixed(6)
 
 const PropertyMap: React.FC<PropertyMapProps> = ({
   location,
@@ -98,20 +97,15 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
 
   return (
     <div className='space-y-4 md:space-y-5'>
-      <div className='rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-background to-background p-4 sm:p-5'>
-        <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
-          <div className='space-y-1.5'>
-            <Typography variant='h3' className='text-xl md:text-2xl font-bold'>
-              {t('sections.location')}
-            </Typography>
-            <Typography
-              variant='small'
-              className='text-muted-foreground leading-relaxed'
-            >
-              {t('map.description')}
-            </Typography>
-          </div>
+      <div className='space-y-3'>
+        <Typography variant='h3' className='text-xl md:text-2xl font-bold'>
+          {t('sections.location')}
+        </Typography>
+        <Typography variant='small' className='text-muted-foreground'>
+          {t('map.description')}
+        </Typography>
 
+        <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
           <Button
             variant='outline'
             size='sm'
@@ -121,82 +115,78 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
             <ExternalLink className='w-4 h-4' />
             {t('map.openInGoogleMaps')}
           </Button>
+
+          {displayAddress && (
+            <Button
+              variant='ghost'
+              size='sm'
+              onClick={copyAddress}
+              className='h-9 w-full justify-center px-3 sm:h-8 sm:w-auto sm:justify-start sm:px-2.5'
+            >
+              {isCopied ? (
+                <Check className='w-4 h-4' />
+              ) : (
+                <Copy className='w-4 h-4' />
+              )}
+              {isCopied ? t('map.addressCopied') : t('map.copyAddress')}
+            </Button>
+          )}
         </div>
       </div>
 
       {displayAddress && (
-        <Card className='border-border/70 shadow-sm py-0'>
+        <Card className='border-border/70 py-0'>
           <CardContent className='px-4 py-4 sm:px-5 sm:py-5'>
             <div className='flex items-start gap-3 sm:gap-4'>
-              <div className='mt-0.5 rounded-full bg-primary/10 p-2.5 text-primary shrink-0'>
+              <div className='mt-0.5 p-0.5 text-primary shrink-0'>
                 <MapPin className='w-4 h-4 sm:w-5 sm:h-5' />
               </div>
 
               <div className='min-w-0 flex-1 space-y-3'>
-                <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
-                  <Typography
-                    variant='small'
-                    className='text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground'
-                  >
-                    {t('map.addressTitle')}
-                  </Typography>
-
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onClick={copyAddress}
-                    className='h-8 px-2.5 w-full sm:w-auto'
-                  >
-                    {isCopied ? (
-                      <Check className='w-4 h-4' />
-                    ) : (
-                      <Copy className='w-4 h-4' />
-                    )}
-                    {isCopied ? t('map.addressCopied') : t('map.copyAddress')}
-                  </Button>
-                </div>
+                <Typography
+                  variant='small'
+                  className='text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground'
+                >
+                  {t('map.addressTitle')}
+                </Typography>
 
                 <div className='space-y-2'>
                   {hasNewAddress && (
-                    <div className='rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5'>
+                    <div className='space-y-1'>
+                      <Typography
+                        variant='small'
+                        className='font-semibold text-foreground'
+                      >
+                        {t('property.newAddress')}
+                      </Typography>
                       <Typography
                         variant='p'
-                        className='text-sm md:text-base text-muted-foreground flex items-start gap-2'
+                        className='text-sm md:text-base text-muted-foreground break-words leading-relaxed'
                       >
-                        <span className='font-semibold text-foreground shrink-0'>
-                          {t('property.newAddress')}:
-                        </span>
-                        <span className='flex-1 break-words'>
-                          {normalizedNewAddress}
-                        </span>
+                        {normalizedNewAddress}
                       </Typography>
                     </div>
                   )}
 
+                  {hasNewAddress && hasLegacyAddress && <Separator />}
+
                   {hasLegacyAddress && (
-                    <div className='rounded-lg border border-border/70 bg-muted/20 px-3 py-2.5'>
+                    <div className='space-y-1'>
+                      <Typography
+                        variant='small'
+                        className='font-semibold text-foreground'
+                      >
+                        {t('property.legacyAddress')}
+                      </Typography>
                       <Typography
                         variant='p'
-                        className='text-sm md:text-base text-muted-foreground flex items-start gap-2'
+                        className='text-sm md:text-base text-muted-foreground break-words leading-relaxed'
                       >
-                        <span className='font-semibold text-foreground shrink-0'>
-                          {t('property.legacyAddress')}:
-                        </span>
-                        <span className='flex-1 break-words'>
-                          {normalizedLegacyAddress}
-                        </span>
+                        {normalizedLegacyAddress}
                       </Typography>
                     </div>
                   )}
                 </div>
-
-                <Typography
-                  variant='small'
-                  className='text-xs text-muted-foreground'
-                >
-                  {t('map.coordinates')}: {formatCoordinate(latitude)},{' '}
-                  {formatCoordinate(longitude)}
-                </Typography>
               </div>
             </div>
           </CardContent>
