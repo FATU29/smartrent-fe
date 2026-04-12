@@ -8,20 +8,8 @@ import {
   useMap,
 } from '@vis.gl/react-google-maps'
 import { Button } from '@/components/atoms/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  VisuallyHidden,
-} from '@/components/atoms/dialog'
-import {
-  ArrowLeft,
-  Loader2,
-  ExternalLink,
-  X,
-  List as ListIcon,
-  ChevronLeft,
-} from 'lucide-react'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { ArrowLeft, Loader2, ExternalLink, ChevronsRight } from 'lucide-react'
 import { ENV } from '@/constants/env'
 import { PUBLIC_ROUTES, buildApartmentDetailRoute } from '@/constants/route'
 import { ListingDetail, VipType } from '@/api/types/property.type'
@@ -50,6 +38,8 @@ interface MapSidebarProps {
   isBelowMinZoom: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tCommon: any
 }
 
 const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
@@ -64,7 +54,10 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   error,
   isBelowMinZoom,
   t,
+  tCommon,
 }) => {
+  const isDesktopCard = useMediaQuery('(min-width: 1024px)') ?? false
+
   return (
     <div className='flex flex-col h-full bg-background overflow-hidden'>
       <div className='p-5 border-b border-border bg-card'>
@@ -107,7 +100,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
       </div>
 
       <div className='flex-1 overflow-y-auto p-4 bg-muted/20'>
-        <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 gap-5'>
           {listings.map((listing) => {
             const isSelected = selectedListing?.listingId === listing.listingId
             return (
@@ -133,7 +126,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                   <PropertyCard
                     listing={listing}
                     onClick={(l) => onViewDetails(l)}
-                    className='compact border-0 shadow-none h-full'
+                    className={`${isDesktopCard ? '' : 'compact '}border-0 shadow-none h-full`}
                     imageLayout='top'
                   />
                 </div>
@@ -147,8 +140,8 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                       onViewDetails(listing)
                     }}
                   >
-                    {t('properties')}{' '}
-                    {/* Placeholder for view details context if tCommon fails, usually fallback */}
+                    <ExternalLink className='h-4 w-4 mr-2' />
+                    {tCommon('viewDetails')}
                   </Button>
                 </div>
               </div>
@@ -180,9 +173,7 @@ interface MapContentProps {
     zoom: number,
   ) => void
   onMarkerClick: (listing: ListingDetail) => void
-  onCloseCard: () => void
   onViewDetails: (listing: ListingDetail) => void
-  onOpenListingsDrawer: () => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -197,14 +188,13 @@ const MapContent: React.FC<MapContentProps> = ({
   error,
   fetchListings,
   onMarkerClick,
-  onCloseCard,
   onViewDetails,
-  onOpenListingsDrawer,
   t,
   tCommon,
   handleBackToList,
 }) => {
   const map = useMap()
+  const isDesktopCard = useMediaQuery('(min-width: 1024px)') ?? false
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleMapChange = useCallback(() => {
@@ -234,8 +224,8 @@ const MapContent: React.FC<MapContentProps> = ({
     if (!map) return
     const listener = map.addListener('bounds_changed', handleMapChange)
     return () => {
-      if (listener && typeof google !== 'undefined' && google.maps?.event) {
-        google.maps.event.removeListener(listener)
+      if (listener?.remove) {
+        listener.remove()
       }
     }
   }, [map, handleMapChange])
@@ -265,17 +255,6 @@ const MapContent: React.FC<MapContentProps> = ({
           {t('backToList')}
         </Button>
       </div>
-      <div className='absolute top-20 right-4 z-40'>
-        <Button
-          variant='secondary'
-          size='sm'
-          className='shadow-lg'
-          onClick={onOpenListingsDrawer}
-        >
-          <ListIcon className='h-4 w-4 mr-2' />
-          {t('properties')}
-        </Button>
-      </div>
 
       {/* Loading Indicator (Top Center) - Visible when loading */}
       {isLoading && (
@@ -302,20 +281,12 @@ const MapContent: React.FC<MapContentProps> = ({
 
       {/* Mobile Selected Property Card Overlay */}
       {selectedListing && (
-        <div className='absolute bottom-6 left-4 right-4 z-30 lg:top-4 lg:bottom-auto lg:right-4 lg:left-auto lg:w-80'>
+        <div className='absolute bottom-4 left-4 right-4 z-30 md:left-6 md:right-6 lg:top-6 lg:bottom-auto lg:left-auto lg:right-6 lg:w-[420px] xl:w-[460px]'>
           <div className='relative bg-background rounded-xl shadow-2xl border border-border/50'>
-            <Button
-              variant='ghost'
-              size='icon'
-              className='absolute -top-3 -right-3 z-40 bg-background hover:bg-muted shadow-lg rounded-full w-8 h-8 border border-border'
-              onClick={onCloseCard}
-            >
-              <X className='h-4 w-4' />
-            </Button>
             <PropertyCard
               listing={selectedListing}
               onClick={onViewDetails}
-              className='compact border-0 shadow-none'
+              className={`${isDesktopCard ? '' : 'compact '}border-0 shadow-none`}
               imageLayout='top'
               bottomContent={
                 <Button
@@ -454,27 +425,15 @@ const MapViewTemplate: React.FC = () => {
     >
       {/* Map Area */}
       <div className='flex-1 relative h-full'>
-        <Dialog
-          open={isListingsDrawerOpen}
-          onOpenChange={setIsListingsDrawerOpen}
-        >
-          <DialogContent
-            showCloseButton={false}
-            className='!top-0 !left-0 !translate-x-0 !translate-y-0 h-full w-[92vw] md:w-[540px] xl:w-[680px] max-w-[680px] rounded-none border-r border-border p-0 data-[state=open]:slide-in-from-left-3 data-[state=closed]:slide-out-to-left-3'
+        <div className='absolute inset-y-0 left-0 z-40 pointer-events-none'>
+          <aside
+            className={`pointer-events-auto h-full w-[92vw] md:w-[600px] xl:w-[760px] max-w-[760px] border-r border-border bg-background shadow-2xl transition-transform duration-300 ease-out ${
+              isListingsDrawerOpen
+                ? 'translate-x-0'
+                : '-translate-x-[calc(100%+1rem)]'
+            }`}
+            aria-label='Map listings panel'
           >
-            <VisuallyHidden>
-              <DialogTitle>Map Listings</DialogTitle>
-            </VisuallyHidden>
-            <div className='absolute right-4 top-4 z-10'>
-              <Button
-                variant='ghost'
-                size='icon'
-                onClick={() => setIsListingsDrawerOpen(false)}
-                aria-label='Close listings panel'
-              >
-                <X className='h-4 w-4' />
-              </Button>
-            </div>
             <MapListingsPanelContent
               isLoading={isLoading}
               listings={listings}
@@ -487,20 +446,35 @@ const MapViewTemplate: React.FC = () => {
               error={error}
               isBelowMinZoom={currentZoom < MIN_LISTING_FETCH_ZOOM}
               t={t}
+              tCommon={tCommon}
             />
-          </DialogContent>
-        </Dialog>
+          </aside>
+        </div>
 
         {!isListingsDrawerOpen && (
-          <div className='absolute top-20 left-4 z-40 hidden lg:block'>
+          <div className='absolute left-4 z-40 top-32 lg:top-20'>
             <Button
               variant='secondary'
               size='sm'
               className='shadow-lg'
               onClick={() => setIsListingsDrawerOpen(true)}
             >
-              <ChevronLeft className='h-4 w-4 mr-2' />
+              <ChevronsRight className='h-4 w-4 mr-2' />
               {t('properties')}
+            </Button>
+          </div>
+        )}
+
+        {isListingsDrawerOpen && (
+          <div className='absolute left-[calc(92vw-2.75rem)] md:left-[calc(600px-2.75rem)] xl:left-[calc(760px-2.75rem)] top-20 z-40'>
+            <Button
+              variant='secondary'
+              size='icon'
+              className='shadow-lg rounded-full'
+              onClick={() => setIsListingsDrawerOpen(false)}
+              aria-label='Close listings panel'
+            >
+              <ArrowLeft className='h-4 w-4' />
             </Button>
           </div>
         )}
@@ -513,6 +487,7 @@ const MapViewTemplate: React.FC = () => {
             disableDefaultUI={false}
             gestureHandling='greedy'
             className='w-full h-full outline-none'
+            onClick={handleCloseCard}
           >
             <MapContent
               listings={listings}
@@ -521,9 +496,7 @@ const MapViewTemplate: React.FC = () => {
               error={error}
               fetchListings={fetchListings}
               onMarkerClick={handleMarkerClick}
-              onCloseCard={handleCloseCard}
               onViewDetails={handleViewDetails}
-              onOpenListingsDrawer={() => setIsListingsDrawerOpen(true)}
               t={t}
               tCommon={tCommon}
               handleBackToList={handleBackToList}
