@@ -33,7 +33,6 @@ interface MapSidebarProps {
   hasMore: boolean
   onSelectListing: (listing: ListingDetail) => void
   onViewDetails: (listing: ListingDetail) => void
-  onBackToList: () => void
   error: string | null
   isBelowMinZoom: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,7 +49,6 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   hasMore,
   onSelectListing,
   onViewDetails,
-  onBackToList,
   error,
   isBelowMinZoom,
   t,
@@ -61,17 +59,6 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   return (
     <div className='flex flex-col h-full bg-background overflow-hidden'>
       <div className='p-5 border-b border-border bg-card'>
-        <div className='flex items-center justify-between gap-3 mb-4'>
-          <Button
-            variant='secondary'
-            size='sm'
-            onClick={onBackToList}
-            className='w-fit shadow-sm'
-          >
-            <ArrowLeft className='h-4 w-4 mr-2' />
-            {t('backToList')}
-          </Button>
-        </div>
         <div className='flex items-center justify-between'>
           <Typography
             variant='h4'
@@ -100,7 +87,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
       </div>
 
       <div className='flex-1 overflow-y-auto p-4 bg-muted/20'>
-        <div className='grid grid-cols-1 gap-5'>
+        <div className='grid grid-cols-1 gap-5 lg:grid-cols-2'>
           {listings.map((listing) => {
             const isSelected = selectedListing?.listingId === listing.listingId
             return (
@@ -442,7 +429,6 @@ const MapViewTemplate: React.FC = () => {
               hasMore={hasMore}
               onSelectListing={handleMarkerClick}
               onViewDetails={handleViewDetails}
-              onBackToList={handleBackToList}
               error={error}
               isBelowMinZoom={currentZoom < MIN_LISTING_FETCH_ZOOM}
               t={t}
