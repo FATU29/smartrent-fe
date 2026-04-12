@@ -9,15 +9,9 @@ import {
 } from '@vis.gl/react-google-maps'
 import { Button } from '@/components/atoms/button'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import {
-  ArrowLeft,
-  Loader2,
-  ExternalLink,
-  ChevronsRight,
-  X,
-} from 'lucide-react'
+import { Loader2, ExternalLink, ChevronsRight, X } from 'lucide-react'
 import { ENV } from '@/constants/env'
-import { PUBLIC_ROUTES, buildApartmentDetailRoute } from '@/constants/route'
+import { buildApartmentDetailRoute } from '@/constants/route'
 import { ListingDetail, VipType } from '@/api/types/property.type'
 import MapMarker from '@/components/molecules/mapMarker'
 import PropertyCard from '@/components/molecules/propertyCard'
@@ -83,7 +77,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
               size='icon'
               className='h-8 w-8'
               onClick={onClosePanel}
-              aria-label='Close listings panel'
+              aria-label={t('closeListingsPanel')}
             >
               <X className='h-4 w-4' />
             </Button>
@@ -91,7 +85,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
         </div>
         {!isLoading && isBelowMinZoom && (
           <Typography variant='small' className='text-muted-foreground mt-1'>
-            Zoom in to load listings in this area.
+            {t('zoomInToLoadListings')}
           </Typography>
         )}
         {!isLoading &&
@@ -99,7 +93,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
           hasMore &&
           totalCount > listings.length && (
             <Typography variant='small' className='text-muted-foreground mt-1'>
-              {`(${totalCount} total, zoom in for more)`}
+              {t('totalCountZoomHint', { totalCount })}
             </Typography>
           )}
         {error && <p className='text-xs text-destructive mt-1'>{error}</p>}
@@ -157,7 +151,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
         {listings.length === 0 && !isLoading && !error && (
           <div className='flex flex-col items-center justify-center h-40 text-muted-foreground space-y-3'>
             <Typography variant='p' className='text-sm text-center'>
-              No listings found in this area.
+              {t('noListingsInArea')}
             </Typography>
           </div>
         )}
@@ -184,7 +178,6 @@ interface MapContentProps {
   t: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tCommon: any
-  handleBackToList: () => void
 }
 
 const MapContent: React.FC<MapContentProps> = ({
@@ -197,7 +190,6 @@ const MapContent: React.FC<MapContentProps> = ({
   onViewDetails,
   t,
   tCommon,
-  handleBackToList,
 }) => {
   const map = useMap()
   const isDesktopCard = useMediaQuery('(min-width: 1024px)') ?? false
@@ -249,19 +241,6 @@ const MapContent: React.FC<MapContentProps> = ({
 
   return (
     <>
-      {/* Mobile Back Button */}
-      <div className='absolute top-20 left-4 z-40 lg:hidden'>
-        <Button
-          variant='secondary'
-          size='sm'
-          onClick={handleBackToList}
-          className='shadow-lg'
-        >
-          <ArrowLeft className='h-4 w-4 mr-2' />
-          {t('backToList')}
-        </Button>
-      </div>
-
       {/* Loading Indicator (Top Center) - Visible when loading */}
       {isLoading && (
         <div className='absolute top-4 left-1/2 -translate-x-1/2 z-10'>
@@ -406,10 +385,6 @@ const MapViewTemplate: React.FC = () => {
     [router.query],
   )
 
-  const handleBackToList = useCallback(() => {
-    router.push(PUBLIC_ROUTES.PROPERTIES_PREFIX)
-  }, [router])
-
   const handleMarkerClick = useCallback((listing: ListingDetail) => {
     setSelectedListing(listing)
   }, [])
@@ -438,7 +413,7 @@ const MapViewTemplate: React.FC = () => {
                 ? 'translate-x-0'
                 : '-translate-x-[calc(100%+1rem)]'
             }`}
-            aria-label='Map listings panel'
+            aria-label={t('listingsPanelAriaLabel')}
           >
             <MapListingsPanelContent
               isLoading={isLoading}
@@ -491,7 +466,6 @@ const MapViewTemplate: React.FC = () => {
               onViewDetails={handleViewDetails}
               t={t}
               tCommon={tCommon}
-              handleBackToList={handleBackToList}
             />
           </Map>
         </APIProvider>
