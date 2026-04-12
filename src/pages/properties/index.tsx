@@ -1,6 +1,5 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
-import { GetServerSideProps } from 'next'
 import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
@@ -22,25 +21,49 @@ import {
   mapFrontendToBackendRequest,
   mapBackendToFrontendResponse,
 } from '@/utils/property/mapListingResponse'
-import { createServerAxiosInstance } from '@/configs/axios/axiosServer'
 
-interface ResidentialPropertiesPageProps {
-  initialData: ListingDetail[]
+type ResidentialPropertiesClientInit = {
+  initialFilters: Partial<ListingFilterRequest>
   initialPagination: {
     totalCount: number
     currentPage: number
     pageSize: number
     totalPages: number
   }
-  initialFilters: Partial<ListingFilterRequest>
 }
 
-const ResidentialPropertiesPage: NextPageWithLayout<
-  ResidentialPropertiesPageProps
-> = ({ initialData, initialPagination, initialFilters }) => {
+const buildClientInit = (
+  query: Record<string, unknown>,
+): ResidentialPropertiesClientInit => {
+  const parsedFilters = getFiltersFromQuery(query)
+  const page = parsedFilters.page ?? DEFAULT_PAGE
+  const size = parsedFilters.size ?? DEFAULT_PER_PAGE
+
+  return {
+    initialFilters: parsedFilters,
+    initialPagination: {
+      totalCount: 0,
+      currentPage: page,
+      pageSize: size,
+      totalPages: 0,
+    },
+  }
+}
+
+const ResidentialPropertiesPage: NextPageWithLayout = () => {
   const t = useTranslations('navigation')
   const router = useRouter()
   const lastPushedFiltersRef = useRef<string>('')
+  const [clientInit, setClientInit] =
+    useState<ResidentialPropertiesClientInit | null>(null)
+
+  useEffect(() => {
+    if (!router.isReady || clientInit) {
+      return
+    }
+
+    setClientInit(buildClientInit(router.query))
+  }, [router.isReady, router.query, clientInit])
 
   const pushFiltersToQuery = useCallback(
     (filters: ListingFilterRequest) => {
@@ -113,8 +136,8 @@ const ResidentialPropertiesPage: NextPageWithLayout<
             listings: [],
             pagination: {
               totalCount: 0,
-              currentPage: filters.page || 0,
-              pageSize: filters.size || 20,
+              currentPage: filters.page ?? DEFAULT_PAGE,
+              pageSize: filters.size ?? DEFAULT_PER_PAGE,
               totalPages: 0,
             },
           },
@@ -133,15 +156,26 @@ const ResidentialPropertiesPage: NextPageWithLayout<
     [pushFiltersToQuery],
   )
 
+  if (!clientInit) {
+    return (
+      <>
+        <SeoHead title={t('properties')} description='Property search' />
+        <div className='container mx-auto py-6 px-4 md:px-0'>
+          <div className='min-h-[320px]' aria-busy='true' />
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <SeoHead title={t('properties')} description='Property search' />
       <div className='container mx-auto py-6 px-4 md:px-0'>
         <ListProvider
           fetcher={fetcher}
-          initialData={initialData}
-          initialFilters={initialFilters}
-          initialPagination={initialPagination}
+          initialData={[]}
+          initialFilters={clientInit.initialFilters}
+          initialPagination={clientInit.initialPagination}
         >
           <LocationProvider>
             <ResidentialPropertiesTemplate />
@@ -156,65 +190,6 @@ ResidentialPropertiesPage.getLayout = function getLayout(
   page: React.ReactNode,
 ) {
   return <MainLayout activeItem='properties'>{page}</MainLayout>
-}
-
-// Server-Side Props - Fetch initial data from API
-export const getServerSideProps: GetServerSideProps<
-  ResidentialPropertiesPageProps
-> = async (context) => {
-  try {
-    const serverInstance = createServerAxiosInstance()
-
-    const parsedFilters = getFiltersFromQuery(context.query)
-
-    const filters: Partial<ListingFilterRequest> = {
-      ...parsedFilters,
-    }
-
-    const backendRequest = mapFrontendToBackendRequest(filters)
-
-    const response = await ListingService.search(backendRequest, serverInstance)
-
-    if (!response.success || !response.data) {
-      return {
-        props: {
-          initialData: [],
-          initialPagination: {
-            totalCount: 0,
-            currentPage: 0,
-            pageSize: 20,
-            totalPages: 0,
-          },
-          initialFilters: filters,
-        },
-      }
-    }
-
-    const frontendData = mapBackendToFrontendResponse(response.data)
-
-    return {
-      props: {
-        initialData: frontendData?.listings,
-        initialPagination: frontendData?.pagination,
-        initialFilters: filters,
-      },
-    }
-  } catch (error) {
-    console.error('[SSR Properties] Error fetching listings:', error)
-
-    return {
-      props: {
-        initialData: [],
-        initialPagination: {
-          totalCount: 0,
-          currentPage: 0,
-          pageSize: 20,
-          totalPages: 0,
-        },
-        initialFilters: {},
-      },
-    }
-  }
 }
 
 export default ResidentialPropertiesPage

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
-import { GetServerSideProps } from 'next'
 import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
@@ -17,39 +16,85 @@ import {
 import type { Pagination } from '@/api/types/pagination.type'
 import { PUBLIC_ROUTES } from '@/constants/route'
 
-interface NewsPageProps {
-  initialData: NewsItem[]
-  initialPagination: Pagination
-  initialFilters: Partial<ListingFilterRequest>
-  initialCategory?: string | null
-  initialTag?: string | null
-}
-
 type NewsListUIFilters = ListingFilterRequest & {
   tag?: string
   _t?: number
 }
 
-const NewsPage: NextPageWithLayout<NewsPageProps> = ({
-  initialData,
-  initialPagination,
-  initialFilters,
-  initialCategory,
-  initialTag,
-}) => {
+type NewsPageClientInit = {
+  initialFilters: Partial<NewsListUIFilters>
+  initialPagination: Pagination
+  initialCategory?: string
+  initialTag?: string
+}
+
+const DEFAULT_NEWS_PAGE = 1
+const DEFAULT_NEWS_SIZE = 20
+
+const parseQueryString = (value: unknown): string | undefined => {
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string') {
+    return undefined
+  }
+
+  const trimmed = raw.trim()
+  return trimmed.length > 0 ? trimmed : undefined
+}
+
+const parsePositiveNumber = (value: unknown, fallback: number): number => {
+  const parsed = Number.parseInt(parseQueryString(value) || '', 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+}
+
+const parseNewsClientInit = (
+  query: Record<string, unknown>,
+): NewsPageClientInit => {
+  const page = parsePositiveNumber(query.page, DEFAULT_NEWS_PAGE)
+  const size = parsePositiveNumber(query.size, DEFAULT_NEWS_SIZE)
+  const category = parseQueryString(query.category)
+  const keyword = parseQueryString(query.keyword)
+  const tag = parseQueryString(query.tag)
+
+  return {
+    initialFilters: {
+      page,
+      size,
+      ...(keyword ? { keyword } : {}),
+      ...(tag ? { tag } : {}),
+    },
+    initialPagination: {
+      totalCount: 0,
+      currentPage: page,
+      pageSize: size,
+      totalPages: 0,
+    },
+    initialCategory: category,
+    initialTag: tag,
+  }
+}
+
+const NewsPage: NextPageWithLayout = () => {
   const t = useTranslations('newsPage')
   const router = useRouter()
   const lastPushedFiltersRef = useRef<string>('')
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
-    initialCategory ?? undefined,
-  )
-  const [selectedTag, setSelectedTag] = useState<string | undefined>(
-    initialTag ?? undefined,
-  )
+  const [clientInit, setClientInit] = useState<NewsPageClientInit | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
+  const [selectedTag, setSelectedTag] = useState<string | undefined>()
   const selectedCategoryRef = useRef(selectedCategory)
   const selectedTagRef = useRef(selectedTag)
   selectedCategoryRef.current = selectedCategory
   selectedTagRef.current = selectedTag
+
+  useEffect(() => {
+    if (!router.isReady || clientInit) {
+      return
+    }
+
+    const initialState = parseNewsClientInit(router.query)
+    setClientInit(initialState)
+    setSelectedCategory(initialState.initialCategory)
+    setSelectedTag(initialState.initialTag)
+  }, [router.isReady, router.query, clientInit])
 
   const pushFiltersToQuery = useCallback(
     (filters: NewsListUIFilters, category?: string, tag?: string) => {
@@ -186,6 +231,8 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
   }, [])
 
   useEffect(() => {
+    if (!router.isReady || !clientInit) return
+
     const nextTag =
       typeof router.query.tag === 'string' && router.query.tag.trim().length > 0
         ? router.query.tag
@@ -194,9 +241,11 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
     if (selectedTagRef.current === nextTag) return
 
     handleTagChange(nextTag)
-  }, [router.query.tag, handleTagChange])
+  }, [router.isReady, router.query.tag, handleTagChange, clientInit])
 
   useEffect(() => {
+    if (!router.isReady || !clientInit) return
+
     const nextCategory =
       typeof router.query.category === 'string' &&
       router.query.category.trim().length > 0
@@ -214,7 +263,7 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
         _t: Date.now(),
       } as Partial<NewsListUIFilters>)
     }
-  }, [router.query.category])
+  }, [router.isReady, router.query.category, clientInit])
 
   // Capture ListContext actions so category change can trigger re-fetch
   const listActionsRef = useRef<{
@@ -234,15 +283,26 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
     [],
   )
 
+  if (!clientInit) {
+    return (
+      <>
+        <SeoHead title={t('seoTitle')} description={t('seoDescription')} />
+        <div className='container mx-auto py-6 px-4 md:px-0'>
+          <div className='min-h-[240px]' aria-busy='true' />
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <SeoHead title={t('seoTitle')} description={t('seoDescription')} />
       <div className='container mx-auto py-6 px-4 md:px-0'>
         <ListProvider<NewsItem>
           fetcher={fetcher}
-          initialData={initialData}
-          initialFilters={initialFilters}
-          initialPagination={initialPagination}
+          initialData={[]}
+          initialFilters={clientInit.initialFilters}
+          initialPagination={clientInit.initialPagination}
         >
           <NewsListTemplate
             selectedCategory={selectedCategory}
@@ -259,88 +319,6 @@ const NewsPage: NextPageWithLayout<NewsPageProps> = ({
 
 NewsPage.getLayout = function getLayout(page: React.ReactNode) {
   return <MainLayout activeItem='news'>{page}</MainLayout>
-}
-
-// Server-Side Props - Fetch initial data from API
-export const getServerSideProps: GetServerSideProps<NewsPageProps> = async (
-  context,
-) => {
-  try {
-    const { query } = context
-
-    const page = query.page ? Number.parseInt(query.page as string, 10) : 1
-    const size = query.size ? Number.parseInt(query.size as string, 10) : 20
-    const category = (query.category as string) || null
-    const keyword = (query.keyword as string) || null
-    const tag = (query.tag as string) || null
-
-    const newsFilters: NewsFilterRequest = {
-      page,
-      size,
-      ...(category ? { category } : {}),
-      ...(tag ? { tag } : {}),
-      ...(keyword ? { keyword } : {}),
-    }
-
-    const response = await NewsService.getList(newsFilters)
-
-    const initialFilters: Partial<NewsListUIFilters> = {
-      page,
-      size,
-      ...(tag ? { tag } : {}),
-      ...(keyword ? { keyword } : {}),
-    }
-
-    if (!response.success || !response.data) {
-      return {
-        props: {
-          initialData: [],
-          initialPagination: {
-            totalCount: 0,
-            currentPage: 1,
-            pageSize: 20,
-            totalPages: 0,
-          },
-          initialFilters,
-          initialCategory: category ?? null,
-          initialTag: tag ?? null,
-        },
-      }
-    }
-
-    const { news, totalItems, currentPage, pageSize, totalPages } =
-      response.data
-
-    return {
-      props: {
-        initialData: news,
-        initialPagination: {
-          totalCount: totalItems,
-          currentPage,
-          pageSize,
-          totalPages,
-        },
-        initialFilters,
-        initialCategory: category ?? null,
-        initialTag: tag ?? null,
-      },
-    }
-  } catch (error) {
-    console.error('[SSR News] Error fetching news:', error)
-
-    return {
-      props: {
-        initialData: [],
-        initialPagination: {
-          totalCount: 0,
-          currentPage: 1,
-          pageSize: 10,
-          totalPages: 0,
-        },
-        initialFilters: {},
-      },
-    }
-  }
 }
 
 export default NewsPage
