@@ -16,7 +16,7 @@ import { PaymentProvider as MembershipPaymentProvider } from '@/api/types/member
 import { PAYMENT_PROVIDER } from '@/api/types/property.type'
 import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
-import { redirectToPayment } from '@/utils/payment'
+import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
 import { useUpdateDraft } from '@/hooks/useListings/useUpdateDraft'
 import { useDeleteDraft } from '@/hooks/useListings/useDeleteDraft'
 
@@ -160,6 +160,8 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           'pendingListingCreation',
           JSON.stringify(listingPaymentInfo),
         )
+
+        setPendingTransactionRef(data.transactionId)
 
         // Redirect to payment page using safe redirect utility
         // This preserves exact URL encoding required for VNPay signature verification

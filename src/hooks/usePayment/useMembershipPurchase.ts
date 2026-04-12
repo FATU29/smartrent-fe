@@ -8,7 +8,7 @@ import type {
   PurchaseMembershipRequest,
   PaymentProvider,
 } from '@/api/types/membership.type'
-import { redirectToPayment } from '@/utils/payment'
+import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
 
 /**
  * Hook to initiate membership purchase with payment
@@ -78,6 +78,7 @@ export function useMembershipPurchase(options?: {
     onSuccess: (data, variables) => {
       // Redirect to payment URL if auto-redirect is enabled
       if (data.paymentUrl && autoRedirect) {
+        setPendingTransactionRef(data.transactionRef)
         redirectToPayment(data.paymentUrl)
       }
 

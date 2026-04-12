@@ -24,6 +24,9 @@ function isPublicPath(pathname: string) {
   if (pathname.startsWith('/compare')) return true
   if (pathname.startsWith('/news')) return true
 
+  // Payment gateway redirect must stay public so callback page can mount
+  if (pathname.startsWith('/payment/result')) return true
+
   // Allow 404 page
   if (pathname === '/404') return true
 

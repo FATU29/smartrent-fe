@@ -5,7 +5,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { PushService } from '@/api/services'
 import type { PushListingRequest } from '@/api/types/push.type'
-import { redirectToPayment } from '@/utils/payment'
+import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
 
 /**
  * Hook to push a listing (with payment or membership quota)
@@ -57,6 +57,7 @@ export function usePushListing(options?: {
     onSuccess: (data, variables) => {
       // Redirect to payment URL if payment is required and auto-redirect is enabled
       if (data.paymentUrl && autoRedirect) {
+        setPendingTransactionRef(data.transactionRef)
         redirectToPayment(data.paymentUrl)
       }
 

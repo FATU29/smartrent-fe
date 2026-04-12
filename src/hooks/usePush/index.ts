@@ -5,6 +5,7 @@ import type {
   PushListingRequest,
   PushListingResponse,
 } from '@/api/types/push.type'
+import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
 
 /**
  * Hook to check push quota availability
@@ -78,7 +79,8 @@ export function usePushListing() {
 
       // If payment URL is returned, redirect to payment
       if (data.data?.paymentUrl) {
-        globalThis.location.href = data.data.paymentUrl
+        setPendingTransactionRef(data.data.transactionRef)
+        redirectToPayment(data.data.paymentUrl)
       }
     },
   })

@@ -4,7 +4,9 @@ import { PaymentService, ListingService } from '@/api/services'
 import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import {
+  clearPendingTransactionRef,
   extractVNPayTransactionInfo,
+  getPendingTransactionRef,
   getVNPayResponseMessage,
   isVNPaySuccess,
   isVNPayCancelled,
@@ -87,6 +89,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
       sessionStorage.removeItem('pendingMembership')
       sessionStorage.removeItem('pendingMembershipUpgrade')
       sessionStorage.removeItem('pendingListingCreation')
+      clearPendingTransactionRef()
     }
 
     const getSuccessMessageByPaymentType = (type: PaymentType | null) => {
@@ -109,15 +112,28 @@ const PaymentResultPage: NextPageWithLayout = () => {
       Array.from(params.keys()).some((key) => key.startsWith('vnp_'))
 
     const isZaloPayCallback = (params: URLSearchParams) =>
-      params.has('resultCode')
+      [
+        'status',
+        'apptransid',
+        'checksum',
+        'appid',
+        'bankcode',
+        // Backward compatibility with older ZaloPay redirect schemas
+        'resultCode',
+        'orderId',
+      ].some((key) => params.has(key))
 
     const extractZaloPayTransactionInfo = (params: URLSearchParams) => ({
-      transactionRef: params.get('orderId') || params.get('apptransid') || '',
+      transactionRef:
+        params.get('apptransid') ||
+        params.get('orderId') ||
+        getPendingTransactionRef() ||
+        '',
       amount: Number(params.get('amount') || '0'),
-      responseCode: params.get('resultCode') || '',
-      transactionStatus: params.get('resultCode') || '',
-      transactionNo: params.get('orderId') || params.get('apptransid') || '',
-      bankCode: 'ZALOPAY',
+      responseCode: params.get('status') || params.get('resultCode') || '',
+      transactionStatus: params.get('status') || params.get('resultCode') || '',
+      transactionNo: params.get('apptransid') || params.get('orderId') || '',
+      bankCode: params.get('bankcode') || 'ZALOPAY',
       payDate: '',
       orderInfo: params.get('description') || '',
     })
@@ -212,98 +228,115 @@ const PaymentResultPage: NextPageWithLayout = () => {
           }
 
           const transactionInfo = extractVNPayTransactionInfo(queryParams)
-          const response = await PaymentService.vnpayCallback(rawQueryString)
+          const callbackResponse =
+            await PaymentService.vnpayCallback(rawQueryString)
+          const callbackData = callbackResponse.data
 
-          if (response.code === '200000') {
-            if (!response.data?.signatureValid) {
-              setResult({
-                status: 'failed',
-                message: t('failed.signatureFailed'),
-                details: response.data,
-                transactionInfo,
-              })
-              return
-            }
-
-            if (response.data?.success) {
-              const isSuccess = isVNPaySuccess(transactionInfo.responseCode)
-              const isCancelled = isVNPayCancelled(transactionInfo.responseCode)
-
-              if (isCancelled) {
-                setResult({
-                  status: 'cancelled',
-                  message: t('cancelled.message'),
-                  details: response.data,
-                  transactionInfo,
-                })
-                clearPendingPaymentStorage()
-              } else if (isSuccess) {
-                const successMessage =
-                  getSuccessMessageByPaymentType(detectedPaymentType)
-
-                setResult({
-                  status: 'success',
-                  message: successMessage,
-                  details: response.data,
-                  transactionInfo,
-                })
-
-                await deleteDraftAfterSuccessfulListingPayment(
-                  detectedPaymentType,
-                  storedListing,
-                )
-                clearPendingPaymentStorage()
-              } else {
-                const errorMessage = getVNPayResponseMessage(
-                  transactionInfo.responseCode,
-                )
-                setResult({
-                  status: 'failed',
-                  message: `Payment failed: ${errorMessage}`,
-                  details: response.data,
-                  transactionInfo,
-                })
-                clearPendingPaymentStorage()
-              }
-            } else {
-              setResult({
-                status: 'failed',
-                message: response.data?.message || 'Payment was not successful',
-                details: response.data,
-                transactionInfo,
-              })
-              clearPendingPaymentStorage()
-            }
-          } else {
+          if (callbackData?.signatureValid === false) {
             setResult({
               status: 'failed',
-              message: response.message || 'Payment processing failed',
-              details: response.data,
+              message: t('failed.signatureFailed'),
+              details: callbackData,
               transactionInfo,
             })
             clearPendingPaymentStorage()
+            return
           }
+
+          const callbackStatus = callbackData?.status?.toUpperCase()
+          const callbackIsSuccess =
+            callbackData?.success === true || callbackStatus === 'COMPLETED'
+          const callbackIsCancelled = callbackStatus === 'CANCELLED'
+
+          const vnpIsSuccess = isVNPaySuccess(transactionInfo.responseCode)
+          const vnpIsCancelled = isVNPayCancelled(transactionInfo.responseCode)
+
+          if (vnpIsCancelled || callbackIsCancelled) {
+            setResult({
+              status: 'cancelled',
+              message: t('cancelled.message'),
+              details: callbackData,
+              transactionInfo,
+            })
+            clearPendingPaymentStorage()
+            return
+          }
+
+          if (vnpIsSuccess && callbackIsSuccess) {
+            const successMessage =
+              getSuccessMessageByPaymentType(detectedPaymentType)
+
+            setResult({
+              status: 'success',
+              message: successMessage,
+              details: callbackData,
+              transactionInfo,
+            })
+
+            await deleteDraftAfterSuccessfulListingPayment(
+              detectedPaymentType,
+              storedListing,
+            )
+            clearPendingPaymentStorage()
+            return
+          }
+
+          const vnpErrorMessage = vnpIsSuccess
+            ? null
+            : getVNPayResponseMessage(transactionInfo.responseCode)
+
+          setResult({
+            status: 'failed',
+            message:
+              callbackData?.message ||
+              callbackResponse.message ||
+              vnpErrorMessage ||
+              t('failed.errorProcessing'),
+            details: callbackData,
+            transactionInfo,
+          })
+
+          clearPendingPaymentStorage()
 
           return
         }
 
         if (isZaloPayCallback(queryParams)) {
-          const transactionInfo = extractZaloPayTransactionInfo(queryParams)
-          const resultCode = queryParams.get('resultCode') || ''
-          let callbackData: PaymentCallbackResponse | undefined
+          const redirectStatus =
+            queryParams.get('status') || queryParams.get('resultCode') || ''
 
-          try {
-            const callbackResponse = await PaymentService.callback(
-              'ZALOPAY',
-              Object.fromEntries(queryParams.entries()),
-            )
-            callbackData = callbackResponse.data
-          } catch (error) {
-            console.error('ZaloPay callback verification failed:', error)
-          }
+          const callbackResponse = await PaymentService.callback(
+            'ZALOPAY',
+            Object.fromEntries(queryParams.entries()),
+          )
+          const callbackData = callbackResponse.data
 
-          const isSuccess = callbackData?.success ?? resultCode === '1'
-          const isFailed = callbackData?.success === false || resultCode === '2'
+          const callbackStatus = callbackData?.status?.toUpperCase()
+          const backendHasDecision =
+            typeof callbackData?.success === 'boolean' ||
+            callbackStatus === 'COMPLETED' ||
+            callbackStatus === 'FAILED' ||
+            callbackStatus === 'CANCELLED'
+
+          const isSuccess = backendHasDecision
+            ? callbackData?.success === true || callbackStatus === 'COMPLETED'
+            : redirectStatus === '1'
+
+          const isFailed = backendHasDecision
+            ? callbackData?.success === false || callbackStatus === 'FAILED'
+            : redirectStatus === '2'
+
+          const isCancelled =
+            callbackStatus === 'CANCELLED' ||
+            (!isSuccess && !isFailed && redirectStatus === '2')
+
+          const baseTransactionInfo = extractZaloPayTransactionInfo(queryParams)
+          const transactionInfo = callbackData?.transactionRef
+            ? {
+                ...baseTransactionInfo,
+                transactionRef: callbackData.transactionRef,
+              }
+            : baseTransactionInfo
 
           if (isSuccess) {
             const successMessage =
@@ -326,7 +359,10 @@ const PaymentResultPage: NextPageWithLayout = () => {
           if (isFailed) {
             setResult({
               status: 'failed',
-              message: callbackData?.message || t('failed.errorProcessing'),
+              message:
+                callbackData?.message ||
+                callbackResponse.message ||
+                t('failed.errorProcessing'),
               details: callbackData,
               transactionInfo,
             })
@@ -335,8 +371,12 @@ const PaymentResultPage: NextPageWithLayout = () => {
           }
 
           setResult({
-            status: 'cancelled',
-            message: t('cancelled.message'),
+            status: isCancelled ? 'cancelled' : 'failed',
+            message: isCancelled
+              ? t('cancelled.message')
+              : callbackData?.message ||
+                callbackResponse.message ||
+                t('failed.errorProcessing'),
             details: callbackData,
             transactionInfo,
           })
