@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MembershipService } from '@/api/services'
 import type { PurchaseMembershipRequest } from '@/api/types/membership.type'
-import { redirectToPayment } from '@/utils/payment'
+import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
 
 // Export upgrade hooks
 export * from './useMembershipUpgrade'
@@ -103,6 +103,7 @@ export const usePurchaseMembership = () => {
     onSuccess: (data, variables) => {
       // Redirect to payment URL if present
       if (data.paymentUrl) {
+        setPendingTransactionRef(data.transactionRef)
         redirectToPayment(data.paymentUrl)
       }
 

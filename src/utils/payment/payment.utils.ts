@@ -4,6 +4,8 @@
 
 import type { PaymentProvider } from '@/api/types/payment.type'
 
+export const PENDING_TRANSACTION_REF_KEY = 'pendingTransactionRef'
+
 /**
  * Redirect to payment URL preserving exact URL encoding.
  *
@@ -40,6 +42,32 @@ export function redirectToPayment(
 
   // Simple redirect - the URL should work as-is if backend generates correct signature
   window.location.href = paymentUrl
+}
+
+/**
+ * Persist a pending transaction reference before redirecting to gateway.
+ */
+export function setPendingTransactionRef(transactionRef?: string | null): void {
+  if (typeof window === 'undefined') return
+  if (!transactionRef) return
+
+  window.localStorage.setItem(PENDING_TRANSACTION_REF_KEY, transactionRef)
+}
+
+/**
+ * Read pending transaction reference from localStorage.
+ */
+export function getPendingTransactionRef(): string | null {
+  if (typeof window === 'undefined') return null
+  return window.localStorage.getItem(PENDING_TRANSACTION_REF_KEY)
+}
+
+/**
+ * Clear pending transaction reference after callback processing.
+ */
+export function clearPendingTransactionRef(): void {
+  if (typeof window === 'undefined') return
+  window.localStorage.removeItem(PENDING_TRANSACTION_REF_KEY)
 }
 
 /**

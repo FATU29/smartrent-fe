@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MembershipService } from '@/api/services'
 import type { UpgradeRequest } from '@/api/types/membership.type'
-import { redirectToPayment } from '@/utils/payment'
+import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
 
 //==================== AVAILABLE UPGRADES ====================
 /**
@@ -82,6 +82,7 @@ export const useInitiateUpgrade = () => {
     onSuccess: (data, variables) => {
       // Redirect to payment URL if present and payment is required
       if (data.paymentUrl && data.status === 'PENDING_PAYMENT') {
+        setPendingTransactionRef(data.transactionRef)
         redirectToPayment(data.paymentUrl)
       }
 

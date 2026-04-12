@@ -10,7 +10,7 @@ import type {
   PaymentStatus,
   ProviderParams,
 } from '@/api/types/payment.type'
-import { redirectToPayment } from '@/utils/payment'
+import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
 
 /**
  * Hook to create a payment
@@ -370,6 +370,7 @@ export function useInitiatePayment(options?: {
     },
     onSuccess: (data) => {
       if (data.paymentUrl && autoRedirect) {
+        setPendingTransactionRef(data.transactionId)
         redirectToPayment(data.paymentUrl)
       }
       onSuccess?.()
