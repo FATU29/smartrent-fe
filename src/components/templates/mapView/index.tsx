@@ -9,7 +9,13 @@ import {
 } from '@vis.gl/react-google-maps'
 import { Button } from '@/components/atoms/button'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { ArrowLeft, Loader2, ExternalLink, ChevronsRight } from 'lucide-react'
+import {
+  ArrowLeft,
+  Loader2,
+  ExternalLink,
+  ChevronsRight,
+  X,
+} from 'lucide-react'
 import { ENV } from '@/constants/env'
 import { PUBLIC_ROUTES, buildApartmentDetailRoute } from '@/constants/route'
 import { ListingDetail, VipType } from '@/api/types/property.type'
@@ -33,6 +39,7 @@ interface MapSidebarProps {
   hasMore: boolean
   onSelectListing: (listing: ListingDetail) => void
   onViewDetails: (listing: ListingDetail) => void
+  onClosePanel: () => void
   error: string | null
   isBelowMinZoom: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,6 +56,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   hasMore,
   onSelectListing,
   onViewDetails,
+  onClosePanel,
   error,
   isBelowMinZoom,
   t,
@@ -59,16 +67,27 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   return (
     <div className='flex flex-col h-full bg-background overflow-hidden'>
       <div className='p-5 border-b border-border bg-card'>
-        <div className='flex items-center justify-between'>
+        <div className='flex items-center justify-between gap-2'>
           <Typography
             variant='h4'
             className='text-lg font-semibold tracking-tight'
           >
             {listings.length} {t('propertiesFound')}
           </Typography>
-          {isLoading && (
-            <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
-          )}
+          <div className='flex items-center gap-1'>
+            {isLoading && (
+              <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
+            )}
+            <Button
+              variant='ghost'
+              size='icon'
+              className='h-8 w-8'
+              onClick={onClosePanel}
+              aria-label='Close listings panel'
+            >
+              <X className='h-4 w-4' />
+            </Button>
+          </div>
         </div>
         {!isLoading && isBelowMinZoom && (
           <Typography variant='small' className='text-muted-foreground mt-1'>
@@ -429,6 +448,7 @@ const MapViewTemplate: React.FC = () => {
               hasMore={hasMore}
               onSelectListing={handleMarkerClick}
               onViewDetails={handleViewDetails}
+              onClosePanel={() => setIsListingsDrawerOpen(false)}
               error={error}
               isBelowMinZoom={currentZoom < MIN_LISTING_FETCH_ZOOM}
               t={t}
@@ -447,20 +467,6 @@ const MapViewTemplate: React.FC = () => {
             >
               <ChevronsRight className='h-4 w-4 mr-2' />
               {t('properties')}
-            </Button>
-          </div>
-        )}
-
-        {isListingsDrawerOpen && (
-          <div className='absolute left-[calc(92vw-2.75rem)] md:left-[calc(600px-2.75rem)] xl:left-[calc(760px-2.75rem)] top-20 z-40'>
-            <Button
-              variant='secondary'
-              size='icon'
-              className='shadow-lg rounded-full'
-              onClick={() => setIsListingsDrawerOpen(false)}
-              aria-label='Close listings panel'
-            >
-              <ArrowLeft className='h-4 w-4' />
             </Button>
           </div>
         )}
