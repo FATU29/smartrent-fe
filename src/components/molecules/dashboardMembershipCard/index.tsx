@@ -302,7 +302,7 @@ const DashboardMembershipCard: React.FC = () => {
               </Badge>
             </div>
 
-            <div className='space-y-2'>
+            <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
               {activeBenefits.map((benefit, index) => {
                 const progress = getBenefitProgress(
                   benefit.quantityRemaining,
@@ -322,7 +322,7 @@ const DashboardMembershipCard: React.FC = () => {
                     key={benefit.userBenefitId}
                     variants={itemVariants}
                     className={cn(
-                      'p-3 rounded-lg border transition-all hover:shadow-md',
+                      'h-full p-3 rounded-lg border transition-all hover:shadow-md',
                       colorClass,
                     )}
                   >

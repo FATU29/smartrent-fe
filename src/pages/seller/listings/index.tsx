@@ -1,9 +1,10 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
+import { useQueryClient } from '@tanstack/react-query'
 import { ListingsManagementTemplate } from '@/components/templates/listingsManagementTemplate'
 import { ListProvider } from '@/contexts/list/index.context'
 import LocationProvider from '@/contexts/location'
@@ -65,7 +66,21 @@ const fetchMyListings = async (
 const ListingsPage: NextPageWithLayout = () => {
   const t = useTranslations()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const lastPushedFiltersRef = useRef<string>('')
+
+  useEffect(() => {
+    queryClient.setQueryDefaults(['my-listings'], {
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: 'always',
+      refetchOnWindowFocus: 'always',
+      refetchOnReconnect: 'always',
+    })
+
+    // Ensure any stale my-listings query cache is removed when opening this page.
+    queryClient.removeQueries({ queryKey: ['my-listings'] })
+  }, [queryClient])
 
   const pushFiltersToQuery = useCallback(
     (filters: ListingFilterRequest) => {

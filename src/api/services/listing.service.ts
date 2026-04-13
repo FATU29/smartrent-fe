@@ -499,6 +499,11 @@ export class ListingService {
         method: 'POST',
         url: PATHS.LISTING.MY_LISTINGS,
         data: request,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+          Pragma: 'no-cache',
+          Expires: '0',
+        },
       },
       instance,
     )

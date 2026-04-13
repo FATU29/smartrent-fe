@@ -13,6 +13,7 @@ interface CreatePostDraftGuardProps {
 }
 
 const NAVIGATION_CANCELLED_ERROR = 'Navigation cancelled by draft guard'
+const CREATE_POST_BYPASS_DRAFT_GUARD_EVENT = 'create-post:bypass-draft-guard'
 
 export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   children,
@@ -68,6 +69,26 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   useEffect(() => {
     shouldBlockRef.current = hasUnsavedChanges()
   }, [hasUnsavedChanges])
+
+  // Allow specific flows (e.g., external payment redirect) to bypass this guard.
+  useEffect(() => {
+    const handleBypassDraftGuard = (): void => {
+      shouldBlockRef.current = false
+      isNavigatingRef.current = true
+    }
+
+    window.addEventListener(
+      CREATE_POST_BYPASS_DRAFT_GUARD_EVENT,
+      handleBypassDraftGuard,
+    )
+
+    return () => {
+      window.removeEventListener(
+        CREATE_POST_BYPASS_DRAFT_GUARD_EVENT,
+        handleBypassDraftGuard,
+      )
+    }
+  }, [])
 
   const cancelNavigation = useCallback(
     (url: string) => {

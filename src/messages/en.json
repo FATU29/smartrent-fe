@@ -2463,8 +2463,8 @@
         "actions": {
           "edit": "Edit",
           "editFull": "Edit listing",
-          "promote": "Post",
-          "promoteFull": "Post listing",
+          "promote": "Push",
+          "promoteFull": "Push listing",
           "repost": "Repost",
           "repostFull": "Push listing",
           "viewReport": "View report",
@@ -2489,7 +2489,7 @@
           "deleteError": "Failed to delete listing",
           "pushSuccess": "Listing pushed successfully",
           "pushError": "Failed to push listing",
-          "pushNotDisplaying": "Only displaying listings can be pushed"
+          "pushNotDisplaying": "Listing must be verified and displaying before it can be pushed"
         }
       }
     },
