@@ -10,6 +10,7 @@ import {
 } from '@/components/atoms/resizable'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useChatLogic } from '@/hooks/useChatAi'
+import { OPEN_AI_CHAT_WIDGET_EVENT } from '@/constants/events'
 
 import AiChatHeader from '@/components/organisms/aiChatHeader'
 import AiChatInterface from '@/components/organisms/aiChatInterface'
@@ -55,6 +56,18 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
   //Init effect hook
   useEffect(() => {
     setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    const handleOpenAiChat = () => {
+      setIsOpen(true)
+    }
+
+    window.addEventListener(OPEN_AI_CHAT_WIDGET_EVENT, handleOpenAiChat)
+
+    return () => {
+      window.removeEventListener(OPEN_AI_CHAT_WIDGET_EVENT, handleOpenAiChat)
+    }
   }, [])
 
   // Prevent SSR mismatch

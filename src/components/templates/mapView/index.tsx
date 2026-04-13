@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
-import { useQueryClient } from '@tanstack/react-query'
 import {
   APIProvider,
   Map,
@@ -14,11 +14,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { Loader2, ExternalLink, ChevronsRight, X } from 'lucide-react'
 import { ENV } from '@/constants/env'
 import { buildApartmentDetailRoute } from '@/constants/route'
-import {
-  ListingDetail,
-  MapBoundsResponse,
-  VipType,
-} from '@/api/types/property.type'
+import { ListingDetail, VipType } from '@/api/types/property.type'
 import MapMarker from '@/components/molecules/mapMarker'
 import PropertyCard from '@/components/molecules/propertyCard'
 import { ListingService } from '@/api/services/listing.service'
@@ -27,11 +23,9 @@ import { Typography } from '@/components/atoms/typography'
 const VIETNAM_CENTER = { lat: 16.0544, lng: 108.2022 }
 const DEFAULT_ZOOM = 12
 const MAP_HEIGHT = 'h-[calc(100vh-80px)]'
-const MAP_INTERACTION_DEBOUNCE_MS = 2500
+const MAP_INTERACTION_DEBOUNCE_MS = 1000
 const MAP_LISTINGS_LIMIT = 200
 const MIN_LISTING_FETCH_ZOOM = 13
-const MAP_BOUNDS_CACHE_QUERY_ROOT_KEY = 'map-bounds-listings'
-const MAP_BOUNDS_CACHE_STALE_TIME_MS = 5 * 60 * 1000
 const MAP_BOUNDS_COORDINATE_PRECISION = 4
 
 interface MapViewport {
@@ -59,19 +53,6 @@ const normalizeViewport = (viewport: MapViewport): MapViewport => ({
   zoom: Math.round(viewport.zoom),
 })
 
-const buildMapBoundsQueryKey = (viewport: MapViewport, filters: MapFilters) =>
-  [
-    MAP_BOUNDS_CACHE_QUERY_ROOT_KEY,
-    viewport.neLat,
-    viewport.neLng,
-    viewport.swLat,
-    viewport.swLng,
-    viewport.zoom,
-    filters.verifiedOnly,
-    filters.categoryId ?? null,
-    filters.vipType ?? null,
-  ] as const
-
 interface MapSidebarProps {
   isLoading: boolean
   listings: ListingDetail[]
@@ -79,7 +60,6 @@ interface MapSidebarProps {
   totalCount: number
   hasMore: boolean
   onSelectListing: (listing: ListingDetail) => void
-  onViewDetails: (listing: ListingDetail) => void
   onClosePanel: () => void
   error: string | null
   isBelowMinZoom: boolean
@@ -96,7 +76,6 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   totalCount,
   hasMore,
   onSelectListing,
-  onViewDetails,
   onClosePanel,
   error,
   isBelowMinZoom,
@@ -172,7 +151,6 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                 <div className='pointer-events-none flex-1'>
                   <PropertyCard
                     listing={listing}
-                    onClick={(l) => onViewDetails(l)}
                     className={`${isDesktopCard ? '' : 'compact '}border-0 shadow-none h-full`}
                     imageLayout='top'
                   />
@@ -182,13 +160,17 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                   <Button
                     size='sm'
                     className='w-full pointer-events-auto'
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onViewDetails(listing)
-                    }}
+                    asChild
                   >
-                    <ExternalLink className='h-4 w-4 mr-2' />
-                    {tCommon('viewDetails')}
+                    <Link
+                      href={buildApartmentDetailRoute(
+                        String(listing.listingId),
+                      )}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ExternalLink className='h-4 w-4 mr-2' />
+                      {tCommon('viewDetails')}
+                    </Link>
                   </Button>
                 </div>
               </div>
@@ -216,7 +198,6 @@ interface MapContentProps {
   error: string | null
   onViewportChange: (viewport: MapViewport) => void
   onMarkerClick: (listing: ListingDetail) => void
-  onViewDetails: (listing: ListingDetail) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -230,7 +211,6 @@ const MapContent: React.FC<MapContentProps> = ({
   error,
   onViewportChange,
   onMarkerClick,
-  onViewDetails,
   t,
   tCommon,
 }) => {
@@ -313,18 +293,23 @@ const MapContent: React.FC<MapContentProps> = ({
           <div className='relative bg-background rounded-xl shadow-2xl border border-border/50'>
             <PropertyCard
               listing={selectedListing}
-              onClick={onViewDetails}
               className={`${isDesktopCard ? '' : 'compact '}border-0 shadow-none`}
               imageLayout='top'
               bottomContent={
                 <Button
                   className='w-full shadow-sm'
-                  onClick={() => onViewDetails(selectedListing)}
                   variant='default'
                   size='sm'
+                  asChild
                 >
-                  <ExternalLink className='h-4 w-4 mr-2' />
-                  {tCommon('viewDetails')}
+                  <Link
+                    href={buildApartmentDetailRoute(
+                      String(selectedListing.listingId),
+                    )}
+                  >
+                    <ExternalLink className='h-4 w-4 mr-2' />
+                    {tCommon('viewDetails')}
+                  </Link>
                 </Button>
               }
             />
@@ -356,7 +341,6 @@ const MapContent: React.FC<MapContentProps> = ({
 
 const MapViewTemplate: React.FC = () => {
   const router = useRouter()
-  const queryClient = useQueryClient()
   const t = useTranslations('navigation')
   const tCommon = useTranslations('common')
   const [listings, setListings] = useState<ListingDetail[]>([])
@@ -414,43 +398,38 @@ const MapViewTemplate: React.FC = () => {
       return
     }
 
-    const queryKey = buildMapBoundsQueryKey(normalizedViewport, mapFilters)
     let isSubscribed = true
 
     setIsLoading(true)
     setError(null)
 
-    queryClient
-      .fetchQuery<MapBoundsResponse>({
-        queryKey,
-        queryFn: async () => {
-          const response = await ListingService.getMapBounds({
-            ...normalizedViewport,
-            limit: MAP_LISTINGS_LIMIT,
-            verifiedOnly: mapFilters.verifiedOnly,
-            categoryId: mapFilters.categoryId,
-            vipType: mapFilters.vipType,
-          })
+    setListings([])
+    setTotalCount(0)
+    setHasMore(false)
+    setSelectedListing(null)
 
-          if (!response.success || !response.data) {
-            throw new Error(response.message || 'Failed to load properties')
-          }
+    const fetchMapBoundsListings = async () => {
+      try {
+        const response = await ListingService.getMapBounds({
+          ...normalizedViewport,
+          limit: MAP_LISTINGS_LIMIT,
+          verifiedOnly: mapFilters.verifiedOnly,
+          categoryId: mapFilters.categoryId,
+          vipType: mapFilters.vipType,
+        })
 
-          return response.data
-        },
-        staleTime: MAP_BOUNDS_CACHE_STALE_TIME_MS,
-        gcTime: MAP_BOUNDS_CACHE_STALE_TIME_MS,
-      })
-      .then((data) => {
+        if (!response.success || !response.data) {
+          throw new Error(response.message || 'Failed to load properties')
+        }
+
         if (!isSubscribed) {
           return
         }
 
-        setListings(data.listings)
-        setTotalCount(data.totalCount)
-        setHasMore(data.hasMore)
-      })
-      .catch((err) => {
+        setListings(response.data.listings)
+        setTotalCount(response.data.totalCount)
+        setHasMore(response.data.hasMore)
+      } catch (err) {
         if (!isSubscribed) {
           return
         }
@@ -463,34 +442,19 @@ const MapViewTemplate: React.FC = () => {
         setListings([])
         setTotalCount(0)
         setHasMore(false)
-      })
-      .finally(() => {
+      } finally {
         if (isSubscribed) {
           setIsLoading(false)
         }
-      })
+      }
+    }
+
+    fetchMapBoundsListings()
 
     return () => {
       isSubscribed = false
     }
-  }, [debouncedViewport, mapFilters, queryClient])
-
-  useEffect(() => {
-    const clearMapBoundsCache = () => {
-      queryClient.removeQueries({
-        queryKey: [MAP_BOUNDS_CACHE_QUERY_ROOT_KEY],
-      })
-    }
-
-    window.addEventListener('beforeunload', clearMapBoundsCache)
-    window.addEventListener('pagehide', clearMapBoundsCache)
-
-    return () => {
-      window.removeEventListener('beforeunload', clearMapBoundsCache)
-      window.removeEventListener('pagehide', clearMapBoundsCache)
-      clearMapBoundsCache()
-    }
-  }, [queryClient])
+  }, [debouncedViewport, mapFilters])
 
   const handleViewportChange = useCallback((viewport: MapViewport) => {
     setPendingViewport(viewport)
@@ -505,13 +469,6 @@ const MapViewTemplate: React.FC = () => {
   const handleCloseCard = useCallback(() => {
     setSelectedListing(null)
   }, [])
-
-  const handleViewDetails = useCallback(
-    (listing: ListingDetail) => {
-      router.push(buildApartmentDetailRoute(String(listing.listingId)))
-    },
-    [router],
-  )
 
   return (
     <div
@@ -535,7 +492,6 @@ const MapViewTemplate: React.FC = () => {
               totalCount={totalCount}
               hasMore={hasMore}
               onSelectListing={handleMarkerClick}
-              onViewDetails={handleViewDetails}
               onClosePanel={() => setIsListingsDrawerOpen(false)}
               error={error}
               isBelowMinZoom={currentZoom < MIN_LISTING_FETCH_ZOOM}
@@ -576,7 +532,6 @@ const MapViewTemplate: React.FC = () => {
               error={error}
               onViewportChange={handleViewportChange}
               onMarkerClick={handleMarkerClick}
-              onViewDetails={handleViewDetails}
               t={t}
               tCommon={tCommon}
             />
