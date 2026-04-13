@@ -12,6 +12,7 @@ import {
 } from '@/components/atoms/carousel'
 import Autoplay from 'embla-carousel-autoplay'
 import { cn } from '@/lib/utils'
+import { OPEN_AI_CHAT_WIDGET_EVENT } from '@/constants/events'
 
 interface Slide {
   id: string
@@ -70,11 +71,21 @@ const HeroPromoCarousel = () => {
     })
   }, [api])
 
-  const handleOnClick = (link?: string) => {
-    if (link) {
-      router.push(link)
+  const handleOnClick = (e: React.MouseEvent, slide: Slide) => {
+    if (slide.id === 'aiAssist') {
+      e.preventDefault()
+      e.stopPropagation()
+      window.dispatchEvent(new CustomEvent(OPEN_AI_CHAT_WIDGET_EVENT))
+      return
+    }
+
+    if (slide.link) {
+      router.push(slide.link)
     }
   }
+
+  const carouselImageSizes =
+    '(max-width: 640px) calc(100vw - 2rem), (max-width: 1024px) calc(100vw - 3rem), (max-width: 1344px) calc(100vw - 4rem), 1280px'
 
   return (
     <div className='relative rounded-xl overflow-hidden shadow-sm'>
@@ -93,16 +104,23 @@ const HeroPromoCarousel = () => {
         <CarouselContent className='-ml-0'>
           {slides.map((s) => (
             <CarouselItem key={s.id} className='pl-0'>
-              <Link href={s.link || '#'}>
+              <Link
+                href={s.link || '#'}
+                onClick={(e) => {
+                  if (s.id === 'aiAssist') {
+                    handleOnClick(e, s)
+                  }
+                }}
+              >
                 <div className='relative h-[340px] sm:h-[420px] lg:h-[500px] w-full cursor-pointer'>
                   <Image
                     src={s.image}
                     alt={s.heading}
                     fill
-                    className='object-contain'
+                    className='object-cover object-top'
                     priority={s.id === 'rentSecure'}
                     quality={85}
-                    sizes='(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1280px'
+                    sizes={carouselImageSizes}
                   />
                   <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/10' />
                   <div className='absolute bottom-10 left-6 sm:left-10 max-w-xl text-white'>
@@ -117,7 +135,7 @@ const HeroPromoCarousel = () => {
                         variant='secondary'
                         size='sm'
                         className='backdrop-blur-sm'
-                        onClick={() => handleOnClick(s.link || '#')}
+                        onClick={(e) => handleOnClick(e, s)}
                       >
                         {s.cta}
                       </Button>
