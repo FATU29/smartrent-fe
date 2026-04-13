@@ -84,6 +84,11 @@ const ListingsWithPagination = () => {
   })
 
   const handlePushListing = async (listing: ListingOwnerDetail) => {
+    if (listing.listingStatus !== POST_STATUS.DISPLAYING) {
+      toast.error(tSeller('card.toast.pushNotDisplaying'))
+      return
+    }
+
     const hasQuota = quotaData?.data && quotaData.data.totalAvailable > 0
     const useMembershipQuota = hasQuota ?? false
 
@@ -98,12 +103,12 @@ const ListingsWithPagination = () => {
       if (result.data?.paymentUrl) {
         toast.loading('Redirecting to payment...')
       } else if (result.data?.message) {
-        toast.success(result.data.message || 'Listing pushed successfully!')
+        toast.success(result.data.message || tSeller('card.toast.pushSuccess'))
         // Trigger quota refresh
         refetchQuota()
       }
     } catch (error: any) {
-      toast.error(error.message || 'Failed to push listing')
+      toast.error(error.message || tSeller('card.toast.pushError'))
     }
   }
 
