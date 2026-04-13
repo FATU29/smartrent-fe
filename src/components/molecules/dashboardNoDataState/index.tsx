@@ -42,18 +42,18 @@ const DashboardNoDataState: React.FC<DashboardNoDataStateProps> = ({
 
       <div
         className={cn(
-          'relative grid gap-5',
+          'relative grid gap-7',
           hasHints &&
             'grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(220px,280px)]',
         )}
       >
-        <div className='space-y-5'>
+        <div className='space-y-6'>
           <div className='flex flex-col gap-4 sm:flex-row sm:items-start'>
             <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10'>
               <BarChart3 className='h-6 w-6 text-primary' />
             </div>
 
-            <div className='space-y-2'>
+            <div className='space-y-3'>
               {badgeLabel ? (
                 <Badge
                   variant='secondary'
@@ -85,7 +85,7 @@ const DashboardNoDataState: React.FC<DashboardNoDataStateProps> = ({
             </div>
 
             {metricChips && metricChips.length > 0 ? (
-              <div className='mt-4 flex flex-wrap gap-2'>
+              <div className='mt-5 flex flex-wrap gap-2.5'>
                 {metricChips.map((chip) => (
                   <Badge key={chip} variant='outline' className='text-xs'>
                     {chip}
@@ -102,7 +102,7 @@ const DashboardNoDataState: React.FC<DashboardNoDataStateProps> = ({
               <Sparkles className='h-4 w-4 text-amber-500' />
               {hintTitle}
             </div>
-            <ul className='mt-3 space-y-2'>
+            <ul className='mt-4 space-y-3'>
               {hints?.map((hint, index) => (
                 <li
                   key={`${hint}-${index}`}

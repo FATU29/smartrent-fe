@@ -2464,9 +2464,9 @@
         "actions": {
           "edit": "Sửa",
           "editFull": "Sửa tin",
-          "promote": "Đăng",
-          "promoteFull": "Đăng bài",
-          "repost": "Đẩy",
+          "promote": "Đẩy tin",
+          "promoteFull": "Đẩy tin",
+          "repost": "Đẩy tin",
           "repostFull": "Đẩy tin",
           "viewReport": "Xem báo cáo",
           "requestVerification": "Yêu cầu xác thực",
@@ -2490,7 +2490,7 @@
           "deleteError": "Không thể xóa tin đăng",
           "pushSuccess": "Đẩy bài thành công",
           "pushError": "Không thể đẩy bài",
-          "pushNotDisplaying": "Chỉ có thể đẩy bài khi tin đang hiển thị"
+          "pushNotDisplaying": "Tin phải được xác thực và đang hiển thị mới có thể đẩy tin"
         }
       }
     },

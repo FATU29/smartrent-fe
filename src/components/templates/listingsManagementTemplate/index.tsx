@@ -84,7 +84,11 @@ const ListingsWithPagination = () => {
   })
 
   const handlePushListing = async (listing: ListingOwnerDetail) => {
-    if (listing.listingStatus !== POST_STATUS.DISPLAYING) {
+    const canPush =
+      listing.verified === true &&
+      listing.listingStatus === POST_STATUS.DISPLAYING
+
+    if (!canPush) {
       toast.error(tSeller('card.toast.pushNotDisplaying'))
       return
     }

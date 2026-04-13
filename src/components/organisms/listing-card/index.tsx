@@ -135,9 +135,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     address || {}
 
   const isExpired = expired || false
-  const hasVipPackage = vipType && vipType !== 'NORMAL'
   const showRank = rankOfVipType > 0
-  const showPromoteButton = !hasVipPackage
+  const showPromoteButton = true
   const showRepostButton = isExpired
 
   const postISO = toISO(postDate)

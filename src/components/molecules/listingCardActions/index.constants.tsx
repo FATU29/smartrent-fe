@@ -5,7 +5,7 @@ import {
   MessageCircle,
   Share,
   Clock,
-  Megaphone,
+  ChevronsUp,
   RefreshCw,
   TrendingDown,
   Trash2,
@@ -85,7 +85,7 @@ export const createMenuItems = ({
   },
   {
     id: 'promote',
-    icon: <Megaphone size={14} />,
+    icon: <ChevronsUp size={14} />,
     labelKey: 'promoteFull',
     onClick: onPromote,
     show: showPromoteButton,

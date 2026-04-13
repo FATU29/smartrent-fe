@@ -4,7 +4,7 @@ import {
   Edit,
   MoreHorizontal,
   RefreshCw,
-  Megaphone,
+  ChevronsUp,
   SendHorizontal,
 } from 'lucide-react'
 import { createMenuItems } from './index.constants'
@@ -115,7 +115,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
           onClick={onPromote}
           className='gap-1 border-cyan-500 text-cyan-600 hover:bg-cyan-50 text-xs sm:text-sm'
         >
-          <Megaphone size={14} />
+          <ChevronsUp size={14} />
           <span className='hidden xs:inline'>{t('promoteFull')}</span>
           <span className='xs:hidden'>{t('promote')}</span>
         </Button>

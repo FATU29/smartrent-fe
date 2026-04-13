@@ -24,6 +24,8 @@ interface CreatePostTemplateProps {
   className?: string
 }
 
+const CREATE_POST_BYPASS_DRAFT_GUARD_EVENT = 'create-post:bypass-draft-guard'
+
 const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   className,
 }) => {
@@ -166,6 +168,9 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         // Redirect to payment page using safe redirect utility
         // This preserves exact URL encoding required for VNPay signature verification
         setIsSubmitSuccess(true)
+        window.dispatchEvent(
+          new CustomEvent(CREATE_POST_BYPASS_DRAFT_GUARD_EVENT),
+        )
         redirectToPayment(data.paymentUrl)
         return
       }
