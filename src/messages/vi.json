@@ -2464,8 +2464,8 @@
         "actions": {
           "edit": "Sửa",
           "editFull": "Sửa tin",
-          "promote": "QC",
-          "promoteFull": "Quảng cáo",
+          "promote": "Đăng",
+          "promoteFull": "Đăng bài",
           "repost": "Đẩy",
           "repostFull": "Đẩy tin",
           "viewReport": "Xem báo cáo",
@@ -2487,7 +2487,10 @@
         },
         "toast": {
           "deleteSuccess": "Tin đăng đã được xóa thành công",
-          "deleteError": "Không thể xóa tin đăng"
+          "deleteError": "Không thể xóa tin đăng",
+          "pushSuccess": "Đẩy bài thành công",
+          "pushError": "Không thể đẩy bài",
+          "pushNotDisplaying": "Chỉ có thể đẩy bài khi tin đang hiển thị"
         }
       }
     },

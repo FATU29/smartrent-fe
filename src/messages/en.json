@@ -2463,8 +2463,8 @@
         "actions": {
           "edit": "Edit",
           "editFull": "Edit listing",
-          "promote": "Promote",
-          "promoteFull": "Advertise",
+          "promote": "Post",
+          "promoteFull": "Post listing",
           "repost": "Repost",
           "repostFull": "Push listing",
           "viewReport": "View report",
@@ -2486,7 +2486,10 @@
         },
         "toast": {
           "deleteSuccess": "Listing deleted successfully",
-          "deleteError": "Failed to delete listing"
+          "deleteError": "Failed to delete listing",
+          "pushSuccess": "Listing pushed successfully",
+          "pushError": "Failed to push listing",
+          "pushNotDisplaying": "Only displaying listings can be pushed"
         }
       }
     },
