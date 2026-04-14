@@ -2989,6 +2989,7 @@
       "tip3": "Check for spelling mistakes in your search"
     },
     "loadingMore": "Loading more articles...",
+    "viewMore": "View more",
     "notFound": "Article not found",
     "notFoundDescription": "The article you're looking for doesn't exist or has been removed.",
     "backToNews": "Back to News",
@@ -3059,6 +3060,7 @@
       "membership": {
         "title": "Membership Pricing",
         "description": "Membership packages are billed monthly, auto-renewed, and provide a fixed number of listings each month.",
+        "explorePlans": "Explore plans and subscribe",
         "note": {
           "title": "Note:",
           "content": "Listing allocations reset at the start of each month. Unused listings do not carry over to the next month."
@@ -3097,8 +3099,10 @@
         "title": "Pricing by Listing Type",
         "description": "4 listing types used in Create Post step 4, with prices shown per day.",
         "referenceNote": "Reference prices follow the Create Post step 4 package selection.",
+        "priorityByPriceNote": "VIP levels are ordered by pricing in Create Post step 4.",
         "duration": "Display duration",
         "days": "days",
+        "pricePerDay": "Price per day",
         "maxImages": "Max images",
         "price": "Price",
         "priority": {

@@ -62,11 +62,11 @@ const UsageGuideTemplate = () => {
   ] as const
 
   return (
-    <div className='space-y-8 pt-2 sm:space-y-10 sm:pt-4'>
+    <div className='space-y-6 pt-2 sm:space-y-7 sm:pt-3'>
       <Card className='overflow-hidden border-border/60 bg-card/80 shadow-sm'>
-        <div className='grid gap-6 px-5 py-6 sm:px-6 sm:py-8 lg:grid-cols-[1.35fr_0.95fr] lg:gap-8'>
-          <div className='space-y-4'>
-            <div className='space-y-3'>
+        <div className='grid gap-5 px-5 py-5 sm:px-6 sm:py-6 lg:grid-cols-[1.35fr_0.95fr] lg:gap-6'>
+          <div className='space-y-3'>
+            <div className='space-y-2'>
               <Typography
                 variant='h2'
                 className='max-w-3xl leading-tight tracking-tight text-balance'
@@ -75,7 +75,7 @@ const UsageGuideTemplate = () => {
               </Typography>
               <Typography
                 variant='lead'
-                className='max-w-3xl text-base leading-8 text-muted-foreground'
+                className='max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base'
               >
                 {t('description')}
               </Typography>
@@ -83,16 +83,19 @@ const UsageGuideTemplate = () => {
           </div>
 
           <div className='rounded-2xl border border-dashed border-border/70 bg-muted/30 p-4 sm:p-5'>
-            <Typography variant='h4' className='leading-snug tracking-tight'>
+            <Typography
+              variant='h4'
+              className='text-base leading-snug tracking-tight sm:text-lg'
+            >
               {t('gettingStarted.title')}
             </Typography>
             <Typography
               variant='p'
-              className='mt-2 text-sm leading-7 text-muted-foreground'
+              className='mt-1.5 text-sm leading-6 text-muted-foreground'
             >
               {t('gettingStarted.description')}
             </Typography>
-            <div className='mt-4 flex flex-wrap gap-2'>
+            <div className='mt-3 flex flex-wrap gap-2'>
               {[
                 t('membership.title'),
                 t('posts.title'),
@@ -117,7 +120,7 @@ const UsageGuideTemplate = () => {
         title={t('gettingStarted.title')}
         description={t('gettingStarted.description')}
       >
-        <Indented className='space-y-6'>
+        <Indented className='space-y-4'>
           <NumberedStepList
             steps={['step1', 'step2', 'step3'].map((k) => ({
               title: t(`gettingStarted.${k}.title`),
@@ -132,24 +135,31 @@ const UsageGuideTemplate = () => {
         title={t('membership.title')}
         description={t('membership.description')}
       >
-        <Indented className='space-y-8'>
-          <div className='space-y-3'>
-            <Typography variant='h4' className='leading-snug tracking-tight'>
+        <Indented className='space-y-6'>
+          <div className='space-y-2'>
+            <Typography
+              variant='h4'
+              className='text-base leading-snug tracking-tight sm:text-lg'
+            >
               {t('membership.choosingPlan.title')}
             </Typography>
             <BulletList
+              tight
               items={['tip1', 'tip2', 'tip3'].map((k) =>
                 t(`membership.choosingPlan.${k}`),
               )}
             />
           </div>
-          <div className='space-y-3'>
-            <Typography variant='h4' className='leading-snug tracking-tight'>
+          <div className='space-y-2'>
+            <Typography
+              variant='h4'
+              className='text-base leading-snug tracking-tight sm:text-lg'
+            >
               {t('membership.monthlyAllocation.title')}
             </Typography>
             <Typography
               variant='p'
-              className='text-sm leading-7 text-muted-foreground'
+              className='text-sm leading-6 text-muted-foreground'
             >
               {t('membership.monthlyAllocation.description')}
             </Typography>
@@ -170,11 +180,11 @@ const UsageGuideTemplate = () => {
         title={t('posts.title')}
         description={t('posts.description')}
       >
-        <Indented className='space-y-8'>
-          <div className='space-y-4'>
+        <Indented className='space-y-6'>
+          <div className='space-y-3'>
             <Typography
               variant='h4'
-              className='flex items-center gap-2 leading-snug tracking-tight'
+              className='flex items-center gap-2 text-base leading-snug tracking-tight sm:text-lg'
             >
               <Crown className='h-4 w-4 text-primary' />
               {t('posts.types.title')}
@@ -186,18 +196,18 @@ const UsageGuideTemplate = () => {
               {t('posts.types.referenceNote')}
             </Typography>
 
-            <div className='hidden gap-5 md:grid md:grid-cols-2 xl:grid-cols-4'>
+            <div className='hidden gap-4 md:grid md:grid-cols-2 xl:grid-cols-4'>
               {listingTypes.map((item) => (
                 <div
                   key={item.key}
-                  className={`rounded-2xl border p-5 ${item.cardClass}`}
+                  className={`rounded-2xl border p-4 ${item.cardClass}`}
                 >
                   <div className='mb-3 flex items-start justify-between gap-3'>
                     <div className='flex items-center gap-2'>
                       {item.icon}
                       <Typography
                         variant='h5'
-                        className={`${item.titleClass} break-words leading-snug`}
+                        className={`${item.titleClass} text-base break-words leading-snug`}
                       >
                         {t(`posts.types.${item.key}.name`)}
                       </Typography>
@@ -230,14 +240,14 @@ const UsageGuideTemplate = () => {
                       className='basis-[90%] sm:basis-[72%]'
                     >
                       <div
-                        className={`rounded-2xl border p-5 ${item.cardClass}`}
+                        className={`rounded-2xl border p-4 ${item.cardClass}`}
                       >
                         <div className='mb-3 flex items-start justify-between gap-3'>
                           <div className='flex min-w-0 items-center gap-2'>
                             {item.icon}
                             <Typography
                               variant='h5'
-                              className={`${item.titleClass} break-words leading-snug`}
+                              className={`${item.titleClass} text-base break-words leading-snug`}
                             >
                               {t(`posts.types.${item.key}.name`)}
                             </Typography>
@@ -261,23 +271,30 @@ const UsageGuideTemplate = () => {
               </Carousel>
             </div>
           </div>
-          <div className='space-y-3'>
-            <Typography variant='h4' className='leading-snug tracking-tight'>
+          <div className='space-y-2'>
+            <Typography
+              variant='h4'
+              className='text-base leading-snug tracking-tight sm:text-lg'
+            >
               {t('posts.bestPractices.title')}
             </Typography>
             <BulletList
+              tight
               items={['tip1', 'tip2', 'tip3', 'tip4', 'tip5'].map((k) =>
                 t(`posts.bestPractices.${k}`),
               )}
             />
           </div>
-          <div className='space-y-3'>
-            <Typography variant='h4' className='leading-snug tracking-tight'>
+          <div className='space-y-2'>
+            <Typography
+              variant='h4'
+              className='text-base leading-snug tracking-tight sm:text-lg'
+            >
               {t('posts.pushing.title')}
             </Typography>
             <Typography
               variant='p'
-              className='text-sm leading-7 text-muted-foreground'
+              className='text-sm leading-6 text-muted-foreground'
             >
               {t('posts.pushing.description')}
             </Typography>
@@ -298,15 +315,18 @@ const UsageGuideTemplate = () => {
         title={t('managing.title')}
         description={t('managing.description')}
       >
-        <Indented className='space-y-6'>
+        <Indented className='space-y-4'>
           {['editing', 'pausing', 'renewing'].map((k) => (
-            <div key={k} className='space-y-2'>
-              <Typography variant='h4' className='leading-snug tracking-tight'>
+            <div key={k} className='space-y-1.5'>
+              <Typography
+                variant='h4'
+                className='text-base leading-snug tracking-tight sm:text-lg'
+              >
                 {t(`managing.${k}.title`)}
               </Typography>
               <Typography
                 variant='p'
-                className='text-sm leading-7 text-muted-foreground'
+                className='text-sm leading-6 text-muted-foreground'
               >
                 {t(`managing.${k}.description`)}
               </Typography>
@@ -320,14 +340,15 @@ const UsageGuideTemplate = () => {
         title={t('customers.title')}
         description={t('customers.description')}
       >
-        <Indented className='space-y-5'>
+        <Indented className='space-y-4'>
           <Typography
             variant='p'
-            className='text-sm leading-7 text-muted-foreground'
+            className='text-sm leading-6 text-muted-foreground'
           >
             {t('customers.features')}
           </Typography>
           <BulletList
+            tight
             items={['feature1', 'feature2', 'feature3'].map((k) =>
               t(`customers.${k}`),
             )}
@@ -340,15 +361,18 @@ const UsageGuideTemplate = () => {
         title={t('settings.title')}
         description={t('settings.description')}
       >
-        <Indented className='space-y-6'>
+        <Indented className='space-y-4'>
           {['profile', 'notifications'].map((k) => (
-            <div key={k} className='space-y-2'>
-              <Typography variant='h4' className='leading-snug tracking-tight'>
+            <div key={k} className='space-y-1.5'>
+              <Typography
+                variant='h4'
+                className='text-base leading-snug tracking-tight sm:text-lg'
+              >
                 {t(`settings.${k}.title`)}
               </Typography>
               <Typography
                 variant='p'
-                className='text-sm leading-7 text-muted-foreground'
+                className='text-sm leading-6 text-muted-foreground'
               >
                 {t(`settings.${k}.description`)}
               </Typography>
@@ -364,7 +388,7 @@ const UsageGuideTemplate = () => {
         headerBgClass='bg-emerald-100 dark:bg-emerald-900/40'
         iconClassName='text-green-600 dark:text-green-400'
       >
-        <Indented className='space-y-4'>
+        <Indented className='space-y-3'>
           <CheckList
             items={['tip1', 'tip2', 'tip3', 'tip4', 'tip5'].map((k) =>
               t(`tips.${k}`),

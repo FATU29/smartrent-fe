@@ -29,7 +29,7 @@ type NewsPageClientInit = {
 }
 
 const DEFAULT_NEWS_PAGE = 1
-const DEFAULT_NEWS_SIZE = 20
+const DEFAULT_NEWS_SIZE = 10
 
 const parseQueryString = (value: unknown): string | undefined => {
   const raw = Array.isArray(value) ? value[0] : value
@@ -49,7 +49,8 @@ const parsePositiveNumber = (value: unknown, fallback: number): number => {
 const parseNewsClientInit = (
   query: Record<string, unknown>,
 ): NewsPageClientInit => {
-  const page = parsePositiveNumber(query.page, DEFAULT_NEWS_PAGE)
+  // Always start from page 1 — load-more is client-side accumulation,
+  // page number in URL is not a valid entry point
   const size = parsePositiveNumber(query.size, DEFAULT_NEWS_SIZE)
   const category = parseQueryString(query.category)
   const keyword = parseQueryString(query.keyword)
@@ -57,14 +58,14 @@ const parseNewsClientInit = (
 
   return {
     initialFilters: {
-      page,
+      page: DEFAULT_NEWS_PAGE,
       size,
       ...(keyword ? { keyword } : {}),
       ...(tag ? { tag } : {}),
     },
     initialPagination: {
       totalCount: 0,
-      currentPage: page,
+      currentPage: DEFAULT_NEWS_PAGE,
       pageSize: size,
       totalPages: 0,
     },
@@ -105,9 +106,8 @@ const NewsPage: NextPageWithLayout = () => {
       lastPushedFiltersRef.current = filtersKey
 
       const queryParams: Record<string, string | null> = {}
-      if (filters.page && filters.page > 1) {
-        queryParams.page = filters.page.toString()
-      }
+      // Do NOT push page number — load-more accumulates items client-side,
+      // putting ?page=N in the URL causes re-init on refresh at page N with no prior pages
       if (category) {
         queryParams.category = category
       }
@@ -126,7 +126,7 @@ const NewsPage: NextPageWithLayout = () => {
           ),
         },
         undefined,
-        { shallow: true, scroll: true },
+        { shallow: true, scroll: false },
       )
     },
     [router],
