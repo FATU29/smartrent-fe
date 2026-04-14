@@ -3170,6 +3170,7 @@
       "membership": {
         "title": "Giá Gói Hội Viên",
         "description": "Các gói hội viên được tính theo tháng, tự động gia hạn và cung cấp số lượng tin đăng cố định mỗi tháng.",
+        "explorePlans": "Xem chi tiết và đăng ký gói",
         "note": {
           "title": "Lưu ý:",
           "content": "Số tin đăng được reset vào đầu mỗi tháng. Tin chưa sử dụng sẽ không được chuyển sang tháng tiếp theo."
@@ -3208,8 +3209,10 @@
         "title": "Giá Theo Loại Tin Đăng",
         "description": "4 loại tin đăng dùng trong bước 4 của Tạo Tin, giá hiển thị theo ngày.",
         "referenceNote": "Giá tham khảo theo phần chọn gói ở bước 4 tạo tin đăng.",
+        "priorityByPriceNote": "Cấp độ VIP được sắp theo mức giá ở bước 4 Tạo Tin.",
         "duration": "Thời gian hiển thị",
         "days": "ngày",
+        "pricePerDay": "Giá theo ngày",
         "maxImages": "Số ảnh tối đa",
         "price": "Giá",
         "priority": {

@@ -33,7 +33,7 @@ export const GuideCard: React.FC<GuideCardProps> = ({
     <Card
       className={`overflow-hidden rounded-2xl border bg-card/90 shadow-sm ${className}`.trim()}
     >
-      <div className='flex items-start gap-3 border-b border-border/60 px-5 py-5 sm:px-6'>
+      <div className='flex items-start gap-3 border-b border-border/60 px-5 py-4 sm:px-6 sm:py-5'>
         {icon && (
           <div className={`rounded-lg p-2 ${headerBgClass}`.trim()}>
             <div className={`h-6 w-6 ${iconClassName}`}>{icon}</div>
@@ -42,21 +42,21 @@ export const GuideCard: React.FC<GuideCardProps> = ({
         <div className='min-w-0'>
           <Typography
             variant='h4'
-            className='text-lg leading-snug tracking-tight sm:text-xl'
+            className='text-base leading-snug tracking-tight sm:text-lg'
           >
             {title}
           </Typography>
           {description && (
             <Typography
               variant='p'
-              className='mt-2 max-w-2xl text-sm leading-7 text-muted-foreground'
+              className='mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground'
             >
               {description}
             </Typography>
           )}
         </div>
       </div>
-      <div className='px-5 py-5 sm:px-6 sm:py-6'>{children}</div>
+      <div className='px-5 py-4 sm:px-6 sm:py-5'>{children}</div>
     </Card>
   )
 }
@@ -75,11 +75,11 @@ export const BulletList: React.FC<BulletListProps> = ({
   tight = false,
 }) => (
   <ul
-    className={`space-y-${tight ? 1 : 2} text-sm leading-7 text-muted-foreground ${className}`.trim()}
+    className={`${tight ? 'space-y-1.5' : 'space-y-2'} text-sm leading-6 text-muted-foreground ${className}`.trim()}
   >
     {items.map((content, i) => (
-      <li key={i} className='flex items-start gap-2'>
-        <span className={`${markerClassName} mt-1 shrink-0`}>•</span>
+      <li key={i} className='flex items-start gap-1.5'>
+        <span className={`${markerClassName} mt-0.5 shrink-0`}>•</span>
         <span className='min-w-0'>{content}</span>
       </li>
     ))}
@@ -99,13 +99,13 @@ export const CheckList: React.FC<CheckListProps> = ({
   markerClassName = 'text-green-600 dark:text-green-400',
   className = '',
 }) => (
-  <ul className={`space-y-3 ${className}`.trim()}>
+  <ul className={`space-y-2 ${className}`.trim()}>
     {items.map((content, i) => (
-      <li key={i} className='flex items-start gap-2'>
-        <span className={`${markerClassName} mt-1 shrink-0`}>{marker}</span>
+      <li key={i} className='flex items-start gap-1.5'>
+        <span className={`${markerClassName} mt-0.5 shrink-0`}>{marker}</span>
         <Typography
           variant='p'
-          className='min-w-0 text-sm leading-7 text-green-900 dark:text-green-100'
+          className='min-w-0 text-sm leading-6 text-green-900 dark:text-green-100'
         >
           {content}
         </Typography>
@@ -125,12 +125,12 @@ export const NumberedStepList: React.FC<NumberedStepListProps> = ({
   start = 1,
   className = '',
 }) => (
-  <div className={`space-y-7 ${className}`.trim()}>
+  <div className={`space-y-5 ${className}`.trim()}>
     {steps.map((s, i) => (
       <div key={i}>
         <Typography
           variant='h4'
-          className='flex items-center gap-3 leading-snug'
+          className='flex items-center gap-3 text-base leading-snug sm:text-lg'
         >
           <span className='inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground'>
             {start + i}
@@ -140,7 +140,7 @@ export const NumberedStepList: React.FC<NumberedStepListProps> = ({
         {s.description && (
           <Typography
             variant='p'
-            className='ml-9 mt-2 text-sm leading-7 text-muted-foreground'
+            className='ml-9 mt-1.5 text-sm leading-6 text-muted-foreground'
           >
             {s.description}
           </Typography>
@@ -154,5 +154,5 @@ export const NumberedStepList: React.FC<NumberedStepListProps> = ({
 export const Indented: React.FC<
   React.PropsWithChildren<{ className?: string }>
 > = ({ children, className = '' }) => (
-  <div className={`ml-0 sm:ml-11 ${className}`.trim()}>{children}</div>
+  <div className={`ml-0 sm:ml-10 ${className}`.trim()}>{children}</div>
 )
