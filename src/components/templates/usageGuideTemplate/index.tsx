@@ -63,53 +63,55 @@ const UsageGuideTemplate = () => {
 
   return (
     <div className='space-y-6 pt-2 sm:space-y-7 sm:pt-3'>
-      <Card className='overflow-hidden border-border/60 bg-card/80 shadow-sm'>
-        <div className='grid gap-5 px-5 py-5 sm:px-6 sm:py-6 lg:grid-cols-[1.35fr_0.95fr] lg:gap-6'>
-          <div className='space-y-3'>
-            <div className='space-y-2'>
+      <Card className='overflow-hidden border-border/60 bg-card/90 shadow-sm'>
+        <div className='relative px-4 py-4 sm:px-6 sm:py-5'>
+          <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
+            <div className='min-w-0 space-y-2'>
+              <Badge
+                variant='outline'
+                className='w-fit rounded-full border-primary/25 bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary'
+              >
+                {t('gettingStarted.title')}
+              </Badge>
+
               <Typography
                 variant='h2'
-                className='max-w-3xl leading-tight tracking-tight text-balance'
+                className='max-w-3xl text-2xl leading-tight tracking-tight sm:text-[1.75rem]'
               >
                 {t('title')}
               </Typography>
+
               <Typography
-                variant='lead'
-                className='max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base'
+                variant='p'
+                className='max-w-3xl text-sm leading-6 text-muted-foreground sm:text-[15px]'
               >
                 {t('description')}
               </Typography>
             </div>
-          </div>
 
-          <div className='rounded-2xl border border-dashed border-border/70 bg-muted/30 p-4 sm:p-5'>
-            <Typography
-              variant='h4'
-              className='text-base leading-snug tracking-tight sm:text-lg'
-            >
-              {t('gettingStarted.title')}
-            </Typography>
-            <Typography
-              variant='p'
-              className='mt-1.5 text-sm leading-6 text-muted-foreground'
-            >
-              {t('gettingStarted.description')}
-            </Typography>
-            <div className='mt-3 flex flex-wrap gap-2'>
-              {[
-                t('membership.title'),
-                t('posts.title'),
-                t('managing.title'),
-                t('settings.title'),
-              ].map((label) => (
-                <Badge
-                  key={label}
-                  variant='outline'
-                  className='rounded-full border-border/60 bg-background/70 px-3 py-1 text-[11px] font-medium text-muted-foreground'
-                >
-                  {label}
-                </Badge>
-              ))}
+            <div className='rounded-xl border border-dashed border-border/70 bg-muted/30 p-3 sm:p-3.5 lg:min-w-[320px]'>
+              <Typography
+                variant='small'
+                className='text-sm font-semibold leading-5 text-foreground'
+              >
+                {t('gettingStarted.description')}
+              </Typography>
+              <div className='mt-2.5 flex flex-wrap gap-1.5'>
+                {[
+                  t('membership.title'),
+                  t('posts.title'),
+                  t('managing.title'),
+                  t('settings.title'),
+                ].map((label) => (
+                  <Badge
+                    key={label}
+                    variant='outline'
+                    className='rounded-full border-border/60 bg-background/75 px-2.5 py-0.5 text-xs leading-5 font-medium text-muted-foreground'
+                  >
+                    {label}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
         </div>

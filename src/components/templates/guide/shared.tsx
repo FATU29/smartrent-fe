@@ -120,6 +120,13 @@ interface NumberedStepListProps {
   className?: string
 }
 
+const STEP_NUMBER_PREFIX_REGEX = /^\s*\d+\s*(?:[.)-]\s*)?/
+
+const normalizeStepTitle = (title: React.ReactNode) => {
+  if (typeof title !== 'string') return title
+  return title.replace(STEP_NUMBER_PREFIX_REGEX, '').trim()
+}
+
 export const NumberedStepList: React.FC<NumberedStepListProps> = ({
   steps,
   start = 1,
@@ -130,12 +137,12 @@ export const NumberedStepList: React.FC<NumberedStepListProps> = ({
       <div key={i}>
         <Typography
           variant='h4'
-          className='flex items-center gap-3 text-base leading-snug sm:text-lg'
+          className='flex items-start gap-2.5 text-base leading-snug tracking-tight sm:text-lg'
         >
-          <span className='inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground'>
+          <span className='mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground sm:text-sm'>
             {start + i}
           </span>
-          {s.title}
+          {normalizeStepTitle(s.title)}
         </Typography>
         {s.description && (
           <Typography
