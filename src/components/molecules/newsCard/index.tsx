@@ -76,7 +76,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
     >
       <Card
         className={classNames(
-          'overflow-hidden transition-all duration-200',
+          'overflow-hidden transition-all duration-200 py-0',
           'hover:shadow-md hover:border-primary/30',
           'h-full',
           {
