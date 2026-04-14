@@ -30,25 +30,33 @@ export const GuideCard: React.FC<GuideCardProps> = ({
   children,
 }) => {
   return (
-    <Card className={`p-6 ${className}`.trim()}>
-      <div className='flex items-start gap-3 mb-4'>
+    <Card
+      className={`overflow-hidden rounded-2xl border bg-card/90 shadow-sm ${className}`.trim()}
+    >
+      <div className='flex items-start gap-3 border-b border-border/60 px-5 py-5 sm:px-6'>
         {icon && (
-          <div className={`p-2 rounded-lg ${headerBgClass}`.trim()}>
+          <div className={`rounded-lg p-2 ${headerBgClass}`.trim()}>
             <div className={`h-6 w-6 ${iconClassName}`}>{icon}</div>
           </div>
         )}
-        <div>
-          <Typography variant='h3' className='mb-2'>
+        <div className='min-w-0'>
+          <Typography
+            variant='h4'
+            className='text-lg leading-snug tracking-tight sm:text-xl'
+          >
             {title}
           </Typography>
           {description && (
-            <Typography variant='p' className='text-muted-foreground'>
+            <Typography
+              variant='p'
+              className='mt-2 max-w-2xl text-sm leading-7 text-muted-foreground'
+            >
               {description}
             </Typography>
           )}
         </div>
       </div>
-      {children}
+      <div className='px-5 py-5 sm:px-6 sm:py-6'>{children}</div>
     </Card>
   )
 }
@@ -67,12 +75,12 @@ export const BulletList: React.FC<BulletListProps> = ({
   tight = false,
 }) => (
   <ul
-    className={`space-y-${tight ? 1 : 2} text-muted-foreground ${className}`.trim()}
+    className={`space-y-${tight ? 1 : 2} text-sm leading-7 text-muted-foreground ${className}`.trim()}
   >
     {items.map((content, i) => (
       <li key={i} className='flex items-start gap-2'>
-        <span className={`${markerClassName} mt-1`}>•</span>
-        <span>{content}</span>
+        <span className={`${markerClassName} mt-1 shrink-0`}>•</span>
+        <span className='min-w-0'>{content}</span>
       </li>
     ))}
   </ul>
@@ -94,8 +102,11 @@ export const CheckList: React.FC<CheckListProps> = ({
   <ul className={`space-y-3 ${className}`.trim()}>
     {items.map((content, i) => (
       <li key={i} className='flex items-start gap-2'>
-        <span className={`${markerClassName} mt-1`}>{marker}</span>
-        <Typography variant='p' className='text-green-900 dark:text-green-100'>
+        <span className={`${markerClassName} mt-1 shrink-0`}>{marker}</span>
+        <Typography
+          variant='p'
+          className='min-w-0 text-sm leading-7 text-green-900 dark:text-green-100'
+        >
           {content}
         </Typography>
       </li>
@@ -114,17 +125,23 @@ export const NumberedStepList: React.FC<NumberedStepListProps> = ({
   start = 1,
   className = '',
 }) => (
-  <div className={`space-y-6 ${className}`.trim()}>
+  <div className={`space-y-7 ${className}`.trim()}>
     {steps.map((s, i) => (
       <div key={i}>
-        <Typography variant='h4' className='mb-3 flex items-center gap-2'>
-          <span className='inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm font-semibold'>
+        <Typography
+          variant='h4'
+          className='flex items-center gap-3 leading-snug'
+        >
+          <span className='inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground'>
             {start + i}
           </span>
           {s.title}
         </Typography>
         {s.description && (
-          <Typography variant='p' className='ml-8 text-muted-foreground'>
+          <Typography
+            variant='p'
+            className='ml-9 mt-2 text-sm leading-7 text-muted-foreground'
+          >
             {s.description}
           </Typography>
         )}
@@ -137,5 +154,5 @@ export const NumberedStepList: React.FC<NumberedStepListProps> = ({
 export const Indented: React.FC<
   React.PropsWithChildren<{ className?: string }>
 > = ({ children, className = '' }) => (
-  <div className={`ml-11 ${className}`.trim()}>{children}</div>
+  <div className={`ml-0 sm:ml-11 ${className}`.trim()}>{children}</div>
 )

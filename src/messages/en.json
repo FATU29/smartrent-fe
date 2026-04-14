@@ -3034,8 +3034,28 @@
     "pricing": {
       "title": "Service Pricing",
       "description": "View detailed pricing for membership packages and listing types on SmartRent",
+      "currencySymbol": "đ",
       "loading": "Loading data...",
+      "errorTitle": "Unable to load pricing data",
       "error": "Failed to load data",
+      "hero": {
+        "badge": "Pricing Guide",
+        "metrics": {
+          "packageCount": "Number of packages",
+          "listingTypeCount": "Listing types",
+          "priceRange": "Price range",
+          "currencyPerDay": "đ/day"
+        }
+      },
+      "tabs": {
+        "membership": "Membership Plans",
+        "postTypes": "VIP Tiers",
+        "services": "Extra Services"
+      },
+      "empty": {
+        "title": "No pricing data yet",
+        "description": "Pricing details are being updated. Please check back in a moment."
+      },
       "membership": {
         "title": "Membership Pricing",
         "description": "Membership packages are billed monthly, auto-renewed, and provide a fixed number of listings each month.",
@@ -3057,102 +3077,155 @@
             "description": "Suitable for agents with large inventory and marketing budget"
           },
           "popular": "Popular"
+        },
+        "table": {
+          "ariaLabel": "Membership package comparison",
+          "columns": {
+            "package": "Package",
+            "monthlyPrice": "Monthly price",
+            "gold": "VIP Gold",
+            "silver": "VIP Silver",
+            "normal": "Regular"
+          }
+        },
+        "card": {
+          "totalPosts": "Total monthly listings",
+          "perMonth": "month"
         }
       },
       "postTypes": {
         "title": "Pricing by Listing Type",
+        "description": "4 listing types used in Create Post step 4, with prices shown per day.",
+        "referenceNote": "Reference prices follow the Create Post step 4 package selection.",
         "duration": "Display duration",
+        "days": "days",
+        "maxImages": "Max images",
         "price": "Price",
         "priority": {
           "highest": "Highest priority",
           "high": "High priority",
           "normal": "Normal priority"
         },
+        "vipDiamond": {
+          "name": "VIP Diamond Listing",
+          "description": "Top visibility for premium listings that need maximum reach",
+          "price": "Price on request",
+          "maxImages": "24"
+        },
         "vipGold": {
           "name": "VIP Gold Listing",
-          "description": "Most prominent display, always at top, gold border and special badge",
-          "price": "Per membership plan"
+          "description": "High visibility with strong placement and premium presentation",
+          "price": "Price on request",
+          "maxImages": "24"
         },
         "vipSilver": {
           "name": "VIP Silver Listing",
-          "description": "High priority display, silver border and prominent position",
-          "price": "Per membership plan"
+          "description": "Balanced visibility for standard premium listings",
+          "price": "Price on request",
+          "maxImages": "24"
         },
-        "regular": {
-          "name": "Regular Listing",
-          "description": "Standard listing, displayed by post date and can be pushed to top",
-          "price": "Per membership plan"
+        "standard": {
+          "name": "Standard Listing",
+          "description": "Normal listing for regular posts and membership quota usage",
+          "price": "Free with membership quota",
+          "maxImages": "24"
         }
       },
       "services": {
         "title": "Additional Services",
+        "description": "Three support services currently available for seller accounts.",
+        "broker": {
+          "name": "Real Estate Broker Support",
+          "description": "Extra support for professional broker accounts and setup guidance",
+          "price": "Custom quote"
+        },
         "push": {
           "name": "Push to top",
           "description": "Move your listing to the top for 1 hour",
           "price": "Free with membership"
         },
-        "imageRights": {
-          "name": "Image copyright",
-          "description": "Protect your images from copying with watermark",
-          "price": "Included in Standard+ plans"
-        },
-        "schedule": {
-          "name": "Schedule posting",
-          "description": "Schedule listings to post at optimal times",
-          "price": "Included in Standard+ plans"
+        "verification": {
+          "name": "Listing verification support",
+          "description": "Faster guidance for verification and moderation of listings",
+          "price": "Support only"
         }
       }
     },
     "payment": {
       "title": "Payment Guide",
-      "description": "Learn about payment methods and the purchase process",
+      "description": "Complete payment securely with only two supported gateways: ZaloPay and VNPay.",
+      "hero": {
+        "badge": "Secure checkout for SellerNet",
+        "metrics": {
+          "methodCount": {
+            "label": "Supported methods",
+            "value": "2 gateways"
+          },
+          "availability": {
+            "label": "Availability",
+            "value": "24/7"
+          }
+        }
+      },
       "methods": {
-        "title": "Payment Methods",
-        "card": {
-          "title": "ATM/Visa/Mastercard",
-          "description": "Online payment via payment gateway",
-          "feature1": "Automatically processed instantly",
-          "feature2": "High security with SSL encryption",
-          "feature3": "Supports multiple banks"
+        "title": "Supported Payment Methods",
+        "description": "Choose either ZaloPay or VNPay. We currently do not support card-only or manual bank transfer checkout on this page.",
+        "metaLabels": {
+          "bestFor": "Best for",
+          "channels": "Checkout channels"
         },
-        "wallet": {
-          "title": "E-Wallet",
-          "description": "ZaloPay, VNPay",
-          "feature1": "Fast and convenient",
-          "feature2": "Available wallet promotions"
+        "zalopay": {
+          "shortLabel": "ZaloPay",
+          "badge": "Mobile-first",
+          "title": "Pay via ZaloPay",
+          "description": "Fast checkout from your phone with one-tap confirmation in ZaloPay.",
+          "feature1": "Instant redirect and automatic return to SmartRent",
+          "feature2": "Easy confirmation inside the ZaloPay app",
+          "feature3": "Good fit for quick top-ups and routine renewals",
+          "bestFor": "Users paying mostly on mobile",
+          "channels": "ZaloPay app, linked bank card"
         },
-        "bank": {
-          "title": "Bank Transfer",
-          "description": "Direct bank transfer",
-          "feature1": "Suitable for large transactions",
-          "feature2": "Confirmed within 1-2 hours"
+        "vnpay": {
+          "shortLabel": "VNPay",
+          "badge": "Bank network",
+          "title": "Pay via VNPay",
+          "description": "Broad banking support through VNPay gateway with clear transaction references.",
+          "feature1": "Supports major domestic banking channels",
+          "feature2": "Stable flow for membership and feature purchases",
+          "feature3": "Clear transaction code for support and reconciliation",
+          "bestFor": "Users preferring bank-driven checkout",
+          "channels": "VNPay QR, ATM card, banking apps"
         }
       },
       "howToPay": {
         "title": "Payment Process",
+        "description": "Follow these 4 steps to complete your purchase without interruption.",
         "step1": {
-          "title": "Choose a service package",
-          "description": "Go to 'Membership' and select the package that suits your needs. Compare features and pricing to make the best decision."
+          "title": "Choose package or service",
+          "description": "Select the membership plan or paid feature you want to purchase in SellerNet."
         },
         "step2": {
-          "title": "Select payment method",
-          "description": "Choose a suitable payment method: Bank card, E-wallet, or Bank transfer. Each method has its own advantages in speed and convenience."
+          "title": "Pick ZaloPay or VNPay",
+          "description": "Choose one of the two supported gateways and continue to the secure payment page."
         },
         "step3": {
-          "title": "Confirm payment",
-          "description": "Review order details, discount code (if any), and total amount. Then proceed with payment according to the payment gateway instructions."
+          "title": "Confirm payment details",
+          "description": "Check amount and order information, then confirm in your selected gateway."
         },
         "step4": {
-          "title": "Account activation",
-          "description": "After successful payment, the service package will be activated immediately. You can start using features and posting listings right away."
+          "title": "Return and activate instantly",
+          "description": "After success, your balance or package is updated automatically in your account."
         }
       },
       "notes": {
         "title": "Important Notes",
-        "note1": "Membership auto-renews monthly. You can cancel anytime.",
-        "note2": "Listing allocations reset at the start of each month and do not carry over.",
-        "note3": "Electronic invoices will be sent via email after each payment.",
-        "note4": "Contact hotline 1900-xxxx if you encounter any payment issues."
+        "description": "Review these points before making a payment.",
+        "securityTitle": "Security reminder",
+        "securityDescription": "Always verify you are redirected to official ZaloPay or VNPay domains before confirming payment.",
+        "note1": "Only ZaloPay and VNPay are supported on this payment guide page.",
+        "note2": "Do not refresh or close the browser while the gateway is processing.",
+        "note3": "If payment is deducted but status is pending, wait 1-3 minutes then check transaction history.",
+        "note4": "Contact support with transaction code for faster troubleshooting."
       }
     },
     "usage": {
@@ -3194,24 +3267,39 @@
         "description": "Detailed guide on listing types and how to create effective listings",
         "types": {
           "title": "Listing Types",
-          "vipGold": "VIP Gold Listing",
-          "vipGoldDesc": "Highest priority display, always at top, gold border. Best for premium properties or urgent sales.",
-          "vipSilver": "VIP Silver Listing",
-          "vipSilverDesc": "High priority display with silver border. Suitable for mid-range properties needing more views.",
-          "regular": "Regular Listing",
-          "regularDesc": "Standard listing, displayed by post time. Can be pushed to top with free push credits."
+          "referenceNote": "These 4 listing types are synced with the Pricing Guide and Create Post step 4.",
+          "vipDiamond": {
+            "name": "VIP Diamond Listing",
+            "description": "Maximum visibility for premium listings that need the strongest reach",
+            "badge": "Top priority"
+          },
+          "vipGold": {
+            "name": "VIP Gold Listing",
+            "description": "High visibility with strong placement and premium presentation",
+            "badge": "High priority"
+          },
+          "vipSilver": {
+            "name": "VIP Silver Listing",
+            "description": "Balanced visibility for standard premium listings",
+            "badge": "Priority"
+          },
+          "standard": {
+            "name": "Standard Listing",
+            "description": "Normal listing for regular posts and membership quota usage",
+            "badge": "Default"
+          }
         },
         "bestPractices": {
           "title": "Tips for Effective Listings",
           "tip1": "Use high-quality, well-lit photos from multiple angles (minimum 5-8 photos)",
           "tip2": "Write concise, eye-catching titles (e.g., '2BR apartment with river view in D7, great price')",
-          "tip3": "Detailed description: area, rooms, furnishing, legal status, price, contact",
+          "tip3": "Match the listing type to your goal: Diamond for maximum reach, Gold for strong visibility, Silver for balanced reach, Standard for quota-based posting",
           "tip4": "Update accurate pricing, avoid overpricing or 'negotiable' only",
           "tip5": "Add videos or 3D/360° tours to increase credibility and views"
         },
         "pushing": {
           "title": "Push to Top",
-          "description": "Each membership plan includes free push credits. Use push to move regular listings to the top for 1 hour.",
+          "description": "Use push to move Standard listings to the top for 1 hour when you need extra exposure.",
           "tip": "Tip: Push listings during peak hours (9-11 AM, 7-9 PM) to optimize effectiveness."
         }
       },
