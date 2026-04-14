@@ -44,32 +44,27 @@ const LISTING_TYPE_STYLES: Record<
     cardClass: string
     badgeClass: string
     titleClass: string
-    iconClass: string
   }
 > = {
   DIAMOND: {
     cardClass: 'border-primary/25 bg-primary/5',
     badgeClass: 'border-primary/30 bg-primary/10 text-primary',
     titleClass: 'text-primary',
-    iconClass: 'text-primary',
   },
   GOLD: {
     cardClass: 'border-amber-200 bg-amber-50/70',
     badgeClass: 'border-amber-200 bg-amber-100 text-amber-800',
     titleClass: 'text-amber-800',
-    iconClass: 'text-amber-700',
   },
   SILVER: {
     cardClass: 'border-slate-200 bg-slate-50/70',
     badgeClass: 'border-slate-200 bg-slate-100 text-slate-700',
     titleClass: 'text-slate-700',
-    iconClass: 'text-slate-600',
   },
   STANDARD: {
     cardClass: 'border-border bg-muted/20',
     badgeClass: 'border-border bg-background text-foreground',
     titleClass: 'text-foreground',
-    iconClass: 'text-muted-foreground',
   },
 }
 
@@ -202,21 +197,18 @@ const PricingGuideTemplate: React.FC = () => {
     return (
       <div
         className={cn(
-          'flex h-full flex-col rounded-xl border p-4',
+          'flex h-full w-full flex-col rounded-xl border p-3.5',
           style.cardClass,
         )}
       >
         <div className='mb-2 flex items-start justify-between gap-2'>
-          <div className='flex min-w-0 items-center gap-2'>
-            <Crown className={cn('h-4 w-4', style.iconClass)} />
-            <div
-              className={cn(
-                'min-w-0 text-base font-semibold sm:text-lg',
-                style.titleClass,
-              )}
-            >
-              <span className='block truncate'>{tierName}</span>
-            </div>
+          <div
+            className={cn(
+              'min-w-0 text-sm font-semibold sm:text-base',
+              style.titleClass,
+            )}
+          >
+            <span className='block truncate'>{tierName}</span>
           </div>
           <Badge
             variant='outline'
@@ -435,10 +427,7 @@ const PricingGuideTemplate: React.FC = () => {
                   >
                     <CarouselContent>
                       {vipTiersByPrice.map((tier, rank) => (
-                        <CarouselItem
-                          key={tier.tierId}
-                          className='flex basis-[88%] sm:basis-[72%]'
-                        >
+                        <CarouselItem key={tier.tierId} className='basis-full'>
                           {renderVipTierCard(tier, rank)}
                         </CarouselItem>
                       ))}
@@ -504,10 +493,7 @@ const PricingGuideTemplate: React.FC = () => {
                 <CarouselContent>
                   {['broker', 'push', 'verification'].map(
                     (serviceKey, index) => (
-                      <CarouselItem
-                        key={serviceKey}
-                        className='basis-[88%] sm:basis-[72%]'
-                      >
+                      <CarouselItem key={serviceKey} className='basis-full'>
                         <div
                           className={cn(
                             'rounded-xl border p-4',
