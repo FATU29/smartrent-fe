@@ -3144,8 +3144,28 @@
     "pricing": {
       "title": "Bảng Giá Dịch Vụ",
       "description": "Xem chi tiết bảng giá các gói dịch vụ và loại tin đăng của SmartRent",
+      "currencySymbol": "đ",
       "loading": "Đang tải dữ liệu...",
+      "errorTitle": "Không thể tải dữ liệu bảng giá",
       "error": "Không thể tải dữ liệu",
+      "hero": {
+        "badge": "Hướng Dẫn Bảng Giá",
+        "metrics": {
+          "packageCount": "Số lượng gói",
+          "listingTypeCount": "Loại tin đăng",
+          "priceRange": "Khoảng giá",
+          "currencyPerDay": "đ/ngày"
+        }
+      },
+      "tabs": {
+        "membership": "Gói Hội Viên",
+        "postTypes": "Cấp độ VIP",
+        "services": "Dịch vụ thêm"
+      },
+      "empty": {
+        "title": "Chưa có dữ liệu bảng giá",
+        "description": "Dữ liệu bảng giá đang được cập nhật. Vui lòng thử lại sau ít phút."
+      },
       "membership": {
         "title": "Giá Gói Hội Viên",
         "description": "Các gói hội viên được tính theo tháng, tự động gia hạn và cung cấp số lượng tin đăng cố định mỗi tháng.",
@@ -3167,102 +3187,155 @@
             "description": "Phù hợp với môi giới có gói hàng và ngân sách quảng cáo lớn"
           },
           "popular": "Phổ biến"
+        },
+        "table": {
+          "ariaLabel": "Bảng so sánh gói hội viên",
+          "columns": {
+            "package": "Gói",
+            "monthlyPrice": "Giá theo tháng",
+            "gold": "VIP Vàng",
+            "silver": "VIP Bạc",
+            "normal": "Tin thường"
+          }
+        },
+        "card": {
+          "totalPosts": "Tổng số tin mỗi tháng",
+          "perMonth": "tháng"
         }
       },
       "postTypes": {
         "title": "Giá Theo Loại Tin Đăng",
+        "description": "4 loại tin đăng dùng trong bước 4 của Tạo Tin, giá hiển thị theo ngày.",
+        "referenceNote": "Giá tham khảo theo phần chọn gói ở bước 4 tạo tin đăng.",
         "duration": "Thời gian hiển thị",
+        "days": "ngày",
+        "maxImages": "Số ảnh tối đa",
         "price": "Giá",
         "priority": {
           "highest": "Ưu tiên cao nhất",
           "high": "Ưu tiên cao",
           "normal": "Ưu tiên thường"
         },
+        "vipDiamond": {
+          "name": "Tin VIP Kim Cương",
+          "description": "Hiển thị nổi bật nhất cho tin cần độ phủ tối đa",
+          "price": "Liên hệ báo giá",
+          "maxImages": "24"
+        },
         "vipGold": {
           "name": "Tin VIP Vàng",
-          "description": "Hiển thị nổi bật nhất, luôn ở đầu danh sách, có khung viền vàng và badge đặc biệt",
-          "price": "Theo gói hội viên"
+          "description": "Hiển thị ưu tiên cao với vị trí nổi bật và trình bày cao cấp",
+          "price": "Liên hệ báo giá",
+          "maxImages": "24"
         },
         "vipSilver": {
           "name": "Tin VIP Bạc",
-          "description": "Hiển thị ưu tiên cao, có khung viền bạc và vị trí nổi bật",
-          "price": "Theo gói hội viên"
+          "description": "Hiển thị cân bằng cho tin cần tăng lượt xem",
+          "price": "Liên hệ báo giá",
+          "maxImages": "24"
         },
-        "regular": {
+        "standard": {
           "name": "Tin Thường",
-          "description": "Tin đăng tiêu chuẩn, hiển thị theo thời gian đăng và được đẩy lên top",
-          "price": "Theo gói hội viên"
+          "description": "Tin đăng tiêu chuẩn cho bài viết thông thường hoặc dùng quota hội viên",
+          "price": "Miễn phí với quota hội viên",
+          "maxImages": "24"
         }
       },
       "services": {
         "title": "Dịch Vụ Bổ Sung",
+        "description": "3 dịch vụ hỗ trợ hiện đang áp dụng cho tài khoản bán hàng.",
+        "broker": {
+          "name": "Hỗ trợ môi giới bất động sản",
+          "description": "Hỗ trợ bổ sung cho tài khoản môi giới chuyên nghiệp và cấu hình ban đầu",
+          "price": "Báo giá theo nhu cầu"
+        },
         "push": {
           "name": "Đẩy tin lên top",
           "description": "Đưa tin đăng của bạn lên đầu danh sách trong 1 giờ",
           "price": "Miễn phí với gói hội viên"
         },
-        "imageRights": {
-          "name": "Bản quyền ảnh",
-          "description": "Bảo vệ ảnh của bạn khỏi sao chép, có watermark",
-          "price": "Bao gồm trong gói Tiêu chuẩn+"
-        },
-        "schedule": {
-          "name": "Hẹn giờ đăng tin",
-          "description": "Lên lịch đăng tin vào thời gian tối ưu",
-          "price": "Bao gồm trong gói Tiêu chuẩn+"
+        "verification": {
+          "name": "Hỗ trợ xác thực tin đăng",
+          "description": "Hỗ trợ nhanh hơn trong kiểm duyệt và xác thực tin đăng",
+          "price": "Chỉ hỗ trợ"
         }
       }
     },
     "payment": {
       "title": "Hướng Dẫn Thanh Toán",
-      "description": "Tìm hiểu các phương thức thanh toán và quy trình mua gói dịch vụ",
+      "description": "Thanh toán an toàn với 2 cổng được hỗ trợ: ZaloPay và VNPay.",
+      "hero": {
+        "badge": "Thanh toán bảo mật cho SellerNet",
+        "metrics": {
+          "methodCount": {
+            "label": "Phương thức hỗ trợ",
+            "value": "2 cổng thanh toán"
+          },
+          "availability": {
+            "label": "Thời gian hoạt động",
+            "value": "24/7"
+          }
+        }
+      },
       "methods": {
-        "title": "Phương Thức Thanh Toán",
-        "card": {
-          "title": "Thẻ ATM/Visa/Mastercard",
-          "description": "Thanh toán trực tuyến qua cổng thanh toán",
-          "feature1": "Tự động xử lý ngay lập tức",
-          "feature2": "Bảo mật cao với mã hóa SSL",
-          "feature3": "Hỗ trợ đa dạng ngân hàng"
+        "title": "Phương Thức Thanh Toán Được Hỗ Trợ",
+        "description": "Trang này chỉ hỗ trợ ZaloPay và VNPay. Không còn thanh toán thẻ riêng lẻ hoặc chuyển khoản thủ công.",
+        "metaLabels": {
+          "bestFor": "Phù hợp với",
+          "channels": "Kênh thanh toán"
         },
-        "wallet": {
-          "title": "Ví điện tử",
-          "description": "ZaloPay, VNPay",
-          "feature1": "Nhanh chóng, tiện lợi",
-          "feature2": "Có khuyến mãi từ ví"
+        "zalopay": {
+          "shortLabel": "ZaloPay",
+          "badge": "Ưu tiên mobile",
+          "title": "Thanh toán qua ZaloPay",
+          "description": "Thanh toán nhanh trên điện thoại, xác nhận một chạm trong ứng dụng ZaloPay.",
+          "feature1": "Chuyển hướng tức thì và tự động quay lại SmartRent",
+          "feature2": "Xác nhận thuận tiện ngay trong app ZaloPay",
+          "feature3": "Phù hợp cho nạp tiền nhanh và gia hạn định kỳ",
+          "bestFor": "Người dùng thanh toán chủ yếu trên mobile",
+          "channels": "Ứng dụng ZaloPay, thẻ liên kết ngân hàng"
         },
-        "bank": {
-          "title": "Chuyển khoản ngân hàng",
-          "description": "Chuyển khoản trực tiếp",
-          "feature1": "Phù hợp với giao dịch lớn",
-          "feature2": "Xác nhận trong 1-2 giờ"
+        "vnpay": {
+          "shortLabel": "VNPay",
+          "badge": "Mạng lưới ngân hàng",
+          "title": "Thanh toán qua VNPay",
+          "description": "Hỗ trợ ngân hàng rộng qua cổng VNPay, dễ đối soát nhờ mã giao dịch rõ ràng.",
+          "feature1": "Hỗ trợ đa dạng kênh ngân hàng nội địa",
+          "feature2": "Luồng ổn định cho mua gói hội viên và tiện ích",
+          "feature3": "Có mã giao dịch rõ ràng để hỗ trợ và kiểm tra",
+          "bestFor": "Người dùng ưu tiên thanh toán qua ngân hàng",
+          "channels": "VNPay QR, thẻ ATM, ứng dụng ngân hàng"
         }
       },
       "howToPay": {
         "title": "Quy Trình Thanh Toán",
+        "description": "Làm theo 4 bước sau để hoàn tất thanh toán nhanh và ổn định.",
         "step1": {
-          "title": "Chọn gói dịch vụ",
-          "description": "Vào mục 'Gói Hội viên' và chọn gói phù hợp với nhu cầu của bạn. So sánh các tính năng và giá cả để đưa ra quyết định tốt nhất."
+          "title": "Chọn gói hoặc dịch vụ",
+          "description": "Chọn gói hội viên hoặc tiện ích trả phí bạn muốn mua trong SellerNet."
         },
         "step2": {
-          "title": "Chọn phương thức thanh toán",
-          "description": "Chọn phương thức thanh toán phù hợp: Thẻ ngân hàng, Ví điện tử hoặc Chuyển khoản. Mỗi phương thức có ưu điểm riêng về tốc độ và tiện lợi."
+          "title": "Chọn ZaloPay hoặc VNPay",
+          "description": "Chọn 1 trong 2 cổng được hỗ trợ và tiếp tục tới trang thanh toán bảo mật."
         },
         "step3": {
-          "title": "Xác nhận thanh toán",
-          "description": "Kiểm tra lại thông tin đơn hàng, mã giảm giá (nếu có) và tổng số tiền. Sau đó tiến hành thanh toán theo hướng dẫn của cổng thanh toán."
+          "title": "Xác nhận thông tin thanh toán",
+          "description": "Kiểm tra số tiền và thông tin đơn hàng, sau đó xác nhận trong cổng đã chọn."
         },
         "step4": {
-          "title": "Kích hoạt tài khoản",
-          "description": "Sau khi thanh toán thành công, gói dịch vụ sẽ được kích hoạt ngay lập tức. Bạn có thể bắt đầu sử dụng các tính năng và đăng tin ngay."
+          "title": "Quay lại và kích hoạt ngay",
+          "description": "Sau khi thành công, số dư hoặc gói dịch vụ được cập nhật tự động vào tài khoản."
         }
       },
       "notes": {
         "title": "Lưu Ý Quan Trọng",
-        "note1": "Gói hội viên tự động gia hạn hàng tháng. Bạn có thể hủy bất cứ lúc nào.",
-        "note2": "Số tin đăng được reset vào đầu mỗi tháng và không được chuyển sang tháng tiếp theo.",
-        "note3": "Hóa đơn điện tử sẽ được gửi qua email sau mỗi lần thanh toán.",
-        "note4": "Liên hệ hotline 1900-xxxx nếu gặp vấn đề trong quá trình thanh toán."
+        "description": "Đọc kỹ các lưu ý sau trước khi thanh toán.",
+        "securityTitle": "Nhắc nhở bảo mật",
+        "securityDescription": "Luôn kiểm tra bạn đang được chuyển đến đúng tên miền chính thức của ZaloPay hoặc VNPay trước khi xác nhận.",
+        "note1": "Trang hướng dẫn này chỉ hỗ trợ ZaloPay và VNPay.",
+        "note2": "Không làm mới hoặc đóng trình duyệt khi cổng thanh toán đang xử lý.",
+        "note3": "Nếu đã trừ tiền nhưng trạng thái còn chờ, hãy đợi 1-3 phút rồi kiểm tra lịch sử giao dịch.",
+        "note4": "Liên hệ hỗ trợ và cung cấp mã giao dịch để được xử lý nhanh hơn."
       }
     },
     "usage": {
@@ -3304,24 +3377,39 @@
         "description": "Hướng dẫn chi tiết về các loại tin và cách tạo tin hiệu quả",
         "types": {
           "title": "Các Loại Tin Đăng",
-          "vipGold": "Tin VIP Vàng",
-          "vipGoldDesc": "Hiển thị ưu tiên cao nhất, luôn ở top, có khung vàng nổi bật. Tốt nhất cho BDS cao cấp hoặc cần bán gấp.",
-          "vipSilver": "Tin VIP Bạc",
-          "vipSilverDesc": "Hiển thị ưu tiên cao, có khung bạc. Phù hợp cho BDS tầm trung cần tăng lượt xem.",
-          "regular": "Tin Thường",
-          "regularDesc": "Tin tiêu chuẩn, hiển thị theo thời gian. Có thể đẩy lên top bằng lượt push miễn phí."
+          "referenceNote": "4 loại tin này đã đồng bộ với Bảng Giá và bước 4 trong Tạo Tin.",
+          "vipDiamond": {
+            "name": "Tin VIP Kim Cương",
+            "description": "Hiển thị mạnh nhất cho tin cần độ phủ tối đa",
+            "badge": "Ưu tiên cao nhất"
+          },
+          "vipGold": {
+            "name": "Tin VIP Vàng",
+            "description": "Hiển thị ưu tiên cao với vị trí nổi bật và trình bày cao cấp",
+            "badge": "Ưu tiên cao"
+          },
+          "vipSilver": {
+            "name": "Tin VIP Bạc",
+            "description": "Hiển thị cân bằng cho tin cần tăng lượt xem",
+            "badge": "Ưu tiên"
+          },
+          "standard": {
+            "name": "Tin Thường",
+            "description": "Tin đăng tiêu chuẩn cho bài viết thông thường hoặc dùng quota hội viên",
+            "badge": "Mặc định"
+          }
         },
         "bestPractices": {
           "title": "Mẹo Đăng Tin Hiệu Quả",
           "tip1": "Sử dụng ảnh chất lượng cao, đủ ánh sáng, chụp nhiều góc (tối thiểu 5-8 ảnh)",
           "tip2": "Viết tiêu đề ngắn gọn, nổi bật (ví dụ: 'Căn hộ 2PN view sông Q7, giá tốt')",
-          "tip3": "Mô tả chi tiết: diện tích, số phòng, nội thất, pháp lý, giá, liên hệ",
+          "tip3": "Chọn loại tin phù hợp với mục tiêu: Kim Cương cho độ phủ tối đa, Vàng cho hiển thị mạnh, Bạc cho hiển thị cân bằng, Thường cho đăng bằng quota",
           "tip4": "Cập nhật giá chính xác, không để giá quá cao hoặc 'thỏa thuận'",
           "tip5": "Thêm video hoặc tour 3D/360° để tăng độ tin cậy và lượt xem"
         },
         "pushing": {
           "title": "Đẩy Tin Lên Top",
-          "description": "Mỗi gói hội viên đều có lượt đẩy tin miễn phí (push). Sử dụng push để đưa tin thường lên đầu danh sách trong 1 giờ.",
+          "description": "Dùng push để đưa Tin Thường lên đầu danh sách trong 1 giờ khi cần thêm lượt hiển thị.",
           "tip": "Tip: Đẩy tin vào khung giờ cao điểm (9-11h sáng, 19-21h tối) để tối ưu hiệu quả."
         }
       },
