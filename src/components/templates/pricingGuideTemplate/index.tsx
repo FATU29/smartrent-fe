@@ -200,24 +200,37 @@ const PricingGuideTemplate: React.FC = () => {
     )
 
     return (
-      <div className={cn('rounded-xl border p-4', style.cardClass)}>
+      <div
+        className={cn(
+          'flex h-full flex-col rounded-xl border p-4',
+          style.cardClass,
+        )}
+      >
         <div className='mb-2 flex items-start justify-between gap-2'>
-          <div className='flex items-center gap-2'>
+          <div className='flex min-w-0 items-center gap-2'>
             <Crown className={cn('h-4 w-4', style.iconClass)} />
-            <div className={cn('text-lg font-semibold', style.titleClass)}>
-              {tierName}
+            <div
+              className={cn(
+                'min-w-0 text-base font-semibold sm:text-lg',
+                style.titleClass,
+              )}
+            >
+              <span className='block truncate'>{tierName}</span>
             </div>
           </div>
-          <Badge variant='outline' className={style.badgeClass}>
+          <Badge
+            variant='outline'
+            className={cn('whitespace-nowrap', style.badgeClass)}
+          >
             {t(`postTypes.priority.${getTierPriorityTranslationKey(rank)}`)}
           </Badge>
         </div>
 
-        <div className='mb-4 text-sm leading-relaxed text-muted-foreground'>
+        <div className='mb-4 h-10 overflow-hidden text-sm leading-5 text-muted-foreground'>
           {t(`postTypes.${translationKey}.description`)}
         </div>
 
-        <div className='space-y-2 text-sm'>
+        <div className='mt-auto space-y-2 text-sm'>
           {[10, 15, 30].map((days) => {
             const priceByDuration: Record<number, number> = {
               10: tier.price10Days || 0,
@@ -228,23 +241,23 @@ const PricingGuideTemplate: React.FC = () => {
             return (
               <div
                 key={`${tier.tierId}-duration-${days}`}
-                className='flex items-start justify-between gap-3 rounded-md border bg-background/70 px-3 py-2'
+                className='flex items-center justify-between gap-3 rounded-md border bg-background/70 px-3 py-2'
               >
-                <span className='text-muted-foreground'>
+                <span className='whitespace-nowrap text-xs font-medium text-muted-foreground sm:text-sm'>
                   {t('postTypes.duration')} {days} {t('postTypes.days')}
                 </span>
-                <span className='text-right font-semibold'>
+                <span className='whitespace-nowrap text-right text-xs font-semibold sm:text-sm'>
                   {formatPrice(priceByDuration[days])} {t('currencySymbol')}
                 </span>
               </div>
             )
           })}
 
-          <div className='flex items-start justify-between gap-3 rounded-md border bg-background/70 px-3 py-2'>
-            <span className='text-muted-foreground'>
+          <div className='flex items-center justify-between gap-3 rounded-md border bg-background/70 px-3 py-2'>
+            <span className='whitespace-nowrap text-xs font-medium text-muted-foreground sm:text-sm'>
               {t('postTypes.pricePerDay')}
             </span>
-            <span className='text-right font-semibold'>
+            <span className='whitespace-nowrap text-right text-xs font-semibold sm:text-sm'>
               {formatPrice(tier.pricePerDay || 0)} {t('currencySymbol')}
             </span>
           </div>
@@ -400,21 +413,18 @@ const PricingGuideTemplate: React.FC = () => {
               <Crown className='h-5 w-5 text-primary' />
               <span className='break-words'>{t('postTypes.title')}</span>
             </CardTitle>
-            <CardDescription>{t('postTypes.description')}</CardDescription>
+            <CardDescription className='max-w-4xl leading-relaxed'>
+              {t('postTypes.description')}
+            </CardDescription>
           </CardHeader>
           <CardContent className='space-y-4 pb-5'>
-            <Typography variant='small' className='text-muted-foreground'>
-              {t('postTypes.referenceNote')}
-            </Typography>
-            <Typography variant='small' className='text-muted-foreground'>
-              {t('postTypes.priorityByPriceNote')}
-            </Typography>
-
             {vipTiersByPrice.length > 0 ? (
               <>
-                <div className='hidden gap-4 md:grid md:grid-cols-2 xl:grid-cols-4'>
+                <div className='hidden items-stretch gap-4 md:grid md:grid-cols-2 xl:grid-cols-4'>
                   {vipTiersByPrice.map((tier, rank) => (
-                    <div key={tier.tierId}>{renderVipTierCard(tier, rank)}</div>
+                    <div key={tier.tierId} className='h-full'>
+                      {renderVipTierCard(tier, rank)}
+                    </div>
                   ))}
                 </div>
 
@@ -427,7 +437,7 @@ const PricingGuideTemplate: React.FC = () => {
                       {vipTiersByPrice.map((tier, rank) => (
                         <CarouselItem
                           key={tier.tierId}
-                          className='basis-[88%] sm:basis-[72%]'
+                          className='flex basis-[88%] sm:basis-[72%]'
                         >
                           {renderVipTierCard(tier, rank)}
                         </CarouselItem>

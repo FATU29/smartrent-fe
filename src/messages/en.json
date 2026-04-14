@@ -3097,10 +3097,10 @@
       },
       "postTypes": {
         "title": "Pricing by Listing Type",
-        "description": "4 listing types used in Create Post step 4, with prices shown per day.",
+        "description": "These 4 listing types are used in Create Post step 4 with daily pricing; reference prices and VIP levels follow the package selection and price order in this step.",
         "referenceNote": "Reference prices follow the Create Post step 4 package selection.",
         "priorityByPriceNote": "VIP levels are ordered by pricing in Create Post step 4.",
-        "duration": "Display duration",
+        "duration": "Duration",
         "days": "days",
         "pricePerDay": "Price per day",
         "maxImages": "Max images",
