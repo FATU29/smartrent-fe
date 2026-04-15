@@ -2,7 +2,7 @@ export type MediaType = 'IMAGE' | 'VIDEO'
 // UPLOAD = our R2 flow; YOUTUBE/TIKTOK/EXTERNAL come from saveExternal endpoint
 export type MediaSourceType = 'UPLOAD' | 'YOUTUBE' | 'TIKTOK' | 'EXTERNAL'
 export type MediaStatus = 'PENDING' | 'ACTIVE' | 'ARCHIVED' | 'DELETED'
-export type MediaPurpose = 'LISTING' | 'AVATAR'
+export type MediaPurpose = 'LISTING' | 'AVATAR' | 'BROKER_DOCUMENT'
 
 export interface MediaItem {
   mediaId: number

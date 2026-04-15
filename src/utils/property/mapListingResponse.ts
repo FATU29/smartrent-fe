@@ -60,6 +60,7 @@ export function mapFrontendToBackendRequest(
     size: frontendFilter?.size ?? 10,
     status: frontendFilter?.status,
     userId: frontendFilter?.userId,
+    isBroker: frontendFilter?.isBroker,
     sortBy: frontendFilter?.sortBy,
     latitude: frontendFilter?.latitude,
     longitude: frontendFilter?.longitude,

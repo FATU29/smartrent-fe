@@ -650,6 +650,23 @@
           "section1Description": "Please upload a clear photo of your broker practicing certificate for verification.",
           "section2Title": "Section 2: Vietnam ID verification",
           "section2Description": "You must update Full Name, Phone Number, and Avatar in the Edit Information tab before uploading ID images.",
+          "statusLoading": "Loading broker status...",
+          "statusLoadError": "Unable to load broker verification status.",
+          "statusLoadErrorTitle": "Unable to refresh broker status",
+          "statusLoadErrorHint": "You can still upload and submit documents. We will retry status sync later.",
+          "refreshStatus": "Refresh status",
+          "approvedBadge": "✓ Verified Broker",
+          "pendingBadge": "🕐 Verification in Progress",
+          "rejectedBadge": "Registration Rejected",
+          "approvedMessage": "Your broker profile has been verified successfully.",
+          "pendingMessage": "Your broker verification application is under manual review.",
+          "rejectedMessage": "Your previous submission was rejected. Please re-apply with new documents.",
+          "rejectionReasonLabel": "Reason:",
+          "reapply": "Re-apply with New Documents",
+          "submittedDocsTitle": "Submitted Documents",
+          "submittedDocsHint": "These presigned links may expire. Refresh status to load fresh URLs.",
+          "docUnavailable": "Document preview unavailable. Please refresh status.",
+          "docExpiredHint": "One or more document URLs may be expired. Refresh status to request fresh links.",
           "certificateLabel": "Broker license photo",
           "citizenIdLabel": "Citizen ID number",
           "citizenIdPlaceholder": "Enter Citizen ID number (9-12 digits)",
@@ -657,6 +674,12 @@
           "idBackLabel": "Citizen ID back side",
           "uploadCta": "Click to upload image",
           "uploadHint": "Supported formats: JPEG, PNG, WebP • Max 10MB",
+          "uploading": "Uploading...",
+          "uploaded": "Uploaded",
+          "retryUpload": "Retry upload",
+          "uploadInProgress": "Documents are still uploading. Please wait for all uploads to finish.",
+          "readyToSubmit": "All documents uploaded. You can submit your application now.",
+          "uploadRequiredHint": "Upload all required documents to enable submission.",
           "personalInfoIncompleteTitle": "Missing basic information",
           "personalInfoIncompleteDescription": "Please complete First Name, Last Name, Phone Number, and Avatar in the Edit Information tab.",
           "personalInfoIncompleteToast": "Please complete the Edit Information tab first.",
@@ -664,13 +687,22 @@
           "submit": "Submit verification profile",
           "submitting": "Submitting profile...",
           "submitSuccess": "Verification profile submitted successfully. We'll review it shortly.",
+          "alreadyApproved": "You are already a verified broker.",
+          "resubmitSuccess": "Your application has been re-submitted and is now under review.",
           "errors": {
             "fileSize": "Image must not exceed {maxSize}MB.",
             "fileFormat": "Image must be in JPEG, PNG, or WebP format.",
+            "uploadFailed": "Upload failed, please re-select the file and try again.",
             "certificateRequired": "Please upload your broker license photo.",
             "idNumberRequired": "Please enter your Citizen ID number.",
             "idNumberInvalid": "Invalid Citizen ID number. Please review and try again.",
-            "idImagesRequired": "Please upload both front and back images of your Citizen ID."
+            "idImagesRequired": "Please upload both front and back images of your Citizen ID.",
+            "documentMissing": "A required document is missing. Please upload all documents.",
+            "documentNotFound": "A document was not found. Please upload again.",
+            "documentNotConfirmed": "Upload confirmation failed. Please re-select and upload again.",
+            "documentNotImage": "Only image files are accepted.",
+            "submitFailed": "Unable to submit broker registration right now. Please try again.",
+            "uploadIncomplete": "Please make sure all required document uploads are completed."
           }
         },
         "passwordChange": {
@@ -709,7 +741,12 @@
             "featuredSearch": "Featured on search results",
             "joinFree": "Join for free",
             "credibilityBoost": "Boost credibility with a verified profile"
-          }
+          },
+          "footer": "Complete verification to build trust and reach customers faster."
+        },
+        "brokerProfessional": {
+          "badge": "Professional Broker",
+          "description": "Your account has been verified as a professional broker."
         },
         "loginRequired": {
           "title": "Please log in",
@@ -2922,6 +2959,8 @@
       "title": "Seller information",
       "subtitle": "Connect quickly with this seller via phone, Zalo, or email",
       "sellerBadge": "Seller",
+      "professionalBrokerBadge": "Professional Broker",
+      "professionalBrokerDescription": "This seller is verified as a professional broker.",
       "listingCount": "{count} listings",
       "defaultSellerName": "Seller",
       "phoneLabel": "Phone number",

@@ -651,6 +651,23 @@
           "section1Description": "Vui lòng tải ảnh chụp rõ nét chứng chỉ hành nghề môi giới để hệ thống đối soát.",
           "section2Title": "Phần 2: Xác minh CCCD/CMND Việt Nam",
           "section2Description": "Bạn cần cập nhật đủ Họ tên, Số điện thoại và Ảnh đại diện ở tab Chỉnh sửa thông tin trước khi cung cấp ảnh CCCD/CMND.",
+          "statusLoading": "Đang tải trạng thái xác minh...",
+          "statusLoadError": "Không thể tải trạng thái xác minh môi giới.",
+          "statusLoadErrorTitle": "Không thể làm mới trạng thái xác minh",
+          "statusLoadErrorHint": "Bạn vẫn có thể tải ảnh và gửi hồ sơ. Hệ thống sẽ đồng bộ trạng thái lại sau.",
+          "refreshStatus": "Làm mới trạng thái",
+          "approvedBadge": "✓ Môi giới được xác nhận",
+          "pendingBadge": "🕐 Đang xác minh",
+          "rejectedBadge": "Đơn bị từ chối",
+          "approvedMessage": "Hồ sơ môi giới của bạn đã được xác minh thành công.",
+          "pendingMessage": "Hồ sơ xác minh môi giới của bạn đang được xét duyệt thủ công.",
+          "rejectedMessage": "Hồ sơ trước đó đã bị từ chối. Vui lòng nộp lại với bộ hồ sơ mới.",
+          "rejectionReasonLabel": "Lý do:",
+          "reapply": "Nộp lại đơn với hồ sơ mới",
+          "submittedDocsTitle": "Hồ sơ đã nộp",
+          "submittedDocsHint": "Liên kết presigned có thể hết hạn. Hãy làm mới trạng thái để lấy liên kết mới.",
+          "docUnavailable": "Không thể xem trước tài liệu. Vui lòng làm mới trạng thái.",
+          "docExpiredHint": "Một hoặc nhiều liên kết tài liệu đã hết hạn. Hãy làm mới trạng thái để lấy liên kết mới.",
           "certificateLabel": "Ảnh chụp chứng chỉ môi giới",
           "citizenIdLabel": "Số CCCD/CMND",
           "citizenIdPlaceholder": "Nhập số CCCD/CMND (9-12 số)",
@@ -658,6 +675,12 @@
           "idBackLabel": "Mặt sau CCCD/CMND",
           "uploadCta": "Nhấn để tải ảnh",
           "uploadHint": "Định dạng hỗ trợ: JPEG, PNG, WebP • Tối đa 10MB",
+          "uploading": "Đang tải lên...",
+          "uploaded": "Đã tải lên",
+          "retryUpload": "Tải lại ảnh",
+          "uploadInProgress": "Tài liệu đang được tải lên. Vui lòng chờ hoàn tất.",
+          "readyToSubmit": "Đã tải lên đủ tài liệu. Bạn có thể gửi hồ sơ ngay bây giờ.",
+          "uploadRequiredHint": "Vui lòng tải lên đầy đủ tài liệu bắt buộc để gửi hồ sơ.",
           "personalInfoIncompleteTitle": "Thiếu thông tin cơ bản",
           "personalInfoIncompleteDescription": "Bạn cần điền đầy đủ Họ, Tên, Số điện thoại và Ảnh đại diện trong tab Chỉnh sửa thông tin.",
           "personalInfoIncompleteToast": "Vui lòng hoàn tất thông tin ở tab Chỉnh sửa thông tin trước.",
@@ -665,13 +688,22 @@
           "submit": "Gửi hồ sơ xác thực",
           "submitting": "Đang gửi hồ sơ...",
           "submitSuccess": "Đã gửi hồ sơ xác thực. Chúng tôi sẽ phản hồi sớm nhất.",
+          "alreadyApproved": "Bạn đã là môi giới được xác nhận.",
+          "resubmitSuccess": "Đơn của bạn đã được nộp lại và đang chờ xác minh.",
           "errors": {
             "fileSize": "Ảnh không được vượt quá {maxSize}MB.",
             "fileFormat": "Ảnh phải thuộc định dạng JPEG, PNG hoặc WebP.",
+            "uploadFailed": "Tải ảnh thất bại. Vui lòng chọn lại tệp và thử lại.",
             "certificateRequired": "Vui lòng tải ảnh chứng chỉ môi giới.",
             "idNumberRequired": "Vui lòng nhập số CCCD/CMND.",
             "idNumberInvalid": "Số CCCD/CMND không hợp lệ. Vui lòng kiểm tra lại.",
-            "idImagesRequired": "Vui lòng tải đầy đủ ảnh mặt trước và mặt sau CCCD/CMND."
+            "idImagesRequired": "Vui lòng tải đầy đủ ảnh mặt trước và mặt sau CCCD/CMND.",
+            "documentMissing": "Thiếu tài liệu bắt buộc. Vui lòng tải lên đầy đủ.",
+            "documentNotFound": "Không tìm thấy tài liệu. Vui lòng tải lên lại.",
+            "documentNotConfirmed": "Xác nhận tải ảnh thất bại. Vui lòng chọn lại và tải lên lại.",
+            "documentNotImage": "Chỉ chấp nhận tệp ảnh.",
+            "submitFailed": "Không thể gửi đăng ký môi giới lúc này. Vui lòng thử lại.",
+            "uploadIncomplete": "Vui lòng đảm bảo tất cả tài liệu đã tải lên thành công."
           }
         },
         "passwordChange": {
@@ -710,7 +742,12 @@
             "featuredSearch": "Nổi bật trên trang tìm kiếm",
             "joinFree": "Tham gia miễn phí",
             "credibilityBoost": "Tăng độ uy tín với hồ sơ xác thực"
-          }
+          },
+          "footer": "Hoàn tất xác minh để tăng độ tin cậy và tiếp cận khách hàng nhanh hơn."
+        },
+        "brokerProfessional": {
+          "badge": "Môi giới chuyên nghiệp",
+          "description": "Tài khoản của bạn đã được xác minh là môi giới chuyên nghiệp."
         },
         "loginRequired": {
           "title": "Vui lòng đăng nhập",
@@ -2923,6 +2960,8 @@
       "title": "Thông tin người bán",
       "subtitle": "Kết nối nhanh với người bán qua điện thoại, Zalo hoặc email",
       "sellerBadge": "Người bán",
+      "professionalBrokerBadge": "Môi giới chuyên nghiệp",
+      "professionalBrokerDescription": "Người bán này đã được xác minh là môi giới chuyên nghiệp.",
       "listingCount": "{count} tin đăng",
       "defaultSellerName": "Người bán",
       "phoneLabel": "Số điện thoại",

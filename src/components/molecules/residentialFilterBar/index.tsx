@@ -7,10 +7,11 @@ import {
 import AreaRangeDropdown from '@/components/molecules/areaRangeDropdown'
 import { Button } from '@/components/atoms/button'
 import { useTranslations } from 'next-intl'
-import { Filter, MapIcon } from 'lucide-react'
+import { BadgeCheck, Filter, MapIcon } from 'lucide-react'
 import Link from 'next/link'
 
 import { LocationSwitch } from '@/components/atoms'
+import { Switch } from '@/components/atoms/switch'
 import { useRouter } from 'next/router'
 import { ListingFilterRequest, SortKey } from '@/api/types/property.type'
 import { useListContext } from '@/contexts/list/useListContext'
@@ -242,6 +243,22 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
             }}
           />
           <div className='flex items-center gap-4 ml-2'>
+            <div className='flex items-center gap-2 rounded-full border bg-background px-3 h-9'>
+              <BadgeCheck className='h-4 w-4 text-muted-foreground' />
+              <span className='text-sm whitespace-nowrap'>
+                {t('toggles.professionalBroker')}
+              </span>
+              <Switch
+                size='sm'
+                checked={filters.isBroker === true}
+                onCheckedChange={(checked) =>
+                  updateFilter({
+                    isBroker: checked ? true : undefined,
+                    page: 1,
+                  })
+                }
+              />
+            </div>
             <div className='flex items-center gap-1'>
               <LocationSwitch
                 onLocationChange={handleLocationChange}

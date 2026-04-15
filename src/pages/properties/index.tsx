@@ -32,10 +32,29 @@ type ResidentialPropertiesClientInit = {
   }
 }
 
+const parseBooleanQueryParam = (
+  query: Record<string, unknown>,
+  key: string,
+): boolean | undefined => {
+  const raw = query[key]
+  const value = Array.isArray(raw) ? raw[0] : raw
+  if (value === 'true' || value === true) {
+    return true
+  }
+  if (value === 'false' || value === false) {
+    return false
+  }
+  return undefined
+}
+
 const buildClientInit = (
   query: Record<string, unknown>,
 ): ResidentialPropertiesClientInit => {
   const parsedFilters = getFiltersFromQuery(query)
+  const isBroker = parseBooleanQueryParam(query, 'isBroker')
+  if (isBroker === true) {
+    parsedFilters.isBroker = true
+  }
   const page = parsedFilters.page ?? DEFAULT_PAGE
   const size = parsedFilters.size ?? DEFAULT_PER_PAGE
 
@@ -104,6 +123,7 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
           isLegacy: filters.isLegacy ?? null,
           userLongitude: filters.userLongitude ?? null,
           userLatitude: filters.userLatitude ?? null,
+          isBroker: filters.isBroker === true ? true : null,
           sortBy: filters.sortBy ?? null,
           page: filters.page ?? DEFAULT_PAGE,
           size: filters.size ?? DEFAULT_PER_PAGE,

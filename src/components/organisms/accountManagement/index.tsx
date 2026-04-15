@@ -12,6 +12,7 @@ import { BrokerVerificationForm } from '@/components/molecules/brokerVerificatio
 import { useChangePassword } from '@/hooks/useAuth/useChangePassword'
 import {
   User,
+  CheckCircle2,
   Lock,
   ShieldCheck,
   Search,
@@ -82,6 +83,8 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
   }, [profileResponse?.data, updateUser])
 
   const profileUser = profileResponse?.data ?? user
+  const tabTriggerClassName =
+    'flex min-w-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-2 py-2 text-[11px] leading-tight transition-all sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm data-[state=active]:border-primary/35 data-[state=active]:bg-transparent data-[state=active]:shadow-none'
 
   const isPersonalInfoComplete = React.useMemo(() => {
     if (!profileUser) return false
@@ -94,6 +97,14 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
     const hasAvatar = Boolean(profileUser.avatarUrl?.trim())
 
     return hasFirstName && hasLastName && hasPhone && hasAvatar
+  }, [profileUser])
+
+  const isProfessionalBroker = React.useMemo(() => {
+    if (!profileUser) return false
+    return (
+      Boolean(profileUser.isBroker) ||
+      profileUser.brokerVerificationStatus === 'APPROVED'
+    )
   }, [profileUser])
 
   const getUserInitialData = React.useMemo(() => {
@@ -191,11 +202,8 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
     <div className={cn('w-full max-w-4xl mx-auto', className)}>
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
-        <TabsList className='grid w-full grid-cols-3 mb-6 h-auto gap-1'>
-          <TabsTrigger
-            value='personal-info'
-            className='flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-[11px] leading-tight sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm'
-          >
+        <TabsList className='mb-6 grid h-auto w-full grid-cols-3 gap-1.5 rounded-xl border bg-transparent p-1'>
+          <TabsTrigger value='personal-info' className={tabTriggerClassName}>
             <User className='hidden sm:inline-block h-4 w-4' />
             <span className='truncate sm:hidden'>
               {safeT(
@@ -207,10 +215,7 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
               {t('homePage.auth.accountManagement.personalInfoTab')}
             </span>
           </TabsTrigger>
-          <TabsTrigger
-            value='account-settings'
-            className='flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-[11px] leading-tight sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm'
-          >
+          <TabsTrigger value='account-settings' className={tabTriggerClassName}>
             <Lock className='hidden sm:inline-block h-4 w-4' />
             <span className='truncate sm:hidden'>
               {safeT(
@@ -224,7 +229,7 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
           </TabsTrigger>
           <TabsTrigger
             value='broker-verification'
-            className='flex min-w-0 items-center justify-center gap-1.5 px-2 py-2 text-[11px] leading-tight sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm'
+            className={tabTriggerClassName}
           >
             <ShieldCheck className='hidden sm:inline-block h-4 w-4' />
             <span className='truncate sm:hidden'>
@@ -239,6 +244,15 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
                 'Môi giới BĐS',
               )}
             </span>
+            {isProfessionalBroker && (
+              <CheckCircle2
+                className='hidden h-3.5 w-3.5 text-emerald-500 sm:inline-block'
+                aria-label={safeT(
+                  'homePage.auth.accountManagement.brokerProfessional.badge',
+                  'Professional Broker',
+                )}
+              />
+            )}
           </TabsTrigger>
         </TabsList>
 
@@ -261,31 +275,44 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
           />
         </TabsContent>
 
-        <TabsContent value='broker-verification' className='space-y-6'>
-          <div className='rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-blue-500/10 to-purple-500/10 p-5 md:p-6 shadow-sm'>
-            <div className='flex items-start gap-3'>
-              <div className='size-9 rounded-full bg-primary/15 flex items-center justify-center shrink-0 mt-0.5'>
+        <TabsContent
+          value='broker-verification'
+          className='space-y-5 md:space-y-6'
+        >
+          <div className='rounded-3xl border border-border/80 p-4 shadow-[0_10px_32px_-24px_hsl(var(--foreground)/0.65)] sm:p-5 md:p-6'>
+            <div className='flex items-start gap-3 sm:gap-4'>
+              <div className='mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full border border-primary/30'>
                 <Sparkles className='size-4.5 text-primary' />
               </div>
-              <div className='space-y-1.5'>
-                <span className='inline-flex items-center rounded-full border bg-background/70 px-2.5 py-0.5 text-xs font-medium text-muted-foreground'>
+              <div className='space-y-2'>
+                <span className='inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground'>
                   {safeT(
                     'homePage.auth.accountManagement.brokerHookBanner.badge',
                     'SellerNet Pro',
                   )}
                 </span>
-                <h3 className='text-base md:text-lg font-semibold leading-snug text-foreground'>
+                <h3 className='text-base font-semibold leading-snug text-foreground md:text-lg'>
                   {safeT(
                     'homePage.auth.accountManagement.brokerHookBanner.title',
                     'Bật hồ sơ môi giới để tăng độ tin cậy và tiếp cận khách hàng nhanh hơn.',
                   )}
                 </h3>
+
+                {isProfessionalBroker && (
+                  <p className='inline-flex items-center gap-1.5 rounded-full border border-emerald-300/70 bg-emerald-50/60 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-700/50 dark:bg-emerald-950/20 dark:text-emerald-300'>
+                    <CheckCircle2 className='h-3.5 w-3.5' />
+                    {safeT(
+                      'homePage.auth.accountManagement.brokerProfessional.description',
+                      'Tài khoản của bạn đã được xác minh là môi giới chuyên nghiệp.',
+                    )}
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className='mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3'>
-              <div className='rounded-xl border bg-background/85 px-3.5 py-3.5 flex items-center gap-2.5 transition-all hover:-translate-y-0.5 hover:shadow-md'>
-                <div className='size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0'>
+            <div className='mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3'>
+              <div className='group flex items-center gap-2.5 rounded-2xl border px-3.5 py-3.5 transition-all hover:-translate-y-0.5 hover:shadow-md'>
+                <div className='flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/25 transition-colors group-hover:border-primary/45'>
                   <Search className='size-4 text-primary' />
                 </div>
                 <span className='text-sm font-medium leading-snug'>
@@ -295,8 +322,8 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
                   )}
                 </span>
               </div>
-              <div className='rounded-xl border bg-background/85 px-3.5 py-3.5 flex items-center gap-2.5 transition-all hover:-translate-y-0.5 hover:shadow-md'>
-                <div className='size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0'>
+              <div className='group flex items-center gap-2.5 rounded-2xl border px-3.5 py-3.5 transition-all hover:-translate-y-0.5 hover:shadow-md'>
+                <div className='flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/25 transition-colors group-hover:border-primary/45'>
                   <Gift className='size-4 text-primary' />
                 </div>
                 <span className='text-sm font-medium leading-snug'>
@@ -306,8 +333,8 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
                   )}
                 </span>
               </div>
-              <div className='rounded-xl border bg-background/85 px-3.5 py-3.5 flex items-center gap-2.5 transition-all hover:-translate-y-0.5 hover:shadow-md'>
-                <div className='size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0'>
+              <div className='group flex items-center gap-2.5 rounded-2xl border px-3.5 py-3.5 transition-all hover:-translate-y-0.5 hover:shadow-md'>
+                <div className='flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/25 transition-colors group-hover:border-primary/45'>
                   <BadgeCheck className='size-4 text-primary' />
                 </div>
                 <span className='text-sm font-medium leading-snug'>
@@ -318,6 +345,13 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
                 </span>
               </div>
             </div>
+
+            <p className='mt-4 text-xs text-muted-foreground sm:text-sm'>
+              {safeT(
+                'homePage.auth.accountManagement.brokerHookBanner.footer',
+                'Complete verification to build trust and reach customers faster.',
+              )}
+            </p>
           </div>
 
           <BrokerVerificationForm

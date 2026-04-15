@@ -16,7 +16,8 @@ import type {
 /**
  * Metadata required to upload a file via the R2 presigned URL flow.
  * `listingId` is required when `purpose === 'LISTING'` and forbidden when
- * `purpose === 'AVATAR'` (BE will reject mismatches).
+ * `purpose === 'AVATAR'` or `purpose === 'BROKER_DOCUMENT'`
+ * (BE will reject mismatches).
  */
 export interface UploadViaPresignInput {
   file: File

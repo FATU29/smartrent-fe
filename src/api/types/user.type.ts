@@ -12,4 +12,6 @@ export interface UserApi {
   contactPhoneVerified: boolean
   avatarUrl?: string
   avatarMediaId?: number
+  isBroker?: boolean | null
+  brokerVerificationStatus?: 'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED' | null
 }

@@ -49,6 +49,7 @@ export const navigateToPropertiesWithFilters = (
       userLongitude: filters?.longitude ?? filters?.userLongitude ?? null,
       sortBy: filters?.sortBy ?? null,
       userId: filters?.userId ?? null,
+      isBroker: filters?.isBroker === true ? true : null,
       // Reflect pagination in URL
       page: filters?.page ?? DEFAULT_PAGE,
       size: filters?.size ?? DEFAULT_PER_PAGE,
@@ -96,6 +97,7 @@ export const navigateToPropertiesWithClearedFilters = (router: NextRouter) => {
       latitude: null,
       longitude: null,
       sortBy: null,
+      isBroker: null,
       // Reset pagination to defaults
       page: DEFAULT_PAGE,
       size: DEFAULT_PER_PAGE,

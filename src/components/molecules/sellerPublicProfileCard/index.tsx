@@ -18,6 +18,7 @@ import {
   Mail,
   MessageCircle,
   Phone,
+  ShieldCheck,
   UserRoundCheck,
 } from 'lucide-react'
 
@@ -103,6 +104,8 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
 
   const hasPhone = Boolean(phone)
   const hasEmail = Boolean(seller?.email)
+  const isProfessionalBroker =
+    Boolean(seller?.isBroker) || seller?.brokerVerificationStatus === 'APPROVED'
 
   return (
     <Card className='border-primary/20 overflow-hidden bg-gradient-to-br from-background via-primary/[0.02] to-primary/[0.06] shadow-sm'>
@@ -130,6 +133,17 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
                 <UserRoundCheck className='h-3.5 w-3.5' />
                 {t('profile.sellerBadge')}
               </Badge>
+
+              {isProfessionalBroker && (
+                <Badge
+                  variant='outline'
+                  className='gap-1.5 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+                >
+                  <ShieldCheck className='h-3.5 w-3.5' />
+                  {t('profile.professionalBrokerBadge')}
+                </Badge>
+              )}
+
               {seller?.contactPhoneVerified && (
                 <Badge
                   variant='outline'
@@ -143,6 +157,16 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
                 {t('profile.listingCount', { count: listingCount })}
               </Badge>
             </div>
+
+            {isProfessionalBroker && (
+              <Typography
+                variant='small'
+                className='inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-50/60 px-2.5 py-1 text-emerald-700 dark:border-emerald-700/50 dark:bg-emerald-950/20 dark:text-emerald-300'
+              >
+                <ShieldCheck className='h-3.5 w-3.5' />
+                {t('profile.professionalBrokerDescription')}
+              </Typography>
+            )}
           </div>
         </div>
 
