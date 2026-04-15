@@ -85,23 +85,22 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
     >
       <Card
         className={classNames(
-          'overflow-hidden transition-all duration-200 h-full flex flex-col',
+          'overflow-hidden transition-all duration-200 h-full flex flex-col py-0',
           'hover:shadow-md hover:border-primary/30',
         )}
       >
         {/* Thumbnail */}
         <div
           className={classNames(
-            'relative overflow-hidden bg-muted',
+            'relative overflow-hidden bg-muted flex-shrink-0',
             isFeatured ? 'aspect-[4/3] sm:aspect-[16/10]' : 'aspect-[16/10]',
           )}
         >
           <ImageAtom
             src={imageUrl}
             alt={title}
-            width={isFeatured ? 600 : 320}
-            height={isFeatured ? 375 : 200}
-            className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+            fill
+            className='object-cover transition-transform duration-300 group-hover:scale-105'
           />
           <div
             className={classNames(
