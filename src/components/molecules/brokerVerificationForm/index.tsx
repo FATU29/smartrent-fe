@@ -853,28 +853,12 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
               )}
             </AlertTitle>
             <AlertDescription>
-              <div className='flex flex-wrap items-center gap-2'>
-                <span>
-                  {safeT(
-                    'homePage.auth.accountManagement.brokerVerification.statusLoadErrorHint',
-                    'You can still upload and submit documents. We will retry status sync later.',
-                  )}
-                </span>
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  onClick={() => {
-                    void brokerStatusQuery.refetch()
-                  }}
-                >
-                  <RefreshCcw className='mr-1 size-3.5' />
-                  {safeT(
-                    'homePage.auth.accountManagement.brokerVerification.refreshStatus',
-                    'Refresh status',
-                  )}
-                </Button>
-              </div>
+              <span>
+                {safeT(
+                  'homePage.auth.accountManagement.brokerVerification.statusLoadErrorHint',
+                  'You can still upload and submit documents. We will retry status sync later.',
+                )}
+              </span>
             </AlertDescription>
           </Alert>
         )}
@@ -971,7 +955,7 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
 
         {hasSubmittedDocuments && (
           <section className='space-y-3 rounded-2xl border p-4 sm:p-5'>
-            <div className='flex items-start justify-between gap-2'>
+            <div>
               <div>
                 <h4 className='text-sm font-semibold'>
                   {safeT(
@@ -979,27 +963,7 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
                     'Submitted Documents',
                   )}
                 </h4>
-                <p className='text-xs text-muted-foreground'>
-                  {safeT(
-                    'homePage.auth.accountManagement.brokerVerification.submittedDocsHint',
-                    'These presigned links may expire. Refresh status to load fresh URLs.',
-                  )}
-                </p>
               </div>
-              <Button
-                type='button'
-                variant='outline'
-                size='sm'
-                onClick={() => {
-                  void brokerStatusQuery.refetch()
-                }}
-              >
-                <RefreshCcw className='mr-1 size-3.5' />
-                {safeT(
-                  'homePage.auth.accountManagement.brokerVerification.refreshStatus',
-                  'Refresh status',
-                )}
-              </Button>
             </div>
 
             <div className='grid grid-cols-1 gap-3 md:grid-cols-3'>

@@ -19,6 +19,7 @@ interface EmailFieldProps {
   placeholder?: string
   className?: string
   id?: string
+  required?: boolean
 }
 
 const EmailField = (props: EmailFieldProps) => {
@@ -32,6 +33,7 @@ const EmailField = (props: EmailFieldProps) => {
     name,
     control,
     placeholder,
+    required = true,
   } = props
 
   const t = useTranslations()
@@ -44,7 +46,7 @@ const EmailField = (props: EmailFieldProps) => {
     name,
     control,
     rules: {
-      required: t('homePage.auth.validation.emailRequired'),
+      required: required ? t('homePage.auth.validation.emailRequired') : false,
       pattern: {
         value: EMAIL_REGEX,
         message: t('homePage.auth.validation.emailInvalid'),
@@ -59,6 +61,7 @@ const EmailField = (props: EmailFieldProps) => {
       {label && (
         <Label className='mb-2' htmlFor={fieldId}>
           {label}
+          {required && <span className='text-destructive ml-1'>*</span>}
         </Label>
       )}
 
