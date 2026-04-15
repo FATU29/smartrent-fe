@@ -96,9 +96,8 @@ const NewsCard: React.FC<NewsCardProps> = ({
           <ImageAtom
             src={imageUrl}
             alt={title}
-            width={isHorizontal ? 200 : 400}
-            height={isHorizontal ? 120 : 225}
-            className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+            fill
+            className='object-cover transition-transform duration-300 group-hover:scale-105'
           />
 
           {/* Category Badge */}

@@ -164,6 +164,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                   'homePage.auth.accountManagement.personalInfo.firstName',
                 ) /* Họ */
               }
+              required
               placeholder={t('homePage.auth.register.firstNamePlaceholder')}
               error={errors.firstName?.message}
               {...firstNameController.field}
@@ -174,6 +175,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                   'homePage.auth.accountManagement.personalInfo.lastName',
                 ) /* Tên */
               }
+              required
               placeholder={t('homePage.auth.register.lastNamePlaceholder')}
               error={errors.lastName?.message}
               {...lastNameController.field}
@@ -188,6 +190,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               label={t(
                 'homePage.auth.accountManagement.personalInfo.phoneNumber',
               )}
+              required
               placeholder={t('homePage.auth.common.phoneNumberPlaceholder')}
               error={errors.contactPhoneNumber?.message}
             />
@@ -195,6 +198,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               name='email'
               control={control}
               label={t('homePage.auth.accountManagement.personalInfo.email')}
+              required
               placeholder={t('homePage.auth.common.emailPlaceholder')}
               error={errors.email?.message}
             />
@@ -206,6 +210,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               label={t(
                 'homePage.auth.accountManagement.personalInfo.idDocument',
               )}
+              required
               placeholder={t('homePage.auth.register.idDocumentPlaceholder')}
               error={errors.idDocument?.message}
               {...idDocumentController.field}

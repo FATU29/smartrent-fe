@@ -13,6 +13,7 @@ type ImageAtomProps = {
   width?: number
   height?: number
   priority?: boolean
+  fill?: boolean
 }
 
 const ImageAtom: NextPage<ImageAtomProps> = ({
@@ -24,11 +25,28 @@ const ImageAtom: NextPage<ImageAtomProps> = ({
   width,
   height,
   priority = false,
+  fill = false,
 }) => {
   const [hasError, setHasError] = useState(false)
 
   const fallbackSrc = defaultImage ?? ''
   const imageSrc = hasError ? fallbackSrc : (src ?? fallbackSrc)
+
+  if (fill) {
+    return (
+      <Image
+        src={imageSrc}
+        alt={alt}
+        fill
+        className={clsx(className, 'object-cover')}
+        priority={priority}
+        placeholder={placeholderSrc ? 'blur' : 'empty'}
+        blurDataURL={placeholderSrc}
+        onError={() => !hasError && setHasError(true)}
+        loading={priority ? undefined : 'lazy'}
+      />
+    )
+  }
 
   if (width && height) {
     return (

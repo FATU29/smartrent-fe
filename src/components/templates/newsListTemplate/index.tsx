@@ -10,6 +10,7 @@ import ImageAtom from '@/components/atoms/imageAtom'
 import { Badge } from '@/components/atoms/badge'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { Card } from '@/components/atoms/card'
+import { Input } from '@/components/atoms/input'
 import NewsFilterBar from '@/components/molecules/newsFilterBar'
 import NewsCard from '@/components/molecules/newsCard'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
@@ -20,8 +21,123 @@ import {
   formatPublishedDate,
   formatViewCount,
 } from '@/utils/news'
-import { Calendar, Eye, User, TrendingUp } from 'lucide-react'
+import {
+  Calendar,
+  Eye,
+  User,
+  TrendingUp,
+  MapPin,
+  Search,
+  X,
+} from 'lucide-react'
 import type { ListingFilterRequest } from '@/api/types/property.type'
+import Image from 'next/image'
+import { PROVINCE_CODE, PROVINCE_ID } from '@/utils/mapper'
+
+// ─── Static city data for sidebar ────────────────────────────────────────────
+
+const SIDEBAR_CITIES = [
+  {
+    id: PROVINCE_ID.HANOI,
+    code: PROVINCE_CODE.HANOI,
+    name: 'Hà Nội',
+    image: '/images/ha-noi.jpg',
+  },
+  {
+    id: PROVINCE_ID.HO_CHI_MINH,
+    code: PROVINCE_CODE.HO_CHI_MINH,
+    name: 'Hồ Chí Minh',
+    image: '/images/ho-chi-minh.jpg',
+  },
+  {
+    id: PROVINCE_ID.DA_NANG,
+    code: PROVINCE_CODE.DA_NANG,
+    name: 'Đà Nẵng',
+    image: '/images/da-nang.jpg',
+  },
+  {
+    id: PROVINCE_ID.BINH_DUONG,
+    code: PROVINCE_CODE.BINH_DUONG,
+    name: 'Bình Dương',
+    image: '/images/binh-duong.png',
+  },
+  {
+    id: PROVINCE_ID.DONG_NAI,
+    code: PROVINCE_CODE.DONG_NAI,
+    name: 'Đồng Nai',
+    image: '/images/dong-nai.jpg',
+  },
+]
+
+// ─── Sidebar: Location widget ─────────────────────────────────────────────────
+
+const LocationWidget: React.FC = () => {
+  const topCities = SIDEBAR_CITIES.slice(0, 2)
+  const restCities = SIDEBAR_CITIES.slice(2)
+
+  return (
+    <Card className='py-0 overflow-hidden mt-4'>
+      <div className='flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/40'>
+        <MapPin className='w-4 h-4 text-primary flex-shrink-0' />
+        <Typography variant='h4' className='font-semibold text-sm'>
+          Thị trường BĐS theo địa điểm
+        </Typography>
+      </div>
+
+      {/* Top 2 cities – larger image cards */}
+      <div className='grid grid-cols-2 gap-2 p-3'>
+        {topCities.map((city) => (
+          <Link
+            key={city.id}
+            href={`${PUBLIC_ROUTES.LISTING_LISTING}?provinceId=${city.id}&provinceCode=${city.code}`}
+            className='group block relative rounded-lg overflow-hidden'
+          >
+            <div className='relative h-[90px]'>
+              <Image
+                src={city.image}
+                alt={city.name}
+                fill
+                className='object-cover transition-transform duration-300 group-hover:scale-105'
+                sizes='150px'
+              />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
+              <span className='absolute bottom-2 left-2 right-2 text-white text-xs font-semibold leading-tight drop-shadow'>
+                {city.name}
+              </span>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Remaining cities – compact list */}
+      <div className='px-3 pb-3 space-y-2'>
+        {restCities.map((city) => (
+          <Link
+            key={city.id}
+            href={`${PUBLIC_ROUTES.LISTING_LISTING}?provinceId=${city.id}&provinceCode=${city.code}`}
+            className='group flex items-center gap-2.5 rounded-lg hover:bg-muted/60 transition-colors p-1'
+          >
+            <div className='relative w-10 h-10 flex-shrink-0 rounded-md overflow-hidden'>
+              <Image
+                src={city.image}
+                alt={city.name}
+                fill
+                className='object-cover'
+                sizes='40px'
+              />
+            </div>
+            <Typography
+              variant='small'
+              className='text-sm font-medium group-hover:text-primary transition-colors'
+            >
+              {city.name}
+            </Typography>
+          </Link>
+        ))}
+      </div>
+    </Card>
+  )
+}
 
 // ─── Featured Article (first item – large horizontal card) ───────────────────
 
@@ -198,8 +314,8 @@ const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
   onListReady,
 }) => {
   const t = useTranslations('newsPage')
-  const { items, isLoading, updateFilters } = useListContext<NewsItem>()
-  const [layout, setLayout] = useState<'grid' | 'list'>('list')
+  const { items, isLoading, updateFilters, filters, setKeyword } =
+    useListContext<NewsItem>()
   const [mostViewed, setMostViewed] = useState<NewsItem[]>([])
   const [isSidebarLoading, setIsSidebarLoading] = useState(true)
 
@@ -227,24 +343,46 @@ const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
 
   return (
     <div className='px-4 sm:px-6'>
-      {/* Header */}
-      <header className='mb-6'>
-        <Typography
-          variant='h1'
-          className='text-2xl md:text-3xl font-bold mb-1'
-        >
-          {t('title')}
-        </Typography>
-        <Typography variant='p' className='text-muted-foreground text-sm'>
-          {t('subtitle')}
-        </Typography>
+      {/* Header: title + subtitle (left) + search bar (right) */}
+      <header className='mb-4'>
+        <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3'>
+          <div>
+            <Typography
+              variant='h1'
+              className='text-2xl md:text-3xl font-bold mb-1'
+            >
+              {t('title')}
+            </Typography>
+            <Typography variant='p' className='text-muted-foreground text-sm'>
+              {t('subtitle')}
+            </Typography>
+          </div>
+          {/* Search — right-aligned on desktop */}
+          <div className='relative sm:w-64 lg:w-72 flex-shrink-0'>
+            <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none' />
+            <Input
+              type='text'
+              placeholder={t('searchPlaceholder')}
+              value={filters.keyword || ''}
+              onChange={(e) => setKeyword(e.target.value)}
+              className='pl-9 pr-9'
+            />
+            {filters.keyword && (
+              <button
+                type='button'
+                onClick={() => setKeyword('')}
+                className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'
+              >
+                <X className='h-4 w-4' />
+              </button>
+            )}
+          </div>
+        </div>
       </header>
 
-      {/* Filter bar */}
-      <div className='mb-7'>
+      {/* Sticky category tab bar */}
+      <div className='mb-6'>
         <NewsFilterBar
-          layout={layout}
-          onLayoutChange={setLayout}
           selectedCategory={selectedCategory}
           onCategoryChange={onCategoryChange}
           selectedTag={selectedTag}
@@ -308,7 +446,7 @@ const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
 
         {/* ── Sidebar ── */}
         <aside className='w-full lg:w-[300px] xl:w-[320px] flex-shrink-0'>
-          <div className='sticky top-20'>
+          <div className='sticky top-20 space-y-0'>
             <Card className='py-0 overflow-hidden'>
               <div className='flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/40'>
                 <TrendingUp className='w-4 h-4 text-primary flex-shrink-0' />
@@ -326,6 +464,8 @@ const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
                 )}
               </div>
             </Card>
+
+            <LocationWidget />
           </div>
         </aside>
       </div>

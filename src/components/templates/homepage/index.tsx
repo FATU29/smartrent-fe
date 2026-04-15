@@ -101,7 +101,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
               )}
               {(hasLoadedOnce || !hasNext) && (
                 <Link href={getLoadMoreHref()}>
-                  <Button className='px-6'>{t('common.loadMore')} ➜</Button>
+                  <Button className='px-6'>{t('common.loadMore')}</Button>
                 </Link>
               )}
             </div>

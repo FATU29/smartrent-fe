@@ -205,8 +205,13 @@ const useListFetch = <T,>(
     let isCancelled = false
 
     const fetchData = async () => {
-      // Clear items when not appending (filter change)
-      if (!shouldAppendRef.current) {
+      // Capture the flag BEFORE any await so the value is frozen for this fetch.
+      // React 18 automatic batching defers setState callbacks until after the
+      // entire async function finishes — meaning finally{} runs first and resets
+      // shouldAppendRef.current to false before the setItems callback executes.
+      const shouldAppend = shouldAppendRef.current
+
+      if (!shouldAppend) {
         setItems([])
       }
 
@@ -219,9 +224,7 @@ const useListFetch = <T,>(
 
         const { listings, pagination: paginationData } = response.data
         setItems((prev) =>
-          shouldAppendRef.current
-            ? ([...prev, ...listings] as T[])
-            : (listings as T[]),
+          shouldAppend ? ([...prev, ...listings] as T[]) : (listings as T[]),
         )
         setPagination(paginationData)
       } catch (error) {

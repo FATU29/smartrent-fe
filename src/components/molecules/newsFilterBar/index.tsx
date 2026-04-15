@@ -1,16 +1,12 @@
 import React, { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { useListContext } from '@/contexts/list'
-import { Button } from '@/components/atoms/button'
-import { Input } from '@/components/atoms/input'
 import { Badge } from '@/components/atoms/badge'
 import { NewsCategory, NewsItem } from '@/api/types/news.type'
-import { Search, X, LayoutGrid, List } from 'lucide-react'
+import { X } from 'lucide-react'
 import classNames from 'classnames'
 
 interface NewsFilterBarProps {
-  layout: 'grid' | 'list'
-  onLayoutChange: (layout: 'grid' | 'list') => void
   selectedCategory?: string
   onCategoryChange?: (category: string | undefined) => void
   selectedTag?: string
@@ -18,8 +14,6 @@ interface NewsFilterBarProps {
 }
 
 const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
-  layout,
-  onLayoutChange,
   selectedCategory,
   onCategoryChange,
   selectedTag,
@@ -27,8 +21,7 @@ const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
 }) => {
   const t = useTranslations('newsPage')
   const tCategories = useTranslations('newsPage.categories')
-  const { filters, setKeyword, activeFilterCount, resetFilters } =
-    useListContext<NewsItem>()
+  const { activeFilterCount, resetFilters } = useListContext<NewsItem>()
 
   const categories = useMemo(
     () => [
@@ -44,14 +37,6 @@ const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
     [t, tCategories],
   )
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setKeyword(e.target.value)
-  }
-
-  const handleCategoryClick = (category: NewsCategory | undefined) => {
-    onCategoryChange?.(category)
-  }
-
   const handleClearFilters = () => {
     resetFilters()
     onCategoryChange?.(undefined)
@@ -62,82 +47,46 @@ const NewsFilterBar: React.FC<NewsFilterBarProps> = ({
     activeFilterCount + (selectedCategory ? 1 : 0) + (selectedTag ? 1 : 0)
 
   return (
-    <div className='space-y-4'>
-      {/* Search and Layout Toggle Row */}
-      <div className='flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between'>
-        {/* Search Input */}
-        <div className='relative flex-1 max-w-md'>
-          <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
-          <Input
-            type='text'
-            placeholder={t('searchPlaceholder')}
-            value={filters.keyword || ''}
-            onChange={handleSearchChange}
-            className='pl-9 pr-9'
-          />
-          {filters.keyword && (
+    <div>
+      {/* Sticky tab bar */}
+      <div className='sticky top-12 sm:top-16 z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 bg-background/95 backdrop-blur-sm border-b border-border'>
+        <div className='flex items-stretch overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
+          {categories.map((cat) => {
+            const isActive = selectedCategory === cat.value
+            return (
+              <button
+                key={cat.value || 'all'}
+                type='button'
+                onClick={() => onCategoryChange?.(cat.value)}
+                className={classNames(
+                  'flex-shrink-0 px-3 sm:px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap leading-none',
+                  isActive
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30',
+                )}
+              >
+                {cat.label}
+              </button>
+            )
+          })}
+
+          {/* Clear button inline with tabs */}
+          {totalActiveFilters > 0 && (
             <button
-              onClick={() => setKeyword('')}
-              className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'
+              type='button'
+              onClick={handleClearFilters}
+              className='flex-shrink-0 flex items-center gap-1 px-3 py-3 text-sm text-muted-foreground hover:text-foreground border-b-2 border-transparent whitespace-nowrap'
             >
-              <X className='h-4 w-4' />
+              <X className='h-3.5 w-3.5' />
+              {t('clearFilters')}
             </button>
           )}
         </div>
-
-        {/* Layout Toggle (Desktop) */}
-        <div className='hidden sm:flex items-center gap-1 border rounded-lg p-1'>
-          <Button
-            variant={layout === 'grid' ? 'default' : 'ghost'}
-            size='sm'
-            onClick={() => onLayoutChange('grid')}
-            className='h-8 w-8 p-0'
-          >
-            <LayoutGrid className='h-4 w-4' />
-          </Button>
-          <Button
-            variant={layout === 'list' ? 'default' : 'ghost'}
-            size='sm'
-            onClick={() => onLayoutChange('list')}
-            className='h-8 w-8 p-0'
-          >
-            <List className='h-4 w-4' />
-          </Button>
-        </div>
       </div>
 
-      {/* Category Pills */}
-      <div className='flex flex-wrap gap-2'>
-        {categories.map((cat) => (
-          <Button
-            key={cat.value || 'all'}
-            variant={selectedCategory === cat.value ? 'default' : 'outline'}
-            size='sm'
-            onClick={() => handleCategoryClick(cat.value)}
-            className={classNames('transition-all', {
-              'border-primary': selectedCategory === cat.value,
-            })}
-          >
-            {cat.label}
-          </Button>
-        ))}
-
-        {/* Clear Filters */}
-        {totalActiveFilters > 0 && (
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={handleClearFilters}
-            className='text-muted-foreground'
-          >
-            <X className='h-4 w-4 mr-1' />
-            {t('clearFilters')}
-          </Button>
-        )}
-      </div>
-
+      {/* Active tag badge */}
       {selectedTag && (
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 mt-3'>
           <span className='text-sm text-muted-foreground'>
             {t('activeTag')}
           </span>
