@@ -12,8 +12,8 @@ import {
   type CarouselApi,
 } from '@/components/atoms/carousel'
 import { Skeleton } from '@/components/atoms/skeleton'
-import { LayoutGrid } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import SectionHeading from '@/components/atoms/sectionHeading'
 import { VipType } from '@/api/types'
 import { useSimilarProperties } from '@/hooks/useListings/useSimilarProperties'
 
@@ -92,14 +92,10 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
     const skeletonItems = Array.from({ length: 4 })
     return (
       <section className='mb-8 sm:mb-10'>
-        <div className='flex items-center gap-3 mb-4 sm:mb-5'>
-          <div className='p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600'>
-            <LayoutGrid className='w-5 h-5 text-white' />
-          </div>
-          <h2 className='text-xl sm:text-2xl font-semibold'>
-            {t('apartmentDetail.sections.similarProperties')}
-          </h2>
-        </div>
+        <SectionHeading
+          title={t('apartmentDetail.sections.similarProperties')}
+          className='mb-4 sm:mb-5'
+        />
         <Carousel
           className='group'
           opts={{ align: 'start', loop: true }}
@@ -159,17 +155,14 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
 
   return (
     <section className='mb-8 sm:mb-10'>
-      <div className='flex items-center gap-3 mb-4 sm:mb-5'>
-        <div className='p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600'>
-          <LayoutGrid className='w-5 h-5 text-white' />
-        </div>
-        <h2 className='text-xl sm:text-2xl font-semibold'>
-          {t('apartmentDetail.sections.similarProperties')}
-        </h2>
-        <span className='ml-auto text-sm font-medium text-green-600 dark:text-green-400'>
+      <SectionHeading
+        title={t('apartmentDetail.sections.similarProperties')}
+        className='mb-4 sm:mb-5'
+      >
+        <span className='text-sm font-medium text-muted-foreground'>
           {validListings.length}
         </span>
-      </div>
+      </SectionHeading>
 
       <Carousel
         className='group'

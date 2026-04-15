@@ -5,6 +5,7 @@ import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import Link from 'next/link'
 import type { ListingDetail } from '@/api/types'
 import { mapRecentlyViewedToListing } from '@/utils/recentlyViewed/mapper'
+import SectionHeading from '@/components/atoms/sectionHeading'
 import {
   Carousel,
   CarouselContent,
@@ -13,7 +14,7 @@ import {
   CarouselNext,
   type CarouselApi,
 } from '@/components/atoms/carousel'
-import { History } from 'lucide-react'
+
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/atoms/skeleton'
 
@@ -96,9 +97,6 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
     return (
       <section className='mb-8 sm:mb-10'>
         <div className='flex items-center gap-3 mb-4 sm:mb-5'>
-          <div className='p-2 rounded-lg bg-gradient-to-br from-slate-400 to-slate-600'>
-            <History className='w-5 h-5 text-white' />
-          </div>
           <Skeleton className='h-7 w-48' />
           <Skeleton className='ml-auto h-5 w-8' />
         </div>
@@ -141,17 +139,14 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
 
   return (
     <section className='mb-8 sm:mb-10'>
-      <div className='flex items-center gap-3 mb-4 sm:mb-5'>
-        <div className='p-2 rounded-lg bg-gradient-to-br from-slate-400 to-slate-600'>
-          <History className='w-5 h-5 text-white' />
-        </div>
-        <h2 className='text-xl sm:text-2xl font-semibold'>
-          {t('apartmentDetail.recentlyViewed.title') || 'Tin đăng đã xem'}
-        </h2>
-        <span className='ml-auto text-sm font-medium text-slate-600 dark:text-slate-400'>
+      <SectionHeading
+        title={t('apartmentDetail.recentlyViewed.title') || 'Tin đăng đã xem'}
+        className='mb-4 sm:mb-5'
+      >
+        <span className='text-sm font-medium text-muted-foreground'>
           {listingsData.length}
         </span>
-      </div>
+      </SectionHeading>
 
       <Carousel
         className='group'

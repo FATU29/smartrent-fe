@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
+import SectionHeading from '@/components/atoms/sectionHeading'
 import { Amenity } from '@/api/types'
 import { getAmenityIcon } from '@/constants/amenities'
 
@@ -22,9 +22,7 @@ const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({
 
   return (
     <div className='space-y-5'>
-      <Typography variant='h3' className='text-xl md:text-2xl font-bold'>
-        {title || t('sections.features')}
-      </Typography>
+      <SectionHeading title={title || t('sections.features')} />
 
       <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
         {features.map((feature, index) => (
@@ -41,12 +39,9 @@ const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({
                   ) : null
                 })()}
               </div>
-              <Typography
-                variant='small'
-                className='font-semibold text-foreground text-xs md:text-sm line-clamp-2'
-              >
+              <p className='font-semibold text-foreground text-xs md:text-sm line-clamp-2'>
                 {feature.name}
-              </Typography>
+              </p>
             </CardContent>
           </Card>
         ))}

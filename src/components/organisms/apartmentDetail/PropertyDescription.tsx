@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { Typography } from '@/components/atoms/typography'
+import SectionHeading from '@/components/atoms/sectionHeading'
 
 interface PropertyDescriptionProps {
   description?: string
@@ -22,19 +22,16 @@ const PropertyDescription: React.FC<PropertyDescriptionProps> = ({
 
   return (
     <div className='space-y-5'>
-      <Typography variant='h3' className='text-xl md:text-2xl font-bold'>
-        {title || t('sections.description')}
-      </Typography>
+      <SectionHeading title={title || t('sections.description')} />
 
       <div className='bg-card border border-border rounded-xl p-5 md:p-6 space-y-3'>
         {lines.map((line, index) => (
-          <Typography
+          <p
             key={index}
-            variant='p'
             className='text-foreground/90 leading-relaxed text-sm md:text-base'
           >
             {line}
-          </Typography>
+          </p>
         ))}
       </div>
     </div>
