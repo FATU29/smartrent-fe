@@ -33,6 +33,12 @@ export const PATHS = {
     CHANGE_PASSWORD: '/v1/users/change-password', // NOSONAR - API endpoint path, not a password
   },
 
+  // Broker verification endpoints (user-facing)
+  BROKER: {
+    REGISTER: '/v1/users/broker/register',
+    STATUS: '/v1/users/broker/status',
+  },
+
   // Property endpoints (deprecated - use LISTING instead)
   PROPERTY: {
     LIST: '/v1/properties',

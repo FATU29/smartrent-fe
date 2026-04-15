@@ -14,6 +14,7 @@ import {
   Droplets,
   Wifi,
   ShieldCheck,
+  BadgeCheck,
   Camera,
   MapPin,
   Home,
@@ -30,6 +31,7 @@ interface MobileFilterMainViewProps {
   onUpdate: (partial: Partial<ListingFilterRequest>) => void
   hideLocationFilter?: boolean
   hideVerifiedFilter?: boolean
+  hideBrokerFilter?: boolean
   hideViewMapButton?: boolean
 }
 
@@ -39,6 +41,7 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
   onUpdate,
   hideLocationFilter = false,
   hideVerifiedFilter = false,
+  hideBrokerFilter = false,
   hideViewMapButton = false,
 }) => {
   const t = useTranslations('residentialFilter')
@@ -151,6 +154,23 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
       </div>
 
       <div className='p-4 space-y-6'>
+        {!hideBrokerFilter && (
+          <ToggleSection
+            icon={<BadgeCheck className='h-4 w-4 text-muted-foreground' />}
+            title={t('toggles.professionalBroker')}
+          >
+            <ToggleChip
+              label={t('toggles.professionalBroker')}
+              active={filters.isBroker === true}
+              onClick={() =>
+                onUpdate({
+                  isBroker: filters.isBroker === true ? undefined : true,
+                })
+              }
+            />
+          </ToggleSection>
+        )}
+
         {!hideVerifiedFilter && (
           <ToggleSection
             icon={<ShieldCheck className='h-4 w-4 text-muted-foreground' />}

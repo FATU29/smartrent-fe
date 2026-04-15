@@ -326,6 +326,7 @@ const FilterDialogWrapper: React.FC<{
       onApply={onApply}
       hideLocationFilter
       hideVerifiedFilter
+      hideBrokerFilter
       hideViewMapButton
     />
   )

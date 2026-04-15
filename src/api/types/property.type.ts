@@ -520,6 +520,7 @@ export interface ListingFilterRequest {
 
   status?: PostStatus
   userId?: string
+  isBroker?: boolean
   sortBy?: SortKey
 
   serviceFee?: PriceType
@@ -575,6 +576,7 @@ export interface ListingSearchApiRequest {
 
   status?: PostStatus
   userId?: string
+  isBroker?: boolean
   sortBy?: SortKey
 
   // Location coordinates
