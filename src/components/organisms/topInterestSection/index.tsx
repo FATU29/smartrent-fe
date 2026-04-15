@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { Button } from '@/components/atoms/button'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
 import {
   Carousel,
   CarouselContent,
@@ -93,8 +94,12 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
           </h2>
         </div>
         <Link href={PUBLIC_ROUTES.LISTING_LISTING}>
-          <Button variant='ghost' size='sm' className='text-sm'>
+          <Button
+            variant='ghost'
+            className='group gap-1 px-0 sm:px-3 text-primary hover:text-primary/80'
+          >
             {t('viewAll')}
+            <ArrowRight className='w-4 h-4 transition-transform group-hover:translate-x-0.5' />
           </Button>
         </Link>
       </div>
