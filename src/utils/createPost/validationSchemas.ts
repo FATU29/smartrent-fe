@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 const getPropertyInfoFields = () => ({
-  categoryId: yup.string().required('propertyTypeRequired'),
+  categoryId: yup.string().required('categoryTypeRequired'),
   productType: yup
     .string()
     .required('propertyTypeRequired')
@@ -98,7 +98,7 @@ const getPropertyInfoFields = () => ({
     .required('listingTitleRequired')
     .trim()
     .min(30, 'listingTitleMinLength')
-    .max(200, 'listingTitleMaxLength'),
+    .max(500, 'listingTitleMaxLength'),
   description: yup
     .string()
     .required('propertyDescriptionRequired')
@@ -280,22 +280,23 @@ export const getCreatePostSchema = () => {
 }
 
 export const STEP_0_FIELDS = [
-  'propertyType',
+  'categoryId',
+  'productType',
   'address',
   'area',
   'price',
   'priceUnit',
-  'title',
-  'description',
-  'waterPrice',
-  'electricityPrice',
-  'internetPrice',
-  'serviceFee',
   'furnishing',
   'bedrooms',
   'bathrooms',
   'roomCapacity',
+  'waterPrice',
+  'electricityPrice',
+  'internetPrice',
+  'serviceFee',
   'direction',
+  'title',
+  'description',
 ] as const
 
 export const STEP_2_FIELDS = [] as const

@@ -929,6 +929,7 @@
     },
     "validation": {
       "imagesUploadInProgress": "Vui lòng đợi quá trình tải ảnh hoàn tất trước khi tiếp tục",
+      "categoryTypeRequired": "Loại danh mục là bắt buộc",
       "propertyTypeRequired": "Loại bất động sản là bắt buộc",
       "propertyTypeInvalid": "Loại bất động sản không hợp lệ",
       "addressRequired": "Vui lòng chọn tỉnh/thành phố và phường/xã",
@@ -949,7 +950,7 @@
       "startDateRequired": "Vui lòng chọn ngày bắt đầu",
       "listingTitleRequired": "Tiêu đề tin đăng là bắt buộc",
       "listingTitleMinLength": "Tiêu đề phải có ít nhất 30 ký tự",
-      "listingTitleMaxLength": "Tiêu đề không được vượt quá 200 ký tự",
+      "listingTitleMaxLength": "Tiêu đề không được vượt quá 500 ký tự",
       "propertyDescriptionRequired": "Mô tả bất động sản là bắt buộc",
       "propertyDescriptionMinLength": "Mô tả phải có ít nhất 100 ký tự",
       "fullNameRequired": "Họ và tên là bắt buộc",

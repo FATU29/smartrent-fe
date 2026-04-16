@@ -927,6 +927,7 @@
       "unexpectedError": "An unexpected error occurred"
     },
     "validation": {
+      "categoryTypeRequired": "Category type is required",
       "propertyTypeRequired": "Property type is required",
       "propertyTypeInvalid": "Invalid property type",
       "addressRequired": "Please select province/city and ward/commune",
@@ -947,7 +948,7 @@
       "startDateRequired": "Please select a start date",
       "listingTitleRequired": "Listing title is required",
       "listingTitleMinLength": "Title must be at least 30 characters",
-      "listingTitleMaxLength": "Title cannot exceed 200 characters",
+      "listingTitleMaxLength": "Title cannot exceed 500 characters",
       "propertyDescriptionRequired": "Property description is required",
       "propertyDescriptionMinLength": "Description must be at least 100 characters",
       "fullNameRequired": "Full name is required",
