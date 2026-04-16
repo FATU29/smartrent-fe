@@ -6,14 +6,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/atoms/dropdown-menu'
-import { Avatar } from '@/components/atoms/avatar'
 import { Button } from '@/components/atoms/button'
 import { useAuth, useLogout } from '@/hooks/useAuth'
 import { useTranslations } from 'next-intl'
-import { cn, getUserInitials } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import Image from 'next/image'
 import { SELLER_ROUTES } from '@/constants/route'
+import BrokerAvatar from '@/components/molecules/brokerAvatar'
 import {
   type MenuItem,
   badgeStyles,
@@ -30,29 +30,20 @@ const UserDropdown: React.FC = () => {
 
   const items: MenuItem[] = getMenuItems(t)
   const logoutItem: MenuItem = getLogoutItem(t, logoutUser)
-
-  const getInitials = (first: string, last: string) =>
-    getUserInitials(first, last)
+  const isProfessionalBroker =
+    Boolean(user.isBroker) || user.brokerVerificationStatus === 'APPROVED'
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='relative h-9 w-9 rounded-full'>
-          <Avatar className='h-9 w-9'>
-            {user.avatarUrl ? (
-              <Image
-                src={user.avatarUrl}
-                alt={`${user.firstName} ${user.lastName}`}
-                fill
-                className='object-cover'
-                sizes='36px'
-              />
-            ) : (
-              <div className='flex items-center justify-center h-full w-full bg-primary text-primary-foreground text-sm font-medium'>
-                {getInitials(user.firstName, user.lastName)}
-              </div>
-            )}
-          </Avatar>
+        <Button variant='ghost' className='relative h-10 w-10 rounded-full'>
+          <BrokerAvatar
+            avatarUrl={user.avatarUrl}
+            firstName={user.firstName}
+            lastName={user.lastName}
+            sizeClassName='h-9 w-9'
+            showBrokerBadge={isProfessionalBroker}
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

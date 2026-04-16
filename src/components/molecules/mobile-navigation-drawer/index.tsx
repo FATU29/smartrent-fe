@@ -14,7 +14,6 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import Logo from '@/components/atoms/logo'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
 import Link from 'next/link'
 import NavigationMenu from '@/components/molecules/navigation-menu'
 import { NavigationItemData } from '@/components/atoms/navigation-item'
@@ -26,6 +25,7 @@ import { useAuth, useLogout } from '@/hooks/useAuth'
 import { useAuthDialog } from '@/contexts/authDialog'
 import { useRouter } from 'next/router'
 import { PUBLIC_ROUTES, SELLERNET_ROUTES } from '@/constants/route'
+import BrokerAvatar from '@/components/molecules/brokerAvatar'
 
 interface MobileNavigationDrawerProps {
   items: NavigationItemData[]
@@ -105,9 +105,8 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
     setIsOpen(false)
   }
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
-  }
+  const isProfessionalBroker =
+    Boolean(user?.isBroker) || user?.brokerVerificationStatus === 'APPROVED'
 
   return (
     <>
@@ -161,16 +160,13 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
               <div className='overflow-hidden rounded-2xl border border-border bg-card shadow-sm'>
                 <div className='bg-muted/40 p-4'>
                   <div className='flex items-start gap-3'>
-                    <Avatar className='h-12 w-12 ring-2 ring-border'>
-                      <AvatarImage
-                        src={user.avatarUrl}
-                        alt={`${user.firstName} ${user.lastName}`}
-                        className='object-cover'
-                      />
-                      <AvatarFallback className='bg-primary text-primary-foreground text-sm font-semibold'>
-                        {getInitials(user.firstName, user.lastName)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <BrokerAvatar
+                      avatarUrl={user.avatarUrl}
+                      firstName={user.firstName}
+                      lastName={user.lastName}
+                      sizeClassName='h-12 w-12'
+                      showBrokerBadge={isProfessionalBroker}
+                    />
 
                     <div className='min-w-0 flex-1'>
                       <Typography

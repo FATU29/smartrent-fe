@@ -4,7 +4,6 @@ import { useRouter } from 'next/router'
 import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
 import { Card, CardContent } from '@/components/atoms/card'
-import { Avatar } from '@/components/atoms/avatar'
 import {
   Dialog,
   DialogContent,
@@ -20,6 +19,7 @@ import { PUBLIC_ROUTES, buildSellerDetailRoute } from '@/constants/route'
 import { UserApi } from '@/api/types'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthDialog } from '@/contexts/authDialog'
+import BrokerAvatar from '@/components/molecules/brokerAvatar'
 
 interface SellerContactProps {
   host?: UserApi
@@ -58,15 +58,6 @@ const SellerContact: React.FC<SellerContactProps> = ({
     ? buildSellerDetailRoute(host.userId)
     : PUBLIC_ROUTES.PROPERTIES_PREFIX
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((word) => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
-
   const handleZaloClick = () => {
     if (zaloLink) {
       window.open(zaloLink, '_blank')
@@ -90,6 +81,8 @@ const SellerContact: React.FC<SellerContactProps> = ({
   }
 
   const hasPhone = Boolean(phoneCode && phoneNumber)
+  const isProfessionalBroker =
+    Boolean(host.isBroker) || host.brokerVerificationStatus === 'APPROVED'
 
   return (
     <Card className='w-full shadow-lg hover:shadow-xl transition-shadow'>
@@ -97,21 +90,17 @@ const SellerContact: React.FC<SellerContactProps> = ({
         {/* Seller Info */}
         <div className='flex items-start gap-4'>
           <Link href={sellerListingsUrl} className='cursor-pointer'>
-            <Avatar className='w-14 h-14 md:w-16 md:h-16 flex-shrink-0 ring-2 ring-primary/10 cursor-pointer'>
-              {avatarUrl ? (
-                <Image
-                  src={avatarUrl}
-                  alt={name}
-                  width={64}
-                  height={64}
-                  className='object-cover'
-                />
-              ) : (
-                <div className='w-full h-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center text-lg md:text-xl font-bold'>
-                  {getInitials(name)}
-                </div>
-              )}
-            </Avatar>
+            <BrokerAvatar
+              avatarUrl={avatarUrl}
+              firstName={firstName}
+              lastName={lastName}
+              alt={name}
+              sizeClassName='w-16 h-16 md:w-20 md:h-20'
+              className='cursor-pointer'
+              showBrokerBadge={isProfessionalBroker}
+              fallbackClassName='text-lg md:text-xl'
+              badgeClassName='h-6 w-6 md:h-7 md:w-7'
+            />
           </Link>
 
           <div className='flex-1 min-w-0 flex flex-col gap-1'>

@@ -118,6 +118,8 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
         profileUser.contactPhoneNumber || profileUser.phoneNumber || '',
       idDocument: profileUser.idDocument || '',
       avatarUrl: profileUser.avatarUrl,
+      isBroker: profileUser.isBroker,
+      brokerVerificationStatus: profileUser.brokerVerificationStatus,
     }
   }, [profileUser])
 
