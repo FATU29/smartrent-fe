@@ -312,7 +312,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     const categoryItem = categoryId
       ? categories.find((c) => c.categoryId === categoryId)
       : null
-    const categoryName = categoryItem?.icon || ''
+    const categoryName = categoryItem?.icon || categoryItem?.name || ''
 
     const amenityCodes: string[] = []
     if (amenityIds && amenityIds.length > 0) {
@@ -324,60 +324,109 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
       })
     }
 
-    if (!categoryName) {
-      toast.error(tValidation('propertyTypeRequired'))
-      return
-    }
-    if (!productType) {
-      toast.error(tValidation('propertyTypeRequired'))
-      return
-    }
-    if (!furnishing) {
-      toast.error(tValidation('interiorConditionRequired'))
-      return
-    }
-    if (!propertyInfo?.direction) {
-      toast.error(tValidation('directionRequired'))
-      return
-    }
-    if (!propertyInfo?.waterPrice) {
-      toast.error(tValidation('waterPriceRequired'))
-      return
-    }
-    if (!propertyInfo?.electricityPrice) {
-      toast.error(tValidation('electricityPriceRequired'))
-      return
-    }
-    if (!propertyInfo?.internetPrice) {
-      toast.error(tValidation('internetPriceRequired'))
-      return
-    }
-    if (!propertyInfo?.serviceFee) {
-      toast.error(tValidation('serviceFeeRequired'))
-      return
-    }
-    if (!propertyInfo?.price || propertyInfo.price <= 0) {
-      toast.error(tValidation('priceRequired'))
-      return
-    }
-    if (!propertyInfo?.priceUnit) {
-      toast.error(tValidation('priceUnitRequired'))
-      return
-    }
-    if (!propertyInfo?.area) {
-      toast.error(tValidation('areaRequired'))
-      return
-    }
-    if (!propertyInfo?.bedrooms) {
-      toast.error(tValidation('bedroomsRequired'))
-      return
-    }
-    if (!propertyInfo?.bathrooms) {
-      toast.error(tValidation('bathroomsRequired'))
-      return
-    }
-    if (!propertyInfo?.roomCapacity) {
-      toast.error(tValidation('roomCapacityRequired'))
+    const hasNewAddress = !!(
+      propertyInfo?.address?.newAddress?.provinceCode &&
+      propertyInfo?.address?.newAddress?.wardCode
+    )
+    const hasValidCoordinates =
+      propertyInfo?.address?.latitude !== undefined &&
+      propertyInfo?.address?.longitude !== undefined &&
+      propertyInfo?.address?.latitude !== 0 &&
+      propertyInfo?.address?.longitude !== 0
+
+    const orderedChecks: Array<{
+      field?: keyof CreateListingRequest
+      messageKey: string
+      isValid: boolean
+    }> = [
+      {
+        field: 'categoryId',
+        messageKey: 'categoryTypeRequired',
+        isValid: !!categoryId,
+      },
+      {
+        field: 'productType',
+        messageKey: 'propertyTypeRequired',
+        isValid: !!productType,
+      },
+      {
+        field: 'address',
+        messageKey: 'addressRequired',
+        isValid: hasNewAddress,
+      },
+      {
+        field: 'address',
+        messageKey: 'locationRequired',
+        isValid: hasValidCoordinates,
+      },
+      {
+        field: 'area',
+        messageKey: 'areaRequired',
+        isValid: !!propertyInfo?.area,
+      },
+      {
+        field: 'price',
+        messageKey: 'priceRequired',
+        isValid: !!propertyInfo?.price && propertyInfo.price > 0,
+      },
+      {
+        field: 'priceUnit',
+        messageKey: 'priceUnitRequired',
+        isValid: !!propertyInfo?.priceUnit,
+      },
+      {
+        field: 'furnishing',
+        messageKey: 'interiorConditionRequired',
+        isValid: !!furnishing,
+      },
+      {
+        field: 'bedrooms',
+        messageKey: 'bedroomsRequired',
+        isValid: !!propertyInfo?.bedrooms,
+      },
+      {
+        field: 'bathrooms',
+        messageKey: 'bathroomsRequired',
+        isValid: !!propertyInfo?.bathrooms,
+      },
+      {
+        field: 'roomCapacity',
+        messageKey: 'roomCapacityRequired',
+        isValid: !!propertyInfo?.roomCapacity,
+      },
+      {
+        field: 'waterPrice',
+        messageKey: 'waterPriceRequired',
+        isValid: !!propertyInfo?.waterPrice,
+      },
+      {
+        field: 'electricityPrice',
+        messageKey: 'electricityPriceRequired',
+        isValid: !!propertyInfo?.electricityPrice,
+      },
+      {
+        field: 'internetPrice',
+        messageKey: 'internetPriceRequired',
+        isValid: !!propertyInfo?.internetPrice,
+      },
+      {
+        field: 'serviceFee',
+        messageKey: 'serviceFeeRequired',
+        isValid: !!propertyInfo?.serviceFee,
+      },
+      {
+        field: 'direction',
+        messageKey: 'directionRequired',
+        isValid: !!propertyInfo?.direction,
+      },
+    ]
+
+    const firstInvalid = orderedChecks.find((check) => !check.isValid)
+    if (firstInvalid) {
+      if (firstInvalid.field) {
+        trigger(firstInvalid.field)
+      }
+      toast.error(tValidation(firstInvalid.messageKey))
       return
     }
 
@@ -1162,7 +1211,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   <Input
                     type='text'
                     value={titleInput}
-                    maxLength={200}
+                    maxLength={500}
                     placeholder={tPlaceholders('enterListingTitle')}
                     onChange={(e) => {
                       setTitleInput(e.target.value)
@@ -1186,14 +1235,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                       </p>
                       <p
                         className={`text-xs font-medium ${
-                          titleInput.length > 200
+                          titleInput.length > 500
                             ? 'text-destructive'
                             : titleInput.length >= 30
                               ? 'text-green-600 dark:text-green-400'
                               : 'text-gray-500 dark:text-gray-400'
                         }`}
                       >
-                        {titleInput.length}/200
+                        {titleInput.length}/500
                       </p>
                     </div>
                   )}
