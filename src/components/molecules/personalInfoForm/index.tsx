@@ -23,6 +23,8 @@ type PersonalInfoFormData = {
   idDocument: string
   avatar?: File
   avatarUrl?: string
+  isBroker?: boolean | null
+  brokerVerificationStatus?: 'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED' | null
 }
 
 type PersonalInfoFormProps = {
@@ -83,7 +85,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       firstName: initialData?.firstName || '',
       lastName: initialData?.lastName || '',
       email: initialData?.email || '',
-      contactPhoneNumber: (initialData as any)?.contactPhoneNumber || '',
+      contactPhoneNumber: initialData?.contactPhoneNumber || '',
       idDocument: initialData?.idDocument || '',
       avatarUrl: initialData?.avatarUrl || '',
     },
@@ -95,7 +97,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       firstName: initialData?.firstName || '',
       lastName: initialData?.lastName || '',
       email: initialData?.email || '',
-      contactPhoneNumber: (initialData as any)?.contactPhoneNumber || '',
+      contactPhoneNumber: initialData?.contactPhoneNumber || '',
       idDocument: initialData?.idDocument || '',
       avatarUrl: initialData?.avatarUrl || '',
     })
@@ -107,6 +109,9 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   const idDocumentController = useController({ name: 'idDocument', control })
 
   const watchedValues = watch()
+  const isProfessionalBroker =
+    Boolean(initialData?.isBroker) ||
+    initialData?.brokerVerificationStatus === 'APPROVED'
 
   // Realtime sync basic identity fields to auth store so dropdown updates immediately
   React.useEffect(() => {
@@ -151,6 +156,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               firstName={watchedValues.firstName}
               lastName={watchedValues.lastName}
               currentImage={initialData?.avatarUrl}
+              isProfessionalBroker={isProfessionalBroker}
               onImageChange={handleAvatarChange}
               size='lg'
             />

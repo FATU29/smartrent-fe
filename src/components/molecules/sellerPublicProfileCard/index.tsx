@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/atoms/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { Typography } from '@/components/atoms/typography'
 import CopyButton from '@/components/atoms/copy-button'
@@ -21,21 +20,13 @@ import {
   ShieldCheck,
   UserRoundCheck,
 } from 'lucide-react'
+import BrokerAvatar from '@/components/molecules/brokerAvatar'
 
 interface SellerPublicProfileCardProps {
   seller?: UserApi | null
   listingCount: number
   isLoading?: boolean
 }
-
-const getInitials = (fullName: string) =>
-  fullName
-    .split(' ')
-    .filter(Boolean)
-    .map((item) => item[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
 
 const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
   seller,
@@ -117,12 +108,16 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
       </CardHeader>
       <CardContent className='space-y-4 pt-4'>
         <div className='flex items-start gap-4'>
-          <Avatar className='h-16 w-16 ring-2 ring-primary/15'>
-            <AvatarImage src={seller?.avatarUrl} alt={displayName} />
-            <AvatarFallback className='bg-gradient-to-br from-primary to-primary/70 text-primary-foreground font-semibold'>
-              {getInitials(displayName)}
-            </AvatarFallback>
-          </Avatar>
+          <BrokerAvatar
+            avatarUrl={seller?.avatarUrl}
+            firstName={firstName}
+            lastName={lastName}
+            alt={displayName}
+            sizeClassName='h-16 w-16 md:h-20 md:w-20'
+            showBrokerBadge={isProfessionalBroker}
+            fallbackClassName='text-base md:text-lg'
+            badgeClassName='h-6 w-6 md:h-7 md:w-7'
+          />
 
           <div className='min-w-0 flex-1 space-y-2'>
             <Typography variant='h4' className='truncate text-base md:text-lg'>

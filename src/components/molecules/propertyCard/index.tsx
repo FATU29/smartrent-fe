@@ -40,6 +40,7 @@ import {
   getDirectionTranslationKey,
   getFurnishingTranslationKey,
 } from '@/utils/property'
+import BrokerAvatar from '@/components/molecules/brokerAvatar'
 
 interface PropertyCardProps {
   listing: ListingDetail
@@ -109,7 +110,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   const video = media?.find((m) => m.mediaType === 'VIDEO')
 
   const { firstName, lastName } = user || {}
-  const userName = firstName && lastName ? `${firstName} ${lastName}` : ''
+  const userName = `${firstName || ''} ${lastName || ''}`.trim()
+  const isProfessionalBroker =
+    Boolean(user?.isBroker) || user?.brokerVerificationStatus === 'APPROVED'
 
   const { fullNewAddress: newAddress, fullAddress: legacyAddress } =
     address || {}
@@ -702,26 +705,33 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           )}
 
           {/* User Info & Post Date Footer */}
-          {isCompact && user && (
+          {user && (
             <div className='flex items-center justify-between gap-2 mt-auto pt-2.5 border-t border-border/60'>
-              {/* User Info */}
               <div className='flex items-center gap-2 flex-1 min-w-0'>
-                <div className='w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0'>
-                  <Typography
-                    variant='small'
-                    className='text-xs font-bold text-primary'
-                  >
-                    {userName ? userName.charAt(0).toUpperCase() : '?'}
-                  </Typography>
-                </div>
+                <BrokerAvatar
+                  avatarUrl={user.avatarUrl}
+                  firstName={firstName}
+                  lastName={lastName}
+                  sizeClassName={isCompact ? 'size-10' : 'size-9'}
+                  showBrokerBadge={isProfessionalBroker}
+                  fallbackClassName={isCompact ? 'text-sm' : 'text-xs'}
+                />
                 <div className='flex-1 min-w-0'>
                   {userName && (
                     <Typography
                       variant='small'
-                      className='text-sm font-medium truncate block'
+                      className={classNames(
+                        'font-medium truncate block',
+                        isCompact ? 'text-sm' : 'text-xs sm:text-sm',
+                      )}
                     >
                       {userName}
                     </Typography>
+                  )}
+                  {isProfessionalBroker && (
+                    <span className='inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-700/40 dark:bg-emerald-950/20 dark:text-emerald-300'>
+                      {t('userMenu.proBroker')}
+                    </span>
                   )}
                 </div>
               </div>
@@ -740,11 +750,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           )}
 
           {/* Bottom Content - Custom ReactNode */}
-          {bottomContent && (
-            <div className={classNames(isCompact ? 'mt-2' : 'mt-auto')}>
-              {bottomContent}
-            </div>
-          )}
+          {bottomContent && <div className='mt-2'>{bottomContent}</div>}
         </CardContent>
       </Card>
     </TooltipProvider>

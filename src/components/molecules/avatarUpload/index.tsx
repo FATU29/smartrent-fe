@@ -1,10 +1,10 @@
 import * as React from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
 import { Button } from '@/components/atoms/button'
 import { Camera, Upload } from 'lucide-react'
-import { cn, getUserInitials } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import BrokerAvatar from '@/components/molecules/brokerAvatar'
 
 interface AvatarUploadProps {
   currentImage?: string
@@ -14,6 +14,7 @@ interface AvatarUploadProps {
   className?: string
   size?: 'sm' | 'md' | 'lg'
   maxSizeInMB?: number // Default: 10MB
+  isProfessionalBroker?: boolean
 }
 
 const AvatarUpload: React.FC<AvatarUploadProps> = ({
@@ -24,6 +25,7 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
   className,
   size = 'lg',
   maxSizeInMB = 10,
+  isProfessionalBroker = false,
 }) => {
   const t = useTranslations()
   const [preview, setPreview] = React.useState<string | null>(
@@ -84,20 +86,21 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
     fileInputRef.current?.click()
   }
 
-  const initials = getUserInitials(firstName, lastName)
   const fullName = `${firstName} ${lastName}`.trim()
 
   return (
     <div className={cn('flex flex-col items-center gap-4', className)}>
       <div className='relative group'>
-        <Avatar className={cn(sizeClasses[size])}>
-          <AvatarImage src={preview || currentImage} alt={fullName} />
-          {initials && (
-            <AvatarFallback className='bg-primary text-primary-foreground text-lg font-semibold'>
-              {initials}
-            </AvatarFallback>
-          )}
-        </Avatar>
+        <BrokerAvatar
+          avatarUrl={preview || currentImage}
+          firstName={firstName}
+          lastName={lastName}
+          alt={fullName}
+          sizeClassName={sizeClasses[size]}
+          showBrokerBadge={isProfessionalBroker}
+          fallbackClassName='text-lg font-semibold'
+          badgeClassName='h-6 w-6'
+        />
 
         {/* Overlay button on hover */}
         <div className='absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center'>
