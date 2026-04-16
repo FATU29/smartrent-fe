@@ -180,7 +180,12 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
                 className='block h-full'
                 onClick={handleLinkClick}
               >
-                <PropertyCard listing={listing} onFavorite={handleFavorite} />
+                <PropertyCard
+                  listing={listing}
+                  onFavorite={handleFavorite}
+                  className='compact'
+                  imageLayout='top'
+                />
               </Link>
             </CarouselItem>
           ))}
