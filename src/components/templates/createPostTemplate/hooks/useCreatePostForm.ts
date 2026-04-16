@@ -6,9 +6,11 @@ import { getFormDefaultValues } from '@/components/templates/shared/form.utils'
 import type { CreateListingRequest } from '@/api/types/property.type'
 
 export const useCreatePostForm = () => {
-  const { propertyInfo } = useCreatePost()
+  const { propertyInfo, draftId } = useCreatePost()
 
-  const validationSchema = getCreatePostSchema()
+  const validationSchema = getCreatePostSchema({
+    draftMode: Boolean(draftId),
+  })
   const form = useForm<Partial<CreateListingRequest>>({
     resolver: yupResolver(validationSchema) as unknown as Resolver<
       Partial<CreateListingRequest>

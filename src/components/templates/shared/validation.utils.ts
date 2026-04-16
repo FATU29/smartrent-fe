@@ -29,8 +29,11 @@ export const hasFormErrors = (
 
 export const validateStep0 = (
   propertyInfo: CreateListingRequest | undefined,
+  options?: { draftMode?: boolean },
 ): boolean => {
   if (!propertyInfo) return false
+
+  const draftMode = !!options?.draftMode
 
   const address = propertyInfo.address
 
@@ -45,7 +48,22 @@ export const validateStep0 = (
   const hasNewAddress = !!(
     address?.newAddress?.provinceCode && address?.newAddress?.wardCode
   )
-  const hasAddressStructure = hasNewAddress
+  const hasLegacyAddress = !!(
+    address?.legacy?.provinceId &&
+    address?.legacy?.districtId &&
+    address?.legacy?.wardId
+  )
+  const hasAddressStructure = hasNewAddress || hasLegacyAddress
+
+  if (draftMode) {
+    return (
+      !!propertyInfo.categoryId &&
+      !!propertyInfo.title &&
+      propertyInfo.title.trim().length >= 5 &&
+      !!propertyInfo.address &&
+      hasAddressStructure
+    )
+  }
 
   const hasAllRequiredFields =
     !!propertyInfo.categoryId &&

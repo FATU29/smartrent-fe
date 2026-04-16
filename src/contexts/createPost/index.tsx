@@ -141,7 +141,10 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
     } = mapDraftToFormData(draft)
 
     setFulltextAddress(fulltextAddressUpdate)
-    setPropertyInfo(mappedPropertyInfo)
+    setPropertyInfo({
+      ...mappedPropertyInfo,
+      isDraft: true,
+    })
     setMedia(mediaItems)
   }
 
