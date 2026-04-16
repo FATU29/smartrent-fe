@@ -1,15 +1,11 @@
 import React, { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
+import SectionHeading from '@/components/atoms/sectionHeading'
 import { Tabs, TabsList, TabsTrigger } from '@/components/atoms/tabs'
-import { Badge } from '@/components/atoms/badge'
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltipContent,
-} from '@/components/atoms/chart'
-import { TrendingUp } from 'lucide-react'
+import { Skeleton } from '@/components/atoms/skeleton'
+import { ChartConfig, ChartContainer } from '@/components/atoms/chart'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 import {
   Area,
   AreaChart,
@@ -17,11 +13,19 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  ReferenceLine,
   ResponsiveContainer,
 } from 'recharts'
 import { formatByLocale, formatCompactCurrency } from '@/utils/currency/convert'
+import { cn } from '@/lib/utils'
 
 import { usePricingHistory, usePriceStatistics } from '@/hooks/usePricing'
+import {
+  mockPricingHistory,
+  mockPriceStatistics,
+} from '@/mock/listingDetail/pricingHistory'
+
+const IS_DEV = process.env.NODE_ENV === 'development'
 
 interface PriceHistoryChartProps {
   listingId: number
@@ -29,24 +33,93 @@ interface PriceHistoryChartProps {
   oldAddress?: string
 }
 
-const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
-  listingId,
-  newAddress,
-  oldAddress,
-}) => {
-  const t = useTranslations()
-  const [selectedPeriod, setSelectedPeriod] = useState<
-    '1year' | '2years' | '5years'
-  >('1year')
+type Period = '1year' | '2years'
 
-  const { data: priceHistory } = usePricingHistory(listingId)
-  const { data: priceStatistics } = usePriceStatistics(listingId, {
+const PERIOD_MONTHS: Record<Period, number> = {
+  '1year': 12,
+  '2years': 24,
+}
+
+// ─── Tooltip ─────────────────────────────────────────────────────────────────
+
+const PriceTooltip = ({
+  active,
+  payload,
+  label,
+  avgPrice,
+}: {
+  active?: boolean
+  payload?: Array<{ value: number; color: string }>
+  label?: string
+  avgPrice: number
+}) => {
+  if (!active || !payload?.length) return null
+  const price = payload[0]?.value ?? 0
+  const diff = price - avgPrice
+  const diffPct = avgPrice > 0 ? ((diff / avgPrice) * 100).toFixed(1) : '0'
+  const isAbove = diff > 0
+
+  return (
+    <div className='rounded-xl border border-border/60 bg-background/95 backdrop-blur-md px-3.5 py-2.5 shadow-2xl text-xs min-w-[170px]'>
+      <p className='text-[11px] font-medium text-muted-foreground mb-2 pb-1.5 border-b border-border/50'>
+        {label}
+      </p>
+      <div className='flex items-center justify-between gap-4'>
+        <div className='flex items-center gap-1.5'>
+          <div
+            className='w-2 h-2 rounded-full flex-shrink-0'
+            style={{ backgroundColor: payload[0]?.color }}
+          />
+          <span className='text-muted-foreground'>Giá thuê</span>
+        </div>
+        <span className='font-semibold tabular-nums text-foreground'>
+          {formatByLocale(price, 'vi')}
+        </span>
+      </div>
+      {avgPrice > 0 && diff !== 0 && (
+        <div className='flex items-center justify-between gap-4 mt-1'>
+          <span className='text-muted-foreground pl-3.5'>vs trung bình</span>
+          <span
+            className={cn(
+              'font-medium tabular-nums',
+              isAbove
+                ? 'text-emerald-600 dark:text-emerald-400'
+                : 'text-red-500 dark:text-red-400',
+            )}
+          >
+            {isAbove ? '+' : ''}
+            {diffPct}%
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
+const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
+  const t = useTranslations()
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>('1year')
+
+  const { data: priceHistoryRaw, isLoading: isHistoryLoading } =
+    usePricingHistory(listingId)
+
+  const { data: priceStatisticsRaw } = usePriceStatistics(listingId, {
     enabled: !!listingId,
   })
 
-  // Transform PriceHistory[] to chart data and calculate statistics
+  const priceHistory =
+    priceHistoryRaw && priceHistoryRaw.length > 0
+      ? priceHistoryRaw
+      : IS_DEV
+        ? mockPricingHistory
+        : priceHistoryRaw
+
+  const priceStatistics =
+    priceStatisticsRaw ?? (IS_DEV ? mockPriceStatistics : undefined)
+
   const { chartData, statistics } = useMemo(() => {
-    // Check if priceHistory is an array and has data
     if (
       !priceHistory ||
       !Array.isArray(priceHistory) ||
@@ -55,174 +128,187 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
       return { chartData: [], statistics: null }
     }
 
-    // Sort by date (oldest first)
     const sorted = [...priceHistory].sort(
       (a, b) =>
-        new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime(),
+        new Date(a.changedAt + '+07:00').getTime() -
+        new Date(b.changedAt + '+07:00').getTime(),
     )
 
-    // Calculate statistics from priceHistory for chart data
-    const prices = sorted.map((item) => item.newPrice)
-    const overallAvg =
-      priceStatistics?.avgPrice ||
-      Math.round(prices.reduce((sum, price) => sum + price, 0) / prices.length)
+    const cutoff = new Date()
+    cutoff.setMonth(cutoff.getMonth() - PERIOD_MONTHS[selectedPeriod])
+    const display = sorted.filter(
+      (item) => new Date(item.changedAt + '+07:00') >= cutoff,
+    )
+    const slice = display.length > 0 ? display : sorted
 
-    // Transform to chart data format
-    const transformed = sorted.map((item) => ({
-      date: new Date(item.changedAt).toLocaleDateString('vi-VN', {
-        month: 'short',
-        year: 'numeric',
-      }),
-      price: item.newPrice,
-      average: overallAvg, // Add average to each data point
-      highest: item.newPrice,
-      lowest: item.newPrice,
-    }))
+    const allPrices = sorted.map((p) => p.newPrice)
+    const slicePrices = slice.map((p) => p.newPrice)
 
-    const currentPrice = sorted.at(-1)?.newPrice || 0
-    const firstPrice = sorted.at(0)?.newPrice || 0
+    const currentPrice = sorted.at(-1)?.newPrice ?? 0
+    const firstPrice = slice.at(0)?.newPrice ?? currentPrice
     const changePercentage =
       firstPrice > 0
         ? Math.round(((currentPrice - firstPrice) / firstPrice) * 100)
         : 0
 
-    // Calculate highest/lowest for each date point (using rolling window)
-    const chartDataWithRange = transformed.map((item, index) => {
-      const windowStart = Math.max(0, index - 5)
-      const windowEnd = index + 1
-      const windowPrices = prices.slice(windowStart, windowEnd)
-      return {
-        ...item,
-        highest: Math.max(...windowPrices),
-        lowest: Math.min(...windowPrices),
-      }
-    })
+    const avgPrice =
+      priceStatistics?.avgPrice ??
+      Math.round(slicePrices.reduce((s, p) => s + p, 0) / slicePrices.length)
 
-    if (!priceStatistics) {
-      return { chartData: chartDataWithRange, statistics: null }
+    let increases = 0
+    let decreases = 0
+    for (let i = 1; i < sorted.length; i++) {
+      if (sorted[i].newPrice > sorted[i - 1].newPrice) increases++
+      else if (sorted[i].newPrice < sorted[i - 1].newPrice) decreases++
+    }
+
+    // Deduplicate: keep last entry per month (MM/YYYY key)
+    const monthMap = new Map<string, number>()
+    for (const item of slice) {
+      const d = new Date(item.changedAt + '+07:00')
+      const key = `${d.getMonth()}-${d.getFullYear()}`
+      monthMap.set(key, item.newPrice)
     }
 
     return {
-      chartData: chartDataWithRange,
+      chartData: Array.from(monthMap.entries()).map(([key, price]) => {
+        const [month, year] = key.split('-').map(Number)
+        const shortYear = String(year).slice(-2)
+        return { date: `T${month + 1}/${shortYear}`, price }
+      }),
       statistics: {
         current: currentPrice,
-        minPrice: priceStatistics.minPrice,
-        maxPrice: priceStatistics.maxPrice,
-        avgPrice: priceStatistics.avgPrice,
+        minPrice: priceStatistics?.minPrice ?? Math.min(...allPrices),
+        maxPrice: priceStatistics?.maxPrice ?? Math.max(...allPrices),
+        avgPrice,
         changePercentage,
-        totalChanges: priceStatistics.totalChanges,
-        priceIncreases: priceStatistics.priceIncreases,
-        priceDecreases: priceStatistics.priceDecreases,
-        pricePerSqm: currentPrice,
+        totalChanges:
+          priceStatistics?.totalChanges ?? Math.max(sorted.length - 1, 0),
+        priceIncreases: priceStatistics?.priceIncreases ?? increases,
+        priceDecreases: priceStatistics?.priceDecreases ?? decreases,
       },
     }
-  }, [priceHistory, priceStatistics])
+  }, [priceHistory, priceStatistics, selectedPeriod])
+
+  // ── Loading ──
+  if (isHistoryLoading) {
+    return (
+      <div className='space-y-5'>
+        <Skeleton className='h-7 w-56' />
+        <div className='grid grid-cols-3 gap-3'>
+          <Skeleton className='h-20 rounded-xl' />
+          <Skeleton className='h-20 rounded-xl' />
+          <Skeleton className='h-20 rounded-xl' />
+        </div>
+        <Skeleton className='h-[260px] w-full rounded-xl' />
+      </div>
+    )
+  }
 
   if (
     !priceHistory ||
     !Array.isArray(priceHistory) ||
-    priceHistory.length === 0 ||
-    !statistics
+    priceHistory.length === 0
   ) {
     return null
   }
+  if (!statistics || chartData.length === 0) return null
+
+  const isPositive = statistics.changePercentage >= 0
 
   const chartConfig: ChartConfig = {
-    highest: {
-      label: t('apartmentDetail.priceHistory.chartLabels.highest'),
-      color: '#e5e7eb',
-    },
-    average: {
-      label: t('apartmentDetail.priceHistory.chartLabels.average'),
+    price: {
+      label: 'Giá thuê',
       color: '#3b82f6',
-    },
-    lowest: {
-      label: t('apartmentDetail.priceHistory.chartLabels.lowest'),
-      color: '#fbbf24',
     },
   }
 
   return (
-    <div className='space-y-6'>
-      <div className='space-y-3'>
-        <Typography variant='h3' className='text-xl font-bold'>
-          {t('apartmentDetail.sections.priceHistory', {
-            district: newAddress || oldAddress || '',
-          })}
-        </Typography>
-        <div>
-          {newAddress && (
-            <Typography variant='p' className='text-base text-muted-foreground'>
-              {t('apartmentDetail.property.newAddress')}: {newAddress}
-            </Typography>
-          )}
-          {oldAddress && (
-            <Typography variant='p' className='text-base text-muted-foreground'>
-              {t('apartmentDetail.property.legacyAddress')}: {oldAddress}
-            </Typography>
-          )}
-        </div>
-      </div>
+    <div className='space-y-5'>
+      <SectionHeading title={t('apartmentDetail.priceHistory.simpleTitle')} />
 
-      {/* Stats Summary */}
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-        <Card>
+      {/* Stat cards */}
+      <div className='grid grid-cols-3 gap-3'>
+        {/* Giá hiện tại — blue */}
+        <Card className='py-0 border-blue-200 bg-blue-50/60 dark:border-blue-800 dark:bg-blue-950/30'>
           <CardContent className='p-4'>
-            <Typography
-              variant='h2'
-              className='text-xl sm:text-2xl font-bold mb-1 break-words'
-            >
-              {formatByLocale(statistics.current, 'vi')}{' '}
-            </Typography>
-            <Typography variant='small' className='text-muted-foreground'>
-              {t('apartmentDetail.priceHistory.statistics.avgPrice')}
-            </Typography>
+            <p className='text-xs text-blue-600/80 dark:text-blue-400/80 mb-1'>
+              Giá hiện tại
+            </p>
+            <p className='text-base font-bold text-blue-700 dark:text-blue-300 break-words leading-tight'>
+              {formatByLocale(statistics.current, 'vi')}
+            </p>
           </CardContent>
         </Card>
 
-        <Card className='bg-emerald-50 border-emerald-200'>
+        {/* Biến động — emerald / red */}
+        <Card
+          className={cn(
+            'py-0',
+            isPositive
+              ? 'border-emerald-200 bg-emerald-50/60 dark:border-emerald-800 dark:bg-emerald-950/30'
+              : 'border-red-200 bg-red-50/60 dark:border-red-800 dark:bg-red-950/30',
+          )}
+        >
           <CardContent className='p-4'>
-            <div className='flex items-center gap-2 mb-2'>
-              <TrendingUp className='w-5 h-5 text-emerald-600' />
-              <Typography
-                variant='h2'
-                className='text-3xl font-bold text-emerald-600'
+            <p
+              className={cn(
+                'text-xs mb-1',
+                isPositive
+                  ? 'text-emerald-600/80 dark:text-emerald-400/80'
+                  : 'text-red-500/80 dark:text-red-400/80',
+              )}
+            >
+              Biến động (
+              {t(`apartmentDetail.priceHistory.period.${selectedPeriod}`)})
+            </p>
+            <div className='flex items-center gap-1.5'>
+              {isPositive ? (
+                <TrendingUp className='w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0' />
+              ) : (
+                <TrendingDown className='w-4 h-4 text-red-500 dark:text-red-400 flex-shrink-0' />
+              )}
+              <p
+                className={cn(
+                  'text-base font-bold',
+                  isPositive
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-red-500 dark:text-red-400',
+                )}
               >
                 {statistics.changePercentage > 0 ? '+' : ''}
                 {statistics.changePercentage}%
-              </Typography>
+              </p>
             </div>
-            <Typography variant='small' className='text-emerald-700'>
-              {t('apartmentDetail.priceHistory.increaseWithTime', {
-                period: t('apartmentDetail.priceHistory.period.1year'),
-                timeRange: 'T9/24 - T9/25',
-              })}
-            </Typography>
           </CardContent>
         </Card>
 
-        <Card className='bg-blue-50 border-blue-200'>
+        {/* Thay đổi giá — violet */}
+        <Card className='py-0 border-violet-200 bg-violet-50/60 dark:border-violet-800 dark:bg-violet-950/30'>
           <CardContent className='p-4'>
-            <div className='flex items-center gap-2 mb-2'>
-              <div className='flex -space-x-1'>
-                <Badge className='w-6 h-6 bg-blue-400 rounded-full border-2 border-white p-0' />
-                <Badge className='w-6 h-6 bg-blue-500 rounded-full border-2 border-white p-0' />
-                <Badge className='w-6 h-6 bg-blue-600 rounded-full border-2 border-white p-0' />
-              </div>
-            </div>
-            <Typography variant='small' className='text-blue-700'>
-              {t('apartmentDetail.priceHistory.chartLabels.highest')}
-            </Typography>
+            <p className='text-xs text-violet-600/80 dark:text-violet-400/80 mb-1'>
+              Thay đổi giá
+            </p>
+            <p className='text-base font-bold text-violet-700 dark:text-violet-300'>
+              {statistics.totalChanges} lần
+            </p>
+            <p className='text-xs mt-0.5'>
+              <span className='text-emerald-600 dark:text-emerald-400'>
+                ↑{statistics.priceIncreases}
+              </span>
+              {' · '}
+              <span className='text-red-500 dark:text-red-400'>
+                ↓{statistics.priceDecreases}
+              </span>
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Period Selector */}
+      {/* Period selector */}
       <Tabs
         value={selectedPeriod}
-        onValueChange={(value) =>
-          setSelectedPeriod(value as '1year' | '2years' | '5years')
-        }
+        onValueChange={(v) => setSelectedPeriod(v as Period)}
       >
         <TabsList>
           <TabsTrigger value='1year'>
@@ -231,240 +317,151 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
           <TabsTrigger value='2years'>
             {t('apartmentDetail.priceHistory.period.2years')}
           </TabsTrigger>
-          <TabsTrigger value='5years'>
-            {t('apartmentDetail.priceHistory.period.5years')}
-          </TabsTrigger>
         </TabsList>
       </Tabs>
 
-      {/* Chart */}
-      <Card>
-        <CardContent className='p-6'>
-          <ChartContainer
-            config={chartConfig}
-            className='aspect-auto h-[300px] w-full'
-          >
+      {/* Chart card */}
+      <Card className='py-0'>
+        <CardContent className='p-5'>
+          <ChartContainer config={chartConfig} className='h-[220px] w-full'>
             <ResponsiveContainer width='100%' height='100%'>
-              <AreaChart data={chartData}>
+              <AreaChart
+                data={chartData}
+                margin={{ top: 8, right: 12, left: 0, bottom: 0 }}
+              >
                 <defs>
-                  <linearGradient id='fillHighest' x1='0' y1='0' x2='0' y2='1'>
+                  <linearGradient
+                    id='priceGradient'
+                    x1='0'
+                    y1='0'
+                    x2='0'
+                    y2='1'
+                  >
                     <stop
-                      offset='5%'
-                      stopColor='var(--color-highest)'
-                      stopOpacity={0.8}
+                      offset='0%'
+                      stopColor='var(--color-price)'
+                      stopOpacity={0.35}
                     />
                     <stop
-                      offset='95%'
-                      stopColor='var(--color-highest)'
-                      stopOpacity={0.1}
-                    />
-                  </linearGradient>
-                  <linearGradient id='fillAverage' x1='0' y1='0' x2='0' y2='1'>
-                    <stop
-                      offset='5%'
-                      stopColor='var(--color-average)'
-                      stopOpacity={0.8}
-                    />
-                    <stop
-                      offset='95%'
-                      stopColor='var(--color-average)'
-                      stopOpacity={0.1}
-                    />
-                  </linearGradient>
-                  <linearGradient id='fillLowest' x1='0' y1='0' x2='0' y2='1'>
-                    <stop
-                      offset='5%'
-                      stopColor='var(--color-lowest)'
-                      stopOpacity={0.8}
-                    />
-                    <stop
-                      offset='95%'
-                      stopColor='var(--color-lowest)'
-                      stopOpacity={0.1}
+                      offset='100%'
+                      stopColor='var(--color-price)'
+                      stopOpacity={0.02}
                     />
                   </linearGradient>
                 </defs>
-                <CartesianGrid vertical={false} strokeDasharray='3 3' />
+
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray='3 3'
+                  stroke='hsl(var(--border))'
+                  strokeOpacity={0.6}
+                />
+
                 <XAxis
                   dataKey='date'
                   tickLine={false}
                   axisLine={false}
-                  tickMargin={8}
-                  minTickGap={32}
+                  tickMargin={10}
+                  minTickGap={80}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tickFormatter={(value) => {
-                    return formatCompactCurrency(value, 'vi')
-                  }}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  tickFormatter={(v) => formatCompactCurrency(v, 'vi')}
+                  width={44}
+                  domain={['auto', 'auto']}
                 />
+
+                <ReferenceLine
+                  y={statistics.avgPrice}
+                  stroke='#f59e0b'
+                  strokeDasharray='5 4'
+                  strokeWidth={1.5}
+                  strokeOpacity={0.8}
+                />
+
                 <Tooltip
-                  cursor={false}
-                  content={({ active, payload }) => {
-                    if (!active || !payload || payload.length === 0) return null
-                    return (
-                      <ChartTooltipContent
-                        indicator='dot'
-                        active={active}
-                        payload={payload.map((item) => ({
-                          color: item.color,
-                          dataKey: String(item.dataKey || ''),
-                          name: String(item.name || ''),
-                          value: formatByLocale(Number(item.value) || 0, 'vi'),
-                        }))}
-                      />
-                    )
+                  cursor={{
+                    stroke: 'hsl(var(--muted-foreground))',
+                    strokeWidth: 1,
+                    strokeDasharray: '4 4',
+                    strokeOpacity: 0.5,
                   }}
+                  content={({ active, payload, label }) => (
+                    <PriceTooltip
+                      active={active}
+                      payload={
+                        payload as Array<{ value: number; color: string }>
+                      }
+                      label={label}
+                      avgPrice={statistics.avgPrice}
+                    />
+                  )}
                 />
+
                 <Area
-                  dataKey='lowest'
+                  dataKey='price'
                   type='monotone'
-                  fill='url(#fillLowest)'
-                  stroke='var(--color-lowest)'
+                  fill='url(#priceGradient)'
+                  stroke='var(--color-price)'
                   strokeWidth={2}
-                />
-                <Area
-                  dataKey='average'
-                  type='monotone'
-                  fill='url(#fillAverage)'
-                  stroke='var(--color-average)'
-                  strokeWidth={2}
-                />
-                <Area
-                  dataKey='highest'
-                  type='monotone'
-                  fill='url(#fillHighest)'
-                  stroke='var(--color-highest)'
-                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{
+                    r: 5,
+                    fill: 'var(--color-price)',
+                    stroke: 'hsl(var(--background))',
+                    strokeWidth: 2.5,
+                  }}
                 />
               </AreaChart>
             </ResponsiveContainer>
           </ChartContainer>
-        </CardContent>
-      </Card>
 
-      {/* Legend */}
-      <div className='flex flex-wrap gap-4 text-sm'>
-        <div className='flex items-center gap-2'>
-          <Badge className='w-3 h-3 bg-gray-300 rounded-full p-0' />
-          <Typography variant='small'>
-            {t('apartmentDetail.priceHistory.chartLabels.highest')}
-          </Typography>
-        </div>
-        <div className='flex items-center gap-2'>
-          <Badge className='w-3 h-3 bg-blue-500 rounded-full p-0' />
-          <Typography variant='small'>
-            {t('apartmentDetail.priceHistory.chartLabels.average')}
-          </Typography>
-        </div>
-        <div className='flex items-center gap-2'>
-          <Badge className='w-3 h-3 bg-yellow-400 rounded-full p-0' />
-          <Typography variant='small'>
-            {t('apartmentDetail.priceHistory.chartLabels.lowest')}
-          </Typography>
-        </div>
-        <div className='flex items-center gap-2'>
-          <Badge className='w-3 h-3 bg-red-500 rounded-full p-0' />
-          <Typography variant='small'>
-            {t('apartmentDetail.priceHistory.chartLabels.searching', {
-              price: formatByLocale(statistics.pricePerSqm, 'vi'),
-            })}
-          </Typography>
-        </div>
-      </div>
+          {/* Min / Avg / Max below chart */}
+          <div className='grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-border'>
+            <div className='rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 px-3 py-2.5'>
+              <div className='flex items-center gap-1.5 mb-1'>
+                <div className='w-2 h-2 rounded-full bg-red-400 flex-shrink-0' />
+                <p className='text-[11px] font-medium text-red-600/80 dark:text-red-400/80 truncate'>
+                  {t('apartmentDetail.priceHistory.statistics.minPrice')}
+                </p>
+              </div>
+              <p className='font-bold text-sm text-red-700 dark:text-red-300 break-words'>
+                {formatByLocale(statistics.minPrice, 'vi')}
+              </p>
+            </div>
 
-      {/* Statistics Summary */}
-      <Card className='bg-muted/50'>
-        <CardContent className='p-4'>
-          <Typography variant='h6' className='font-semibold mb-3'>
-            {t('apartmentDetail.priceHistory.statistics.title')}
-          </Typography>
-          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
-            <div>
-              <Typography
-                variant='small'
-                className='text-muted-foreground mb-1'
-              >
-                {t('apartmentDetail.priceHistory.statistics.minPrice')}
-              </Typography>
-              <Typography
-                variant='p'
-                className='font-bold text-sm sm:text-base break-words'
-              >
-                {formatByLocale(statistics.minPrice, 'vi')}{' '}
-              </Typography>
+            <div className='rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 px-3 py-2.5'>
+              <div className='flex items-center gap-1.5 mb-1'>
+                <div
+                  className='w-4 h-0.5 rounded-full bg-amber-400 flex-shrink-0'
+                  style={{
+                    borderTop: '2px dashed #f59e0b',
+                    background: 'transparent',
+                  }}
+                />
+                <p className='text-[11px] font-medium text-amber-600/80 dark:text-amber-400/80 truncate'>
+                  {t('apartmentDetail.priceHistory.statistics.avgPrice')}
+                </p>
+              </div>
+              <p className='font-bold text-sm text-amber-700 dark:text-amber-300 break-words'>
+                {formatByLocale(statistics.avgPrice, 'vi')}
+              </p>
             </div>
-            <div>
-              <Typography
-                variant='small'
-                className='text-muted-foreground mb-1'
-              >
-                {t('apartmentDetail.priceHistory.statistics.maxPrice')}
-              </Typography>
-              <Typography
-                variant='p'
-                className='font-bold text-sm sm:text-base break-words'
-              >
-                {formatByLocale(statistics.maxPrice, 'vi')}{' '}
-              </Typography>
-            </div>
-            <div>
-              <Typography
-                variant='small'
-                className='text-muted-foreground mb-1'
-              >
-                {t('apartmentDetail.priceHistory.statistics.avgPrice')}
-              </Typography>
-              <Typography
-                variant='p'
-                className='font-bold text-sm sm:text-base break-words'
-              >
-                {formatByLocale(statistics.avgPrice, 'vi')}{' '}
-              </Typography>
-            </div>
-            <div>
-              <Typography
-                variant='small'
-                className='text-muted-foreground mb-1'
-              >
-                {t('apartmentDetail.priceHistory.statistics.totalChanges')}
-              </Typography>
-              <Typography variant='p' className='font-bold text-lg'>
-                {statistics.totalChanges}{' '}
-                {t('apartmentDetail.priceHistory.statistics.times')}
-              </Typography>
-            </div>
-            <div>
-              <Typography
-                variant='small'
-                className='text-muted-foreground mb-1'
-              >
-                {t('apartmentDetail.priceHistory.statistics.priceIncreases')}
-              </Typography>
-              <Typography
-                variant='p'
-                className='font-bold text-lg text-emerald-600'
-              >
-                {statistics.priceIncreases}{' '}
-                {t('apartmentDetail.priceHistory.statistics.times')}
-              </Typography>
-            </div>
-            <div>
-              <Typography
-                variant='small'
-                className='text-muted-foreground mb-1'
-              >
-                {t('apartmentDetail.priceHistory.statistics.priceDecreases')}
-              </Typography>
-              <Typography
-                variant='p'
-                className='font-bold text-lg text-red-600'
-              >
-                {statistics.priceDecreases}{' '}
-                {t('apartmentDetail.priceHistory.statistics.times')}
-              </Typography>
+
+            <div className='rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 px-3 py-2.5'>
+              <div className='flex items-center gap-1.5 mb-1'>
+                <div className='w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0' />
+                <p className='text-[11px] font-medium text-emerald-600/80 dark:text-emerald-400/80 truncate'>
+                  {t('apartmentDetail.priceHistory.statistics.maxPrice')}
+                </p>
+              </div>
+              <p className='font-bold text-sm text-emerald-700 dark:text-emerald-300 break-words'>
+                {formatByLocale(statistics.maxPrice, 'vi')}
+              </p>
             </div>
           </div>
         </CardContent>

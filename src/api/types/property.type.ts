@@ -396,6 +396,8 @@ export interface QuotaCheckResponse {
  */
 export interface UpdatePriceRequest {
   newPrice: number
+  priceUnit?: string
+  changeReason?: string
   effectiveAt?: string
 }
 
@@ -405,15 +407,15 @@ export interface UpdatePriceRequest {
 export interface PriceHistory {
   id: number
   listingId: number
-  oldPrice: number
+  oldPrice: number | null
   newPrice: number
-  oldPriceUnit: string
+  oldPriceUnit: string | null
   newPriceUnit: string
-  changeType: string
+  changeType: 'INITIAL' | 'INCREASE' | 'DECREASE' | 'UNIT_CHANGE' | 'CORRECTION'
   changePercentage: number
   changeAmount: number
   changedBy: string
-  changeReason: string
+  changeReason: string | null
   changedAt: string
   current: boolean
 }
