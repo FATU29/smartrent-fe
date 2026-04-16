@@ -126,15 +126,25 @@ export const DraftCard: React.FC<DraftCardProps> = ({
       )}
     >
       <CardContent className='p-0'>
-        <div className='grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)]'>
-          <div className='relative h-52 w-full overflow-hidden bg-muted md:h-full md:min-h-[280px]'>
+        <div className='grid grid-cols-1 md:grid-cols-[300px_minmax(0,1fr)] lg:grid-cols-[340px_minmax(0,1fr)]'>
+          <div className='relative h-52 w-full overflow-hidden bg-muted md:h-full md:min-h-[300px]'>
+            {hasImage && (
+              <Image
+                src={imageUrl}
+                alt=''
+                fill
+                aria-hidden
+                className='object-cover blur-2xl scale-110 opacity-55 transition-all duration-300 group-hover:scale-125'
+                unoptimized={false}
+              />
+            )}
             <Image
               src={imageUrl}
               alt={draftTitle}
               fill
               className={cn(
-                'object-cover transition-all duration-300',
-                hasImage && 'group-hover:scale-105 group-hover:brightness-105',
+                'object-cover transition-all duration-300 md:object-contain md:p-4',
+                hasImage && 'group-hover:brightness-105',
               )}
               unoptimized={!hasImage}
             />

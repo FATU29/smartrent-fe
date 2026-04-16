@@ -17,9 +17,9 @@ export const DraftCardSkeleton: React.FC<DraftCardSkeletonProps> = ({
       {Array.from({ length: count }, (_, index) => (
         <Card key={index} className={cn('overflow-hidden', className)}>
           <CardContent className='p-0'>
-            <div className='flex flex-col sm:flex-row animate-pulse'>
+            <div className='flex animate-pulse flex-col md:grid md:grid-cols-[300px_minmax(0,1fr)] lg:grid-cols-[340px_minmax(0,1fr)]'>
               {/* Image Skeleton - Larger and matches new design */}
-              <Skeleton className='w-full sm:w-56 h-56 sm:h-auto rounded-none shrink-0' />
+              <Skeleton className='h-56 w-full rounded-none md:h-full md:min-h-[300px]' />
 
               {/* Content Skeleton */}
               <div className='flex-1 min-w-0 flex flex-col p-5 sm:p-6'>
