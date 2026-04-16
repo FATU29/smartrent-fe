@@ -5,8 +5,13 @@ import { usePostSteps } from '@/components/templates/shared/steps.hooks'
 const TOTAL_STEPS = 5
 
 export const useCreatePostSteps = () => {
-  const { propertyInfo, media, videoUploadProgress, imagesUploadProgress } =
-    useCreatePost()
+  const {
+    propertyInfo,
+    media,
+    videoUploadProgress,
+    imagesUploadProgress,
+    draftId,
+  } = useCreatePost()
   const form = useCreatePostForm()
 
   return usePostSteps({
@@ -17,5 +22,6 @@ export const useCreatePostSteps = () => {
     videoUploadProgress,
     imagesUploadProgress,
     isCreatePost: true,
+    draftMode: Boolean(draftId),
   })
 }

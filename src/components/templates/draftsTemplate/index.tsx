@@ -23,6 +23,7 @@ const DraftsList: React.FC<{
 }> = ({ drafts, isLoading }) => {
   const router = useRouter()
   const tDelete = useTranslations('seller.drafts.delete')
+  const tCard = useTranslations('seller.drafts.card')
   const [draftToDelete, setDraftToDelete] = useState<number | null>(null)
   const deleteMutation = useDeleteDraft()
 
@@ -116,7 +117,7 @@ const DraftsList: React.FC<{
     const addressString = parts.filter(Boolean).join(', ')
 
     // Fallback
-    return addressString || 'Địa chỉ đang được cập nhật'
+    return addressString || tCard('defaultAddress')
   }
 
   // Helper to get primary image or first image

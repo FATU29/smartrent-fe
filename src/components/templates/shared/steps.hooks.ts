@@ -33,6 +33,7 @@ interface UsePostStepsParams {
   videoUploadProgress: VideoUploadProgressState
   imagesUploadProgress: ImagesUploadProgressState
   isCreatePost?: boolean
+  draftMode?: boolean
 }
 
 export const usePostSteps = ({
@@ -43,10 +44,12 @@ export const usePostSteps = ({
   videoUploadProgress,
   imagesUploadProgress,
   isCreatePost = false,
+  draftMode = false,
 }: UsePostStepsParams) => {
   const t = useTranslations('createPost')
   const { trigger, formState } = form
   const { errors } = formState
+  const isDraftMode = isCreatePost && draftMode
 
   const [currentStep, setCurrentStep] = useState(0)
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
@@ -89,7 +92,12 @@ export const usePostSteps = ({
       // Step-specific validation
       switch (index) {
         case 0:
-          return validateStep0(propertyInfo as CreateListingRequest | undefined)
+          return validateStep0(
+            propertyInfo as CreateListingRequest | undefined,
+            {
+              draftMode: isDraftMode,
+            },
+          )
         case 2:
           return validateStep2(media, isCreatePost)
         case 3:
@@ -103,7 +111,7 @@ export const usePostSteps = ({
           return true
       }
     },
-    [errors, propertyInfo, media, isCreatePost],
+    [errors, propertyInfo, media, isCreatePost, isDraftMode],
   )
 
   const allPreviousComplete = useCallback(
