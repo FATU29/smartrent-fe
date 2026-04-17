@@ -337,21 +337,23 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     setCurrentImageIndex(idx)
                   }}
                   className={classNames(
-                    'relative size-[68px] md:size-[76px] aspect-square shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-200',
+                    'relative size-[68px] md:size-[76px] aspect-square shrink-0 rounded-xl p-[2px] transition-all duration-200',
                     {
-                      'border-primary ring-2 ring-primary/20 scale-105':
+                      'bg-primary ring-1 ring-primary/25 shadow-sm':
                         currentImageIndex === idx,
-                      'border-transparent hover:border-primary/40 opacity-70 hover:opacity-100':
+                      'bg-transparent ring-1 ring-border/50 hover:ring-primary/40 opacity-80 hover:opacity-100':
                         currentImageIndex !== idx,
                     },
                   )}
                 >
-                  <ImageAtom
-                    src={img || `${basePath}/images/default-image.jpg`}
-                    defaultImage={DEFAULT_IMAGE}
-                    alt={`${title} ${idx + 1}`}
-                    className='w-full h-full object-cover'
-                  />
+                  <div className='h-full w-full overflow-hidden rounded-[10px]'>
+                    <ImageAtom
+                      src={img || `${basePath}/images/default-image.jpg`}
+                      defaultImage={DEFAULT_IMAGE}
+                      alt={`${title} ${idx + 1}`}
+                      className='w-full h-full object-cover'
+                    />
+                  </div>
                 </button>
               ))}
               {hasThumbnailOverflow && (
@@ -361,7 +363,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     e.stopPropagation()
                     setCurrentImageIndex(visibleThumbnails.length)
                   }}
-                  className='relative size-[68px] md:size-[76px] aspect-square shrink-0 overflow-hidden rounded-xl border border-border bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'
+                  className='relative size-[68px] md:size-[76px] aspect-square shrink-0 overflow-hidden rounded-xl ring-1 ring-border/60 bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'
                 >
                   <div className='text-center'>
                     <Typography

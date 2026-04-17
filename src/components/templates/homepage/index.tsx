@@ -17,6 +17,7 @@ import Image from 'next/image'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
 import NewsGridSection from '@/components/organisms/newsGridSection'
 import type { NewsItem } from '@/api/types/news.type'
+import PersonalizedPropertySection from '@/components/organisms/personalizedPropertySection'
 
 interface HomepageTemplateProps {
   cities?: ProvinceStatsItem[]
@@ -86,6 +87,8 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
             <div id='top-interest'>
               <TopInterestSection categoryStats={categoryStats} />
             </div>
+
+            <PersonalizedPropertySection />
 
             {/* VIP Property Sections */}
             <div className='space-y-8'>

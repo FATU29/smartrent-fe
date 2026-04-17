@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/atoms/skeleton'
 
 const LocationBrowseSectionSkeleton: React.FC = () => {
   return (
-    <section className='mt-16'>
+    <section className='mb-10 sm:mb-14'>
       <Skeleton className='h-8 w-64 mb-6' />
       <div className='hidden md:flex md:gap-6'>
         {/* Left large card skeleton */}
