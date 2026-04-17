@@ -27,18 +27,6 @@ const PersonalizedPropertySection: React.FC = () => {
     isAuthenticated,
   )
 
-  if (!isAuthenticated) {
-    return null
-  }
-
-  const listings = (data?.listings || []).filter(
-    (listing) => !!listing.listingId,
-  )
-
-  if (!isLoading && listings.length === 0) {
-    return null
-  }
-
   React.useEffect(() => {
     if (!api) return
 
@@ -53,6 +41,18 @@ const PersonalizedPropertySection: React.FC = () => {
       setScrollSnaps(api.scrollSnapList())
     })
   }, [api])
+
+  if (!isAuthenticated) {
+    return null
+  }
+
+  const listings = (data?.listings || []).filter(
+    (listing) => !!listing.listingId,
+  )
+
+  if (!isLoading && listings.length === 0) {
+    return null
+  }
 
   const handleFavorite = () => {}
 
@@ -72,7 +72,7 @@ const PersonalizedPropertySection: React.FC = () => {
   const renderCard = (listing: (typeof listings)[number]) => (
     <Link
       href={`/listing-detail/${listing.listingId}`}
-      className='block h-full'
+      className='block w-full'
       onClick={handleLinkClick}
     >
       <PropertyCard
@@ -107,7 +107,7 @@ const PersonalizedPropertySection: React.FC = () => {
             ? Array.from({ length: 10 }).map((_, index) => (
                 <CarouselItem
                   key={`personalized-skeleton-${index}`}
-                  className='basis-full sm:basis-1/2 lg:basis-1/3'
+                  className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 min-w-[320px] sm:min-w-[360px] flex'
                 >
                   <div className='w-full space-y-3'>
                     <Skeleton className='aspect-[4/3] rounded-lg w-full' />
@@ -120,7 +120,7 @@ const PersonalizedPropertySection: React.FC = () => {
             : displayedListings.map((listing) => (
                 <CarouselItem
                   key={listing.listingId}
-                  className='basis-full sm:basis-1/2 lg:basis-1/3'
+                  className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 min-w-[320px] sm:min-w-[360px] flex'
                 >
                   {renderCard(listing)}
                 </CarouselItem>
