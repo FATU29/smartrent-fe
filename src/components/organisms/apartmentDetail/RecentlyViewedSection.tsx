@@ -167,7 +167,7 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
                 <PropertyCard
                   listing={listing}
                   onFavorite={handleFavorite}
-                  className='compact'
+                  className='compact h-full min-h-[500px]'
                   imageLayout='top'
                 />
               </Link>

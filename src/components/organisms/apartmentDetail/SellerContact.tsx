@@ -98,7 +98,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
               sizeClassName='w-16 h-16 md:w-20 md:h-20'
               className='cursor-pointer'
               showBrokerBadge={isProfessionalBroker}
-              fallbackClassName='text-lg md:text-xl'
+              fallbackClassName='text-lg md:text-xl text-white'
               badgeClassName='h-6 w-6 md:h-7 md:w-7'
             />
           </Link>
@@ -115,34 +115,24 @@ const SellerContact: React.FC<SellerContactProps> = ({
                 {name}
               </Typography>
             </Link>
-            <Typography variant='small' className='text-primary leading-none'>
-              <Link
-                href={sellerListingsUrl}
-                className='hover:underline inline-flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary/80'
+            <div className='pt-1'>
+              <Button
+                asChild
+                size='sm'
+                className='h-8 px-3 text-xs md:text-sm bg-primary hover:bg-primary/90 text-primary-foreground dark:text-white'
               >
-                {t('links.viewSellerListings')}
-                <svg
-                  className='w-3.5 h-3.5 shrink-0'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M9 5l7 7-7 7'
-                  />
-                </svg>
-              </Link>
-            </Typography>
+                <Link href={sellerListingsUrl}>
+                  {t('links.viewSellerListings')}
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Contact Buttons */}
         <div className='space-y-2.5'>
           <Button
-            className='w-full bg-white hover:bg-blue-50 text-foreground border-2 border-primary h-11 md:h-12 font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed'
+            className='w-full bg-white hover:bg-blue-50 text-foreground border-2 border-primary h-11 md:h-12 font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed dark:bg-primary dark:hover:bg-primary/90 dark:text-white dark:border-primary/80'
             onClick={handleZaloClick}
             disabled={!hasPhone}
             aria-label={t('actions.chatZalo')}
@@ -154,7 +144,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
               height={20}
               className='mr-2 w-5 h-5'
             />
-            <span className='text-black'>{t('actions.chatZalo')}</span>
+            <span>{t('actions.chatZalo')}</span>
           </Button>
 
           <Button

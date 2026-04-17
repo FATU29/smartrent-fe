@@ -363,13 +363,13 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                   axisLine={false}
                   tickMargin={10}
                   minTickGap={80}
-                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }}
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }}
                   tickFormatter={(v) => formatCompactCurrency(v, 'vi')}
                   width={44}
                   domain={['auto', 'auto']}
