@@ -89,12 +89,12 @@ const PersonalizedPropertySection: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className='grid grid-cols-1 lg:grid-cols-6 gap-4 sm:gap-5 auto-rows-fr'>
-            <Skeleton className='lg:col-span-3 h-[260px] rounded-xl' />
-            <Skeleton className='lg:col-span-3 h-[260px] rounded-xl' />
-            <Skeleton className='lg:col-span-2 h-[260px] rounded-xl' />
-            <Skeleton className='lg:col-span-2 h-[260px] rounded-xl' />
-            <Skeleton className='lg:col-span-2 h-[260px] rounded-xl' />
+          <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 sm:gap-5'>
+            <Skeleton className='h-[260px] rounded-xl xl:col-span-4' />
+            <Skeleton className='h-[260px] rounded-xl xl:col-span-4' />
+            <Skeleton className='h-[260px] rounded-xl xl:col-span-4' />
+            <Skeleton className='h-[260px] rounded-xl xl:col-span-4 xl:col-start-3' />
+            <Skeleton className='h-[260px] rounded-xl xl:col-span-4 xl:col-start-7' />
           </div>
         )
       ) : isMobile ? (
@@ -120,29 +120,29 @@ const PersonalizedPropertySection: React.FC = () => {
           </CarouselContent>
         </Carousel>
       ) : (
-        <div className='grid grid-cols-1 lg:grid-cols-6 gap-4 sm:gap-5 auto-rows-fr'>
+        <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 sm:gap-5'>
           {desktopListings[0] && (
-            <div className='lg:col-span-3'>
+            <div className='xl:col-span-4'>
               {renderCard(desktopListings[0])}
             </div>
           )}
           {desktopListings[1] && (
-            <div className='lg:col-span-3'>
+            <div className='xl:col-span-4'>
               {renderCard(desktopListings[1])}
             </div>
           )}
           {desktopListings[2] && (
-            <div className='lg:col-span-2'>
+            <div className='xl:col-span-4'>
               {renderCard(desktopListings[2])}
             </div>
           )}
           {desktopListings[3] && (
-            <div className='lg:col-span-2'>
+            <div className='xl:col-span-4 xl:col-start-3'>
               {renderCard(desktopListings[3])}
             </div>
           )}
           {desktopListings[4] && (
-            <div className='lg:col-span-2'>
+            <div className='xl:col-span-4 xl:col-start-7'>
               {renderCard(desktopListings[4])}
             </div>
           )}
