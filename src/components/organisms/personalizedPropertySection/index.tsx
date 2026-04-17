@@ -3,21 +3,29 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import PropertyCard from '@/components/molecules/propertyCard'
 import { useAuth } from '@/hooks/useAuth'
-import { useIsMobile } from '@/hooks/useIsMobile'
 import { usePersonalizedRecommendations } from '@/hooks/useRecommendations'
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  type CarouselApi,
 } from '@/components/atoms/carousel'
 import { Skeleton } from '@/components/atoms/skeleton'
+import { cn } from '@/lib/utils'
 
 const PersonalizedPropertySection: React.FC = () => {
   const t = useTranslations('homePage.personalized')
-  const isMobile = useIsMobile()
   const { isAuthenticated } = useAuth()
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(0)
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
 
-  const { data, isLoading } = usePersonalizedRecommendations(5, isAuthenticated)
+  const { data, isLoading } = usePersonalizedRecommendations(
+    10,
+    isAuthenticated,
+  )
 
   if (!isAuthenticated) {
     return null
@@ -30,6 +38,21 @@ const PersonalizedPropertySection: React.FC = () => {
   if (!isLoading && listings.length === 0) {
     return null
   }
+
+  React.useEffect(() => {
+    if (!api) return
+
+    setScrollSnaps(api.scrollSnapList())
+    setCurrent(api.selectedScrollSnap())
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+
+    api.on('reInit', () => {
+      setScrollSnaps(api.scrollSnapList())
+    })
+  }, [api])
 
   const handleFavorite = () => {}
 
@@ -46,13 +69,10 @@ const PersonalizedPropertySection: React.FC = () => {
     }
   }
 
-  const renderCard = (
-    listing: (typeof listings)[number],
-    extraClassName?: string,
-  ) => (
+  const renderCard = (listing: (typeof listings)[number]) => (
     <Link
       href={`/listing-detail/${listing.listingId}`}
-      className={extraClassName || 'block h-full'}
+      className='block h-full'
       onClick={handleLinkClick}
     >
       <PropertyCard
@@ -63,7 +83,7 @@ const PersonalizedPropertySection: React.FC = () => {
     </Link>
   )
 
-  const desktopListings = listings.slice(0, 5)
+  const displayedListings = listings.slice(0, 10)
 
   return (
     <section className='mb-10 sm:mb-14'>
@@ -77,77 +97,56 @@ const PersonalizedPropertySection: React.FC = () => {
         </div>
       </div>
 
-      {isLoading ? (
-        isMobile ? (
-          <div className='flex gap-3 overflow-hidden'>
-            {Array.from({ length: 2 }).map((_, index) => (
-              <div key={index} className='w-[78%] shrink-0 space-y-3'>
-                <Skeleton className='aspect-[4/3] rounded-lg w-full' />
-                <Skeleton className='h-4 w-3/4' />
-                <Skeleton className='h-4 w-1/2' />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 sm:gap-5'>
-            <Skeleton className='h-[260px] rounded-xl xl:col-span-4' />
-            <Skeleton className='h-[260px] rounded-xl xl:col-span-4' />
-            <Skeleton className='h-[260px] rounded-xl xl:col-span-4' />
-            <Skeleton className='h-[260px] rounded-xl xl:col-span-4 xl:col-start-3' />
-            <Skeleton className='h-[260px] rounded-xl xl:col-span-4 xl:col-start-7' />
-          </div>
-        )
-      ) : isMobile ? (
-        <Carousel
-          opts={{ align: 'start', loop: false, dragFree: true }}
-          className='w-full'
-        >
-          <CarouselContent className='-ml-3'>
-            {listings.map((listing) => (
-              <CarouselItem
-                key={listing.listingId}
-                className='pl-3 basis-[85%] min-[480px]:basis-[70%]'
-              >
-                <Link
-                  href={`/listing-detail/${listing.listingId}`}
-                  className='block h-full'
-                  onClick={handleLinkClick}
+      <Carousel
+        className='group'
+        opts={{ align: 'start', loop: false }}
+        setApi={setApi}
+      >
+        <CarouselContent>
+          {isLoading
+            ? Array.from({ length: 10 }).map((_, index) => (
+                <CarouselItem
+                  key={`personalized-skeleton-${index}`}
+                  className='basis-full sm:basis-1/2 lg:basis-1/3'
                 >
-                  <PropertyCard listing={listing} onFavorite={handleFavorite} />
-                </Link>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-      ) : (
-        <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 sm:gap-5'>
-          {desktopListings[0] && (
-            <div className='xl:col-span-4'>
-              {renderCard(desktopListings[0])}
-            </div>
-          )}
-          {desktopListings[1] && (
-            <div className='xl:col-span-4'>
-              {renderCard(desktopListings[1])}
-            </div>
-          )}
-          {desktopListings[2] && (
-            <div className='xl:col-span-4'>
-              {renderCard(desktopListings[2])}
-            </div>
-          )}
-          {desktopListings[3] && (
-            <div className='xl:col-span-4 xl:col-start-3'>
-              {renderCard(desktopListings[3])}
-            </div>
-          )}
-          {desktopListings[4] && (
-            <div className='xl:col-span-4 xl:col-start-7'>
-              {renderCard(desktopListings[4])}
-            </div>
-          )}
+                  <div className='w-full space-y-3'>
+                    <Skeleton className='aspect-[4/3] rounded-lg w-full' />
+                    <Skeleton className='h-4 w-3/4' />
+                    <Skeleton className='h-4 w-1/2' />
+                    <Skeleton className='h-20 w-full' />
+                  </div>
+                </CarouselItem>
+              ))
+            : displayedListings.map((listing) => (
+                <CarouselItem
+                  key={listing.listingId}
+                  className='basis-full sm:basis-1/2 lg:basis-1/3'
+                >
+                  {renderCard(listing)}
+                </CarouselItem>
+              ))}
+        </CarouselContent>
+
+        <CarouselPrevious className='hidden sm:flex -left-12' />
+        <CarouselNext className='hidden sm:flex -right-12' />
+
+        <div className='flex xl:hidden justify-center gap-2 mt-4'>
+          {scrollSnaps.map((_, index) => (
+            <button
+              key={`personalized-indicator-${index}`}
+              type='button'
+              onClick={() => api?.scrollTo(index)}
+              className={cn(
+                'h-2 rounded-full transition-all',
+                current === index
+                  ? 'w-8 bg-primary'
+                  : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50',
+              )}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </div>
-      )}
+      </Carousel>
     </section>
   )
 }
