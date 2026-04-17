@@ -27,12 +27,10 @@ import {
   Sofa,
   Sparkles,
   MapPin,
-  Calendar,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
 import { ListingDetail } from '@/api/types'
-import { formatDate } from 'date-fns'
 import { isYouTube, toYouTubeEmbed } from '@/utils/video/url'
 import { formatByLocale } from '@/utils/currency/convert'
 import {
@@ -97,7 +95,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     verified,
     user,
     address,
-    postDate,
     productType,
     vipType,
     furnishing,
@@ -754,17 +751,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   )}
                 </div>
               </div>
-              {postDate && (
-                <div className='flex items-center gap-1 text-muted-foreground flex-shrink-0'>
-                  <Calendar className='w-3 h-3' />
-                  <Typography
-                    variant='small'
-                    className='text-xs text-muted-foreground'
-                  >
-                    {formatDate(postDate, 'dd/MM/yyyy')}
-                  </Typography>
-                </div>
-              )}
             </div>
           )}
 

@@ -46,13 +46,35 @@ const PersonalizedPropertySection: React.FC = () => {
     }
   }
 
+  const renderCard = (
+    listing: (typeof listings)[number],
+    extraClassName?: string,
+  ) => (
+    <Link
+      href={`/listing-detail/${listing.listingId}`}
+      className={extraClassName || 'block h-full'}
+      onClick={handleLinkClick}
+    >
+      <PropertyCard
+        listing={listing}
+        onFavorite={handleFavorite}
+        className='h-full'
+      />
+    </Link>
+  )
+
+  const desktopListings = listings.slice(0, 5)
+
   return (
-    <section className='py-6 sm:py-8'>
-      <div className='flex flex-col gap-1 mb-6'>
-        <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
-          {t('title')}
-        </h2>
-        <p className='text-sm text-muted-foreground'>{t('subtitle')}</p>
+    <section className='mb-10 sm:mb-14'>
+      <div className='flex items-start gap-3 mb-5 sm:mb-6'>
+        <div className='w-1 h-7 sm:h-8 rounded-full bg-primary mt-0.5' />
+        <div>
+          <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
+            {t('title')}
+          </h2>
+          <p className='text-sm text-muted-foreground mt-1'>{t('subtitle')}</p>
+        </div>
       </div>
 
       {isLoading ? (
@@ -67,13 +89,12 @@ const PersonalizedPropertySection: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5'>
-            <Skeleton className='h-[520px] rounded-xl' />
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
-              {Array.from({ length: 4 }).map((_, index) => (
-                <Skeleton key={index} className='h-[250px] rounded-xl' />
-              ))}
-            </div>
+          <div className='grid grid-cols-1 lg:grid-cols-6 gap-4 sm:gap-5 auto-rows-fr'>
+            <Skeleton className='lg:col-span-3 h-[260px] rounded-xl' />
+            <Skeleton className='lg:col-span-3 h-[260px] rounded-xl' />
+            <Skeleton className='lg:col-span-2 h-[260px] rounded-xl' />
+            <Skeleton className='lg:col-span-2 h-[260px] rounded-xl' />
+            <Skeleton className='lg:col-span-2 h-[260px] rounded-xl' />
           </div>
         )
       ) : isMobile ? (
@@ -92,51 +113,39 @@ const PersonalizedPropertySection: React.FC = () => {
                   className='block h-full'
                   onClick={handleLinkClick}
                 >
-                  <PropertyCard
-                    listing={listing}
-                    onFavorite={handleFavorite}
-                    className='compact h-full min-h-[500px]'
-                    imageLayout='top'
-                  />
+                  <PropertyCard listing={listing} onFavorite={handleFavorite} />
                 </Link>
               </CarouselItem>
             ))}
           </CarouselContent>
         </Carousel>
       ) : (
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5'>
-          {listings[0] && (
-            <Link
-              href={`/listing-detail/${listings[0].listingId}`}
-              className='block h-full'
-              onClick={handleLinkClick}
-            >
-              <PropertyCard
-                listing={listings[0]}
-                onFavorite={handleFavorite}
-                className='compact h-full min-h-[520px]'
-                imageLayout='top'
-              />
-            </Link>
+        <div className='grid grid-cols-1 lg:grid-cols-6 gap-4 sm:gap-5 auto-rows-fr'>
+          {desktopListings[0] && (
+            <div className='lg:col-span-3'>
+              {renderCard(desktopListings[0])}
+            </div>
           )}
-
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
-            {listings.slice(1, 5).map((listing) => (
-              <Link
-                key={listing.listingId}
-                href={`/listing-detail/${listing.listingId}`}
-                className='block h-full'
-                onClick={handleLinkClick}
-              >
-                <PropertyCard
-                  listing={listing}
-                  onFavorite={handleFavorite}
-                  className='compact h-full min-h-[500px]'
-                  imageLayout='top'
-                />
-              </Link>
-            ))}
-          </div>
+          {desktopListings[1] && (
+            <div className='lg:col-span-3'>
+              {renderCard(desktopListings[1])}
+            </div>
+          )}
+          {desktopListings[2] && (
+            <div className='lg:col-span-2'>
+              {renderCard(desktopListings[2])}
+            </div>
+          )}
+          {desktopListings[3] && (
+            <div className='lg:col-span-2'>
+              {renderCard(desktopListings[3])}
+            </div>
+          )}
+          {desktopListings[4] && (
+            <div className='lg:col-span-2'>
+              {renderCard(desktopListings[4])}
+            </div>
+          )}
         </div>
       )}
     </section>
