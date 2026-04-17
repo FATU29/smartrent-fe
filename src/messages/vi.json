@@ -797,6 +797,10 @@
       "noCategories": "Không có danh mục nào",
       "noCategoriesDescription": "Hiện tại chưa có danh mục bất động sản nào. Vui lòng quay lại sau."
     },
+    "personalized": {
+      "title": "Bất động sản dành cho bạn",
+      "subtitle": "Gợi ý dựa trên hành vi lưu tin, xem tin và tương tác gần đây của bạn"
+    },
     "searchIntro": {
       "title": "Tìm căn phù hợp nhanh chóng",
       "description": "Nhập từ khóa hoặc dùng bộ lọc chi tiết để thu hẹp theo vị trí, giá, loại hình và tiện nghi bạn cần."

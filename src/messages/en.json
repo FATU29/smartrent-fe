@@ -796,6 +796,10 @@
       "noCategories": "No categories available",
       "noCategoriesDescription": "There are currently no property categories available. Please check back later."
     },
+    "personalized": {
+      "title": "Recommended For You",
+      "subtitle": "Suggestions based on your saved listings, viewed listings, and recent interactions"
+    },
     "searchIntro": {
       "title": "Find your ideal place faster",
       "description": "Type a keyword or refine with filters for location, price, property type and amenities."

@@ -274,6 +274,12 @@ export const PATHS = {
     NEWEST: '/v1/news/newest',
   },
 
+  // Recommendation endpoints
+  RECOMMENDATION: {
+    SIMILAR: '/v1/recommendations/similar/:listingId',
+    PERSONALIZED: '/v1/recommendations/personalized',
+  },
+
   // Notification endpoints
   NOTIFICATION: {
     LIST: '/v1/notifications',

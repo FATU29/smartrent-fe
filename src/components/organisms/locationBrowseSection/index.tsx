@@ -62,8 +62,8 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
 
   if (!cities || uniqueCities.length === 0) {
     return (
-      <section className='mt-16'>
-        <div className='flex items-center gap-3 mb-6'>
+      <section className='mb-10 sm:mb-14'>
+        <div className='flex items-center gap-3 mb-5 sm:mb-6'>
           <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
           <Typography
             variant='h2'
@@ -83,13 +83,16 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
   }
 
   return (
-    <section className='mt-16'>
-      <Typography
-        variant='h2'
-        className='text-xl sm:text-2xl font-semibold mb-6'
-      >
-        {t('title')}
-      </Typography>
+    <section className='mb-10 sm:mb-14'>
+      <div className='flex items-center gap-3 mb-5 sm:mb-6'>
+        <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
+        <Typography
+          variant='h2'
+          className='text-xl sm:text-2xl font-bold text-foreground'
+        >
+          {t('title')}
+        </Typography>
+      </div>
 
       <Carousel
         className='group'

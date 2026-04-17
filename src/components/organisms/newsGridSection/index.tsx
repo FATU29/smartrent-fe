@@ -126,22 +126,25 @@ const NewsGridSection: React.FC<NewsGridSectionProps> = ({
   if (!loading && (!news || news.length === 0)) return null
 
   return (
-    <section className='py-6 sm:py-8'>
+    <section className='mb-10 sm:mb-14'>
       {/* Section header */}
-      <div className='flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-6'>
-        <div>
-          <Typography
-            variant='h2'
-            className='text-xl sm:text-2xl font-bold text-foreground'
-          >
-            {t('title')}
-          </Typography>
-          <Typography
-            variant='p'
-            className='text-sm text-muted-foreground mt-1'
-          >
-            {t('subtitle')}
-          </Typography>
+      <div className='flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-5 sm:mb-6'>
+        <div className='flex items-start gap-3'>
+          <div className='w-1 h-7 sm:h-8 rounded-full bg-primary mt-0.5' />
+          <div>
+            <Typography
+              variant='h2'
+              className='text-xl sm:text-2xl font-bold text-foreground'
+            >
+              {t('title')}
+            </Typography>
+            <Typography
+              variant='p'
+              className='text-sm text-muted-foreground mt-1'
+            >
+              {t('subtitle')}
+            </Typography>
+          </div>
         </div>
         <Link href={PUBLIC_ROUTES.NEWS}>
           <Button

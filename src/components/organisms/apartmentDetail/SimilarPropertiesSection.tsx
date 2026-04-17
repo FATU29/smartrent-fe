@@ -2,7 +2,6 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import PropertyCard from '@/components/molecules/propertyCard'
-import type { ListingDetail } from '@/api/types'
 import {
   Carousel,
   CarouselContent,
@@ -14,43 +13,24 @@ import {
 import { Skeleton } from '@/components/atoms/skeleton'
 import { cn } from '@/lib/utils'
 import SectionHeading from '@/components/atoms/sectionHeading'
-import { VipType } from '@/api/types'
-import { useSimilarProperties } from '@/hooks/useListings/useSimilarProperties'
+import { useSimilarRecommendations } from '@/hooks/useRecommendations'
 
 interface SimilarPropertiesSectionProps {
   listingId: number
-  vipType?: VipType
-  wardId?: number
-  districtId?: number
-  provinceId?: number
-  onPropertyClick?: (listing: ListingDetail) => void
 }
 
 const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
   listingId,
-  vipType,
-  wardId,
-  districtId,
-  provinceId,
 }) => {
   const t = useTranslations()
 
-  const {
-    data: fetchedSimilarProperties,
-    isLoading,
-    isError,
-  } = useSimilarProperties({
+  const { data, isLoading, isError } = useSimilarRecommendations(
     listingId,
-    vipType,
-    wardId,
-    districtId,
-    provinceId,
-    isLegacy: true,
-    enabled: !!listingId && !!vipType,
-    limit: 10,
-  })
+    10,
+    !!listingId,
+  )
 
-  const listings = fetchedSimilarProperties || []
+  const listings = data?.listings || []
   const showEmptyState = !isLoading && !isError
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
@@ -98,14 +78,14 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
         />
         <Carousel
           className='group'
-          opts={{ align: 'start', loop: true }}
+          opts={{ align: 'start', loop: false }}
           setApi={setApi}
         >
           <CarouselContent>
             {skeletonItems.map((_, index) => (
               <CarouselItem
                 key={index}
-                className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'
+                className='basis-full sm:basis-1/2 lg:basis-1/3 min-w-[320px] sm:min-w-[360px]'
               >
                 <div className='w-full space-y-2 md:space-y-3'>
                   <Skeleton className='aspect-[4/3] rounded-lg w-full' />
@@ -166,14 +146,14 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
 
       <Carousel
         className='group'
-        opts={{ align: 'start', loop: true }}
+        opts={{ align: 'start', loop: false }}
         setApi={setApi}
       >
         <CarouselContent>
           {validListings.map((listing) => (
             <CarouselItem
               key={listing.listingId}
-              className='basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4'
+              className='basis-full sm:basis-1/2 lg:basis-1/3 min-w-[320px] sm:min-w-[360px]'
             >
               <Link
                 href={`/listing-detail/${listing.listingId}`}
@@ -183,7 +163,7 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
                 <PropertyCard
                   listing={listing}
                   onFavorite={handleFavorite}
-                  className='compact'
+                  className='compact h-full min-h-[500px]'
                   imageLayout='top'
                 />
               </Link>

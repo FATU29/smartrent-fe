@@ -65,20 +65,11 @@ interface Section {
 const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   listing,
   onChatZalo,
-  onSimilarPropertyClick,
 }) => {
   const t = useTranslations()
   const { addListing } = useRecentlyViewed()
 
-  const {
-    description,
-    media,
-    user,
-    amenities,
-    address,
-    vipType,
-    locationPricing,
-  } = listing || {}
+  const { description, media, user, amenities, address } = listing || {}
 
   // Memoize listingId to prevent effect from running on every render
   const listingId = useMemo(() => listing?.listingId, [listing?.listingId])
@@ -119,10 +110,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     } catch (error) {
       console.error('Failed to track phone click:', error)
     }
-  }
-
-  const handleSimilarPropertyClick = (property: ListingDetail) => {
-    onSimilarPropertyClick?.(property)
   }
 
   const sections: Section[] = useMemo(
@@ -198,16 +185,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
       },
       {
         id: 'similarProperties',
-        component: (
-          <SimilarPropertiesSection
-            listingId={listing.listingId}
-            vipType={vipType}
-            wardId={locationPricing?.wardPricing?.locationId}
-            districtId={locationPricing?.districtPricing?.locationId}
-            provinceId={locationPricing?.provincePricing?.locationId}
-            onPropertyClick={handleSimilarPropertyClick}
-          />
-        ),
+        component: <SimilarPropertiesSection listingId={listing.listingId} />,
         order: 8,
         isVisible: true,
       },
@@ -219,16 +197,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         isVisible: true,
       },
     ],
-    [
-      listing,
-      t,
-      address,
-      mediaItems,
-      amenities,
-      description,
-      vipType,
-      locationPricing,
-    ],
+    [listing, t, address, mediaItems, amenities, description],
   )
 
   // Render sections function
