@@ -161,13 +161,6 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
           </>
         )}
 
-        {/* Media Counter */}
-        {sortedMedia.length > 1 && (
-          <div className='absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-black/75 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-xs md:text-sm backdrop-blur-md font-medium z-10'>
-            {currentIndex + 1} / {sortedMedia.length}
-          </div>
-        )}
-
         {/* Video Badge */}
         {currentMedia?.mediaType === 'VIDEO' && (
           <div className='absolute top-3 left-3 md:top-5 md:left-5 bg-red-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-xs md:text-sm font-semibold flex items-center gap-1.5 z-10'>

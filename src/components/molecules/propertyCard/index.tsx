@@ -198,9 +198,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
     return (
       <div className='p-2 pb-1'>
-        <div className='flex gap-2'>
+        <div className='flex gap-2 h-[220px] md:h-[240px]'>
           {/* Main Image */}
-          <div className='relative flex-1 aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg'>
+          <div className='relative flex-1 h-full overflow-hidden rounded-lg'>
             {assetsVideo && currentImageIndex === 0 ? (
               isYouTube(assetsVideo) ? (
                 <div className='w-full h-full'>
@@ -321,7 +321,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
           {/* Thumbnails */}
           {thumbnails.length > 1 && (
-            <div className='flex flex-col gap-1.5 w-12 md:w-14'>
+            <div className='flex flex-col gap-1.5 w-12 md:w-14 h-full'>
               {thumbnails.slice(0, 3).map((img, idx) => (
                 <button
                   key={`thumb-${idx}-${img || ''}`}
@@ -331,7 +331,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     setCurrentImageIndex(idx)
                   }}
                   className={classNames(
-                    'relative aspect-square overflow-hidden rounded-lg border-2 transition-all duration-200',
+                    'relative flex-1 overflow-hidden rounded-lg border-2 transition-all duration-200',
                     {
                       'border-primary ring-2 ring-primary/20 scale-105':
                         currentImageIndex === idx,
@@ -349,7 +349,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 </button>
               ))}
               {totalImages > 3 && (
-                <div className='relative aspect-square overflow-hidden rounded-lg border border-border bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'>
+                <div className='relative flex-1 overflow-hidden rounded-lg border border-border bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'>
                   <div className='text-center'>
                     <Typography
                       variant='small'
