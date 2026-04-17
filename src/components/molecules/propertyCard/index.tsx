@@ -510,7 +510,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               className={classNames(
                 'text-foreground group-hover/card:text-primary transition-colors duration-200 leading-tight font-semibold flex-1',
                 isCompact
-                  ? 'text-base md:text-lg line-clamp-2'
+                  ? 'text-base md:text-lg line-clamp-2 min-h-[2.75rem]'
                   : 'text-sm sm:text-base line-clamp-2',
               )}
             >
@@ -647,13 +647,17 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           </div>
 
           {/* Description - Only in compact mode */}
-          {isCompact && description && (
-            <Typography
-              variant='small'
-              className='text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed'
-            >
-              {description}
-            </Typography>
+          {isCompact && (
+            <div className='min-h-[2.75rem]'>
+              {description && (
+                <Typography
+                  variant='small'
+                  className='text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed'
+                >
+                  {description}
+                </Typography>
+              )}
+            </div>
           )}
 
           {/* Non-compact layout: furnishing & direction */}
