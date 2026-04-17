@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
@@ -27,6 +27,7 @@ const MAP_INTERACTION_DEBOUNCE_MS = 1000
 const MAP_LISTINGS_LIMIT = 200
 const MIN_LISTING_FETCH_ZOOM = 13
 const MAP_BOUNDS_COORDINATE_PRECISION = 4
+const PROGRAMMATIC_PAN_SUPPRESS_MS = 600
 
 interface MapViewport {
   neLat: number
@@ -216,9 +217,16 @@ const MapContent: React.FC<MapContentProps> = ({
 }) => {
   const map = useMap()
   const isDesktopCard = useMediaQuery('(min-width: 1024px)') ?? false
+  const isProgrammaticPanRef = useRef(false)
+  const panIdleListenerRef = useRef<{ remove: () => void } | null>(null)
+  const panSuppressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  )
 
   const handleMapChange = useCallback(() => {
     if (!map) return
+    if (isProgrammaticPanRef.current) return
+
     const bounds = map.getBounds()
     const zoom = map.getZoom()
     if (!bounds || zoom === null || zoom === undefined) return
@@ -254,6 +262,32 @@ const MapContent: React.FC<MapContentProps> = ({
   // Auto-pan to selected listing when clicked from sidebar
   useEffect(() => {
     if (selectedListing && map) {
+      isProgrammaticPanRef.current = true
+      if (panSuppressTimeoutRef.current) {
+        clearTimeout(panSuppressTimeoutRef.current)
+      }
+      if (panIdleListenerRef.current?.remove) {
+        panIdleListenerRef.current.remove()
+      }
+
+      panIdleListenerRef.current = map.addListener('idle', () => {
+        isProgrammaticPanRef.current = false
+        if (panIdleListenerRef.current?.remove) {
+          panIdleListenerRef.current.remove()
+        }
+        panIdleListenerRef.current = null
+        if (panSuppressTimeoutRef.current) {
+          clearTimeout(panSuppressTimeoutRef.current)
+          panSuppressTimeoutRef.current = null
+        }
+      })
+
+      // Fallback release in case idle does not fire (e.g. tiny/no-op pan).
+      panSuppressTimeoutRef.current = setTimeout(() => {
+        isProgrammaticPanRef.current = false
+        panSuppressTimeoutRef.current = null
+      }, PROGRAMMATIC_PAN_SUPPRESS_MS)
+
       // Only pan if it's slightly outside the center to prevent jitter on marker click
       map.panTo({
         lat: selectedListing.address.latitude,
@@ -261,6 +295,17 @@ const MapContent: React.FC<MapContentProps> = ({
       })
     }
   }, [selectedListing, map])
+
+  useEffect(() => {
+    return () => {
+      if (panIdleListenerRef.current?.remove) {
+        panIdleListenerRef.current.remove()
+      }
+      if (panSuppressTimeoutRef.current) {
+        clearTimeout(panSuppressTimeoutRef.current)
+      }
+    }
+  }, [])
 
   return (
     <>
