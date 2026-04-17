@@ -321,7 +321,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
           {/* Thumbnails */}
           {thumbnails.length > 1 && (
-            <div className='flex flex-col gap-1.5 w-12 md:w-14 h-full'>
+            <div className='flex flex-col gap-1.5 w-14 md:w-16 shrink-0'>
               {thumbnails.slice(0, 3).map((img, idx) => (
                 <button
                   key={`thumb-${idx}-${img || ''}`}
@@ -331,7 +331,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     setCurrentImageIndex(idx)
                   }}
                   className={classNames(
-                    'relative flex-1 overflow-hidden rounded-lg border-2 transition-all duration-200',
+                    'relative h-[68px] md:h-[76px] shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-200',
                     {
                       'border-primary ring-2 ring-primary/20 scale-105':
                         currentImageIndex === idx,
@@ -349,7 +349,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 </button>
               ))}
               {totalImages > 3 && (
-                <div className='relative flex-1 overflow-hidden rounded-lg border border-border bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'>
+                <div className='relative h-[68px] md:h-[76px] shrink-0 overflow-hidden rounded-lg border border-border bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'>
                   <div className='text-center'>
                     <Typography
                       variant='small'
