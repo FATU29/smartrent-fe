@@ -148,12 +148,12 @@ const SellerContact: React.FC<SellerContactProps> = ({
           </Button>
 
           <Button
-            className='w-full bg-primary hover:bg-primary/90 h-11 md:h-12 font-semibold shadow-sm hover:shadow-md transition-all'
+            className='w-full bg-primary hover:bg-primary/90 h-11 md:h-12 font-semibold shadow-sm hover:shadow-md transition-all text-white dark:text-white'
             onClick={handleCall}
             disabled={!hasPhone}
             aria-label={showPhone ? phone : t('actions.showPhone')}
           >
-            <Phone className='w-4 h-4 md:w-5 md:h-5 mr-2' />
+            <Phone className='w-4 h-4 md:w-5 md:h-5 mr-2 text-white' />
             {showPhone ? phone : t('actions.showPhone')}
           </Button>
         </div>

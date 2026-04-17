@@ -353,7 +353,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                 <CartesianGrid
                   vertical={false}
                   strokeDasharray='3 3'
-                  stroke='hsl(var(--border))'
+                  stroke='var(--border)'
                   strokeOpacity={0.6}
                 />
 
@@ -363,13 +363,13 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                   axisLine={false}
                   tickMargin={10}
                   minTickGap={80}
-                  tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }}
+                  tick={{ fontSize: 11, fill: 'var(--foreground)' }}
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }}
+                  tick={{ fontSize: 11, fill: 'var(--foreground)' }}
                   tickFormatter={(v) => formatCompactCurrency(v, 'vi')}
                   width={44}
                   domain={['auto', 'auto']}
@@ -385,7 +385,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
 
                 <Tooltip
                   cursor={{
-                    stroke: 'hsl(var(--muted-foreground))',
+                    stroke: 'var(--muted-foreground)',
                     strokeWidth: 1,
                     strokeDasharray: '4 4',
                     strokeOpacity: 0.5,
@@ -412,7 +412,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                   activeDot={{
                     r: 5,
                     fill: 'var(--color-price)',
-                    stroke: 'hsl(var(--background))',
+                    stroke: 'var(--background)',
                     strokeWidth: 2.5,
                   }}
                 />
