@@ -163,7 +163,7 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
                 <PropertyCard
                   listing={listing}
                   onFavorite={handleFavorite}
-                  className='compact h-full min-h-[500px]'
+                  className='h-full'
                   imageLayout='top'
                 />
               </Link>
