@@ -6,6 +6,7 @@ import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
 import ResidentialPropertiesTemplate from '@/components/templates/residentialProperties'
 import { ListProvider } from '@/contexts/list/index.context'
+import { useListContext } from '@/contexts/list/useListContext'
 import LocationProvider from '@/contexts/location'
 import { getFiltersFromQuery, pushQueryParams } from '@/utils/queryParams'
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@/contexts/list/index.type'
@@ -30,6 +31,38 @@ type ResidentialPropertiesClientInit = {
     pageSize: number
     totalPages: number
   }
+}
+
+const parseNumberFromRouterQuery = (
+  queryValue: string | string[] | undefined,
+): number | undefined => {
+  const raw = Array.isArray(queryValue) ? queryValue[0] : queryValue
+  if (!raw) {
+    return undefined
+  }
+
+  const parsed = Number(raw)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
+const CategoryQuerySync: React.FC<{ categoryFromQuery?: number }> = ({
+  categoryFromQuery,
+}) => {
+  const { filters, updateFilters } = useListContext<ListingFilterRequest>()
+
+  useEffect(() => {
+    if (filters.categoryId === categoryFromQuery) {
+      return
+    }
+
+    updateFilters({
+      categoryId: categoryFromQuery,
+      page: DEFAULT_PAGE,
+      size: DEFAULT_PER_PAGE,
+    })
+  }, [categoryFromQuery, filters.categoryId, updateFilters])
+
+  return null
 }
 
 const parseBooleanQueryParam = (
@@ -72,6 +105,7 @@ const buildClientInit = (
 const ResidentialPropertiesPage: NextPageWithLayout = () => {
   const t = useTranslations('navigation')
   const router = useRouter()
+  const categoryFromQuery = parseNumberFromRouterQuery(router.query.categoryId)
   const lastPushedFiltersRef = useRef<string>('')
   const [clientInit, setClientInit] =
     useState<ResidentialPropertiesClientInit | null>(null)
@@ -197,6 +231,7 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
           initialFilters={clientInit.initialFilters}
           initialPagination={clientInit.initialPagination}
         >
+          <CategoryQuerySync categoryFromQuery={categoryFromQuery} />
           <LocationProvider>
             <ResidentialPropertiesTemplate />
           </LocationProvider>
