@@ -62,7 +62,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
   const { data: myMembership } = useMyMembership(user?.userId)
 
   const { data: profileResponse, isLoading: isCheckingProfile } = useQuery({
-    queryKey: ['create-post-order-summary-profile'],
+    queryKey: ['create-post-order-summary-profile', user?.userId],
     queryFn: () => UserService.getProfile(),
     enabled: !!user?.userId,
     retry: false,

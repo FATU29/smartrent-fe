@@ -37,7 +37,7 @@ const CreatePostPage: NextPageWithLayout = () => {
     React.useState(false)
 
   const { data: profileResponse, isLoading: isCheckingProfile } = useQuery({
-    queryKey: ['create-post-profile-phone-check'],
+    queryKey: ['create-post-profile-phone-check', user?.userId],
     queryFn: () => UserService.getProfile(),
     enabled: isAuthenticated,
     retry: false,

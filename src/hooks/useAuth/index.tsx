@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useShallow } from 'zustand/react/shallow'
 import { useAuthStore } from '@/store/auth/index.store'
 import { AuthService } from '@/api/services/auth.service'
@@ -9,7 +10,10 @@ import {
 } from '@/api/types/auth.type'
 import { cookieManager } from '@/utils/cookies'
 import { VerificationAPI } from '@/api/types/verification.type'
-import { decodeToken } from '@/utils/decode-jwt'
+import {
+  clearAuthProfileQueries,
+  resolveAuthenticatedUser,
+} from '@/utils/auth/session'
 
 export { useAuthGuard, useForceLogout } from './useAuthGuard'
 export { useChangePassword } from './useChangePassword'
@@ -31,6 +35,7 @@ export const useAuth = () => {
 
 export const useLogin = () => {
   const { setLoading, setError, login } = useAuthStore()
+  const queryClient = useQueryClient()
 
   const loginUser = useCallback(
     async (credentials: LoginRequest) => {
@@ -48,7 +53,7 @@ export const useLogin = () => {
           return result
         }
 
-        const { user } = decodeToken(tokens.accessToken)
+        const user = await resolveAuthenticatedUser(tokens, queryClient)
         login(user, tokens)
 
         // Clear AI chat session when login successfully
@@ -72,7 +77,7 @@ export const useLogin = () => {
         }
       }
     },
-    [setLoading, setError, login],
+    [setLoading, setError, login, queryClient],
   )
 
   return { loginUser }
@@ -80,6 +85,7 @@ export const useLogin = () => {
 
 export const useAdminLogin = () => {
   const { setLoading, setError, login } = useAuthStore()
+  const queryClient = useQueryClient()
 
   const loginAdmin = useCallback(
     async (credentials: AdminLoginRequest) => {
@@ -97,7 +103,7 @@ export const useAdminLogin = () => {
           return result
         }
 
-        const { user } = decodeToken(tokens.accessToken)
+        const user = await resolveAuthenticatedUser(tokens, queryClient)
         login(user, tokens)
 
         // Clear AI chat session when login successfully
@@ -119,7 +125,7 @@ export const useAdminLogin = () => {
         return { success: false, message: errorMessage }
       }
     },
-    [setLoading, setError, login],
+    [setLoading, setError, login, queryClient],
   )
 
   return { loginAdmin }
@@ -166,6 +172,7 @@ export const useRegister = () => {
 
 export const useLogout = () => {
   const { logout } = useAuthStore()
+  const queryClient = useQueryClient()
 
   const logoutUser = useCallback(async () => {
     const accessToken = cookieManager.getAccessToken()
@@ -176,6 +183,8 @@ export const useLogout = () => {
     } catch (error) {
       console.warn('[Logout] Failed to clear AI chat session:', error)
     }
+
+    clearAuthProfileQueries(queryClient)
 
     // Clear local state FIRST (optimistic) — triggers immediate UI update
     logout()
@@ -196,7 +205,7 @@ export const useLogout = () => {
       // Already logged out locally — no need to setError or disrupt UX
       return { success: true, message: 'Logged out locally' }
     }
-  }, [logout])
+  }, [logout, queryClient])
 
   return { logoutUser }
 }

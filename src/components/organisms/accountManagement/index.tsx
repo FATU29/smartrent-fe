@@ -68,7 +68,7 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
     isLoading: isProfileLoading,
     refetch: refetchProfile,
   } = useQuery({
-    queryKey: ['sellernet', 'personal-edit-profile'],
+    queryKey: ['sellernet', 'personal-edit-profile', user?.userId],
     queryFn: () => UserService.getProfile(),
     enabled: Boolean(user),
     staleTime: 2 * 60 * 1000, // 2 minutes

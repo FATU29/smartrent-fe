@@ -7,16 +7,20 @@ import {
   useMemo,
   useRef,
 } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/store/auth/index.store'
 import { AuthTokens } from '@/configs/axios/types'
 import { useValidToken } from '@/hooks/useAuth'
-import { decodeToken } from '@/utils/decode-jwt'
 import { clearLegacyAuthStorage } from '@/utils/authLocalStorage'
 import { isTokenExpired } from '@/configs/axios/helpers'
 import { AuthService } from '@/api/services/auth.service'
 import { cookieManager } from '@/utils/cookies'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
+import {
+  clearAuthProfileQueries,
+  resolveAuthenticatedUser,
+} from '@/utils/auth/session'
 
 interface User extends UserApi {}
 
@@ -45,10 +49,12 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     clearError,
     _hasHydrated,
   } = useAuthStore()
+  const queryClient = useQueryClient()
 
   const { validToken } = useValidToken()
   const t = useTranslations('auth')
   const hasHandledUnauthorized = useRef(false)
+  const previousAuthState = useRef(isAuthenticated)
 
   // Reset the unauthorized flag when user authenticates again
   useEffect(() => {
@@ -56,6 +62,14 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       hasHandledUnauthorized.current = false
     }
   }, [isAuthenticated])
+
+  useEffect(() => {
+    if (previousAuthState.current && !isAuthenticated) {
+      clearAuthProfileQueries(queryClient)
+    }
+
+    previousAuthState.current = isAuthenticated
+  }, [isAuthenticated, queryClient])
 
   // Listen for unauthorized events from axios interceptors
   useEffect(() => {
@@ -128,8 +142,11 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
           const result = await validToken(activeAccessToken)
           if (result.success && 'data' in result && result.data?.valid) {
-            const { user } = decodeToken(activeAccessToken)
-            login(user, tokens)
+            const sessionUser = await resolveAuthenticatedUser(
+              tokens,
+              queryClient,
+            )
+            login(sessionUser, tokens)
           } else {
             logout()
           }
