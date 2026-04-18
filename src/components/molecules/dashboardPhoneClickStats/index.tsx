@@ -22,11 +22,11 @@ const DashboardPhoneClickStats: React.FC<DashboardPhoneClickStatsProps> = ({
 
   if (isLoading) {
     return (
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5'>
         {[1, 2, 3].map((i) => (
-          <Card key={i}>
+          <Card key={i} className='border-border/70 bg-card/80'>
             <CardHeader>
-              <CardTitle className='text-sm font-medium'>
+              <CardTitle className='text-sm font-medium text-muted-foreground'>
                 <Loader2 className='h-4 w-4 animate-spin inline mr-2' />
                 {t('loading')}
               </CardTitle>
@@ -60,29 +60,31 @@ const DashboardPhoneClickStats: React.FC<DashboardPhoneClickStatsProps> = ({
       title: t('conversionRate'),
       value: `${(analytics.conversionRate * 100).toFixed(2)}%`,
       icon: Percent,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50 dark:bg-purple-950',
+      color: 'text-amber-600',
+      bgColor: 'bg-amber-50 dark:bg-amber-950',
     },
   ]
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5'>
       {statCards.map((stat, index) => {
         const Icon = stat.icon
         return (
-          <Card key={index}>
-            <CardHeader className='pb-3'>
-              <CardTitle className='text-sm font-medium text-muted-foreground'>
+          <Card key={index} className='border-border/70 bg-card/80 shadow-sm'>
+            <CardHeader className='pb-2'>
+              <CardTitle className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
                 {stat.title}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className='flex items-center justify-between'>
-                <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                  <Icon className={`h-6 w-6 ${stat.color}`} />
+                <div className={`rounded-xl p-2.5 ${stat.bgColor}`}>
+                  <Icon className={`h-5 w-5 ${stat.color}`} />
                 </div>
                 <div className='text-right'>
-                  <div className='text-3xl font-bold'>{stat.value}</div>
+                  <div className='text-2xl font-semibold tracking-tight sm:text-3xl'>
+                    {stat.value}
+                  </div>
                 </div>
               </div>
             </CardContent>

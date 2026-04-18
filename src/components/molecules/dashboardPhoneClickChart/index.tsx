@@ -41,7 +41,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Loader2 } from 'lucide-react'
+import { ListX, Loader2, Search } from 'lucide-react'
 import { format, parseISO, eachDayOfInterval, subDays } from 'date-fns'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import type {
@@ -261,12 +261,16 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
     !isSummaryLoading && !isDetailLoading && !hasPhoneClickData
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('analyticsOverview')}</CardTitle>
-        <CardDescription>{t('description')}</CardDescription>
+    <Card className='border-border/70 bg-card/80 shadow-sm'>
+      <CardHeader className='space-y-2 pb-4'>
+        <CardTitle className='text-lg font-semibold tracking-tight'>
+          {t('analyticsOverview')}
+        </CardTitle>
+        <CardDescription className='max-w-3xl text-sm leading-relaxed'>
+          {t('description')}
+        </CardDescription>
       </CardHeader>
-      <CardContent className='space-y-6'>
+      <CardContent className='space-y-7'>
         {showEmptyState ? (
           <DashboardNoDataState
             title={t('emptyState.title')}
@@ -286,9 +290,11 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
           />
         ) : (
           <>
-            <div className='space-y-2'>
-              <p className='text-sm font-medium'>{t('listing')}</p>
-              <div className='w-full md:w-[360px]'>
+            <div className='space-y-2.5'>
+              <p className='text-sm font-semibold tracking-tight'>
+                {t('listing')}
+              </p>
+              <div className='w-full md:w-[420px]'>
                 <Combobox
                   value={selectedListingId ? String(selectedListingId) : ''}
                   onValueChange={(v) => {
@@ -325,9 +331,9 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
             ) : analytics ? (
               <>
                 <div className='space-y-6'>
-                  <Card>
-                    <CardHeader className='pb-2'>
-                      <CardTitle className='text-base'>
+                  <Card className='border-border/70 bg-card/70'>
+                    <CardHeader className='space-y-2 pb-3'>
+                      <CardTitle className='text-base font-semibold tracking-tight'>
                         {t('clicksOverTime')}
                       </CardTitle>
                       <div className='mt-2'>
@@ -446,9 +452,9 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                     </CardContent>
                   </Card>
 
-                  <Card>
-                    <CardHeader className='pb-2'>
-                      <CardTitle className='text-base'>
+                  <Card className='border-border/70 bg-card/70'>
+                    <CardHeader className='space-y-2 pb-3'>
+                      <CardTitle className='text-base font-semibold tracking-tight'>
                         {t('clicksByDayOfWeek')}
                       </CardTitle>
                     </CardHeader>
@@ -513,17 +519,18 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                   </Card>
                 </div>
 
-                <Card>
-                  <CardHeader className='pb-2'>
-                    <CardTitle className='text-base'>
+                <Card className='border-border/70 bg-card/70'>
+                  <CardHeader className='space-y-2 pb-3'>
+                    <CardTitle className='text-base font-semibold tracking-tight'>
                       {t('allListings')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3'>
-                      <div className='flex items-center gap-2 w-full md:w-auto'>
+                    <div className='mb-4 flex flex-col gap-3 rounded-xl border border-border/60 bg-muted/25 p-3 sm:p-4 md:flex-row md:items-center md:justify-between'>
+                      <div className='relative w-full md:w-auto'>
+                        <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground' />
                         <Input
-                          className='w-full md:w-[260px]'
+                          className='w-full pl-9 md:w-[280px]'
                           placeholder={t('searchPlaceholder')}
                           value={searchKeyword || ''}
                           onChange={(e) =>
@@ -531,8 +538,8 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                           }
                         />
                       </div>
-                      <div className='flex items-center gap-2'>
-                        <span className='text-sm text-muted-foreground'>
+                      <div className='flex items-center justify-between gap-2 sm:justify-start'>
+                        <span className='text-xs font-medium uppercase tracking-wide text-muted-foreground'>
                           {t('rowsPerPage')}
                         </span>
                         <Select
@@ -552,14 +559,14 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                       </div>
                     </div>
                     {isMobile ? (
-                      <div className='space-y-2'>
+                      <div className='space-y-2.5'>
                         {isSummaryLoading ? (
                           Array.from({
                             length: Math.max(3, Math.min(10, pageSize || 10)),
                           }).map((_, idx) => (
                             <div
                               key={`m-sk-${idx}`}
-                              className='rounded-lg border p-3 space-y-2'
+                              className='space-y-2.5 rounded-xl border border-border/70 bg-background/75 p-3.5'
                             >
                               <Skeleton className='h-4 w-[70%]' />
                               <div className='flex items-center justify-between'>
@@ -569,22 +576,27 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                             </div>
                           ))
                         ) : listings.length === 0 ? (
-                          <div className='flex items-center justify-center h-[120px] text-muted-foreground rounded-lg border'>
-                            {t('noListings')}
+                          <div className='flex h-[150px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 text-center'>
+                            <ListX className='size-5 text-muted-foreground' />
+                            <p className='text-sm font-medium text-muted-foreground'>
+                              {t('noListings')}
+                            </p>
                           </div>
                         ) : (
                           listings.map((listing) => (
                             <div
                               key={listing.listingId}
-                              className='rounded-lg border p-3 space-y-2'
+                              className='space-y-2.5 rounded-xl border border-border/70 bg-background/75 p-3.5'
                             >
-                              <p className='font-medium text-sm line-clamp-2'>
+                              <p className='line-clamp-2 text-sm font-medium leading-5'>
                                 {listing.listingTitle}
                               </p>
                               <div className='flex items-center justify-between gap-3'>
                                 <p className='text-sm text-muted-foreground'>
                                   {t('totalClicks')}:{' '}
-                                  <strong>{listing.totalClicks}</strong>
+                                  <strong className='text-foreground'>
+                                    {listing.totalClicks}
+                                  </strong>
                                 </p>
                                 <Button
                                   variant='outline'
@@ -604,11 +616,13 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>{t('listing')}</TableHead>
-                            <TableHead className='text-right'>
+                            <TableHead className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                              {t('listing')}
+                            </TableHead>
+                            <TableHead className='text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
                               {t('totalClicks')}
                             </TableHead>
-                            <TableHead className='text-right'>
+                            <TableHead className='text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
                               {t('action')}
                             </TableHead>
                           </TableRow>
@@ -642,8 +656,11 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                           ) : listings.length === 0 ? (
                             <TableRow>
                               <TableCell colSpan={3}>
-                                <div className='flex items-center justify-center h-[120px] text-muted-foreground'>
-                                  {t('noListings')}
+                                <div className='mx-auto flex h-[150px] w-full max-w-md flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 bg-muted/20 text-center'>
+                                  <ListX className='size-5 text-muted-foreground' />
+                                  <p className='text-sm font-medium text-muted-foreground'>
+                                    {t('noListings')}
+                                  </p>
                                 </div>
                               </TableCell>
                             </TableRow>
@@ -673,8 +690,8 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                         </TableBody>
                       </Table>
                     )}
-                    <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-4'>
-                      <div className='text-sm text-muted-foreground'>
+                    <div className='mt-4 flex flex-col gap-3 rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between'>
+                      <div className='text-xs text-muted-foreground sm:text-sm'>
                         {typeof totalElements === 'number' &&
                         typeof currentPage === 'number' &&
                         typeof pageSize === 'number'
@@ -688,7 +705,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                             })
                           : null}
                       </div>
-                      <div className='flex items-center justify-between sm:justify-end gap-2'>
+                      <div className='flex items-center justify-between gap-2 sm:justify-end'>
                         <Button
                           variant='outline'
                           size='sm'
@@ -701,7 +718,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                         >
                           {t('prev')}
                         </Button>
-                        <span className='text-sm'>
+                        <span className='min-w-16 text-center text-sm font-medium'>
                           {typeof currentPage === 'number' &&
                           typeof totalPages === 'number'
                             ? `${currentPage + 1} / ${totalPages}`
