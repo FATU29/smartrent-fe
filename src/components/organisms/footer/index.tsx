@@ -1,235 +1,174 @@
 import React from 'react'
-import { Typography } from '@/components/atoms/typography'
-import Logo from '@/components/atoms/logo'
-import { useTranslations } from 'next-intl'
-import { Mail, Phone, MapPin } from 'lucide-react'
+import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
+import { Mail, Phone, MapPin, GraduationCap } from 'lucide-react'
+
+import Logo from '@/components/atoms/logo'
+import { Button } from '@/components/atoms/button'
+
+const SOCIAL_ICONS = [
+  { src: '/svg/facebook.svg', alt: 'Facebook', label: 'Facebook' },
+  { src: '/svg/instagram.svg', alt: 'Instagram', label: 'Instagram' },
+  { src: '/svg/x.svg', alt: 'X', label: 'X' },
+  { src: '/svg/zalo.svg', alt: 'Zalo', label: 'Zalo' },
+]
 
 const Footer: React.FC = () => {
-  const t = useTranslations()
+  const t = useTranslations('footer')
 
   return (
-    <footer className='bg-muted/50'>
+    <footer className='bg-stone-50 border-t border-gray-200'>
       <div className='w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10'>
-        {/* Slightly reduced mobile vertical padding, increased large screen breathing space */}
-        <div className='py-6 sm:py-10 lg:py-14'>
-          <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 lg:gap-12'>
-            {/* Company Info */}
-            <div className='col-span-2 sm:col-span-2 lg:col-span-1 space-y-3 flex flex-col items-center text-center sm:items-start sm:text-left'>
-              <Logo size='large' clickable={false} />
-              <Typography
-                variant='muted'
-                className='text-sm leading-relaxed max-w-md sm:max-w-none'
-              >
-                {t('footer.description')}
-              </Typography>
-              <div className='flex space-x-4 mt-5 sm:mt-6 justify-center sm:justify-start'>
-                <button
-                  className='hover:opacity-70 transition-opacity'
-                  aria-label='Facebook'
-                >
-                  <Image
-                    src='/svg/facebook.svg'
-                    alt='Facebook'
-                    width={24}
-                    height={24}
-                  />
-                </button>
-                <button
-                  className='hover:opacity-70 transition-opacity'
-                  aria-label='Instagram'
-                >
-                  <Image
-                    src='/svg/instagram.svg'
-                    alt='Instagram'
-                    width={24}
-                    height={24}
-                  />
-                </button>
-                <button
-                  className='hover:opacity-70 transition-opacity'
-                  aria-label='X'
-                >
-                  <Image src='/svg/x.svg' alt='X' width={24} height={24} />
-                </button>
-                <button
-                  className='hover:opacity-70 transition-opacity'
-                  aria-label='Zalo'
-                >
-                  <Image
-                    src='/svg/zalo.svg'
-                    alt='Zalo'
-                    width={24}
-                    height={24}
-                  />
-                </button>
+        {/* ── Academic notice banner ── */}
+        <div className='py-5'>
+          <div className='flex items-center justify-between gap-4 bg-white border border-blue-100 rounded-xl px-5 py-3.5'>
+            <div className='flex items-center gap-3.5 min-w-0'>
+              <div className='w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0'>
+                <GraduationCap className='w-5 h-5 text-blue-600' />
+              </div>
+              <div className='min-w-0'>
+                <p className='text-sm font-semibold text-blue-700 leading-tight'>
+                  {t('academic.badge')}
+                </p>
+                <p className='text-sm text-gray-500 leading-snug mt-0.5 line-clamp-1'>
+                  {t('academic.description')}
+                </p>
               </div>
             </div>
+            <Button
+              variant='outline'
+              size='sm'
+              className='flex-shrink-0 text-sm h-9 px-4 border-gray-300 text-gray-700 hover:bg-gray-50'
+              asChild
+            >
+              <a href='mailto:smartrent.tools@gmail.com'>
+                {t('academic.requestRemoval')}
+              </a>
+            </Button>
+          </div>
+        </div>
 
-            {/* Quick Links */}
-            <div className='space-y-4 flex flex-col items-center lg:items-start'>
-              <Typography
-                variant='h6'
-                className='text-foreground font-semibold text-center lg:text-left text-sm sm:text-base'
-              >
-                {t('footer.quickLinks')}
-              </Typography>
-              <div className='space-y-2 w-full'>
-                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
-                  >
-                    {t('footer.aboutUs')}
-                  </Typography>
+        {/* ── Main grid ── */}
+        <div className='grid grid-cols-2 lg:grid-cols-4 gap-8 py-8 border-t border-gray-200'>
+          {/* Col 1 — Brand */}
+          <div className='col-span-2 lg:col-span-1 space-y-4'>
+            <Logo size='large' clickable={false} />
+            <p className='text-sm text-gray-500 leading-relaxed max-w-xs'>
+              {t('description')}
+            </p>
+            <div className='flex gap-2 pt-1'>
+              {SOCIAL_ICONS.map(({ src, alt, label }) => (
+                <button
+                  key={alt}
+                  className='w-9 h-9 rounded-full border border-gray-200 bg-white flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-colors'
+                  aria-label={label}
+                >
+                  <Image src={src} alt={alt} width={18} height={18} />
                 </button>
-                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
-                  >
-                    {t('footer.properties')}
-                  </Typography>
-                </button>
-                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
-                  >
-                    {t('footer.services')}
-                  </Typography>
-                </button>
-                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
-                  >
-                    {t('footer.contact')}
-                  </Typography>
-                </button>
-              </div>
-            </div>
-
-            {/* Support */}
-            <div className='space-y-4 flex flex-col items-center lg:items-start'>
-              <Typography
-                variant='h6'
-                className='text-foreground font-semibold text-center lg:text-left text-sm sm:text-base'
-              >
-                {t('footer.support')}
-              </Typography>
-              <div className='space-y-2 w-full'>
-                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
-                  >
-                    {t('footer.helpCenter')}
-                  </Typography>
-                </button>
-                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
-                  >
-                    {t('footer.privacyPolicy')}
-                  </Typography>
-                </button>
-                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
-                  >
-                    {t('footer.termsOfService')}
-                  </Typography>
-                </button>
-                <button className='block text-center lg:text-left text-sm text-muted-foreground hover:text-primary transition-colors w-full'>
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors'
-                  >
-                    {t('footer.faq')}
-                  </Typography>
-                </button>
-              </div>
-            </div>
-
-            {/* Contact Info */}
-            <div className='col-span-2 lg:col-span-1 space-y-4 flex flex-col items-center lg:items-start'>
-              <Typography
-                variant='h6'
-                className='text-foreground font-semibold text-center lg:text-left text-sm sm:text-base'
-              >
-                {t('footer.contactInfo')}
-              </Typography>
-              <div className='grid grid-cols-1 min-[420px]:grid-cols-3 lg:grid-cols-1 gap-2 w-full'>
-                <div className='flex items-start justify-center lg:justify-start gap-2 rounded-md bg-background/70 px-3 py-2'>
-                  <MapPin className='h-4 w-4 text-muted-foreground' />
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground text-center lg:text-left leading-relaxed'
-                  >
-                    {t('footer.address')}
-                  </Typography>
-                </div>
-                <div className='flex items-start justify-center lg:justify-start gap-2 rounded-md bg-background/70 px-3 py-2'>
-                  <Phone className='h-4 w-4 text-muted-foreground' />
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground text-center lg:text-left leading-relaxed'
-                  >
-                    {t('footer.phone')}
-                  </Typography>
-                </div>
-                <div className='flex items-start justify-center lg:justify-start gap-2 rounded-md bg-background/70 px-3 py-2'>
-                  <Mail className='h-4 w-4 text-muted-foreground' />
-                  <Typography
-                    variant='small'
-                    className='text-xs sm:text-sm text-muted-foreground text-center lg:text-left leading-relaxed'
-                  >
-                    {t('footer.email')}
-                  </Typography>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Bottom Bar */}
-          <div className='mt-8'>
-            <div className='flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4'>
-              <Typography
-                variant='small'
-                className='text-muted-foreground text-center sm:text-left'
-              >
-                {t('footer.copyright')}
-              </Typography>
-              <div className='flex items-center gap-4'>
-                <button className='text-sm text-muted-foreground hover:text-primary transition-colors'>
-                  <Typography
-                    variant='small'
-                    className='text-sm text-muted-foreground hover:text-primary transition-colors'
-                  >
-                    {t('footer.privacy')}
-                  </Typography>
-                </button>
-                <button className='text-sm text-muted-foreground hover:text-primary transition-colors'>
-                  <Typography
-                    variant='small'
-                    className='text-sm text-muted-foreground hover:text-primary transition-colors'
-                  >
-                    {t('footer.terms')}
-                  </Typography>
-                </button>
+          {/* Col 2 — Khám phá */}
+          <div className='space-y-4'>
+            <p className='text-[11px] font-semibold tracking-widest text-gray-400 uppercase'>
+              {t('discover')}
+            </p>
+            <nav className='space-y-2.5'>
+              {(
+                [
+                  ['aboutUs', '#'],
+                  ['properties', '/properties'],
+                  ['services', '#'],
+                  ['contact', '#'],
+                ] as const
+              ).map(([key, href]) => (
+                <Link
+                  key={key}
+                  href={href}
+                  className='block text-sm text-gray-600 hover:text-gray-900 transition-colors'
+                >
+                  {t(key)}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Col 3 — Hỗ trợ */}
+          <div className='space-y-4'>
+            <p className='text-[11px] font-semibold tracking-widest text-gray-400 uppercase'>
+              {t('support')}
+            </p>
+            <nav className='space-y-2.5'>
+              {(
+                [
+                  ['helpCenter', '#'],
+                  ['privacyPolicy', '#'],
+                  ['termsOfService', '#'],
+                  ['faq', '#'],
+                ] as const
+              ).map(([key, href]) => (
+                <Link
+                  key={key}
+                  href={href}
+                  className='block text-sm text-gray-600 hover:text-gray-900 transition-colors'
+                >
+                  {t(key)}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Col 4 — Liên hệ */}
+          <div className='space-y-4'>
+            <p className='text-[11px] font-semibold tracking-widest text-gray-400 uppercase'>
+              {t('contactInfo')}
+            </p>
+            <div className='space-y-3'>
+              <div className='flex items-start gap-2.5'>
+                <MapPin className='w-4 h-4 mt-0.5 flex-shrink-0 text-gray-400' />
+                <span className='text-sm text-gray-600 leading-snug'>
+                  {t('address')}
+                </span>
+              </div>
+              <div className='flex items-center gap-2.5'>
+                <Phone className='w-4 h-4 flex-shrink-0 text-gray-400' />
+                <a
+                  href={`tel:${t('phone').replace(/\s/g, '')}`}
+                  className='text-sm text-gray-600 hover:text-gray-900 transition-colors tabular-nums'
+                >
+                  {t('phone')}
+                </a>
+              </div>
+              <div className='flex items-center gap-2.5'>
+                <Mail className='w-4 h-4 flex-shrink-0 text-gray-400' />
+                <a
+                  href={`mailto:${t('email')}`}
+                  className='text-sm text-blue-600 hover:underline transition-colors'
+                >
+                  {t('email')}
+                </a>
               </div>
             </div>
-            <div className='mt-5 sm:mt-6 lg:mt-7'>
-              <Typography
-                variant='small'
-                className='text-[11px] sm:text-xs leading-relaxed text-muted-foreground text-center max-w-3xl sm:max-w-4xl mx-auto px-2'
-              >
-                {t('footer.disclaimer')}
-              </Typography>
-            </div>
+          </div>
+        </div>
+
+        {/* ── Bottom bar ── */}
+        <div className='flex flex-col sm:flex-row justify-between items-center gap-3 py-4 border-t border-gray-200'>
+          <p className='text-sm text-gray-400'>{t('copyright')}</p>
+          <div className='flex items-center gap-5'>
+            {(['privacy', 'terms', 'cookies', 'sitemap'] as const).map(
+              (key) => (
+                <Link
+                  key={key}
+                  href='#'
+                  className='text-sm text-gray-500 hover:text-gray-800 transition-colors'
+                >
+                  {t(key)}
+                </Link>
+              ),
+            )}
           </div>
         </div>
       </div>

@@ -2,7 +2,18 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { MapPin, Maximize2, Bed, ExternalLink, Heart, Plus } from 'lucide-react'
+import {
+  MapPin,
+  Maximize2,
+  Bed,
+  ExternalLink,
+  Heart,
+  Plus,
+  Star,
+  Check,
+  ArrowRight,
+  Phone,
+} from 'lucide-react'
 
 import { Card, CardContent } from '@/components/atoms/card'
 import { Button } from '@/components/atoms/button'
@@ -20,12 +31,9 @@ import { toast } from 'sonner'
 
 export interface CardListingAIMiniProps {
   listing: ChatListing
-  ranking?: {
-    score: number
-    reason: string
-  }
+  ranking?: { score: number; reason: string }
   className?: string
-  variant?: 'default' | 'compact' // compact for chat popups
+  variant?: 'default' | 'compact'
 }
 
 export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
@@ -45,12 +53,17 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
     listingId,
     title,
     price,
+    priceUnit,
     area,
     bedrooms,
     address,
     media,
     vipType,
     verified,
+    expired,
+    listingStatus,
+    ownerContactPhoneNumber,
+    user,
   } = listing
 
   const primaryImage =
@@ -63,12 +76,9 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
     isLoading: isSaveLoading,
     toggleSave,
   } = useToggleSaveListing(listingId)
-  // Subscribe to compareList to trigger re-renders when it changes
   const compareList = useCompareStore((state) => state.compareList)
   const { addToCompare, removeFromCompare } = useCompareStore()
-  const isInCompareList = compareList.some(
-    (listing) => listing.listingId === listingId,
-  )
+  const isInCompareList = compareList.some((l) => l.listingId === listingId)
 
   const handleSaveClick = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -79,7 +89,6 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
   const handleCompareClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-
     if (isInCompareList) {
       removeFromCompare(listingId)
       toast.success(tCompare('messages.removed'))
@@ -93,249 +102,282 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
         category: { categoryId: 1, name: '' },
         user: { userId: 0, firstName: '', lastName: '' },
       } as unknown as ListingApi
-
       const success = addToCompare(listingForCompare)
-      if (success) {
-        toast.success(tCompare('messages.added'))
-      } else {
-        toast.warning(tCompare('messages.limitReached'))
-      }
+      if (success) toast.success(tCompare('messages.added'))
+      else toast.warning(tCompare('messages.limitReached'))
     }
   }
 
+  // ─── Compact (chat) — horizontal layout ──────────────────────────────────────
+  if (isCompact) {
+    const isVip = vipType === 'DIAMOND' || vipType === 'GOLD'
+    const isAvailable = !expired && listingStatus !== 'EXPIRED'
+    const phone =
+      ownerContactPhoneNumber ||
+      (user ? `${user.phoneCode || ''}${user.phoneNumber || ''}` : '')
+    const locationStr =
+      [address?.legacyDistrictName, address?.legacyProvinceName]
+        .filter(Boolean)
+        .join(', ') ||
+      address?.fullAddress ||
+      ''
+    const priceLabel =
+      priceUnit === 'YEAR' ? '/năm' : priceUnit === 'DAY' ? '/ngày' : '/tháng'
+
+    return (
+      <div
+        className={cn(
+          'bg-white border border-gray-200 rounded-xl overflow-hidden',
+          className,
+        )}
+      >
+        {/* ── Horizontal header ── */}
+        <div className='flex'>
+          {/* Thumbnail */}
+          <div className='relative w-24 h-24 flex-shrink-0'>
+            <Image
+              src={primaryImage}
+              alt={title}
+              fill
+              className='object-cover'
+              sizes='96px'
+            />
+            {isVip && (
+              <div className='absolute top-1 left-1'>
+                <span className='inline-flex items-center gap-0.5 bg-white/90 rounded-full px-1.5 py-0.5 text-[9px] font-semibold shadow-sm'>
+                  <Star
+                    className='w-2.5 h-2.5 fill-yellow-400 stroke-yellow-400'
+                    aria-hidden='true'
+                  />
+                  {tHome('priorityBadge')}
+                </span>
+              </div>
+            )}
+            {media && media.length > 1 && (
+              <span className='absolute bottom-1 right-1 bg-black/60 rounded text-[9px] text-white px-1 py-0.5 font-medium'>
+                1/{media.length}
+              </span>
+            )}
+          </div>
+
+          {/* Info */}
+          <div className='flex-1 min-w-0 px-3 py-2.5 flex flex-col justify-between'>
+            <div className='space-y-0.5'>
+              <p className='text-[13px] font-semibold text-gray-900 line-clamp-2 leading-tight'>
+                {title}
+              </p>
+              {locationStr && (
+                <div className='flex items-center gap-1 text-[11px] text-gray-400'>
+                  <MapPin
+                    className='w-3 h-3 flex-shrink-0'
+                    aria-hidden='true'
+                  />
+                  <span className='truncate'>{locationStr}</span>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <div className='flex items-baseline gap-1'>
+                <span className='text-red-500 font-bold text-sm'>
+                  {formattedPrice}
+                </span>
+                <span className='text-gray-400 text-[10px]'>{priceLabel}</span>
+              </div>
+
+              <div className='flex items-center gap-1 mt-1 flex-wrap'>
+                {area > 0 && (
+                  <span className='px-1.5 py-0.5 bg-gray-100 rounded-full text-[10px] text-gray-600'>
+                    {area} m²
+                  </span>
+                )}
+                {bedrooms > 0 && (
+                  <span className='px-1.5 py-0.5 bg-gray-100 rounded-full text-[10px] text-gray-600'>
+                    {bedrooms} PN
+                  </span>
+                )}
+                {isAvailable && (
+                  <span className='inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-emerald-50 rounded-full text-[10px] text-emerald-600'>
+                    <Check className='w-2.5 h-2.5' aria-hidden='true' />
+                    Trống
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── CTA row ── */}
+        <div className='flex gap-1.5 px-2.5 py-2 border-t border-gray-100'>
+          <Link
+            href={`/listing-detail/${listingId}`}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='flex-1'
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button className='w-full bg-blue-700 hover:bg-blue-800 text-white h-7 text-[11px] font-normal normal-case gap-1 rounded-lg'>
+              {t('viewDetails')}
+              <ArrowRight
+                className='w-2.5 h-2.5'
+                strokeWidth={2.5}
+                aria-hidden='true'
+              />
+            </Button>
+          </Link>
+          {phone ? (
+            <a
+              href={`tel:${phone.replace(/[\s.-]/g, '')}`}
+              onClick={(e) => e.stopPropagation()}
+              aria-label='Gọi điện'
+            >
+              <Button
+                variant='outline'
+                size='icon'
+                className='h-7 w-7 border-gray-200 hover:bg-gray-50 flex-shrink-0 rounded-lg'
+              >
+                <Phone className='w-3 h-3 text-gray-600' aria-hidden='true' />
+              </Button>
+            </a>
+          ) : (
+            <Button
+              variant='outline'
+              size='icon'
+              className='h-7 w-7 border-gray-200 flex-shrink-0 rounded-lg opacity-40 cursor-default'
+              disabled
+              aria-label='Không có số điện thoại'
+            >
+              <Phone className='w-3 h-3 text-gray-400' aria-hidden='true' />
+            </Button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Default variant (unchanged) ─────────────────────────────────────────────
   return (
     <Card
       className={cn(
-        'group overflow-hidden transition-all duration-300 hover:shadow-lg',
-        isCompact ? 'hover:scale-[1.01]' : 'hover:scale-[1.02]',
+        'group overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02]',
         'border border-border/40 bg-card',
         className,
       )}
     >
-      <CardContent className={cn('p-0', isCompact && 'text-xs')}>
-        <div
-          className={cn(
-            'flex',
-            isCompact
-              ? 'flex-col gap-1.5 p-1.5'
-              : 'flex-col sm:flex-row gap-3 p-3',
-          )}
-        >
-          {/* Image Section */}
-          <div
-            className={cn(
-              'relative rounded-lg overflow-hidden flex-shrink-0',
-              isCompact ? 'w-full h-28' : 'w-full sm:w-32 h-40 sm:h-24',
-            )}
-          >
+      <CardContent className='p-0'>
+        <div className='flex flex-col sm:flex-row gap-3 p-3'>
+          <div className='relative rounded-lg overflow-hidden flex-shrink-0 w-full sm:w-32 h-40 sm:h-24'>
             <Image
               src={primaryImage}
               alt={title}
               fill
               className='object-cover transition-transform duration-300 group-hover:scale-110'
-              sizes={isCompact ? '100vw' : '(max-width: 640px) 100vw, 128px'}
+              sizes='(max-width: 640px) 100vw, 128px'
             />
-
-            {/* Priority Badge - only for Diamond/Gold */}
             {vipType && (vipType === 'DIAMOND' || vipType === 'GOLD') && (
-              <div
-                className={cn(
-                  'absolute',
-                  isCompact ? 'top-1.5 left-1.5' : 'top-2 left-2',
-                )}
-              >
-                <Badge
-                  className={cn(
-                    'rounded-full shadow-md font-medium backdrop-blur-sm',
-                    'bg-gradient-to-r from-primary to-primary/80 text-white',
-                    isCompact
-                      ? 'text-[10px] px-2 py-0.5'
-                      : 'text-xs px-2.5 py-1',
-                  )}
-                >
+              <div className='absolute top-2 left-2'>
+                <Badge className='rounded-full shadow-md font-medium backdrop-blur-sm bg-gradient-to-r from-primary to-primary/80 text-white text-xs px-2.5 py-1'>
                   {tHome('priorityBadge')}
                 </Badge>
               </div>
             )}
-
-            {/* Verified Badge */}
             {verified && (
-              <div
-                className={cn(
-                  'absolute',
-                  isCompact ? 'top-1 right-1' : 'top-2 right-2',
-                )}
-              >
-                <Badge
-                  variant='secondary'
-                  className={cn(
-                    isCompact ? 'text-[10px] px-1 py-0' : 'text-xs',
-                  )}
-                >
+              <div className='absolute top-2 right-2'>
+                <Badge variant='secondary' className='text-xs'>
                   ✓
                 </Badge>
               </div>
             )}
-
-            {/* AI Score */}
             {ranking && (
-              <div
-                className={cn(
-                  'absolute',
-                  isCompact ? 'bottom-1 right-1' : 'bottom-2 right-2',
-                )}
-              >
+              <div className='absolute bottom-2 right-2'>
                 <Badge
                   variant='secondary'
-                  className={cn(
-                    'font-semibold bg-black/70 text-white',
-                    isCompact ? 'text-[10px] px-1 py-0' : 'text-xs',
-                  )}
+                  className='font-semibold bg-black/70 text-white text-xs'
                 >
                   {ranking.score}
                 </Badge>
               </div>
             )}
-
-            {/* Action buttons overlay - hidden in compact (chat) mode */}
-            {!isCompact && (
-              <div className='absolute flex gap-1 bottom-2 left-2'>
-                {/* Save button */}
-                <button
-                  onClick={handleSaveClick}
-                  disabled={isSaveLoading}
+            <div className='absolute flex gap-1 bottom-2 left-2'>
+              <button
+                onClick={handleSaveClick}
+                disabled={isSaveLoading}
+                className='flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-50 h-7 w-7'
+                aria-label={
+                  isSaved ? tSaved('actions.saved') : tSaved('actions.save')
+                }
+              >
+                <Heart
                   className={cn(
-                    'flex items-center justify-center',
-                    'rounded-full bg-background/80 backdrop-blur-sm',
-                    'hover:bg-background transition-all duration-200',
-                    'hover:scale-110 active:scale-95',
-                    'disabled:opacity-50 disabled:cursor-not-allowed',
-                    'h-7 w-7',
+                    'w-4 h-4 transition-all duration-200',
+                    isSaved
+                      ? 'fill-red-500 stroke-red-500'
+                      : 'fill-none stroke-muted-foreground hover:stroke-red-500',
+                    isSaveLoading && 'animate-pulse',
                   )}
-                  aria-label={
-                    isSaved ? tSaved('actions.saved') : tSaved('actions.save')
-                  }
-                >
-                  <Heart
-                    className={cn(
-                      'w-4 h-4 transition-all duration-200',
-                      isSaved
-                        ? 'fill-red-500 stroke-red-500'
-                        : 'fill-none stroke-muted-foreground hover:stroke-red-500',
-                      isSaveLoading && 'animate-pulse',
-                    )}
-                  />
-                </button>
-
-                {/* Compare button */}
-                <button
-                  onClick={handleCompareClick}
+                />
+              </button>
+              <button
+                onClick={handleCompareClick}
+                className='flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all duration-200 hover:scale-110 active:scale-95 h-7 w-7'
+                aria-label={
+                  isInCompareList
+                    ? tCompare('actions.removeFromCompare')
+                    : tCompare('actions.addToCompare')
+                }
+              >
+                <Plus
                   className={cn(
-                    'flex items-center justify-center',
-                    'rounded-full bg-background/80 backdrop-blur-sm',
-                    'hover:bg-background transition-all duration-200',
-                    'hover:scale-110 active:scale-95',
-                    'h-7 w-7',
-                  )}
-                  aria-label={
+                    'w-4 h-4 transition-all duration-200',
                     isInCompareList
-                      ? tCompare('actions.removeFromCompare')
-                      : tCompare('actions.addToCompare')
-                  }
-                >
-                  <Plus
-                    className={cn(
-                      'w-4 h-4 transition-all duration-200',
-                      isInCompareList
-                        ? 'rotate-45 stroke-primary'
-                        : 'stroke-muted-foreground hover:stroke-primary',
-                    )}
-                  />
-                </button>
-              </div>
-            )}
+                      ? 'rotate-45 stroke-primary'
+                      : 'stroke-muted-foreground hover:stroke-primary',
+                  )}
+                />
+              </button>
+            </div>
           </div>
 
-          {/* Content Section */}
-          <div
-            className={cn(
-              'flex-1 min-w-0 flex flex-col',
-              isCompact ? 'gap-1.5' : 'justify-between',
-            )}
-          >
-            {/* Title */}
-            <div className={cn(isCompact ? 'space-y-0.5' : 'space-y-1')}>
+          <div className='flex-1 min-w-0 flex flex-col justify-between'>
+            <div className='space-y-1'>
               <Typography
                 variant='p'
-                className={cn(
-                  'font-semibold line-clamp-1 text-foreground group-hover:text-primary transition-colors',
-                  isCompact ? 'text-xs' : 'text-sm',
-                )}
+                className='font-semibold line-clamp-1 text-foreground group-hover:text-primary transition-colors text-sm'
               >
                 {title}
               </Typography>
-
-              {/* Price */}
-              <div className='flex items-center gap-1'>
-                <Typography
-                  variant='p'
-                  className={cn(
-                    'font-bold text-primary',
-                    isCompact ? 'text-xs' : 'text-sm',
-                  )}
-                >
-                  {formattedPrice}
-                </Typography>
-              </div>
+              <Typography
+                variant='p'
+                className='font-bold text-primary text-sm'
+              >
+                {formattedPrice}
+              </Typography>
             </div>
-
-            {/* Details */}
-            <div
-              className={cn(
-                'flex flex-wrap items-center text-muted-foreground',
-                isCompact ? 'gap-2 text-[10px]' : 'gap-3 text-xs',
-              )}
-            >
+            <div className='flex flex-wrap items-center text-muted-foreground gap-3 text-xs'>
               {bedrooms && (
                 <div className='flex items-center gap-1'>
-                  <Bed className={cn(isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3')} />
+                  <Bed className='w-3 h-3' />
                   <span>{bedrooms}</span>
                 </div>
               )}
-
               {area && (
                 <div className='flex items-center gap-1'>
-                  <Maximize2
-                    className={cn(isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3')}
-                  />
+                  <Maximize2 className='w-3 h-3' />
                   <span>
                     {area}m<sup>2</sup>
                   </span>
                 </div>
               )}
-
               {address?.fullAddress && (
                 <div className='flex items-center gap-1 flex-1 min-w-0'>
-                  <MapPin
-                    className={cn(
-                      'flex-shrink-0',
-                      isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3',
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      'truncate',
-                      isCompact ? 'text-[10px]' : 'text-xs',
-                    )}
-                  >
+                  <MapPin className='flex-shrink-0 w-3 h-3' />
+                  <span className='truncate text-xs'>
                     {address.fullAddress.split(',').slice(-2).join(',')}
                   </span>
                 </div>
               )}
             </div>
-
-            {/* AI Ranking Reason */}
-            {ranking?.reason && !isCompact && (
+            {ranking?.reason && (
               <Typography
                 variant='small'
                 className='text-muted-foreground italic line-clamp-1 mt-1'
@@ -345,13 +387,7 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
             )}
           </div>
 
-          {/* View Details Button */}
-          <div
-            className={cn(
-              'flex',
-              isCompact ? 'items-center' : 'items-center sm:items-start',
-            )}
-          >
+          <div className='flex items-center sm:items-start'>
             <Link
               href={`/listing-detail/${listingId}`}
               target='_blank'
@@ -361,20 +397,10 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
               <Button
                 size='sm'
                 variant='outline'
-                className={cn(
-                  'w-full whitespace-nowrap rounded-lg',
-                  isCompact
-                    ? 'text-xs h-8 px-3 py-1.5'
-                    : 'text-sm h-9 px-4 py-2',
-                )}
+                className='w-full whitespace-nowrap rounded-lg text-sm h-9 px-4 py-2'
               >
                 {t('viewDetails')}
-                <ExternalLink
-                  className={cn(
-                    'ml-1.5',
-                    isCompact ? 'w-3 h-3' : 'w-3.5 h-3.5',
-                  )}
-                />
+                <ExternalLink className='ml-1.5 w-3.5 h-3.5' />
               </Button>
             </Link>
           </div>

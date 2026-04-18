@@ -2,7 +2,11 @@ import { useState, useCallback, useMemo } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { AiService } from '@/api/services/ai.service'
-import type { ChatMessage, ChatListing } from '@/api/types/ai.type'
+import type {
+  ChatMessage,
+  ChatListing,
+  LastListingRef,
+} from '@/api/types/ai.type'
 import { useChatSession } from './useChatSession'
 import { useChatScroll } from './useChatScroll'
 import { useAuth } from '@/hooks/useAuth'
@@ -115,9 +119,26 @@ export const useChatLogic = () => {
         content: trimmedContent,
       })
 
+      // Build last_listings from the most recent bot message that had listings
+      const lastListings: LastListingRef[] = []
+      for (let i = messages.length - 1; i >= 0; i--) {
+        const msg = messages[i]
+        if (msg.sender === 'bot' && msg.listings && msg.listings.length > 0) {
+          msg.listings.forEach((listing, idx) => {
+            lastListings.push({
+              position: idx + 1,
+              listingId: String(listing.listingId),
+              title: listing.title || '',
+            })
+          })
+          break // only the most recent search
+        }
+      }
+
       try {
         const response = await AiService.chat({
           messages: conversationHistory,
+          ...(lastListings.length > 0 && { last_listings: lastListings }),
         })
 
         const chatResponse = response.data

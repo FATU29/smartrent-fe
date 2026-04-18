@@ -66,8 +66,15 @@ export interface ChatMessage {
   content: string
 }
 
+export interface LastListingRef {
+  position: number
+  listingId: string
+  title: string
+}
+
 export interface ChatRequest {
   messages: ChatMessage[]
+  last_listings?: LastListingRef[]
 }
 
 export interface ChatMessageResponse {
