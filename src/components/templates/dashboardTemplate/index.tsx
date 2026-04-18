@@ -189,13 +189,15 @@ const DashboardTemplate: React.FC = () => {
   }, [selectedListingAnalytics])
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-7'>
       {/* Header */}
-      <div>
-        <h1 className='text-2xl md:text-3xl font-bold tracking-tight'>
+      <div className='space-y-1.5'>
+        <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
           {t('title')}
         </h1>
-        <p className='text-muted-foreground mt-1'>{t('description')}</p>
+        <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]'>
+          {t('description')}
+        </p>
       </div>
 
       {/* Membership Section */}
@@ -214,14 +216,14 @@ const DashboardTemplate: React.FC = () => {
 
       {/* Phone Click Statistics */}
       <div id='phone-click-analytics' className='space-y-6'>
-        <div>
+        <div className='space-y-1.5'>
           <h2
             id='phone-click-analytics-title'
-            className='text-xl font-semibold tracking-tight scroll-mt-24'
+            className='scroll-mt-24 text-xl font-semibold tracking-tight sm:text-2xl'
           >
             {t('phoneClickStats.title')}
           </h2>
-          <p className='text-sm text-muted-foreground mt-1'>
+          <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]'>
             {t('phoneClickStats.description')}
           </p>
         </div>
@@ -267,14 +269,14 @@ const DashboardTemplate: React.FC = () => {
 
       {/* Saved Listings Statistics */}
       <div id='saved-listings-analytics' className='space-y-6'>
-        <div>
+        <div className='space-y-1.5'>
           <h2
             id='saved-listings-analytics-title'
-            className='text-xl font-semibold tracking-tight scroll-mt-24'
+            className='scroll-mt-24 text-xl font-semibold tracking-tight sm:text-2xl'
           >
             {t('savedListingsStats.title')}
           </h2>
-          <p className='text-sm text-muted-foreground mt-1'>
+          <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]'>
             {t('savedListingsStats.description')}
           </p>
         </div>

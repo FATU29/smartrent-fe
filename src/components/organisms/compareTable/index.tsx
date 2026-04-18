@@ -51,12 +51,12 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
 }) => {
   return (
     <div className='flex flex-col gap-1'>
-      <span className={cn('font-semibold', isLowest && 'text-primary text-lg')}>
+      <span
+        className={cn('font-semibold text-blue-600', isLowest && 'text-lg')}
+      >
         {formattedPrice}
       </span>
-      {unitKey && (
-        <span className='text-xs text-muted-foreground'>/{unitKey}</span>
-      )}
+      {unitKey && <span className='text-xs text-blue-600/90'>/{unitKey}</span>}
     </div>
   )
 }
@@ -268,19 +268,6 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
     )
   }
 
-  const formatDateValue = (value: string | Date | undefined | null): string => {
-    if (!value) return t('table.notAvailable')
-
-    const date = new Date(value)
-    if (Number.isNaN(date.getTime())) {
-      return t('table.notAvailable')
-    }
-
-    return new Intl.DateTimeFormat(locale, {
-      dateStyle: 'medium',
-    }).format(date)
-  }
-
   const formatUtilityValue = (
     utilityValue?: string | number | null,
   ): string => {
@@ -348,14 +335,6 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
     }
 
     return `${new Intl.NumberFormat(locale).format(area)} m²`
-  }
-
-  const formatPricePerSqm = (listing: ListingApi): string => {
-    if (!listing.price || !listing.area || listing.area <= 0) {
-      return t('table.notAvailable')
-    }
-
-    return `${formatByLocale(listing.price / listing.area, language)} /m²`
   }
 
   const formatCategory = (listing: ListingApi): string => {
@@ -449,11 +428,6 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
         key: 'price',
         label: t('table.price'),
         getValue: (listing: ListingApi) => formatPriceValue(listing),
-      },
-      {
-        key: 'pricePerSqm',
-        label: t('table.pricePerSqm'),
-        getValue: (listing: ListingApi) => formatPricePerSqm(listing),
       },
       {
         key: 'location',
@@ -571,26 +545,6 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
         key: 'amenities',
         label: t('table.amenities'),
         getValue: (listing: ListingApi) => formatAmenities(listing),
-      },
-      {
-        key: 'postDate',
-        label: t('table.postDate'),
-        getValue: (listing: ListingApi) => formatDateValue(listing.postDate),
-      },
-      {
-        key: 'expiryDate',
-        label: t('table.expiryDate'),
-        getValue: (listing: ListingApi) => formatDateValue(listing.expiryDate),
-      },
-      {
-        key: 'updatedAt',
-        label: t('table.updatedAt'),
-        getValue: (listing: ListingApi) => formatDateValue(listing.updatedAt),
-      },
-      {
-        key: 'listingId',
-        label: t('table.listingId'),
-        getValue: (listing: ListingApi) => formatValue(listing.listingId),
       },
     ]
   }, [t, tRoot, language, listings.length, locale, lowestPrice])
