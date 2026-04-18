@@ -330,6 +330,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   key={`thumb-${idx}-${img || ''}`}
                   type='button'
                   onClick={(e) => {
+                    e.preventDefault()
                     e.stopPropagation()
                     setCurrentImageIndex(idx)
                   }}
@@ -357,6 +358,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 <button
                   type='button'
                   onClick={(e) => {
+                    e.preventDefault()
                     e.stopPropagation()
                     setCurrentImageIndex(visibleThumbnails.length)
                   }}
