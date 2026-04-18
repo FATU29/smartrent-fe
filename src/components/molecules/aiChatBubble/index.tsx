@@ -18,7 +18,6 @@ import {
 
 import AiChatAvatar from '@/components/atoms/aiChatAvatar'
 import AiChatMessageTime from '@/components/atoms/aiChatMessageTime'
-import { CardListingAIMini } from '@/components/molecules/CardListingAIMini'
 import { CardListingAIDetail } from '@/components/molecules/CardListingAIDetail'
 import AiChatCompare from '@/components/molecules/aiChatCompare'
 import AiChatContactCard from '@/components/molecules/aiChatContactCard'
@@ -313,20 +312,14 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({ message, className }) => {
                 <Badge variant='secondary' className='text-xs'>
                   {message.totalCount || listings.length} {t('foundListings')}
                 </Badge>
-                <div className='flex flex-col gap-2 w-full'>
-                  {visibleListings.map((listing) => {
-                    const ranking = message.aiRankings?.find(
-                      (r) => r.listingId === listing.listingId,
-                    )
-                    return (
-                      <CardListingAIMini
-                        key={listing.listingId}
-                        listing={listing}
-                        ranking={ranking}
-                        variant='compact'
-                      />
-                    )
-                  })}
+                <div className='flex flex-col gap-2 w-full px-0.5'>
+                  {visibleListings.map((listing) => (
+                    <CardListingAIDetail
+                      key={listing.listingId}
+                      listing={listing}
+                      compact
+                    />
+                  ))}
                 </div>
                 {hasMore && (
                   <Button
@@ -347,7 +340,7 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({ message, className }) => {
           })()}
 
         {hasListings && !containsTable && listingDisplayMode === 'detail' && (
-          <div className='w-full space-y-2 mt-1'>
+          <div className='w-full space-y-2 mt-1 px-0.5'>
             {message.listings?.map((listing) => (
               <React.Fragment key={listing.listingId}>
                 {listing.user && <AiChatContactCard listing={listing} />}

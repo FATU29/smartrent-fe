@@ -1,11 +1,10 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { Phone, Mail, MessageCircle, ArrowRight } from 'lucide-react'
+import { Phone, Mail, ArrowRight } from 'lucide-react'
 
-import { Card, CardContent } from '@/components/atoms/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
-import { Button } from '@/components/atoms/button'
 import { cn } from '@/lib/utils'
 import type { ChatListing } from '@/api/types/ai.type'
 
@@ -22,6 +21,13 @@ const getInitials = (name: string) =>
     .join('')
     .slice(0, 2)
     .toUpperCase()
+
+const formatVNPhone = (phone: string): string => {
+  const d = phone.replace(/\D/g, '')
+  if (d.length === 10) return `${d.slice(0, 4)} ${d.slice(4, 7)} ${d.slice(7)}`
+  if (d.length === 9) return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`
+  return phone
+}
 
 const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
   listing,
@@ -40,85 +46,122 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
   const sellerPageUrl = `/properties/seller/${user.userId}`
 
   return (
-    <Card
+    <div
       className={cn(
-        'overflow-hidden border border-border/40 bg-card py-0',
+        'bg-white border border-gray-200 rounded-xl overflow-hidden',
         className,
       )}
     >
-      <CardContent className='p-3'>
-        {/* Header: Avatar + Name */}
-        <div className='flex items-center gap-3 mb-3'>
-          <Avatar className='h-10 w-10 ring-2 ring-primary/15'>
-            <AvatarImage src={undefined} alt={displayName} />
-            <AvatarFallback className='bg-primary/10 text-primary text-xs font-semibold'>
-              {getInitials(displayName)}
-            </AvatarFallback>
-          </Avatar>
-          <div className='min-w-0 flex-1'>
-            <p className='text-sm font-semibold text-foreground truncate'>
-              {displayName}
-            </p>
-            <p className='text-[11px] text-muted-foreground'>{t('landlord')}</p>
-          </div>
+      {/* ── Header ── */}
+      <div className='flex items-center gap-2.5 px-3 pt-3 pb-2.5'>
+        <Avatar className='h-9 w-9 flex-shrink-0'>
+          <AvatarImage src={undefined} alt={displayName} />
+          <AvatarFallback className='bg-blue-50 text-blue-700 text-xs font-semibold'>
+            {getInitials(displayName)}
+          </AvatarFallback>
+        </Avatar>
+
+        <div className='min-w-0'>
+          <p className='text-[13px] font-semibold text-gray-900 truncate leading-snug'>
+            {displayName}
+          </p>
+          <span className='inline-flex items-center gap-1 mt-0.5 bg-gray-100 rounded-full px-2 py-0.5'>
+            <span className='w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0' />
+            <span className='text-[10px] text-gray-600'>{t('landlord')}</span>
+          </span>
         </div>
+      </div>
 
-        {/* Contact info */}
-        <div className='space-y-1.5 mb-3'>
-          {phone && (
-            <a
-              href={`tel:${phone.replace(/[\s.-]/g, '')}`}
-              className='flex items-center gap-2 text-xs text-foreground hover:text-primary transition-colors rounded-md px-2 py-1.5 hover:bg-muted/60'
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Phone className='w-3.5 h-3.5 text-primary flex-shrink-0' />
-              <span>{phone}</span>
-            </a>
-          )}
+      <div className='mx-3 border-t border-gray-100' />
 
-          {email && (
-            <a
-              href={`mailto:${email}`}
-              className='flex items-center gap-2 text-xs text-foreground hover:text-primary transition-colors rounded-md px-2 py-1.5 hover:bg-muted/60'
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Mail className='w-3.5 h-3.5 text-primary flex-shrink-0' />
-              <span className='truncate'>{email}</span>
-            </a>
-          )}
-
-          {zaloLink && (
-            <a
-              href={zaloLink}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='flex items-center gap-2 text-xs text-foreground hover:text-primary transition-colors rounded-md px-2 py-1.5 hover:bg-muted/60'
-              onClick={(e) => e.stopPropagation()}
-            >
-              <MessageCircle className='w-3.5 h-3.5 text-primary flex-shrink-0' />
-              <span>Zalo</span>
-            </a>
-          )}
-        </div>
-
-        {/* CTA: View seller page */}
-        <Link
-          href={sellerPageUrl}
-          target='_blank'
-          rel='noopener noreferrer'
-          className='block'
-        >
-          <Button
-            size='sm'
-            variant='ghost'
-            className='w-full text-xs h-8 text-primary hover:text-primary hover:bg-primary/5 justify-between'
+      {/* ── Contact rows ── */}
+      <div className='px-2 py-1.5 space-y-0'>
+        {phone && (
+          <a
+            href={`tel:${phone.replace(/[\s.-]/g, '')}`}
+            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-gray-50 transition-colors'
+            onClick={(e) => e.stopPropagation()}
           >
-            <span>{t('viewSellerPage')}</span>
-            <ArrowRight className='w-3.5 h-3.5' />
-          </Button>
-        </Link>
-      </CardContent>
-    </Card>
+            <div className='w-6 h-6 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0'>
+              <Phone className='w-3 h-3 text-gray-500' aria-hidden='true' />
+            </div>
+            <div className='min-w-0 flex-1'>
+              <p className='text-[9px] uppercase tracking-wide text-gray-400 leading-none mb-0.5'>
+                Điện thoại
+              </p>
+              <p className='text-[12px] text-gray-900 tabular-nums'>
+                {formatVNPhone(phone)}
+              </p>
+            </div>
+          </a>
+        )}
+
+        {email && (
+          <a
+            href={`mailto:${email}`}
+            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-gray-50 transition-colors'
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className='w-6 h-6 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0'>
+              <Mail className='w-3 h-3 text-gray-500' aria-hidden='true' />
+            </div>
+            <div className='min-w-0 flex-1 overflow-hidden'>
+              <p className='text-[9px] uppercase tracking-wide text-gray-400 leading-none mb-0.5'>
+                Email
+              </p>
+              <p className='text-[12px] text-gray-900 truncate'>{email}</p>
+            </div>
+          </a>
+        )}
+
+        {zaloLink && (
+          <a
+            href={zaloLink}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-gray-50 transition-colors'
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className='w-6 h-6 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0'>
+              <Image
+                src='/svg/zalo.svg'
+                alt='Zalo'
+                width={14}
+                height={14}
+                aria-hidden='true'
+              />
+            </div>
+            <div className='min-w-0 flex-1'>
+              <p className='text-[9px] uppercase tracking-wide text-gray-400 leading-none mb-0.5'>
+                Nhắn tin
+              </p>
+              <p className='text-[12px] text-gray-900'>Zalo</p>
+            </div>
+            <span className='text-[10px] font-medium bg-blue-50 text-blue-700 rounded-full px-1.5 py-0.5 flex-shrink-0'>
+              Mở
+            </span>
+          </a>
+        )}
+      </div>
+
+      {/* ── CTA footer link ── */}
+      <Link
+        href={sellerPageUrl}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='flex items-center justify-between px-3 py-2 border-t border-gray-100 hover:bg-gray-50 transition-colors group'
+        onClick={(e) => e.stopPropagation()}
+      >
+        <span className='text-[11px] text-blue-600 font-medium'>
+          {t('viewSellerPage')}
+        </span>
+        <ArrowRight
+          className='w-3 h-3 text-blue-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all'
+          strokeWidth={2}
+          aria-hidden='true'
+        />
+      </Link>
+    </div>
   )
 }
 

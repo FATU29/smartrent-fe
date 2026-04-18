@@ -1945,8 +1945,9 @@
     }
   },
   "footer": {
-    "description": "Your trusted partner in finding the perfect home. We connect you with premium real estate and exceptional services.",
+    "description": "The smart property search platform, connecting you with the most suitable homes.",
     "quickLinks": "Quick Links",
+    "discover": "Discover",
     "aboutUs": "About Us",
     "properties": "Properties",
     "services": "Services",
@@ -1956,19 +1957,26 @@
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "faq": "FAQ",
-    "contactInfo": "Contact Info",
+    "contactInfo": "Contact",
     "address": "University of Science, Ho Chi Minh City",
     "phone": "+84 123 456 789",
     "email": "smartrent.tools@gmail.com",
     "copyright": "© 2026 SmartRent. All rights reserved.",
     "privacy": "Privacy",
     "terms": "Terms",
+    "cookies": "Cookies",
+    "sitemap": "Sitemap",
     "followUs": "Follow Us",
     "newsletter": "Newsletter",
     "newsletterDescription": "Subscribe to receive the latest real estate news",
     "subscribe": "Subscribe",
     "emailPlaceholder": "Enter your email",
-    "disclaimer": "Data is collected for scientific research/capstone thesis purposes at VNU-HCM University of Science. For any removal requests, please contact and CC both emails [smartrent.tools@gmail.com, lqm550@gmail.com]."
+    "disclaimer": "Data is collected for scientific research/capstone thesis purposes at VNU-HCM University of Science. For any removal requests, please contact and CC both emails [smartrent.tools@gmail.com, lqm550@gmail.com].",
+    "academic": {
+      "badge": "Academic Project",
+      "description": "Capstone thesis at VNU-HCM University of Science. Data is used for research purposes.",
+      "requestRemoval": "Request Removal"
+    }
   },
   "navigation": {
     "home": "Home",

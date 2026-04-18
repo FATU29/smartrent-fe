@@ -2,7 +2,11 @@ import { useState, useCallback, useMemo } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { AiService } from '@/api/services/ai.service'
-import type { ChatMessage, ChatListing } from '@/api/types/ai.type'
+import type {
+  ChatMessage,
+  ChatListing,
+  LastListingRef,
+} from '@/api/types/ai.type'
 import { useChatSession } from './useChatSession'
 import { useChatScroll } from './useChatScroll'
 import { useAuth } from '@/hooks/useAuth'
@@ -26,6 +30,31 @@ export type TChatState = {
   messages: TChatMessage[]
   isLoading: boolean
   isTyping: boolean
+}
+
+function buildLastListings(messages: TChatMessage[]): LastListingRef[] {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const msg = messages[i]
+    if (msg.sender === 'bot' && msg.listings && msg.listings.length > 0) {
+      return msg.listings.map((listing, idx) => ({
+        position: idx + 1,
+        listingId: String(listing.listingId),
+        title: listing.title || '',
+      }))
+    }
+  }
+  return []
+}
+
+function getChatErrorContent(
+  locale: string,
+  t: (key: string) => string,
+  isUnauthorized = false,
+): string {
+  if (isUnauthorized) return t('loginRequired')
+  return locale === 'vi'
+    ? 'Xin lỗi, đã có lỗi xảy ra khi xử lý yêu cầu của bạn. Vui lòng thử lại sau.'
+    : 'Sorry, an error occurred while processing your request. Please try again later.'
 }
 
 export const useChatLogic = () => {
@@ -115,9 +144,13 @@ export const useChatLogic = () => {
         content: trimmedContent,
       })
 
+      // Build last_listings from the most recent bot message that had listings
+      const lastListings = buildLastListings(messages)
+
       try {
         const response = await AiService.chat({
           messages: conversationHistory,
+          ...(lastListings.length > 0 && { last_listings: lastListings }),
         })
 
         const chatResponse = response.data
@@ -129,10 +162,7 @@ export const useChatLogic = () => {
         if (!aiMessage || !aiMessage.content) {
           const errorMessage: TChatMessage = {
             id: generateMessageId(),
-            content:
-              locale === 'vi'
-                ? 'Xin lỗi, đã có lỗi xảy ra khi xử lý yêu cầu của bạn. Vui lòng thử lại sau.'
-                : 'Sorry, an error occurred while processing your request. Please try again later.',
+            content: getChatErrorContent(locale, t),
             sender: 'bot',
             timestamp: new Date(),
           }
@@ -173,19 +203,16 @@ export const useChatLogic = () => {
         // Handle network errors or actual exceptions
         console.error('[useChatLogic] Chat API error:', error)
 
+        const errorStatus = error as {
+          response?: { status?: number }
+          status?: number
+        }
         const isUnauthorized =
-          (error as { response?: { status?: number }; status?: number })
-            ?.response?.status === 401 ||
-          (error as { response?: { status?: number }; status?: number })
-            ?.status === 401
+          errorStatus?.response?.status === 401 || errorStatus?.status === 401
 
         const errorMessage: TChatMessage = {
           id: generateMessageId(),
-          content: isUnauthorized
-            ? t('loginRequired')
-            : locale === 'vi'
-              ? 'Xin lỗi, đã có lỗi xảy ra khi xử lý yêu cầu của bạn. Vui lòng thử lại sau.'
-              : 'Sorry, an error occurred while processing your request. Please try again later.',
+          content: getChatErrorContent(locale, t, isUnauthorized),
           sender: 'bot',
           timestamp: new Date(),
         }
