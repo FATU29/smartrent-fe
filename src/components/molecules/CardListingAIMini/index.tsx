@@ -2,18 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import {
-  MapPin,
-  Maximize2,
-  Bed,
-  ExternalLink,
-  Heart,
-  Plus,
-  Star,
-  Check,
-  ArrowRight,
-  Phone,
-} from 'lucide-react'
+import { MapPin, Maximize2, Bed, ExternalLink, Heart, Plus } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/atoms/card'
 import { Button } from '@/components/atoms/button'
@@ -33,37 +22,29 @@ export interface CardListingAIMiniProps {
   listing: ChatListing
   ranking?: { score: number; reason: string }
   className?: string
-  variant?: 'default' | 'compact'
 }
 
 export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
   listing,
   ranking,
   className,
-  variant = 'default',
 }) => {
   const t = useTranslations('chat.listing')
   const tHome = useTranslations('homePage')
   const tCompare = useTranslations('compare')
   const tSaved = useTranslations('savedListings')
   const { language } = useLanguage()
-  const isCompact = variant === 'compact'
 
   const {
     listingId,
     title,
     price,
-    priceUnit,
     area,
     bedrooms,
     address,
     media,
     vipType,
     verified,
-    expired,
-    listingStatus,
-    ownerContactPhoneNumber,
-    user,
   } = listing
 
   const primaryImage =
@@ -108,154 +89,6 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
     }
   }
 
-  // ─── Compact (chat) — horizontal layout ──────────────────────────────────────
-  if (isCompact) {
-    const isVip = vipType === 'DIAMOND' || vipType === 'GOLD'
-    const isAvailable = !expired && listingStatus !== 'EXPIRED'
-    const phone =
-      ownerContactPhoneNumber ||
-      (user ? `${user.phoneCode || ''}${user.phoneNumber || ''}` : '')
-    const locationStr =
-      [address?.legacyDistrictName, address?.legacyProvinceName]
-        .filter(Boolean)
-        .join(', ') ||
-      address?.fullAddress ||
-      ''
-    const priceLabel =
-      priceUnit === 'YEAR' ? '/năm' : priceUnit === 'DAY' ? '/ngày' : '/tháng'
-
-    return (
-      <div
-        className={cn(
-          'bg-white border border-gray-200 rounded-xl overflow-hidden',
-          className,
-        )}
-      >
-        {/* ── Horizontal header ── */}
-        <div className='flex'>
-          {/* Thumbnail */}
-          <div className='relative w-24 h-24 flex-shrink-0'>
-            <Image
-              src={primaryImage}
-              alt={title}
-              fill
-              className='object-cover'
-              sizes='96px'
-            />
-            {isVip && (
-              <div className='absolute top-1 left-1'>
-                <span className='inline-flex items-center gap-0.5 bg-white/90 rounded-full px-1.5 py-0.5 text-[9px] font-semibold shadow-sm'>
-                  <Star
-                    className='w-2.5 h-2.5 fill-yellow-400 stroke-yellow-400'
-                    aria-hidden='true'
-                  />
-                  {tHome('priorityBadge')}
-                </span>
-              </div>
-            )}
-            {media && media.length > 1 && (
-              <span className='absolute bottom-1 right-1 bg-black/60 rounded text-[9px] text-white px-1 py-0.5 font-medium'>
-                1/{media.length}
-              </span>
-            )}
-          </div>
-
-          {/* Info */}
-          <div className='flex-1 min-w-0 px-3 py-2.5 flex flex-col justify-between'>
-            <div className='space-y-0.5'>
-              <p className='text-[13px] font-semibold text-gray-900 line-clamp-2 leading-tight'>
-                {title}
-              </p>
-              {locationStr && (
-                <div className='flex items-center gap-1 text-[11px] text-gray-400'>
-                  <MapPin
-                    className='w-3 h-3 flex-shrink-0'
-                    aria-hidden='true'
-                  />
-                  <span className='truncate'>{locationStr}</span>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <div className='flex items-baseline gap-1'>
-                <span className='text-red-500 font-bold text-sm'>
-                  {formattedPrice}
-                </span>
-                <span className='text-gray-400 text-[10px]'>{priceLabel}</span>
-              </div>
-
-              <div className='flex items-center gap-1 mt-1 flex-wrap'>
-                {area > 0 && (
-                  <span className='px-1.5 py-0.5 bg-gray-100 rounded-full text-[10px] text-gray-600'>
-                    {area} m²
-                  </span>
-                )}
-                {bedrooms > 0 && (
-                  <span className='px-1.5 py-0.5 bg-gray-100 rounded-full text-[10px] text-gray-600'>
-                    {bedrooms} PN
-                  </span>
-                )}
-                {isAvailable && (
-                  <span className='inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-emerald-50 rounded-full text-[10px] text-emerald-600'>
-                    <Check className='w-2.5 h-2.5' aria-hidden='true' />
-                    Trống
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── CTA row ── */}
-        <div className='flex gap-1.5 px-2.5 py-2 border-t border-gray-100'>
-          <Link
-            href={`/listing-detail/${listingId}`}
-            target='_blank'
-            rel='noopener noreferrer'
-            className='flex-1'
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Button className='w-full bg-blue-700 hover:bg-blue-800 text-white h-7 text-[11px] font-normal normal-case gap-1 rounded-lg'>
-              {t('viewDetails')}
-              <ArrowRight
-                className='w-2.5 h-2.5'
-                strokeWidth={2.5}
-                aria-hidden='true'
-              />
-            </Button>
-          </Link>
-          {phone ? (
-            <a
-              href={`tel:${phone.replaceAll(' ', '').replaceAll('.', '').replaceAll('-', '')}`}
-              onClick={(e) => e.stopPropagation()}
-              aria-label='Gọi điện'
-            >
-              <Button
-                variant='outline'
-                size='icon'
-                className='h-7 w-7 border-gray-200 hover:bg-gray-50 flex-shrink-0 rounded-lg'
-              >
-                <Phone className='w-3 h-3 text-gray-600' aria-hidden='true' />
-              </Button>
-            </a>
-          ) : (
-            <Button
-              variant='outline'
-              size='icon'
-              className='h-7 w-7 border-gray-200 flex-shrink-0 rounded-lg opacity-40 cursor-default'
-              disabled
-              aria-label='Không có số điện thoại'
-            >
-              <Phone className='w-3 h-3 text-gray-400' aria-hidden='true' />
-            </Button>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  // ─── Default variant (unchanged) ─────────────────────────────────────────────
   return (
     <Card
       className={cn(

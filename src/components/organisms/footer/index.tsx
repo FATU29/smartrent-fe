@@ -14,6 +14,49 @@ const SOCIAL_ICONS = [
   { src: '/svg/zalo.svg', alt: 'Zalo', label: 'Zalo' },
 ]
 
+interface FooterNavColumnProps {
+  heading: string
+  links: ReadonlyArray<readonly [string, string]>
+  t: (key: string) => string
+}
+
+const FooterNavColumn: React.FC<FooterNavColumnProps> = ({
+  heading,
+  links,
+  t,
+}) => (
+  <div className='space-y-4'>
+    <p className='text-[11px] font-semibold tracking-widest text-gray-400 uppercase'>
+      {heading}
+    </p>
+    <nav className='space-y-2.5'>
+      {links.map(([key, href]) => (
+        <Link
+          key={key}
+          href={href}
+          className='block text-sm text-gray-600 hover:text-gray-900 transition-colors'
+        >
+          {t(key)}
+        </Link>
+      ))}
+    </nav>
+  </div>
+)
+
+const DISCOVER_LINKS = [
+  ['aboutUs', '#'],
+  ['properties', '/properties'],
+  ['services', '#'],
+  ['contact', '#'],
+] as const
+
+const SUPPORT_LINKS = [
+  ['helpCenter', '#'],
+  ['privacyPolicy', '#'],
+  ['termsOfService', '#'],
+  ['faq', '#'],
+] as const
+
 const Footer: React.FC = () => {
   const t = useTranslations('footer')
 
@@ -71,54 +114,14 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Col 2 — Khám phá */}
-          <div className='space-y-4'>
-            <p className='text-[11px] font-semibold tracking-widest text-gray-400 uppercase'>
-              {t('discover')}
-            </p>
-            <nav className='space-y-2.5'>
-              {(
-                [
-                  ['aboutUs', '#'],
-                  ['properties', '/properties'],
-                  ['services', '#'],
-                  ['contact', '#'],
-                ] as const
-              ).map(([key, href]) => (
-                <Link
-                  key={key}
-                  href={href}
-                  className='block text-sm text-gray-600 hover:text-gray-900 transition-colors'
-                >
-                  {t(key)}
-                </Link>
-              ))}
-            </nav>
-          </div>
+          <FooterNavColumn
+            heading={t('discover')}
+            links={DISCOVER_LINKS}
+            t={t}
+          />
 
           {/* Col 3 — Hỗ trợ */}
-          <div className='space-y-4'>
-            <p className='text-[11px] font-semibold tracking-widest text-gray-400 uppercase'>
-              {t('support')}
-            </p>
-            <nav className='space-y-2.5'>
-              {(
-                [
-                  ['helpCenter', '#'],
-                  ['privacyPolicy', '#'],
-                  ['termsOfService', '#'],
-                  ['faq', '#'],
-                ] as const
-              ).map(([key, href]) => (
-                <Link
-                  key={key}
-                  href={href}
-                  className='block text-sm text-gray-600 hover:text-gray-900 transition-colors'
-                >
-                  {t(key)}
-                </Link>
-              ))}
-            </nav>
-          </div>
+          <FooterNavColumn heading={t('support')} links={SUPPORT_LINKS} t={t} />
 
           {/* Col 4 — Liên hệ */}
           <div className='space-y-4'>
@@ -135,7 +138,7 @@ const Footer: React.FC = () => {
               <div className='flex items-center gap-2.5'>
                 <Phone className='w-4 h-4 flex-shrink-0 text-gray-400' />
                 <a
-                  href={`tel:${t('phone').replace(/\s/g, '')}`}
+                  href={`tel:${t('phone').replaceAll(' ', '')}`}
                   className='text-sm text-gray-600 hover:text-gray-900 transition-colors tabular-nums'
                 >
                   {t('phone')}
