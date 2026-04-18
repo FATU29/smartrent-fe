@@ -17,6 +17,9 @@ const NOTIFICATIONS_KEY = ['notifications'] as const
 const UNREAD_COUNT_KEY = ['notifications', 'unread-count'] as const
 const PAGE_SIZE = 20
 
+const getRealtimeSeenIdsKey = (userId?: string) =>
+  ['notifications', 'realtime-seen-ids', userId ?? 'anonymous'] as const
+
 /**
  * Main notification hook combining REST queries + WebSocket realtime.
  * Returns notifications, unreadCount, markAsRead, markAllAsRead.
@@ -24,6 +27,7 @@ const PAGE_SIZE = 20
 export function useNotifications() {
   const { user, isAuthenticated } = useAuth()
   const queryClient = useQueryClient()
+  const realtimeSeenIdsKey = getRealtimeSeenIdsKey(user?.userId)
 
   // ── REST: Paginated notifications (infinite scroll) ──────────
   const {
@@ -156,14 +160,40 @@ export function useNotifications() {
   // ── WebSocket: Realtime push ─────────────────────────────────
   const handleRealtimeNotification = useCallback(
     (notification: NotificationItem) => {
+      let isDuplicateRealtimeEvent = false
+
+      // Ignore duplicate websocket payloads for the same notification id.
+      queryClient.setQueryData<number[]>(realtimeSeenIdsKey, (prev) => {
+        const seenIds = prev ?? []
+        if (seenIds.includes(notification.id)) {
+          isDuplicateRealtimeEvent = true
+          return seenIds
+        }
+        return [...seenIds, notification.id].slice(-300)
+      })
+
+      if (isDuplicateRealtimeEvent) return
+
+      let shouldIncrementUnread = true
+
       // Prepend to the first page of cached data
       queryClient.setQueriesData<{
         pages: NotificationListResponse[]
         pageParams: number[]
       }>({ queryKey: NOTIFICATIONS_KEY }, (old) => {
         if (!old?.pages) return old
+
+        const alreadyExists = old.pages.some((page) =>
+          page.content.some((n) => n.id === notification.id),
+        )
+        if (alreadyExists) {
+          shouldIncrementUnread = false
+          return old
+        }
+
         const firstPage = old.pages[0]
         if (!firstPage) return old
+
         return {
           ...old,
           pages: [
@@ -178,12 +208,14 @@ export function useNotifications() {
       })
 
       // Increment unread count
-      queryClient.setQueryData<number>(
-        UNREAD_COUNT_KEY,
-        (prev) => (prev ?? 0) + 1,
-      )
+      if (shouldIncrementUnread) {
+        queryClient.setQueryData<number>(
+          UNREAD_COUNT_KEY,
+          (prev) => (prev ?? 0) + 1,
+        )
+      }
     },
-    [queryClient],
+    [queryClient, realtimeSeenIdsKey],
   )
 
   useNotificationWebSocket(

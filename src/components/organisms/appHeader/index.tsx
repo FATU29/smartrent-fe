@@ -66,17 +66,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({
 
   const defaultRightContent = (
     <div className='flex items-center gap-2 sm:gap-3'>
-      {/* Notification bell visible on all screen sizes when authenticated */}
-      {isAuthenticated && (
-        <div className='lg:hidden'>
-          <NotificationPanel />
-        </div>
-      )}
       <div className='hidden lg:flex items-center gap-2 sm:gap-3'>
         <LanguageSwitch />
         <ThemeSwitch />
-        {isAuthenticated && <NotificationPanel />}
       </div>
+      {isAuthenticated && <NotificationPanel />}
       <Link href={PUBLIC_ROUTES.MAPS}>
         <Button
           variant='outline'
