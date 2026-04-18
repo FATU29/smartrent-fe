@@ -334,7 +334,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     setCurrentImageIndex(idx)
                   }}
                   className={classNames(
-                    'relative h-full w-full aspect-square shrink-0 rounded-xl p-[2px] transition-all duration-200',
+                    'relative size-[68px] md:size-[76px] aspect-square shrink-0 rounded-xl p-[2px] transition-all duration-200',
                     {
                       'bg-primary ring-1 ring-primary/25 shadow-sm':
                         currentImageIndex === idx,
@@ -360,7 +360,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     e.stopPropagation()
                     setCurrentImageIndex(visibleThumbnails.length)
                   }}
-                  className='relative h-full w-full aspect-square shrink-0 overflow-hidden rounded-xl ring-1 ring-border/60 bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'
+                  className='relative size-[68px] md:size-[76px] aspect-square shrink-0 overflow-hidden rounded-xl ring-1 ring-border/60 bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'
                 >
                   <div className='text-center'>
                     <Typography
