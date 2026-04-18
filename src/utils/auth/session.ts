@@ -29,7 +29,7 @@ export const resolveAuthenticatedUser = async (
   const fallbackUser = decodeToken(tokens.accessToken).user
 
   try {
-    const profileResponse = await UserService.getProfile()
+    const profileResponse = await UserService.getProfile(tokens.accessToken)
     if (profileResponse.success && profileResponse.data) {
       return profileResponse.data
     }

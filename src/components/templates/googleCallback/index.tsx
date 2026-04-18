@@ -3,8 +3,9 @@ import { useRouter } from 'next/router'
 import { googleOAuth } from '@/api/services/auth.service'
 import { useTranslations } from 'next-intl'
 import AuthStatusDisplay from '@/components/molecules/auth-status'
-import { decodeToken } from '@/utils/decode-jwt'
 import { useAuth } from '@/hooks/useAuth'
+import { useQueryClient } from '@tanstack/react-query'
+import { resolveAuthenticatedUser } from '@/utils/auth/session'
 
 const DEFAULT_RETURN_PATH = '/'
 
@@ -21,6 +22,7 @@ interface OAuthResponse {
 export default function GoogleCallback() {
   const router = useRouter()
   const { login } = useAuth()
+  const queryClient = useQueryClient()
   const t = useTranslations()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
     'loading',
@@ -49,16 +51,19 @@ export default function GoogleCallback() {
   }, [router])
 
   const handleOAuthSuccess = useCallback(
-    (response: OAuthResponse) => {
+    async (response: OAuthResponse) => {
       if (response.data) {
         const { accessToken, refreshToken } = response.data
-        const { user } = decodeToken(accessToken)
+        const user = await resolveAuthenticatedUser(
+          { accessToken, refreshToken },
+          queryClient,
+        )
         login(user, { accessToken, refreshToken })
         setStatus('success')
         handleRedirect()
       }
     },
-    [login, handleRedirect],
+    [login, handleRedirect, queryClient],
   )
 
   const handleOAuthError = useCallback((errorMessage: string) => {
@@ -87,7 +92,7 @@ export default function GoogleCallback() {
         if (!response.success) {
           throw new Error(response.message || 'Authentication failed')
         }
-        handleOAuthSuccess(response)
+        await handleOAuthSuccess(response)
       } catch (error) {
         const errorMessage =
           error instanceof Error

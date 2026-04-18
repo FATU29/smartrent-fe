@@ -2,6 +2,7 @@ import { apiRequest } from '@/configs/axios/instance'
 import { ApiResponse } from '@/configs/axios/types'
 import { UserApi } from '@/api/types/user.type'
 import { ENV } from '@/constants/env'
+import { decodeToken } from '@/utils/decode-jwt'
 
 /**
  * JSON request body for PATCH /v1/users/profile.
@@ -26,13 +27,25 @@ export interface UpdateUserProfileRequest {
 export class UserService {
   /**
    * Get current user profile
+   * @param accessToken Optional explicit access token for immediate post-login hydration.
    * @returns User profile data
    */
-  static async getProfile(): Promise<ApiResponse<UserApi>> {
+  static async getProfile(accessToken?: string): Promise<ApiResponse<UserApi>> {
+    const userIdFromToken = accessToken
+      ? decodeToken(accessToken).user?.userId
+      : undefined
+
     return apiRequest<UserApi>({
       method: 'GET',
       // Backend maps GET /v1/users to profile
       url: ENV.API.USER.CREATE,
+      skipAuth: Boolean(accessToken),
+      headers: accessToken
+        ? {
+            Authorization: `Bearer ${accessToken}`,
+            ...(userIdFromToken ? { userId: userIdFromToken } : {}),
+          }
+        : undefined,
     })
   }
 
