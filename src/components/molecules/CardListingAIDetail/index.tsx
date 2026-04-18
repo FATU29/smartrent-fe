@@ -296,7 +296,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
         </Link>
         {contactPhone ? (
           <a
-            href={`tel:${contactPhone.replace(/[\s.-]/g, '')}`}
+            href={`tel:${contactPhone.replaceAll(' ', '').replaceAll('.', '').replaceAll('-', '')}`}
             onClick={(e) => e.stopPropagation()}
             aria-label='Gọi điện'
           >

@@ -227,7 +227,7 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
           </Link>
           {phone ? (
             <a
-              href={`tel:${phone.replace(/[\s.-]/g, '')}`}
+              href={`tel:${phone.replaceAll(' ', '').replaceAll('.', '').replaceAll('-', '')}`}
               onClick={(e) => e.stopPropagation()}
               aria-label='Gọi điện'
             >
