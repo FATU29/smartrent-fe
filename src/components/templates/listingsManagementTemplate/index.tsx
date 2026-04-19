@@ -106,8 +106,11 @@ const ListingsWithPagination = () => {
       // If payment URL is returned, it will be handled in the hook's onSuccess
       if (result.data?.paymentUrl) {
         toast.loading('Redirecting to payment...')
-      } else if (result.data?.message) {
-        toast.success(result.data.message || tSeller('card.toast.pushSuccess'))
+      } else {
+        const successMessage = useMembershipQuota
+          ? tSeller('card.toast.pushSuccessWithQuota')
+          : tSeller('card.toast.pushSuccess')
+        toast.success(successMessage)
         // Trigger quota refresh
         refetchQuota()
       }

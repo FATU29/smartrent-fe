@@ -2539,6 +2539,7 @@
           "deleteSuccess": "Tin đăng đã được xóa thành công",
           "deleteError": "Không thể xóa tin đăng",
           "pushSuccess": "Đẩy bài thành công",
+          "pushSuccessWithQuota": "Đẩy bài thành công bằng lượt đẩy",
           "pushError": "Không thể đẩy bài",
           "pushNotDisplaying": "Tin phải được xác thực và đang hiển thị mới có thể đẩy tin"
         }

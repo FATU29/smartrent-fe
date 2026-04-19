@@ -2538,6 +2538,7 @@
           "deleteSuccess": "Listing deleted successfully",
           "deleteError": "Failed to delete listing",
           "pushSuccess": "Listing pushed successfully",
+          "pushSuccessWithQuota": "Listing pushed successfully using quota",
           "pushError": "Failed to push listing",
           "pushNotDisplaying": "Listing must be verified and displaying before it can be pushed"
         }
