@@ -92,6 +92,53 @@ const PaymentResultPage: NextPageWithLayout = () => {
       clearPendingTransactionRef()
     }
 
+    const normalizeFailedMessage = (
+      rawMessage?: string | null,
+      fallback?: string | null,
+    ) => {
+      const trimmed = rawMessage?.trim()
+      const source = trimmed || fallback || ''
+      const normalized = source.toLowerCase()
+
+      if (
+        normalized.includes('zalopay_order_not_found') ||
+        normalized.includes('transaction not found for app_trans_id') ||
+        normalized.includes('order not found')
+      ) {
+        return t('failed.orderNotFound')
+      }
+
+      if (
+        normalized.includes('zalopay_missing_apptransid') ||
+        normalized.includes('zalopay_missing_status')
+      ) {
+        return t('failed.invalidData')
+      }
+
+      if (
+        normalized.includes('gateway timeout') ||
+        normalized.includes('timeout') ||
+        normalized.includes('network error') ||
+        normalized.includes('failed to fetch') ||
+        normalized.includes('err_failed') ||
+        normalized.includes('cors') ||
+        normalized.includes('payment_gateway_unreachable') ||
+        normalized.includes('504')
+      ) {
+        return t('failed.gatewayUnavailable')
+      }
+
+      return source || t('failed.errorProcessing')
+    }
+
+    const normalizeErrorFromException = (error: unknown) => {
+      if (error instanceof Error) {
+        return normalizeFailedMessage(error.message)
+      }
+
+      return t('failed.errorProcessing')
+    }
+
     const getSuccessMessageByPaymentType = (type: PaymentType | null) => {
       if (type === 'listing') {
         return t('success.messageListing')
@@ -230,6 +277,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
           const transactionInfo = extractVNPayTransactionInfo(queryParams)
           const callbackResponse =
             await PaymentService.vnpayCallback(rawQueryString)
+
+          if (!callbackResponse.success) {
+            throw new Error('PAYMENT_GATEWAY_UNREACHABLE')
+          }
+
           const callbackData = callbackResponse.data
 
           if (callbackData?.signatureValid === false) {
@@ -287,11 +339,10 @@ const PaymentResultPage: NextPageWithLayout = () => {
 
           setResult({
             status: 'failed',
-            message:
-              callbackData?.message ||
-              callbackResponse.message ||
-              vnpErrorMessage ||
-              t('failed.errorProcessing'),
+            message: normalizeFailedMessage(
+              callbackData?.message || callbackResponse.message,
+              vnpErrorMessage,
+            ),
             details: callbackData,
             transactionInfo,
           })
@@ -309,6 +360,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
             'ZALOPAY',
             Object.fromEntries(queryParams.entries()),
           )
+
+          if (!callbackResponse.success) {
+            throw new Error('PAYMENT_GATEWAY_UNREACHABLE')
+          }
+
           const callbackData = callbackResponse.data
 
           const callbackStatus = callbackData?.status?.toUpperCase()
@@ -359,10 +415,9 @@ const PaymentResultPage: NextPageWithLayout = () => {
           if (isFailed) {
             setResult({
               status: 'failed',
-              message:
-                callbackData?.message ||
-                callbackResponse.message ||
-                t('failed.errorProcessing'),
+              message: normalizeFailedMessage(
+                callbackData?.message || callbackResponse.message,
+              ),
               details: callbackData,
               transactionInfo,
             })
@@ -374,9 +429,9 @@ const PaymentResultPage: NextPageWithLayout = () => {
             status: isCancelled ? 'cancelled' : 'failed',
             message: isCancelled
               ? t('cancelled.message')
-              : callbackData?.message ||
-                callbackResponse.message ||
-                t('failed.errorProcessing'),
+              : normalizeFailedMessage(
+                  callbackData?.message || callbackResponse.message,
+                ),
             details: callbackData,
             transactionInfo,
           })
@@ -393,10 +448,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
         console.error('Payment result processing error:', error)
         setResult({
           status: 'failed',
-          message:
-            error instanceof Error
-              ? error.message
-              : t('failed.errorProcessing'),
+          message: normalizeErrorFromException(error),
         })
         clearPendingPaymentStorage()
       }
