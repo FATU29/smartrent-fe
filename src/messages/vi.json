@@ -3161,6 +3161,8 @@
       "noParams": "Không tìm thấy thông tin thanh toán",
       "invalidData": "Dữ liệu thanh toán không hợp lệ",
       "signatureFailed": "Xác thực chữ ký thanh toán thất bại",
+      "orderNotFound": "Không tìm thấy thông tin đơn hàng trên ZaloPay. Đơn có thể đã hết hạn hoặc chưa được ghi nhận.",
+      "gatewayUnavailable": "Không thể kết nối tới cổng thanh toán ZaloPay. Vui lòng thử lại sau ít phút.",
       "errorProcessing": "Lỗi xử lý kết quả thanh toán"
     },
     "cancelled": {

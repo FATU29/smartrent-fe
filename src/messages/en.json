@@ -3482,6 +3482,8 @@
       "noParams": "No payment parameters found",
       "invalidData": "Invalid payment data",
       "signatureFailed": "Payment signature verification failed",
+      "orderNotFound": "Unable to find order information on ZaloPay. The order may have expired or was not recorded yet.",
+      "gatewayUnavailable": "Unable to connect to the ZaloPay payment gateway. Please try again in a few minutes.",
       "errorProcessing": "Error processing payment result"
     },
     "cancelled": {
