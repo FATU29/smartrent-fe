@@ -17,6 +17,11 @@ const NOTIFICATIONS_KEY = ['notifications'] as const
 const UNREAD_COUNT_KEY = ['notifications', 'unread-count'] as const
 const PAGE_SIZE = 20
 
+type NotificationInfiniteData = {
+  pages: NotificationListResponse[]
+  pageParams: number[]
+}
+
 const getRealtimeSeenIdsKey = (userId?: string) =>
   ['notifications', 'realtime-seen-ids', userId ?? 'anonymous'] as const
 
@@ -98,58 +103,130 @@ export function useNotifications() {
 
   // ── Mutations: mark-as-read ──────────────────────────────────
   const markAsReadMutation = useMutation({
-    mutationFn: (id: number) => NotificationService.markAsRead(id),
+    mutationFn: async (id: number) => {
+      const response = await NotificationService.markAsRead(id)
+      if (!response.success) {
+        throw new Error(
+          response.message ?? 'Failed to mark notification as read',
+        )
+      }
+      return response
+    },
     onMutate: async (id: number) => {
       // Optimistic update
       await queryClient.cancelQueries({ queryKey: NOTIFICATIONS_KEY })
       await queryClient.cancelQueries({ queryKey: UNREAD_COUNT_KEY })
 
-      queryClient.setQueryData<number>(UNREAD_COUNT_KEY, (prev) =>
-        Math.max(0, (prev ?? 0) - 1),
+      const previousUnreadCount =
+        queryClient.getQueryData<number>(UNREAD_COUNT_KEY)
+      const previousNotifications =
+        queryClient.getQueryData<NotificationInfiniteData>(NOTIFICATIONS_KEY)
+
+      const shouldDecrementUnread =
+        previousNotifications?.pages.some((page) =>
+          page.content.some((n) => n.id === id && !n.isRead),
+        ) ?? false
+
+      if (shouldDecrementUnread) {
+        queryClient.setQueryData<number>(UNREAD_COUNT_KEY, (prev) =>
+          Math.max(0, (prev ?? 0) - 1),
+        )
+      }
+
+      queryClient.setQueryData<NotificationInfiniteData>(
+        NOTIFICATIONS_KEY,
+        (old) => {
+          if (!old) return old
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              content: page.content.map((n) =>
+                n.id === id ? { ...n, isRead: true } : n,
+              ),
+            })),
+          }
+        },
       )
 
-      queryClient.setQueriesData<{
-        pages: NotificationListResponse[]
-        pageParams: number[]
-      }>({ queryKey: NOTIFICATIONS_KEY }, (old) => {
-        if (!old) return old
-        return {
-          ...old,
-          pages: old.pages.map((page) => ({
-            ...page,
-            content: page.content.map((n) =>
-              n.id === id ? { ...n, isRead: true } : n,
-            ),
-          })),
-        }
-      })
+      return {
+        previousUnreadCount,
+        previousNotifications,
+      }
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousNotifications) {
+        queryClient.setQueryData<NotificationInfiniteData>(
+          NOTIFICATIONS_KEY,
+          context.previousNotifications,
+        )
+      }
+      if (typeof context?.previousUnreadCount !== 'undefined') {
+        queryClient.setQueryData<number>(
+          UNREAD_COUNT_KEY,
+          context.previousUnreadCount,
+        )
+      }
     },
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_KEY })
       queryClient.invalidateQueries({ queryKey: UNREAD_COUNT_KEY })
     },
   })
 
   const markAllAsReadMutation = useMutation({
-    mutationFn: () => NotificationService.markAllAsRead(),
+    mutationFn: async () => {
+      const response = await NotificationService.markAllAsRead()
+      if (!response.success) {
+        throw new Error(
+          response.message ?? 'Failed to mark all notifications as read',
+        )
+      }
+      return response
+    },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: NOTIFICATIONS_KEY })
       await queryClient.cancelQueries({ queryKey: UNREAD_COUNT_KEY })
 
+      const previousUnreadCount =
+        queryClient.getQueryData<number>(UNREAD_COUNT_KEY)
+      const previousNotifications =
+        queryClient.getQueryData<NotificationInfiniteData>(NOTIFICATIONS_KEY)
+
       queryClient.setQueryData<number>(UNREAD_COUNT_KEY, 0)
 
-      queryClient.setQueriesData<{
-        pages: NotificationListResponse[]
-        pageParams: number[]
-      }>({ queryKey: NOTIFICATIONS_KEY }, (old) => {
-        if (!old) return old
-        return {
-          ...old,
-          pages: old.pages.map((page) => ({
-            ...page,
-            content: page.content.map((n) => ({ ...n, isRead: true })),
-          })),
-        }
-      })
+      queryClient.setQueryData<NotificationInfiniteData>(
+        NOTIFICATIONS_KEY,
+        (old) => {
+          if (!old) return old
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              content: page.content.map((n) => ({ ...n, isRead: true })),
+            })),
+          }
+        },
+      )
+
+      return {
+        previousUnreadCount,
+        previousNotifications,
+      }
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousNotifications) {
+        queryClient.setQueryData<NotificationInfiniteData>(
+          NOTIFICATIONS_KEY,
+          context.previousNotifications,
+        )
+      }
+      if (typeof context?.previousUnreadCount !== 'undefined') {
+        queryClient.setQueryData<number>(
+          UNREAD_COUNT_KEY,
+          context.previousUnreadCount,
+        )
+      }
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_KEY })
