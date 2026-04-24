@@ -214,7 +214,7 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
     return (
       <>
         <SeoHead title={t('properties')} description='Property search' />
-        <div className='container mx-auto py-6 px-4 md:px-0'>
+        <div className='container max-w-6xl mx-auto px-4 py-6 lg:py-8'>
           <div className='min-h-[320px]' aria-busy='true' />
         </div>
       </>

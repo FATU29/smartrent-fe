@@ -62,7 +62,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                   quality={85}
                   sizes='(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1280px'
                 />
-                <div className='absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/20 dark:from-black/70 dark:via-black/60 dark:to-black/30' />
+                <div className='absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/20 dark:from-background/75 dark:via-background/55 dark:to-background/25' />
               </div>
               <div className='relative p-5 sm:p-8 lg:p-10'>
                 <div className='max-w-2xl mb-5 sm:mb-6'>
@@ -73,7 +73,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
                     {t('homePage.searchIntro.description')}
                   </p>
                 </div>
-                <div className='backdrop-blur-sm bg-white/75 dark:bg-black/50 p-3 sm:p-4 rounded-xl shadow-lg ring-1 ring-white/40 dark:ring-white/10'>
+                <div className='backdrop-blur-sm bg-white/75 dark:bg-card/70 p-3 sm:p-4 rounded-xl shadow-lg ring-1 ring-white/40 dark:ring-white/10'>
                   <div className='flex flex-col gap-3'>
                     <ResidentialFilterResponsive hideVerifiedFilterInDialog />
                     <div className='flex justify-between items-center'>

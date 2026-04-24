@@ -23,6 +23,7 @@ import {
   navigateToPropertiesWithClearedFilters,
 } from '@/utils/filters'
 import { PUBLIC_ROUTES } from '@/constants/route'
+import { cn } from '@/lib/utils'
 
 interface ResidentialFilterBarProps {
   onOpenAdvanced?: () => void
@@ -243,8 +244,20 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
             }}
           />
           <div className='flex items-center gap-4 ml-2'>
-            <div className='flex items-center gap-2 rounded-full border bg-background px-3 h-9'>
-              <BadgeCheck className='h-4 w-4 text-muted-foreground' />
+            <div
+              className={cn(
+                'flex items-center gap-2 rounded-full border px-3 h-9 transition-colors',
+                filters.isBroker
+                  ? 'bg-primary/10 border-primary/40 text-primary'
+                  : 'bg-card border-border text-foreground hover:bg-accent',
+              )}
+            >
+              <BadgeCheck
+                className={cn(
+                  'h-4 w-4',
+                  filters.isBroker ? 'text-primary' : 'text-muted-foreground',
+                )}
+              />
               <span className='text-sm whitespace-nowrap'>
                 {t('toggles.professionalBroker')}
               </span>
