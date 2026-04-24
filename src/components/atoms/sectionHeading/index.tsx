@@ -14,7 +14,7 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
   className,
 }) => (
   <div className={cn('flex items-center justify-between', className)}>
-    <h2 className='text-xl sm:text-2xl font-bold pl-3 border-l-[3px] border-primary leading-tight'>
+    <h2 className='text-base sm:text-lg font-bold pl-2.5 border-l-[3px] border-primary leading-tight'>
       {title}
     </h2>
     {children}

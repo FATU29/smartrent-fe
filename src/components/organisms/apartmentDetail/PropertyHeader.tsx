@@ -217,24 +217,24 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   }
 
   return (
-    <div className='space-y-5 listing-section'>
+    <div className='space-y-4 listing-section'>
       {/* Title and Actions */}
-      <div className='flex flex-col gap-4'>
-        <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-3'>
+        <div className='flex flex-col gap-3'>
           <div className='flex-1 min-w-0'>
             {/* Title */}
             <Typography
               variant='h1'
-              className='listing-title text-xl md:text-2xl lg:text-3xl font-bold leading-tight mb-4 line-clamp-3'
+              className='listing-title text-base md:text-lg lg:text-xl font-bold leading-snug mb-3 line-clamp-3'
             >
               {title}
             </Typography>
 
-            <div className='flex flex-wrap items-center gap-2 mb-3'>
+            <div className='flex flex-wrap items-center gap-1.5 mb-2.5'>
               {vipBadge && (
                 <Badge
                   variant={vipBadge.variant}
-                  className={vipBadge.className}
+                  className={`${vipBadge.className} text-[11px] px-2 py-0.5`}
                 >
                   {vipBadge.text}
                 </Badge>
@@ -244,7 +244,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
                 <Badge
                   key={meta.key}
                   variant='outline'
-                  className={`px-2.5 py-1 ${meta.className || ''}`}
+                  className={`text-[11px] px-2 py-0.5 ${meta.className || ''}`}
                 >
                   {meta.label}: {meta.value}
                 </Badge>
@@ -252,11 +252,11 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
             </div>
 
             {/* Address */}
-            <div className='space-y-2'>
+            <div className='space-y-1.5'>
               {newAddress && (
                 <Typography
                   variant='p'
-                  className='text-sm md:text-base text-muted-foreground flex items-start gap-2'
+                  className='text-xs md:text-sm text-muted-foreground flex items-start gap-2'
                 >
                   <span className='font-semibold text-foreground shrink-0'>
                     {t('apartmentDetail.property.newAddress')}:
@@ -267,7 +267,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
               {oldAddress && (
                 <Typography
                   variant='p'
-                  className='text-sm md:text-base text-muted-foreground flex items-start gap-2'
+                  className='text-xs md:text-sm text-muted-foreground flex items-start gap-2'
                 >
                   <span className='font-semibold text-foreground shrink-0'>
                     {t('apartmentDetail.property.legacyAddress')}:
@@ -278,7 +278,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
             </div>
           </div>
 
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-2 mt-4'>
+          <div className='grid grid-cols-2 md:grid-cols-4 gap-2 mt-3'>
             <Button
               variant='outline'
               size='sm'
@@ -317,12 +317,12 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
       </div>
 
       {/* Key Metrics */}
-      <div className='space-y-4'>
+      <div className='space-y-3'>
         {/* Price - Prominent Display */}
-        <div className='price-gradient bg-gradient-to-r from-primary/10 to-transparent p-5 md:p-6 rounded-xl md:rounded-2xl border border-primary/20'>
+        <div className='price-gradient bg-gradient-to-r from-primary/10 to-transparent p-4 md:p-5 rounded-xl border border-primary/20'>
           <Typography
             variant='small'
-            className='text-muted-foreground mb-2 font-semibold uppercase tracking-wider text-xs'
+            className='text-muted-foreground mb-1.5 font-semibold uppercase tracking-wider text-[11px]'
           >
             {t('apartmentDetail.property.price')}
           </Typography>
@@ -330,13 +330,13 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
             <div className='flex items-baseline gap-2 flex-wrap'>
               <Typography
                 variant='h2'
-                className='text-3xl md:text-4xl lg:text-5xl font-bold text-primary'
+                className='text-xl md:text-2xl lg:text-3xl font-bold text-primary'
               >
                 {formatByLocale(price, locale)}
               </Typography>
               <Typography
                 variant='h5'
-                className='text-lg md:text-xl text-muted-foreground font-medium'
+                className='text-sm md:text-base text-muted-foreground font-medium'
               >
                 / {t(getPriceUnitTranslationKey(priceUnit))}
               </Typography>
@@ -346,22 +346,22 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
 
         {/* Other Metrics in Grid */}
         {metrics.length > 0 && (
-          <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3'>
+          <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5'>
             {metrics.map((metric) => (
               <Card
                 key={metric.key}
                 className='hover:shadow-md hover:border-primary/30 transition-all'
               >
-                <CardContent className='p-4 md:p-5'>
+                <CardContent className='p-3 md:p-3.5'>
                   <Typography
                     variant='small'
-                    className='text-muted-foreground mb-1.5 font-semibold text-xs uppercase tracking-wider'
+                    className='text-muted-foreground mb-1 font-semibold text-[11px] uppercase tracking-wider'
                   >
                     {metric.label}
                   </Typography>
                   <Typography
                     variant='h4'
-                    className='text-xl md:text-2xl font-bold break-words'
+                    className='text-sm md:text-base font-bold break-words'
                   >
                     {metric.value}
                   </Typography>

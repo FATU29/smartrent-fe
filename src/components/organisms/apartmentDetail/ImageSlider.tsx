@@ -74,7 +74,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
 
   if (sortedMedia.length === 0) {
     return (
-      <div className='relative w-full aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden bg-muted shadow-lg'>
+      <div className='relative w-full h-[240px] sm:h-[320px] md:h-[380px] rounded-xl overflow-hidden bg-muted shadow-md'>
         <ImageAtom
           src={DEFAULT_IMAGE}
           defaultImage={DEFAULT_IMAGE}
@@ -82,7 +82,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
           className='w-full h-full object-cover'
         />
         <div className='absolute inset-0 bg-black/50 flex items-center justify-center'>
-          <span className='text-white text-sm md:text-base font-medium bg-black/70 px-5 py-2.5 rounded-lg '>
+          <span className='text-white text-xs md:text-sm font-medium bg-black/70 px-4 py-2 rounded-lg'>
             {t('noMediaAvailable')}
           </span>
         </div>
@@ -93,9 +93,9 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
   const currentMedia = sortedMedia[currentIndex]
 
   return (
-    <div className='space-y-3 md:space-y-4'>
+    <div className='space-y-2.5 md:space-y-3'>
       {/* Main Media Display */}
-      <div className='relative w-full rounded-xl md:rounded-2xl overflow-hidden bg-muted shadow-lg'>
+      <div className='relative w-full rounded-xl overflow-hidden bg-muted shadow-md'>
         <Carousel
           setApi={setApi}
           opts={{ align: 'start', loop: sortedMedia.length > 1 }}
@@ -107,7 +107,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
                 key={`${item.mediaType}-${item.url}-${index}`}
                 className='pl-0'
               >
-                <div className='relative w-full aspect-[16/9] overflow-hidden'>
+                <div className='relative w-full h-[240px] sm:h-[320px] md:h-[380px] overflow-hidden'>
                   {item.mediaType === 'IMAGE' ? (
                     <ImageAtom
                       src={item.url || DEFAULT_IMAGE}
@@ -145,26 +145,26 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             <Button
               variant='ghost'
               size='icon'
-              className='absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full shadow-lg h-10 w-10 md:h-11 md:w-11  z-10 border border-gray-200/50'
+              className='absolute left-2 md:left-3 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full shadow-md h-8 w-8 md:h-9 md:w-9 z-10 border border-gray-200/50'
               onClick={prevMedia}
             >
-              <ChevronLeft className='w-5 h-5 md:w-6 md:h-6 text-gray-900' />
+              <ChevronLeft className='w-4 h-4 md:w-5 md:h-5 text-gray-900' />
             </Button>
             <Button
               variant='ghost'
               size='icon'
-              className='absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full shadow-lg h-10 w-10 md:h-11 md:w-11  z-10  border border-gray-200/50'
+              className='absolute right-2 md:right-3 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full shadow-md h-8 w-8 md:h-9 md:w-9 z-10 border border-gray-200/50'
               onClick={nextMedia}
             >
-              <ChevronRight className='w-5 h-5 md:w-6 md:h-6 text-gray-900' />
+              <ChevronRight className='w-4 h-4 md:w-5 md:h-5 text-gray-900' />
             </Button>
           </>
         )}
 
         {/* Video Badge */}
         {currentMedia?.mediaType === 'VIDEO' && (
-          <div className='absolute top-3 left-3 md:top-5 md:left-5 bg-red-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-xs md:text-sm font-semibold flex items-center gap-1.5 z-10'>
-            <Play className='w-3 h-3 md:w-4 md:h-4' fill='currentColor' />
+          <div className='absolute top-2.5 left-2.5 md:top-3 md:left-3 bg-red-600 text-white px-2.5 py-1 md:px-3 md:py-1.5 rounded-md text-[11px] md:text-xs font-semibold flex items-center gap-1 z-10'>
+            <Play className='w-3 h-3' fill='currentColor' />
             {t('video')}
           </div>
         )}
@@ -172,7 +172,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
 
       {/* Thumbnail Grid */}
       {sortedMedia.length > 1 && (
-        <div className='flex gap-2 md:gap-3 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400'>
+        <div className='flex gap-1.5 md:gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400'>
           {sortedMedia.map((item, index) => {
             const isYouTubeVideo =
               item?.mediaType === 'VIDEO' && isYouTube(item?.url || '')
@@ -183,7 +183,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             return (
               <button
                 key={index}
-                className={`relative flex-shrink-0 w-20 h-16 sm:w-24 sm:h-20 md:w-28 md:h-22 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                className={`relative flex-shrink-0 w-14 h-12 sm:w-16 sm:h-14 md:w-20 md:h-16 rounded-md overflow-hidden border-2 transition-all duration-200 ${
                   index === currentIndex
                     ? 'border-primary'
                     : 'border-transparent hover:border-gray-300'
@@ -198,9 +198,9 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
                 />
                 {item?.mediaType === 'VIDEO' && (
                   <div className='absolute inset-0 bg-black/30 flex items-center justify-center'>
-                    <div className='bg-white/95 rounded-full p-1.5 md:p-2'>
+                    <div className='bg-white/95 rounded-full p-1 md:p-1.5'>
                       <Play
-                        className='w-3 h-3 md:w-4 md:h-4 text-gray-900'
+                        className='w-2.5 h-2.5 md:w-3 md:h-3 text-gray-900'
                         fill='currentColor'
                       />
                     </div>
