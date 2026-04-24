@@ -19,7 +19,7 @@ export const SavedListingsLoadingState: React.FC<
         <Skeleton className='h-10 w-64 mb-4' />
         <Skeleton className='h-6 w-96' />
       </div>
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {Array.from({ length: itemsCount }).map((_, i) => (
           <Skeleton key={i} className='h-80 w-full rounded-lg' />
         ))}
