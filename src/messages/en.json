@@ -3611,7 +3611,15 @@
       "listingId": "Listing ID",
       "notAvailable": "N/A",
       "yes": "Yes",
-      "no": "No"
+      "no": "No",
+      "lowestPrice": "Lowest"
+    },
+    "sections": {
+      "essentials": "Essentials",
+      "property": "Property details",
+      "rooms": "Rooms & furnishing",
+      "utilities": "Utilities & fees",
+      "features": "Trust & amenities"
     },
     "floatingBar": {
       "items": "{count} item",

@@ -3612,7 +3612,15 @@
       "listingId": "Mã tin",
       "notAvailable": "N/A",
       "yes": "Có",
-      "no": "Không"
+      "no": "Không",
+      "lowestPrice": "Thấp nhất"
+    },
+    "sections": {
+      "essentials": "Thông tin cơ bản",
+      "property": "Chi tiết BĐS",
+      "rooms": "Phòng & Nội thất",
+      "utilities": "Chi phí sinh hoạt",
+      "features": "Xác thực & Tiện ích"
     },
     "floatingBar": {
       "items": "{count} tin",
