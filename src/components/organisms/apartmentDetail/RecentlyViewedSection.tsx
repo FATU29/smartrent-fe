@@ -110,7 +110,7 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
             {Array.from({ length: 3 }).map((_, index) => (
               <CarouselItem
                 key={index}
-                className='basis-full sm:basis-1/2 lg:basis-1/3 min-w-[240px] sm:min-w-[260px]'
+                className='basis-full sm:basis-1/2 lg:basis-1/2 min-w-[280px] sm:min-w-[300px]'
               >
                 <div className='space-y-2'>
                   <Skeleton className='aspect-[4/3] rounded-lg w-full' />
@@ -157,7 +157,7 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
           {listingsData.map((listing) => (
             <CarouselItem
               key={listing.listingId}
-              className='basis-full sm:basis-1/2 lg:basis-1/3 min-w-[240px] sm:min-w-[260px]'
+              className='basis-full sm:basis-1/2 lg:basis-1/2 min-w-[280px] sm:min-w-[300px]'
             >
               <Link
                 href={`/listing-detail/${listing.listingId}`}

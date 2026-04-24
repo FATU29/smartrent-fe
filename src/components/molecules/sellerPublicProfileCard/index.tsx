@@ -56,13 +56,13 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
             </div>
           </div>
 
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2'>
             <Skeleton className='h-10 w-full rounded-md' />
             <Skeleton className='h-10 w-full rounded-md' />
             <Skeleton className='h-10 w-full rounded-md sm:col-span-2 lg:col-span-1' />
           </div>
 
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-2'>
+          <div className='grid grid-cols-1 gap-2'>
             <div className='flex items-center gap-2 rounded-lg border border-primary/25 p-2.5 bg-background/85'>
               <Skeleton className='h-8 w-8 rounded-full shrink-0' />
               <Skeleton className='h-4 w-40 max-w-full flex-1' />
@@ -152,16 +152,6 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
                 {t('profile.listingCount', { count: listingCount })}
               </Badge>
             </div>
-
-            {isProfessionalBroker && (
-              <Typography
-                variant='small'
-                className='inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-50/60 px-2.5 py-1 text-emerald-700 dark:border-emerald-700/50 dark:bg-emerald-950/20 dark:text-emerald-300'
-              >
-                <ShieldCheck className='h-3.5 w-3.5' />
-                {t('profile.professionalBrokerDescription')}
-              </Typography>
-            )}
           </div>
         </div>
 
@@ -170,7 +160,7 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
             <Typography variant='small' className='font-medium text-foreground'>
               {t('profile.quickActionsTitle')}
             </Typography>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2'>
               {hasPhone && (
                 <Button
                   asChild
@@ -221,7 +211,7 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
           <Typography variant='small' className='font-medium text-foreground'>
             {t('profile.contactInformationTitle')}
           </Typography>
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-2'>
+          <div className='grid grid-cols-1 gap-2'>
             {phone && (
               <div className='flex items-center gap-2.5 text-sm rounded-lg border border-primary/25 p-2.5 bg-background/85 transition-colors hover:border-primary/45'>
                 <div className='h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0'>
