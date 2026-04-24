@@ -21,14 +21,14 @@ const PropertyDescription: React.FC<PropertyDescriptionProps> = ({
   const lines = description.split('\n').filter((line) => line.trim())
 
   return (
-    <div className='space-y-5'>
+    <div className='space-y-3'>
       <SectionHeading title={title || t('sections.description')} />
 
-      <div className='bg-card border border-border rounded-xl p-5 md:p-6 space-y-3'>
+      <div className='bg-card border border-border rounded-xl p-4 md:p-5 space-y-2.5'>
         {lines.map((line, index) => (
           <p
             key={index}
-            className='text-foreground/90 leading-relaxed text-sm md:text-base'
+            className='text-foreground/90 leading-relaxed text-xs md:text-sm'
           >
             {line}
           </p>

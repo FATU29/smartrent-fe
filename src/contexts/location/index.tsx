@@ -1,7 +1,6 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useState,
   useCallback,
@@ -14,11 +13,7 @@ import { getErrorInfo } from './index.helper'
 export { PermissionState } from './index.type'
 export type { LocationCoordinates, LocationError } from './index.type'
 
-import {
-  PermissionState,
-  LocationCoordinates,
-  LocationError,
-} from './index.type'
+import { LocationCoordinates, LocationError } from './index.type'
 
 const GEOLOCATION_TIMEOUT = 30000 // Increase to 30s for better GPS lock
 const GEOLOCATION_MAX_AGE = 5000 // Allow 5s cache for faster response
@@ -40,30 +35,6 @@ export const LocationProvider = ({ children }: LocationProviderProps) => {
   const isSupported = useMemo(() => {
     return typeof navigator !== 'undefined' && 'geolocation' in navigator
   }, [])
-
-  const checkPermissionStatus =
-    useCallback(async (): Promise<PermissionState> => {
-      if (typeof navigator === 'undefined' || !navigator.permissions) {
-        return PermissionState.PROMPT
-      }
-
-      try {
-        // Check geolocation permission status to determine if we should
-        // automatically enable location on page load (if previously granted)
-        // or show the toggle in disabled state (if denied/not yet requested).
-        // This is necessary to provide a seamless user experience by remembering
-        // the user's previous location permission choice. No location data is
-        // accessed at this stage - we only check the permission state.
-        // Geolocation is necessary for location-based property search with explicit user consent
-        // NOSONAR: S6328 - Permission query necessary for UX, no location data accessed
-        const result = await navigator.permissions.query({
-          name: 'geolocation', // NOSONAR
-        })
-        return result.state as PermissionState
-      } catch {
-        return PermissionState.PROMPT
-      }
-    }, [])
 
   const handleGeolocationSuccess = useCallback(
     (pos: GeolocationPosition, resolve: (value: boolean) => void): void => {
@@ -210,22 +181,6 @@ export const LocationProvider = ({ children }: LocationProviderProps) => {
   }, [isEnabled, enableLocation, disableLocation, error])
 
   const clearError = useCallback(() => setError(null), [])
-
-  useEffect(() => {
-    const initializeLocation = async () => {
-      if (!isSupported) return
-
-      const permissionStatus = await checkPermissionStatus()
-
-      if (permissionStatus === PermissionState.GRANTED) {
-        await requestLocation()
-      } else {
-        setIsEnabled(false)
-      }
-    }
-
-    initializeLocation()
-  }, [isSupported, checkPermissionStatus, requestLocation])
 
   const contextValue: LocationContextType = useMemo(
     () => ({

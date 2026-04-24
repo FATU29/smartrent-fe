@@ -42,6 +42,10 @@ const SellerContact: React.FC<SellerContactProps> = ({
   const [showPhone, setShowPhone] = React.useState(false)
   const [openLoginRequired, setOpenLoginRequired] = React.useState(false)
 
+  React.useEffect(() => {
+    setShowPhone(false)
+  }, [host?.userId, host?.phoneCode, host?.phoneNumber])
+
   if (!host) {
     return null
   }
@@ -94,26 +98,26 @@ const SellerContact: React.FC<SellerContactProps> = ({
         isProfessionalBroker && 'border-2 border-[#22c55e]',
       )}
     >
-      <CardContent className='p-5 md:p-6 space-y-4.5'>
+      <CardContent className='p-4 md:p-4.5 space-y-3.5'>
         {/* Seller Info */}
-        <div className='flex items-start gap-4'>
+        <div className='flex items-start gap-3'>
           <Link href={sellerListingsUrl} className='cursor-pointer'>
             <BrokerAvatar
               avatarUrl={avatarUrl}
               firstName={firstName}
               lastName={lastName}
               alt={name}
-              sizeClassName='w-16 h-16 md:w-20 md:h-20'
+              sizeClassName='w-12 h-12 md:w-14 md:h-14'
               className='cursor-pointer'
               showBrokerBadge={isProfessionalBroker}
-              fallbackClassName='text-lg md:text-xl text-white'
-              badgeClassName='h-6 w-6 md:h-7 md:w-7'
+              fallbackClassName='text-sm md:text-base text-white'
+              badgeClassName='h-5 w-5 md:h-6 md:w-6'
             />
           </Link>
 
-          <div className='flex-1 min-w-0 flex flex-col gap-1'>
+          <div className='flex-1 min-w-0 flex flex-col gap-0.5'>
             {isProfessionalBroker && (
-              <span className='inline-block text-sm md:text-base font-semibold text-emerald-700 leading-tight'>
+              <span className='inline-block text-xs md:text-sm font-semibold text-emerald-700 leading-tight'>
                 {professionalBrokerLabel}
               </span>
             )}
@@ -123,7 +127,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
             >
               <Typography
                 variant='h5'
-                className='font-bold truncate text-base md:text-lg hover:text-primary transition-colors cursor-pointer leading-tight'
+                className='font-bold truncate text-sm md:text-base hover:text-primary transition-colors cursor-pointer leading-tight'
               >
                 {name}
               </Typography>
@@ -132,7 +136,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
               <Button
                 asChild
                 size='sm'
-                className='h-8 px-3 text-xs md:text-sm bg-primary hover:bg-primary/90 text-primary-foreground dark:text-white'
+                className='h-7 px-2.5 text-[11px] md:text-xs bg-primary hover:bg-primary/90 text-primary-foreground dark:text-white'
               >
                 <Link href={sellerListingsUrl}>
                   {t('links.viewSellerListings')}
@@ -143,9 +147,9 @@ const SellerContact: React.FC<SellerContactProps> = ({
         </div>
 
         {/* Contact Buttons */}
-        <div className='space-y-2.5'>
+        <div className='space-y-2'>
           <Button
-            className='w-full bg-white hover:bg-blue-50 text-foreground border-2 border-primary h-11 md:h-12 font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed dark:bg-primary dark:hover:bg-primary/90 dark:text-white dark:border-primary/80'
+            className='w-full bg-white hover:bg-blue-50 text-foreground border-2 border-primary h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed dark:bg-primary dark:hover:bg-primary/90 dark:text-white dark:border-primary/80'
             onClick={handleZaloClick}
             disabled={!hasPhone}
             aria-label={t('actions.chatZalo')}
@@ -153,20 +157,20 @@ const SellerContact: React.FC<SellerContactProps> = ({
             <Image
               src='/svg/zalo.svg'
               alt='Zalo'
-              width={20}
-              height={20}
-              className='mr-2 w-5 h-5'
+              width={16}
+              height={16}
+              className='mr-1.5 w-4 h-4'
             />
             <span>{t('actions.chatZalo')}</span>
           </Button>
 
           <Button
-            className='w-full bg-primary hover:bg-primary/90 h-11 md:h-12 font-semibold shadow-sm hover:shadow-md transition-all text-white dark:text-white'
+            className='w-full bg-primary hover:bg-primary/90 h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all text-white dark:text-white'
             onClick={handleCall}
             disabled={!hasPhone}
             aria-label={showPhone ? phone : t('actions.showPhone')}
           >
-            <Phone className='w-4 h-4 md:w-5 md:h-5 mr-2 text-white' />
+            <Phone className='w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-white' />
             {showPhone ? phone : t('actions.showPhone')}
           </Button>
         </div>

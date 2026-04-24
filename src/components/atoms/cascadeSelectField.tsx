@@ -1,11 +1,14 @@
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { Check, ChevronDown, Loader2, X } from 'lucide-react'
+import { Popover, PopoverContent, PopoverTrigger } from './popover'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './select'
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from './command'
 import { cn } from '@/lib/utils'
 
 export interface CascadeOption {
@@ -42,125 +45,158 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
   isLoadingMore = false,
   onSearchChange,
 }) => {
+  const [open, setOpen] = useState(false)
   const [keyword, setKeyword] = useState('')
+  const listRef = useRef<HTMLDivElement>(null)
 
-  // If onSearchChange is provided, use it for API search; otherwise filter locally
-  const filtered = useMemo(() => {
-    if (!searchable || !keyword) return options
-    if (onSearchChange) {
-      // API search - return all options (filtering done by API)
-      return options
+  const selected = options.find((opt) => opt.id === value)
+
+  // Reset keyword + notify parent when popover closes
+  useEffect(() => {
+    if (!open) {
+      setKeyword('')
+      onSearchChange?.('')
     }
-    // Local search - filter options
-    return options.filter((o) =>
-      o.label.toLowerCase().includes(keyword.toLowerCase()),
-    )
-  }, [keyword, options, searchable, onSearchChange])
+  }, [open, onSearchChange])
 
-  // Handle search input change
-  const handleSearchChange = (newKeyword: string) => {
-    setKeyword(newKeyword)
-    onSearchChange?.(newKeyword)
+  // Infinite scroll on command list
+  useEffect(() => {
+    if (!open || !onLoadMore || !hasMore || isLoadingMore) return
+    const el = listRef.current
+    if (!el) return
+
+    const handler = () => {
+      const bottom = el.scrollHeight - el.scrollTop - el.clientHeight
+      if (bottom < 60 && hasMore && !isLoadingMore) {
+        onLoadMore()
+      }
+    }
+
+    el.addEventListener('scroll', handler)
+    return () => el.removeEventListener('scroll', handler)
+  }, [open, onLoadMore, hasMore, isLoadingMore])
+
+  const handleSearchChange = useCallback(
+    (next: string) => {
+      setKeyword(next)
+      onSearchChange?.(next)
+    },
+    [onSearchChange],
+  )
+
+  const handleSelect = (id: string) => {
+    onChange(id)
+    setOpen(false)
   }
 
-  const CLEAR_VALUE = '__clear__'
-  const [isOpen, setIsOpen] = useState(false)
+  const handleClear = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onChange('')
+  }
 
-  useEffect(() => {
-    if (!onLoadMore || !hasMore || isLoadingMore || !isOpen) return
-
-    let viewport: HTMLElement | null = null
-    let timeoutId: NodeJS.Timeout | null = null
-    let scrollHandler: (() => void) | null = null
-
-    // Find the scrollable viewport element in the portal
-    const findAndAttachScroll = () => {
-      viewport = document.querySelector(
-        '[data-radix-select-viewport]',
-      ) as HTMLElement
-      if (!viewport) {
-        // Retry after a short delay if not found
-        timeoutId = setTimeout(findAndAttachScroll, 50)
-        return
-      }
-
-      scrollHandler = () => {
-        if (!viewport) return
-        const scrollBottom =
-          viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight
-
-        // Load more when scrolled to within 50px of bottom
-        if (scrollBottom < 50 && hasMore && !isLoadingMore) {
-          onLoadMore()
-        }
-      }
-
-      viewport.addEventListener('scroll', scrollHandler)
-    }
-
-    findAndAttachScroll()
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-      if (viewport && scrollHandler) {
-        viewport.removeEventListener('scroll', scrollHandler)
-      }
-    }
-  }, [onLoadMore, hasMore, isLoadingMore, isOpen])
+  // When onSearchChange is provided, server handles filtering so skip cmdk's internal filter
+  const shouldFilter = !onSearchChange
 
   return (
-    <div className={cn('space-y-1', className)}>
+    <div className={cn('space-y-1.5', className)}>
       <div className='text-sm font-medium'>{label}</div>
-      <Select
-        value={value || undefined}
-        onValueChange={(v) => {
-          if (v === CLEAR_VALUE) onChange('')
-          else onChange(v)
-        }}
-        onOpenChange={setIsOpen}
-        disabled={disabled}
-      >
-        <SelectTrigger
-          className={cn(
-            'w-full h-12 justify-between rounded-lg bg-white dark:bg-muted text-left',
-            disabled && 'bg-muted/40 opacity-70 cursor-not-allowed',
-          )}
+      <Popover open={open} onOpenChange={disabled ? undefined : setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type='button'
+            disabled={disabled}
+            aria-haspopup='listbox'
+            aria-expanded={open}
+            className={cn(
+              'flex w-full h-11 items-center justify-between gap-2 rounded-lg border border-input bg-white dark:bg-muted px-3 text-sm text-left shadow-xs transition-colors',
+              'hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+              disabled &&
+                'bg-muted/40 opacity-70 cursor-not-allowed hover:border-input',
+              !selected && 'text-muted-foreground',
+            )}
+          >
+            <span className='flex-1 truncate'>
+              {selected ? selected.label : placeholder}
+            </span>
+            <span className='flex items-center gap-1 shrink-0'>
+              {selected && !disabled && (
+                <span
+                  role='button'
+                  tabIndex={-1}
+                  aria-label='Clear'
+                  onClick={handleClear}
+                  className='inline-flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground'
+                >
+                  <X className='h-3.5 w-3.5' />
+                </span>
+              )}
+              <ChevronDown className='h-4 w-4 opacity-60' />
+            </span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align='start'
+          sideOffset={6}
+          className='w-[var(--radix-popover-trigger-width)] min-w-[240px] p-0'
+          onOpenAutoFocus={(e) => {
+            // Let CommandInput take focus naturally when searchable
+            if (!searchable) e.preventDefault()
+          }}
         >
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent className='max-h-72'>
-          {searchable && (
-            <div className='p-2 sticky top-0 bg-popover z-10'>
-              <input
-                className='w-full text-sm px-2 py-1 border rounded-md bg-background'
+          <Command
+            shouldFilter={shouldFilter}
+            filter={(itemValue, search) => {
+              const opt = options.find((o) => o.id === itemValue)
+              if (!opt) return 0
+              return opt.label.toLowerCase().includes(search.toLowerCase())
+                ? 1
+                : 0
+            }}
+          >
+            {searchable && (
+              <CommandInput
                 placeholder={placeholder}
                 value={keyword}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                onValueChange={handleSearchChange}
               />
-            </div>
-          )}
-          {/* Không render option placeholder */}
-          {filtered
-            .filter((opt) => opt.id !== undefined && opt.id !== null)
-            .map((opt, index) => (
-              <SelectItem key={opt.id || `option-${index}`} value={opt.id}>
-                {opt.label}
-              </SelectItem>
-            ))}
-          {isLoadingMore && (
-            <div className='p-2 text-center text-sm text-muted-foreground'>
-              Đang tải...
-            </div>
-          )}
-          {hasMore && !isLoadingMore && (
-            <div className='p-2 text-center text-xs text-muted-foreground'>
-              Cuộn để tải thêm
-            </div>
-          )}
-        </SelectContent>
-      </Select>
+            )}
+            <CommandList ref={listRef} className='max-h-64'>
+              <CommandEmpty>
+                {isLoadingMore ? 'Đang tải...' : 'Không có kết quả'}
+              </CommandEmpty>
+              <CommandGroup>
+                {options
+                  .filter((opt) => opt.id !== undefined && opt.id !== null)
+                  .map((opt) => (
+                    <CommandItem
+                      key={opt.id}
+                      value={opt.id}
+                      onSelect={() => handleSelect(opt.id)}
+                      className='cursor-pointer'
+                    >
+                      <span className='flex-1 truncate'>{opt.label}</span>
+                      {opt.id === value && (
+                        <Check className='h-4 w-4 text-primary shrink-0' />
+                      )}
+                    </CommandItem>
+                  ))}
+              </CommandGroup>
+              {isLoadingMore && (
+                <div className='flex items-center justify-center gap-2 py-2 text-xs text-muted-foreground'>
+                  <Loader2 className='h-3.5 w-3.5 animate-spin' />
+                  Đang tải...
+                </div>
+              )}
+              {hasMore && !isLoadingMore && (
+                <div className='py-2 text-center text-xs text-muted-foreground'>
+                  Cuộn để tải thêm
+                </div>
+              )}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
   )
 }
