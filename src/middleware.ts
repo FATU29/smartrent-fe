@@ -23,6 +23,7 @@ function isPublicPath(pathname: string) {
   if (pathname.startsWith('/listing-detail')) return true
   if (pathname.startsWith('/compare')) return true
   if (pathname.startsWith('/news')) return true
+  if (pathname.startsWith('/maps')) return true
 
   // Payment gateway redirect must stay public so callback page can mount
   if (pathname.startsWith('/payment/result')) return true

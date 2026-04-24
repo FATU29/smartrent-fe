@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import Image from 'next/image'
-import { X, Check, XCircle } from 'lucide-react'
+import { X, Check, Minus, Crown } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
@@ -42,24 +42,39 @@ interface PriceDisplayProps {
   isLowest: boolean
   formattedPrice: string
   unitKey: string
+  lowestLabel: string
 }
 
 const PriceDisplay: React.FC<PriceDisplayProps> = ({
   isLowest,
   formattedPrice,
   unitKey,
-}) => {
-  return (
-    <div className='flex flex-col gap-1'>
+  lowestLabel,
+}) => (
+  <div className='flex flex-col gap-1'>
+    <div className='flex items-center gap-2 flex-wrap'>
       <span
-        className={cn('font-semibold text-blue-600', isLowest && 'text-lg')}
+        className={cn(
+          'font-semibold text-primary tabular-nums',
+          isLowest ? 'text-base md:text-lg' : 'text-sm md:text-base',
+        )}
       >
         {formattedPrice}
       </span>
-      {unitKey && <span className='text-xs text-blue-600/90'>/{unitKey}</span>}
+      {isLowest && (
+        <Badge
+          variant='secondary'
+          className='bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-[10px] font-semibold px-1.5 py-0 h-5'
+        >
+          {lowestLabel}
+        </Badge>
+      )}
     </div>
-  )
-}
+    {unitKey && (
+      <span className='text-xs text-muted-foreground'>/{unitKey}</span>
+    )}
+  </div>
+)
 
 interface LocationDisplayProps {
   address: string | undefined | null
@@ -80,7 +95,7 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({
 
   if (!shouldTruncate) {
     return (
-      <span className='max-w-[360px] break-words block'>
+      <span className='text-sm leading-relaxed block break-words'>
         {formattedAddress}
       </span>
     )
@@ -89,10 +104,8 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span title={formattedAddress} className='inline-block max-w-full'>
-          <span className='md:max-w-[220px] md:truncate block'>
-            {formattedAddress}
-          </span>
+        <span className='text-sm leading-relaxed block line-clamp-2 cursor-help'>
+          {formattedAddress}
         </span>
       </TooltipTrigger>
       <TooltipContent side='top' className='max-w-sm break-words'>
@@ -111,25 +124,19 @@ const VipTypeBadge: React.FC<VipTypeBadgeProps> = ({
   vipType,
   vipTypeLabel,
 }) => {
-  const vipGradients: Record<string, string> = {
+  const vipStyles: Record<string, string> = {
     DIAMOND:
-      'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-blue-600',
-    GOLD: 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-yellow-600',
-    SILVER:
-      'bg-gradient-to-r from-gray-400 to-gray-600 text-white border-gray-600',
-    NORMAL: 'bg-muted text-foreground border-border',
+      'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-600 dark:text-blue-300 border-blue-500/40',
+    GOLD: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/40',
+    SILVER: 'bg-muted text-muted-foreground border-border',
+    NORMAL: 'bg-muted text-muted-foreground border-border',
   }
-  const gradientClass =
-    vipGradients[vipType] ||
-    'bg-gradient-to-r from-yellow-400 to-orange-500 text-white'
+  const cls = vipStyles[vipType] || vipStyles.NORMAL
   return (
-    <Badge
-      variant='default'
-      className={cn(
-        'backdrop-blur-md font-semibold shadow-lg border',
-        gradientClass,
+    <Badge variant='outline' className={cn('font-medium gap-1 text-xs', cls)}>
+      {vipType !== 'NORMAL' && vipType !== 'SILVER' && (
+        <Crown className='w-3 h-3' />
       )}
-    >
       {vipTypeLabel}
     </Badge>
   )
@@ -146,41 +153,38 @@ const AmenitiesDisplay: React.FC<AmenitiesDisplayProps> = ({
   compareColumns,
   notAvailableText,
 }) => {
-  const shouldCollapse = compareColumns >= 3 && amenities.length > 3
-  const visibleAmenities = shouldCollapse ? amenities.slice(0, 3) : amenities
+  const shouldCollapse = compareColumns >= 3 && amenities.length > 4
+  const visibleAmenities = shouldCollapse ? amenities.slice(0, 4) : amenities
   const hiddenCount = amenities.length - visibleAmenities.length
-  const fullAmenitiesText = amenities
-    .map((amenity) => amenity.name || notAvailableText)
-    .join(', ')
 
-  const amenityContent = (
-    <div
-      className={cn(
-        'flex flex-wrap gap-1.5',
-        compareColumns >= 3 ? 'md:max-w-[220px]' : 'max-w-none',
-      )}
-    >
+  const content = (
+    <div className='flex flex-wrap gap-1.5'>
       {visibleAmenities.map((amenity) => (
-        <Badge key={amenity.amenityId} variant='outline' className='text-xs'>
+        <Badge
+          key={amenity.amenityId}
+          variant='secondary'
+          className='text-xs font-normal bg-muted/60'
+        >
           {amenity.name || notAvailableText}
         </Badge>
       ))}
       {hiddenCount > 0 && (
-        <Badge variant='secondary' className='text-xs font-semibold'>
+        <Badge
+          variant='outline'
+          className='text-xs font-semibold text-muted-foreground'
+        >
           +{hiddenCount}
         </Badge>
       )}
     </div>
   )
 
-  if (!shouldCollapse) {
-    return amenityContent
-  }
+  if (!shouldCollapse) return content
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div title={fullAmenitiesText}>{amenityContent}</div>
+        <div>{content}</div>
       </TooltipTrigger>
       <TooltipContent side='top' className='max-w-sm'>
         <div className='flex flex-wrap gap-1.5'>
@@ -199,12 +203,25 @@ const AmenitiesDisplay: React.FC<AmenitiesDisplayProps> = ({
   )
 }
 
+interface ComparisonRow {
+  key: string
+  label: string
+  getValue: (listing: ListingApi) => React.ReactNode
+}
+
+interface ComparisonSection {
+  key: string
+  label: string
+  rows: ComparisonRow[]
+}
+
 const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
   const t = useTranslations('compare')
   const tRoot = useTranslations()
   const { removeFromCompare } = useCompareStore()
   const { language } = useLanguage()
   const locale = language === 'vi' ? 'vi-VN' : 'en-US'
+  const count = listings.length
 
   const utilityPriceTranslationKeys = {
     NEGOTIABLE: 'residentialFilter.utilitiesPrice.electricity.negotiable',
@@ -251,19 +268,22 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
   const formatBoolean = (value: boolean | undefined): React.ReactNode => {
     if (value === undefined || value === null) {
       return (
-        <span className='text-muted-foreground'>{t('table.notAvailable')}</span>
+        <span className='inline-flex items-center gap-1.5 text-muted-foreground text-sm'>
+          <Minus className='w-3.5 h-3.5' />
+          {t('table.notAvailable')}
+        </span>
       )
     }
 
     return value ? (
-      <span className='inline-flex items-center gap-1.5'>
-        <Check className='w-4 h-4 text-green-600' />
-        <span>{t('table.yes')}</span>
+      <span className='inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 text-sm font-medium'>
+        <Check className='w-4 h-4' />
+        {t('table.yes')}
       </span>
     ) : (
-      <span className='inline-flex items-center gap-1.5'>
-        <XCircle className='w-4 h-4 text-muted-foreground' />
-        <span>{t('table.no')}</span>
+      <span className='inline-flex items-center gap-1.5 text-muted-foreground text-sm'>
+        <Minus className='w-3.5 h-3.5' />
+        {t('table.no')}
       </span>
     )
   }
@@ -337,28 +357,20 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
     return `${new Intl.NumberFormat(locale).format(area)} m²`
   }
 
-  const formatCategory = (listing: ListingApi): string => {
-    return formatValue(listing.category?.name)
-  }
-
-  const formatRoomCapacity = (listing: ListingApi): string => {
-    if (listing.roomCapacity === undefined || listing.roomCapacity === null) {
-      return t('table.notAvailable')
-    }
-
-    return String(listing.roomCapacity)
-  }
-
   const formatAmenities = (listing: ListingApi): React.ReactNode => {
     const amenities = listing.amenities
     if (!amenities || amenities.length === 0) {
-      return t('table.notAvailable')
+      return (
+        <span className='text-muted-foreground text-sm'>
+          {t('table.notAvailable')}
+        </span>
+      )
     }
 
     return (
       <AmenitiesDisplay
         amenities={amenities}
-        compareColumns={listings.length}
+        compareColumns={count}
         notAvailableText={t('table.notAvailable')}
       />
     )
@@ -366,7 +378,11 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
 
   const formatVipDisplay = (listing: ListingApi): React.ReactNode => {
     if (!listing.vipType) {
-      return t('table.notAvailable')
+      return (
+        <span className='text-muted-foreground text-sm'>
+          {t('table.notAvailable')}
+        </span>
+      )
     }
 
     return (
@@ -383,32 +399,9 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
     return (
       <LocationDisplay
         address={address}
-        compareColumns={listings.length}
+        compareColumns={count}
         notAvailableText={t('table.notAvailable')}
         formatValue={formatValue}
-      />
-    )
-  }
-
-  const formatPriceValue = (listing: ListingApi): React.ReactNode => {
-    const price = listing.price
-    const priceUnit = listing.priceUnit
-
-    if (!price || price <= 0) {
-      return t('table.notAvailable')
-    }
-
-    const formattedPrice = formatByLocale(price, language)
-    const unitKey = priceUnit
-      ? tRoot(getPriceUnitTranslationKey(priceUnit))
-      : ''
-    const isLowest = lowestPrice === price
-
-    return (
-      <PriceDisplay
-        isLowest={isLowest}
-        formattedPrice={formattedPrice}
-        unitKey={unitKey}
       />
     )
   }
@@ -421,155 +414,222 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
     return prices.length > 0 ? Math.min(...prices) : null
   }, [listings])
 
-  // Comparison rows data
-  const comparisonRows = useMemo(() => {
-    return [
+  const formatPriceValue = (listing: ListingApi): React.ReactNode => {
+    const price = listing.price
+    const priceUnit = listing.priceUnit
+
+    if (!price || price <= 0) {
+      return (
+        <span className='text-muted-foreground text-sm'>
+          {t('table.notAvailable')}
+        </span>
+      )
+    }
+
+    const formattedPrice = formatByLocale(price, language)
+    const unitKey = priceUnit
+      ? tRoot(getPriceUnitTranslationKey(priceUnit))
+      : ''
+    const isLowest = count > 1 && lowestPrice === price
+
+    return (
+      <PriceDisplay
+        isLowest={isLowest}
+        formattedPrice={formattedPrice}
+        unitKey={unitKey}
+        lowestLabel={t('table.lowestPrice')}
+      />
+    )
+  }
+
+  // Comparison sections
+  const sections: ComparisonSection[] = useMemo(
+    () => [
       {
-        key: 'price',
-        label: t('table.price'),
-        getValue: (listing: ListingApi) => formatPriceValue(listing),
+        key: 'essentials',
+        label: t('sections.essentials'),
+        rows: [
+          {
+            key: 'price',
+            label: t('table.price'),
+            getValue: (l) => formatPriceValue(l),
+          },
+          {
+            key: 'location',
+            label: t('table.location'),
+            getValue: (l) => formatLocation(l),
+          },
+          {
+            key: 'area',
+            label: t('table.area'),
+            getValue: (l) => (
+              <span className='text-sm font-medium tabular-nums'>
+                {formatArea(l.area)}
+              </span>
+            ),
+          },
+        ],
       },
       {
-        key: 'location',
-        label: t('table.location'),
-        getValue: (listing: ListingApi) => formatLocation(listing),
+        key: 'property',
+        label: t('sections.property'),
+        rows: [
+          {
+            key: 'propertyType',
+            label: t('table.propertyType'),
+            getValue: (l) =>
+              l.productType
+                ? tRoot(getProductTypeTranslationKey(l.productType))
+                : t('table.notAvailable'),
+          },
+          {
+            key: 'listingType',
+            label: t('table.listingType'),
+            getValue: (l) => formatListingType(l.listingType),
+          },
+          {
+            key: 'category',
+            label: t('table.category'),
+            getValue: (l) => formatValue(l.category?.name),
+          },
+        ],
       },
       {
-        key: 'area',
-        label: t('table.area'),
-        getValue: (listing: ListingApi) => formatArea(listing.area),
+        key: 'rooms',
+        label: t('sections.rooms'),
+        rows: [
+          {
+            key: 'bedrooms',
+            label: t('table.bedrooms'),
+            getValue: (l) => formatValue(l.bedrooms),
+          },
+          {
+            key: 'bathrooms',
+            label: t('table.bathrooms'),
+            getValue: (l) => formatValue(l.bathrooms),
+          },
+          {
+            key: 'roomCapacity',
+            label: t('table.roomCapacity'),
+            getValue: (l) =>
+              l.roomCapacity === undefined || l.roomCapacity === null
+                ? t('table.notAvailable')
+                : String(l.roomCapacity),
+          },
+          {
+            key: 'furnishing',
+            label: t('table.furnishing'),
+            getValue: (l) =>
+              l.furnishing
+                ? tRoot(getFurnishingTranslationKey(l.furnishing))
+                : t('table.notAvailable'),
+          },
+          {
+            key: 'direction',
+            label: t('table.direction'),
+            getValue: (l) =>
+              l.direction
+                ? tRoot(getDirectionTranslationKey(l.direction))
+                : t('table.notAvailable'),
+          },
+        ],
       },
       {
-        key: 'propertyType',
-        label: t('table.propertyType'),
-        getValue: (listing: ListingApi) => {
-          if (!listing.productType) {
-            return t('table.notAvailable')
-          }
-          return tRoot(getProductTypeTranslationKey(listing.productType))
-        },
+        key: 'utilities',
+        label: t('sections.utilities'),
+        rows: [
+          {
+            key: 'waterPrice',
+            label: t('table.waterPrice'),
+            getValue: (l) => formatUtilityValue(l.waterPrice),
+          },
+          {
+            key: 'electricityPrice',
+            label: t('table.electricityPrice'),
+            getValue: (l) => formatUtilityValue(l.electricityPrice),
+          },
+          {
+            key: 'internetPrice',
+            label: t('table.internetPrice'),
+            getValue: (l) => formatUtilityValue(l.internetPrice),
+          },
+          {
+            key: 'serviceFee',
+            label: t('table.serviceFee'),
+            getValue: (l) => formatUtilityValue(l.serviceFee),
+          },
+        ],
       },
       {
-        key: 'listingType',
-        label: t('table.listingType'),
-        getValue: (listing: ListingApi) =>
-          formatListingType(listing.listingType),
+        key: 'features',
+        label: t('sections.features'),
+        rows: [
+          {
+            key: 'verified',
+            label: t('table.verified'),
+            getValue: (l) => formatBoolean(l.verified),
+          },
+          {
+            key: 'contactAvailable',
+            label: t('table.contactAvailable'),
+            getValue: (l) => formatBoolean(l.contactAvailable),
+          },
+          {
+            key: 'ownerPhoneVerified',
+            label: t('table.ownerPhoneVerified'),
+            getValue: (l) => formatBoolean(l.ownerContactPhoneVerified),
+          },
+          {
+            key: 'vipType',
+            label: t('table.vipType'),
+            getValue: (l) => formatVipDisplay(l),
+          },
+          {
+            key: 'amenities',
+            label: t('table.amenities'),
+            getValue: (l) => formatAmenities(l),
+          },
+        ],
       },
-      {
-        key: 'category',
-        label: t('table.category'),
-        getValue: (listing: ListingApi) => formatCategory(listing),
-      },
-      {
-        key: 'bedrooms',
-        label: t('table.bedrooms'),
-        getValue: (listing: ListingApi) => formatValue(listing.bedrooms),
-      },
-      {
-        key: 'bathrooms',
-        label: t('table.bathrooms'),
-        getValue: (listing: ListingApi) => formatValue(listing.bathrooms),
-      },
-      {
-        key: 'roomCapacity',
-        label: t('table.roomCapacity'),
-        getValue: (listing: ListingApi) => formatRoomCapacity(listing),
-      },
-      {
-        key: 'furnishing',
-        label: t('table.furnishing'),
-        getValue: (listing: ListingApi) => {
-          if (!listing.furnishing) {
-            return t('table.notAvailable')
-          }
-          return tRoot(getFurnishingTranslationKey(listing.furnishing))
-        },
-      },
-      {
-        key: 'direction',
-        label: t('table.direction'),
-        getValue: (listing: ListingApi) => {
-          if (!listing.direction) {
-            return t('table.notAvailable')
-          }
-          return tRoot(getDirectionTranslationKey(listing.direction))
-        },
-      },
-      {
-        key: 'verified',
-        label: t('table.verified'),
-        getValue: (listing: ListingApi) => formatBoolean(listing.verified),
-      },
-      {
-        key: 'contactAvailable',
-        label: t('table.contactAvailable'),
-        getValue: (listing: ListingApi) =>
-          formatBoolean(listing.contactAvailable),
-      },
-      {
-        key: 'ownerPhoneVerified',
-        label: t('table.ownerPhoneVerified'),
-        getValue: (listing: ListingApi) =>
-          formatBoolean(listing.ownerContactPhoneVerified),
-      },
-      {
-        key: 'vipType',
-        label: t('table.vipType'),
-        getValue: (listing: ListingApi) => formatVipDisplay(listing),
-      },
-      {
-        key: 'waterPrice',
-        label: t('table.waterPrice'),
-        getValue: (listing: ListingApi) =>
-          formatUtilityValue(listing.waterPrice),
-      },
-      {
-        key: 'electricityPrice',
-        label: t('table.electricityPrice'),
-        getValue: (listing: ListingApi) =>
-          formatUtilityValue(listing.electricityPrice),
-      },
-      {
-        key: 'internetPrice',
-        label: t('table.internetPrice'),
-        getValue: (listing: ListingApi) =>
-          formatUtilityValue(listing.internetPrice),
-      },
-      {
-        key: 'serviceFee',
-        label: t('table.serviceFee'),
-        getValue: (listing: ListingApi) =>
-          formatUtilityValue(listing.serviceFee),
-      },
-      {
-        key: 'amenities',
-        label: t('table.amenities'),
-        getValue: (listing: ListingApi) => formatAmenities(listing),
-      },
-    ]
-  }, [t, tRoot, language, listings.length, locale, lowestPrice])
+    ],
+    [t, tRoot, language, count, locale, lowestPrice],
+  )
+
+  // Distribute column widths equally: feature column fixed, listings share the rest
+  const featureColWidth = '200px'
+  const listingColWidth = `calc((100% - 200px) / ${count})`
+  const minTableWidth = 200 + count * 240
 
   return (
     <TooltipProvider delayDuration={150}>
       <div className={cn('w-full', className)}>
-        {/* Desktop: Full table with horizontal scroll */}
-        <div className='hidden md:block'>
+        {/* Desktop: Full table */}
+        <div className='hidden md:block rounded-xl border border-border bg-card overflow-hidden'>
           <ScrollArea className='w-full'>
-            <div className='min-w-[800px]'>
-              <Table>
+            <div style={{ minWidth: `${minTableWidth}px` }}>
+              <Table className='table-fixed w-full'>
+                <colgroup>
+                  <col style={{ width: featureColWidth }} />
+                  {listings.map((l) => (
+                    <col
+                      key={`col-${l.listingId}`}
+                      style={{ width: listingColWidth }}
+                    />
+                  ))}
+                </colgroup>
                 <TableHeader>
-                  <TableRow className='bg-gradient-to-r from-muted/80 to-muted/60 backdrop-blur-md border-b-2 border-border'>
-                    <TableHead className='sticky left-0 z-20 bg-gradient-to-r from-muted/95 to-muted/90 backdrop-blur-md min-w-[160px] font-bold text-base'>
+                  <TableRow className='bg-muted/40 hover:bg-muted/40 border-b border-border'>
+                    <TableHead className='sticky left-0 z-20 bg-muted/80 backdrop-blur-sm font-semibold text-sm text-muted-foreground uppercase tracking-wide align-bottom pb-4'>
                       {t('table.features')}
                     </TableHead>
                     {listings.map((listing, index) => (
                       <TableHead
                         key={listing.listingId}
-                        className='min-w-[250px] relative bg-gradient-to-b from-muted/40 to-transparent'
+                        className='relative align-top p-3'
                       >
-                        <div className='flex flex-col gap-3 pb-2'>
+                        <div className='flex flex-col gap-3'>
                           {/* Image */}
-                          <div className='relative w-full h-40 rounded-lg overflow-hidden bg-muted shadow-md group'>
+                          <div className='relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-muted group'>
                             <Image
                               src={listingImages[index]}
                               alt={listing.title}
@@ -579,51 +639,71 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
                                 'default',
                               )}
                             />
-                            <div className='absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent' />
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              className='absolute top-1.5 right-1.5 h-7 w-7 bg-background/90 backdrop-blur-sm hover:bg-destructive hover:text-destructive-foreground'
+                              onClick={() =>
+                                removeFromCompare(listing.listingId)
+                              }
+                              aria-label={t('actions.removeFromCompare')}
+                            >
+                              <X className='w-4 h-4' />
+                            </Button>
                           </div>
 
                           {/* Title */}
                           <Link
                             href={`/listing-detail/${listing.listingId}`}
-                            className='font-semibold text-sm hover:text-primary transition-colors line-clamp-2 group'
+                            className='font-semibold text-sm leading-snug text-foreground hover:text-primary transition-colors line-clamp-2'
                           >
-                            <span className='group-hover:underline'>
-                              {listing.title}
-                            </span>
+                            {listing.title}
                           </Link>
-
-                          {/* Remove button */}
-                          <Button
-                            variant='ghost'
-                            size='icon'
-                            className='absolute top-2 right-2 h-7 w-7 bg-background/90 backdrop-blur-sm hover:bg-destructive/10 hover:text-destructive transition-colors z-10'
-                            onClick={() => removeFromCompare(listing.listingId)}
-                          >
-                            <X className='w-4 h-4' />
-                          </Button>
                         </div>
                       </TableHead>
                     ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {comparisonRows.map((row, rowIndex) => (
-                    <TableRow
-                      key={row.key}
-                      className={cn(
-                        rowIndex % 2 === 0 && 'bg-muted/10',
-                        'hover:bg-muted/30 transition-colors border-b border-border/50',
-                      )}
-                    >
-                      <TableCell className='font-semibold sticky left-0 z-10 bg-background/98 backdrop-blur-md border-r border-border/50 pr-4'>
-                        {row.label}
-                      </TableCell>
-                      {listings.map((listing) => (
-                        <TableCell key={`${row.key}-${listing.listingId}`}>
-                          {row.getValue(listing)}
+                  {sections.map((section, sectionIdx) => (
+                    <Fragment key={section.key}>
+                      {/* Section header row */}
+                      <TableRow
+                        className={cn(
+                          'bg-muted/30 hover:bg-muted/30 border-b border-border/60',
+                          sectionIdx > 0 && 'border-t border-border/60',
+                        )}
+                      >
+                        <TableCell
+                          colSpan={count + 1}
+                          className='sticky left-0 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground'
+                        >
+                          {section.label}
                         </TableCell>
+                      </TableRow>
+                      {/* Section rows */}
+                      {section.rows.map((row, rowIndex) => (
+                        <TableRow
+                          key={row.key}
+                          className={cn(
+                            rowIndex % 2 === 1 && 'bg-muted/15',
+                            'hover:bg-accent/40 transition-colors border-b border-border/40',
+                          )}
+                        >
+                          <TableCell className='sticky left-0 z-10 bg-card/98 backdrop-blur-sm border-r border-border/40 font-medium text-sm text-muted-foreground align-top py-3'>
+                            {row.label}
+                          </TableCell>
+                          {listings.map((listing) => (
+                            <TableCell
+                              key={`${row.key}-${listing.listingId}`}
+                              className='align-top py-3 text-sm'
+                            >
+                              {row.getValue(listing)}
+                            </TableCell>
+                          ))}
+                        </TableRow>
                       ))}
-                    </TableRow>
+                    </Fragment>
                   ))}
                 </TableBody>
               </Table>
@@ -631,16 +711,16 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
           </ScrollArea>
         </div>
 
-        {/* Mobile: Stacked cards */}
+        {/* Mobile: Stacked cards per listing */}
         <div className='md:hidden space-y-4'>
           {listings.map((listing, index) => (
             <div
               key={listing.listingId}
-              className='border rounded-lg p-4 space-y-3 bg-card'
+              className='rounded-xl border border-border bg-card overflow-hidden'
             >
               {/* Header with image and title */}
-              <div className='flex gap-3 pb-3 border-b border-border'>
-                <div className='relative w-28 h-28 rounded-lg overflow-hidden bg-muted shrink-0 shadow-md'>
+              <div className='relative'>
+                <div className='relative w-full aspect-[16/9] bg-muted'>
                   <Image
                     src={listingImages[index]}
                     alt={listing.title}
@@ -648,41 +728,48 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
                     className='object-cover'
                     unoptimized={listingImages[index].includes('default')}
                   />
-                </div>
-                <div className='flex-1 min-w-0'>
-                  <Link
-                    href={`/listing-detail/${listing.listingId}`}
-                    className='font-semibold text-sm hover:text-primary transition-colors line-clamp-2 block mb-2 group'
-                  >
-                    <span className='group-hover:underline'>
-                      {listing.title}
-                    </span>
-                  </Link>
                   <Button
                     variant='ghost'
-                    size='sm'
+                    size='icon'
+                    className='absolute top-2 right-2 h-8 w-8 bg-background/90 backdrop-blur-sm hover:bg-destructive hover:text-destructive-foreground'
                     onClick={() => removeFromCompare(listing.listingId)}
-                    className='h-7 text-destructive hover:text-destructive hover:bg-destructive/10'
+                    aria-label={t('actions.removeFromCompare')}
                   >
-                    <X className='w-4 h-4 mr-1' />
-                    {t('actions.removeFromCompare')}
+                    <X className='w-4 h-4' />
                   </Button>
+                </div>
+                <div className='p-4 border-b border-border'>
+                  <Link
+                    href={`/listing-detail/${listing.listingId}`}
+                    className='font-semibold text-base leading-snug hover:text-primary transition-colors line-clamp-2 block'
+                  >
+                    {listing.title}
+                  </Link>
                 </div>
               </div>
 
-              {/* Comparison details */}
-              <div className='grid grid-cols-2 gap-3 text-sm pt-2'>
-                {comparisonRows.map((row) => (
-                  <div
-                    key={`${row.key}-mobile-${listing.listingId}`}
-                    className='space-y-1 p-2 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors'
-                  >
-                    <div className='text-muted-foreground text-xs font-medium'>
-                      {row.label}
-                    </div>
-                    <div className='font-semibold text-foreground'>
-                      {row.getValue(listing)}
-                    </div>
+              {/* Sections */}
+              <div className='divide-y divide-border/60'>
+                {sections.map((section) => (
+                  <div key={section.key} className='p-4'>
+                    <h4 className='text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3'>
+                      {section.label}
+                    </h4>
+                    <dl className='space-y-2.5'>
+                      {section.rows.map((row) => (
+                        <div
+                          key={row.key}
+                          className='flex items-start gap-3 text-sm'
+                        >
+                          <dt className='min-w-[110px] text-muted-foreground shrink-0'>
+                            {row.label}
+                          </dt>
+                          <dd className='flex-1 min-w-0 font-medium text-foreground'>
+                            {row.getValue(listing)}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
                   </div>
                 ))}
               </div>
