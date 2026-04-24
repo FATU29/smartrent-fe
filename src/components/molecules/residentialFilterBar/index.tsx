@@ -249,7 +249,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
                 'flex items-center gap-2 rounded-full border px-3 h-9 transition-colors',
                 filters.isBroker
                   ? 'bg-primary/10 border-primary/40 text-primary'
-                  : 'bg-card border-border text-foreground hover:bg-accent',
+                  : 'bg-background border-border text-foreground hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
               )}
             >
               <BadgeCheck

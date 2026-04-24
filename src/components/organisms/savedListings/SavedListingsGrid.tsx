@@ -17,7 +17,7 @@ export const SavedListingsGrid: React.FC<SavedListingsGridProps> = ({
   onCardClick,
 }) => {
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8'>
+    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8'>
       {savedListings.map((savedListing) => {
         const listing = savedListing.listing
         if (!listing) return null

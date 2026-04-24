@@ -34,7 +34,7 @@ const SellerPublicListings: React.FC<SellerPublicListingsProps> = ({
 
   if (isLoading) {
     return (
-      <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <PropertyCardSkeleton count={6} className='compact' imageLayout='top' />
       </div>
     )
@@ -56,7 +56,7 @@ const SellerPublicListings: React.FC<SellerPublicListingsProps> = ({
   }
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
+    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
       {listings.map((listing) => (
         <Link
           key={listing.listingId}
