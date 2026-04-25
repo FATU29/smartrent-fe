@@ -330,52 +330,38 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
               </div>
             ) : analytics ? (
               <>
-                <div className='space-y-6'>
-                  <Card className='border-border/70 bg-card/70'>
-                    <CardHeader className='space-y-2 pb-3'>
-                      <CardTitle className='text-base font-semibold tracking-tight'>
+                <div className='space-y-8'>
+                  <section className='space-y-4 border-t border-border/60 pt-6'>
+                    <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+                      <h3 className='text-base font-semibold tracking-tight'>
                         {t('clicksOverTime')}
-                      </CardTitle>
-                      <div className='mt-2'>
-                        <Select
-                          value={period}
-                          onValueChange={(v) =>
-                            onPeriodChange?.(
-                              v as
-                                | '7d'
-                                | '30d'
-                                | '90d'
-                                | '180d'
-                                | '365d'
-                                | 'all',
-                            )
-                          }
-                        >
-                          <SelectTrigger className='w-full sm:w-[200px]'>
-                            <SelectValue placeholder={t('period')} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value='7d'>{t('period7d')}</SelectItem>
-                            <SelectItem value='30d'>
-                              {t('period30d')}
-                            </SelectItem>
-                            <SelectItem value='90d'>
-                              {t('period90d')}
-                            </SelectItem>
-                            <SelectItem value='180d'>
-                              {t('period180d')}
-                            </SelectItem>
-                            <SelectItem value='365d'>
-                              {t('period365d')}
-                            </SelectItem>
-                            <SelectItem value='all'>
-                              {t('periodAll')}
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
+                      </h3>
+                      <Select
+                        value={period}
+                        onValueChange={(v) =>
+                          onPeriodChange?.(
+                            v as '7d' | '30d' | '90d' | '180d' | '365d' | 'all',
+                          )
+                        }
+                      >
+                        <SelectTrigger className='w-full sm:w-[200px]'>
+                          <SelectValue placeholder={t('period')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='7d'>{t('period7d')}</SelectItem>
+                          <SelectItem value='30d'>{t('period30d')}</SelectItem>
+                          <SelectItem value='90d'>{t('period90d')}</SelectItem>
+                          <SelectItem value='180d'>
+                            {t('period180d')}
+                          </SelectItem>
+                          <SelectItem value='365d'>
+                            {t('period365d')}
+                          </SelectItem>
+                          <SelectItem value='all'>{t('periodAll')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
                       <ChartContainer
                         config={chartConfig}
                         className={
@@ -449,16 +435,14 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                           </LineChart>
                         </ResponsiveContainer>
                       </ChartContainer>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </section>
 
-                  <Card className='border-border/70 bg-card/70'>
-                    <CardHeader className='space-y-2 pb-3'>
-                      <CardTitle className='text-base font-semibold tracking-tight'>
-                        {t('clicksByDayOfWeek')}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                  <section className='space-y-4 border-t border-border/60 pt-6'>
+                    <h3 className='text-base font-semibold tracking-tight'>
+                      {t('clicksByDayOfWeek')}
+                    </h3>
+                    <div>
                       <ChartContainer
                         config={chartConfig}
                         className={
@@ -515,18 +499,16 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                           </BarChart>
                         </ResponsiveContainer>
                       </ChartContainer>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </section>
                 </div>
 
-                <Card className='border-border/70 bg-card/70'>
-                  <CardHeader className='space-y-2 pb-3'>
-                    <CardTitle className='text-base font-semibold tracking-tight'>
-                      {t('allListings')}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className='mb-4 flex flex-col gap-3 rounded-xl border border-border/60 bg-muted/25 p-3 sm:p-4 md:flex-row md:items-center md:justify-between'>
+                <section className='space-y-4 border-t border-border/60 pt-6'>
+                  <h3 className='text-base font-semibold tracking-tight'>
+                    {t('allListings')}
+                  </h3>
+                  <div>
+                    <div className='mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
                       <div className='relative w-full md:w-auto'>
                         <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground' />
                         <Input
@@ -690,7 +672,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                         </TableBody>
                       </Table>
                     )}
-                    <div className='mt-4 flex flex-col gap-3 rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between'>
+                    <div className='mt-4 flex flex-col gap-3 border-t border-border/60 pt-3 sm:flex-row sm:items-center sm:justify-between'>
                       <div className='text-xs text-muted-foreground sm:text-sm'>
                         {typeof totalElements === 'number' &&
                         typeof currentPage === 'number' &&
@@ -740,8 +722,8 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                         </Button>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </section>
               </>
             ) : null}
           </>

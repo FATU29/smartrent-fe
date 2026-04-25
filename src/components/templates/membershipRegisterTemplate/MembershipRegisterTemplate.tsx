@@ -306,23 +306,23 @@ export const MembershipRegisterTemplate: React.FC = () => {
                       </div>
                     </div>
                     <div className='flex-1 space-y-2'>
-                      <div className='flex items-center gap-2'>
-                        <Typography variant='h3' className='font-bold'>
+                      <div className='flex items-center gap-2 flex-wrap'>
+                        <Typography
+                          variant='small'
+                          className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'
+                        >
                           {tUpgrade('currentMembership.title')}
                         </Typography>
-                        <Badge
-                          variant='default'
-                          className='bg-green-500 hover:bg-green-600 text-white'
-                        >
-                          <CheckCircle2 className='size-3 mr-1' />
+                        <Badge className='bg-green-500 hover:bg-green-600 text-white border-0 px-2.5 py-0.5 gap-1.5'>
+                          <CheckCircle2 className='size-3' />
                           {tPage('currentPlan')}
                         </Badge>
                       </div>
                       {currentMembership && (
                         <>
                           <Typography
-                            variant='large'
-                            className='font-semibold text-foreground'
+                            variant='h2'
+                            className='text-2xl md:text-3xl font-bold tracking-tight'
                           >
                             {currentMembership.packageName}
                           </Typography>
@@ -380,8 +380,8 @@ export const MembershipRegisterTemplate: React.FC = () => {
                             {tPage('status')}
                           </Typography>
                           <Typography
-                            variant='p'
-                            className='font-semibold text-foreground'
+                            variant='h3'
+                            className='font-bold text-amber-600 dark:text-amber-400'
                           >
                             {currentMembership.status}
                           </Typography>

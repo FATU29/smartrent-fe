@@ -98,13 +98,15 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
                 <TooltipTrigger asChild>
                   <Badge
                     variant='default'
-                    className='bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 shadow-lg mb-2 cursor-help border-0'
+                    className='bg-green-500 hover:bg-green-600 text-white px-3 py-1 gap-2 shadow-lg mb-2 cursor-help border-0 [&>svg]:size-3.5'
                   >
-                    <Gift className='size-3.5 mr-1.5' />
-                    {t('savePercent', {
-                      percent: upgrade.discountPercentage.toFixed(1),
-                    })}
-                    <Info className='size-3 ml-1.5 opacity-70' />
+                    <Gift />
+                    <span>
+                      {t('savePercent', {
+                        percent: upgrade.discountPercentage.toFixed(1),
+                      })}
+                    </span>
+                    <Info className='opacity-70' />
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent
