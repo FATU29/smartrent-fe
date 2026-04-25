@@ -101,7 +101,7 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
   return (
     <div className={cn('space-y-1.5', className)}>
       <div className='text-sm font-medium'>{label}</div>
-      <Popover open={open} onOpenChange={disabled ? undefined : setOpen}>
+      <Popover open={open} onOpenChange={disabled ? undefined : setOpen} modal>
         <PopoverTrigger asChild>
           <button
             type='button'
@@ -161,7 +161,12 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
                 onValueChange={handleSearchChange}
               />
             )}
-            <CommandList ref={listRef} className='max-h-64'>
+            <CommandList
+              ref={listRef}
+              className='max-h-64 overscroll-contain'
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+            >
               <CommandEmpty>
                 {isLoadingMore ? 'Đang tải...' : 'Không có kết quả'}
               </CommandEmpty>
