@@ -10,7 +10,7 @@ interface ListingListSkeletonProps {
 
 const ListingCardSkeletonItem: React.FC = () => {
   return (
-    <div className='w-full rounded-lg border border-gray-200 overflow-hidden bg-white'>
+    <div className='w-full rounded-lg border border-border overflow-hidden bg-card'>
       {/* Image skeleton */}
       <div className='relative'>
         <Skeleton className='h-48 w-full rounded-none' />
