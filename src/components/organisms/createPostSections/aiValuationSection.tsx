@@ -449,7 +449,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             <Button
               onClick={handleReevaluate}
               disabled={!canPredict || isPredicting}
-              className='w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
+              className='w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
             >
               {isPredicting ? (
                 <>

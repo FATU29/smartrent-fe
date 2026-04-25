@@ -11,6 +11,7 @@ import { Badge } from '@/components/atoms/badge'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { Card } from '@/components/atoms/card'
 import { Input } from '@/components/atoms/input'
+import { Button } from '@/components/atoms/button'
 import NewsFilterBar from '@/components/molecules/newsFilterBar'
 import NewsCard from '@/components/molecules/newsCard'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
@@ -29,6 +30,10 @@ import {
   MapPin,
   Search,
   X,
+  SearchX,
+  Inbox,
+  RefreshCw,
+  CheckCircle2,
 } from 'lucide-react'
 import type { ListingFilterRequest } from '@/api/types/property.type'
 import Image from 'next/image'
@@ -249,6 +254,64 @@ const MostViewedItem: React.FC<{ news: NewsItem }> = ({ news }) => {
   )
 }
 
+// ─── Empty state ──────────────────────────────────────────────────────────────
+
+const NewsEmptyState: React.FC<{
+  hasActiveFilter: boolean
+  onReset: () => void
+}> = ({ hasActiveFilter, onReset }) => {
+  const t = useTranslations('newsPage')
+  const Icon = hasActiveFilter ? SearchX : Inbox
+
+  return (
+    <Card className='flex flex-col items-center justify-center text-center py-10 px-5 sm:py-16 sm:px-10'>
+      <div className='mb-5 inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 text-primary'>
+        <Icon className='w-8 h-8 sm:w-10 sm:h-10' />
+      </div>
+      <Typography
+        variant='h3'
+        className='text-lg sm:text-xl font-semibold tracking-tight mb-2'
+      >
+        {hasActiveFilter ? t('emptyState.searchTitle') : t('emptyState.title')}
+      </Typography>
+      <Typography
+        variant='p'
+        className='text-sm text-muted-foreground max-w-md leading-relaxed mb-6'
+      >
+        {hasActiveFilter
+          ? t('emptyState.searchDescription')
+          : t('emptyState.description')}
+      </Typography>
+
+      {hasActiveFilter && (
+        <>
+          <Button
+            onClick={onReset}
+            className='gap-2 w-full sm:w-auto sm:min-w-[200px]'
+          >
+            <RefreshCw className='w-4 h-4' />
+            {t('emptyState.resetFilters')}
+          </Button>
+
+          <div className='w-full max-w-sm text-left border-t border-border mt-8 pt-5'>
+            <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3 text-center'>
+              {t('emptyState.tips')}
+            </p>
+            <ul className='space-y-2 text-sm text-muted-foreground'>
+              {[1, 2, 3].map((n) => (
+                <li key={n} className='flex items-start gap-2'>
+                  <CheckCircle2 className='w-4 h-4 text-primary flex-shrink-0 mt-0.5' />
+                  <span>{t(`emptyState.tip${n}`)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
+    </Card>
+  )
+}
+
 // ─── Skeletons ────────────────────────────────────────────────────────────────
 
 const FeaturedSkeleton = () => (
@@ -340,6 +403,16 @@ const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
   const featuredItem = items[0]
   const listItems = items.slice(1)
   const isInitialLoading = isLoading && items.length === 0
+  const hasActiveFilter = Boolean(
+    filters.keyword || selectedCategory || selectedTag,
+  )
+  const showEmpty = !isLoading && items.length === 0
+
+  const handleResetFilters = () => {
+    setKeyword('')
+    onCategoryChange?.(undefined)
+    onTagClear?.()
+  }
 
   return (
     <div className='px-4 sm:px-6'>
@@ -401,6 +474,11 @@ const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
                 <ArticleSkeleton key={i} />
               ))}
             </>
+          ) : showEmpty ? (
+            <NewsEmptyState
+              hasActiveFilter={hasActiveFilter}
+              onReset={handleResetFilters}
+            />
           ) : (
             <>
               {/* Featured article */}
@@ -435,7 +513,7 @@ const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
               <div className='mt-8 flex justify-center'>
                 <List.LoadMore
                   variant='default'
-                  className='px-10 bg-blue-600 hover:bg-blue-700 text-white border-0'
+                  className='px-10 bg-primary text-primary-foreground hover:bg-primary/90 border-0'
                   labelIdleKey='newsPage.viewMore'
                   labelLoadingKey='newsPage.loadingMore'
                 />

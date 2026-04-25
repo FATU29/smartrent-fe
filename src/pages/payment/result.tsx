@@ -852,7 +852,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                               window.location.href = '/seller/dashboard'
                             }
                           }}
-                          className='flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+                          className='flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                         >
                           {paymentType === 'listing'
                             ? t('actions.viewListings')
