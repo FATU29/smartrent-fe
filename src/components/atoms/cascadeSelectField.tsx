@@ -50,8 +50,21 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
   const [open, setOpen] = useState(false)
   const [keyword, setKeyword] = useState('')
   const listRef = useRef<HTMLDivElement>(null)
+  const labelCacheRef = useRef<Map<string, string>>(new Map())
 
-  const selected = options.find((opt) => opt.id === value)
+  // Remember labels for any id we've ever seen, so the trigger keeps showing
+  // the selected item even after options swap (e.g. search results → browse list)
+  useEffect(() => {
+    for (const opt of options) {
+      labelCacheRef.current.set(opt.id, opt.label)
+    }
+  }, [options])
+
+  const selected =
+    options.find((opt) => opt.id === value) ??
+    (value && labelCacheRef.current.has(value)
+      ? { id: value, label: labelCacheRef.current.get(value) as string }
+      : undefined)
 
   // Reset keyword + notify parent when popover closes
   useEffect(() => {
