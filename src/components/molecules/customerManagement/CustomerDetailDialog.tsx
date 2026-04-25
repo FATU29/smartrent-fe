@@ -68,7 +68,7 @@ export default function CustomerDetailDialog({
         />
 
         {/* Dialog Content */}
-        <div className='relative z-50 w-full max-w-2xl max-h-[90vh] overflow-hidden bg-white rounded-2xl shadow-2xl m-4 animate-in fade-in-0 zoom-in-95 duration-200'>
+        <div className='relative z-50 w-full max-w-2xl max-h-[90vh] overflow-hidden bg-card rounded-2xl shadow-2xl m-4 animate-in fade-in-0 zoom-in-95 duration-200'>
           {/* Header with gradient */}
           <div className='relative bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white'>
             <button
@@ -86,7 +86,7 @@ export default function CustomerDetailDialog({
                     alt={`${customer.firstName} ${customer.lastName}`}
                   />
                 )}
-                <AvatarFallback className='text-2xl bg-white text-blue-600'>
+                <AvatarFallback className='text-2xl bg-card text-blue-600'>
                   {getInitials(customer.firstName, customer.lastName)}
                 </AvatarFallback>
               </Avatar>
@@ -145,14 +145,14 @@ export default function CustomerDetailDialog({
               </h3>
 
               <div className='space-y-3'>
-                <div className='flex items-center justify-between p-3 bg-gray-50 rounded-lg'>
+                <div className='flex items-center justify-between p-3 bg-muted/40 rounded-lg'>
                   <div className='flex items-center gap-3'>
-                    <Mail className='h-5 w-5 text-gray-400' />
+                    <Mail className='h-5 w-5 text-muted-foreground' />
                     <div>
-                      <p className='text-xs text-gray-500'>
+                      <p className='text-xs text-muted-foreground'>
                         {t('table.email')}
                       </p>
-                      <p className='font-medium text-gray-900'>
+                      <p className='font-medium text-foreground'>
                         {customer.email}
                       </p>
                     </div>
@@ -161,18 +161,18 @@ export default function CustomerDetailDialog({
                     onClick={() =>
                       handleCopyToClipboard(customer.email, 'email')
                     }
-                    className='p-2 hover:bg-gray-200 rounded-lg transition-colors'
+                    className='p-2 hover:bg-accent rounded-lg transition-colors'
                   >
-                    <Copy className='h-4 w-4 text-gray-600' />
+                    <Copy className='h-4 w-4 text-muted-foreground' />
                   </button>
                 </div>
 
                 {customer.contactPhone && (
-                  <div className='flex items-center justify-between p-3 bg-gray-50 rounded-lg'>
+                  <div className='flex items-center justify-between p-3 bg-muted/40 rounded-lg'>
                     <div className='flex items-center gap-3'>
-                      <Phone className='h-5 w-5 text-gray-400' />
+                      <Phone className='h-5 w-5 text-muted-foreground' />
                       <div>
-                        <p className='text-xs text-gray-500 flex items-center gap-2'>
+                        <p className='text-xs text-muted-foreground flex items-center gap-2'>
                           {t('table.phone')}
                           {customer.contactPhoneVerified ? (
                             <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800'>
@@ -186,7 +186,7 @@ export default function CustomerDetailDialog({
                             </Badge>
                           )}
                         </p>
-                        <p className='font-medium text-gray-900'>
+                        <p className='font-medium text-foreground'>
                           {customer.contactPhone}
                         </p>
                       </div>
@@ -195,9 +195,9 @@ export default function CustomerDetailDialog({
                       onClick={() =>
                         handleCopyToClipboard(customer.contactPhone, 'phone')
                       }
-                      className='p-2 hover:bg-gray-200 rounded-lg transition-colors'
+                      className='p-2 hover:bg-accent rounded-lg transition-colors'
                     >
-                      <Copy className='h-4 w-4 text-gray-600' />
+                      <Copy className='h-4 w-4 text-muted-foreground' />
                     </button>
                   </div>
                 )}
@@ -215,7 +215,7 @@ export default function CustomerDetailDialog({
                 {customer.clickedListings.map((listing, index) => (
                   <div
                     key={listing.listingId}
-                    className='group p-4 bg-gray-50 hover:bg-blue-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-all duration-200'
+                    className='group p-4 bg-muted/40 hover:bg-blue-50 rounded-lg border border-border hover:border-blue-300 transition-all duration-200'
                   >
                     <div className='flex items-start justify-between gap-3'>
                       <div className='flex-1 min-w-0'>
@@ -230,10 +230,10 @@ export default function CustomerDetailDialog({
                             </Badge>
                           )}
                         </div>
-                        <h4 className='font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors'>
+                        <h4 className='font-semibold text-foreground truncate group-hover:text-blue-600 transition-colors'>
                           {listing.listingTitle}
                         </h4>
-                        <p className='text-xs text-gray-500 mt-1'>
+                        <p className='text-xs text-muted-foreground mt-1'>
                           {t('dialog.customerDetail.clickedOn')}{' '}
                           {formatDate(listing.clickedAt)}
                         </p>
@@ -258,7 +258,7 @@ export default function CustomerDetailDialog({
           </div>
 
           {/* Footer */}
-          <div className='border-t p-4 bg-gray-50 flex justify-end'>
+          <div className='border-t p-4 bg-muted/40 flex justify-end'>
             <Button onClick={() => onOpenChange(false)} variant='outline'>
               {t('dialog.customerDetail.close')}
             </Button>

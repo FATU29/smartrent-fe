@@ -509,10 +509,10 @@ const PaymentResultPage: NextPageWithLayout = () => {
                     className='w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full'
                   />
                 </div>
-                <h2 className='text-2xl font-bold text-gray-800 mb-2'>
+                <h2 className='text-2xl font-bold text-foreground mb-2'>
                   {t('processing.title')}
                 </h2>
-                <p className='text-gray-600'>{result.message}</p>
+                <p className='text-muted-foreground'>{result.message}</p>
               </div>
             )}
 
@@ -576,7 +576,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                           <div className='flex items-center justify-center w-10 h-10 bg-purple-500 rounded-lg'>
                             <Sparkles className='w-6 h-6 text-white' />
                           </div>
-                          <h3 className='text-xl font-bold text-gray-800'>
+                          <h3 className='text-xl font-bold text-foreground'>
                             {t('sections.vipListing.title')}
                           </h3>
                         </div>
@@ -586,11 +586,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
                             <div className='flex items-start justify-between py-2 border-b border-purple-200'>
                               <div className='flex items-center gap-2'>
                                 <Package className='w-5 h-5 text-purple-600' />
-                                <span className='text-gray-600 font-medium'>
+                                <span className='text-muted-foreground font-medium'>
                                   {t('sections.vipListing.listingTitle')}
                                 </span>
                               </div>
-                              <span className='font-semibold text-gray-900 text-right max-w-[60%]'>
+                              <span className='font-semibold text-foreground text-right max-w-[60%]'>
                                 {listingInfo.title}
                               </span>
                             </div>
@@ -600,11 +600,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
                             <div className='flex items-center justify-between py-2 border-b border-purple-200'>
                               <div className='flex items-center gap-2'>
                                 <Sparkles className='w-5 h-5 text-purple-600' />
-                                <span className='text-gray-600 font-medium'>
+                                <span className='text-muted-foreground font-medium'>
                                   {t('sections.vipListing.vipTier')}
                                 </span>
                               </div>
-                              <span className='font-semibold text-gray-900'>
+                              <span className='font-semibold text-foreground'>
                                 {listingInfo.vipType}
                               </span>
                             </div>
@@ -614,11 +614,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
                             <div className='flex items-center justify-between py-2 border-b border-purple-200'>
                               <div className='flex items-center gap-2'>
                                 <Calendar className='w-5 h-5 text-purple-600' />
-                                <span className='text-gray-600 font-medium'>
+                                <span className='text-muted-foreground font-medium'>
                                   {t('sections.vipListing.duration')}
                                 </span>
                               </div>
-                              <span className='font-semibold text-gray-900'>
+                              <span className='font-semibold text-foreground'>
                                 {listingInfo.durationDays}{' '}
                                 {t('sections.vipListing.durationDays')}
                               </span>
@@ -629,11 +629,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
                             <div className='flex items-center justify-between py-2'>
                               <div className='flex items-center gap-2'>
                                 <CreditCard className='w-5 h-5 text-purple-600' />
-                                <span className='text-gray-600 font-medium'>
+                                <span className='text-muted-foreground font-medium'>
                                   {t('sections.vipListing.amountPaid')}
                                 </span>
                               </div>
-                              <span className='font-bold text-xl text-gray-900'>
+                              <span className='font-bold text-xl text-foreground'>
                                 {result.transactionInfo.amount.toLocaleString(
                                   'vi-VN',
                                 )}{' '}
@@ -644,7 +644,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                         </div>
 
                         <div className='mt-6 pt-6 border-t border-purple-200'>
-                          <p className='text-sm text-gray-600'>
+                          <p className='text-sm text-muted-foreground'>
                             {t('sections.vipListing.note')}
                           </p>
                         </div>
@@ -665,7 +665,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                           <div className='flex items-center justify-center w-10 h-10 bg-blue-500 rounded-lg'>
                             <Sparkles className='w-6 h-6 text-white' />
                           </div>
-                          <h3 className='text-xl font-bold text-gray-800'>
+                          <h3 className='text-xl font-bold text-foreground'>
                             {t('sections.membership.title')}
                           </h3>
                         </div>
@@ -674,11 +674,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
                           <div className='flex items-center justify-between py-2 border-b border-blue-200'>
                             <div className='flex items-center gap-2'>
                               <Package className='w-5 h-5 text-blue-600' />
-                              <span className='text-gray-600 font-medium'>
+                              <span className='text-muted-foreground font-medium'>
                                 {t('sections.membership.package')}
                               </span>
                             </div>
-                            <span className='font-semibold text-gray-900'>
+                            <span className='font-semibold text-foreground'>
                               {membershipInfo.packageName}
                             </span>
                           </div>
@@ -686,11 +686,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
                           <div className='flex items-center justify-between py-2 border-b border-blue-200'>
                             <div className='flex items-center gap-2'>
                               <Calendar className='w-5 h-5 text-blue-600' />
-                              <span className='text-gray-600 font-medium'>
+                              <span className='text-muted-foreground font-medium'>
                                 {t('sections.membership.duration')}
                               </span>
                             </div>
-                            <span className='font-semibold text-gray-900'>
+                            <span className='font-semibold text-foreground'>
                               {membershipInfo.durationMonths}{' '}
                               {membershipInfo.durationMonths === 1
                                 ? t('sections.membership.month')
@@ -701,12 +701,12 @@ const PaymentResultPage: NextPageWithLayout = () => {
                           <div className='flex items-center justify-between py-2'>
                             <div className='flex items-center gap-2'>
                               <CreditCard className='w-5 h-5 text-blue-600' />
-                              <span className='text-gray-600 font-medium'>
+                              <span className='text-muted-foreground font-medium'>
                                 {t('sections.membership.amountPaid')}
                               </span>
                             </div>
                             <div className='text-right'>
-                              <span className='font-bold text-xl text-gray-900'>
+                              <span className='font-bold text-xl text-foreground'>
                                 {membershipInfo.salePrice.toLocaleString(
                                   'vi-VN',
                                 )}{' '}
@@ -714,7 +714,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                               </span>
                               {membershipInfo.discountPercentage > 0 && (
                                 <div className='flex items-center gap-2 justify-end'>
-                                  <span className='text-sm text-gray-500 line-through'>
+                                  <span className='text-sm text-muted-foreground line-through'>
                                     {membershipInfo.originalPrice.toLocaleString(
                                       'vi-VN',
                                     )}{' '}
@@ -733,7 +733,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                         {membershipInfo.benefits &&
                           membershipInfo.benefits.length > 0 && (
                             <div className='mt-6 pt-6 border-t border-blue-200'>
-                              <h4 className='font-semibold text-gray-800 mb-3 flex items-center gap-2'>
+                              <h4 className='font-semibold text-foreground mb-3 flex items-center gap-2'>
                                 <Sparkles className='w-4 h-4 text-blue-600' />
                                 {t('sections.membership.benefitsTitle')}
                               </h4>
@@ -744,7 +744,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                                     className='flex items-start gap-2 text-sm'
                                   >
                                     <Check className='w-4 h-4 text-green-500 mt-0.5 flex-shrink-0' />
-                                    <span className='text-gray-700'>
+                                    <span className='text-foreground'>
                                       <strong>
                                         {benefit.benefitNameDisplay}
                                       </strong>{' '}
@@ -773,24 +773,24 @@ const PaymentResultPage: NextPageWithLayout = () => {
                       className={cn(
                         'rounded-xl p-6 border mb-8',
                         result.status === 'success' &&
-                          'bg-gray-50 border-gray-200',
+                          'bg-muted/40 border-border',
                         result.status === 'failed' &&
                           'bg-red-50 border-red-200',
                         result.status === 'cancelled' &&
                           'bg-amber-50 border-amber-200',
                       )}
                     >
-                      <h3 className='font-semibold text-gray-800 mb-4 flex items-center gap-2'>
-                        <Hash className='w-5 h-5 text-gray-600' />
+                      <h3 className='font-semibold text-foreground mb-4 flex items-center gap-2'>
+                        <Hash className='w-5 h-5 text-muted-foreground' />
                         {t('sections.transaction.title')}
                       </h3>
 
                       <div className='space-y-3 text-sm'>
-                        <div className='flex justify-between items-center py-2 border-b border-gray-200'>
-                          <span className='text-gray-600'>
+                        <div className='flex justify-between items-center py-2 border-b border-border'>
+                          <span className='text-muted-foreground'>
                             {t('sections.transaction.amount')}
                           </span>
-                          <span className='font-bold text-gray-900'>
+                          <span className='font-bold text-foreground'>
                             {result.transactionInfo.amount.toLocaleString(
                               'vi-VN',
                             )}{' '}
@@ -799,22 +799,22 @@ const PaymentResultPage: NextPageWithLayout = () => {
                         </div>
 
                         {result.transactionInfo.bankCode && (
-                          <div className='flex justify-between items-center py-2 border-b border-gray-200'>
-                            <span className='text-gray-600'>
+                          <div className='flex justify-between items-center py-2 border-b border-border'>
+                            <span className='text-muted-foreground'>
                               {t('sections.transaction.bank')}
                             </span>
-                            <span className='font-semibold text-gray-900 uppercase'>
+                            <span className='font-semibold text-foreground uppercase'>
                               {result.transactionInfo.bankCode}
                             </span>
                           </div>
                         )}
 
                         {result.transactionInfo.transactionNo && (
-                          <div className='flex justify-between items-center py-2 border-b border-gray-200'>
-                            <span className='text-gray-600'>
+                          <div className='flex justify-between items-center py-2 border-b border-border'>
+                            <span className='text-muted-foreground'>
                               {t('sections.transaction.vnpayTxnNo')}
                             </span>
-                            <span className='font-mono font-semibold text-gray-900 text-xs'>
+                            <span className='font-mono font-semibold text-foreground text-xs'>
                               {result.transactionInfo.transactionNo}
                             </span>
                           </div>
@@ -861,7 +861,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                         </button>
                         <button
                           onClick={() => (window.location.href = '/')}
-                          className='flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-300'
+                          className='flex-1 px-6 py-3 bg-secondary hover:bg-secondary/80 text-foreground font-semibold rounded-xl transition-all duration-300'
                         >
                           {t('actions.returnHome')}
                         </button>
@@ -873,7 +873,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                       <>
                         <button
                           onClick={() => (window.location.href = '/')}
-                          className='flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-300'
+                          className='flex-1 px-6 py-3 bg-secondary hover:bg-secondary/80 text-foreground font-semibold rounded-xl transition-all duration-300'
                         >
                           {t('actions.returnHome')}
                         </button>

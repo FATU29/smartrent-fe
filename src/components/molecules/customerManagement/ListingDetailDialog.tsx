@@ -85,7 +85,7 @@ export default function ListingDetailDialog({
         />
 
         {/* Dialog Content */}
-        <div className='relative z-50 w-full max-w-3xl max-h-[90vh] overflow-hidden bg-white rounded-2xl shadow-2xl m-4 animate-in fade-in-0 zoom-in-95 duration-200'>
+        <div className='relative z-50 w-full max-w-3xl max-h-[90vh] overflow-hidden bg-card rounded-2xl shadow-2xl m-4 animate-in fade-in-0 zoom-in-95 duration-200'>
           {/* Header with gradient */}
           <div className='relative bg-gradient-to-r from-green-600 to-teal-600 p-6 text-white'>
             <button
@@ -157,15 +157,15 @@ export default function ListingDetailDialog({
 
               {loadingUsers ? (
                 <div className='flex items-center justify-center py-8'>
-                  <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
-                  <span className='ml-2 text-gray-500'>
+                  <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
+                  <span className='ml-2 text-muted-foreground'>
                     {t('dialog.listingDetail.loadingUsers')}
                   </span>
                 </div>
               ) : !usersData?.data || usersData.data.length === 0 ? (
                 <div className='text-center py-8'>
                   <Users className='h-12 w-12 text-gray-300 mx-auto mb-3' />
-                  <p className='text-gray-500'>
+                  <p className='text-muted-foreground'>
                     {t('dialog.listingDetail.noUsers')}
                   </p>
                 </div>
@@ -195,7 +195,7 @@ export default function ListingDetailDialog({
                         key={user.userId}
                         role='button'
                         tabIndex={0}
-                        className='group p-4 bg-gray-50 hover:bg-green-50 rounded-lg border border-gray-200 hover:border-green-300 transition-all duration-200 cursor-pointer'
+                        className='group p-4 bg-muted/40 hover:bg-green-50 rounded-lg border border-border hover:border-green-300 transition-all duration-200 cursor-pointer'
                         onClick={() => onViewCustomer?.(user.userId)}
                         onKeyDown={handleKeyDown}
                         aria-label={`View customer: ${user.firstName} ${user.lastName}`}
@@ -215,7 +215,7 @@ export default function ListingDetailDialog({
 
                           <div className='flex-1 min-w-0'>
                             <div className='flex items-center gap-2 mb-1'>
-                              <h4 className='font-semibold text-gray-900 truncate group-hover:text-green-600 transition-colors'>
+                              <h4 className='font-semibold text-foreground truncate group-hover:text-green-600 transition-colors'>
                                 {user.firstName} {user.lastName}
                               </h4>
                               {user.contactPhoneVerified && (
@@ -223,7 +223,7 @@ export default function ListingDetailDialog({
                               )}
                             </div>
 
-                            <div className='flex items-center gap-3 text-sm text-gray-600'>
+                            <div className='flex items-center gap-3 text-sm text-muted-foreground'>
                               <div className='flex items-center gap-1'>
                                 <Mail className='h-3.5 w-3.5' />
                                 <span className='truncate'>{user.email}</span>
@@ -241,7 +241,7 @@ export default function ListingDetailDialog({
                             <Badge variant='secondary' className='text-xs'>
                               {userClickCount} {t('listingCard.clicks')}
                             </Badge>
-                            <span className='text-xs text-gray-500'>
+                            <span className='text-xs text-muted-foreground'>
                               {formatDate(
                                 user.clickedListings[0]?.clickedAt || '',
                               )}
@@ -255,7 +255,7 @@ export default function ListingDetailDialog({
                   {usersData &&
                     usersData.totalElements > usersData.data.length && (
                       <div className='text-center pt-4'>
-                        <p className='text-sm text-gray-500'>
+                        <p className='text-sm text-muted-foreground'>
                           {t('pagination.showing')} {usersData.data.length} /{' '}
                           {usersData.totalElements} {t('pagination.results')}
                         </p>
@@ -267,7 +267,7 @@ export default function ListingDetailDialog({
           </div>
 
           {/* Footer */}
-          <div className='border-t p-4 bg-gray-50 flex justify-end'>
+          <div className='border-t p-4 bg-muted/40 flex justify-end'>
             <Button onClick={() => onOpenChange(false)} variant='outline'>
               {t('dialog.listingDetail.close')}
             </Button>

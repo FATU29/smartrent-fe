@@ -53,12 +53,12 @@ export default function AuthStatusDisplay({
     <div className='text-center'>
       {config.icon}
 
-      <h2 className='mt-3 sm:mt-4 text-base sm:text-lg font-semibold text-gray-900'>
+      <h2 className='mt-3 sm:mt-4 text-base sm:text-lg font-semibold text-foreground'>
         {config.title}
       </h2>
 
       {config.description && (
-        <p className='mt-2 text-xs sm:text-sm text-gray-600'>
+        <p className='mt-2 text-xs sm:text-sm text-muted-foreground'>
           {config.description}
         </p>
       )}

@@ -67,7 +67,7 @@ export const PaymentMethodDialog: React.FC<PaymentMethodDialogProps> = ({
             alt='ZaloPay'
             width={64}
             height={64}
-            className='object-contain bg-white p-2 w-16 h-16 rounded-md'
+            className='object-contain bg-card p-2 w-16 h-16 rounded-md'
           />
           <Typography
             as='div'

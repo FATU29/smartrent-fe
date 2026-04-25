@@ -57,9 +57,9 @@ const LISTING_TYPE_STYLES: Record<
     titleClass: 'text-amber-800',
   },
   SILVER: {
-    cardClass: 'border-slate-200 bg-slate-50/70',
-    badgeClass: 'border-slate-200 bg-slate-100 text-slate-700',
-    titleClass: 'text-slate-700',
+    cardClass: 'border-border bg-slate-50/70',
+    badgeClass: 'border-border bg-muted text-muted-foreground',
+    titleClass: 'text-muted-foreground',
   },
   STANDARD: {
     cardClass: 'border-border bg-muted/20',
