@@ -1,16 +1,22 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   useLegacyProvinces,
+  useLegacyProvincesSearch,
   useLegacyDistrictsInfinite,
+  useLegacyDistrictsSearch,
   useLegacyWardsInfinite,
+  useLegacyWardsSearch,
   useNewProvinces,
   useNewWardsInfinite,
 } from '@/hooks/useAddress'
+import { useDebounce } from '@/hooks/useDebounce'
 import CascadeSelectField from '@/components/atoms/cascadeSelectField'
 import { Switch } from '@/components/atoms/switch'
 import { useListContext } from '@/contexts/list/useListContext'
 import { ListingFilterRequest } from '@/api/types/property.type'
+
+const SEARCH_DEBOUNCE_MS = 300
 
 interface AddressFilterViewProps {
   value?: ListingFilterRequest
@@ -118,39 +124,90 @@ const LegacyAddressSection: React.FC<AddressSectionProps> = ({
   const legacyDistrictId =
     typeof value.districtId === 'number' ? value.districtId : undefined
 
+  const [provinceKeyword, setProvinceKeyword] = useState('')
+  const [districtKeyword, setDistrictKeyword] = useState('')
+  const [wardKeyword, setWardKeyword] = useState('')
+
+  const debouncedProvinceKeyword = useDebounce(
+    provinceKeyword,
+    SEARCH_DEBOUNCE_MS,
+  )
+  const debouncedDistrictKeyword = useDebounce(
+    districtKeyword,
+    SEARCH_DEBOUNCE_MS,
+  )
+  const debouncedWardKeyword = useDebounce(wardKeyword, SEARCH_DEBOUNCE_MS)
+
+  const trimmedProvinceKeyword = debouncedProvinceKeyword.trim()
+  const trimmedDistrictKeyword = debouncedDistrictKeyword.trim()
+  const trimmedWardKeyword = debouncedWardKeyword.trim()
+
+  const isSearchingProvinces = trimmedProvinceKeyword.length > 0
+  const isSearchingDistricts = trimmedDistrictKeyword.length > 0
+  const isSearchingWards = trimmedWardKeyword.length > 0
+
   const { data: legacyProvincesData, isLoading: legacyProvincesLoading } =
     useLegacyProvinces()
-  const legacyDistrictsQuery = useLegacyDistrictsInfinite(legacyProvinceId)
-  const legacyWardsQuery = useLegacyWardsInfinite(legacyDistrictId)
+  const provinceSearchQuery = useLegacyProvincesSearch(
+    isSearchingProvinces ? trimmedProvinceKeyword : undefined,
+  )
 
-  const provinces = useMemo(
-    () =>
-      (legacyProvincesData ?? []).map((province) => ({
+  const legacyDistrictsQuery = useLegacyDistrictsInfinite(legacyProvinceId)
+  const districtSearchQuery = useLegacyDistrictsSearch(
+    isSearchingDistricts ? trimmedDistrictKeyword : undefined,
+    legacyProvinceId,
+  )
+
+  const legacyWardsQuery = useLegacyWardsInfinite(legacyDistrictId)
+  const wardSearchQuery = useLegacyWardsSearch(
+    isSearchingWards ? trimmedWardKeyword : undefined,
+    legacyDistrictId,
+  )
+
+  const provinces = useMemo(() => {
+    if (isSearchingProvinces) {
+      return (provinceSearchQuery.data ?? []).map((province) => ({
         id: String(province.id),
         label: province.name,
-      })),
-    [legacyProvincesData],
-  )
+      }))
+    }
+    return (legacyProvincesData ?? []).map((province) => ({
+      id: String(province.id),
+      label: province.name,
+    }))
+  }, [isSearchingProvinces, provinceSearchQuery.data, legacyProvincesData])
 
-  const districts = useMemo(
-    () =>
-      mapPagedDataToOptions(
-        legacyDistrictsQuery.data?.pages,
-        (district) => district.id,
-        (district) => district.name,
-      ),
-    [legacyDistrictsQuery.data?.pages],
-  )
+  const districts = useMemo(() => {
+    if (isSearchingDistricts) {
+      return (districtSearchQuery.data ?? []).map((district) => ({
+        id: String(district.id),
+        label: district.name,
+      }))
+    }
+    return mapPagedDataToOptions(
+      legacyDistrictsQuery.data?.pages,
+      (district) => district.id,
+      (district) => district.name,
+    )
+  }, [
+    isSearchingDistricts,
+    districtSearchQuery.data,
+    legacyDistrictsQuery.data?.pages,
+  ])
 
-  const wards = useMemo(
-    () =>
-      mapPagedDataToOptions(
-        legacyWardsQuery.data?.pages,
-        (ward) => ward.id,
-        (ward) => ward.name,
-      ),
-    [legacyWardsQuery.data?.pages],
-  )
+  const wards = useMemo(() => {
+    if (isSearchingWards) {
+      return (wardSearchQuery.data ?? []).map((ward) => ({
+        id: String(ward.id),
+        label: ward.name,
+      }))
+    }
+    return mapPagedDataToOptions(
+      legacyWardsQuery.data?.pages,
+      (ward) => ward.id,
+      (ward) => ward.name,
+    )
+  }, [isSearchingWards, wardSearchQuery.data, legacyWardsQuery.data?.pages])
 
   return (
     <div className='space-y-5'>
@@ -171,6 +228,7 @@ const LegacyAddressSection: React.FC<AddressSectionProps> = ({
         }}
         disabled={legacyProvincesLoading}
         searchable
+        onSearchChange={setProvinceKeyword}
       />
 
       <CascadeSelectField
@@ -187,16 +245,25 @@ const LegacyAddressSection: React.FC<AddressSectionProps> = ({
             longitude: undefined,
           })
         }}
-        disabled={!legacyProvinceId || legacyDistrictsQuery.isLoading}
+        disabled={
+          !legacyProvinceId ||
+          (isSearchingDistricts
+            ? districtSearchQuery.isLoading
+            : legacyDistrictsQuery.isLoading)
+        }
         searchable
+        onSearchChange={setDistrictKeyword}
         onLoadMore={
+          !isSearchingDistricts &&
           legacyDistrictsQuery.hasNextPage &&
           !legacyDistrictsQuery.isFetchingNextPage
             ? () => legacyDistrictsQuery.fetchNextPage()
             : undefined
         }
-        hasMore={!!legacyDistrictsQuery.hasNextPage}
-        isLoadingMore={legacyDistrictsQuery.isFetchingNextPage}
+        hasMore={!isSearchingDistricts && !!legacyDistrictsQuery.hasNextPage}
+        isLoadingMore={
+          !isSearchingDistricts && legacyDistrictsQuery.isFetchingNextPage
+        }
       />
 
       <CascadeSelectField
@@ -212,15 +279,23 @@ const LegacyAddressSection: React.FC<AddressSectionProps> = ({
             longitude: undefined,
           })
         }}
-        disabled={!legacyDistrictId || legacyWardsQuery.isLoading}
+        disabled={
+          !legacyDistrictId ||
+          (isSearchingWards
+            ? wardSearchQuery.isLoading
+            : legacyWardsQuery.isLoading)
+        }
         searchable
+        onSearchChange={setWardKeyword}
         onLoadMore={
-          legacyWardsQuery.hasNextPage && !legacyWardsQuery.isFetchingNextPage
+          !isSearchingWards &&
+          legacyWardsQuery.hasNextPage &&
+          !legacyWardsQuery.isFetchingNextPage
             ? () => legacyWardsQuery.fetchNextPage()
             : undefined
         }
-        hasMore={!!legacyWardsQuery.hasNextPage}
-        isLoadingMore={legacyWardsQuery.isFetchingNextPage}
+        hasMore={!isSearchingWards && !!legacyWardsQuery.hasNextPage}
+        isLoadingMore={!isSearchingWards && legacyWardsQuery.isFetchingNextPage}
       />
     </div>
   )
@@ -234,9 +309,16 @@ const NewAddressSection: React.FC<AddressSectionProps> = ({
   const newProvinceCode =
     typeof value.provinceId === 'string' ? value.provinceId : undefined
 
+  const [wardKeyword, setWardKeyword] = useState('')
+  const debouncedWardKeyword = useDebounce(wardKeyword, SEARCH_DEBOUNCE_MS)
+  const trimmedWardKeyword = debouncedWardKeyword.trim()
+
   const { data: newProvincesData, isLoading: newProvincesLoading } =
     useNewProvinces()
-  const newWardsQuery = useNewWardsInfinite(newProvinceCode)
+  const newWardsQuery = useNewWardsInfinite(
+    newProvinceCode,
+    trimmedWardKeyword || undefined,
+  )
 
   const provinces = useMemo(
     () =>
@@ -293,6 +375,7 @@ const NewAddressSection: React.FC<AddressSectionProps> = ({
         }}
         disabled={!newProvinceCode || newWardsQuery.isLoading}
         searchable
+        onSearchChange={setWardKeyword}
         onLoadMore={
           newWardsQuery.hasNextPage && !newWardsQuery.isFetchingNextPage
             ? () => newWardsQuery.fetchNextPage()
