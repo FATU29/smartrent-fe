@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Check, ChevronDown, Loader2, X } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from './popover'
 import {
@@ -45,6 +46,7 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
   isLoadingMore = false,
   onSearchChange,
 }) => {
+  const tCommon = useTranslations('common')
   const [open, setOpen] = useState(false)
   const [keyword, setKeyword] = useState('')
   const listRef = useRef<HTMLDivElement>(null)
@@ -59,22 +61,27 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
     }
   }, [open, onSearchChange])
 
-  // Infinite scroll on command list
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      if (!onLoadMore || !hasMore || isLoadingMore) return
+      const el = e.currentTarget
+      const remaining = el.scrollHeight - el.scrollTop - el.clientHeight
+      if (remaining < 60) {
+        onLoadMore()
+      }
+    },
+    [onLoadMore, hasMore, isLoadingMore],
+  )
+
+  // Auto-fetch when content doesn't fill the list (so user can scroll to trigger more)
   useEffect(() => {
     if (!open || !onLoadMore || !hasMore || isLoadingMore) return
     const el = listRef.current
     if (!el) return
-
-    const handler = () => {
-      const bottom = el.scrollHeight - el.scrollTop - el.clientHeight
-      if (bottom < 60 && hasMore && !isLoadingMore) {
-        onLoadMore()
-      }
+    if (el.scrollHeight <= el.clientHeight) {
+      onLoadMore()
     }
-
-    el.addEventListener('scroll', handler)
-    return () => el.removeEventListener('scroll', handler)
-  }, [open, onLoadMore, hasMore, isLoadingMore])
+  }, [open, onLoadMore, hasMore, isLoadingMore, options.length])
 
   const handleSearchChange = useCallback(
     (next: string) => {
@@ -163,12 +170,13 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
             )}
             <CommandList
               ref={listRef}
+              onScroll={handleScroll}
               className='max-h-64 overscroll-contain'
               onWheel={(e) => e.stopPropagation()}
               onTouchMove={(e) => e.stopPropagation()}
             >
               <CommandEmpty>
-                {isLoadingMore ? 'Đang tải...' : 'Không có kết quả'}
+                {isLoadingMore ? tCommon('loading') : tCommon('noResults')}
               </CommandEmpty>
               <CommandGroup>
                 {options
@@ -190,12 +198,12 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
               {isLoadingMore && (
                 <div className='flex items-center justify-center gap-2 py-2 text-xs text-muted-foreground'>
                   <Loader2 className='h-3.5 w-3.5 animate-spin' />
-                  Đang tải...
+                  {tCommon('loading')}
                 </div>
               )}
-              {hasMore && !isLoadingMore && (
+              {hasMore && !isLoadingMore && options.length > 0 && (
                 <div className='py-2 text-center text-xs text-muted-foreground'>
-                  Cuộn để tải thêm
+                  {tCommon('scrollToLoadMore')}
                 </div>
               )}
             </CommandList>

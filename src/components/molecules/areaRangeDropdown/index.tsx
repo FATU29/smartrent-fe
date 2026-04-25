@@ -27,6 +27,7 @@ const AreaRangeDropdown: React.FC<AreaRangeDropdownProps> = ({
   className = '',
 }) => {
   const t = useTranslations('residentialFilter.area')
+  const tActions = useTranslations('residentialFilter.actions')
   const [localMin, setLocalMin] = useState<number>(minArea || 0)
   const [localMax, setLocalMax] = useState<number>(maxArea || 500)
   const [sliderValue, setSliderValue] = useState<[number, number]>([
@@ -149,10 +150,10 @@ const AreaRangeDropdown: React.FC<AreaRangeDropdownProps> = ({
               onClick={handleClear}
               className='flex-1 h-8'
             >
-              Clear
+              {tActions('clear')}
             </Button>
             <Button size='sm' onClick={handleApply} className='flex-1 h-8'>
-              Apply
+              {tActions('apply')}
             </Button>
           </div>
         </div>
