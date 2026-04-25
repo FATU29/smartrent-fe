@@ -167,7 +167,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
   const displayImage = coverImage?.url
 
   return (
-    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-background to-muted'>
       <CardHeader className='pb-3'>
         <CardTitle className='text-lg sm:text-xl'>
           <span>{t('title')}</span>
@@ -176,7 +176,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
       <CardContent>
         <div className='mx-auto w-full max-w-xl'>
           {displayImage ? (
-            <div className='relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900'>
+            <div className='relative rounded-xl overflow-hidden border border-border bg-card'>
               <div className='relative aspect-[4/3]'>
                 <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-yellow-400 text-gray-900 font-medium shadow-sm'>
                   {t('badge')}
@@ -188,7 +188,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
                   className='object-cover'
                 />
               </div>
-              <div className='p-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2'>
+              <div className='p-3 border-t border-border flex items-center justify-between gap-2'>
                 <Button
                   size='sm'
                   className='rounded-md'
@@ -211,8 +211,8 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
               </div>
             </div>
           ) : (
-            <div className='rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 p-6 flex flex-col items-center justify-center text-center bg-white dark:bg-gray-900/50'>
-              <p className='text-sm text-gray-600 dark:text-gray-400'>
+            <div className='rounded-2xl border-2 border-dashed border-border p-6 flex flex-col items-center justify-center text-center bg-card/50'>
+              <p className='text-sm text-muted-foreground'>
                 {t('description')}
               </p>
               <Button

@@ -199,23 +199,23 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
     return (
       <div
         className={cn(
-          'rounded-lg border p-4 bg-gray-50 border-gray-300 dark:bg-gray-950/30 dark:border-gray-700',
+          'rounded-lg border p-4 bg-muted border-border',
           className,
         )}
       >
         <div className='flex items-start gap-3'>
-          <XCircle className='w-5 h-5 mt-0.5 shrink-0 text-gray-600 dark:text-gray-400' />
+          <XCircle className='w-5 h-5 mt-0.5 shrink-0 text-muted-foreground' />
           <div className='flex-1 min-w-0'>
             <Typography
               variant='p'
-              className='font-semibold mb-1 text-gray-800 dark:text-gray-300'
+              className='font-semibold mb-1 text-foreground'
             >
               {t('suspendedTitle')}
             </Typography>
             {verificationNotes && (
               <Typography
                 variant='small'
-                className='block mb-2 text-gray-700 dark:text-gray-400'
+                className='block mb-2 text-muted-foreground'
               >
                 {verificationNotes}
               </Typography>

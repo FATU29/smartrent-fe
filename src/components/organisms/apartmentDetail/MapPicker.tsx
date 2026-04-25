@@ -12,14 +12,11 @@ interface MapPickerProps {
 
 const Marker: React.FC<{ lat: number; lng: number }> = () => (
   <div
+    className='-translate-x-1/2 -translate-y-full bg-destructive border-2 border-background shadow-md'
     style={{
-      transform: 'translate(-50%, -100%)',
-      background: '#ef4444',
       borderRadius: '9999px',
       width: 16,
       height: 16,
-      border: '2px solid white',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
     }}
   />
 )

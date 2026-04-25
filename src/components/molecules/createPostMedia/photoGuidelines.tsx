@@ -13,7 +13,7 @@ const PhotoGuidelines: React.FC = () => {
   const [openNormal, setOpenNormal] = useState(false)
 
   return (
-    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-background to-muted'>
       <CardHeader className='pb-3'>
         <CardTitle className='flex items-center justify-between text-lg'>
           <div className='flex items-center gap-2'>
@@ -23,11 +23,11 @@ const PhotoGuidelines: React.FC = () => {
       </CardHeader>
       <CardContent className='space-y-4'>
         {/* Normal Photos collapsible */}
-        <div className='rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden'>
+        <div className='rounded-lg border border-border overflow-hidden'>
           <button
             type='button'
             onClick={() => setOpenNormal((v) => !v)}
-            className='w-full flex items-center justify-between px-3 sm:px-4 py-3 bg-gray-50 dark:bg-gray-900/40 hover:bg-gray-100 dark:hover:bg-gray-900/60 transition-colors'
+            className='w-full flex items-center justify-between px-3 sm:px-4 py-3 bg-muted/50 hover:bg-muted transition-colors'
           >
             <div className='flex items-center gap-2 font-medium'>
               {openNormal ? (
@@ -38,7 +38,7 @@ const PhotoGuidelines: React.FC = () => {
               <Camera className='w-4 h-4' />
               <span>{t('guidelines.normalTitle')}</span>
             </div>
-            <span className='text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800'>
+            <span className='text-xs px-2 py-0.5 rounded bg-muted'>
               {t('guidelines.normalCount')}
             </span>
           </button>

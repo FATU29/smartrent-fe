@@ -19,14 +19,11 @@ interface PropertyMapProps {
 
 const Marker: React.FC<{ lat: number; lng: number }> = () => (
   <div
+    className='-translate-x-1/2 -translate-y-full bg-destructive border-[3px] border-background shadow-lg'
     style={{
-      transform: 'translate(-50%, -100%)',
-      background: '#ef4444',
       borderRadius: '9999px',
       width: 20,
       height: 20,
-      border: '3px solid white',
-      boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
     }}
   />
 )

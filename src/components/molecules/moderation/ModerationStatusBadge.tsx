@@ -51,8 +51,7 @@ const BADGE_CONFIG: Record<
   [ModerationStatus.SUSPENDED]: {
     icon: Ban,
     variant: 'outline',
-    className:
-      'bg-gray-50 text-gray-700 border-gray-300 dark:bg-gray-950/30 dark:text-gray-400 dark:border-gray-800',
+    className: 'bg-muted text-muted-foreground border-border',
   },
 }
 

@@ -116,8 +116,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             'w-full h-12 justify-start text-left font-normal rounded-xl px-4 border-2',
             !selectedDate && 'text-muted-foreground',
             error
-              ? 'border-destructive dark:border-destructive focus:border-destructive focus:ring-destructive/50'
-              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600',
+              ? 'border-destructive focus:border-destructive focus:ring-destructive/50'
+              : 'border-border hover:border-foreground/30',
             className,
           )}
         >

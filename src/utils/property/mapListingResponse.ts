@@ -27,16 +27,56 @@ export function mapBackendToFrontendResponse(
 
 /**
  * Map frontend filter request to backend API request
+ *
+ * Address fields differ by structure:
+ * - Legacy mode (isLegacy=true): backend matches on legacy_province_id /
+ *   legacy_district_id / legacy_ward_id, so send numeric provinceId,
+ *   districtId, wardId.
+ * - New mode (isLegacy=false): backend matches on new_province_code /
+ *   new_ward_code, so send provinceCodes (list) and newWardCode. The FE
+ *   address filter stores the chosen new codes under provinceId/wardId
+ *   (string), so promote them here.
  */
 export function mapFrontendToBackendRequest(
   frontendFilter: Partial<ListingFilterRequest>,
 ): ListingSearchApiRequest {
+  const isLegacy = frontendFilter?.isLegacy
+  const addressPayload: Pick<
+    ListingSearchApiRequest,
+    | 'provinceId'
+    | 'provinceCodes'
+    | 'districtId'
+    | 'wardId'
+    | 'newWardCode'
+    | 'isLegacy'
+  > =
+    isLegacy === false
+      ? {
+          provinceCodes:
+            frontendFilter?.provinceCodes &&
+            frontendFilter.provinceCodes.length > 0
+              ? frontendFilter.provinceCodes
+              : frontendFilter?.provinceId !== undefined &&
+                  frontendFilter.provinceId !== null
+                ? [String(frontendFilter.provinceId)]
+                : undefined,
+          newWardCode:
+            frontendFilter?.wardId !== undefined &&
+            frontendFilter.wardId !== null
+              ? String(frontendFilter.wardId)
+              : undefined,
+          isLegacy: false,
+        }
+      : {
+          provinceId: frontendFilter?.provinceId,
+          provinceCodes: frontendFilter?.provinceCodes,
+          districtId: frontendFilter?.districtId,
+          wardId: frontendFilter?.wardId,
+          isLegacy,
+        }
+
   const payload = {
-    provinceId: frontendFilter?.provinceId,
-    provinceCodes: frontendFilter?.provinceCodes,
-    districtId: frontendFilter?.districtId,
-    wardId: frontendFilter?.wardId,
-    isLegacy: frontendFilter?.isLegacy,
+    ...addressPayload,
     categoryId: frontendFilter?.categoryId,
     vipType: frontendFilter?.vipType,
     productType: frontendFilter?.productType,

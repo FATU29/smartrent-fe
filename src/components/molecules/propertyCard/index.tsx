@@ -240,18 +240,18 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 <button
                   type='button'
                   onClick={handlePrevImage}
-                  className='absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-black/80 shadow-sm z-10'
+                  className='absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-card shadow-sm z-10'
                   aria-label='Previous image'
                 >
-                  <ChevronLeft className='w-4 h-4 text-gray-800 dark:text-gray-200' />
+                  <ChevronLeft className='w-4 h-4 text-foreground' />
                 </button>
                 <button
                   type='button'
                   onClick={handleNextImage}
-                  className='absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-black/80 shadow-sm z-10'
+                  className='absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-card shadow-sm z-10'
                   aria-label='Next image'
                 >
-                  <ChevronRight className='w-4 h-4 text-gray-800 dark:text-gray-200' />
+                  <ChevronRight className='w-4 h-4 text-foreground' />
                 </button>
               </>
             )}
@@ -286,12 +286,12 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 listing={listing}
                 variant='ghost'
                 size='icon'
-                className='bg-white/80 dark:bg-black/60 backdrop-blur-md hover:bg-white dark:hover:bg-black/80 shadow-sm rounded-full transition-all duration-200'
+                className='bg-card/80 backdrop-blur-md hover:bg-card shadow-sm rounded-full transition-all duration-200'
               />
               <SaveListingButton
                 listingId={listing.listingId}
                 variant='icon'
-                className='bg-white/80 dark:bg-black/60 backdrop-blur-md hover:bg-white dark:hover:bg-black/80 shadow-sm rounded-full transition-all duration-200'
+                className='bg-card/80 backdrop-blur-md hover:bg-card shadow-sm rounded-full transition-all duration-200'
               />
             </div>
 
@@ -415,7 +415,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             variant='ghost'
             size='icon'
             className={classNames(
-              'bg-white/80 dark:bg-black/60 backdrop-blur-md rounded-full shadow-sm hover:bg-white dark:hover:bg-black/80 transition-all',
+              'bg-card/80 backdrop-blur-md rounded-full shadow-sm hover:bg-card transition-all',
               isCompact ? 'w-6 h-6' : 'w-8 h-8 sm:w-9 sm:h-9',
             )}
           />
@@ -423,7 +423,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             listingId={listing.listingId}
             variant='icon'
             className={classNames(
-              'bg-white/80 dark:bg-black/60 backdrop-blur-md rounded-full shadow-sm hover:bg-white dark:hover:bg-black/80 transition-all',
+              'bg-card/80 backdrop-blur-md rounded-full shadow-sm hover:bg-card transition-all',
               isCompact
                 ? 'w-6 h-6'
                 : 'w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9',

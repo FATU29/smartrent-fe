@@ -543,9 +543,11 @@ export interface ListingFilterRequest {
  */
 export interface ListingSearchApiRequest {
   provinceId?: number | string
+  provinceCode?: string
   provinceCodes?: string[]
   districtId?: number
   wardId?: number | string
+  newWardCode?: string
   isLegacy?: boolean
 
   categoryId?: number

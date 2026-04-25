@@ -47,7 +47,7 @@ export const NumberField: React.FC<NumberFieldProps> = ({
   return (
     <div className={cn('space-y-2', className)}>
       {label && (
-        <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+        <label className='text-sm font-semibold text-foreground'>
           {label}
           {required && <span className='text-destructive ml-1'>*</span>}
         </label>
@@ -64,9 +64,9 @@ export const NumberField: React.FC<NumberFieldProps> = ({
           inputMode='numeric'
           placeholder={placeholder}
           className={cn(
-            'w-full h-12 px-4 pr-10 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600',
+            'w-full h-12 px-4 pr-10 border-2 rounded-xl bg-background text-foreground border-border hover:border-foreground/30 focus:ring-2 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm',
             (invalid || error) &&
-              'border-destructive dark:border-destructive focus:border-destructive focus:ring-destructive/50',
+              'border-destructive focus:border-destructive focus:ring-destructive/50',
             disabled && 'opacity-60 cursor-not-allowed',
             compact && 'h-10 text-sm',
           )}
@@ -74,7 +74,7 @@ export const NumberField: React.FC<NumberFieldProps> = ({
           onBlur={() => setTouched(true)}
         />
         {suffix && (
-          <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400'>
+          <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground'>
             {suffix}
           </span>
         )}

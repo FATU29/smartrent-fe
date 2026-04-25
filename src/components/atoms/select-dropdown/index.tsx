@@ -71,11 +71,11 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
 
   const variantClasses = {
     default:
-      'border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus-visible:outline-none',
+      'border-2 border-border bg-background hover:border-foreground/30 focus:outline-none focus-visible:outline-none',
     outline:
-      'border-2 border-gray-300 dark:border-gray-600 bg-transparent hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus-visible:outline-none',
+      'border-2 border-input bg-transparent hover:border-foreground/40 focus:outline-none focus-visible:outline-none',
     ghost:
-      'border-0 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus-visible:outline-none',
+      'border-0 bg-muted hover:bg-accent focus:outline-none focus-visible:outline-none',
   }
 
   const iconSizeClasses = {
@@ -90,8 +90,8 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
       {label && (
         <label
           className={cn(
-            'text-sm font-semibold text-gray-700 dark:text-gray-300',
-            error && 'text-red-600 dark:text-red-400',
+            'text-sm font-semibold text-foreground',
+            error && 'text-destructive',
           )}
         >
           {label}
@@ -105,7 +105,7 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
           <div className='absolute left-3 top-1/2 transform -translate-y-1/2 z-10'>
             <div
               className={cn(
-                'text-gray-400 group-focus-within:text-blue-500 transition-colors',
+                'text-muted-foreground group-focus-within:text-ring transition-colors',
                 iconSizeClasses[size],
               )}
             >
@@ -128,7 +128,7 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
               icon && iconPosition === 'left' && 'pl-12 pr-5',
               icon && iconPosition === 'right' && 'pl-5 pr-12',
               loading && 'pr-12',
-              error && 'border-destructive dark:border-destructive',
+              error && 'border-destructive',
               disabled && 'opacity-50 cursor-not-allowed',
               loading && 'opacity-70 cursor-wait',
               fullWidth && 'w-full',
@@ -139,7 +139,7 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
               <div className='absolute right-3 top-1/2 transform -translate-y-1/2 z-10'>
                 <Loader2
                   className={cn(
-                    'text-gray-400 animate-spin',
+                    'text-muted-foreground animate-spin',
                     iconSizeClasses[size],
                   )}
                 />
@@ -166,7 +166,7 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
           <div className='absolute right-3 top-1/2 transform -translate-y-1/2 z-10'>
             <div
               className={cn(
-                'text-gray-400 group-focus-within:text-blue-500 transition-colors',
+                'text-muted-foreground group-focus-within:text-ring transition-colors',
                 iconSizeClasses[size],
               )}
             >
@@ -181,9 +181,7 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
         <p
           className={cn(
             'text-xs',
-            error
-              ? 'text-red-600 dark:text-red-400'
-              : 'text-gray-500 dark:text-gray-400',
+            error ? 'text-destructive' : 'text-muted-foreground',
           )}
         >
           {error || helperText}

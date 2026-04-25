@@ -364,7 +364,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                   <div className='relative w-full rounded-lg overflow-hidden bg-muted'>
                     {videoUrl ? (
                       // Video takes priority
-                      <div className='relative w-full aspect-video bg-black rounded-lg overflow-hidden'>
+                      <div className='relative w-full aspect-video bg-muted rounded-lg overflow-hidden'>
                         {isYouTubeVideo && embedUrl ? (
                           // YouTube video - use iframe
                           <iframe
