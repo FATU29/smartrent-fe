@@ -42,8 +42,13 @@ jobs:
 
   sonar-analysis:
     name: SonarCloud Analysis
-    needs: build-and-test
+    # Runs in parallel with build-and-test and never blocks CI:
+    # Sonar findings should be reviewed in the SonarCloud dashboard, not gate merges.
+    # Flip `continue-on-error` to false once tests + coverage land and the team
+    # commits to enforcing the quality gate.
     runs-on: ubuntu-latest
+    continue-on-error: true
+    if: ${{ !github.event.pull_request.draft }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -57,15 +62,9 @@ jobs:
         with:
           # Only override projectKey & organization — all other settings
           # are read from sonar-project.properties (single source of truth).
+          # `qualitygate.wait=false` keeps the scan informational; the result
+          # is visible on the SonarCloud dashboard but does not block CI.
           args: >-
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             -Dsonar.organization=${{ secrets.SONAR_ORG }}
-
-      # Quality Gate check — informational only while no tests exist.
-      # Set continue-on-error to false once coverage & tests are in place.
-      - name: SonarCloud Quality Gate
-        uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
-        timeout-minutes: 5
-        continue-on-error: true
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            -Dsonar.qualitygate.wait=false

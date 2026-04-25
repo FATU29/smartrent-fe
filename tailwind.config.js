@@ -248,14 +248,18 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: [
-          'var(--font-inter)',
+          'Helvetica Neue',
+          'Helvetica',
+          'Arial',
           'var(--font-sans)',
           'system-ui',
           'sans-serif',
         ],
         heading: [
+          'Helvetica Neue',
+          'Helvetica',
+          'Arial',
           'var(--font-heading)',
-          'var(--font-inter)',
           'system-ui',
           'sans-serif',
         ],
