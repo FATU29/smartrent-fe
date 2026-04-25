@@ -47,7 +47,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     electricityPrice,
     internetPrice,
     serviceFee,
-    verified,
     listingId,
   } = listing || {}
 
@@ -127,13 +126,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
       key: 'furnishing',
       label: t('apartmentDetail.property.furnishing'),
       value: furnishing ? t(getFurnishingTranslationKey(furnishing)) : null,
-    },
-    {
-      key: 'verified',
-      label: t('common.status.VERIFIED'),
-      value: verified ? t('compare.table.yes') : null,
-      className:
-        'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800',
     },
   ].filter((item) => item.value)
 
@@ -244,7 +236,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
                 <Badge
                   key={meta.key}
                   variant='outline'
-                  className={`text-[11px] px-2 py-0.5 ${meta.className || ''}`}
+                  className='text-[11px] px-2 py-0.5'
                 >
                   {meta.label}: {meta.value}
                 </Badge>

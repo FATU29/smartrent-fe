@@ -25,7 +25,6 @@ export const ORDERED_POST_STATUSES: PostStatus[] = [
   POST_STATUS.DISPLAYING,
   POST_STATUS.IN_REVIEW,
   POST_STATUS.REJECTED,
-  POST_STATUS.VERIFIED,
 ]
 
 // Including ALL at the beginning for tab/filter components
