@@ -113,7 +113,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
           variant='outline'
           size='sm'
           onClick={onPromote}
-          className='gap-1 border-cyan-500 text-cyan-600 hover:bg-cyan-50 text-xs sm:text-sm'
+          className='gap-1 border-cyan-500 text-cyan-600 hover:bg-cyan-50 dark:text-cyan-400 dark:hover:bg-cyan-500/10 text-xs sm:text-sm'
         >
           <ChevronsUp size={14} />
           <span className='hidden xs:inline'>{t('promoteFull')}</span>
@@ -125,7 +125,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
         <Button
           onClick={onRepost}
           size='sm'
-          className='gap-1 bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm'
+          className='gap-1 bg-cyan-500 hover:bg-cyan-600 text-white dark:bg-cyan-600 dark:hover:bg-cyan-700 text-xs sm:text-sm'
         >
           <RefreshCw size={14} />
           <span className='hidden xs:inline'>{t('repostFull')}</span>
@@ -137,7 +137,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
         <Button
           onClick={onResubmit}
           size='sm'
-          className='gap-1 bg-orange-500 hover:bg-orange-600 text-white text-xs sm:text-sm'
+          className='gap-1 bg-orange-500 hover:bg-orange-600 text-white dark:bg-orange-600 dark:hover:bg-orange-700 text-xs sm:text-sm'
         >
           <SendHorizontal size={14} />
           <span className='hidden xs:inline'>{t('resubmitFull')}</span>

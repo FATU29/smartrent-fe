@@ -56,8 +56,9 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
   const getBenefitColor = (remaining: number, total: number) => {
     const percentage = (remaining / total) * 100
     if (percentage > 50) return 'text-foreground bg-muted border-border'
-    if (percentage > 20) return 'text-foreground bg-amber-50 border-amber-200'
-    return 'text-foreground bg-red-50 border-red-200'
+    if (percentage > 20)
+      return 'text-foreground bg-amber-50 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/30'
+    return 'text-foreground bg-red-50 border-red-200 dark:bg-red-500/10 dark:border-red-500/30'
   }
 
   const getBenefitProgressColor = (remaining: number, total: number) => {
@@ -74,11 +75,11 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className='flex items-center justify-between gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200'
+        className='flex items-center justify-between gap-3 p-3 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20'
       >
         <div className='flex items-center gap-3'>
-          <div className='flex items-center justify-center w-10 h-10 rounded-full bg-blue-100'>
-            <Crown className='h-5 w-5 text-blue-600' />
+          <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/15'>
+            <Crown className='h-5 w-5 text-primary' />
           </div>
           <div>
             <p className='text-sm font-semibold text-foreground'>
@@ -91,12 +92,12 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
         </div>
         <div className='text-right'>
           <div className='flex items-center gap-1.5'>
-            <Calendar className='h-3.5 w-3.5 text-blue-600' />
+            <Calendar className='h-3.5 w-3.5 text-primary' />
             <p className='text-xs text-muted-foreground'>
               {t('daysRemaining')}
             </p>
           </div>
-          <p className='text-lg font-bold text-blue-600'>
+          <p className='text-lg font-bold text-primary'>
             {membershipData.daysRemaining}
           </p>
         </div>
@@ -153,7 +154,7 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
               </div>
 
               {/* Progress Bar */}
-              <div className='w-full bg-white/50 rounded-full h-1.5 overflow-hidden'>
+              <div className='w-full bg-background/50 rounded-full h-1.5 overflow-hidden'>
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
@@ -179,7 +180,7 @@ export const MembershipPushDisplaySkeleton: React.FC<{
   return (
     <div
       className={cn(
-        'flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200',
+        'flex items-center gap-2 p-3 bg-muted/40 rounded-lg border border-border',
         className,
       )}
     >

@@ -109,7 +109,7 @@ const CascadeSelectField: React.FC<CascadeSelectFieldProps> = ({
             aria-haspopup='listbox'
             aria-expanded={open}
             className={cn(
-              'flex w-full h-11 items-center justify-between gap-2 rounded-lg border border-input bg-white dark:bg-muted px-3 text-sm text-left shadow-xs transition-colors',
+              'flex w-full h-11 items-center justify-between gap-2 rounded-lg border border-input bg-background px-3 text-sm text-left shadow-xs transition-colors',
               'hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
               disabled &&
                 'bg-muted/40 opacity-70 cursor-not-allowed hover:border-input',

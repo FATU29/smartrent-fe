@@ -234,7 +234,16 @@ export default function SeoHead(
 
       {/* Additional SEO Meta Tags */}
       <meta name='format-detection' content='telephone=no' />
-      <meta name='theme-color' content='#ffffff' />
+      <meta
+        name='theme-color'
+        content='#ffffff'
+        media='(prefers-color-scheme: light)'
+      />
+      <meta
+        name='theme-color'
+        content='#1a1d2e'
+        media='(prefers-color-scheme: dark)'
+      />
 
       {/* Prevent duplicate content */}
       {router.query && Object.keys(router.query).length > 0 && (

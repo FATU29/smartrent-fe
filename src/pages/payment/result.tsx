@@ -484,7 +484,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4'>
+    <div className='min-h-screen bg-gradient-to-br from-background via-muted/40 to-primary/5 flex items-center justify-center p-4'>
       <AnimatePresence mode='wait'>
         <motion.div
           key={result.status}
@@ -494,7 +494,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
           transition={{ duration: 0.5 }}
           className='w-full max-w-2xl'
         >
-          <div className='bg-white rounded-2xl shadow-2xl overflow-hidden'>
+          <div className='bg-card rounded-2xl shadow-2xl overflow-hidden'>
             {/* Loading State */}
             {result.status === 'loading' && (
               <div className='p-12 text-center'>
@@ -506,7 +506,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                       repeat: Infinity,
                       ease: 'linear',
                     }}
-                    className='w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full'
+                    className='w-16 h-16 border-4 border-primary border-t-transparent rounded-full'
                   />
                 </div>
                 <h2 className='text-2xl font-bold text-foreground mb-2'>
@@ -570,11 +570,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
-                        className='mb-8 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100'
+                        className='mb-8 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-6 border border-primary/20'
                       >
                         <div className='flex items-center gap-3 mb-4'>
-                          <div className='flex items-center justify-center w-10 h-10 bg-purple-500 rounded-lg'>
-                            <Sparkles className='w-6 h-6 text-white' />
+                          <div className='flex items-center justify-center w-10 h-10 bg-primary rounded-lg'>
+                            <Sparkles className='w-6 h-6 text-primary-foreground' />
                           </div>
                           <h3 className='text-xl font-bold text-foreground'>
                             {t('sections.vipListing.title')}
@@ -583,9 +583,9 @@ const PaymentResultPage: NextPageWithLayout = () => {
 
                         <div className='space-y-3'>
                           {listingInfo.title && (
-                            <div className='flex items-start justify-between py-2 border-b border-purple-200'>
+                            <div className='flex items-start justify-between py-2 border-b border-primary/20'>
                               <div className='flex items-center gap-2'>
-                                <Package className='w-5 h-5 text-purple-600' />
+                                <Package className='w-5 h-5 text-primary' />
                                 <span className='text-muted-foreground font-medium'>
                                   {t('sections.vipListing.listingTitle')}
                                 </span>
@@ -597,9 +597,9 @@ const PaymentResultPage: NextPageWithLayout = () => {
                           )}
 
                           {listingInfo.vipType && (
-                            <div className='flex items-center justify-between py-2 border-b border-purple-200'>
+                            <div className='flex items-center justify-between py-2 border-b border-primary/20'>
                               <div className='flex items-center gap-2'>
-                                <Sparkles className='w-5 h-5 text-purple-600' />
+                                <Sparkles className='w-5 h-5 text-primary' />
                                 <span className='text-muted-foreground font-medium'>
                                   {t('sections.vipListing.vipTier')}
                                 </span>
@@ -611,9 +611,9 @@ const PaymentResultPage: NextPageWithLayout = () => {
                           )}
 
                           {listingInfo.durationDays && (
-                            <div className='flex items-center justify-between py-2 border-b border-purple-200'>
+                            <div className='flex items-center justify-between py-2 border-b border-primary/20'>
                               <div className='flex items-center gap-2'>
-                                <Calendar className='w-5 h-5 text-purple-600' />
+                                <Calendar className='w-5 h-5 text-primary' />
                                 <span className='text-muted-foreground font-medium'>
                                   {t('sections.vipListing.duration')}
                                 </span>
@@ -628,7 +628,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                           {result.transactionInfo && (
                             <div className='flex items-center justify-between py-2'>
                               <div className='flex items-center gap-2'>
-                                <CreditCard className='w-5 h-5 text-purple-600' />
+                                <CreditCard className='w-5 h-5 text-primary' />
                                 <span className='text-muted-foreground font-medium'>
                                   {t('sections.vipListing.amountPaid')}
                                 </span>
@@ -643,7 +643,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                           )}
                         </div>
 
-                        <div className='mt-6 pt-6 border-t border-purple-200'>
+                        <div className='mt-6 pt-6 border-t border-primary/20'>
                           <p className='text-sm text-muted-foreground'>
                             {t('sections.vipListing.note')}
                           </p>
@@ -659,11 +659,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
-                        className='mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100'
+                        className='mb-8 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-6 border border-primary/20'
                       >
                         <div className='flex items-center gap-3 mb-4'>
-                          <div className='flex items-center justify-center w-10 h-10 bg-blue-500 rounded-lg'>
-                            <Sparkles className='w-6 h-6 text-white' />
+                          <div className='flex items-center justify-center w-10 h-10 bg-primary rounded-lg'>
+                            <Sparkles className='w-6 h-6 text-primary-foreground' />
                           </div>
                           <h3 className='text-xl font-bold text-foreground'>
                             {t('sections.membership.title')}
@@ -671,9 +671,9 @@ const PaymentResultPage: NextPageWithLayout = () => {
                         </div>
 
                         <div className='space-y-3'>
-                          <div className='flex items-center justify-between py-2 border-b border-blue-200'>
+                          <div className='flex items-center justify-between py-2 border-b border-primary/20'>
                             <div className='flex items-center gap-2'>
-                              <Package className='w-5 h-5 text-blue-600' />
+                              <Package className='w-5 h-5 text-primary' />
                               <span className='text-muted-foreground font-medium'>
                                 {t('sections.membership.package')}
                               </span>
@@ -683,9 +683,9 @@ const PaymentResultPage: NextPageWithLayout = () => {
                             </span>
                           </div>
 
-                          <div className='flex items-center justify-between py-2 border-b border-blue-200'>
+                          <div className='flex items-center justify-between py-2 border-b border-primary/20'>
                             <div className='flex items-center gap-2'>
-                              <Calendar className='w-5 h-5 text-blue-600' />
+                              <Calendar className='w-5 h-5 text-primary' />
                               <span className='text-muted-foreground font-medium'>
                                 {t('sections.membership.duration')}
                               </span>
@@ -700,7 +700,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
 
                           <div className='flex items-center justify-between py-2'>
                             <div className='flex items-center gap-2'>
-                              <CreditCard className='w-5 h-5 text-blue-600' />
+                              <CreditCard className='w-5 h-5 text-primary' />
                               <span className='text-muted-foreground font-medium'>
                                 {t('sections.membership.amountPaid')}
                               </span>
@@ -720,7 +720,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                                     )}{' '}
                                     VND
                                   </span>
-                                  <span className='text-sm font-semibold text-green-600 bg-green-100 px-2 py-0.5 rounded'>
+                                  <span className='text-sm font-semibold text-green-600 bg-green-100 px-2 py-0.5 rounded dark:text-green-400 dark:bg-green-500/15'>
                                     -{membershipInfo.discountPercentage}%
                                   </span>
                                 </div>
@@ -732,9 +732,9 @@ const PaymentResultPage: NextPageWithLayout = () => {
                         {/* Benefits */}
                         {membershipInfo.benefits &&
                           membershipInfo.benefits.length > 0 && (
-                            <div className='mt-6 pt-6 border-t border-blue-200'>
+                            <div className='mt-6 pt-6 border-t border-primary/20'>
                               <h4 className='font-semibold text-foreground mb-3 flex items-center gap-2'>
-                                <Sparkles className='w-4 h-4 text-blue-600' />
+                                <Sparkles className='w-4 h-4 text-primary' />
                                 {t('sections.membership.benefitsTitle')}
                               </h4>
                               <ul className='space-y-2'>
@@ -743,7 +743,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                                     key={benefit.benefitId}
                                     className='flex items-start gap-2 text-sm'
                                   >
-                                    <Check className='w-4 h-4 text-green-500 mt-0.5 flex-shrink-0' />
+                                    <Check className='w-4 h-4 text-green-500 dark:text-green-400 mt-0.5 flex-shrink-0' />
                                     <span className='text-foreground'>
                                       <strong>
                                         {benefit.benefitNameDisplay}
@@ -775,9 +775,9 @@ const PaymentResultPage: NextPageWithLayout = () => {
                         result.status === 'success' &&
                           'bg-muted/40 border-border',
                         result.status === 'failed' &&
-                          'bg-red-50 border-red-200',
+                          'bg-red-50 border-red-200 dark:bg-red-500/10 dark:border-red-500/30',
                         result.status === 'cancelled' &&
-                          'bg-amber-50 border-amber-200',
+                          'bg-amber-50 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/30',
                       )}
                     >
                       <h3 className='font-semibold text-foreground mb-4 flex items-center gap-2'>
@@ -821,11 +821,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
                         )}
 
                         {result.status === 'failed' && (
-                          <div className='flex justify-between items-center py-2 bg-red-100 rounded-lg px-3 -mx-3 mt-3'>
-                            <span className='text-red-700 font-medium'>
+                          <div className='flex justify-between items-center py-2 bg-red-100 rounded-lg px-3 -mx-3 mt-3 dark:bg-red-500/15'>
+                            <span className='text-red-700 font-medium dark:text-red-300'>
                               {t('sections.transaction.errorCode')}
                             </span>
-                            <span className='font-mono font-bold text-red-900'>
+                            <span className='font-mono font-bold text-red-900 dark:text-red-200'>
                               {result.transactionInfo.responseCode}
                             </span>
                           </div>

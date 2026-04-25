@@ -111,7 +111,7 @@ const PaymentGuideTemplate = () => {
                   <CardHeader className='pt-4 pb-3 md:pt-5'>
                     <div className='flex items-start justify-between gap-3'>
                       <div className='flex min-w-0 items-center gap-3'>
-                        <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border bg-white'>
+                        <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border bg-white dark:bg-white/95'>
                           <Image
                             src={method.logo}
                             alt={t(`methods.${method.key}.title`)}
@@ -188,7 +188,7 @@ const PaymentGuideTemplate = () => {
                         <CardHeader className='pt-4 pb-3'>
                           <div className='space-y-3'>
                             <div className='flex items-start gap-3'>
-                              <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border bg-white'>
+                              <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border bg-white dark:bg-white/95'>
                                 <Image
                                   src={method.logo}
                                   alt={t(`methods.${method.key}.title`)}

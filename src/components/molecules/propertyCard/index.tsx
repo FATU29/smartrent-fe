@@ -162,7 +162,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     return {
       label: t('homePage.priorityBadge'),
       className:
-        'bg-gradient-to-r from-primary to-primary/80 text-white shadow-sm',
+        'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-sm',
       borderClassName: 'ring-1 ring-primary/30',
       icon: Sparkles,
     }

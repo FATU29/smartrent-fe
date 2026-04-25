@@ -73,7 +73,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     if (!vipType || vipType === 'NORMAL' || vipType === 'SILVER') return null
     return {
       className:
-        'bg-gradient-to-r from-primary to-primary/80 text-white border-transparent',
+        'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border-transparent',
       text: t('homePage.priorityBadge'),
       variant: 'default' as const,
     }

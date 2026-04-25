@@ -178,11 +178,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               moderationStatus !== ModerationStatus.APPROVED ? (
                 <ModerationStatusBadge status={moderationStatus} />
               ) : isExpired ? (
-                <Badge className='backdrop-blur-md bg-red-500 text-white border-red-600 shadow-md font-medium hover:bg-red-600'>
+                <Badge className='backdrop-blur-md bg-red-500 text-white border-red-600 shadow-md font-medium hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 dark:border-red-700'>
                   {t('status.expired')}
                 </Badge>
               ) : verified ? (
-                <Badge className='backdrop-blur-md bg-green-500 text-white border-green-600 shadow-md font-medium hover:bg-green-600'>
+                <Badge className='backdrop-blur-md bg-green-500 text-white border-green-600 shadow-md font-medium hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 dark:border-green-700'>
                   {t('status.active')}
                 </Badge>
               ) : null}

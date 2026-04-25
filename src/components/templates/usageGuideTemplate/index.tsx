@@ -40,15 +40,17 @@ const UsageGuideTemplate = () => {
     },
     {
       key: 'vipGold',
-      icon: <Crown className='h-4 w-4 text-amber-700' />,
-      cardClass: 'border-amber-200 bg-amber-50/70',
-      titleClass: 'text-amber-800',
-      badgeClass: 'border-amber-200 bg-amber-100 text-amber-800',
+      icon: <Crown className='h-4 w-4 text-amber-700 dark:text-amber-400' />,
+      cardClass:
+        'border-amber-200 bg-amber-50/70 dark:border-amber-500/30 dark:bg-amber-500/10',
+      titleClass: 'text-amber-800 dark:text-amber-300',
+      badgeClass:
+        'border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-300',
     },
     {
       key: 'vipSilver',
       icon: <Crown className='h-4 w-4 text-muted-foreground' />,
-      cardClass: 'border-border bg-slate-50/70',
+      cardClass: 'border-border bg-muted/50',
       titleClass: 'text-muted-foreground',
       badgeClass: 'border-border bg-muted text-muted-foreground',
     },

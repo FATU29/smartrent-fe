@@ -33,9 +33,9 @@ const getVipConfig = (vipType: VipType) => {
       }
     default:
       return {
-        color: 'bg-white hover:bg-gray-50 border-gray-300',
+        color: 'bg-card hover:bg-muted border-border',
         icon: null,
-        textColor: 'text-gray-900',
+        textColor: 'text-foreground',
       }
   }
 }
@@ -54,7 +54,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({
     if (vipType === 'DIAMOND') return 'border-t-blue-600'
     if (vipType === 'GOLD') return 'border-t-yellow-500'
     if (vipType === 'SILVER') return 'border-t-gray-400'
-    return 'border-t-white'
+    return 'border-t-card'
   }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {

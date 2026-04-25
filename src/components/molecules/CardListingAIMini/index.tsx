@@ -109,7 +109,7 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
             />
             {vipType && (vipType === 'DIAMOND' || vipType === 'GOLD') && (
               <div className='absolute top-2 left-2'>
-                <Badge className='rounded-full shadow-md font-medium backdrop-blur-sm bg-gradient-to-r from-primary to-primary/80 text-white text-xs px-2.5 py-1'>
+                <Badge className='rounded-full shadow-md font-medium backdrop-blur-sm bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs px-2.5 py-1'>
                   {tHome('priorityBadge')}
                 </Badge>
               </div>

@@ -141,7 +141,7 @@ const LocationMap: React.FC<LocationMapProps> = ({ location, className }) => {
                   variant='outline'
                   size='sm'
                   onClick={handleViewInMaps}
-                  className='bg-white/80 hover:bg-card'
+                  className='bg-card/80 hover:bg-card'
                 >
                   <ExternalLink className='w-4 h-4 mr-2' />
                   Open in Google Maps
@@ -151,7 +151,7 @@ const LocationMap: React.FC<LocationMapProps> = ({ location, className }) => {
 
             {/* Mock location pin */}
             <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-              <div className='w-6 h-6 bg-red-500 rounded-full border-4 border-white shadow-lg animate-pulse'></div>
+              <div className='w-6 h-6 bg-red-500 rounded-full border-4 border-card shadow-lg animate-pulse'></div>
             </div>
 
             {/* Mock surrounding points */}

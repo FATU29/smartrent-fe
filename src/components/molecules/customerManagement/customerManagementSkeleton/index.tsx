@@ -7,7 +7,7 @@ const CustomerManagementSkeleton: React.FC = () => {
     <div className='h-full flex flex-col bg-background'>
       <div className='flex-1 flex overflow-hidden w-full'>
         {/* Left Panel */}
-        <div className='w-full lg:w-1/2 border-r bg-white flex flex-col'>
+        <div className='w-full lg:w-1/2 border-r bg-card flex flex-col'>
           {/* Search with Stats */}
           <div className='p-4 border-b'>
             <div className='flex flex-col mb:flex-row items-center gap-4'>

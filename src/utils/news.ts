@@ -80,39 +80,48 @@ export const getCategoryConfig = (
   const configs: Record<string, CategoryConfig> = {
     NEWS: {
       label: tCategories('news'),
-      className: 'bg-blue-500 text-white border-blue-500',
+      className:
+        'bg-blue-500 text-white border-blue-500 dark:bg-blue-600 dark:border-blue-600',
     },
     BLOG: {
       label: tCategories('blog'),
-      className: 'bg-violet-500 text-white border-violet-500',
+      className:
+        'bg-violet-500 text-white border-violet-500 dark:bg-violet-600 dark:border-violet-600',
     },
     POLICY: {
       label: tCategories('policy'),
-      className: 'bg-orange-500 text-white border-orange-500',
+      className:
+        'bg-orange-500 text-white border-orange-500 dark:bg-orange-600 dark:border-orange-600',
     },
     MARKET: {
       label: tCategories('market'),
-      className: 'bg-amber-500 text-white border-amber-500',
+      className:
+        'bg-amber-500 text-white border-amber-500 dark:bg-amber-600 dark:border-amber-600',
     },
     PROJECT: {
       label: tCategories('project'),
-      className: 'bg-cyan-600 text-white border-cyan-600',
+      className:
+        'bg-cyan-600 text-white border-cyan-600 dark:bg-cyan-700 dark:border-cyan-700',
     },
     INVESTMENT: {
       label: tCategories('investment'),
-      className: 'bg-pink-600 text-white border-pink-600',
+      className:
+        'bg-pink-600 text-white border-pink-600 dark:bg-pink-700 dark:border-pink-700',
     },
     MARKET_TREND: {
       label: tCategories('market'),
-      className: 'bg-amber-500 text-white border-amber-500',
+      className:
+        'bg-amber-500 text-white border-amber-500 dark:bg-amber-600 dark:border-amber-600',
     },
     GUIDE: {
       label: tCategories('guide'),
-      className: 'bg-emerald-500 text-white border-emerald-500',
+      className:
+        'bg-emerald-500 text-white border-emerald-500 dark:bg-emerald-600 dark:border-emerald-600',
     },
     ANNOUNCEMENT: {
       label: tCategories('news'),
-      className: 'bg-red-500 text-white border-red-500',
+      className:
+        'bg-red-500 text-white border-red-500 dark:bg-red-600 dark:border-red-600',
     },
   }
   return configs[category] || configs.NEWS

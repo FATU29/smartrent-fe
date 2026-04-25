@@ -52,12 +52,14 @@ const LISTING_TYPE_STYLES: Record<
     titleClass: 'text-primary',
   },
   GOLD: {
-    cardClass: 'border-amber-200 bg-amber-50/70',
-    badgeClass: 'border-amber-200 bg-amber-100 text-amber-800',
-    titleClass: 'text-amber-800',
+    cardClass:
+      'border-amber-200 bg-amber-50/70 dark:border-amber-500/30 dark:bg-amber-500/10',
+    badgeClass:
+      'border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-300',
+    titleClass: 'text-amber-800 dark:text-amber-300',
   },
   SILVER: {
-    cardClass: 'border-border bg-slate-50/70',
+    cardClass: 'border-border bg-muted/50',
     badgeClass: 'border-border bg-muted text-muted-foreground',
     titleClass: 'text-muted-foreground',
   },

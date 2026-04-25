@@ -77,7 +77,7 @@ const NewsDetailHeader: React.FC<NewsDetailHeaderProps> = ({ news }) => {
             variant='outline'
             size='sm'
             onClick={handleShare}
-            className='rounded-full gap-1.5 hover:bg-primary hover:text-white transition-colors'
+            className='rounded-full gap-1.5 hover:bg-primary hover:text-primary-foreground transition-colors'
           >
             <Share2 className='w-4 h-4' />
             {t('share')}

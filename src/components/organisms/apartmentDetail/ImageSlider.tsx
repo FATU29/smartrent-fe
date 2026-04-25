@@ -145,7 +145,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             <Button
               variant='ghost'
               size='icon'
-              className='absolute left-2 md:left-3 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-card rounded-full shadow-md h-8 w-8 md:h-9 md:w-9 z-10 border border-border/50'
+              className='absolute left-2 md:left-3 top-1/2 -translate-y-1/2 bg-card/95 hover:bg-card rounded-full shadow-md h-8 w-8 md:h-9 md:w-9 z-10 border border-border/50'
               onClick={prevMedia}
             >
               <ChevronLeft className='w-4 h-4 md:w-5 md:h-5 text-foreground' />
@@ -153,7 +153,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
             <Button
               variant='ghost'
               size='icon'
-              className='absolute right-2 md:right-3 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-card rounded-full shadow-md h-8 w-8 md:h-9 md:w-9 z-10 border border-border/50'
+              className='absolute right-2 md:right-3 top-1/2 -translate-y-1/2 bg-card/95 hover:bg-card rounded-full shadow-md h-8 w-8 md:h-9 md:w-9 z-10 border border-border/50'
               onClick={nextMedia}
             >
               <ChevronRight className='w-4 h-4 md:w-5 md:h-5 text-foreground' />
@@ -198,7 +198,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
                 />
                 {item?.mediaType === 'VIDEO' && (
                   <div className='absolute inset-0 bg-black/30 flex items-center justify-center'>
-                    <div className='bg-white/95 rounded-full p-1 md:p-1.5'>
+                    <div className='bg-card/95 rounded-full p-1 md:p-1.5'>
                       <Play
                         className='w-2.5 h-2.5 md:w-3 md:h-3 text-foreground'
                         fill='currentColor'

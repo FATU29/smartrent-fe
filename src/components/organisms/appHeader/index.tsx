@@ -85,7 +85,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         <Button
           variant='default'
           size='sm'
-          className='hidden lg:block bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white shadow-md transition-all duration-300 text-xs sm:text-sm'
+          className='hidden lg:block bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-md transition-all duration-300 text-xs sm:text-sm'
         >
           {t('common.createPost')}
         </Button>
@@ -98,7 +98,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             onClick={() => openAuth('login', router.asPath)}
             size='sm'
             variant='default'
-            className='bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white shadow-md transition-all duration-300 text-xs sm:text-sm'
+            className='bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-md transition-all duration-300 text-xs sm:text-sm'
           >
             {t('homePage.auth.login.loginButton')}
           </Button>

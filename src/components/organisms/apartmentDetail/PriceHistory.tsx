@@ -30,7 +30,7 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ priceHistory }) => {
           {priceHistory.map((entry, index) => (
             <div
               key={index}
-              className='flex items-center justify-between py-2.5 border-b border-gray-100 last:border-b-0'
+              className='flex items-center justify-between py-2.5 border-b border-border last:border-b-0'
             >
               <Typography
                 variant='small'

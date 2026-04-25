@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/atoms/skeleton'
 
 const CustomerCardSkeleton: React.FC = () => {
   return (
-    <div className='w-full p-4 rounded-lg border border-gray-200'>
+    <div className='w-full p-4 rounded-lg border border-border'>
       <div className='flex items-start gap-3'>
         <Skeleton className='h-12 w-12 rounded-full' />
         <div className='flex-1 space-y-2'>

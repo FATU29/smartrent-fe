@@ -70,23 +70,23 @@ export default function CustomerDetailDialog({
         {/* Dialog Content */}
         <div className='relative z-50 w-full max-w-2xl max-h-[90vh] overflow-hidden bg-card rounded-2xl shadow-2xl m-4 animate-in fade-in-0 zoom-in-95 duration-200'>
           {/* Header with gradient */}
-          <div className='relative bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white'>
+          <div className='relative bg-primary p-6 text-primary-foreground'>
             <button
               onClick={() => onOpenChange(false)}
-              className='absolute top-4 right-4 p-2 rounded-full hover:bg-white/20 transition-colors'
+              className='absolute top-4 right-4 p-2 rounded-full hover:bg-primary-foreground/20 transition-colors'
             >
               <X className='h-5 w-5' />
             </button>
 
             <div className='flex items-center gap-4'>
-              <Avatar className='h-20 w-20 border-4 border-white shadow-lg'>
+              <Avatar className='h-20 w-20 border-4 border-primary-foreground shadow-lg'>
                 {customer.avatarUrl && (
                   <AvatarImage
                     src={customer.avatarUrl}
                     alt={`${customer.firstName} ${customer.lastName}`}
                   />
                 )}
-                <AvatarFallback className='text-2xl bg-card text-blue-600'>
+                <AvatarFallback className='text-2xl bg-card text-primary'>
                   {getInitials(customer.firstName, customer.lastName)}
                 </AvatarFallback>
               </Avatar>
@@ -95,7 +95,7 @@ export default function CustomerDetailDialog({
                 <h2 className='text-2xl font-bold mb-1'>
                   {customer.firstName} {customer.lastName}
                 </h2>
-                <p className='text-blue-100 text-sm'>
+                <p className='text-primary-foreground/80 text-sm'>
                   {t('dialog.customerDetail.title')}
                 </p>
               </div>
@@ -106,41 +106,39 @@ export default function CustomerDetailDialog({
           <div className='p-6 overflow-y-auto max-h-[calc(90vh-180px)]'>
             {/* Statistics Cards */}
             <div className='grid grid-cols-3 gap-4 mb-6'>
-              <Card className='p-4 text-center bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200'>
-                <TrendingUp className='h-6 w-6 mx-auto mb-2 text-blue-600' />
-                <p className='text-2xl font-bold text-blue-900'>
-                  {totalClicks}
-                </p>
-                <p className='text-xs text-blue-700 mt-1'>
+              <Card className='p-4 text-center bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'>
+                <TrendingUp className='h-6 w-6 mx-auto mb-2 text-primary' />
+                <p className='text-2xl font-bold text-primary'>{totalClicks}</p>
+                <p className='text-xs text-muted-foreground mt-1'>
                   {t('table.totalClicks')}
                 </p>
               </Card>
 
-              <Card className='p-4 text-center bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200'>
-                <Eye className='h-6 w-6 mx-auto mb-2 text-purple-600' />
-                <p className='text-2xl font-bold text-purple-900'>
+              <Card className='p-4 text-center bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'>
+                <Eye className='h-6 w-6 mx-auto mb-2 text-primary' />
+                <p className='text-2xl font-bold text-primary'>
                   {customer.totalListingsClicked}
                 </p>
-                <p className='text-xs text-purple-700 mt-1'>
+                <p className='text-xs text-muted-foreground mt-1'>
                   {t('dialog.customerDetail.totalListings')}
                 </p>
               </Card>
 
-              <Card className='p-4 text-center bg-gradient-to-br from-green-50 to-green-100 border-green-200'>
-                <Calendar className='h-6 w-6 mx-auto mb-2 text-green-600' />
-                <p className='text-xs font-semibold text-green-900 mb-1'>
+              <Card className='p-4 text-center bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'>
+                <Calendar className='h-6 w-6 mx-auto mb-2 text-primary' />
+                <p className='text-xs font-semibold text-primary mb-1'>
                   {t('dialog.customerDetail.lastClick')}
                 </p>
-                <p className='text-xs text-green-700'>
+                <p className='text-xs text-muted-foreground'>
                   {formatDate(lastClick?.clickedAt || '')}
                 </p>
               </Card>
             </div>
 
             {/* Contact Information */}
-            <Card className='p-5 mb-6 border-l-4 border-blue-500'>
+            <Card className='p-5 mb-6 border-l-4 border-primary'>
               <h3 className='text-lg font-semibold mb-4 flex items-center gap-2'>
-                <Mail className='h-5 w-5 text-blue-600' />
+                <Mail className='h-5 w-5 text-primary' />
                 {t('dialog.customerDetail.contactInfo')}
               </h3>
 
@@ -175,7 +173,7 @@ export default function CustomerDetailDialog({
                         <p className='text-xs text-muted-foreground flex items-center gap-2'>
                           {t('table.phone')}
                           {customer.contactPhoneVerified ? (
-                            <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800'>
+                            <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500 text-white dark:bg-green-600'>
                               <CheckCircle2 className='h-3 w-3 mr-1' />
                               {t('table.verified')}
                             </span>
@@ -205,9 +203,9 @@ export default function CustomerDetailDialog({
             </Card>
 
             {/* Click History */}
-            <Card className='p-5 border-l-4 border-purple-500'>
+            <Card className='p-5 border-l-4 border-primary'>
               <h3 className='text-lg font-semibold mb-4 flex items-center gap-2'>
-                <Calendar className='h-5 w-5 text-purple-600' />
+                <Calendar className='h-5 w-5 text-primary' />
                 {t('dialog.customerDetail.clickHistory')}
               </h3>
 
@@ -215,7 +213,7 @@ export default function CustomerDetailDialog({
                 {customer.clickedListings.map((listing, index) => (
                   <div
                     key={listing.listingId}
-                    className='group p-4 bg-muted/40 hover:bg-blue-50 rounded-lg border border-border hover:border-blue-300 transition-all duration-200'
+                    className='group p-4 bg-muted/40 hover:bg-primary/5 rounded-lg border border-border hover:border-primary/30 transition-all duration-200'
                   >
                     <div className='flex items-start justify-between gap-3'>
                       <div className='flex-1 min-w-0'>
@@ -230,7 +228,7 @@ export default function CustomerDetailDialog({
                             </Badge>
                           )}
                         </div>
-                        <h4 className='font-semibold text-foreground truncate group-hover:text-blue-600 transition-colors'>
+                        <h4 className='font-semibold text-foreground truncate group-hover:text-primary transition-colors'>
                           {listing.listingTitle}
                         </h4>
                         <p className='text-xs text-muted-foreground mt-1'>

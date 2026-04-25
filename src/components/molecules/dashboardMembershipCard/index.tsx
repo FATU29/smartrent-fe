@@ -78,9 +78,9 @@ const DashboardMembershipCard: React.FC = () => {
               }}
               className='relative mb-6'
             >
-              <div className='absolute inset-0 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-full blur-xl' />
-              <div className='relative flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary to-blue-600'>
-                <Crown className='h-10 w-10 text-white' />
+              <div className='absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full blur-xl' />
+              <div className='relative flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/70'>
+                <Crown className='h-10 w-10 text-primary-foreground' />
               </div>
             </motion.div>
 
@@ -350,7 +350,7 @@ const DashboardMembershipCard: React.FC = () => {
                     </div>
 
                     {/* Progress Bar */}
-                    <div className='w-full bg-white/50 rounded-full h-1.5 overflow-hidden'>
+                    <div className='w-full bg-background/50 rounded-full h-1.5 overflow-hidden'>
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${progress}%` }}

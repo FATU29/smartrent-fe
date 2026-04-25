@@ -26,8 +26,8 @@ const AiChatTypingIndicator: FC<TAiChatTypingIndicatorProps> = ({
     >
       {/* Bot Avatar with pulse animation */}
       <Avatar className='h-8 w-8 flex-shrink-0 bg-primary animate-pulse mt-0.5'>
-        <AvatarFallback className='bg-primary'>
-          <Bot className='h-4 w-4 text-white' />
+        <AvatarFallback className='bg-primary text-primary-foreground'>
+          <Bot className='h-4 w-4' />
         </AvatarFallback>
       </Avatar>
 

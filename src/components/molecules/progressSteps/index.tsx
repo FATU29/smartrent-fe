@@ -46,7 +46,7 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
                 step.isActive
                   ? 'bg-primary border-primary text-primary-foreground'
                   : step.isCompleted
-                    ? 'bg-green-500 border-green-500 text-white'
+                    ? 'bg-green-500 border-green-500 text-white dark:bg-green-600 dark:border-green-600'
                     : 'bg-muted border-muted-foreground/20 text-muted-foreground',
                 onStepClick && 'cursor-pointer hover:opacity-80',
               )}
