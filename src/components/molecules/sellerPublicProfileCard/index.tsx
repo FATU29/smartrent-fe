@@ -13,7 +13,6 @@ import { Typography } from '@/components/atoms/typography'
 import CopyButton from '@/components/atoms/copy-button'
 import { UserApi } from '@/api/types'
 import {
-  BadgeCheck,
   Mail,
   MessageCircle,
   Phone,
@@ -139,15 +138,6 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
                 </Badge>
               )}
 
-              {seller?.contactPhoneVerified && (
-                <Badge
-                  variant='outline'
-                  className='gap-1.5 border-emerald-500/30 text-emerald-700'
-                >
-                  <BadgeCheck className='h-3.5 w-3.5' />
-                  {t('profile.contactVerified')}
-                </Badge>
-              )}
               <Badge variant='outline'>
                 {t('profile.listingCount', { count: listingCount })}
               </Badge>
