@@ -32,15 +32,15 @@ export interface NewsGridItemProps {
 // Helpers
 
 const CATEGORY_STYLES: Record<string, string> = {
-  NEWS: 'bg-primary/10 text-primary border-primary/20',
-  BLOG: 'bg-secondary text-secondary-foreground border-secondary/20',
-  POLICY: 'bg-orange-500/10 text-orange-700 border-orange-500/20',
-  MARKET: 'bg-amber-500/10 text-amber-700 border-amber-500/20',
-  PROJECT: 'bg-cyan-600/10 text-cyan-700 border-cyan-600/20',
-  INVESTMENT: 'bg-pink-600/10 text-pink-700 border-pink-600/20',
-  MARKET_TREND: 'bg-chart-1/10 text-chart-1 border-chart-1/20',
-  GUIDE: 'bg-chart-2/10 text-chart-2 border-chart-2/20',
-  ANNOUNCEMENT: 'bg-destructive/10 text-destructive border-destructive/20',
+  NEWS: 'bg-primary text-primary-foreground border-primary',
+  BLOG: 'bg-secondary text-secondary-foreground border-secondary',
+  POLICY: 'bg-orange-500 text-white border-orange-500',
+  MARKET: 'bg-amber-500 text-white border-amber-500',
+  PROJECT: 'bg-cyan-600 text-white border-cyan-600',
+  INVESTMENT: 'bg-pink-600 text-white border-pink-600',
+  MARKET_TREND: 'bg-chart-1 text-white border-chart-1',
+  GUIDE: 'bg-chart-2 text-white border-chart-2',
+  ANNOUNCEMENT: 'bg-destructive text-white border-destructive',
 }
 
 const NewsGridItem: React.FC<NewsGridItemProps> = ({
@@ -111,7 +111,7 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
             <Badge
               variant='outline'
               className={classNames(
-                'font-medium backdrop-blur-sm bg-background/80',
+                'font-medium',
                 isFeatured ? 'text-xs' : 'text-[10px] px-1.5 py-0.5',
                 catStyle,
               )}

@@ -287,7 +287,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
           className='flex-1'
           onClick={(e) => e.stopPropagation()}
         >
-          <Button className='w-full bg-blue-700 hover:bg-blue-800 text-white h-7 text-[11px] font-normal normal-case gap-1 rounded-lg'>
+          <Button className='w-full bg-primary text-primary-foreground hover:bg-primary/90 h-7 text-[11px] font-normal normal-case gap-1 rounded-lg'>
             {t('viewDetails')}
             <ArrowRight
               className='w-2.5 h-2.5'

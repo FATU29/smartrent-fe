@@ -152,7 +152,7 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
                       </Typography>
                       <Button
                         size='sm'
-                        className='backdrop-blur-sm bg-white/90 text-foreground hover:bg-card hover:text-foreground pointer-events-none'
+                        className='bg-primary text-primary-foreground hover:bg-primary/90 pointer-events-none'
                       >
                         {t('exploreButton') || 'Khám phá'}
                       </Button>
