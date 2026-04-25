@@ -27,6 +27,7 @@ const PriceRangeDropdown: React.FC<PriceRangeDropdownProps> = ({
   className = '',
 }) => {
   const t = useTranslations('homePage.filters.priceRange')
+  const tActions = useTranslations('residentialFilter.actions')
 
   const [localMinPrice, setLocalMinPrice] = useState<number>(minPrice || 0)
   const [localMaxPrice, setLocalMaxPrice] = useState<number>(
@@ -167,10 +168,10 @@ const PriceRangeDropdown: React.FC<PriceRangeDropdownProps> = ({
               onClick={handleClear}
               className='flex-1 h-8'
             >
-              Clear
+              {tActions('clear')}
             </Button>
             <Button size='sm' onClick={handleApply} className='flex-1 h-8'>
-              Apply
+              {tActions('apply')}
             </Button>
           </div>
         </div>

@@ -94,15 +94,31 @@ const ListSearch: React.FC<ListSearchProps> = ({
   const loadingRight = getLoadingRight()
 
   return (
-    <div className={classNames('relative flex-1', className)}>
-      <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+    <div
+      className={classNames(
+        'group relative flex-1 flex items-center h-9 rounded-lg border border-input bg-background shadow-xs transition-all duration-200',
+        'hover:border-primary/40',
+        'focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20',
+        isLoading && 'opacity-70',
+        className,
+      )}
+    >
+      <Search
+        className={classNames(
+          'absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors duration-200',
+          'text-muted-foreground group-focus-within:text-primary',
+        )}
+      />
       <Input
         type='text'
         placeholder={placeholder || t('placeholder')}
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className={classNames('pl-10', rightPadding)}
+        className={classNames(
+          'h-full border-0 bg-transparent pl-10 shadow-none focus-visible:ring-0 dark:bg-transparent',
+          rightPadding,
+        )}
         disabled={isLoading}
       />
       {mode === 'manual' && showSearchButton && (
@@ -124,7 +140,7 @@ const ListSearch: React.FC<ListSearchProps> = ({
           size='icon'
           onClick={handleClear}
           className={classNames(
-            'absolute top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground hover:text-foreground',
+            'absolute top-1/2 h-7 w-7 -translate-y-1/2 rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
             showSearchButton ? 'right-12' : 'right-1',
           )}
           disabled={isLoading}
@@ -139,7 +155,7 @@ const ListSearch: React.FC<ListSearchProps> = ({
             loadingRight,
           )}
         >
-          <div className='h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent text-muted-foreground' />
+          <div className='h-4 w-4 animate-spin rounded-full border-2 border-primary/30 border-t-primary' />
         </div>
       )}
     </div>

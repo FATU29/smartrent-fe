@@ -92,6 +92,8 @@
     "loading": "Loading...",
     "loadingMore": "Loading more...",
     "loadMore": "Load more",
+    "scrollToLoadMore": "Scroll to load more",
+    "noResults": "No results",
     "endOfResults": "End of results",
     "new": "New",
     "learnMore": "Learn more",
