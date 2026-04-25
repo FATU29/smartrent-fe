@@ -29,7 +29,10 @@ const InteractionBadge: React.FC<InteractionBadgeProps> = ({
 
   return (
     <Badge
-      className={cn('bg-black hover:bg-gray-800 text-white gap-1', className)}
+      className={cn(
+        'bg-foreground text-background hover:bg-foreground/90 gap-1',
+        className,
+      )}
     >
       <Phone size={12} />
       Phone Number

@@ -97,7 +97,7 @@ export const LegacyAddressSelector: React.FC<LegacyAddressSelectorProps> = ({
           emptyText={tAddress('legacySelection.noResults')}
           noOptionsText={tAddress('legacySelection.noResults')}
         />
-        <p className='text-xs text-gray-500 dark:text-gray-400'>
+        <p className='text-xs text-muted-foreground'>
           {tAddress('legacySelection.description')}
         </p>
       </div>

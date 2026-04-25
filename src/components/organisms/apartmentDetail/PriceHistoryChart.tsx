@@ -219,7 +219,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
   const chartConfig: ChartConfig = {
     price: {
       label: 'Giá thuê',
-      color: '#3b82f6',
+      color: 'var(--color-average)',
     },
   }
 
@@ -377,7 +377,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
 
                 <ReferenceLine
                   y={statistics.avgPrice}
-                  stroke='#f59e0b'
+                  stroke='var(--color-reference-line)'
                   strokeDasharray='5 4'
                   strokeWidth={1.5}
                   strokeOpacity={0.8}
@@ -439,7 +439,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                 <div
                   className='w-4 h-0.5 rounded-full bg-amber-400 flex-shrink-0'
                   style={{
-                    borderTop: '2px dashed #f59e0b',
+                    borderTop: '2px dashed var(--color-reference-line)',
                     background: 'transparent',
                   }}
                 />

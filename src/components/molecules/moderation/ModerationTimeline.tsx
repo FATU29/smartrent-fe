@@ -31,8 +31,8 @@ const ACTION_STYLES: Record<string, { color: string; dotColor: string }> = {
     dotColor: 'bg-yellow-500',
   },
   SUSPEND: {
-    color: 'text-gray-700 dark:text-gray-400',
-    dotColor: 'bg-gray-500',
+    color: 'text-muted-foreground',
+    dotColor: 'bg-muted-foreground',
   },
 }
 

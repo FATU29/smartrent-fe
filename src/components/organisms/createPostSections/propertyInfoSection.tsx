@@ -493,7 +493,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         {/* Main Property Information Card */}
         <Card className='mb-6 shadow-lg border'>
           <CardHeader className='pb-4'>
-            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
+            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg'>
                 <FileText className='w-6 h-6 text-blue-600 dark:text-blue-400' />
               </div>
@@ -581,7 +581,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
                 return (
                   <div className='space-y-3'>
-                    <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                    <label className='text-sm font-semibold text-foreground flex items-center gap-2'>
                       <MapPin className='w-4 h-4 text-blue-500' />
                       {t('propertyAddress')}
                       <span className='text-destructive ml-1'>*</span>
@@ -607,7 +607,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <div className='space-y-4'>
                   {/* Make header responsive: stack on mobile, inline on sm+ */}
                   <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
-                    <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-normal break-words leading-snug'>
+                    <h3 className='text-sm font-semibold text-foreground whitespace-normal break-words leading-snug'>
                       {t('mapPreview')}
                       <span className='text-destructive ml-1'>*</span>
                     </h3>
@@ -615,7 +615,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                       <Button
                         variant='outline'
                         size='sm'
-                        className='border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg w-full sm:w-auto'
+                        className='border-2 border-border hover:bg-muted rounded-lg w-full sm:w-auto'
                         onClick={handleUseMyLocation}
                         disabled={locationLoading}
                       >
@@ -652,13 +652,13 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                       }}
                     />
                   ) : (
-                    <div className='relative w-full h-64 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center'>
+                    <div className='relative w-full h-64 rounded-xl overflow-hidden border-2 border-dashed border-border bg-muted/50 flex items-center justify-center'>
                       <div className='text-center p-6'>
-                        <MapPin className='w-12 h-12 mx-auto mb-3 text-gray-400' />
-                        <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-2'>
+                        <MapPin className='w-12 h-12 mx-auto mb-3 text-muted-foreground' />
+                        <p className='text-sm font-medium text-muted-foreground mb-2'>
                           {t('mapNotSelected')}
                         </p>
-                        <p className='text-xs text-gray-500 dark:text-gray-500'>
+                        <p className='text-xs text-muted-foreground'>
                           {t('clickButtonToSelectLocation')}
                         </p>
                       </div>
@@ -675,7 +675,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     </div>
                   )}
 
-                  <div className='text-xs text-gray-500 dark:text-gray-400 space-y-1'>
+                  <div className='text-xs text-muted-foreground space-y-1'>
                     <p>{t('dragMarker')}</p>
                     <p>{t('searchAddresses')}</p>
                     <p className='flex items-center gap-1'>
@@ -692,7 +692,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         {/* Property Details Card */}
         <Card className='mb-6 shadow-lg border'>
           <CardHeader className='pb-4'>
-            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
+            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-green-100 dark:bg-green-900/30 rounded-lg'>
                 <Home className='w-6 h-6 text-green-600 dark:text-green-400' />
               </div>
@@ -823,7 +823,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
             {/* Rooms Section */}
             <div className='space-y-4'>
-              <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+              <h3 className='text-sm font-semibold text-foreground'>
                 {tDetails('rooms')}
               </h3>
 
@@ -923,7 +923,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
             {/* Amenities (moved from AI Valuation) */}
             <div className='space-y-4'>
-              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+              <label className='text-sm font-semibold text-foreground flex items-center gap-2'>
                 <CheckCircle className='w-4 h-4 text-green-500' />
                 {tValuation('propertyInfo.amenities')}
               </label>
@@ -936,7 +936,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     return (
                       <label
                         key={amenity.key}
-                        className='flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 focus-within:border-primary focus-within:bg-primary/5 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus-within:border-primary'
+                        className='flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-muted border-border text-muted-foreground hover:bg-accent focus-within:border-primary focus-within:bg-primary/5'
                       >
                         {IconComponent && (
                           <IconComponent className='w-4 h-4 flex-shrink-0' />
@@ -977,7 +977,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         {/* Utilities & Structure Card */}
         <Card className='mb-6 shadow-lg border'>
           <CardHeader className='pb-4'>
-            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
+            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg'>
                 <DollarSign className='w-6 h-6 text-purple-600 dark:text-purple-400' />
               </div>
@@ -987,7 +987,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
           <CardContent className='space-y-8'>
             {/* Monthly Utilities */}
             <div className='space-y-4'>
-              <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2'>
+              <h3 className='text-lg font-semibold text-foreground flex items-center gap-2'>
                 <ZapIcon className='w-5 h-5 text-yellow-500' />
                 {tUtilities('monthlyUtilities')}
               </h3>
@@ -1121,7 +1121,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
             {/* Structure & Direction */}
             <div className='space-y-4'>
-              <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2'>
+              <h3 className='text-lg font-semibold text-foreground flex items-center gap-2'>
                 <Navigation className='w-5 h-5 text-orange-500' />
                 {tUtilities('structureDirection')}
               </h3>
@@ -1164,7 +1164,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         <Card className='mb-6 shadow-lg border'>
           <CardHeader className='pb-4'>
             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3'>
-              <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
+              <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
                 <div className='p-2 bg-primary/10 rounded-lg'>
                   <Bot className='w-6 h-6 text-primary' />
                 </div>
@@ -1204,7 +1204,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
               control={control}
               render={({ fieldState: { error } }) => (
                 <div className='space-y-3'>
-                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                  <label className='text-sm font-semibold text-foreground'>
                     {tAI('listingTitle')}
                     <span className='text-destructive ml-1'>*</span>
                   </label>
@@ -1219,7 +1219,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     }}
                     onBlur={() => setTitleTouched(true)}
                     aria-invalid={!!error}
-                    className='h-12 px-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                    className='h-12 px-4 border-2 border-border rounded-xl bg-background text-foreground focus:ring-1 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
                   />
                   {error && (
                     <p className='text-xs text-destructive' role='alert'>
@@ -1230,7 +1230,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   )}
                   {!error && (
                     <div className='flex justify-between items-center'>
-                      <p className='text-xs text-gray-500 dark:text-gray-400'>
+                      <p className='text-xs text-muted-foreground'>
                         {tAI('titleLength')}
                       </p>
                       <p
@@ -1239,7 +1239,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                             ? 'text-destructive'
                             : titleInput.length >= 30
                               ? 'text-green-600 dark:text-green-400'
-                              : 'text-gray-500 dark:text-gray-400'
+                              : 'text-muted-foreground'
                         }`}
                       >
                         {titleInput.length}/500
@@ -1256,7 +1256,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
               control={control}
               render={({ fieldState: { error } }) => (
                 <div className='space-y-3'>
-                  <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                  <label className='text-sm font-semibold text-foreground'>
                     {tAI('propertyDescription')}
                     <span className='text-destructive ml-1'>*</span>
                   </label>
@@ -1269,7 +1269,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     }}
                     onBlur={() => setDescriptionTouched(true)}
                     aria-invalid={!!error}
-                    className='min-h-[128px] resize-none px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                    className='min-h-[128px] resize-none px-4 py-3 border-2 border-border rounded-xl bg-background text-foreground focus:ring-1 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
                   />
                   {error && (
                     <p className='text-xs text-destructive' role='alert'>
@@ -1280,14 +1280,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                   )}
                   {!error && (
                     <div className='flex justify-between items-center'>
-                      <p className='text-xs text-gray-500 dark:text-gray-400'>
+                      <p className='text-xs text-muted-foreground'>
                         {tAI('descriptionHint')}
                       </p>
                       <p
                         className={`text-xs font-medium ${
                           descriptionInput.length >= 100
                             ? 'text-green-600 dark:text-green-400'
-                            : 'text-gray-500 dark:text-gray-400'
+                            : 'text-muted-foreground'
                         }`}
                       >
                         {descriptionInput.length}{' '}

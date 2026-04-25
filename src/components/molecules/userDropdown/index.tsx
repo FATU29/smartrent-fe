@@ -62,7 +62,7 @@ const UserDropdown: React.FC = () => {
               sizes='20rem'
             />
           </div>
-          <div className='absolute inset-0 bg-black/10 dark:bg-black/30' />
+          <div className='absolute inset-0 bg-foreground/10' />
           <div className='relative'>
             <h3 className='text-base font-semibold mb-1'>
               {t('userMenu.membershipPackage')}

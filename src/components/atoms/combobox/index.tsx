@@ -100,12 +100,9 @@ const Combobox: React.FC<ComboboxProps> = ({
   }
 
   const variantClasses = {
-    default:
-      'border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600',
-    outline:
-      'border-2 border-gray-300 dark:border-gray-600 bg-transparent hover:border-gray-400 dark:hover:border-gray-500',
-    ghost:
-      'border-0 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700',
+    default: 'border-2 border-border bg-background hover:border-foreground/30',
+    outline: 'border-2 border-input bg-transparent hover:border-foreground/40',
+    ghost: 'border-0 bg-muted hover:bg-accent',
   }
 
   // Get selected option label
@@ -193,8 +190,8 @@ const Combobox: React.FC<ComboboxProps> = ({
       {label && (
         <label
           className={cn(
-            'text-sm font-semibold text-gray-700 dark:text-gray-300',
-            error && 'text-red-600 dark:text-red-400',
+            'text-sm font-semibold text-foreground',
+            error && 'text-destructive',
           )}
         >
           {label}
@@ -213,7 +210,7 @@ const Combobox: React.FC<ComboboxProps> = ({
               'w-full justify-between rounded-xl transition-all duration-200 shadow-sm',
               sizeClasses[size],
               variantClasses[variant],
-              error && 'border-red-500',
+              error && 'border-destructive',
               disabled && 'opacity-50 cursor-not-allowed',
               loading && 'opacity-70 cursor-wait',
               'text-left font-normal',
@@ -221,12 +218,12 @@ const Combobox: React.FC<ComboboxProps> = ({
           >
             <span className='flex-1 truncate'>
               {selectedOption?.label || (
-                <span className='text-gray-400'>{placeholder}</span>
+                <span className='text-muted-foreground'>{placeholder}</span>
               )}
             </span>
             <div className='flex items-center gap-1 flex-shrink-0'>
               {loading && (
-                <Loader2 className='w-4 h-4 text-gray-400 animate-spin' />
+                <Loader2 className='w-4 h-4 text-muted-foreground animate-spin' />
               )}
               {!loading &&
                 value &&
@@ -243,14 +240,14 @@ const Combobox: React.FC<ComboboxProps> = ({
                     }}
                     role='button'
                     tabIndex={0}
-                    className='rounded-full p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors'
+                    className='rounded-full p-0.5 hover:bg-accent transition-colors'
                     aria-label='Clear selection'
                   >
-                    <X className='w-3 h-3 text-gray-400' />
+                    <X className='w-3 h-3 text-muted-foreground' />
                   </span>
                 )}
               {!loading && (
-                <ChevronsUpDown className='w-4 h-4 text-gray-400 opacity-50' />
+                <ChevronsUpDown className='w-4 h-4 text-muted-foreground opacity-50' />
               )}
             </div>
           </Button>
@@ -299,7 +296,7 @@ const Combobox: React.FC<ComboboxProps> = ({
               {onLoadMore && hasMore && (
                 <div
                   ref={sentryRef}
-                  className='px-3 py-2 text-center text-xs text-gray-500 min-h-[20px]'
+                  className='px-3 py-2 text-center text-xs text-muted-foreground min-h-[20px]'
                 >
                   {isLoadingMore && (loadingMoreText || 'Loading more...')}
                 </div>
@@ -314,9 +311,7 @@ const Combobox: React.FC<ComboboxProps> = ({
         <p
           className={cn(
             'text-xs',
-            error
-              ? 'text-red-600 dark:text-red-400'
-              : 'text-gray-500 dark:text-gray-400',
+            error ? 'text-destructive' : 'text-muted-foreground',
           )}
         >
           {error || helperText}

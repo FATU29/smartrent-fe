@@ -160,15 +160,15 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
     <div className={className}>
       <div className='grid grid-cols-1 gap-8'>
         {/* Top Section - AI Valuation Results */}
-        <Card className='shadow-lg border-0 bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-blue-900/20'>
+        <Card className='shadow-lg border-0 bg-gradient-to-br from-background to-primary/5'>
           <CardHeader className='pb-3'>
-            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
+            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg'>
                 <BarChart3 className='w-6 h-6 text-white' />
               </div>
               {t('results.title')}
             </CardTitle>
-            <p className='text-sm text-gray-600 dark:text-gray-400 mt-2'>
+            <p className='text-sm text-muted-foreground mt-2'>
               {t('results.subtitle')}
             </p>
           </CardHeader>
@@ -177,7 +177,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             {isPredicting && !prediction && (
               <div className='flex flex-col items-center justify-center py-12 space-y-4'>
                 <Loader2 className='w-12 h-12 text-blue-500 animate-spin' />
-                <p className='text-sm text-gray-600 dark:text-gray-400'>
+                <p className='text-sm text-muted-foreground'>
                   {t('results.loading') || 'Đang phân tích và dự đoán giá...'}
                 </p>
               </div>
@@ -205,7 +205,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             {prediction && (
               <>
                 <div className='mt-3 sm:mt-4 space-y-2 sm:space-y-3'>
-                  <h3 className='text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-300'>
+                  <h3 className='text-sm sm:text-base font-semibold text-foreground'>
                     {t('results.suggestedPrice')}
                   </h3>
                   <div className='bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-4 sm:p-6 text-white shadow-lg mb-2 sm:mb-3'>
@@ -227,16 +227,16 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
 
                 {/* Price Details */}
                 <div className='space-y-3'>
-                  <div className='flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-xl'>
-                    <span className='text-sm text-gray-600 dark:text-gray-400'>
+                  <div className='flex justify-between items-center p-3 bg-muted rounded-xl'>
+                    <span className='text-sm text-muted-foreground'>
                       {t('results.minPrice') || 'Giá tối thiểu'}:
                     </span>
                     <span className='text-sm font-semibold text-blue-600 dark:text-blue-400'>
                       {formatPrice(prediction.price_range.min)}
                     </span>
                   </div>
-                  <div className='flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-xl'>
-                    <span className='text-sm text-gray-600 dark:text-gray-400'>
+                  <div className='flex justify-between items-center p-3 bg-muted rounded-xl'>
+                    <span className='text-sm text-muted-foreground'>
                       {t('results.averagePrice') || 'Giá trung bình'}:
                     </span>
                     <span className='text-sm font-semibold text-green-600 dark:text-green-400'>
@@ -248,8 +248,8 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                       )}
                     </span>
                   </div>
-                  <div className='flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-xl'>
-                    <span className='text-sm text-gray-600 dark:text-gray-400'>
+                  <div className='flex justify-between items-center p-3 bg-muted rounded-xl'>
+                    <span className='text-sm text-muted-foreground'>
                       {t('results.maxPrice') || 'Giá tối đa'}:
                     </span>
                     <span className='text-sm font-semibold text-orange-600 dark:text-orange-400'>
@@ -263,8 +263,8 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             {/* Placeholder when no prediction */}
             {!prediction && !isPredicting && !predictionError && (
               <div className='text-center py-12'>
-                <BarChart3 className='w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4' />
-                <p className='text-sm text-gray-500 dark:text-gray-400'>
+                <BarChart3 className='w-16 h-16 text-muted-foreground/50 mx-auto mb-4' />
+                <p className='text-sm text-muted-foreground'>
                   {t('results.noPrediction') ||
                     'Nhấn \"Đánh giá lại\" để xem dự đoán giá từ AI'}
                 </p>
@@ -288,15 +288,15 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
         </Card>
 
         {/* Bottom Section - Property Information Input */}
-        <Card className='shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+        <Card className='shadow-lg border-0 bg-gradient-to-br from-background to-muted'>
           <CardHeader className='pb-4'>
-            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-gray-800 dark:text-gray-100'>
+            <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg'>
                 <Home className='w-6 h-6 text-blue-600 dark:text-blue-400' />
               </div>
               {t('propertyInfo.title')}
             </CardTitle>
-            <p className='text-sm text-gray-600 dark:text-gray-400 mt-2'>
+            <p className='text-sm text-muted-foreground mt-2'>
               {t('propertyInfo.subtitle')}
             </p>
           </CardHeader>
@@ -304,7 +304,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             {/* New Address (Read-only) */}
             {composedNewAddress && (
               <div className='space-y-3'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                <label className='text-sm font-semibold text-foreground flex items-center gap-2'>
                   <MapPin className='w-4 h-4 text-blue-500' />
                   {tPropertyInfo('displayAddress')} (
                   {tAddress('structureType.newShort') || 'Mới'})
@@ -313,7 +313,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                   <Input
                     type='text'
                     disabled
-                    className='pl-12 h-12 px-4 pr-10 border-2 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                    className='pl-12 h-12 px-4 pr-10 border-2 border-border rounded-xl bg-muted/50 text-foreground focus:ring-2 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
                     placeholder={tPropertyInfo('displayAddressPlaceholder')}
                     value={composedNewAddress}
                   />
@@ -324,7 +324,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             {/* Legacy Address (Read-only) */}
             {composedLegacyAddress && (
               <div className='space-y-3'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+                <label className='text-sm font-semibold text-foreground flex items-center gap-2'>
                   <MapPin className='w-4 h-4 text-orange-500' />
                   {tAddress('legacyAddress') ||
                     'Địa chỉ hiển thị trên tin đăng (phiên bản cũ)'}
@@ -333,7 +333,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                   <Input
                     type='text'
                     disabled
-                    className='pl-12 h-12 px-4 pr-10 border-2 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                    className='pl-12 h-12 px-4 pr-10 border-2 border-border rounded-xl bg-muted/50 text-foreground focus:ring-2 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
                     placeholder={
                       tAddress('legacyAddressPlaceholder') ||
                       'Địa chỉ cũ sẽ hiển thị ở đây'
@@ -347,7 +347,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             {/* Main Layout: One row for Type + Area (applies on mobile) */}
             <div className='grid grid-cols-2 gap-3 w-full'>
               <div className='space-y-2'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                <label className='text-sm font-semibold text-foreground'>
                   {t('propertyInfo.type')}
                 </label>
                 <Input
@@ -355,11 +355,11 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                   value={propertyTypeLabel}
                   disabled
                   placeholder={t('propertyInfo.type')}
-                  className='h-12 px-4 pr-10 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                  className='h-12 px-4 pr-10 border-2 border-border rounded-xl bg-background text-foreground focus:ring-2 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
                 />
               </div>
               <div className='space-y-2'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                <label className='text-sm font-semibold text-foreground'>
                   {t('propertyInfo.area')}
                 </label>
                 <div className='relative'>
@@ -368,9 +368,9 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                     value={propertyInfo.area}
                     disabled
                     placeholder='0'
-                    className='h-12 px-4 pr-12 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                    className='h-12 px-4 pr-12 border-2 border-border rounded-xl bg-background text-foreground focus:ring-2 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
                   />
-                  <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400'>
+                  <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground'>
                     m²
                   </span>
                 </div>
@@ -380,7 +380,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             {/* Second row for Bedrooms + Bathrooms (read-only) */}
             <div className='grid grid-cols-2 gap-3 w-full'>
               <div className='space-y-2'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                <label className='text-sm font-semibold text-foreground'>
                   {t('propertyInfo.bedrooms')}
                 </label>
                 <Input
@@ -388,11 +388,11 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                   value={propertyInfo.bedrooms}
                   disabled
                   placeholder='0'
-                  className='h-12 px-4 pr-10 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                  className='h-12 px-4 pr-10 border-2 border-border rounded-xl bg-background text-foreground focus:ring-2 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
                 />
               </div>
               <div className='space-y-2'>
-                <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                <label className='text-sm font-semibold text-foreground'>
                   {t('propertyInfo.bathrooms')}
                 </label>
                 <Input
@@ -400,14 +400,14 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                   value={propertyInfo.bathrooms}
                   disabled
                   placeholder='0'
-                  className='h-12 px-4 pr-10 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                  className='h-12 px-4 pr-10 border-2 border-border rounded-xl bg-background text-foreground focus:ring-2 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
                 />
               </div>
             </div>
 
             {/* Amenities - Full width below grid */}
             <div className='space-y-4'>
-              <label className='text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+              <label className='text-sm font-semibold text-foreground flex items-center gap-2'>
                 <CheckCircle className='w-4 h-4 text-green-500' />
                 {t('propertyInfo.amenities')}
               </label>
@@ -424,7 +424,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                     return (
                       <label
                         key={amenity.key}
-                        className='flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 focus-within:border-primary focus-within:bg-primary/5 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus-within:border-primary w-full'
+                        className='flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-muted border-border text-muted-foreground hover:bg-accent focus-within:border-primary focus-within:bg-primary/5 w-full'
                       >
                         {IconComponent && (
                           <IconComponent className='w-4 h-4 flex-shrink-0' />

@@ -490,7 +490,7 @@ export const AddressInput: React.FC<AddressInputProps> = ({
       <div className='space-y-3'>
         {/* Street Input */}
         <div className='space-y-2'>
-          <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+          <label className='text-sm font-semibold text-foreground'>
             {tRoot('street') || 'Đường/phố (tuỳ chọn)'}
           </label>
           <Input
@@ -503,20 +503,20 @@ export const AddressInput: React.FC<AddressInputProps> = ({
               streetTouchedRef.current = true
               setStreetInput(e.target.value)
             }}
-            className='h-12 px-4 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+            className='h-12 px-4 border-2 border-border rounded-xl bg-background text-foreground focus:ring-1 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
           />
         </div>
 
         {/* Display Address (New Structure) */}
         <div className='space-y-2'>
-          <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+          <label className='text-sm font-semibold text-foreground'>
             {tRoot('displayAddress') || 'Địa chỉ hiển thị trên tin đăng'}
           </label>
           <Input
             type='text'
             readOnly
             value={composedNewAddress}
-            className='h-12 px-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-800 cursor-text text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+            className='h-12 px-4 border-2 border-border rounded-xl bg-muted cursor-text text-foreground focus:ring-1 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
             placeholder={
               tRoot('displayAddressPlaceholder') ||
               'Địa chỉ sẽ tự động tạo từ đường/phố, phường/xã, tỉnh/thành'
@@ -533,16 +533,17 @@ export const AddressInput: React.FC<AddressInputProps> = ({
         {/* Legacy Address Display and Geocode Button */}
         {showLegacyAddress && (
           <div className='space-y-2'>
-            <label className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+            <label className='text-sm font-semibold text-foreground'>
               {tAddress('legacyAddress') ||
                 'Địa chỉ hiển thị trên tin đăng (phiên bản cũ)'}
             </label>
+
             <div className='flex gap-2'>
               <Input
                 type='text'
                 readOnly
                 value={composedLegacyAddress}
-                className='flex-1 h-12 px-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-800 cursor-text text-gray-900 dark:text-gray-100 focus:ring-1 focus:border-blue-400 focus:ring-blue-400/50 transition-all duration-200 shadow-sm hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                className='flex-1 h-12 px-4 border-2 border-border rounded-xl bg-muted cursor-text text-foreground focus:ring-1 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm hover:border-foreground/30'
                 placeholder={
                   tAddress('legacyAddressPlaceholder') ||
                   'Địa chỉ cũ sẽ hiển thị ở đây'

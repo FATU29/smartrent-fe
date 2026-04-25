@@ -44,10 +44,10 @@ const GoogleMapPicker: React.FC<GoogleMapPickerProps> = ({
 
   const Marker: React.FC<{ lat: number; lng: number }> = ({ lat, lng }) => (
     <div className='relative -translate-x-1/2 -translate-y-1/2'>
-      <div className='w-5 h-5 rounded-full bg-blue-500 shadow ring-2 ring-white dark:ring-gray-800 flex items-center justify-center'>
+      <div className='w-5 h-5 rounded-full bg-primary shadow ring-2 ring-background flex items-center justify-center'>
         <MapPin className='w-3 h-3 text-white' />
       </div>
-      <div className='absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white dark:bg-gray-800 text-[10px] px-2 py-0.5 rounded shadow border border-gray-200 dark:border-gray-700'>
+      <div className='absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-card text-card-foreground text-[10px] px-2 py-0.5 rounded shadow border border-border'>
         {lat?.toFixed(4)}, {lng?.toFixed(4)}
       </div>
     </div>
@@ -77,7 +77,7 @@ const GoogleMapPicker: React.FC<GoogleMapPickerProps> = ({
   return (
     <div className={className}>
       {/* Map Display */}
-      <div className='relative w-full h-64 rounded-xl overflow-hidden border-2 border-gray-200 dark:border-gray-700 shadow-sm'>
+      <div className='relative w-full h-64 rounded-xl overflow-hidden border-2 border-border shadow-sm'>
         <GoogleMapReact
           bootstrapURLKeys={{ key: ENV.GOOGLE_MAP_KEY }}
           defaultCenter={center}

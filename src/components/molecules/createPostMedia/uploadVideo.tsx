@@ -174,7 +174,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
   const showVideoPreview = videoUrl && (isBlobUrl || isUploadedVideo)
 
   return (
-    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-background to-muted'>
       <CardHeader className='pb-3'>
         <CardTitle className='text-lg sm:text-xl flex items-center gap-2'>
           <Video className='w-4 h-4' />{' '}
@@ -183,8 +183,8 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
       </CardHeader>
       <CardContent>
         {isExternalVideo ? (
-          <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 space-y-3'>
-            <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>
+          <div className='p-4 bg-muted rounded-xl border border-border space-y-3'>
+            <p className='text-sm text-muted-foreground text-center'>
               {t('video.external.uploadedNote') ||
                 'Video hiện tại không thuộc luồng upload file. Vui lòng xóa video để tải video mới từ thiết bị.'}
             </p>
@@ -211,7 +211,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
               variant='outline'
               onClick={() => inputRef.current?.click()}
               disabled={videoUploadProgress.isUploading}
-              className='w-full h-12 sm:h-12 border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200'
+              className='w-full h-12 sm:h-12 border-2 border-dashed border-border hover:border-foreground/40 bg-transparent hover:bg-muted transition-all duration-200'
             >
               {videoUploadProgress.isUploading ? (
                 <>
@@ -225,14 +225,14 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
                 </>
               )}
             </Button>
-            <p className='text-xs sm:text-sm text-gray-500 mt-2'>
+            <p className='text-xs sm:text-sm text-muted-foreground mt-2'>
               {t('video.upload.help', { maxSize: MAX_VIDEO_SIZE_MB }) ||
                 `Định dạng hỗ trợ: MP4, WebM, OGG. Kích thước tối đa: ${MAX_VIDEO_SIZE_MB}MB`}
             </p>
           </>
         ) : (
           <Card className='border-0 shadow-none p-0'>
-            <div className='relative w-full rounded-lg overflow-hidden bg-black mb-3'>
+            <div className='relative w-full rounded-lg overflow-hidden bg-muted mb-3'>
               <video
                 src={videoUrl}
                 controls

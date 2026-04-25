@@ -81,7 +81,7 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
   }
 
   return (
-    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-background to-muted'>
       <CardHeader className='pb-3'>
         <CardTitle className='text-lg sm:text-xl flex items-center gap-2'>
           <Link2 className='w-4 h-4' /> {t('video.title')}
@@ -89,15 +89,15 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
       </CardHeader>
       <CardContent>
         {isUploadedVideo ? (
-          <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700'>
-            <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>
+          <div className='p-4 bg-muted rounded-xl border border-border'>
+            <p className='text-sm text-muted-foreground text-center'>
               {t('video.upload.uploadedNote') ||
                 'Bạn đã tải video lên. Xóa video để nhập link YouTube.'}
             </p>
           </div>
         ) : hasExternalVideo ? (
           <div className='space-y-3'>
-            <div className='relative w-full aspect-video rounded-lg overflow-hidden bg-black'>
+            <div className='relative w-full aspect-video rounded-lg overflow-hidden bg-muted'>
               <iframe
                 src={toYouTubeEmbed(videoUrl) || ''}
                 className='w-full h-full'
@@ -113,11 +113,11 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
           <>
             {/* Placeholder when no input */}
             {!url && (
-              <div className='mb-4 aspect-video w-full rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600'>
+              <div className='mb-4 aspect-video w-full rounded-lg overflow-hidden bg-muted border-2 border-dashed border-border'>
                 <div className='w-full h-full flex items-center justify-center'>
                   <div className='text-center space-y-2 p-4'>
-                    <Link2 className='w-12 h-12 mx-auto text-gray-400' />
-                    <p className='text-sm text-gray-500 dark:text-gray-400'>
+                    <Link2 className='w-12 h-12 mx-auto text-muted-foreground' />
+                    <p className='text-sm text-muted-foreground'>
                       {t('video.placeholder')}
                     </p>
                   </div>
@@ -131,7 +131,7 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
                 placeholder={t('video.placeholder')}
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                className='w-full h-12 sm:h-12 px-3 sm:px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm'
+                className='w-full h-12 sm:h-12 px-3 sm:px-4 border-2 border-border rounded-xl bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring transition-all duration-200 shadow-sm'
               />
               <Button
                 onClick={onSave}
@@ -141,13 +141,13 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
                 {saving ? t('video.external.saving') : t('video.external.save')}
               </Button>
             </div>
-            <p className='text-xs sm:text-sm text-gray-500 mt-2'>
+            <p className='text-xs sm:text-sm text-muted-foreground mt-2'>
               {t('video.help')}
             </p>
             {/* Live preview when input is a YouTube URL */}
             {url && isYouTube(url) && (
               <div className='mt-3'>
-                <div className='relative w-full aspect-video rounded-lg overflow-hidden bg-black'>
+                <div className='relative w-full aspect-video rounded-lg overflow-hidden bg-muted'>
                   <iframe
                     src={toYouTubeEmbed(url) || ''}
                     className='w-full h-full'

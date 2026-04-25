@@ -170,7 +170,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
   }
 
   return (
-    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800'>
+    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-background to-muted'>
       <CardHeader className='pb-3'>
         <CardTitle className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
           <span className='text-lg sm:text-xl'>{t('title')}</span>
@@ -179,17 +179,15 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
       <CardContent className='space-y-6'>
         {/* Dropzone */}
         <div
-          className='rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 p-4 sm:p-6 flex flex-col items-center justify-center text-center bg-white dark:bg-gray-900/50'
+          className='rounded-2xl border-2 border-dashed border-border p-4 sm:p-6 flex flex-col items-center justify-center text-center bg-card/50'
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {
             e.preventDefault()
             handleFiles(e.dataTransfer.files)
           }}
         >
-          <Upload className='w-8 h-8 sm:w-10 sm:h-10 text-gray-400 mb-2' />
-          <p className='text-sm text-gray-600 dark:text-gray-400'>
-            {t('dropzone.hint')}
-          </p>
+          <Upload className='w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground mb-2' />
+          <p className='text-sm text-muted-foreground'>{t('dropzone.hint')}</p>
           <div className='flex flex-col sm:flex-row gap-3 mt-4 w-full sm:w-auto'>
             <Button
               className='rounded-lg w-full sm:w-auto'
@@ -211,7 +209,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
             disabled={imagesUploadProgress.isUploading}
             onChange={(e) => handleFiles(e.target.files)}
           />
-          <p className='text-xs text-gray-500 dark:text-gray-500 mt-3'>
+          <p className='text-xs text-muted-foreground mt-3'>
             {t('dropzone.note')}
           </p>
         </div>
@@ -219,10 +217,10 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
         {/* Uploaded list */}
         <div className='space-y-3'>
           <div className='flex items-center justify-between'>
-            <span className='text-sm text-gray-600 dark:text-gray-400'>
+            <span className='text-sm text-muted-foreground'>
               {t('uploaded.title')}
             </span>
-            <span className='text-xs text-gray-500'>
+            <span className='text-xs text-muted-foreground'>
               {totalImages}/{MAX_IMAGES}
             </span>
           </div>
@@ -231,9 +229,9 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
             {images.map((img, index) => (
               <div
                 key={`uploaded-${index}`}
-                className='group relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden'
+                className='group relative rounded-xl border border-border bg-card overflow-hidden'
               >
-                <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-800'>
+                <div className='relative aspect-[4/3] bg-muted'>
                   <Image
                     src={img.url || ''}
                     alt={`Image ${index + 1}`}
@@ -242,7 +240,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
                     className='object-cover'
                   />
                 </div>
-                <div className='p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
+                <div className='p-3 border-t border-border bg-card'>
                   <p className='text-sm truncate mb-3'>{`Image ${index + 1}`}</p>
                   <div className='flex items-center justify-end gap-2'>
                     <Button

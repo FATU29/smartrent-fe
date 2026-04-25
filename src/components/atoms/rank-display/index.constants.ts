@@ -6,7 +6,7 @@ export const RANK_DISPLAY_STYLES = {
   progressContainer: 'flex gap-1 ml-1',
   progressDot: 'w-2 h-1 rounded-full',
   progressDotActive: 'bg-orange-400 dark:bg-orange-500',
-  progressDotInactive: 'bg-gray-200 dark:bg-gray-700',
+  progressDotInactive: 'bg-muted',
 } as const
 
 export const RANK_DISPLAY_TRANSLATIONS = {

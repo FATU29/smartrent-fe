@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { ListingService } from '@/api/services/listing.service'
 import { ListingDetail, VipType } from '@/api/types'
+import { mapFrontendToBackendRequest } from '@/utils/property/mapListingResponse'
 
 interface UseSimilarPropertiesOptions {
   listingId?: number | string
@@ -42,13 +43,18 @@ export const useSimilarProperties = (options: UseSimilarPropertiesOptions) => {
       limit,
     ],
     queryFn: async (): Promise<ListingDetail[]> => {
-      // Build search request with same VIP type and location
+      // Build search request with same VIP type and location.
+      // Route through the mapper so legacy/new address codes are sent
+      // under the right backend fields (provinceCodes/newWardCode for
+      // isLegacy=false, provinceId/wardId for isLegacy=true).
       const searchRequest = {
+        ...mapFrontendToBackendRequest({
+          provinceId,
+          wardId,
+          districtId,
+          isLegacy,
+        }),
         vipType,
-        provinceId,
-        wardId,
-        districtId,
-        isLegacy,
         verified: true,
         page: 1,
         size: limit,
