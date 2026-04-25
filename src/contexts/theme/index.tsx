@@ -49,8 +49,8 @@ export default function ThemeDataProvider({ children }: ThemeProviderProps) {
       LocalStorage.set('themeMode', currentTheme)
     }
 
-    // Apply the global theme
-    setGlobalColorTheme(currentTheme)
+    // Apply the global theme (clears any stale inline CSS vars)
+    setGlobalColorTheme()
   }, [themeMode, theme]) // Removed isMounted from dependencies
 
   const contextValue = useMemo(
