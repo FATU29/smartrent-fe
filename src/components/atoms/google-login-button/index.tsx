@@ -30,7 +30,7 @@ export default function GoogleLoginButton({
     <button
       onClick={handleGoogleLogin}
       disabled={disabled}
-      className={`flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      className={`flex items-center justify-center px-4 py-2 border border-input rounded-md shadow-sm text-sm font-medium text-foreground bg-card hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
     >
       <svg className='w-5 h-5 mr-2' viewBox='0 0 24 24'>
         <path

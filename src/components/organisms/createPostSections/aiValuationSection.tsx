@@ -431,7 +431,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                         )}
                         <input
                           type='checkbox'
-                          className='w-4 h-4 rounded border-2 border-gray-300 text-primary focus:ring-0 focus:outline-none focus-visible:outline-none flex-shrink-0 pointer-events-none'
+                          className='w-4 h-4 rounded border-2 border-input text-primary focus:ring-0 focus:outline-none focus-visible:outline-none flex-shrink-0 pointer-events-none'
                           checked={hasAmenity}
                           readOnly
                         />

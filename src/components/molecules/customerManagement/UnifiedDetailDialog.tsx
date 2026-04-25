@@ -132,7 +132,7 @@ export default function UnifiedDetailDialog({
                   {customer.avatarUrl && (
                     <AvatarImage src={customer.avatarUrl} alt={displayName} />
                   )}
-                  <AvatarFallback className='text-base sm:text-lg bg-white text-primary font-bold'>
+                  <AvatarFallback className='text-base sm:text-lg bg-card text-primary font-bold'>
                     {getInitials(customer.firstName, customer.lastName)}
                   </AvatarFallback>
                 </Avatar>
@@ -172,7 +172,7 @@ export default function UnifiedDetailDialog({
                   className={cn(
                     'flex-1 py-2.5 px-4 rounded-lg font-medium text-sm transition-all',
                     isCustomerView
-                      ? 'bg-white text-primary shadow-md'
+                      ? 'bg-card text-primary shadow-md'
                       : 'bg-white/10 text-white/80 hover:bg-white/20',
                   )}
                 >
@@ -184,7 +184,7 @@ export default function UnifiedDetailDialog({
                   className={cn(
                     'flex-1 py-2.5 px-4 rounded-lg font-medium text-sm transition-all',
                     !isCustomerView
-                      ? 'bg-white text-primary shadow-md'
+                      ? 'bg-card text-primary shadow-md'
                       : 'bg-white/10 text-white/80 hover:bg-white/20',
                   )}
                 >

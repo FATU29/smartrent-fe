@@ -943,7 +943,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                         )}
                         <input
                           type='checkbox'
-                          className='w-4 h-4 rounded border-2 border-gray-300 text-primary focus:ring-0 focus:outline-none focus-visible:outline-none flex-shrink-0'
+                          className='w-4 h-4 rounded border-2 border-input text-primary focus:ring-0 focus:outline-none focus-visible:outline-none flex-shrink-0'
                           checked={amenityIds?.includes(amenity.id)}
                           onChange={(e) => {
                             if (e.target.checked) {

@@ -178,7 +178,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
           {displayImage ? (
             <div className='relative rounded-xl overflow-hidden border border-border bg-card'>
               <div className='relative aspect-[4/3]'>
-                <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-yellow-400 text-gray-900 font-medium shadow-sm'>
+                <span className='absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md text-xs bg-yellow-400 text-foreground font-medium shadow-sm'>
                   {t('badge')}
                 </span>
                 <Image

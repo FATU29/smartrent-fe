@@ -34,7 +34,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     >
       <div className='flex gap-3'>
         {/* Image */}
-        <div className='relative w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-gray-100'>
+        <div className='relative w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-muted'>
           {listing.image ? (
             <Image
               src={listing.image}
@@ -43,7 +43,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               className='object-cover'
             />
           ) : (
-            <div className='w-full h-full flex items-center justify-center text-gray-400'>
+            <div className='w-full h-full flex items-center justify-center text-muted-foreground'>
               <span className='text-xs'>No image</span>
             </div>
           )}

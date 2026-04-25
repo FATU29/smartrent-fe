@@ -47,10 +47,10 @@ const UsageGuideTemplate = () => {
     },
     {
       key: 'vipSilver',
-      icon: <Crown className='h-4 w-4 text-slate-600' />,
-      cardClass: 'border-slate-200 bg-slate-50/70',
-      titleClass: 'text-slate-700',
-      badgeClass: 'border-slate-200 bg-slate-100 text-slate-700',
+      icon: <Crown className='h-4 w-4 text-muted-foreground' />,
+      cardClass: 'border-border bg-slate-50/70',
+      titleClass: 'text-muted-foreground',
+      badgeClass: 'border-border bg-muted text-muted-foreground',
     },
     {
       key: 'standard',

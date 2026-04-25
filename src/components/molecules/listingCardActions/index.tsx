@@ -76,7 +76,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
         variant='ghost'
         size='sm'
         onClick={onEdit}
-        className='gap-1 text-gray-600 hover:text-gray-900 text-xs sm:text-sm'
+        className='gap-1 text-muted-foreground hover:text-foreground text-xs sm:text-sm'
       >
         <Edit size={14} />
         <span className='hidden xs:inline'>{t('editFull')}</span>

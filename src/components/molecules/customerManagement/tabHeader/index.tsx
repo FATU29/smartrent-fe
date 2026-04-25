@@ -15,10 +15,10 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   const t = useTranslations('seller.customers')
 
   return (
-    <TabsList className='w-full h-auto rounded-none p-2 bg-gray-50 border-b'>
+    <TabsList className='w-full h-auto rounded-none p-2 bg-muted/40 border-b'>
       <TabsTrigger
         value='customers'
-        className='flex-1 gap-2 data-[state=active]:bg-white'
+        className='flex-1 gap-2 data-[state=active]:bg-card'
       >
         <Users size={18} />
         <span>
@@ -27,7 +27,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
       </TabsTrigger>
       <TabsTrigger
         value='listings'
-        className='flex-1 gap-2 data-[state=active]:bg-white'
+        className='flex-1 gap-2 data-[state=active]:bg-card'
       >
         <Home size={18} />
         <span>

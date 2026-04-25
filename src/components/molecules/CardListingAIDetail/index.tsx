@@ -103,7 +103,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
   return (
     <div
       className={cn(
-        'bg-white border border-gray-200 rounded-xl overflow-hidden',
+        'bg-card border border-border rounded-xl overflow-hidden',
         className,
       )}
     >
@@ -138,7 +138,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
 
         {/* Key info */}
         <div className='flex-1 min-w-0 px-3 py-2.5 flex flex-col justify-between'>
-          <p className='text-[13px] font-semibold text-gray-900 line-clamp-2 leading-tight'>
+          <p className='text-[13px] font-semibold text-foreground line-clamp-2 leading-tight'>
             {title}
           </p>
 
@@ -147,17 +147,19 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
               <span className='text-red-500 font-bold text-sm'>
                 {formattedPrice}
               </span>
-              <span className='text-gray-400 text-[10px]'>{priceLabel}</span>
+              <span className='text-muted-foreground text-[10px]'>
+                {priceLabel}
+              </span>
             </div>
 
             <div className='flex items-center gap-1 mt-1 flex-wrap'>
               {area !== null && area !== undefined && area > 0 && (
-                <span className='px-1.5 py-0.5 bg-gray-100 rounded-full text-[10px] text-gray-600'>
+                <span className='px-1.5 py-0.5 bg-muted rounded-full text-[10px] text-muted-foreground'>
                   {area} m²
                 </span>
               )}
               {bedrooms !== null && bedrooms !== undefined && bedrooms > 0 && (
-                <span className='px-1.5 py-0.5 bg-gray-100 rounded-full text-[10px] text-gray-600'>
+                <span className='px-1.5 py-0.5 bg-muted rounded-full text-[10px] text-muted-foreground'>
                   {bedrooms} PN
                 </span>
               )}
@@ -173,12 +175,12 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
       </div>
 
       {/* ── Extra details ── */}
-      <div className='px-3 pb-2 space-y-1.5 border-t border-gray-100 pt-2'>
+      <div className='px-3 pb-2 space-y-1.5 border-t border-border pt-2'>
         {/* Stats row: bath, furnishing, direction */}
         {((bathrooms !== null && bathrooms !== undefined) ||
           furnishing ||
           direction) && (
-          <div className='flex flex-wrap items-center gap-2 text-[11px] text-gray-500'>
+          <div className='flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground'>
             {bathrooms !== null && bathrooms !== undefined && bathrooms > 0 && (
               <div className='flex items-center gap-1'>
                 <Bath className='w-3 h-3' />
@@ -218,7 +220,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
 
         {/* Full address */}
         {address?.fullAddress && (
-          <div className='flex items-start gap-1 text-[11px] text-gray-500'>
+          <div className='flex items-start gap-1 text-[11px] text-muted-foreground'>
             <MapPin className='w-3 h-3 mt-0.5 flex-shrink-0' />
             <span className='line-clamp-1'>{address.fullAddress}</span>
           </div>
@@ -277,7 +279,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
       </div>
 
       {/* ── CTA row ── */}
-      <div className='flex gap-1.5 px-2.5 py-2 border-t border-gray-100'>
+      <div className='flex gap-1.5 px-2.5 py-2 border-t border-border'>
         <Link
           href={`/listing-detail/${listingId}`}
           target='_blank'
@@ -303,20 +305,26 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
             <Button
               variant='outline'
               size='icon'
-              className='h-7 w-7 border-gray-200 hover:bg-gray-50 flex-shrink-0 rounded-lg'
+              className='h-7 w-7 border-border hover:bg-accent flex-shrink-0 rounded-lg'
             >
-              <Phone className='w-3 h-3 text-gray-600' aria-hidden='true' />
+              <Phone
+                className='w-3 h-3 text-muted-foreground'
+                aria-hidden='true'
+              />
             </Button>
           </a>
         ) : (
           <Button
             variant='outline'
             size='icon'
-            className='h-7 w-7 border-gray-200 flex-shrink-0 rounded-lg opacity-40 cursor-default'
+            className='h-7 w-7 border-border flex-shrink-0 rounded-lg opacity-40 cursor-default'
             disabled
             aria-label='Không có số điện thoại'
           >
-            <Phone className='w-3 h-3 text-gray-400' aria-hidden='true' />
+            <Phone
+              className='w-3 h-3 text-muted-foreground'
+              aria-hidden='true'
+            />
           </Button>
         )}
       </div>

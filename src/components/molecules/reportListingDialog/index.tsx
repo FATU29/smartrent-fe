@@ -367,7 +367,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
                           {...field}
                           type='email'
                           placeholder={`${t('report.reporterEmail') || 'Email'} *`}
-                          className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-ring ${
+                          className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 disabled:bg-muted focus:outline-none focus:ring-2 focus:ring-ring ${
                             fieldState.error ? 'border-red-500' : ''
                           }`}
                           disabled={

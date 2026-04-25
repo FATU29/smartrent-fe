@@ -69,7 +69,7 @@ const LocationMap: React.FC<LocationMapProps> = ({ location, className }) => {
       case 'healthcare':
         return <MapPin className='w-4 h-4 text-red-500' />
       default:
-        return <MapPin className='w-4 h-4 text-gray-500' />
+        return <MapPin className='w-4 h-4 text-muted-foreground' />
     }
   }
 
@@ -141,7 +141,7 @@ const LocationMap: React.FC<LocationMapProps> = ({ location, className }) => {
                   variant='outline'
                   size='sm'
                   onClick={handleViewInMaps}
-                  className='bg-white/80 hover:bg-white'
+                  className='bg-white/80 hover:bg-card'
                 >
                   <ExternalLink className='w-4 h-4 mr-2' />
                   Open in Google Maps

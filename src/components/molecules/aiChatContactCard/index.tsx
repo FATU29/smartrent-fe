@@ -48,7 +48,7 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
   return (
     <div
       className={cn(
-        'bg-white border border-gray-200 rounded-xl overflow-hidden',
+        'bg-card border border-border rounded-xl overflow-hidden',
         className,
       )}
     >
@@ -62,34 +62,39 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
         </Avatar>
 
         <div className='min-w-0'>
-          <p className='text-[13px] font-semibold text-gray-900 truncate leading-snug'>
+          <p className='text-[13px] font-semibold text-foreground truncate leading-snug'>
             {displayName}
           </p>
-          <span className='inline-flex items-center gap-1 mt-0.5 bg-gray-100 rounded-full px-2 py-0.5'>
+          <span className='inline-flex items-center gap-1 mt-0.5 bg-muted rounded-full px-2 py-0.5'>
             <span className='w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0' />
-            <span className='text-[10px] text-gray-600'>{t('landlord')}</span>
+            <span className='text-[10px] text-muted-foreground'>
+              {t('landlord')}
+            </span>
           </span>
         </div>
       </div>
 
-      <div className='mx-3 border-t border-gray-100' />
+      <div className='mx-3 border-t border-border' />
 
       {/* ── Contact rows ── */}
       <div className='px-2 py-1.5 space-y-0'>
         {phone && (
           <a
             href={`tel:${phone.replace(/[\s.-]/g, '')}`}
-            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-gray-50 transition-colors'
+            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-accent transition-colors'
             onClick={(e) => e.stopPropagation()}
           >
-            <div className='w-6 h-6 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0'>
-              <Phone className='w-3 h-3 text-gray-500' aria-hidden='true' />
+            <div className='w-6 h-6 rounded-md bg-muted/40 border border-border flex items-center justify-center flex-shrink-0'>
+              <Phone
+                className='w-3 h-3 text-muted-foreground'
+                aria-hidden='true'
+              />
             </div>
             <div className='min-w-0 flex-1'>
-              <p className='text-[9px] uppercase tracking-wide text-gray-400 leading-none mb-0.5'>
+              <p className='text-[9px] uppercase tracking-wide text-muted-foreground leading-none mb-0.5'>
                 Điện thoại
               </p>
-              <p className='text-[12px] text-gray-900 tabular-nums'>
+              <p className='text-[12px] text-foreground tabular-nums'>
                 {formatVNPhone(phone)}
               </p>
             </div>
@@ -99,17 +104,20 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
         {email && (
           <a
             href={`mailto:${email}`}
-            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-gray-50 transition-colors'
+            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-accent transition-colors'
             onClick={(e) => e.stopPropagation()}
           >
-            <div className='w-6 h-6 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0'>
-              <Mail className='w-3 h-3 text-gray-500' aria-hidden='true' />
+            <div className='w-6 h-6 rounded-md bg-muted/40 border border-border flex items-center justify-center flex-shrink-0'>
+              <Mail
+                className='w-3 h-3 text-muted-foreground'
+                aria-hidden='true'
+              />
             </div>
             <div className='min-w-0 flex-1 overflow-hidden'>
-              <p className='text-[9px] uppercase tracking-wide text-gray-400 leading-none mb-0.5'>
+              <p className='text-[9px] uppercase tracking-wide text-muted-foreground leading-none mb-0.5'>
                 Email
               </p>
-              <p className='text-[12px] text-gray-900 truncate'>{email}</p>
+              <p className='text-[12px] text-foreground truncate'>{email}</p>
             </div>
           </a>
         )}
@@ -119,10 +127,10 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
             href={zaloLink}
             target='_blank'
             rel='noopener noreferrer'
-            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-gray-50 transition-colors'
+            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-accent transition-colors'
             onClick={(e) => e.stopPropagation()}
           >
-            <div className='w-6 h-6 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0'>
+            <div className='w-6 h-6 rounded-md bg-muted/40 border border-border flex items-center justify-center flex-shrink-0'>
               <Image
                 src='/svg/zalo.svg'
                 alt='Zalo'
@@ -132,10 +140,10 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
               />
             </div>
             <div className='min-w-0 flex-1'>
-              <p className='text-[9px] uppercase tracking-wide text-gray-400 leading-none mb-0.5'>
+              <p className='text-[9px] uppercase tracking-wide text-muted-foreground leading-none mb-0.5'>
                 Nhắn tin
               </p>
-              <p className='text-[12px] text-gray-900'>Zalo</p>
+              <p className='text-[12px] text-foreground'>Zalo</p>
             </div>
             <span className='text-[10px] font-medium bg-blue-50 text-blue-700 rounded-full px-1.5 py-0.5 flex-shrink-0'>
               Mở
@@ -149,7 +157,7 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
         href={sellerPageUrl}
         target='_blank'
         rel='noopener noreferrer'
-        className='flex items-center justify-between px-3 py-2 border-t border-gray-100 hover:bg-gray-50 transition-colors group'
+        className='flex items-center justify-between px-3 py-2 border-t border-border hover:bg-accent transition-colors group'
         onClick={(e) => e.stopPropagation()}
       >
         <span className='text-[11px] text-blue-600 font-medium'>

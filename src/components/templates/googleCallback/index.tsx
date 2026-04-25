@@ -112,8 +112,8 @@ export default function GoogleCallback() {
   }, [router])
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-gray-50 px-4'>
-      <div className='w-full max-w-sm mx-auto bg-white rounded-lg shadow-md p-4 sm:p-6 sm:max-w-md'>
+    <div className='min-h-screen flex items-center justify-center bg-muted/40 px-4'>
+      <div className='w-full max-w-sm mx-auto bg-card rounded-lg shadow-md p-4 sm:p-6 sm:max-w-md'>
         <AuthStatusDisplay
           status={status}
           error={error}
