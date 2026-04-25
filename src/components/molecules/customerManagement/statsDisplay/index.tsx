@@ -13,7 +13,7 @@ const StatsDisplay: React.FC<StatsDisplayProps> = ({ totalCount }) => {
     <div className='flex items-center gap-3 shrink-0'>
       <div className='flex items-center gap-2'>
         <Activity size={18} className='text-primary' />
-        <span className='text-gray-600 font-medium text-sm'>
+        <span className='text-muted-foreground font-medium text-sm'>
           {t('total')}: {totalCount}
         </span>
       </div>

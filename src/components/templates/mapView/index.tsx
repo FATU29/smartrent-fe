@@ -312,7 +312,7 @@ const MapContent: React.FC<MapContentProps> = ({
       {/* Loading Indicator (Top Center) - Visible when loading */}
       {isLoading && (
         <div className='absolute top-4 left-1/2 -translate-x-1/2 z-10'>
-          <div className='bg-white/90 backdrop-blur-md shadow-lg rounded-full px-5 py-2.5 flex items-center gap-3 border border-border/50'>
+          <div className='bg-card/90 backdrop-blur-md shadow-lg rounded-full px-5 py-2.5 flex items-center gap-3 border border-border/50'>
             <Loader2 className='h-4 w-4 animate-spin text-primary' />
             <span className='text-sm font-medium'>
               {t('loadingProperties')}

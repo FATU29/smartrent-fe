@@ -51,7 +51,7 @@ const UserDropdown: React.FC = () => {
         sideOffset={8}
         className='p-0 overflow-hidden rounded-xl overflow-x-hidden w-auto min-w-[16rem] max-w-[20rem]'
       >
-        <div className='p-5 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white relative overflow-hidden'>
+        <div className='p-5 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground relative overflow-hidden'>
           <div className='absolute inset-0'>
             <Image
               src='/images/banner-default.jpg'
@@ -72,7 +72,7 @@ const UserDropdown: React.FC = () => {
             </p>
             <Button
               size='sm'
-              className='bg-primary text-white hover:bg-primary/90'
+              className='bg-primary text-primary-foreground hover:bg-primary/90'
               asChild
             >
               <Link href={SELLER_ROUTES.MEMBERSHIP}>

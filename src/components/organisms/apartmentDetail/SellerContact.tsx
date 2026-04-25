@@ -95,7 +95,8 @@ const SellerContact: React.FC<SellerContactProps> = ({
     <Card
       className={cn(
         'w-full shadow-lg hover:shadow-xl transition-shadow',
-        isProfessionalBroker && 'border-2 border-[#22c55e]',
+        isProfessionalBroker &&
+          'border-2 border-green-500 dark:border-green-400',
       )}
     >
       <CardContent className='p-4 md:p-4.5 space-y-3.5'>
@@ -110,7 +111,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
               sizeClassName='w-12 h-12 md:w-14 md:h-14'
               className='cursor-pointer'
               showBrokerBadge={isProfessionalBroker}
-              fallbackClassName='text-sm md:text-base text-white'
+              fallbackClassName='text-sm md:text-base text-primary-foreground'
               badgeClassName='h-5 w-5 md:h-6 md:w-6'
             />
           </Link>
@@ -136,7 +137,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
               <Button
                 asChild
                 size='sm'
-                className='h-7 px-2.5 text-[11px] md:text-xs bg-primary hover:bg-primary/90 text-primary-foreground dark:text-white'
+                className='h-7 px-2.5 text-[11px] md:text-xs bg-primary hover:bg-primary/90 text-primary-foreground'
               >
                 <Link href={sellerListingsUrl}>
                   {t('links.viewSellerListings')}
@@ -149,7 +150,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
         {/* Contact Buttons */}
         <div className='space-y-2'>
           <Button
-            className='w-full bg-white hover:bg-blue-50 text-foreground border-2 border-primary h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed dark:bg-primary dark:hover:bg-primary/90 dark:text-white dark:border-primary/80'
+            className='w-full bg-card hover:bg-primary/10 text-foreground border-2 border-primary h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground dark:border-primary/80'
             onClick={handleZaloClick}
             disabled={!hasPhone}
             aria-label={t('actions.chatZalo')}
@@ -165,12 +166,12 @@ const SellerContact: React.FC<SellerContactProps> = ({
           </Button>
 
           <Button
-            className='w-full bg-primary hover:bg-primary/90 h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all text-white dark:text-white'
+            className='w-full bg-primary hover:bg-primary/90 h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all text-primary-foreground'
             onClick={handleCall}
             disabled={!hasPhone}
             aria-label={showPhone ? phone : t('actions.showPhone')}
           >
-            <Phone className='w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-white' />
+            <Phone className='w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5' />
             {showPhone ? phone : t('actions.showPhone')}
           </Button>
         </div>

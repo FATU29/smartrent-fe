@@ -110,7 +110,7 @@ export default function UnifiedDetailDialog({
         )}
       >
         {/* Header */}
-        <header className='relative bg-primary text-white flex-shrink-0'>
+        <header className='relative bg-primary text-primary-foreground flex-shrink-0'>
           <div className='px-4 py-4 sm:px-6 sm:py-5'>
             <div className='flex items-center gap-3 mb-4'>
               {/* Back button */}
@@ -119,7 +119,7 @@ export default function UnifiedDetailDialog({
                   onClick={() =>
                     setCurrentView(isCustomerView ? 'listing' : 'customer')
                   }
-                  className='p-2 -ml-2 hover:bg-white/20 rounded-full transition-colors active:scale-95'
+                  className='p-2 -ml-2 hover:bg-primary-foreground/20 rounded-full transition-colors active:scale-95'
                   aria-label='Go back'
                 >
                   <ArrowLeft className='h-5 w-5' />
@@ -128,7 +128,7 @@ export default function UnifiedDetailDialog({
 
               {/* Avatar/Icon */}
               {isCustomerView && customer ? (
-                <Avatar className='h-12 w-12 sm:h-14 sm:w-14 border-2 border-white shadow-lg flex-shrink-0'>
+                <Avatar className='h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary-foreground shadow-lg flex-shrink-0'>
                   {customer.avatarUrl && (
                     <AvatarImage src={customer.avatarUrl} alt={displayName} />
                   )}
@@ -137,7 +137,7 @@ export default function UnifiedDetailDialog({
                   </AvatarFallback>
                 </Avatar>
               ) : listing ? (
-                <div className='p-2.5 sm:p-3 bg-white/20 rounded-xl flex-shrink-0'>
+                <div className='p-2.5 sm:p-3 bg-primary-foreground/20 rounded-xl flex-shrink-0'>
                   <Home className='h-6 w-6 sm:h-7 sm:w-7' />
                 </div>
               ) : null}
@@ -147,7 +147,7 @@ export default function UnifiedDetailDialog({
                 <h2 className='text-base sm:text-xl font-bold truncate'>
                   {displayName}
                 </h2>
-                <p className='text-white/80 text-xs sm:text-sm'>
+                <p className='text-primary-foreground/80 text-xs sm:text-sm'>
                   {isCustomerView
                     ? t('dialog.customerDetail.title')
                     : t('dialog.listingDetail.title')}
@@ -157,7 +157,7 @@ export default function UnifiedDetailDialog({
               {/* Close button */}
               <button
                 onClick={() => onOpenChange(false)}
-                className='p-2 -mr-2 hover:bg-white/20 rounded-full transition-colors active:scale-95 flex-shrink-0'
+                className='p-2 -mr-2 hover:bg-primary-foreground/20 rounded-full transition-colors active:scale-95 flex-shrink-0'
                 aria-label='Close'
               >
                 <X className='h-5 w-5' />
@@ -173,7 +173,7 @@ export default function UnifiedDetailDialog({
                     'flex-1 py-2.5 px-4 rounded-lg font-medium text-sm transition-all',
                     isCustomerView
                       ? 'bg-card text-primary shadow-md'
-                      : 'bg-white/10 text-white/80 hover:bg-white/20',
+                      : 'bg-primary-foreground/10 text-primary-foreground/80 hover:bg-primary-foreground/20',
                   )}
                 >
                   <Users className='h-4 w-4 inline-block mr-2' />
@@ -185,7 +185,7 @@ export default function UnifiedDetailDialog({
                     'flex-1 py-2.5 px-4 rounded-lg font-medium text-sm transition-all',
                     !isCustomerView
                       ? 'bg-card text-primary shadow-md'
-                      : 'bg-white/10 text-white/80 hover:bg-white/20',
+                      : 'bg-primary-foreground/10 text-primary-foreground/80 hover:bg-primary-foreground/20',
                   )}
                 >
                   <Home className='h-4 w-4 inline-block mr-2' />

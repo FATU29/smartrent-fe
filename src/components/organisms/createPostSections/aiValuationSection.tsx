@@ -163,8 +163,8 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
         <Card className='shadow-lg border-0 bg-gradient-to-br from-background to-primary/5'>
           <CardHeader className='pb-3'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
-              <div className='p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg'>
-                <BarChart3 className='w-6 h-6 text-white' />
+              <div className='p-2 bg-gradient-to-r from-primary to-primary/70 rounded-lg'>
+                <BarChart3 className='w-6 h-6 text-primary-foreground' />
               </div>
               {t('results.title')}
             </CardTitle>
@@ -208,7 +208,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                   <h3 className='text-sm sm:text-base font-semibold text-foreground'>
                     {t('results.suggestedPrice')}
                   </h3>
-                  <div className='bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-4 sm:p-6 text-white shadow-lg mb-2 sm:mb-3'>
+                  <div className='bg-gradient-to-r from-primary to-primary/70 rounded-2xl p-4 sm:p-6 text-primary-foreground shadow-lg mb-2 sm:mb-3'>
                     <div className='text-lg sm:text-xl font-bold leading-tight tracking-tight mb-2'>
                       {formatPrice(prediction.price_range.min)} -{' '}
                       {formatPrice(prediction.price_range.max)}

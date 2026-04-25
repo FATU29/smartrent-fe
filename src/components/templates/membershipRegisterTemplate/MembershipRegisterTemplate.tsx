@@ -313,7 +313,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
                         >
                           {tUpgrade('currentMembership.title')}
                         </Typography>
-                        <Badge className='bg-green-500 hover:bg-green-600 text-white border-0 px-2.5 py-0.5 gap-1.5'>
+                        <Badge className='bg-green-500 hover:bg-green-600 text-white border-0 px-2.5 py-0.5 gap-1.5 dark:bg-green-600 dark:hover:bg-green-700'>
                           <CheckCircle2 className='size-3' />
                           {tPage('currentPlan')}
                         </Badge>

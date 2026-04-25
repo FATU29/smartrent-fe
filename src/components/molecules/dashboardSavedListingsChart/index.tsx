@@ -76,12 +76,12 @@ interface DashboardSavedListingsChartProps {
 }
 
 const BAR_COLORS = [
-  '#f59e0b',
-  '#6366f1',
-  '#10b981',
-  '#ef4444',
-  '#3b82f6',
-  '#8b5cf6',
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
+  'var(--primary)',
 ]
 
 const DashboardSavedListingsChart: React.FC<

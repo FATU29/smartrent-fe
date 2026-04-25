@@ -54,7 +54,7 @@ export function getNotificationIcon(type: NotificationType) {
     case 'REPORT_REJECTED':
       return {
         icon: XCircle,
-        className: 'text-gray-500',
+        className: 'text-muted-foreground',
       }
     case 'REPORT_ACTION_REQUIRED':
       return {

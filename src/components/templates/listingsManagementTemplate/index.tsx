@@ -259,7 +259,7 @@ const ListingsWithPagination = () => {
             <div className='mt-6 flex flex-col items-center gap-4'>
               {isLoading && (
                 <div className='flex items-center justify-center py-4'>
-                  <div className='animate-pulse text-gray-500 text-sm'>
+                  <div className='animate-pulse text-muted-foreground text-sm'>
                     {t('loadingMore')}
                   </div>
                 </div>
@@ -281,7 +281,7 @@ const ListingsWithPagination = () => {
               />
 
               {!hasNext && listings.length > 0 && (
-                <div className='text-center py-6 text-gray-500 text-sm'>
+                <div className='text-center py-6 text-muted-foreground text-sm'>
                   {tSeller('allListingsShown')}
                 </div>
               )}

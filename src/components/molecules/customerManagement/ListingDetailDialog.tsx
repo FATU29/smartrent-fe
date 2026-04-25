@@ -87,16 +87,16 @@ export default function ListingDetailDialog({
         {/* Dialog Content */}
         <div className='relative z-50 w-full max-w-3xl max-h-[90vh] overflow-hidden bg-card rounded-2xl shadow-2xl m-4 animate-in fade-in-0 zoom-in-95 duration-200'>
           {/* Header with gradient */}
-          <div className='relative bg-gradient-to-r from-green-600 to-teal-600 p-6 text-white'>
+          <div className='relative bg-primary p-6 text-primary-foreground'>
             <button
               onClick={() => onOpenChange(false)}
-              className='absolute top-4 right-4 p-2 rounded-full hover:bg-white/20 transition-colors'
+              className='absolute top-4 right-4 p-2 rounded-full hover:bg-primary-foreground/20 transition-colors'
             >
               <X className='h-5 w-5' />
             </button>
 
             <div className='flex items-center gap-4'>
-              <div className='p-4 bg-white/20 rounded-xl backdrop-blur-sm'>
+              <div className='p-4 bg-primary-foreground/20 rounded-xl backdrop-blur-sm'>
                 <Home className='h-8 w-8' />
               </div>
 
@@ -104,7 +104,7 @@ export default function ListingDetailDialog({
                 <h2 className='text-2xl font-bold mb-1 line-clamp-2'>
                   {listing.listingTitle}
                 </h2>
-                <p className='text-green-100 text-sm'>
+                <p className='text-primary-foreground/80 text-sm'>
                   {t('dialog.listingDetail.title')}
                 </p>
               </div>
@@ -115,32 +115,32 @@ export default function ListingDetailDialog({
           <div className='p-6 overflow-y-auto max-h-[calc(90vh-180px)]'>
             {/* Statistics Cards */}
             <div className='grid grid-cols-2 gap-4 mb-6'>
-              <Card className='p-5 text-center bg-gradient-to-br from-green-50 to-green-100 border-green-200'>
+              <Card className='p-5 text-center bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'>
                 {loadingStats ? (
-                  <Loader2 className='h-6 w-6 mx-auto mb-2 animate-spin text-green-600' />
+                  <Loader2 className='h-6 w-6 mx-auto mb-2 animate-spin text-primary' />
                 ) : (
                   <>
-                    <MousePointerClick className='h-7 w-7 mx-auto mb-2 text-green-600' />
-                    <p className='text-3xl font-bold text-green-900'>
+                    <MousePointerClick className='h-7 w-7 mx-auto mb-2 text-primary' />
+                    <p className='text-3xl font-bold text-primary'>
                       {stats?.totalClicks || listing.clickCount}
                     </p>
-                    <p className='text-sm text-green-700 mt-1'>
+                    <p className='text-sm text-muted-foreground mt-1'>
                       {t('dialog.listingDetail.totalClicks')}
                     </p>
                   </>
                 )}
               </Card>
 
-              <Card className='p-5 text-center bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200'>
+              <Card className='p-5 text-center bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'>
                 {loadingStats ? (
-                  <Loader2 className='h-6 w-6 mx-auto mb-2 animate-spin text-teal-600' />
+                  <Loader2 className='h-6 w-6 mx-auto mb-2 animate-spin text-primary' />
                 ) : (
                   <>
-                    <Users className='h-7 w-7 mx-auto mb-2 text-teal-600' />
-                    <p className='text-3xl font-bold text-teal-900'>
+                    <Users className='h-7 w-7 mx-auto mb-2 text-primary' />
+                    <p className='text-3xl font-bold text-primary'>
                       {stats?.uniqueUsers || usersData?.data.length || 0}
                     </p>
-                    <p className='text-sm text-teal-700 mt-1'>
+                    <p className='text-sm text-muted-foreground mt-1'>
                       {t('dialog.listingDetail.uniqueUsers')}
                     </p>
                   </>
@@ -149,9 +149,9 @@ export default function ListingDetailDialog({
             </div>
 
             {/* Interested Users */}
-            <Card className='p-5 border-l-4 border-green-500'>
+            <Card className='p-5 border-l-4 border-primary'>
               <h3 className='text-lg font-semibold mb-4 flex items-center gap-2'>
-                <Users className='h-5 w-5 text-green-600' />
+                <Users className='h-5 w-5 text-primary' />
                 {t('dialog.listingDetail.interestedUsers')}
               </h3>
 
@@ -164,7 +164,7 @@ export default function ListingDetailDialog({
                 </div>
               ) : !usersData?.data || usersData.data.length === 0 ? (
                 <div className='text-center py-8'>
-                  <Users className='h-12 w-12 text-gray-300 mx-auto mb-3' />
+                  <Users className='h-12 w-12 text-muted-foreground/40 mx-auto mb-3' />
                   <p className='text-muted-foreground'>
                     {t('dialog.listingDetail.noUsers')}
                   </p>
@@ -195,31 +195,31 @@ export default function ListingDetailDialog({
                         key={user.userId}
                         role='button'
                         tabIndex={0}
-                        className='group p-4 bg-muted/40 hover:bg-green-50 rounded-lg border border-border hover:border-green-300 transition-all duration-200 cursor-pointer'
+                        className='group p-4 bg-muted/40 hover:bg-primary/5 rounded-lg border border-border hover:border-primary/30 transition-all duration-200 cursor-pointer'
                         onClick={() => onViewCustomer?.(user.userId)}
                         onKeyDown={handleKeyDown}
                         aria-label={`View customer: ${user.firstName} ${user.lastName}`}
                       >
                         <div className='flex items-center gap-4'>
-                          <Avatar className='h-12 w-12 border-2 border-white shadow'>
+                          <Avatar className='h-12 w-12 border-2 border-card shadow'>
                             {user.avatarUrl && (
                               <AvatarImage
                                 src={user.avatarUrl}
                                 alt={`${user.firstName} ${user.lastName}`}
                               />
                             )}
-                            <AvatarFallback className='bg-gradient-to-br from-green-400 to-teal-400 text-white'>
+                            <AvatarFallback className='bg-primary text-primary-foreground'>
                               {getInitials(user.firstName, user.lastName)}
                             </AvatarFallback>
                           </Avatar>
 
                           <div className='flex-1 min-w-0'>
                             <div className='flex items-center gap-2 mb-1'>
-                              <h4 className='font-semibold text-foreground truncate group-hover:text-green-600 transition-colors'>
+                              <h4 className='font-semibold text-foreground truncate group-hover:text-primary transition-colors'>
                                 {user.firstName} {user.lastName}
                               </h4>
                               {user.contactPhoneVerified && (
-                                <CheckCircle2 className='h-4 w-4 text-green-600 flex-shrink-0' />
+                                <CheckCircle2 className='h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0' />
                               )}
                             </div>
 

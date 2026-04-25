@@ -45,7 +45,7 @@ export function InterestedUserCard({
               alt={`${user.firstName} ${user.lastName}`}
             />
           )}
-          <AvatarFallback className='bg-gradient-to-br from-primary to-primary/70 text-white text-sm font-semibold'>
+          <AvatarFallback className='bg-gradient-to-br from-primary to-primary/70 text-primary-foreground text-sm font-semibold'>
             {getInitials(user.firstName, user.lastName)}
           </AvatarFallback>
         </Avatar>
@@ -56,7 +56,7 @@ export function InterestedUserCard({
               {user.firstName} {user.lastName}
             </h4>
             {user.contactPhoneVerified && (
-              <CheckCircle2 className='h-3.5 w-3.5 text-green-600 flex-shrink-0' />
+              <CheckCircle2 className='h-3.5 w-3.5 text-green-600 dark:text-green-400 flex-shrink-0' />
             )}
           </div>
 
