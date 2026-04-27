@@ -14,6 +14,8 @@ import { DeleteListingDialog } from '@/components/molecules/deleteListingDialog'
 import { ResubmitListingDialog } from '@/components/molecules/moderation'
 import { MembershipPushDisplay } from '@/components/molecules/listings/MembershipPushDisplay'
 import { usePushListing, usePushQuota } from '@/hooks/usePush'
+import PushLimitModal from '@/components/molecules/pushLimitModal'
+import { PushLimitError } from '@/api/types/push.type'
 
 const ResidentialFilterDialog = dynamic(
   () => import('@/components/molecules/residentialFilterDialog'),
@@ -71,6 +73,11 @@ const ListingsWithPagination = () => {
   const [resubmitDialogOpen, setResubmitDialogOpen] = useState(false)
   const [selectedListingForResubmit, setSelectedListingForResubmit] =
     useState<ListingOwnerDetail | null>(null)
+  const [pushLimitState, setPushLimitState] = useState<{
+    open: boolean
+    waitMinutes: number
+    apiMessage?: string | null
+  }>({ open: false, waitMinutes: 1, apiMessage: null })
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: () => {
@@ -114,8 +121,18 @@ const ListingsWithPagination = () => {
         // Trigger quota refresh
         refetchQuota()
       }
-    } catch (error: any) {
-      toast.error(error.message || tSeller('card.toast.pushError'))
+    } catch (error: unknown) {
+      if (error instanceof PushLimitError) {
+        setPushLimitState({
+          open: true,
+          waitMinutes: error.waitMinutes,
+          apiMessage: error.message || null,
+        })
+        return
+      }
+      const message =
+        error instanceof Error ? error.message : tSeller('card.toast.pushError')
+      toast.error(message || tSeller('card.toast.pushError'))
     }
   }
 
@@ -246,6 +263,15 @@ const ListingsWithPagination = () => {
               )
             }}
             isLoading={resubmitMutation.isPending}
+          />
+
+          <PushLimitModal
+            open={pushLimitState.open}
+            onOpenChange={(open) =>
+              setPushLimitState((prev) => ({ ...prev, open }))
+            }
+            waitMinutes={pushLimitState.waitMinutes}
+            apiMessage={pushLimitState.apiMessage}
           />
 
           {/* Desktop: Show Pagination */}

@@ -148,10 +148,11 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
           <Link href={PUBLIC_ROUTES.MAPS} className='flex-1'>
             <Button
               variant='secondary'
-              className='h-9 px-4 w-full'
+              className='flex items-center gap-2 h-9 px-4 w-full text-sm font-medium'
               type='button'
             >
-              <MapIcon className='h-4 w-4 mr-1' /> {t('actions.viewMap')}
+              <MapIcon className='h-4 w-4' />
+              <span className='whitespace-nowrap'>{t('actions.viewMap')}</span>
             </Button>
           </Link>
         </div>
@@ -195,8 +196,15 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
           <div className='flex-1 flex items-center gap-3'>
             <ListSearchWithSuggestions />
             <Link href={PUBLIC_ROUTES.MAPS}>
-              <Button variant='default' className='h-9 px-6' type='button'>
-                <MapIcon className='h-4 w-4 mr-1' /> {t('actions.viewMap')}
+              <Button
+                variant='default'
+                className='flex items-center gap-2 h-9 px-6 text-sm font-medium'
+                type='button'
+              >
+                <MapIcon className='h-4 w-4' />
+                <span className='whitespace-nowrap'>
+                  {t('actions.viewMap')}
+                </span>
               </Button>
             </Link>
           </div>
@@ -205,12 +213,12 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
         <div className='flex flex-wrap gap-2 items-center'>
           <Button
             variant='outline'
-            size='sm'
-            className='h-9 px-3 relative'
+            className='flex items-center gap-2 h-9 px-3 relative text-sm font-medium'
             type='button'
             onClick={onOpenAdvanced}
           >
-            <Filter className='h-4 w-4 mr-1' /> {t('actions.filter')}
+            <Filter className='h-4 w-4' />
+            <span className='whitespace-nowrap'>{t('actions.filter')}</span>
             {typeof activeFilterCount === 'number' && activeFilterCount > 0 && (
               <span className='absolute -top-0.5 -right-0.5 w-2 h-2 bg-destructive rounded-full' />
             )}
@@ -257,7 +265,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
                   filters.isBroker ? 'text-primary' : 'text-muted-foreground',
                 )}
               />
-              <span className='text-sm whitespace-nowrap'>
+              <span className='text-sm font-medium whitespace-nowrap'>
                 {t('toggles.professionalBroker')}
               </span>
               <Switch

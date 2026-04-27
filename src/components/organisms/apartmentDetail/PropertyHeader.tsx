@@ -210,101 +210,99 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
 
   return (
     <div className='space-y-4 listing-section'>
-      {/* Title and Actions */}
-      <div className='flex flex-col gap-3'>
-        <div className='flex flex-col gap-3'>
-          <div className='flex-1 min-w-0'>
-            {/* Title */}
+      {/* Title block — full width, tighter to gallery, more prominent */}
+      <div className='w-full'>
+        {/* Title */}
+        <Typography
+          variant='h1'
+          className='listing-title block w-full text-xl md:text-2xl lg:text-3xl font-bold leading-tight tracking-tight text-foreground'
+        >
+          {title}
+        </Typography>
+
+        {/* Badges */}
+        <div className='flex flex-wrap items-center gap-1.5 mt-3'>
+          {vipBadge && (
+            <Badge
+              variant={vipBadge.variant}
+              className={`${vipBadge.className} text-[11px] px-2 py-0.5`}
+            >
+              {vipBadge.text}
+            </Badge>
+          )}
+
+          {topMeta.map((meta) => (
+            <Badge
+              key={meta.key}
+              variant='outline'
+              className='text-[11px] px-2 py-0.5'
+            >
+              {meta.label}: {meta.value}
+            </Badge>
+          ))}
+        </div>
+
+        {/* Address */}
+        <div className='space-y-1.5 mt-3'>
+          {newAddress && (
             <Typography
-              variant='h1'
-              className='listing-title text-base md:text-lg lg:text-xl font-bold leading-snug mb-3 line-clamp-3'
+              variant='p'
+              className='text-xs md:text-sm text-muted-foreground flex items-start gap-2'
             >
-              {title}
+              <span className='font-semibold text-foreground shrink-0'>
+                {t('apartmentDetail.property.newAddress')}:
+              </span>
+              <span className='flex-1'>{newAddress}</span>
             </Typography>
-
-            <div className='flex flex-wrap items-center gap-1.5 mb-2.5'>
-              {vipBadge && (
-                <Badge
-                  variant={vipBadge.variant}
-                  className={`${vipBadge.className} text-[11px] px-2 py-0.5`}
-                >
-                  {vipBadge.text}
-                </Badge>
-              )}
-
-              {topMeta.map((meta) => (
-                <Badge
-                  key={meta.key}
-                  variant='outline'
-                  className='text-[11px] px-2 py-0.5'
-                >
-                  {meta.label}: {meta.value}
-                </Badge>
-              ))}
-            </div>
-
-            {/* Address */}
-            <div className='space-y-1.5'>
-              {newAddress && (
-                <Typography
-                  variant='p'
-                  className='text-xs md:text-sm text-muted-foreground flex items-start gap-2'
-                >
-                  <span className='font-semibold text-foreground shrink-0'>
-                    {t('apartmentDetail.property.newAddress')}:
-                  </span>
-                  <span className='flex-1'>{newAddress}</span>
-                </Typography>
-              )}
-              {oldAddress && (
-                <Typography
-                  variant='p'
-                  className='text-xs md:text-sm text-muted-foreground flex items-start gap-2'
-                >
-                  <span className='font-semibold text-foreground shrink-0'>
-                    {t('apartmentDetail.property.legacyAddress')}:
-                  </span>
-                  <span className='flex-1'>{oldAddress}</span>
-                </Typography>
-              )}
-            </div>
-          </div>
-
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-2 mt-3'>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={handleCopyLink}
-              className='flex items-center gap-2'
+          )}
+          {oldAddress && (
+            <Typography
+              variant='p'
+              className='text-xs md:text-sm text-muted-foreground flex items-start gap-2'
             >
-              <Copy size={16} />
-              <span>{t('apartmentDetail.actions.share')}</span>
-            </Button>
+              <span className='font-semibold text-foreground shrink-0'>
+                {t('apartmentDetail.property.legacyAddress')}:
+              </span>
+              <span className='flex-1'>{oldAddress}</span>
+            </Typography>
+          )}
+        </div>
 
-            <CompareToggleBtn
-              listing={listingForCompare}
-              variant='outline'
-              size='sm'
-              showLabel={true}
-            />
+        {/* Action buttons */}
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-2 mt-4'>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={handleCopyLink}
+            className='flex items-center gap-2'
+          >
+            <Copy size={16} />
+            <span>{t('apartmentDetail.actions.share')}</span>
+          </Button>
 
-            <SaveListingButton
-              listingId={listingId}
-              variant='default'
-              size='sm'
-              showLabel={true}
-            />
+          <CompareToggleBtn
+            listing={listingForCompare}
+            variant='outline'
+            size='sm'
+            showLabel={true}
+          />
 
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={handleReport}
-              className='flex items-center gap-2'
-            >
-              <Flag size={16} />
-              <span>{t('common.report') || 'Report'}</span>
-            </Button>
-          </div>
+          <SaveListingButton
+            listingId={listingId}
+            variant='default'
+            size='sm'
+            showLabel={true}
+          />
+
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={handleReport}
+            className='flex items-center gap-2'
+          >
+            <Flag size={16} />
+            <span>{t('common.report') || 'Report'}</span>
+          </Button>
         </div>
       </div>
 

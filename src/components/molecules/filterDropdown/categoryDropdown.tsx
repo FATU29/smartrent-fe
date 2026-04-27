@@ -1,7 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
-import { Typography } from '@/components/atoms/typography'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,12 +54,10 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant='outline'
-          className={`flex items-center gap-2 h-9 px-3 w-auto max-w-none shrink-0 ${className}`}
+          className={`flex items-center gap-2 h-9 px-3 w-auto max-w-none shrink-0 text-sm font-medium ${className}`}
         >
           <selectedType.icon className='h-4 w-4' />
-          <Typography variant='small' className='text-sm whitespace-nowrap'>
-            {displayText}
-          </Typography>
+          <span className='whitespace-nowrap'>{displayText}</span>
           <ChevronDown className='h-3 w-3 opacity-50' />
         </Button>
       </DropdownMenuTrigger>
@@ -76,12 +73,10 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
           <DropdownMenuItem
             key={type.value}
             onClick={() => onChange(type.value)}
-            className='flex items-center gap-2 cursor-pointer whitespace-nowrap'
+            className='flex items-center gap-2 cursor-pointer whitespace-nowrap text-sm font-medium'
           >
             <type.icon className='h-4 w-4' />
-            <Typography variant='small' className='text-sm whitespace-nowrap'>
-              {type.displayValue}
-            </Typography>
+            <span className='whitespace-nowrap'>{type.displayValue}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
