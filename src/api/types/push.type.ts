@@ -72,6 +72,41 @@ export interface PushListingResponse {
   pushedAt?: string // ISO 8601 timestamp
 }
 
+// Push limit error
+export const PUSH_LIMIT_ERROR_CODE = '18001'
+
+/**
+ * Thrown when the global push slot window is full (HTTP 429 + code 18001).
+ * Carries the dynamic wait time so the UI can render a precise countdown.
+ */
+export class PushLimitError extends Error {
+  readonly code = PUSH_LIMIT_ERROR_CODE
+  readonly waitMinutes: number
+
+  constructor(message: string, waitMinutes: number) {
+    super(message)
+    this.name = 'PushLimitError'
+    this.waitMinutes = waitMinutes
+  }
+}
+
+/**
+ * Pull the wait-minute count out of the localized backend message.
+ * Falls back to 1 if the format ever drifts.
+ *
+ * Backend template:
+ *   "Hệ thống đang quá tải yêu cầu đẩy tin. Vui lòng chờ %d phút nữa..."
+ */
+export const parsePushLimitWaitMinutes = (
+  message: string | null | undefined,
+): number => {
+  if (!message) return 1
+  const match = message.match(/(\d+)\s*phút|(\d+)\s*minutes?/i)
+  const raw = match?.[1] ?? match?.[2]
+  const parsed = raw ? parseInt(raw, 10) : NaN
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
+}
+
 // Quota response types
 export interface QuotaStatusResponse {
   benefitType: string // 'POST_SILVER' | 'POST_GOLD' | 'POST_DIAMOND' | 'PUSH'

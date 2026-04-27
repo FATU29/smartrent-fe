@@ -148,12 +148,24 @@
     },
     "searchSuggestions": {
       "heading": "Suggestions",
-      "loading": "Loading...",
+      "loading": "Searching...",
       "empty": "No suggestions found",
+      "emptyTitle": "Nothing matches yet",
+      "emptyHint": "Try a different keyword or location.",
       "clear": "Clear search",
+      "runSearchLabel": "Search for",
+      "countResults": "{count, plural, =0 {No results} =1 {1 result} other {# results}}",
       "hintKeyboard": "↑↓ to navigate, Enter to select, Esc to close",
-      "hintMobile": "Tap a suggestion",
-      "poweredBy": "Smart suggestions"
+      "hintMobile": "Tap a suggestion to continue",
+      "hintNavigate": "navigate",
+      "hintSelect": "select",
+      "hintClose": "close",
+      "poweredBy": "Smart suggestions",
+      "groups": {
+        "TITLE": "Listings",
+        "LOCATION": "Locations",
+        "POPULAR_QUERY": "Popular searches"
+      }
     },
     "propertyTypes": {
       "0": "All Types",
@@ -2553,6 +2565,25 @@
           "pushError": "Failed to push listing",
           "pushNotDisplaying": "Listing must be verified and displaying before it can be pushed"
         }
+      }
+    },
+    "pushLimit": {
+      "title": "Push queue is full",
+      "subtitle": "We cap simultaneous pushes to keep results fair for everyone.",
+      "tip": "Try again once a slot frees up, or schedule a push for later.",
+      "countdown": {
+        "label": "Slot opens in",
+        "minutes": "{minutes}m",
+        "seconds": "{seconds}s",
+        "secondsShort": "{seconds} sec"
+      },
+      "progress": {
+        "start": "Now",
+        "end": "Slot opens"
+      },
+      "actions": {
+        "gotIt": "Got it",
+        "schedule": "Schedule a push"
       }
     },
     "moderation": {

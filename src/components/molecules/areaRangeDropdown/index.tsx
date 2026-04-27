@@ -72,12 +72,10 @@ const AreaRangeDropdown: React.FC<AreaRangeDropdownProps> = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant='outline'
-          className={`flex items-center gap-2 h-9 px-3 ${className}`}
+          className={`flex items-center gap-2 h-9 px-3 text-sm font-medium ${className}`}
         >
           <Ruler className='h-4 w-4' />
-          <Typography variant='small' className='text-sm'>
-            {getDisplayText()}
-          </Typography>
+          <span className='whitespace-nowrap'>{getDisplayText()}</span>
           <ChevronDown className='h-3 w-3 opacity-50' />
         </Button>
       </DropdownMenuTrigger>

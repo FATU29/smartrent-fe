@@ -216,7 +216,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
       <div className='container max-w-6xl mx-auto px-4 py-6 lg:py-8'>
         <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start'>
           {/* Main Content */}
-          <div className='lg:col-span-8 flex flex-col gap-8 lg:gap-10'>
+          <div className='lg:col-span-8 flex flex-col gap-5 lg:gap-7'>
             {sections?.map(renderSection)}
           </div>
 

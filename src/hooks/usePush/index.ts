@@ -5,6 +5,11 @@ import type {
   PushListingRequest,
   PushListingResponse,
 } from '@/api/types/push.type'
+import {
+  PUSH_LIMIT_ERROR_CODE,
+  PushLimitError,
+  parsePushLimitWaitMinutes,
+} from '@/api/types/push.type'
 import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
 
 /**
@@ -65,6 +70,12 @@ export function usePushListing() {
       const response = await PushService.pushListing(request)
 
       if (!response.success) {
+        if (response.code === PUSH_LIMIT_ERROR_CODE) {
+          throw new PushLimitError(
+            response.message || '',
+            parsePushLimitWaitMinutes(response.message),
+          )
+        }
         throw new Error(response.message || 'Failed to push listing')
       }
 

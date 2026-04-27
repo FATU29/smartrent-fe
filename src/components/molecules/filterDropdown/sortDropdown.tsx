@@ -1,7 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
-import { Typography } from '@/components/atoms/typography'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,12 +57,10 @@ const SortDropdown: React.FC<SortDropdownProps> = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant='outline'
-          className={`flex items-center gap-2 h-9 px-3 ${className}`}
+          className={`flex items-center gap-2 h-9 px-3 text-sm font-medium ${className}`}
         >
           <ArrowUpDown className='h-4 w-4' />
-          <Typography variant='small' className='text-sm'>
-            {displayText}
-          </Typography>
+          <span className='whitespace-nowrap'>{displayText}</span>
           <ChevronDown className='h-3 w-3 opacity-50' />
         </Button>
       </DropdownMenuTrigger>
@@ -76,11 +73,9 @@ const SortDropdown: React.FC<SortDropdownProps> = ({
           <DropdownMenuItem
             key={option.value}
             onClick={() => onChange(option.value)}
-            className='flex items-center gap-2 cursor-pointer'
+            className='flex items-center gap-2 cursor-pointer text-sm font-medium'
           >
-            <Typography variant='small' className='text-sm'>
-              {option.label}
-            </Typography>
+            <span>{option.label}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

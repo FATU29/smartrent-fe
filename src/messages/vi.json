@@ -136,12 +136,24 @@
     },
     "searchSuggestions": {
       "heading": "Gợi ý",
-      "loading": "Đang tải...",
+      "loading": "Đang tìm...",
       "empty": "Không có gợi ý phù hợp",
+      "emptyTitle": "Chưa tìm thấy kết quả",
+      "emptyHint": "Hãy thử từ khóa hoặc địa điểm khác.",
       "clear": "Xóa từ khóa",
+      "runSearchLabel": "Tìm theo từ khóa",
+      "countResults": "{count, plural, =0 {Không có kết quả} other {# kết quả}}",
       "hintKeyboard": "↑↓ để chọn, Enter để xem, Esc để đóng",
-      "hintMobile": "Chạm vào gợi ý",
-      "poweredBy": "Gợi ý thông minh"
+      "hintMobile": "Chạm vào gợi ý để tiếp tục",
+      "hintNavigate": "di chuyển",
+      "hintSelect": "chọn",
+      "hintClose": "đóng",
+      "poweredBy": "Gợi ý thông minh",
+      "groups": {
+        "TITLE": "Tin đăng",
+        "LOCATION": "Địa điểm",
+        "POPULAR_QUERY": "Tìm kiếm phổ biến"
+      }
     },
     "status": {
       "ALL": "Tất cả",
@@ -2554,6 +2566,25 @@
           "pushError": "Không thể đẩy bài",
           "pushNotDisplaying": "Tin phải được xác thực và đang hiển thị mới có thể đẩy tin"
         }
+      }
+    },
+    "pushLimit": {
+      "title": "Hàng đợi đẩy tin đang đầy",
+      "subtitle": "Chúng tôi giới hạn số tin được đẩy cùng lúc để đảm bảo công bằng cho mọi người.",
+      "tip": "Hãy thử lại khi có chỗ trống, hoặc lên lịch đẩy tin để tự động chạy sau.",
+      "countdown": {
+        "label": "Chỗ trống mở sau",
+        "minutes": "{minutes} phút",
+        "seconds": "{seconds} giây",
+        "secondsShort": "{seconds} giây"
+      },
+      "progress": {
+        "start": "Bây giờ",
+        "end": "Sẵn sàng"
+      },
+      "actions": {
+        "gotIt": "Đã hiểu",
+        "schedule": "Lên lịch đẩy tin"
       }
     },
     "moderation": {
