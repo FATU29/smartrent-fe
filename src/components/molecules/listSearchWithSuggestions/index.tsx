@@ -24,6 +24,11 @@ import {
 
 import { Input } from '@/components/atoms/input'
 import { Button } from '@/components/atoms/button'
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+} from '@/components/atoms/popover'
 import { useDebounce } from '@/hooks/useDebounce'
 import useSearchSuggestions from '@/hooks/useSearchSuggestions'
 import { useListContext } from '@/contexts/list/useListContext'
@@ -467,13 +472,25 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
 
   const showClearButton = inputValue.length > 0
 
-  // Used to detect blur transitions outside the wrapper (input + popover).
+  // Used as the Popover anchor + to detect interactions inside the input box.
   const wrapperRef = useRef<HTMLDivElement | null>(null)
+  const [anchorWidth, setAnchorWidth] = useState<number | undefined>(undefined)
+
+  // Track the input wrapper width so the portaled popover matches it.
+  useEffect(() => {
+    const el = wrapperRef.current
+    if (!el) return
+    setAnchorWidth(el.offsetWidth)
+    if (typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => setAnchorWidth(el.offsetWidth))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
     const next = e.relatedTarget as Node | null
     if (next && wrapperRef.current?.contains(next)) {
-      // Focus moved into the popover (e.g. clear button). Stay open.
+      // Focus moved into the input box (e.g. clear button). Stay open.
       return
     }
     setIsFocused(false)
@@ -523,162 +540,186 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   const showRunSearch = inputValue.trim().length >= 2
 
   return (
-    <div ref={wrapperRef} className={cn('relative flex-1 min-w-0', className)}>
-      <div
-        className={classNames(
-          'group relative flex items-center h-9 rounded-lg border border-input bg-background shadow-xs transition-all duration-200',
-          'hover:border-primary/40',
-          'focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20',
-        )}
-      >
-        <Search
-          className={classNames(
-            'absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors duration-200',
-            'text-muted-foreground group-focus-within:text-primary',
-          )}
-        />
-        <Input
-          type='text'
-          role='combobox'
-          aria-expanded={isOpen}
-          aria-autocomplete='list'
-          aria-controls={isOpen ? listId : undefined}
-          aria-activedescendant={
-            isOpen && highlightIndex >= 0 ? optionId(highlightIndex) : undefined
-          }
-          autoComplete='off'
-          spellCheck={false}
-          placeholder={placeholder || t('placeholder')}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          className={classNames(
-            'h-full border-0 bg-transparent pl-10 shadow-none focus-visible:ring-0 dark:bg-transparent',
-            showClearButton ? 'pr-10' : 'pr-3',
-          )}
-        />
-        {showClearButton ? (
-          <Button
-            type='button'
-            variant='ghost'
-            size='icon'
-            onMouseDown={(e) => {
-              e.preventDefault()
-              handleClear()
-            }}
-            className='absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
-            aria-label={tSuggestions('clear')}
-          >
-            <X className='h-4 w-4' />
-          </Button>
-        ) : null}
-        {isLoading && !isSuggestLoading ? (
+    <Popover
+      open={isOpen}
+      onOpenChange={(next) => {
+        if (!next) setIsFocused(false)
+      }}
+    >
+      <PopoverAnchor asChild>
+        <div
+          ref={wrapperRef}
+          className={cn('relative flex-1 min-w-0', className)}
+        >
           <div
             className={classNames(
-              'absolute top-1/2 -translate-y-1/2 pointer-events-none',
-              showClearButton ? 'right-10' : 'right-3',
+              'group relative flex items-center h-9 rounded-lg border border-input bg-background shadow-xs transition-all duration-200',
+              'hover:border-primary/40',
+              'focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20',
             )}
           >
-            <Loader2 className='h-4 w-4 animate-spin text-primary' />
-          </div>
-        ) : null}
-      </div>
-
-      {isOpen ? (
-        <div
-          className={cn(
-            'absolute left-0 right-0 top-full z-50 mt-2',
-            'rounded-2xl border border-border bg-popover text-popover-foreground',
-            'shadow-xl ring-1 ring-black/5 dark:ring-white/5',
-            'overflow-hidden',
-            'animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150',
-          )}
-          // Prevent mousedown on the chrome from blurring the input
-          onMouseDown={(e) => e.preventDefault()}
-        >
-          {/* Header */}
-          <div className='flex items-center justify-between gap-2 px-4 pt-3 pb-1'>
-            <span className='text-[11px] uppercase tracking-wide text-muted-foreground font-medium'>
-              {tSuggestions('heading')}
-            </span>
-            {isSuggestLoading ? (
-              <span className='flex items-center gap-1.5 text-[11px] text-muted-foreground'>
-                <Loader2 className='h-3 w-3 animate-spin' />
-                {tSuggestions('loading')}
-              </span>
-            ) : (
-              <span className='text-[11px] text-muted-foreground tabular-nums'>
-                {tSuggestions('countResults', { count: suggestions.length })}
-              </span>
-            )}
-          </div>
-
-          {/* Body */}
-          <div
-            id={listId}
-            role='listbox'
-            className='max-h-[60vh] sm:max-h-96 overflow-y-auto py-1'
-          >
-            {showRunSearch ? (
-              <RunSearchRow
-                query={inputValue.trim()}
-                active={highlightIndex === 0}
-                onMouseEnter={() => setHighlightIndex(0)}
-                onSelect={() => {
-                  runKeywordSearch(inputValue)
-                  setIsFocused(false)
+            <Search
+              className={classNames(
+                'absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors duration-200',
+                'text-muted-foreground group-focus-within:text-primary',
+              )}
+            />
+            <Input
+              type='text'
+              role='combobox'
+              aria-expanded={isOpen}
+              aria-autocomplete='list'
+              aria-controls={isOpen ? listId : undefined}
+              aria-activedescendant={
+                isOpen && highlightIndex >= 0
+                  ? optionId(highlightIndex)
+                  : undefined
+              }
+              autoComplete='off'
+              spellCheck={false}
+              placeholder={placeholder || t('placeholder')}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+              className={classNames(
+                'h-full border-0 bg-transparent pl-10 shadow-none focus-visible:ring-0 dark:bg-transparent',
+                showClearButton ? 'pr-10' : 'pr-3',
+              )}
+            />
+            {showClearButton ? (
+              <Button
+                type='button'
+                variant='ghost'
+                size='icon'
+                onMouseDown={(e) => {
+                  e.preventDefault()
+                  handleClear()
                 }}
-                rowId={optionId(0)}
-                label={tSuggestions('runSearchLabel')}
-              />
+                className='absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
+                aria-label={tSuggestions('clear')}
+              >
+                <X className='h-4 w-4' />
+              </Button>
             ) : null}
-
-            {suggestions.length === 0 && !isSuggestLoading ? (
-              <div className='px-4 py-8 text-center text-sm text-muted-foreground'>
-                <div className='mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-muted'>
-                  <Search className='h-4 w-4' />
-                </div>
-                <div className='font-medium text-foreground'>
-                  {tSuggestions('emptyTitle')}
-                </div>
-                <div className='mt-1'>{tSuggestions('emptyHint')}</div>
+            {isLoading && !isSuggestLoading ? (
+              <div
+                className={classNames(
+                  'absolute top-1/2 -translate-y-1/2 pointer-events-none',
+                  showClearButton ? 'right-10' : 'right-3',
+                )}
+              >
+                <Loader2 className='h-4 w-4 animate-spin text-primary' />
               </div>
-            ) : (
-              renderedSuggestionRows
-            )}
-          </div>
-
-          {/* Footer hints */}
-          <div className='flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-4 py-2 text-[11px] text-muted-foreground'>
-            <span className='hidden sm:flex items-center gap-2'>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
-                ↑
-              </kbd>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
-                ↓
-              </kbd>
-              <span>{tSuggestions('hintNavigate')}</span>
-              <span className='mx-1 opacity-40'>·</span>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
-                Enter
-              </kbd>
-              <span>{tSuggestions('hintSelect')}</span>
-              <span className='mx-1 opacity-40'>·</span>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
-                Esc
-              </kbd>
-              <span>{tSuggestions('hintClose')}</span>
-            </span>
-            <span className='sm:hidden'>{tSuggestions('hintMobile')}</span>
-            <span className='font-medium text-foreground/70'>
-              {tSuggestions('poweredBy')}
-            </span>
+            ) : null}
           </div>
         </div>
-      ) : null}
-    </div>
+      </PopoverAnchor>
+
+      <PopoverContent
+        align='start'
+        sideOffset={8}
+        // Match the input width even though portaled
+        style={anchorWidth ? { width: anchorWidth } : undefined}
+        // Don't steal focus from the input — the input drives this combobox
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        // Clicking inside the input box (still in wrapperRef) shouldn't close
+        onInteractOutside={(e) => {
+          const target = e.target as Node | null
+          if (target && wrapperRef.current?.contains(target)) {
+            e.preventDefault()
+          }
+        }}
+        // Prevent mousedown on the popover chrome from blurring the input
+        onMouseDown={(e) => e.preventDefault()}
+        className={cn(
+          'p-0 overflow-hidden',
+          'rounded-2xl border border-border bg-popover text-popover-foreground',
+          'shadow-xl ring-1 ring-black/5 dark:ring-white/5',
+        )}
+      >
+        {/* Header */}
+        <div className='flex items-center justify-between gap-2 px-4 pt-3 pb-1'>
+          <span className='text-[11px] uppercase tracking-wide text-muted-foreground font-medium'>
+            {tSuggestions('heading')}
+          </span>
+          {isSuggestLoading ? (
+            <span className='flex items-center gap-1.5 text-[11px] text-muted-foreground'>
+              <Loader2 className='h-3 w-3 animate-spin' />
+              {tSuggestions('loading')}
+            </span>
+          ) : (
+            <span className='text-[11px] text-muted-foreground tabular-nums'>
+              {tSuggestions('countResults', { count: suggestions.length })}
+            </span>
+          )}
+        </div>
+
+        {/* Body */}
+        <div
+          id={listId}
+          role='listbox'
+          className='max-h-[60vh] sm:max-h-96 overflow-y-auto py-1'
+        >
+          {showRunSearch ? (
+            <RunSearchRow
+              query={inputValue.trim()}
+              active={highlightIndex === 0}
+              onMouseEnter={() => setHighlightIndex(0)}
+              onSelect={() => {
+                runKeywordSearch(inputValue)
+                setIsFocused(false)
+              }}
+              rowId={optionId(0)}
+              label={tSuggestions('runSearchLabel')}
+            />
+          ) : null}
+
+          {suggestions.length === 0 && !isSuggestLoading ? (
+            <div className='px-4 py-8 text-center text-sm text-muted-foreground'>
+              <div className='mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-muted'>
+                <Search className='h-4 w-4' />
+              </div>
+              <div className='font-medium text-foreground'>
+                {tSuggestions('emptyTitle')}
+              </div>
+              <div className='mt-1'>{tSuggestions('emptyHint')}</div>
+            </div>
+          ) : (
+            renderedSuggestionRows
+          )}
+        </div>
+
+        {/* Footer hints */}
+        <div className='flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-4 py-2 text-[11px] text-muted-foreground'>
+          <span className='hidden sm:flex items-center gap-2'>
+            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+              ↑
+            </kbd>
+            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+              ↓
+            </kbd>
+            <span>{tSuggestions('hintNavigate')}</span>
+            <span className='mx-1 opacity-40'>·</span>
+            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+              Enter
+            </kbd>
+            <span>{tSuggestions('hintSelect')}</span>
+            <span className='mx-1 opacity-40'>·</span>
+            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+              Esc
+            </kbd>
+            <span>{tSuggestions('hintClose')}</span>
+          </span>
+          <span className='sm:hidden'>{tSuggestions('hintMobile')}</span>
+          <span className='font-medium text-foreground/70'>
+            {tSuggestions('poweredBy')}
+          </span>
+        </div>
+      </PopoverContent>
+    </Popover>
   )
 }
 
