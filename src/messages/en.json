@@ -146,6 +146,15 @@
     "listSearch": {
       "placeholder": "Search by keyword"
     },
+    "searchSuggestions": {
+      "heading": "Suggestions",
+      "loading": "Loading...",
+      "empty": "No suggestions found",
+      "clear": "Clear search",
+      "hintKeyboard": "↑↓ to navigate, Enter to select, Esc to close",
+      "hintMobile": "Tap a suggestion",
+      "poweredBy": "Smart suggestions"
+    },
     "propertyTypes": {
       "0": "All Types",
       "1": "Room",

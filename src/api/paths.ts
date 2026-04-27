@@ -58,6 +58,8 @@ export const PATHS = {
     SELLER_NORMAL: '/v1/listings/sellers/:userId/normal',
     SELLER_TOP_SAVED: '/v1/listings/sellers/:userId/top-saved',
     MAP_BOUNDS: '/v1/listings/map-bounds',
+    SEARCH_SUGGESTIONS: '/v1/listings/search-suggestions',
+    SEARCH_SUGGESTION_CLICK: '/v1/listings/search-suggestions/click',
     MY_LISTINGS: '/v1/listings/my-listings',
     MY_DRAFTS: '/v1/listings/my-drafts',
     BY_ID: '/v1/listings/:id',

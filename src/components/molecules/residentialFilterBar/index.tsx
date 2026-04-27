@@ -15,8 +15,7 @@ import { Switch } from '@/components/atoms/switch'
 import { useRouter } from 'next/router'
 import { ListingFilterRequest, SortKey } from '@/api/types/property.type'
 import { useListContext } from '@/contexts/list/useListContext'
-import { List } from '@/contexts/list'
-import ListSearch from '@/contexts/list/index.search'
+import ListSearchWithSuggestions from '@/components/molecules/listSearchWithSuggestions'
 import useLocation from '@/hooks/useLocation'
 import {
   navigateToPropertiesWithFilters,
@@ -131,7 +130,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
       <div className='md:hidden flex flex-col gap-2'>
         {/* Row 1: Search + Filter */}
         <div className='flex gap-2'>
-          <List.Search placeholder={t('searchPlaceholder')} />
+          <ListSearchWithSuggestions placeholder={t('searchPlaceholder')} />
           <Button
             variant='outline'
             className='h-9 px-3 relative'
@@ -194,7 +193,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
       <div className='hidden md:block space-y-3'>
         <div className='flex flex-col md:flex-row gap-3 items-stretch'>
           <div className='flex-1 flex items-center gap-3'>
-            <ListSearch />
+            <ListSearchWithSuggestions />
             <Link href={PUBLIC_ROUTES.MAPS}>
               <Button variant='default' className='h-9 px-6' type='button'>
                 <MapIcon className='h-4 w-4 mr-1' /> {t('actions.viewMap')}
