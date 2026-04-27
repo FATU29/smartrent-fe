@@ -49,6 +49,7 @@ export * from './news.type'
 export * from './notification.type'
 export * from './owner-listing-analytics.type'
 export * from './broker.type'
+export * from './search-suggestion.type'
 
 export type {
   PropertyType,

@@ -134,6 +134,15 @@
     "listSearch": {
       "placeholder": "Tìm kiếm bằng từ khóa"
     },
+    "searchSuggestions": {
+      "heading": "Gợi ý",
+      "loading": "Đang tải...",
+      "empty": "Không có gợi ý phù hợp",
+      "clear": "Xóa từ khóa",
+      "hintKeyboard": "↑↓ để chọn, Enter để xem, Esc để đóng",
+      "hintMobile": "Chạm vào gợi ý",
+      "poweredBy": "Gợi ý thông minh"
+    },
     "status": {
       "ALL": "Tất cả",
       "EXPIRED": "Hết hạn",
