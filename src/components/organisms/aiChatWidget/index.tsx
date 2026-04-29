@@ -35,6 +35,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
     messages,
     isLoading,
     isTyping,
+    streamingStatus,
     inputValue,
     scrollRef,
     bottomRef,
@@ -139,6 +140,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                 inputValue={inputValue}
                 isLoading={isLoading}
                 isTyping={isTyping}
+                streamingStatus={streamingStatus}
                 scrollRef={scrollRef}
                 bottomRef={bottomRef}
                 isAtBottom={isAtBottom}
@@ -195,6 +197,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                   inputValue={inputValue}
                   isLoading={isLoading}
                   isTyping={isTyping}
+                  streamingStatus={streamingStatus}
                   scrollRef={scrollRef}
                   bottomRef={bottomRef}
                   isAtBottom={isAtBottom}

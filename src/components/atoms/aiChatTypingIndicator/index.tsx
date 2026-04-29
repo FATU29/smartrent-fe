@@ -7,10 +7,12 @@ import { Avatar, AvatarFallback } from '@/components/atoms/avatar'
 
 type TAiChatTypingIndicatorProps = {
   className?: string
+  statusLabel?: string
 }
 
 const AiChatTypingIndicator: FC<TAiChatTypingIndicatorProps> = ({
   className,
+  statusLabel,
 }) => {
   const t = useTranslations('aiChat')
 
@@ -22,7 +24,7 @@ const AiChatTypingIndicator: FC<TAiChatTypingIndicatorProps> = ({
       )}
       role='status'
       aria-live='polite'
-      aria-label={t('typing')}
+      aria-label={statusLabel || t('typing')}
     >
       {/* Bot Avatar with pulse animation */}
       <Avatar className='h-8 w-8 flex-shrink-0 bg-primary animate-pulse mt-0.5'>
@@ -31,8 +33,8 @@ const AiChatTypingIndicator: FC<TAiChatTypingIndicatorProps> = ({
         </AvatarFallback>
       </Avatar>
 
-      {/* Typing dots */}
-      <div className='flex items-center rounded-2xl bg-muted px-4 py-3 shadow-sm'>
+      {/* Typing dots + optional status label */}
+      <div className='flex items-center gap-2 rounded-2xl bg-muted px-4 py-3 shadow-sm'>
         <div className='flex space-x-1'>
           <div
             className='h-2 w-2 animate-bounce rounded-full bg-primary'
@@ -47,6 +49,9 @@ const AiChatTypingIndicator: FC<TAiChatTypingIndicatorProps> = ({
             style={{ animationDelay: '300ms', animationDuration: '1s' }}
           />
         </div>
+        {statusLabel && (
+          <span className='text-xs text-muted-foreground'>{statusLabel}…</span>
+        )}
       </div>
     </div>
   )

@@ -6,6 +6,7 @@ export const ENV = {
   URL_API_AI: process.env.NEXT_PUBLIC_URL_API_AI || 'http://localhost:8000/',
   URL_API_BASE:
     process.env.NEXT_PUBLIC_URL_API_BASE || 'http://localhost:8080/',
+  CHAT_STREAMING_ENABLED: process.env.NEXT_PUBLIC_CHAT_STREAMING === 'true',
   MAX_VIDEO_SIZE_MB: Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE_MB || 100),
   // Site metadata
   SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
