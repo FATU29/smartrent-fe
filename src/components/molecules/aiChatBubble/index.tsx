@@ -25,6 +25,7 @@ import AiChatContactCard from '@/components/molecules/aiChatContactCard'
 type TAiChatBubbleProps = {
   message: TChatMessage
   className?: string
+  onViewListingDetail?: (listingId: number) => void
 }
 
 // Convert [Mã tin: xxx] to clickable links
@@ -195,7 +196,11 @@ const dialogMarkdownComponents: Components = {
 
 const INITIAL_SEARCH_RESULTS = 3
 
-const AiChatBubble: FC<TAiChatBubbleProps> = ({ message, className }) => {
+const AiChatBubble: FC<TAiChatBubbleProps> = ({
+  message,
+  className,
+  onViewListingDetail,
+}) => {
   const isBot = message.sender === 'bot'
   const hasListings = isBot && message.listings && message.listings.length > 0
   const t = useTranslations('chat')
@@ -322,6 +327,7 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({ message, className }) => {
                       key={listing.listingId}
                       listing={listing}
                       compact
+                      onViewDetail={onViewListingDetail}
                     />
                   ))}
                 </div>
@@ -348,7 +354,11 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({ message, className }) => {
             {message.listings?.map((listing) => (
               <React.Fragment key={listing.listingId}>
                 {listing.user && <AiChatContactCard listing={listing} />}
-                <CardListingAIDetail listing={listing} compact />
+                <CardListingAIDetail
+                  listing={listing}
+                  compact
+                  onViewDetail={onViewListingDetail}
+                />
               </React.Fragment>
             ))}
           </div>

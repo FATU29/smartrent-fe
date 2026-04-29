@@ -23,6 +23,7 @@ type TAiChatInterfaceProps = {
   onScrollToBottom: () => void
   onInputChange: (value: string) => void
   onSendMessage: (value: string) => void
+  onViewListingDetail?: (listingId: number) => void
   isMobile?: boolean
   className?: string
 }
@@ -39,6 +40,7 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
   onScrollToBottom,
   onInputChange,
   onSendMessage,
+  onViewListingDetail,
   isMobile = false,
   className,
 }) => {
@@ -100,7 +102,10 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
                         : undefined
                     }
                   >
-                    <AiChatBubble message={message} />
+                    <AiChatBubble
+                      message={message}
+                      onViewListingDetail={onViewListingDetail}
+                    />
                   </div>
                 )
               })}

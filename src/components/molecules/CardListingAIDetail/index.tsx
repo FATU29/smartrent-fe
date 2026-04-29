@@ -29,6 +29,9 @@ export interface CardListingAIDetailProps {
   listing: ChatListing
   compact?: boolean
   className?: string
+  // When provided, "View Details" triggers an in-chat detail lookup instead of
+  // navigating to /listing-detail/:id in a new tab.
+  onViewDetail?: (listingId: number) => void
 }
 
 const UTILITY_LABELS: Record<
@@ -45,6 +48,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
   listing,
   compact = false,
   className,
+  onViewDetail,
 }) => {
   const t = useTranslations('chat.listing')
   const tFurnishing = useTranslations(
@@ -280,14 +284,15 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
 
       {/* ── CTA row ── */}
       <div className='flex gap-1.5 px-2.5 py-2 border-t border-border'>
-        <Link
-          href={`/listing-detail/${listingId}`}
-          target='_blank'
-          rel='noopener noreferrer'
-          className='flex-1'
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Button className='w-full bg-primary text-primary-foreground hover:bg-primary/90 h-7 text-[11px] font-normal normal-case gap-1 rounded-lg'>
+        {onViewDetail ? (
+          <Button
+            type='button'
+            onClick={(e) => {
+              e.stopPropagation()
+              onViewDetail(listingId)
+            }}
+            className='flex-1 w-full bg-primary text-primary-foreground hover:bg-primary/90 h-7 text-[11px] font-normal normal-case gap-1 rounded-lg'
+          >
             {t('viewDetails')}
             <ArrowRight
               className='w-2.5 h-2.5'
@@ -295,7 +300,24 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
               aria-hidden='true'
             />
           </Button>
-        </Link>
+        ) : (
+          <Link
+            href={`/listing-detail/${listingId}`}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='flex-1'
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button className='w-full bg-primary text-primary-foreground hover:bg-primary/90 h-7 text-[11px] font-normal normal-case gap-1 rounded-lg'>
+              {t('viewDetails')}
+              <ArrowRight
+                className='w-2.5 h-2.5'
+                strokeWidth={2.5}
+                aria-hidden='true'
+              />
+            </Button>
+          </Link>
+        )}
         {contactPhone ? (
           <a
             href={`tel:${contactPhone.replaceAll(' ', '').replaceAll('.', '').replaceAll('-', '')}`}

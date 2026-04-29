@@ -405,6 +405,21 @@ export const useChatLogic = () => {
     setInputValue(value)
   }, [])
 
+  // Triggers the agent's get_listing_detail tool by sending a natural-language
+  // query that includes the listingId in the [Mã tin: X] format the agent's
+  // system prompt recognizes. The detail then renders as a normal bot message
+  // inline in the chat instead of navigating away to /listing-detail/X.
+  const viewListingDetail = useCallback(
+    (listingId: number | string) => {
+      const query =
+        locale === 'vi'
+          ? `Xem chi tiết tin [Mã tin: ${listingId}]`
+          : `Show me details of listing [Mã tin: ${listingId}]`
+      sendMessage(query)
+    },
+    [locale, sendMessage],
+  )
+
   const cancelStream = useCallback(() => {
     abortRef.current?.abort()
     abortRef.current = null
@@ -432,6 +447,7 @@ export const useChatLogic = () => {
     isAtBottom,
     scrollToBottom,
     sendMessage,
+    viewListingDetail,
     cancelStream,
     handleInputChange,
     clearMessages,
