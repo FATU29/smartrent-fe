@@ -25,13 +25,14 @@ interface UseSearchSuggestionsResult {
   ) => void
 }
 
-const MIN_QUERY_LENGTH = 2
-
 /**
  * Debounced fetch for the multi-source search-suggestions endpoint.
  * Cancels stale responses, keeps the previous list visible while a new
  * request is in flight to avoid dropdown flicker, and exposes a
  * `recordClick` helper that bundles the latest impressionId.
+ *
+ * Empty queries are forwarded to the backend — it returns a curated
+ * top-city default list that we show before the user types.
  */
 const useSearchSuggestions = ({
   query,
@@ -65,7 +66,7 @@ const useSearchSuggestions = ({
 
     const trimmed = query?.trim() ?? ''
 
-    if (!enabled || trimmed.length < MIN_QUERY_LENGTH) {
+    if (!enabled) {
       requestSeqRef.current += 1
       setSuggestions([])
       setImpressionId(0)

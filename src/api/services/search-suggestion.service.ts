@@ -51,9 +51,9 @@ export class SearchSuggestionService {
    * Fetch ranked search suggestions from titles, locations, and popular queries.
    * Public API — no authentication required.
    *
-   * Returns `data.suggestions: []` (never 4xx/5xx) when:
-   * - the query is shorter than 2 chars after normalization
-   * - no candidates are found
+   * An empty / very short query is forwarded to the backend on purpose: the
+   * server returns a curated list of top-city LOCATION suggestions in that
+   * case, which is what we render before the user starts typing.
    *
    * @param params Query, limit, optional provinceId / categoryId scoping.
    */
@@ -61,15 +61,6 @@ export class SearchSuggestionService {
     params: SearchSuggestionsParams,
   ): Promise<ApiResponse<SearchSuggestionsResponse>> {
     const query = params.q?.trim() ?? ''
-    if (query.length < 2) {
-      return {
-        code: '1000',
-        data: { suggestions: [], queryNorm: '', impressionId: 0 },
-        message: null,
-        success: true,
-      }
-    }
-
     const limit = Math.min(Math.max(params.limit ?? 8, 1), 20)
     const sessionId = getSessionId()
 

@@ -11,10 +11,26 @@ export interface TitleSuggestionMetadata {
   address?: string
 }
 
+/**
+ * Granularity of a LOCATION suggestion match. Drives how the frontend
+ * applies filters when the user picks the suggestion.
+ */
+export type LocationMatchType = 'WARD' | 'DISTRICT' | 'PROVINCE'
+
 export interface LocationSuggestionMetadata {
   provinceName: string
   districtName: string
   wardName?: string | null
+  /** Granularity of the match — "PROVINCE" if only province matched, etc. */
+  matchType?: LocationMatchType
+  /** Legacy administrative codes (string, padded). */
+  provinceCode?: string
+  districtCode?: string
+  wardCode?: string
+  /** Legacy numeric IDs — what the listing search filter actually expects. */
+  legacyProvinceId?: number
+  legacyDistrictId?: number
+  legacyWardId?: number
 }
 
 export interface PopularQuerySuggestionMetadata {

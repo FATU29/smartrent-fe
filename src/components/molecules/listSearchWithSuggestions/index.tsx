@@ -29,7 +29,6 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from '@/components/atoms/popover'
-import { useDebounce } from '@/hooks/useDebounce'
 import useSearchSuggestions from '@/hooks/useSearchSuggestions'
 import { useListContext } from '@/contexts/list/useListContext'
 import { ListingFilterRequest } from '@/api/types/property.type'
@@ -44,8 +43,6 @@ import { cn } from '@/lib/utils'
 
 interface ListSearchWithSuggestionsProps {
   placeholder?: string
-  /** Debounce delay used to push the keyword to filters (search). */
-  debounceMs?: number
   /** Debounce delay used to fetch suggestions (snappier). */
   suggestionsDebounceMs?: number
   className?: string
@@ -145,7 +142,11 @@ const SuggestionRow: React.FC<SuggestionRowProps> = ({
       item.metadata.districtName,
       item.metadata.provinceName,
     ].filter(Boolean) as string[]
-    secondary = parts.join(' • ')
+    const joined = parts.join(' • ')
+    // For default top-city suggestions the primary text is just the province
+    // name, so the secondary line would duplicate it. Suppress in that case.
+    secondary =
+      joined && joined.toLowerCase() !== item.text.toLowerCase() ? joined : null
   } else if (item.type === 'POPULAR_QUERY' && isPopularMeta(item.metadata)) {
     trailing = (
       <span className='text-[11px] text-muted-foreground tabular-nums px-1.5 py-0.5 rounded-full bg-muted'>
@@ -260,7 +261,6 @@ const RunSearchRow: React.FC<RunSearchRowProps> = ({
 
 const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   placeholder,
-  debounceMs = 500,
   suggestionsDebounceMs = 200,
   className = '',
   limit = 8,
@@ -276,27 +276,13 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   const [isFocused, setIsFocused] = useState(false)
   const [highlightIndex, setHighlightIndex] = useState(0)
 
-  const debouncedKeyword = useDebounce(inputValue, debounceMs)
-
-  const isInitialMount = useRef(true)
-  const filtersRef = useRef(filters)
-  filtersRef.current = filters
   const inputValueRef = useRef(inputValue)
   inputValueRef.current = inputValue
 
-  // Push debounced typed value into filter context (existing keyword search behavior)
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false
-      return
-    }
-    if (debouncedKeyword !== filtersRef.current.keyword) {
-      updateFilters({ keyword: debouncedKeyword, page: 1 })
-    }
-  }, [debouncedKeyword, updateFilters])
-
   // Sync from EXTERNAL resets only — read inputValue via ref so typing
   // does not retrigger this effect and stomp the user's keystrokes.
+  // Typing no longer pushes into filter context: the listing search runs only
+  // on Enter or when a suggestion is selected.
   useEffect(() => {
     const keyword = filters.keyword || ''
     if (keyword !== inputValueRef.current) {
@@ -374,10 +360,9 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
     })
   }, [flatRows])
 
-  const isOpen =
-    isFocused &&
-    inputValue.trim().length >= 2 &&
-    (isSuggestLoading || hasFetched)
+  // Popover opens on focus regardless of input length: when empty, the
+  // backend returns curated top-city defaults; while typing, real matches.
+  const isOpen = isFocused && (isSuggestLoading || hasFetched)
 
   const listId = useId()
   const optionId = (idx: number) => `${listId}-opt-${idx}`
@@ -386,7 +371,65 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
     (keyword: string) => {
       const next = keyword.trim()
       setInputValue(next)
-      updateFilters({ keyword: next, page: 1 })
+      // A free-text search clears any previously-applied LOCATION suggestion
+      // filters so results reflect the new query, not stale province/ward state
+      // left over from a prior pick.
+      updateFilters({
+        keyword: next,
+        provinceId: undefined,
+        provinceCodes: undefined,
+        districtId: undefined,
+        wardId: undefined,
+        isLegacy: undefined,
+        page: 1,
+      })
+    },
+    [updateFilters],
+  )
+
+  const runLocationSearch = useCallback(
+    (item: SearchSuggestionItem) => {
+      const meta = isLocationMeta(item.metadata) ? item.metadata : null
+      // Show the selected location label in the input even though we don't
+      // search by keyword — it makes the active filter visible to the user.
+      setInputValue(item.text)
+
+      if (!meta) {
+        // Defensive fallback: if backend didn't include location metadata
+        // (older response shape), degrade to a keyword search rather than
+        // dropping the click on the floor.
+        updateFilters({ keyword: item.text, page: 1 })
+        return
+      }
+
+      const matchType = meta.matchType
+      const patch: Partial<ListingFilterRequest> = {
+        keyword: undefined,
+        isLegacy: true,
+        page: 1,
+      }
+
+      if (matchType === 'WARD') {
+        if (meta.legacyProvinceId !== undefined)
+          patch.provinceId = meta.legacyProvinceId
+        if (meta.legacyDistrictId !== undefined)
+          patch.districtId = meta.legacyDistrictId
+        if (meta.legacyWardId !== undefined) patch.wardId = meta.legacyWardId
+      } else if (matchType === 'DISTRICT') {
+        if (meta.legacyProvinceId !== undefined)
+          patch.provinceId = meta.legacyProvinceId
+        if (meta.legacyDistrictId !== undefined)
+          patch.districtId = meta.legacyDistrictId
+        patch.wardId = undefined
+      } else {
+        // PROVINCE (default)
+        if (meta.legacyProvinceId !== undefined)
+          patch.provinceId = meta.legacyProvinceId
+        patch.districtId = undefined
+        patch.wardId = undefined
+      }
+
+      updateFilters(patch)
     },
     [updateFilters],
   )
@@ -410,10 +453,17 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
         return
       }
 
+      if (item.type === 'LOCATION') {
+        runLocationSearch(item)
+        setIsFocused(false)
+        return
+      }
+
+      // TITLE without listingId, or POPULAR_QUERY → free-text keyword search.
       runKeywordSearch(item.text)
       setIsFocused(false)
     },
-    [recordClick, router, runKeywordSearch],
+    [recordClick, router, runKeywordSearch, runLocationSearch],
   )
 
   const selectFlatRow = useCallback(
@@ -430,6 +480,31 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
     [flatRows, inputValue, handleSelect, runKeywordSearch],
   )
 
+  /**
+   * Run the search using whatever the user has set up: if a suggestion row
+   * is highlighted, dispatch by its type (LOCATION / TITLE / POPULAR_QUERY);
+   * otherwise treat the input value as a free-text keyword search.
+   * Used by both the Enter key and the explicit Search button so they
+   * always behave identically.
+   */
+  const triggerSearch = useCallback(() => {
+    if (isOpen && flatRows.length > 0) {
+      selectFlatRow(highlightIndex)
+      return
+    }
+    if (inputValue.trim().length >= 2) {
+      runKeywordSearch(inputValue)
+      setIsFocused(false)
+    }
+  }, [
+    isOpen,
+    flatRows,
+    highlightIndex,
+    selectFlatRow,
+    inputValue,
+    runKeywordSearch,
+  ])
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Escape') {
@@ -437,10 +512,9 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
         return
       }
       if (!isOpen || flatRows.length === 0) {
-        if (e.key === 'Enter' && inputValue.trim().length >= 2) {
+        if (e.key === 'Enter') {
           e.preventDefault()
-          runKeywordSearch(inputValue)
-          setIsFocused(false)
+          triggerSearch()
         }
         return
       }
@@ -452,17 +526,10 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
         setHighlightIndex((i) => (i - 1 + flatRows.length) % flatRows.length)
       } else if (e.key === 'Enter') {
         e.preventDefault()
-        selectFlatRow(highlightIndex)
+        triggerSearch()
       }
     },
-    [
-      isOpen,
-      flatRows,
-      highlightIndex,
-      selectFlatRow,
-      inputValue,
-      runKeywordSearch,
-    ],
+    [isOpen, flatRows, triggerSearch],
   )
 
   const handleClear = useCallback(() => {
@@ -500,10 +567,18 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
     let absoluteIdx = 0
     if (inputValue.trim().length >= 2) absoluteIdx = 1 // run-search row
 
+    // When the user hasn't typed yet, the backend returns LOCATION defaults
+    // (top cities). Use a dedicated heading so the dropdown reads as
+    // "Popular cities" rather than the generic "Locations".
+    const showingDefaults = inputValue.trim().length === 0
+
     return TYPE_ORDER.map((type) => {
       const items = grouped[type]
       if (items.length === 0) return null
-      const heading = tSuggestions(`groups.${type}`)
+      const heading =
+        showingDefaults && type === 'LOCATION'
+          ? tSuggestions('defaultsHeading')
+          : tSuggestions(`groups.${type}`)
       const startIdx = absoluteIdx
       absoluteIdx += items.length
 
@@ -553,14 +628,14 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
         >
           <div
             className={classNames(
-              'group relative flex items-center h-9 rounded-lg border border-input bg-background shadow-xs transition-all duration-200',
+              'group flex items-center h-9 rounded-lg border border-input bg-background shadow-xs transition-all duration-200 pl-3 pr-1',
               'hover:border-primary/40',
               'focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20',
             )}
           >
             <Search
               className={classNames(
-                'absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors duration-200',
+                'h-4 w-4 mr-2 shrink-0 transition-colors duration-200',
                 'text-muted-foreground group-focus-within:text-primary',
               )}
             />
@@ -583,11 +658,11 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
               onFocus={() => setIsFocused(true)}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              className={classNames(
-                'h-full border-0 bg-transparent pl-10 shadow-none focus-visible:ring-0 dark:bg-transparent',
-                showClearButton ? 'pr-10' : 'pr-3',
-              )}
+              className='flex-1 min-w-0 h-full border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 dark:bg-transparent'
             />
+            {isLoading && !isSuggestLoading ? (
+              <Loader2 className='h-4 w-4 mx-1 shrink-0 animate-spin text-primary pointer-events-none' />
+            ) : null}
             {showClearButton ? (
               <Button
                 type='button'
@@ -597,22 +672,36 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
                   e.preventDefault()
                   handleClear()
                 }}
-                className='absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
+                className='h-7 w-7 shrink-0 rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
                 aria-label={tSuggestions('clear')}
               >
                 <X className='h-4 w-4' />
               </Button>
             ) : null}
-            {isLoading && !isSuggestLoading ? (
-              <div
-                className={classNames(
-                  'absolute top-1/2 -translate-y-1/2 pointer-events-none',
-                  showClearButton ? 'right-10' : 'right-3',
-                )}
-              >
-                <Loader2 className='h-4 w-4 animate-spin text-primary' />
-              </div>
-            ) : null}
+            {/*
+             * Submit button — pressing this (or Enter) is the only way to run
+             * the listing search. If a suggestion is highlighted, the search
+             * runs by that suggestion's type (LOCATION → location filter,
+             * TITLE → keyword/detail nav, POPULAR_QUERY → keyword); otherwise
+             * the typed value is used as a keyword.
+             */}
+            <Button
+              type='button'
+              size='sm'
+              onMouseDown={(e) => {
+                // mousedown (not click) so the input keeps focus and the
+                // popover doesn't close-then-reopen mid-submit.
+                e.preventDefault()
+                triggerSearch()
+              }}
+              className='ml-1 h-7 shrink-0 rounded-md px-3 text-xs font-medium'
+              aria-label={tSuggestions('submit')}
+            >
+              <Search className='h-3.5 w-3.5' />
+              <span className='hidden sm:inline ml-1'>
+                {tSuggestions('submit')}
+              </span>
+            </Button>
           </div>
         </div>
       </PopoverAnchor>
