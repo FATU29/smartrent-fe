@@ -40,6 +40,21 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
   const { filters, updateFilters, resetFilters, activeFilterCount } =
     useListContext<ListingFilterRequest>()
 
+  // The bar is rendered both inside the listings page and on other pages
+  // (homepage hero). When NOT on /properties, a search submit (Search button
+  // or Enter inside ListSearchWithSuggestions) should navigate to the
+  // listings page, mirroring the Apply button behavior. On /properties the
+  // surrounding ListContext refetches in place — no navigation needed.
+  const isOffListings = router.pathname !== PUBLIC_ROUTES.LISTING_LISTING
+
+  const handleSearchSubmit = useCallback(
+    (next: ListingFilterRequest) => {
+      if (!isOffListings) return
+      navigateToPropertiesWithFilters(router, next)
+    },
+    [isOffListings, router],
+  )
+
   const { disableLocation } = useLocation()
 
   // Build URL for apply link
@@ -130,7 +145,11 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
       <div className='md:hidden flex flex-col gap-2'>
         {/* Row 1: Search + Filter */}
         <div className='flex gap-2'>
-          <ListSearchWithSuggestions placeholder={t('searchPlaceholder')} />
+          <ListSearchWithSuggestions
+            placeholder={t('searchPlaceholder')}
+            hideFooterHints={isOffListings}
+            onAfterSubmit={handleSearchSubmit}
+          />
           <Button
             variant='outline'
             className='h-9 px-3 relative'
@@ -194,7 +213,10 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
       <div className='hidden md:block space-y-3'>
         <div className='flex flex-col md:flex-row gap-3 items-stretch'>
           <div className='flex-1 flex items-center gap-3'>
-            <ListSearchWithSuggestions />
+            <ListSearchWithSuggestions
+              hideFooterHints={isOffListings}
+              onAfterSubmit={handleSearchSubmit}
+            />
             <Link href={PUBLIC_ROUTES.MAPS}>
               <Button
                 variant='default'

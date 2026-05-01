@@ -156,6 +156,7 @@
       "submit": "Search",
       "runSearchLabel": "Search for",
       "defaultsHeading": "Popular cities",
+      "locationFilterUnavailable": "Couldn't filter by this location. Please try again.",
       "countResults": "{count, plural, =0 {No results} =1 {1 result} other {# results}}",
       "hintKeyboard": "↑↓ to navigate, Enter to select, Esc to close",
       "hintMobile": "Tap a suggestion to continue",
