@@ -10,6 +10,7 @@ import React, {
 } from 'react'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import classNames from 'classnames'
 import {
   Search,
@@ -48,6 +49,20 @@ interface ListSearchWithSuggestionsProps {
   className?: string
   /** Max suggestions to fetch. Backend clamps to [1, 20]. */
   limit?: number
+  /**
+   * Hide the keyboard-hints footer in the popover. Used on the homepage
+   * search where space is tight and we don't want a usage guide on top of
+   * the hero copy.
+   */
+  hideFooterHints?: boolean
+  /**
+   * Called after a submit (Enter, Search button, or suggestion pick) once
+   * the filter context has been updated. Receives the post-update filter
+   * snapshot — pages that need to navigate (e.g. homepage → /properties)
+   * use this rather than reading stale `filters` from the surrounding
+   * useListContext after `updateFilters`.
+   */
+  onAfterSubmit?: (filters: ListingFilterRequest) => void
 }
 
 const TYPE_ORDER: SuggestionType[] = ['TITLE', 'LOCATION', 'POPULAR_QUERY']
@@ -160,10 +175,12 @@ const SuggestionRow: React.FC<SuggestionRowProps> = ({
       id={rowId}
       role='option'
       aria-selected={active}
-      onMouseDown={(e) => {
-        e.preventDefault()
-        onSelect()
-      }}
+      // mousedown preventDefault keeps the input focused (so the popover
+      // doesn't auto-close mid-click); click is the actual select action.
+      // Using both — instead of onMouseDown alone — avoids edge cases where
+      // a touch/pen device skips synthetic mousedown.
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={onSelect}
       onMouseEnter={onMouseEnter}
       className={cn(
         'group flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg mx-2 transition-colors',
@@ -225,10 +242,8 @@ const RunSearchRow: React.FC<RunSearchRowProps> = ({
     id={rowId}
     role='option'
     aria-selected={active}
-    onMouseDown={(e) => {
-      e.preventDefault()
-      onSelect()
-    }}
+    onMouseDown={(e) => e.preventDefault()}
+    onClick={onSelect}
     onMouseEnter={onMouseEnter}
     className={cn(
       'group flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg mx-2 transition-colors',
@@ -264,6 +279,8 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   suggestionsDebounceMs = 200,
   className = '',
   limit = 8,
+  hideFooterHints = false,
+  onAfterSubmit,
 }) => {
   const t = useTranslations('common.listSearch')
   const tSuggestions = useTranslations('common.searchSuggestions')
@@ -278,6 +295,13 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
 
   const inputValueRef = useRef(inputValue)
   inputValueRef.current = inputValue
+
+  // Read from a ref so submit handlers always merge against the latest
+  // filter snapshot when computing what to hand back to onAfterSubmit.
+  const filtersRef = useRef(filters)
+  filtersRef.current = filters
+  const onAfterSubmitRef = useRef(onAfterSubmit)
+  onAfterSubmitRef.current = onAfterSubmit
 
   // Sync from EXTERNAL resets only — read inputValue via ref so typing
   // does not retrigger this effect and stomp the user's keystrokes.
@@ -351,13 +375,44 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
     return rows
   }, [grouped, suggestions, inputValue])
 
-  // Keep highlight in range when rows change
+  /**
+   * Pick a default highlight that prefers the most relevant LOCATION row
+   * over the generic "Search for {query}" row. Without this, Enter on a
+   * fresh suggestion list always lands on run-search → keyword search
+   * even when the user clearly typed a city name. With this, Enter on
+   * "Hồ Chí" (a province match) defaults to the LOCATION pick — so the
+   * resulting URL is `?provinceId=…&isLegacy=true` instead of
+   * `?keyword=Hồ Chí Minh`.
+   *
+   * Heuristic: first LOCATION whose text contains the typed input
+   * (case-insensitive). Falls through to index 0 if nothing matches.
+   */
+  const defaultHighlightIndex = useMemo(() => {
+    if (flatRows.length === 0) return 0
+    const trimmed = inputValue.trim().toLowerCase()
+    if (!trimmed) return 0
+
+    for (let i = 0; i < flatRows.length; i++) {
+      const row = flatRows[i]
+      if (
+        row.kind === 'suggestion' &&
+        row.item.type === 'LOCATION' &&
+        row.item.text.toLowerCase().includes(trimmed)
+      ) {
+        return i
+      }
+    }
+    return 0
+  }, [flatRows, inputValue])
+
+  // Reset highlight to the computed default whenever the suggestion list
+  // changes shape (new fetch arrives). Keeps the user's manual arrow-key
+  // picks stable within a single render set.
   useEffect(() => {
-    setHighlightIndex((prev) => {
-      if (flatRows.length === 0) return 0
-      if (prev < 0 || prev >= flatRows.length) return 0
-      return prev
-    })
+    setHighlightIndex(defaultHighlightIndex)
+    // Intentionally only react to flatRows identity changes — not to
+    // defaultHighlightIndex shifts caused by typing in between fetches —
+    // so we don't yank the highlight away from the user mid-arrow-key.
   }, [flatRows])
 
   // Popover opens on focus regardless of input length: when empty, the
@@ -367,6 +422,22 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   const listId = useId()
   const optionId = (idx: number) => `${listId}-opt-${idx}`
 
+  /**
+   * Apply a filter patch and notify the parent (e.g. for navigation). Uses
+   * a ref-based snapshot so the parent sees the post-update state instead
+   * of the stale render-time `filters`.
+   */
+  const submitWithPatch = useCallback(
+    (patch: Partial<ListingFilterRequest>) => {
+      updateFilters(patch)
+      onAfterSubmitRef.current?.({
+        ...filtersRef.current,
+        ...patch,
+      } as ListingFilterRequest)
+    },
+    [updateFilters],
+  )
+
   const runKeywordSearch = useCallback(
     (keyword: string) => {
       const next = keyword.trim()
@@ -374,7 +445,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       // A free-text search clears any previously-applied LOCATION suggestion
       // filters so results reflect the new query, not stale province/ward state
       // left over from a prior pick.
-      updateFilters({
+      submitWithPatch({
         keyword: next,
         provinceId: undefined,
         provinceCodes: undefined,
@@ -384,7 +455,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
         page: 1,
       })
     },
-    [updateFilters],
+    [submitWithPatch],
   )
 
   const runLocationSearch = useCallback(
@@ -394,44 +465,52 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       // search by keyword — it makes the active filter visible to the user.
       setInputValue(item.text)
 
-      if (!meta) {
-        // Defensive fallback: if backend didn't include location metadata
-        // (older response shape), degrade to a keyword search rather than
-        // dropping the click on the floor.
-        updateFilters({ keyword: item.text, page: 1 })
+      // A LOCATION pick must apply a location filter. We deliberately do
+      // NOT fall back to a keyword search when IDs are missing — that
+      // silent degradation is the bug we're trying to prevent (a city pick
+      // ending up as `keyword=Hồ Chí Minh` instead of `provinceId=79`).
+      // Surface a clear error and bail. The BE now drops LOCATION items
+      // without IDs, so this branch should be unreachable in production.
+      if (!meta || meta.legacyProvinceId === undefined) {
+        if (
+          typeof window !== 'undefined' &&
+          process.env.NODE_ENV !== 'production'
+        ) {
+          console.warn(
+            '[listSearchWithSuggestions] LOCATION suggestion missing legacyProvinceId; refusing to fall back to keyword',
+            item,
+          )
+        }
+        toast.error(tSuggestions('locationFilterUnavailable'))
         return
       }
 
-      const matchType = meta.matchType
+      const matchType = meta.matchType ?? 'PROVINCE'
       const patch: Partial<ListingFilterRequest> = {
         keyword: undefined,
         isLegacy: true,
+        provinceId: meta.legacyProvinceId,
+        // Always reset district/ward; the conditional sets below re-add them
+        // for finer granularity. This avoids carrying stale narrower scoping
+        // from a previous pick when the user now selects a coarser one.
+        districtId: undefined,
+        wardId: undefined,
         page: 1,
       }
 
-      if (matchType === 'WARD') {
-        if (meta.legacyProvinceId !== undefined)
-          patch.provinceId = meta.legacyProvinceId
-        if (meta.legacyDistrictId !== undefined)
-          patch.districtId = meta.legacyDistrictId
-        if (meta.legacyWardId !== undefined) patch.wardId = meta.legacyWardId
-      } else if (matchType === 'DISTRICT') {
-        if (meta.legacyProvinceId !== undefined)
-          patch.provinceId = meta.legacyProvinceId
-        if (meta.legacyDistrictId !== undefined)
-          patch.districtId = meta.legacyDistrictId
-        patch.wardId = undefined
-      } else {
-        // PROVINCE (default)
-        if (meta.legacyProvinceId !== undefined)
-          patch.provinceId = meta.legacyProvinceId
-        patch.districtId = undefined
-        patch.wardId = undefined
+      if (
+        (matchType === 'WARD' || matchType === 'DISTRICT') &&
+        meta.legacyDistrictId !== undefined
+      ) {
+        patch.districtId = meta.legacyDistrictId
+      }
+      if (matchType === 'WARD' && meta.legacyWardId !== undefined) {
+        patch.wardId = meta.legacyWardId
       }
 
-      updateFilters(patch)
+      submitWithPatch(patch)
     },
-    [updateFilters],
+    [submitWithPatch, tSuggestions],
   )
 
   const handleSelect = useCallback(
@@ -781,32 +860,34 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
           )}
         </div>
 
-        {/* Footer hints */}
-        <div className='flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-4 py-2 text-[11px] text-muted-foreground'>
-          <span className='hidden sm:flex items-center gap-2'>
-            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
-              ↑
-            </kbd>
-            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
-              ↓
-            </kbd>
-            <span>{tSuggestions('hintNavigate')}</span>
-            <span className='mx-1 opacity-40'>·</span>
-            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
-              Enter
-            </kbd>
-            <span>{tSuggestions('hintSelect')}</span>
-            <span className='mx-1 opacity-40'>·</span>
-            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
-              Esc
-            </kbd>
-            <span>{tSuggestions('hintClose')}</span>
-          </span>
-          <span className='sm:hidden'>{tSuggestions('hintMobile')}</span>
-          <span className='font-medium text-foreground/70'>
-            {tSuggestions('poweredBy')}
-          </span>
-        </div>
+        {/* Footer hints (suppressed in compact contexts like the homepage) */}
+        {!hideFooterHints ? (
+          <div className='flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-4 py-2 text-[11px] text-muted-foreground'>
+            <span className='hidden sm:flex items-center gap-2'>
+              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+                ↑
+              </kbd>
+              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+                ↓
+              </kbd>
+              <span>{tSuggestions('hintNavigate')}</span>
+              <span className='mx-1 opacity-40'>·</span>
+              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+                Enter
+              </kbd>
+              <span>{tSuggestions('hintSelect')}</span>
+              <span className='mx-1 opacity-40'>·</span>
+              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+                Esc
+              </kbd>
+              <span>{tSuggestions('hintClose')}</span>
+            </span>
+            <span className='sm:hidden'>{tSuggestions('hintMobile')}</span>
+            <span className='font-medium text-foreground/70'>
+              {tSuggestions('poweredBy')}
+            </span>
+          </div>
+        ) : null}
       </PopoverContent>
     </Popover>
   )

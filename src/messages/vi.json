@@ -144,6 +144,7 @@
       "submit": "Tìm",
       "runSearchLabel": "Tìm theo từ khóa",
       "defaultsHeading": "Tỉnh thành phổ biến",
+      "locationFilterUnavailable": "Không thể lọc theo địa điểm này. Vui lòng thử lại.",
       "countResults": "{count, plural, =0 {Không có kết quả} other {# kết quả}}",
       "hintKeyboard": "↑↓ để chọn, Enter để xem, Esc để đóng",
       "hintMobile": "Chạm vào gợi ý để tiếp tục",
