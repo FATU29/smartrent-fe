@@ -1,10 +1,19 @@
 import React from 'react'
+import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
 import DashboardMembershipCard from '@/components/molecules/dashboardMembershipCard'
 import DashboardPhoneClickStats from '@/components/molecules/dashboardPhoneClickStats'
-import DashboardPhoneClickChart from '@/components/molecules/dashboardPhoneClickChart'
-import DashboardSavedListingsChart from '@/components/molecules/dashboardSavedListingsChart'
 import DashboardMembershipNavCard from '@/components/molecules/dashboardMembershipNavCard'
+
+const DashboardPhoneClickChart = dynamic(
+  () => import('@/components/molecules/dashboardPhoneClickChart'),
+  { ssr: false },
+)
+
+const DashboardSavedListingsChart = dynamic(
+  () => import('@/components/molecules/dashboardSavedListingsChart'),
+  { ssr: false },
+)
 import {
   useOwnerListingAnalytics,
   useOwnerListingsAnalyticsSummary,
@@ -18,6 +27,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { useOwnerListingsAnalyticsPage } from '@/hooks/usePhoneClickDetails/useOwnerListingAnalytics'
 import { Card, CardContent, CardHeader } from '@/components/atoms/card'
 import { Skeleton } from '@/components/atoms/skeleton'
+import { Typography } from '@/components/atoms/typography'
 
 const MEMBERSHIP_INTRO_STORAGE_KEY = 'seller-dashboard-membership-intro-seen'
 const MEMBERSHIP_INTRO_DURATION_MS = 900
@@ -192,10 +202,8 @@ const DashboardTemplate: React.FC = () => {
     <div className='space-y-7'>
       {/* Header */}
       <div className='space-y-1.5'>
-        <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
-          {t('title')}
-        </h1>
-        <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]'>
+        <Typography variant='pageTitle'>{t('title')}</Typography>
+        <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-md'>
           {t('description')}
         </p>
       </div>
@@ -217,13 +225,14 @@ const DashboardTemplate: React.FC = () => {
       {/* Phone Click Statistics */}
       <div id='phone-click-analytics' className='space-y-6'>
         <div className='space-y-1.5'>
-          <h2
+          <Typography
+            variant='sectionTitle'
             id='phone-click-analytics-title'
-            className='scroll-mt-24 text-xl font-semibold tracking-tight sm:text-2xl'
+            className='scroll-mt-24'
           >
             {t('phoneClickStats.title')}
-          </h2>
-          <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]'>
+          </Typography>
+          <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-md'>
             {t('phoneClickStats.description')}
           </p>
         </div>
@@ -270,13 +279,14 @@ const DashboardTemplate: React.FC = () => {
       {/* Saved Listings Statistics */}
       <div id='saved-listings-analytics' className='space-y-6'>
         <div className='space-y-1.5'>
-          <h2
+          <Typography
+            variant='sectionTitle'
             id='saved-listings-analytics-title'
-            className='scroll-mt-24 text-xl font-semibold tracking-tight sm:text-2xl'
+            className='scroll-mt-24'
           >
             {t('savedListingsStats.title')}
-          </h2>
-          <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]'>
+          </Typography>
+          <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-md'>
             {t('savedListingsStats.description')}
           </p>
         </div>
