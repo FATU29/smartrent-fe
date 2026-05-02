@@ -6,10 +6,6 @@ export default function Document() {
     <Html lang='en' data-scroll-behavior='smooth'>
       <Head>
         <meta
-          name='viewport'
-          content='width=device-width, initial-scale=1, viewport-fit=cover'
-        />
-        <meta
           name='theme-color'
           content='#ffffff'
           media='(prefers-color-scheme: light)'

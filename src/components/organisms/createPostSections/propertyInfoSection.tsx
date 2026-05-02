@@ -1,4 +1,5 @@
 import React from 'react'
+import dynamic from 'next/dynamic'
 import {
   Card,
   CardContent,
@@ -49,12 +50,16 @@ import {
 import { getAmenityByCode, AMENITIES_CONFIG } from '@/constants/amenities'
 import { useCategories } from '@/hooks/useCategories'
 import { AddressInput } from '@/components/molecules/createPostAddress'
-import GoogleMapPicker from '@/components/molecules/googleMapPicker'
 import NumberField from '@/components/atoms/number-field'
 import classNames from 'classnames'
 import { useGenerateListingDescription } from '@/hooks/useAI'
 import type { ListingDescriptionRequest } from '@/api/types/ai.type'
 import { toast } from 'sonner'
+
+const GoogleMapPicker = dynamic(
+  () => import('@/components/molecules/googleMapPicker'),
+  { ssr: false },
+)
 
 interface PropertyInfoSectionProps {
   className?: string

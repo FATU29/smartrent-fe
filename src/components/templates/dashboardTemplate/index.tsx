@@ -1,10 +1,19 @@
 import React from 'react'
+import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
 import DashboardMembershipCard from '@/components/molecules/dashboardMembershipCard'
 import DashboardPhoneClickStats from '@/components/molecules/dashboardPhoneClickStats'
-import DashboardPhoneClickChart from '@/components/molecules/dashboardPhoneClickChart'
-import DashboardSavedListingsChart from '@/components/molecules/dashboardSavedListingsChart'
 import DashboardMembershipNavCard from '@/components/molecules/dashboardMembershipNavCard'
+
+const DashboardPhoneClickChart = dynamic(
+  () => import('@/components/molecules/dashboardPhoneClickChart'),
+  { ssr: false },
+)
+
+const DashboardSavedListingsChart = dynamic(
+  () => import('@/components/molecules/dashboardSavedListingsChart'),
+  { ssr: false },
+)
 import {
   useOwnerListingAnalytics,
   useOwnerListingsAnalyticsSummary,
