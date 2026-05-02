@@ -65,7 +65,10 @@ export const ListingStatusFilterResponsive: React.FC<
       {/* ═══ DESKTOP: Primary tab bar ═══ */}
       <div
         className={cn(
-          'hidden sm:inline-flex w-full flex-wrap gap-1 rounded-lg bg-muted/50 p-1 ring-1 ring-border/60 backdrop-blur supports-[backdrop-filter]:bg-muted/40',
+          // `w-fit max-w-full` sizes the strip to its tabs but still wraps
+          // gracefully when the viewport is too narrow. Avoids the giant
+          // empty rail on wide screens.
+          'hidden sm:inline-flex w-fit max-w-full flex-wrap gap-1 rounded-lg bg-muted/50 p-1 ring-1 ring-border/60 backdrop-blur supports-[backdrop-filter]:bg-muted/40',
           className,
         )}
         role='tablist'
@@ -100,7 +103,7 @@ export const ListingStatusFilterResponsive: React.FC<
                 ((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
                   <span
                     className={cn(
-                      'min-w-5 rounded-full border px-1 text-[10px] leading-none py-1 flex items-center justify-center',
+                      'min-w-5 rounded-full border px-1 text-2xs leading-none py-1 flex items-center justify-center',
                       active && showSubIndicator
                         ? 'bg-orange-100 border-orange-300 text-orange-700 dark:bg-orange-900 dark:border-orange-700 dark:text-orange-300'
                         : active
@@ -152,7 +155,7 @@ export const ListingStatusFilterResponsive: React.FC<
                   {!hideCount && (count ?? 0) > 0 && (
                     <span
                       className={cn(
-                        'min-w-4 rounded-full px-1 text-[10px] leading-none py-0.5 flex items-center justify-center',
+                        'min-w-4 rounded-full px-1 text-2xs leading-none py-0.5 flex items-center justify-center',
                         active
                           ? 'bg-orange-200 text-orange-800 dark:bg-orange-800 dark:text-orange-200'
                           : 'bg-muted text-muted-foreground',
@@ -257,7 +260,7 @@ export const ListingStatusFilterResponsive: React.FC<
                 {!hideCount && (count ?? 0) > 0 && (
                   <span
                     className={cn(
-                      'min-w-4 rounded-full px-1 text-[10px] leading-none py-0.5 flex items-center justify-center',
+                      'min-w-4 rounded-full px-1 text-2xs leading-none py-0.5 flex items-center justify-center',
                       active
                         ? 'bg-orange-200 text-orange-800 dark:bg-orange-800 dark:text-orange-200'
                         : 'bg-muted text-muted-foreground',

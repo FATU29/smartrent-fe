@@ -4,6 +4,17 @@ import { Card } from '@/components/atoms/card'
 import { ArrowLeft, ArrowRight, CreditCard, Save } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
+import { cn } from '@/lib/utils'
+
+// Shared classes for the primary "next" / "submit" CTA — gradient + tinted
+// shadow + arrow-slide on hover. Same convention as the membership upgrade
+// CTA so primary actions feel consistent across the app.
+const PRIMARY_CTA_CLASSES = cn(
+  'group w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 gap-2 text-base font-semibold',
+  'bg-gradient-to-r from-primary to-blue-600 hover:to-blue-700',
+  'shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35',
+  'transition-all duration-200',
+)
 
 interface NavigationButtonsProps {
   currentStep: number
@@ -58,10 +69,10 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
           <Button
             variant='outline'
             onClick={onBack}
-            className='w-full sm:w-auto order-2 sm:order-1 h-12 px-6 sm:px-8'
+            className='w-full sm:w-auto order-2 sm:order-1 h-12 px-6 sm:px-8 gap-2'
             disabled={isUpdatingDraft}
           >
-            <ArrowLeft className='w-4 h-4 mr-2' />
+            <ArrowLeft className='size-4' aria-hidden='true' />
             {t('back')}
           </Button>
         )}
@@ -71,9 +82,9 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
             variant='secondary'
             onClick={handleUpdateDraft}
             disabled={isUpdatingDraft}
-            className='w-full sm:w-auto order-3 sm:order-2 h-12 px-6 sm:px-8'
+            className='w-full sm:w-auto order-3 sm:order-2 h-12 px-6 sm:px-8 gap-2'
           >
-            <Save className='w-4 h-4 mr-2' />
+            <Save className='size-4' aria-hidden='true' />
             {isUpdatingDraft ? t('updatingDraft') : t('updateDraft')}
           </Button>
         )}
@@ -82,18 +93,21 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
           <Button
             onClick={onNext}
             disabled={isUpdatingDraft}
-            className='w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90'
+            className={PRIMARY_CTA_CLASSES}
           >
             {t('next')}
-            <ArrowRight className='w-4 h-4 ml-2' />
+            <ArrowRight
+              className='size-4 transition-transform duration-200 group-hover:translate-x-0.5'
+              aria-hidden='true'
+            />
           </Button>
         ) : (
           <Button
             onClick={handleSubmit}
             disabled={isUpdatingDraft}
-            className='w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90'
+            className={PRIMARY_CTA_CLASSES}
           >
-            <CreditCard className='w-4 h-4 mr-2' />
+            <CreditCard className='size-4' aria-hidden='true' />
             {getSubmitButtonText()}
           </Button>
         )}

@@ -8,6 +8,7 @@ import { DraftEmptyState } from '@/components/organisms/drafts/DraftEmptyState'
 import { DeleteDraftDialog } from '@/components/molecules/deleteDraftDialog'
 import { useDeleteDraft } from '@/hooks/useListings/useDeleteDraft'
 import { Typography } from '@/components/atoms/typography'
+import { PageContainer } from '@/components/atoms/pageContainer'
 import { cn } from '@/lib/utils'
 import type { DraftDetail } from '@/utils/property/mapDraftResponse'
 
@@ -182,17 +183,21 @@ export const DraftsTemplate: React.FC<DraftsTemplateProps> = ({
   const t = useTranslations('seller.drafts')
 
   return (
-    <div className={cn('p-3 sm:p-4', className)}>
-      <div className='mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6'>
+    <PageContainer
+      width='grid'
+      padded={false}
+      className={cn('p-3 sm:p-4', className)}
+    >
+      <div className='flex flex-col gap-4 sm:gap-6'>
         {/* Header */}
-        <div className='space-y-2'>
-          <Typography variant='h1'>{t('title')}</Typography>
+        <div className='space-y-1'>
+          <Typography variant='pageTitle'>{t('title')}</Typography>
           <Typography variant='muted'>{t('description')}</Typography>
         </div>
 
         {/* Drafts List */}
         <DraftsList drafts={drafts} isLoading={isLoading} />
       </div>
-    </div>
+    </PageContainer>
   )
 }

@@ -183,7 +183,7 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
                       </Typography>
                     </div>
 
-                    <span className='rounded-full bg-accent px-2 py-1 text-[11px] font-medium text-accent-foreground'>
+                    <span className='rounded-full bg-accent px-2 py-1 text-2xs font-medium text-accent-foreground'>
                       {t('navigation.account')}
                     </span>
                   </div>

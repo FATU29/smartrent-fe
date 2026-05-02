@@ -3,6 +3,8 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useState, useCallback, useRef } from 'react'
 import { Button } from '@/components/atoms/button'
+import { PageContainer } from '@/components/atoms/pageContainer'
+import { Typography } from '@/components/atoms/typography'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import { useListContext } from '@/contexts/list/useListContext'
 import LocationBrowseSection from '@/components/organisms/locationBrowseSection'
@@ -45,84 +47,77 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   }, [])
 
   return (
-    <div className='w-full'>
-      <div className='px-4 sm:px-6 lg:px-8'>
-        <div className='max-w-6xl mx-auto'>
-          <div className='py-4 sm:py-6 lg:py-8'>
-            <div className='mb-10'>
-              <HeroPromoCarousel />
-            </div>
-            <section className='mb-8 sm:mb-10 relative rounded-2xl overflow-hidden'>
-              <div className='absolute inset-0'>
-                <Image
-                  src='/images/banner-default.jpg'
-                  alt='Banner default'
-                  fill
-                  priority
-                  quality={85}
-                  sizes='(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1280px'
-                />
-                <div className='absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/20 dark:from-background/75 dark:via-background/55 dark:to-background/25' />
-              </div>
-              <div className='relative p-5 sm:p-8 lg:p-10'>
-                <div className='max-w-2xl mb-5 sm:mb-6'>
-                  <h2 className='text-white text-xl sm:text-2xl font-semibold mb-2'>
-                    {t('homePage.searchIntro.title')}
-                  </h2>
-                  <p className='text-white/80 text-sm sm:text-base leading-relaxed'>
-                    {t('homePage.searchIntro.description')}
-                  </p>
-                </div>
-                <div className='backdrop-blur-sm bg-white/75 dark:bg-card/70 p-3 sm:p-4 rounded-xl shadow-lg ring-1 ring-white/40 dark:ring-white/10'>
-                  <div className='flex flex-col gap-3'>
-                    <ResidentialFilterResponsive hideVerifiedFilterInDialog />
-                    <div className='flex justify-between items-center'>
-                      <ClearFilterButton show={false} onClick={() => {}} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <div id='top-interest'>
-              <TopInterestSection categoryStats={categoryStats} />
-            </div>
-
-            <PersonalizedPropertySection />
-
-            {/* VIP Property Sections */}
-            <div className='space-y-8'>
-              <VipPropertySection vipType='DIAMOND' />
-              <VipPropertySection vipType='GOLD' />
-              <VipPropertySection vipType='SILVER' />
-              <VipPropertySection vipType='NORMAL' mode='newest' />
-            </div>
-
-            <div className='mt-8 flex flex-col items-center gap-4'>
-              {hasNext && !hasLoadedOnce && (
-                <List.LoadMore onAfterLoad={() => setHasLoadedOnce(true)} />
-              )}
-              {(hasLoadedOnce || !hasNext) && (
-                <Link href={getLoadMoreHref()}>
-                  <Button className='px-6'>{t('common.loadMore')}</Button>
-                </Link>
-              )}
-            </div>
-
-            <LocationBrowseSection
-              cities={cities}
-              loading={cities === undefined}
-            />
-
-            {latestNews && latestNews.length > 0 && (
-              <NewsGridSection news={latestNews} />
-            )}
-
-            <PromoFeaturesSection />
-          </div>
+    <PageContainer width='content'>
+      <div className='py-4 sm:py-6 lg:py-8'>
+        <div className='mb-10'>
+          <HeroPromoCarousel />
         </div>
+        <section className='mb-8 sm:mb-10 relative rounded-2xl overflow-hidden'>
+          <div className='absolute inset-0'>
+            <Image
+              src='/images/banner-default.jpg'
+              alt='Banner default'
+              fill
+              priority
+              quality={85}
+              sizes='(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1280px'
+            />
+            <div className='absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/20 dark:from-background/75 dark:via-background/55 dark:to-background/25' />
+          </div>
+          <div className='relative p-5 sm:p-8 lg:p-10'>
+            <div className='max-w-2xl mb-5 sm:mb-6'>
+              <Typography variant='sectionTitle' className='text-white mb-2'>
+                {t('homePage.searchIntro.title')}
+              </Typography>
+              <p className='text-white/80 text-sm sm:text-base leading-relaxed'>
+                {t('homePage.searchIntro.description')}
+              </p>
+            </div>
+            <div className='backdrop-blur-sm bg-white/75 dark:bg-card/70 p-3 sm:p-4 rounded-xl shadow-lg ring-1 ring-white/40 dark:ring-white/10'>
+              <div className='flex flex-col gap-3'>
+                <ResidentialFilterResponsive hideVerifiedFilterInDialog />
+                <div className='flex justify-between items-center'>
+                  <ClearFilterButton show={false} onClick={() => {}} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div id='top-interest'>
+          <TopInterestSection categoryStats={categoryStats} />
+        </div>
+
+        <PersonalizedPropertySection />
+
+        {/* VIP Property Sections */}
+        <div className='space-y-8'>
+          <VipPropertySection vipType='DIAMOND' />
+          <VipPropertySection vipType='GOLD' />
+          <VipPropertySection vipType='SILVER' />
+          <VipPropertySection vipType='NORMAL' mode='newest' />
+        </div>
+
+        <div className='mt-8 flex flex-col items-center gap-4'>
+          {hasNext && !hasLoadedOnce && (
+            <List.LoadMore onAfterLoad={() => setHasLoadedOnce(true)} />
+          )}
+          {(hasLoadedOnce || !hasNext) && (
+            <Link href={getLoadMoreHref()}>
+              <Button className='px-6'>{t('common.loadMore')}</Button>
+            </Link>
+          )}
+        </div>
+
+        <LocationBrowseSection cities={cities} loading={cities === undefined} />
+
+        {latestNews && latestNews.length > 0 && (
+          <NewsGridSection news={latestNews} />
+        )}
+
+        <PromoFeaturesSection />
       </div>
-    </div>
+    </PageContainer>
   )
 }
 

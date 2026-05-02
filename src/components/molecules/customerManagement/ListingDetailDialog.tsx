@@ -16,6 +16,7 @@ import { Badge } from '@/components/atoms/badge'
 import { Button } from '@/components/atoms/button'
 import { Card } from '@/components/atoms/card'
 import { Dialog } from '@/components/atoms/dialog'
+import { Typography } from '@/components/atoms/typography'
 import {
   useUsersWhoClickedListing,
   usePhoneClickStats,
@@ -101,9 +102,13 @@ export default function ListingDetailDialog({
               </div>
 
               <div className='flex-1'>
-                <h2 className='text-2xl font-bold mb-1 line-clamp-2'>
+                <Typography
+                  variant='h3'
+                  as='h2'
+                  className='font-bold mb-1 line-clamp-2'
+                >
                   {listing.listingTitle}
-                </h2>
+                </Typography>
                 <p className='text-primary-foreground/80 text-sm'>
                   {t('dialog.listingDetail.title')}
                 </p>
@@ -150,10 +155,14 @@ export default function ListingDetailDialog({
 
             {/* Interested Users */}
             <Card className='p-5 border-l-4 border-primary'>
-              <h3 className='text-lg font-semibold mb-4 flex items-center gap-2'>
+              <Typography
+                variant='h5'
+                as='h3'
+                className='mb-4 flex items-center gap-2'
+              >
                 <Users className='h-5 w-5 text-primary' />
                 {t('dialog.listingDetail.interestedUsers')}
-              </h3>
+              </Typography>
 
               {loadingUsers ? (
                 <div className='flex items-center justify-center py-8'>

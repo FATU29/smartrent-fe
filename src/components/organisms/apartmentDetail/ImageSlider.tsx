@@ -163,7 +163,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ media }) => {
 
         {/* Video Badge */}
         {currentMedia?.mediaType === 'VIDEO' && (
-          <div className='absolute top-2.5 left-2.5 md:top-3 md:left-3 bg-red-600 text-white px-2.5 py-1 md:px-3 md:py-1.5 rounded-md text-[11px] md:text-xs font-semibold flex items-center gap-1 z-10'>
+          <div className='absolute top-2.5 left-2.5 md:top-3 md:left-3 bg-red-600 text-white px-2.5 py-1 md:px-3 md:py-1.5 rounded-md text-2xs md:text-xs font-semibold flex items-center gap-1 z-10'>
             <Play className='w-3 h-3' fill='currentColor' />
             {t('video')}
           </div>

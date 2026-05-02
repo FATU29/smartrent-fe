@@ -12,13 +12,37 @@ function isIgnoredPath(pathname: string) {
   return IGNORE_PATHS.some((re) => re.test(pathname))
 }
 
+// Sub-paths under /sellernet/* that *must* require auth even though the
+// rest of /sellernet/* is intentionally public (pricing/guides/membership
+// signup are visible to prospects). These are personal/business surfaces
+// where unauthenticated access would either crash the page or leak intent.
+const SELLERNET_AUTH_REQUIRED_PREFIXES = [
+  '/sellernet/personal',
+  '/sellernet/business',
+  '/sellernet/finance',
+  '/sellernet/utilities',
+]
+
 function isPublicPath(pathname: string) {
   // Exact match for root
   if (pathname === '/') return true
 
   // Check if starts with /properties, /sellernet, /auth, or /listing-detail
   if (pathname.startsWith('/properties')) return true
-  if (pathname.startsWith('/sellernet')) return true
+  if (pathname.startsWith('/sellernet')) {
+    // Carve out the personal/business/finance/utilities sub-trees — those
+    // are authenticated surfaces wearing the SellerNet skin. Everything
+    // else under /sellernet/* (pricing, guides, membership signup) stays
+    // public so prospects can browse without logging in.
+    if (
+      SELLERNET_AUTH_REQUIRED_PREFIXES.some((prefix) =>
+        pathname.startsWith(prefix),
+      )
+    ) {
+      return false
+    }
+    return true
+  }
   if (pathname.startsWith('/auth')) return true
   if (pathname.startsWith('/listing-detail')) return true
   if (pathname.startsWith('/compare')) return true

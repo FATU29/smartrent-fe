@@ -71,21 +71,21 @@ const UsageGuideTemplate = () => {
             <div className='min-w-0 space-y-2'>
               <Badge
                 variant='outline'
-                className='w-fit rounded-full border-primary/25 bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary'
+                className='w-fit rounded-full border-primary/25 bg-primary/10 px-2.5 py-0.5 text-2xs font-medium text-primary'
               >
                 {t('gettingStarted.title')}
               </Badge>
 
               <Typography
                 variant='h2'
-                className='max-w-3xl text-2xl leading-tight tracking-tight sm:text-[1.75rem]'
+                className='max-w-3xl text-2xl leading-tight tracking-tight sm:text-3xl'
               >
                 {t('title')}
               </Typography>
 
               <Typography
                 variant='p'
-                className='max-w-3xl text-sm leading-6 text-muted-foreground sm:text-[15px]'
+                className='max-w-3xl text-sm leading-6 text-muted-foreground sm:text-md'
               >
                 {t('description')}
               </Typography>

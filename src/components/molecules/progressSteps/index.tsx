@@ -54,35 +54,20 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({
               {step.icon}
             </Card>
 
-            {/* Step Content - Mobile First */}
-            <Card className='text-center space-y-1 border-0 shadow-none p-0'>
-              <Typography
-                variant='h3'
-                className={cn(
-                  'text-[11px] sm:text-xs font-medium leading-tight tracking-tight',
-                  step.isActive
-                    ? 'text-primary'
-                    : step.isCompleted
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-muted-foreground',
-                )}
-              >
-                {step.title}
-              </Typography>
-              <Typography
-                variant='muted'
-                className={cn(
-                  'hidden sm:block text-[10px] leading-snug',
-                  step.isActive
-                    ? 'text-muted-foreground'
-                    : step.isCompleted
-                      ? 'text-muted-foreground'
-                      : 'text-muted-foreground/60',
-                )}
-              >
-                {step.description}
-              </Typography>
-            </Card>
+            {/* Step Content - title only; description was redundant duplication */}
+            <Typography
+              variant='h3'
+              className={cn(
+                'text-center text-sm sm:text-base font-medium leading-tight tracking-tight',
+                step.isActive
+                  ? 'text-primary'
+                  : step.isCompleted
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-muted-foreground',
+              )}
+            >
+              {step.title}
+            </Typography>
 
             {/* Connector Line - Hidden on mobile, shown on desktop */}
             {index < steps.length - 1 && (

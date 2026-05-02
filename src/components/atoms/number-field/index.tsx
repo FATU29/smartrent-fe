@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useTranslations } from 'next-intl'
+
 import { cn } from '@/lib/utils'
 import { NumericFormat } from 'react-number-format'
 
@@ -34,8 +36,10 @@ export const NumberField: React.FC<NumberFieldProps> = ({
   compact,
   error,
 }) => {
+  const tCommon = useTranslations('common')
   const [touched, setTouched] = useState(false)
-  const invalid = (touched && value < (min ?? 0)) || !!error
+  const isBelowMin = touched && value < (min ?? 0)
+  const invalid = isBelowMin || !!error
 
   const handleValueChange = (floatValue?: number) => {
     let next = floatValue ?? 0
@@ -63,10 +67,16 @@ export const NumberField: React.FC<NumberFieldProps> = ({
           allowLeadingZeros={false}
           inputMode='numeric'
           placeholder={placeholder}
+          // Mutually-exclusive branches avoid the focus-border conflict between
+          // `focus:border-ring` (default) and `focus:border-destructive` (error).
+          // Stacking both into the same className relied on tailwind-merge to
+          // pick a winner, which didn't behave consistently for custom theme
+          // colors under the `focus:` modifier.
           className={cn(
-            'w-full h-12 px-4 pr-10 border-2 rounded-xl bg-background text-foreground border-border hover:border-foreground/30 focus:ring-2 focus:border-ring focus:ring-ring/50 transition-all duration-200 shadow-sm',
-            (invalid || error) &&
-              'border-destructive focus:border-destructive focus:ring-destructive/50',
+            'w-full h-12 px-4 pr-10 border-2 rounded-xl bg-background text-foreground transition-all duration-200 shadow-sm focus:ring-2',
+            invalid
+              ? 'border-destructive focus:border-destructive focus:ring-destructive/40'
+              : 'border-border hover:border-foreground/30 focus:border-ring focus:ring-ring/50',
             disabled && 'opacity-60 cursor-not-allowed',
             compact && 'h-10 text-sm',
           )}
@@ -84,8 +94,10 @@ export const NumberField: React.FC<NumberFieldProps> = ({
           {error}
         </p>
       )}
-      {invalid && !error && (
-        <p className='text-xs text-destructive'>Min {min}</p>
+      {isBelowMin && !error && (
+        <p className='text-xs text-destructive' role='alert'>
+          {tCommon('validation.min', { min })}
+        </p>
       )}
     </div>
   )

@@ -1,10 +1,13 @@
 import { SELLER_ROUTES, SELLERNET_ROUTES } from '@/constants'
 import {
   BadgePercent,
+  BookOpen,
+  CreditCard,
   FileText,
   FileX,
   PieChart,
   Plus,
+  Receipt,
   User,
   Users,
 } from 'lucide-react'
@@ -18,6 +21,9 @@ type SellerNavKey =
   | 'customers'
   | 'membership'
   | 'account'
+  | 'pricing'
+  | 'paymentGuide'
+  | 'usageGuide'
 
 export type SellerNavItem = {
   key: SellerNavKey
@@ -29,6 +35,19 @@ export type SellerNavItem = {
   mobilePlacement?: 'normal' | 'centerAction'
   mobileOrder?: number
   children?: SellerNavItem[]
+  /**
+   * Sidebar grouping. `primary` items render at the top; `secondary` items
+   * render at the bottom with a divider between them. Defaults to `primary`.
+   * Used to separate workspace nav (listings/customers/etc.) from
+   * resource/help links (pricing/guides/etc.).
+   */
+  group?: 'primary' | 'secondary'
+  /**
+   * Whether this item requires authentication to be useful. Items marked
+   * `false` (membership signup, public guides) stay visible for logged-out
+   * users; everything else is hidden until login. Defaults to `true`.
+   */
+  requiresAuth?: boolean
 }
 
 // Single source of truth for seller navigation
@@ -87,6 +106,7 @@ export const NAV_ITEMS: SellerNavItem[] = [
     showOnMobile: false,
     mobilePlacement: 'normal',
     mobileOrder: 6,
+    requiresAuth: false, // public — prospects browse plans before signing up
   },
   {
     key: 'account',
@@ -96,5 +116,33 @@ export const NAV_ITEMS: SellerNavItem[] = [
     showOnMobile: true,
     mobilePlacement: 'normal',
     mobileOrder: 7,
+  },
+  // ── Secondary group (resources / guides) — all public ──
+  {
+    key: 'pricing',
+    href: SELLERNET_ROUTES.PRICING,
+    icon: Receipt,
+    showOnDesktop: true,
+    showOnMobile: false,
+    group: 'secondary',
+    requiresAuth: false,
+  },
+  {
+    key: 'paymentGuide',
+    href: SELLERNET_ROUTES.PAYMENT_GUIDE,
+    icon: CreditCard,
+    showOnDesktop: true,
+    showOnMobile: false,
+    group: 'secondary',
+    requiresAuth: false,
+  },
+  {
+    key: 'usageGuide',
+    href: SELLERNET_ROUTES.USAGE_GUIDE,
+    icon: BookOpen,
+    showOnDesktop: true,
+    showOnMobile: false,
+    group: 'secondary',
+    requiresAuth: false,
   },
 ]

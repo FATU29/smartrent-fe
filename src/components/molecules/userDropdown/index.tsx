@@ -90,7 +90,7 @@ const UserDropdown: React.FC = () => {
                 {item.badge && (
                   <span
                     className={cn(
-                      'text-[10px] px-2 py-0.5 rounded font-medium whitespace-nowrap',
+                      'text-2xs px-2 py-0.5 rounded font-medium whitespace-nowrap',
                       badgeStyles[item.badge.variant || 'primary'],
                     )}
                   >

@@ -8,6 +8,7 @@ import {
 import { useTranslations } from 'next-intl'
 import { Home, Key, Building2, Brain } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Typography } from '@/components/atoms/typography'
 
 interface FeatureItem {
   id: string
@@ -71,9 +72,12 @@ const PromoFeaturesSection: React.FC = () => {
           <div className='absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,hsl(var(--primary)/0.08),transparent_60%)]' />
           <div className='absolute inset-0 bg-[radial-gradient(circle_at_80%_30%,hsl(var(--primary)/0.06),transparent_65%)]' />
         </div>
-        <h2 className='relative text-center text-xl sm:text-2xl font-semibold mb-10'>
+        <Typography
+          variant='sectionTitle'
+          className='relative text-center mb-10'
+        >
           {t('title')}
-        </h2>
+        </Typography>
         {/* Desktop grid */}
         <div className='relative hidden md:grid grid-cols-4 gap-10'>
           {items.map((item) => (
@@ -81,7 +85,9 @@ const PromoFeaturesSection: React.FC = () => {
               <div className='flex items-center justify-center h-32 mb-4'>
                 {item.icon}
               </div>
-              <h3 className='font-semibold mb-3 text-base'>{item.title}</h3>
+              <Typography variant='h6' as='h3' className='mb-3'>
+                {item.title}
+              </Typography>
               <p className='text-sm leading-relaxed text-muted-foreground'>
                 {item.description}
               </p>
@@ -102,9 +108,9 @@ const PromoFeaturesSection: React.FC = () => {
                     <div className='flex items-center justify-center h-32 mb-4'>
                       {item.icon}
                     </div>
-                    <h3 className='font-semibold mb-3 text-base'>
+                    <Typography variant='h6' as='h3' className='mb-3'>
                       {item.title}
-                    </h3>
+                    </Typography>
                     <p className='text-sm leading-relaxed text-muted-foreground'>
                       {item.description}
                     </p>

@@ -26,6 +26,7 @@ type TAiChatBubbleProps = {
   message: TChatMessage
   className?: string
   onViewListingDetail?: (listingId: number) => void
+  onOpenFullDetail?: (listingId: number) => void
 }
 
 // Convert [Mã tin: xxx] to clickable links
@@ -105,12 +106,9 @@ const renderLink = (
 // Base markdown components for tables (used when no table hiding needed)
 const baseTableComponents: Partial<Components> = {
   table: ({ children, ...props }) => (
-    <div className='relative my-2 rounded-lg border border-border/50'>
+    <div className='my-2 rounded-lg border border-border overflow-hidden'>
       <div className='overflow-x-auto scrollbar-thin'>
-        <table
-          className='w-full text-xs border-collapse min-w-[300px]'
-          {...props}
-        >
+        <table className='w-full text-xs border-collapse' {...props}>
           {children}
         </table>
       </div>
@@ -123,7 +121,7 @@ const baseTableComponents: Partial<Components> = {
   ),
   th: ({ children, ...props }) => (
     <th
-      className='px-2 py-1.5 text-left font-semibold text-foreground border-b border-border/50'
+      className='px-3 py-2 text-left font-semibold text-foreground border-b border-border whitespace-nowrap'
       {...props}
     >
       {children}
@@ -131,17 +129,13 @@ const baseTableComponents: Partial<Components> = {
   ),
   td: ({ children, ...props }) => (
     <td
-      className='px-2 py-1.5 text-muted-foreground border-b border-border/30'
+      className='px-3 py-2 text-muted-foreground border-b border-border/60'
       {...props}
     >
       {children}
     </td>
   ),
-  tr: ({ children, ...props }) => (
-    <tr className='hover:bg-muted/30 transition-colors' {...props}>
-      {children}
-    </tr>
-  ),
+  tr: ({ children, ...props }) => <tr {...props}>{children}</tr>,
 }
 
 // Hidden table components: table stripped from bubble, shown only in expand dialog
@@ -158,7 +152,7 @@ const hiddenTableComponents: Partial<Components> = {
 const dialogMarkdownComponents: Components = {
   a: ({ href, children, ...props }) => renderLink(href, children, props),
   table: ({ children, ...props }) => (
-    <div className='my-3 rounded-lg border border-border/50 overflow-hidden'>
+    <div className='my-3 rounded-lg border border-border overflow-hidden'>
       <div className='overflow-x-auto'>
         <table className='w-full text-sm border-collapse' {...props}>
           {children}
@@ -173,7 +167,7 @@ const dialogMarkdownComponents: Components = {
   ),
   th: ({ children, ...props }) => (
     <th
-      className='px-3 py-2 text-left font-semibold text-foreground border-b border-border/50 whitespace-nowrap'
+      className='px-3 py-2 text-left font-semibold text-foreground border-b border-border whitespace-nowrap'
       {...props}
     >
       {children}
@@ -181,17 +175,13 @@ const dialogMarkdownComponents: Components = {
   ),
   td: ({ children, ...props }) => (
     <td
-      className='px-3 py-2 text-foreground border-b border-border/30'
+      className='px-3 py-2 text-foreground border-b border-border/60'
       {...props}
     >
       {children}
     </td>
   ),
-  tr: ({ children, ...props }) => (
-    <tr className='hover:bg-muted/30 transition-colors' {...props}>
-      {children}
-    </tr>
-  ),
+  tr: ({ children, ...props }) => <tr {...props}>{children}</tr>,
 }
 
 const INITIAL_SEARCH_RESULTS = 3
@@ -200,6 +190,7 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
   message,
   className,
   onViewListingDetail,
+  onOpenFullDetail,
 }) => {
   const isBot = message.sender === 'bot'
   const hasListings = isBot && message.listings && message.listings.length > 0
@@ -246,7 +237,7 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
   return (
     <div
       className={cn(
-        'flex w-full gap-2 px-3 py-1.5 md:gap-3 md:px-4 md:py-2',
+        'flex w-full gap-2 px-3 py-2 md:gap-3 md:px-4',
         isBot ? 'justify-start' : 'justify-end',
         className,
       )}
@@ -263,18 +254,28 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
       >
         {/* Message Bubble — hide for bot when there's no text (e.g. agent
             returned only listings without a prose answer). User bubbles
-            always render. */}
+            always render. The asymmetric corner ("tail") visually anchors
+            the bubble to its speaker. */}
         {(!isBot || message.content.trim().length > 0) && (
           <div
             className={cn(
-              'rounded-2xl px-3 py-2 shadow-sm transition-all duration-200 md:px-4',
+              'rounded-2xl px-4 py-2.5 shadow-sm overflow-hidden break-words',
               isBot
-                ? 'bg-muted text-foreground hover:bg-muted/80 break-words overflow-hidden'
-                : 'bg-primary text-primary-foreground hover:bg-primary/90 overflow-hidden',
+                ? 'bg-muted text-foreground rounded-bl-md'
+                : 'bg-primary text-primary-foreground rounded-br-md',
             )}
           >
             {isBot ? (
-              <div className='prose prose-sm dark:prose-invert max-w-none break-words text-sm leading-relaxed [&>p]:m-0 [&>ul]:my-1 [&>ol]:my-1 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm [&>h1]:font-semibold [&>h2]:font-semibold [&>h3]:font-semibold [&>h1]:my-1 [&>h2]:my-1 [&>h3]:my-1'>
+              <div
+                className={cn(
+                  'prose prose-sm dark:prose-invert max-w-none break-words text-sm leading-relaxed',
+                  '[&>p]:my-0 [&>p+p]:mt-2',
+                  '[&>ul]:my-1.5 [&>ol]:my-1.5 [&>li]:my-0.5',
+                  '[&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm',
+                  '[&>h1]:font-semibold [&>h2]:font-semibold [&>h3]:font-semibold',
+                  '[&>h1]:my-1.5 [&>h2]:my-1.5 [&>h3]:my-1.5',
+                )}
+              >
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={bubbleMarkdownComponents}
@@ -295,15 +296,15 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
           <Button
             variant='ghost'
             size='sm'
-            className='h-7 px-2 text-xs text-primary hover:text-primary gap-1'
+            className='h-8 px-2.5 text-xs font-medium text-primary hover:text-primary gap-1.5'
             onClick={() => setShowExpandDialog(true)}
           >
-            <Maximize2 className='w-3 h-3' />
+            <Maximize2 className='w-3.5 h-3.5' aria-hidden='true' />
             {tAi('expandTable')}
           </Button>
         )}
 
-        <AiChatMessageTime timestamp={message.timestamp} className='px-1' />
+        <AiChatMessageTime timestamp={message.timestamp} className='px-2' />
 
         {/* Listings Section - Skip when AI already rendered a markdown table comparison */}
         {hasListings &&
@@ -317,11 +318,14 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
               : listings.slice(0, INITIAL_SEARCH_RESULTS)
 
             return (
-              <div className='w-full space-y-2 mt-1'>
-                <Badge variant='secondary' className='text-xs'>
+              <div className='w-full flex flex-col gap-2 mt-1'>
+                <Badge
+                  variant='secondary'
+                  className='self-start text-xs font-medium px-2.5 py-1'
+                >
                   {message.totalCount || listings.length} {t('foundListings')}
                 </Badge>
-                <div className='flex flex-col gap-2 w-full px-0.5'>
+                <div className='flex flex-col gap-3 w-full'>
                   {visibleListings.map((listing) => (
                     <CardListingAIDetail
                       key={listing.listingId}
@@ -335,7 +339,7 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
                   <Button
                     variant='ghost'
                     size='sm'
-                    className='w-full text-xs h-7 text-primary hover:text-primary'
+                    className='w-full h-8 text-sm font-medium text-primary hover:text-primary'
                     onClick={() => setShowAllResults((prev) => !prev)}
                   >
                     {showAllResults
@@ -350,14 +354,14 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
           })()}
 
         {hasListings && !containsTable && listingDisplayMode === 'detail' && (
-          <div className='w-full space-y-2 mt-1 px-0.5'>
+          <div className='w-full flex flex-col gap-3 mt-1'>
             {message.listings?.map((listing) => (
               <React.Fragment key={listing.listingId}>
                 {listing.user && <AiChatContactCard listing={listing} />}
                 <CardListingAIDetail
                   listing={listing}
                   compact
-                  onViewDetail={onViewListingDetail}
+                  onViewDetail={onOpenFullDetail}
                 />
               </React.Fragment>
             ))}
@@ -376,13 +380,13 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
       {/* Expand Dialog - full-width view for messages with tables */}
       {containsTable && (
         <Dialog open={showExpandDialog} onOpenChange={setShowExpandDialog}>
-          <DialogContent className='w-[95vw] max-w-6xl p-0 overflow-hidden'>
-            <DialogHeader className='px-5 pt-5 pb-0'>
+          <DialogContent className='w-[95vw] max-w-4xl max-h-[85vh] p-0 gap-0 overflow-hidden flex flex-col rounded-2xl'>
+            <DialogHeader className='px-6 py-4 border-b border-border'>
               <DialogTitle className='text-base font-semibold'>
                 {tAi('expandTableTitle')}
               </DialogTitle>
             </DialogHeader>
-            <div className='max-h-[80vh] overflow-y-auto px-5 pb-5'>
+            <div className='flex-1 overflow-y-auto px-6 py-5'>
               <div className='prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed [&>p]:my-2'>
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}

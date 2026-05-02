@@ -1,9 +1,13 @@
 import React, { useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
-import { SELLER_ROUTES } from '@/constants'
+import { LogIn } from 'lucide-react'
 import Logo from '@/components/atoms/logo'
+import { Button } from '@/components/atoms/button'
+import { PageContainer } from '@/components/atoms/pageContainer'
 import NotificationPanel from '@/components/molecules/notificationPanel'
+import { useAuthContext } from '@/contexts/auth'
+import { useAuthDialog } from '@/contexts/authDialog'
 
 import { NAV_ITEMS } from './index.helper'
 import VerticalNav from '@/components/molecules/verticalNav/VerticalNav'
@@ -18,40 +22,47 @@ type SellerLayoutProps = {
 const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
   const router = useRouter()
   const t = useTranslations('navigation.seller')
-  const tCreatePost = useTranslations('createPost')
+  const tAuth = useTranslations('homePage.auth')
+  const { isAuthenticated } = useAuthContext()
+  const { openAuth } = useAuthDialog()
 
   const isActive = useCallback(
     (href: string) => router.pathname.startsWith(href),
     [router.pathname],
   )
 
-  const activeItem = useMemo(() => {
-    return (
-      NAV_ITEMS.find((item) => isActive(item.href) && item.key !== 'create') ||
-      NAV_ITEMS.find((item) => isActive(item.href)) ||
-      NAV_ITEMS[0]
-    )
-  }, [isActive])
-
-  const headerTitle = useMemo(() => {
-    return router.pathname.startsWith(SELLER_ROUTES.CREATE)
-      ? tCreatePost('title')
-      : t(activeItem.key)
-  }, [activeItem.key, router.pathname, t, tCreatePost])
+  // Hide auth-required items when logged out so the sidebar isn't full of
+  // dead links that just trigger login redirects. Public items (membership,
+  // guides) stay visible — those pages legitimately work for prospects.
+  const visibleItems = useMemo(
+    () =>
+      NAV_ITEMS.filter(
+        (n) =>
+          n.showOnDesktop !== false &&
+          (isAuthenticated || n.requiresAuth === false),
+      ),
+    [isAuthenticated],
+  )
 
   const mobileNormal = useMemo(
     () =>
       NAV_ITEMS.filter(
-        (n) => n.showOnMobile !== false && n.mobilePlacement !== 'centerAction',
+        (n) =>
+          n.showOnMobile !== false &&
+          n.mobilePlacement !== 'centerAction' &&
+          (isAuthenticated || n.requiresAuth === false),
       ).sort((a, b) => (a.mobileOrder ?? 0) - (b.mobileOrder ?? 0)),
-    [],
+    [isAuthenticated],
   )
   const mobileCenter = useMemo(
     () =>
       NAV_ITEMS.find(
-        (n) => n.showOnMobile !== false && n.mobilePlacement === 'centerAction',
+        (n) =>
+          n.showOnMobile !== false &&
+          n.mobilePlacement === 'centerAction' &&
+          (isAuthenticated || n.requiresAuth === false),
       ),
-    [],
+    [isAuthenticated],
   )
   const mobileLeft = useMemo(() => mobileNormal.slice(0, 2), [mobileNormal])
   const mobileRight = useMemo(() => mobileNormal.slice(2, 4), [mobileNormal])
@@ -67,10 +78,23 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
                 </div>
 
                 <VerticalNav
-                  items={NAV_ITEMS.filter((n) => n.showOnDesktop !== false)}
+                  items={visibleItems}
                   t={t as unknown as (key: string) => string}
                   isActive={isActive}
                 />
+
+                {!isAuthenticated && (
+                  <div className='mt-auto pt-4 border-t border-border/60'>
+                    <Button
+                      type='button'
+                      onClick={() => openAuth('login', router.asPath)}
+                      className='w-full gap-2 h-9'
+                    >
+                      <LogIn className='size-4' aria-hidden='true' />
+                      {tAuth('login.title')}
+                    </Button>
+                  </div>
+                )}
               </div>
             </aside>
 
@@ -82,31 +106,33 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
                       <div className='md:hidden'>
                         <Logo size='medium' showText />
                       </div>
-                      <div className='min-w-0'>
-                        <div className='hidden md:block text-base md:text-lg font-semibold truncate'>
-                          {headerTitle}
-                        </div>
-                        {router.pathname.startsWith(SELLER_ROUTES.CREATE) && (
-                          <div className='hidden md:block text-xs md:text-sm text-muted-foreground truncate'>
-                            {tCreatePost('description')}
-                          </div>
-                        )}
-                      </div>
                     </div>
 
                     <div className='flex items-center justify-center md:justify-end gap-2 sm:gap-3'>
                       <ThemeSwitch />
-                      <NotificationPanel />
+                      {isAuthenticated && <NotificationPanel />}
+                      {!isAuthenticated && (
+                        <Button
+                          type='button'
+                          size='sm'
+                          onClick={() => openAuth('login', router.asPath)}
+                          className='gap-1.5 h-9'
+                        >
+                          <LogIn className='size-4' aria-hidden='true' />
+                          {tAuth('login.title')}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className='mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 md:pt-4 flex-1 flex flex-col'>
-                <div className='md:rounded-xl md:border md:bg-card md:p-4 lg:p-6 flex-1 flex flex-col'>
-                  {children}
-                </div>
-              </div>
+              <PageContainer
+                width='grid'
+                className='pt-4 md:pt-4 md:pb-6 lg:pb-8 flex-1 flex flex-col'
+              >
+                <div className='flex-1 flex flex-col'>{children}</div>
+              </PageContainer>
             </section>
           </div>
         </div>

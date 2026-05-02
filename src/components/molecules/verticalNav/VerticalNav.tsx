@@ -12,6 +12,11 @@ export type VerticalNavItem = {
   children?: VerticalNavItem[]
   disabled?: boolean
   className?: string
+  /**
+   * Sidebar grouping. When two consecutive items have different groups, a
+   * divider is rendered between them. Defaults to `primary`.
+   */
+  group?: 'primary' | 'secondary'
 }
 
 type VerticalNavProps = {
@@ -35,17 +40,31 @@ const VerticalNav: React.FC<VerticalNavProps> = ({
 }) => {
   return (
     <ul className={cn('flex flex-col items-stretch gap-1.5', className)}>
-      {items.map((item) => (
-        <VerticalNavNode
-          key={item.key}
-          item={item}
-          t={t}
-          isActive={isActive}
-          depth={0}
-          itemClassName={itemClassName}
-          collapsed={collapsed}
-        />
-      ))}
+      {items.map((item, index) => {
+        const prev = items[index - 1]
+        const groupChanged =
+          prev !== undefined &&
+          (prev.group ?? 'primary') !== (item.group ?? 'primary')
+        return (
+          <React.Fragment key={item.key}>
+            {groupChanged && (
+              <li
+                role='separator'
+                aria-hidden='true'
+                className='my-1 border-t border-border/60'
+              />
+            )}
+            <VerticalNavNode
+              item={item}
+              t={t}
+              isActive={isActive}
+              depth={0}
+              itemClassName={itemClassName}
+              collapsed={collapsed}
+            />
+          </React.Fragment>
+        )
+      })}
     </ul>
   )
 }
@@ -112,7 +131,7 @@ const VerticalNavNode: React.FC<NodeProps> = ({
             <span className='min-w-0 flex-1'>
               <span
                 className={cn(
-                  'truncate transition-all duration-100 ease-out inline-block w-full !text-[14px] leading-5 align-middle',
+                  'truncate transition-all duration-100 ease-out inline-block w-full text-sm leading-5 align-middle',
                   NAVIGATION_TEXT_CLASSNAME,
                   collapsed
                     ? 'opacity-0 -translate-x-2 w-0 !m-0 overflow-hidden'
@@ -148,7 +167,7 @@ const VerticalNavNode: React.FC<NodeProps> = ({
           {Icon ? <Icon className='size-4 shrink-0' /> : null}
           <span
             className={cn(
-              'truncate transition-all duration-100 ease-out inline-block min-w-0 flex-1 !text-[14px] leading-5 align-middle',
+              'truncate transition-all duration-100 ease-out inline-block min-w-0 flex-1 text-sm leading-5 align-middle',
               NAVIGATION_TEXT_CLASSNAME,
               collapsed
                 ? 'opacity-0 -translate-x-2 w-0 !m-0 overflow-hidden'

@@ -1,6 +1,6 @@
 import React from 'react'
 import type { NextPageWithLayout } from '@/types/next-page'
-import SellernetLayout from '@/components/layouts/sellernet/SellernetLayout'
+import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
 import PaymentGuideTemplate from '@/components/templates/paymentGuideTemplate'
@@ -17,7 +17,7 @@ const PaymentGuidePage: NextPageWithLayout = () => {
 }
 
 PaymentGuidePage.getLayout = (page: React.ReactNode) => (
-  <SellernetLayout>{page}</SellernetLayout>
+  <SellerLayout>{page}</SellerLayout>
 )
 
 export default PaymentGuidePage

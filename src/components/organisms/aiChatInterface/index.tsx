@@ -1,4 +1,4 @@
-import { FC, RefObject, useRef } from 'react'
+import { FC, RefObject, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
@@ -10,6 +10,7 @@ import AiChatBubble from '@/components/molecules/aiChatBubble'
 import AiChatInput from '@/components/molecules/aiChatInput'
 import AiChatTypingIndicator from '@/components/atoms/aiChatTypingIndicator'
 import AiChatScrollButton from '@/components/atoms/aiChatScrollButton'
+import AiChatListingDetailDialog from '@/components/molecules/aiChatListingDetailDialog'
 
 type TAiChatInterfaceProps = {
   messages: TChatMessage[]
@@ -54,6 +55,12 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
 
   // Track initial message count at mount to avoid animating restored messages
   const initialCountRef = useRef(messages.length)
+
+  // Listing-detail dialog state — opened from detail-mode cards in the chat
+  // so users can view the full listing without leaving the chat tab.
+  const [fullDetailListingId, setFullDetailListingId] = useState<number | null>(
+    null,
+  )
 
   return (
     <div
@@ -105,6 +112,7 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
                     <AiChatBubble
                       message={message}
                       onViewListingDetail={onViewListingDetail}
+                      onOpenFullDetail={setFullDetailListingId}
                     />
                   </div>
                 )
@@ -145,6 +153,14 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
           isMobile={isMobile}
         />
       </div>
+
+      <AiChatListingDetailDialog
+        listingId={fullDetailListingId}
+        open={fullDetailListingId !== null}
+        onOpenChange={(next) => {
+          if (!next) setFullDetailListingId(null)
+        }}
+      />
     </div>
   )
 }

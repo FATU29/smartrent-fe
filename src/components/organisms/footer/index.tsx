@@ -6,6 +6,7 @@ import { Mail, Phone, MapPin, GraduationCap } from 'lucide-react'
 
 import Logo from '@/components/atoms/logo'
 import { Button } from '@/components/atoms/button'
+import { SELLERNET_ROUTES, SELLER_ROUTES } from '@/constants'
 
 const SOCIAL_ICONS = [
   { src: '/svg/facebook.svg', alt: 'Facebook', label: 'Facebook' },
@@ -26,7 +27,7 @@ const FooterNavColumn: React.FC<FooterNavColumnProps> = ({
   t,
 }) => (
   <div className='space-y-4'>
-    <p className='text-[11px] font-semibold tracking-widest text-muted-foreground uppercase'>
+    <p className='text-2xs font-semibold tracking-widest text-muted-foreground uppercase'>
       {heading}
     </p>
     <nav className='space-y-2.5'>
@@ -46,15 +47,16 @@ const FooterNavColumn: React.FC<FooterNavColumnProps> = ({
 const DISCOVER_LINKS = [
   ['aboutUs', '#'],
   ['properties', '/properties'],
-  ['services', '#'],
+  ['membership', SELLER_ROUTES.MEMBERSHIP],
   ['contact', '#'],
 ] as const
 
 const SUPPORT_LINKS = [
-  ['helpCenter', '#'],
+  ['pricing', SELLERNET_ROUTES.PRICING],
+  ['paymentGuide', SELLERNET_ROUTES.PAYMENT_GUIDE],
+  ['usageGuide', SELLERNET_ROUTES.USAGE_GUIDE],
   ['privacyPolicy', '#'],
   ['termsOfService', '#'],
-  ['faq', '#'],
 ] as const
 
 const Footer: React.FC = () => {
@@ -125,7 +127,7 @@ const Footer: React.FC = () => {
 
           {/* Col 4 — Liên hệ */}
           <div className='space-y-4'>
-            <p className='text-[11px] font-semibold tracking-widest text-muted-foreground uppercase'>
+            <p className='text-2xs font-semibold tracking-widest text-muted-foreground uppercase'>
               {t('contactInfo')}
             </p>
             <div className='space-y-3'>

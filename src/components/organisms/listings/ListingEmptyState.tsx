@@ -1,10 +1,12 @@
 import React from 'react'
 import { FilePlus2, Plus, ShoppingBag } from 'lucide-react'
-import { Button } from '@/components/atoms/button'
-import { SELLER_ROUTES, SELLERNET_ROUTES } from '@/constants/route'
 import { useRouter } from 'next/router'
-import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
+
+import { Button } from '@/components/atoms/button'
+import { Typography } from '@/components/atoms/typography'
+import { SELLER_ROUTES, SELLERNET_ROUTES } from '@/constants/route'
+import { cn } from '@/lib/utils'
 
 interface ListingEmptyStateProps {
   className?: string
@@ -18,46 +20,57 @@ export const ListingEmptyState: React.FC<ListingEmptyStateProps> = ({
   const router = useRouter()
   const tRoot = useTranslations('seller')
   const t = (key: string) => tRoot(`listingManagement.${key}`)
+
   return (
     <div
       className={cn(
-        'relative mt-10 flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-border/60 p-12 text-center',
-        'bg-gradient-to-b from-background via-background to-primary/5 dark:to-primary/10',
-        'before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_50%_0%,theme(colors.primary/15),transparent_70%)] before:opacity-60',
+        // Single diagonal gradient creates the "interesting" feel without
+        // stacking multiple decorative layers (which is what made the
+        // original version feel cluttered).
+        'relative mt-10 flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-background to-primary/5 px-6 py-16 text-center',
         className,
       )}
     >
-      <div className='absolute inset-0 pointer-events-none select-none [mask-image:radial-gradient(circle_at_center,black,transparent_70%)] opacity-40'>
-        <div className='absolute -top-32 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl' />
+      {/* One soft radial accent at the top to pull the eye toward the icon. */}
+      <div
+        className='pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_top,theme(colors.primary/0.18),transparent_70%)]'
+        aria-hidden='true'
+      />
+
+      {/* Icon — solid primary surface so it actually reads as a focal point. */}
+      <div className='relative mb-6 flex size-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/25'>
+        {icon || <FilePlus2 className='size-8' aria-hidden='true' />}
       </div>
-      <div className='relative z-10 flex h-20 w-20 items-center justify-center rounded-2xl border border-primary/30 bg-primary/5 shadow-inner mb-8 backdrop-blur-sm'>
-        {icon || (
-          <FilePlus2 className='text-primary drop-shadow-sm' size={40} />
-        )}
-      </div>
-      <h2 className='relative z-10 text-2xl font-semibold tracking-tight mb-3 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent'>
+
+      <Typography
+        variant='h4'
+        as='h2'
+        className='relative mb-2 text-foreground'
+      >
         {t('empty.title')}
-      </h2>
-      <p className='relative z-10 max-w-2xl text-sm md:text-base text-muted-foreground mb-4'>
+      </Typography>
+
+      <p className='relative mb-1 max-w-md text-sm text-muted-foreground'>
         {t('empty.description')}
       </p>
-      <p className='relative z-10 mb-8 text-xs md:text-sm font-medium text-primary/80 dark:text-primary/70'>
+      <p className='relative mb-8 text-sm font-medium text-primary'>
         {t('empty.tagline')}
       </p>
-      <div className='relative z-10 flex flex-col sm:flex-row gap-3'>
+
+      <div className='relative flex flex-col sm:flex-row gap-3'>
         <Button
           variant='outline'
           onClick={() => router.push(SELLERNET_ROUTES.MEMBERSHIP_REGISTER)}
-          className='gap-2'
+          className='gap-2 bg-background/80 backdrop-blur-sm'
         >
-          <ShoppingBag size={16} />
+          <ShoppingBag className='size-4' aria-hidden='true' />
           {t('empty.actions.buyPackage')}
         </Button>
         <Button
           onClick={() => router.push(SELLER_ROUTES.CREATE)}
           className='gap-2 shadow-md shadow-primary/20'
         >
-          <Plus size={16} />
+          <Plus className='size-4' aria-hidden='true' />
           {t('empty.actions.create')}
         </Button>
       </div>

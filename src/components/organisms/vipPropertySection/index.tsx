@@ -11,6 +11,7 @@ import {
   type CarouselApi,
 } from '@/components/atoms/carousel'
 import { Skeleton } from '@/components/atoms/skeleton'
+import { Typography } from '@/components/atoms/typography'
 import { VipType } from '@/api/types'
 import { cn } from '@/lib/utils'
 import { useRecommendedListingsByVip } from '@/hooks/useListings/useRecommendedListingsByVip'
@@ -102,9 +103,9 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
       <section className='mb-10 sm:mb-14'>
         <div className='flex items-center gap-3 mb-5 sm:mb-6'>
           <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
-          <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
+          <Typography variant='sectionTitle' className='text-foreground'>
             {t(config.titleKey)}
-          </h2>
+          </Typography>
         </div>
         <Carousel
           className='group'
@@ -162,9 +163,9 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
       <div className='flex items-center justify-between mb-5 sm:mb-6'>
         <div className='flex items-center gap-3'>
           <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
-          <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
+          <Typography variant='sectionTitle' className='text-foreground'>
             {t(config.titleKey)}
-          </h2>
+          </Typography>
         </div>
       </div>
 

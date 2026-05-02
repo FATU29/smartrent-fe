@@ -2,7 +2,6 @@ import * as React from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Card } from '@/components/atoms/card'
 import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
 import { Alert, AlertDescription, AlertTitle } from '@/components/atoms/alert'
@@ -815,260 +814,355 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
   }
 
   return (
-    <Card
-      className={cn(
-        'border-border/80 bg-transparent p-4 shadow-[0_12px_32px_-24px_hsl(var(--foreground)/0.65)] sm:p-6 md:p-7',
-        className,
-      )}
-    >
-      <div className='space-y-5 sm:space-y-6'>
-        <div className='flex items-center gap-3'>
-          <div className='flex size-9 items-center justify-center rounded-full border border-primary/30'>
-            <FileCheck2 className='h-4.5 w-4.5 text-primary' />
-          </div>
-          <Typography
-            variant='h3'
-            className='text-base font-semibold sm:text-lg'
-          >
-            {t('homePage.auth.accountManagement.brokerVerification.title')}
-          </Typography>
+    <div className={cn('space-y-5 sm:space-y-6', className)}>
+      <div className='flex items-center gap-3'>
+        <div className='flex size-9 items-center justify-center rounded-full border border-primary/30'>
+          <FileCheck2 className='h-4.5 w-4.5 text-primary' />
         </div>
+        <Typography variant='h3' className='text-base font-semibold sm:text-lg'>
+          {t('homePage.auth.accountManagement.brokerVerification.title')}
+        </Typography>
+      </div>
 
-        {brokerStatusQuery.isLoading && (
-          <div className='inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-muted-foreground'>
-            <Loader2 className='size-3.5 animate-spin' />
+      {brokerStatusQuery.isLoading && (
+        <div className='inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-muted-foreground'>
+          <Loader2 className='size-3.5 animate-spin' />
+          {safeT(
+            'homePage.auth.accountManagement.brokerVerification.statusLoading',
+            'Loading broker status...',
+          )}
+        </div>
+      )}
+
+      {brokerStatusQuery.isError && (
+        <Alert className='border-amber-300/80 bg-transparent text-amber-900 dark:text-amber-200'>
+          <AlertCircle className='size-4' />
+          <AlertTitle>
             {safeT(
-              'homePage.auth.accountManagement.brokerVerification.statusLoading',
-              'Loading broker status...',
+              'homePage.auth.accountManagement.brokerVerification.statusLoadErrorTitle',
+              'Unable to refresh broker status',
             )}
-          </div>
-        )}
-
-        {brokerStatusQuery.isError && (
-          <Alert className='border-amber-300/80 bg-transparent text-amber-900 dark:text-amber-200'>
-            <AlertCircle className='size-4' />
-            <AlertTitle>
+          </AlertTitle>
+          <AlertDescription>
+            <span>
               {safeT(
-                'homePage.auth.accountManagement.brokerVerification.statusLoadErrorTitle',
-                'Unable to refresh broker status',
+                'homePage.auth.accountManagement.brokerVerification.statusLoadErrorHint',
+                'You can still upload and submit documents. We will retry status sync later.',
               )}
-            </AlertTitle>
-            <AlertDescription>
-              <span>
+            </span>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {showReadOnlyStatus && (
+        <Alert
+          className={cn(
+            'bg-transparent',
+            currentStatus === 'APPROVED' &&
+              'border-emerald-300/80 text-emerald-700 dark:text-emerald-300',
+            currentStatus === 'PENDING' &&
+              'border-blue-300/80 text-blue-700 dark:text-blue-300',
+            currentStatus === 'REJECTED' &&
+              'border-amber-300/80 text-amber-900 dark:text-amber-200',
+          )}
+        >
+          <AlertCircle className='size-4' />
+          <AlertTitle>
+            {currentStatus === 'APPROVED' &&
+              safeT(
+                'homePage.auth.accountManagement.brokerVerification.approvedBadge',
+                'Verified Broker',
+              )}
+            {currentStatus === 'PENDING' &&
+              safeT(
+                'homePage.auth.accountManagement.brokerVerification.pendingBadge',
+                'Verification in Progress',
+              )}
+            {currentStatus === 'REJECTED' &&
+              safeT(
+                'homePage.auth.accountManagement.brokerVerification.rejectedBadge',
+                'Registration Rejected',
+              )}
+          </AlertTitle>
+          <AlertDescription>
+            {currentStatus === 'APPROVED' && (
+              <p>
                 {safeT(
-                  'homePage.auth.accountManagement.brokerVerification.statusLoadErrorHint',
-                  'You can still upload and submit documents. We will retry status sync later.',
+                  'homePage.auth.accountManagement.brokerVerification.approvedMessage',
+                  'Your broker profile has been verified successfully.',
                 )}
-              </span>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {showReadOnlyStatus && (
-          <Alert
-            className={cn(
-              'bg-transparent',
-              currentStatus === 'APPROVED' &&
-                'border-emerald-300/80 text-emerald-700 dark:text-emerald-300',
-              currentStatus === 'PENDING' &&
-                'border-blue-300/80 text-blue-700 dark:text-blue-300',
-              currentStatus === 'REJECTED' &&
-                'border-amber-300/80 text-amber-900 dark:text-amber-200',
+              </p>
             )}
-          >
-            <AlertCircle className='size-4' />
-            <AlertTitle>
-              {currentStatus === 'APPROVED' &&
-                safeT(
-                  'homePage.auth.accountManagement.brokerVerification.approvedBadge',
-                  'Verified Broker',
+
+            {currentStatus === 'PENDING' && (
+              <p>
+                {safeT(
+                  'homePage.auth.accountManagement.brokerVerification.pendingMessage',
+                  'Your broker verification application is under manual review.',
                 )}
-              {currentStatus === 'PENDING' &&
-                safeT(
-                  'homePage.auth.accountManagement.brokerVerification.pendingBadge',
-                  'Verification in Progress',
-                )}
-              {currentStatus === 'REJECTED' &&
-                safeT(
-                  'homePage.auth.accountManagement.brokerVerification.rejectedBadge',
-                  'Registration Rejected',
-                )}
-            </AlertTitle>
-            <AlertDescription>
-              {currentStatus === 'APPROVED' && (
+              </p>
+            )}
+
+            {currentStatus === 'REJECTED' && (
+              <div className='space-y-3'>
                 <p>
                   {safeT(
-                    'homePage.auth.accountManagement.brokerVerification.approvedMessage',
-                    'Your broker profile has been verified successfully.',
+                    'homePage.auth.accountManagement.brokerVerification.rejectedMessage',
+                    'Your previous submission was rejected. Please re-apply with new documents.',
                   )}
                 </p>
-              )}
 
-              {currentStatus === 'PENDING' && (
-                <p>
-                  {safeT(
-                    'homePage.auth.accountManagement.brokerVerification.pendingMessage',
-                    'Your broker verification application is under manual review.',
-                  )}
-                </p>
-              )}
+                {rejectionReason && (
+                  <div className='rounded-lg border border-amber-300/90 bg-amber-50/90 px-3 py-2.5 shadow-sm dark:border-amber-700/70 dark:bg-amber-950/40'>
+                    <div className='space-y-1'>
+                      <p className='text-xs font-semibold text-amber-800 dark:text-amber-200'>
+                        {safeT(
+                          'homePage.auth.accountManagement.brokerVerification.rejectionReasonLabel',
+                          'Reason:',
+                        )}
+                      </p>
+                      <p className='break-words text-sm font-medium leading-relaxed text-amber-950 dark:text-amber-50'>
+                        {rejectionReason}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
-              {currentStatus === 'REJECTED' && (
-                <div className='space-y-3'>
-                  <p>
+                {!isReapplyMode && (
+                  <Button
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    onClick={() => {
+                      resetLocalForm()
+                      setIsReapplyMode(true)
+                    }}
+                  >
                     {safeT(
-                      'homePage.auth.accountManagement.brokerVerification.rejectedMessage',
-                      'Your previous submission was rejected. Please re-apply with new documents.',
+                      'homePage.auth.accountManagement.brokerVerification.reapply',
+                      'Re-apply with New Documents',
                     )}
+                  </Button>
+                )}
+              </div>
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {hasSubmittedDocuments && (
+        <section className='space-y-3 rounded-2xl border p-4 sm:p-5'>
+          <div>
+            <div>
+              <h4 className='text-sm font-semibold'>
+                {safeT(
+                  'homePage.auth.accountManagement.brokerVerification.submittedDocsTitle',
+                  'Submitted Documents',
+                )}
+              </h4>
+            </div>
+          </div>
+
+          <div className='grid grid-cols-1 gap-3 md:grid-cols-3'>
+            {documents.map((document) => {
+              const loadFailed = Boolean(docLoadError[document.key])
+
+              return (
+                <div
+                  key={document.key}
+                  className='space-y-2 rounded-xl border p-3'
+                >
+                  <p className='text-xs font-medium text-muted-foreground'>
+                    {document.label}
                   </p>
 
-                  {rejectionReason && (
-                    <div className='rounded-lg border border-amber-300/90 bg-amber-50/90 px-3 py-2.5 shadow-sm dark:border-amber-700/70 dark:bg-amber-950/40'>
-                      <div className='space-y-1'>
-                        <p className='text-xs font-semibold text-amber-800 dark:text-amber-200'>
-                          {safeT(
-                            'homePage.auth.accountManagement.brokerVerification.rejectionReasonLabel',
-                            'Reason:',
-                          )}
-                        </p>
-                        <p className='break-words text-sm font-medium leading-relaxed text-amber-950 dark:text-amber-50'>
-                          {rejectionReason}
-                        </p>
-                      </div>
+                  {document.url && !loadFailed ? (
+                    <a
+                      href={document.url}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='block overflow-hidden rounded-lg border'
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={document.url}
+                        alt={document.label}
+                        className='h-36 w-full object-cover'
+                        onError={() =>
+                          setDocLoadError((prev) => ({
+                            ...prev,
+                            [document.key]: true,
+                          }))
+                        }
+                      />
+                    </a>
+                  ) : (
+                    <div className='flex h-36 items-center justify-center rounded-lg border bg-muted/30 px-2 text-center text-xs text-muted-foreground'>
+                      {safeT(
+                        'homePage.auth.accountManagement.brokerVerification.docUnavailable',
+                        'Document preview unavailable. Please refresh status.',
+                      )}
                     </div>
                   )}
-
-                  {!isReapplyMode && (
-                    <Button
-                      type='button'
-                      variant='outline'
-                      size='sm'
-                      onClick={() => {
-                        resetLocalForm()
-                        setIsReapplyMode(true)
-                      }}
-                    >
-                      {safeT(
-                        'homePage.auth.accountManagement.brokerVerification.reapply',
-                        'Re-apply with New Documents',
-                      )}
-                    </Button>
-                  )}
                 </div>
-              )}
-            </AlertDescription>
-          </Alert>
-        )}
+              )
+            })}
+          </div>
 
-        {hasSubmittedDocuments && (
-          <section className='space-y-3 rounded-2xl border p-4 sm:p-5'>
-            <div>
-              <div>
-                <h4 className='text-sm font-semibold'>
-                  {safeT(
-                    'homePage.auth.accountManagement.brokerVerification.submittedDocsTitle',
-                    'Submitted Documents',
+          {hasPreviewLoadError && (
+            <Alert className='border-amber-300/80 bg-transparent text-amber-900 dark:text-amber-200'>
+              <AlertCircle className='size-4' />
+              <AlertDescription>
+                {safeT(
+                  'homePage.auth.accountManagement.brokerVerification.docExpiredHint',
+                  'One or more document URLs may be expired. Refresh status to request fresh links.',
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+        </section>
+      )}
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className='space-y-5 sm:space-y-6'>
+          <section
+            ref={section1Ref}
+            className='space-y-4 rounded-2xl border p-4 sm:p-5'
+          >
+            <div className='flex items-start justify-between gap-3'>
+              <div className='space-y-1'>
+                <h4 className='text-base font-semibold'>
+                  {t(
+                    'homePage.auth.accountManagement.brokerVerification.section1Title',
                   )}
                 </h4>
+                <p className='text-sm text-muted-foreground'>
+                  {t(
+                    'homePage.auth.accountManagement.brokerVerification.section1Description',
+                  )}
+                </p>
               </div>
+              <span className='shrink-0 rounded-full border px-2 py-0.5 text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground'>
+                Step 1
+              </span>
             </div>
 
-            <div className='grid grid-cols-1 gap-3 md:grid-cols-3'>
-              {documents.map((document) => {
-                const loadFailed = Boolean(docLoadError[document.key])
-
-                return (
-                  <div
-                    key={document.key}
-                    className='space-y-2 rounded-xl border p-3'
-                  >
-                    <p className='text-xs font-medium text-muted-foreground'>
-                      {document.label}
-                    </p>
-
-                    {document.url && !loadFailed ? (
-                      <a
-                        href={document.url}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='block overflow-hidden rounded-lg border'
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={document.url}
-                          alt={document.label}
-                          className='h-36 w-full object-cover'
-                          onError={() =>
-                            setDocLoadError((prev) => ({
-                              ...prev,
-                              [document.key]: true,
-                            }))
-                          }
-                        />
-                      </a>
-                    ) : (
-                      <div className='flex h-36 items-center justify-center rounded-lg border bg-muted/30 px-2 text-center text-xs text-muted-foreground'>
-                        {safeT(
-                          'homePage.auth.accountManagement.brokerVerification.docUnavailable',
-                          'Document preview unavailable. Please refresh status.',
-                        )}
-                      </div>
-                    )}
-                  </div>
+            <UploadField
+              label={t(
+                'homePage.auth.accountManagement.brokerVerification.certificateLabel',
+              )}
+              helperText={t(
+                'homePage.auth.accountManagement.brokerVerification.uploadCta',
+              )}
+              file={certificateFile}
+              preview={certificatePreview}
+              isUploading={uploadState.certificate.isUploading}
+              uploadProgress={uploadState.certificate.progress}
+              uploaded={Boolean(mediaIds.certificate)}
+              uploadingText={safeT(
+                'homePage.auth.accountManagement.brokerVerification.uploading',
+                'Uploading...',
+              )}
+              uploadedText={safeT(
+                'homePage.auth.accountManagement.brokerVerification.uploaded',
+                'Uploaded',
+              )}
+              retryText={safeT(
+                'homePage.auth.accountManagement.brokerVerification.retryUpload',
+                'Retry upload',
+              )}
+              invalid={
+                certificateError || Boolean(uploadState.certificate.error)
+              }
+              errorText={
+                uploadState.certificate.error ||
+                (certificateError
+                  ? t(
+                      'homePage.auth.accountManagement.brokerVerification.errors.certificateRequired',
+                    )
+                  : undefined)
+              }
+              onRetryUpload={() => {
+                if (!certificateFile) return
+                void uploadDocument('certificate', certificateFile).catch(
+                  () => undefined,
                 )
-              })}
+              }}
+              onFileChange={handleCertificateChange}
+            />
+          </section>
+
+          <section
+            ref={section2Ref}
+            className='space-y-4 rounded-2xl border p-4 sm:p-5'
+          >
+            <div className='flex items-start justify-between gap-3'>
+              <div className='space-y-1'>
+                <h4 className='text-base font-semibold'>
+                  {t(
+                    'homePage.auth.accountManagement.brokerVerification.section2Title',
+                  )}
+                </h4>
+                <p className='text-sm text-muted-foreground'>
+                  {t(
+                    'homePage.auth.accountManagement.brokerVerification.section2Description',
+                  )}
+                </p>
+              </div>
+              <span className='shrink-0 rounded-full border px-2 py-0.5 text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground'>
+                Step 2
+              </span>
             </div>
 
-            {hasPreviewLoadError && (
+            {!protectedSectionEnabled && (
               <Alert className='border-amber-300/80 bg-transparent text-amber-900 dark:text-amber-200'>
                 <AlertCircle className='size-4' />
-                <AlertDescription>
-                  {safeT(
-                    'homePage.auth.accountManagement.brokerVerification.docExpiredHint',
-                    'One or more document URLs may be expired. Refresh status to request fresh links.',
+                <AlertTitle>
+                  {t(
+                    'homePage.auth.accountManagement.brokerVerification.personalInfoIncompleteTitle',
                   )}
+                </AlertTitle>
+                <AlertDescription>
+                  <p>
+                    {t(
+                      'homePage.auth.accountManagement.brokerVerification.personalInfoIncompleteDescription',
+                    )}
+                  </p>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    onClick={onRequirePersonalInfo}
+                    className='mt-2'
+                  >
+                    {t(
+                      'homePage.auth.accountManagement.brokerVerification.goToPersonalInfo',
+                    )}
+                  </Button>
                 </AlertDescription>
               </Alert>
             )}
-          </section>
-        )}
 
-        {showForm && (
-          <form onSubmit={handleSubmit} className='space-y-5 sm:space-y-6'>
-            <section
-              ref={section1Ref}
-              className='space-y-4 rounded-2xl border p-4 sm:p-5'
-            >
-              <div className='flex items-start justify-between gap-3'>
-                <div className='space-y-1'>
-                  <h4 className='text-base font-semibold'>
-                    {t(
-                      'homePage.auth.accountManagement.brokerVerification.section1Title',
-                    )}
-                  </h4>
-                  <p className='text-sm text-muted-foreground'>
-                    {t(
-                      'homePage.auth.accountManagement.brokerVerification.section1Description',
-                    )}
-                  </p>
-                </div>
-                <span className='shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground'>
-                  Step 1
-                </span>
-              </div>
+            <p className='inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs text-muted-foreground'>
+              <Upload className='size-3.5' />
+              {t(
+                'homePage.auth.accountManagement.brokerVerification.uploadHint',
+              )}
+            </p>
 
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5'>
               <UploadField
                 label={t(
-                  'homePage.auth.accountManagement.brokerVerification.certificateLabel',
+                  'homePage.auth.accountManagement.brokerVerification.idFrontLabel',
                 )}
                 helperText={t(
                   'homePage.auth.accountManagement.brokerVerification.uploadCta',
                 )}
-                file={certificateFile}
-                preview={certificatePreview}
-                isUploading={uploadState.certificate.isUploading}
-                uploadProgress={uploadState.certificate.progress}
-                uploaded={Boolean(mediaIds.certificate)}
+                file={idFrontFile}
+                preview={idFrontPreview}
+                isUploading={uploadState.idFront.isUploading}
+                uploadProgress={uploadState.idFront.progress}
+                uploaded={Boolean(mediaIds.idFront)}
                 uploadingText={safeT(
                   'homePage.auth.accountManagement.brokerVerification.uploading',
                   'Uploading...',
@@ -1081,215 +1175,110 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
                   'homePage.auth.accountManagement.brokerVerification.retryUpload',
                   'Retry upload',
                 )}
-                invalid={
-                  certificateError || Boolean(uploadState.certificate.error)
-                }
+                invalid={idFrontError || Boolean(uploadState.idFront.error)}
                 errorText={
-                  uploadState.certificate.error ||
-                  (certificateError
+                  uploadState.idFront.error ||
+                  (idFrontError
                     ? t(
-                        'homePage.auth.accountManagement.brokerVerification.errors.certificateRequired',
+                        'homePage.auth.accountManagement.brokerVerification.errors.idImagesRequired',
                       )
                     : undefined)
                 }
+                disabled={!protectedSectionEnabled}
                 onRetryUpload={() => {
-                  if (!certificateFile) return
-                  void uploadDocument('certificate', certificateFile).catch(
+                  if (!idFrontFile) return
+                  void uploadDocument('idFront', idFrontFile).catch(
                     () => undefined,
                   )
                 }}
-                onFileChange={handleCertificateChange}
+                onFileChange={handleIdFrontChange}
               />
-            </section>
-
-            <section
-              ref={section2Ref}
-              className='space-y-4 rounded-2xl border p-4 sm:p-5'
-            >
-              <div className='flex items-start justify-between gap-3'>
-                <div className='space-y-1'>
-                  <h4 className='text-base font-semibold'>
-                    {t(
-                      'homePage.auth.accountManagement.brokerVerification.section2Title',
-                    )}
-                  </h4>
-                  <p className='text-sm text-muted-foreground'>
-                    {t(
-                      'homePage.auth.accountManagement.brokerVerification.section2Description',
-                    )}
-                  </p>
-                </div>
-                <span className='shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground'>
-                  Step 2
-                </span>
-              </div>
-
-              {!protectedSectionEnabled && (
-                <Alert className='border-amber-300/80 bg-transparent text-amber-900 dark:text-amber-200'>
-                  <AlertCircle className='size-4' />
-                  <AlertTitle>
-                    {t(
-                      'homePage.auth.accountManagement.brokerVerification.personalInfoIncompleteTitle',
-                    )}
-                  </AlertTitle>
-                  <AlertDescription>
-                    <p>
-                      {t(
-                        'homePage.auth.accountManagement.brokerVerification.personalInfoIncompleteDescription',
-                      )}
-                    </p>
-                    <Button
-                      type='button'
-                      variant='outline'
-                      size='sm'
-                      onClick={onRequirePersonalInfo}
-                      className='mt-2'
-                    >
-                      {t(
-                        'homePage.auth.accountManagement.brokerVerification.goToPersonalInfo',
-                      )}
-                    </Button>
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              <p className='inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs text-muted-foreground'>
-                <Upload className='size-3.5' />
-                {t(
-                  'homePage.auth.accountManagement.brokerVerification.uploadHint',
+              <UploadField
+                label={t(
+                  'homePage.auth.accountManagement.brokerVerification.idBackLabel',
                 )}
-              </p>
-
-              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5'>
-                <UploadField
-                  label={t(
-                    'homePage.auth.accountManagement.brokerVerification.idFrontLabel',
-                  )}
-                  helperText={t(
-                    'homePage.auth.accountManagement.brokerVerification.uploadCta',
-                  )}
-                  file={idFrontFile}
-                  preview={idFrontPreview}
-                  isUploading={uploadState.idFront.isUploading}
-                  uploadProgress={uploadState.idFront.progress}
-                  uploaded={Boolean(mediaIds.idFront)}
-                  uploadingText={safeT(
-                    'homePage.auth.accountManagement.brokerVerification.uploading',
-                    'Uploading...',
-                  )}
-                  uploadedText={safeT(
-                    'homePage.auth.accountManagement.brokerVerification.uploaded',
-                    'Uploaded',
-                  )}
-                  retryText={safeT(
-                    'homePage.auth.accountManagement.brokerVerification.retryUpload',
-                    'Retry upload',
-                  )}
-                  invalid={idFrontError || Boolean(uploadState.idFront.error)}
-                  errorText={
-                    uploadState.idFront.error ||
-                    (idFrontError
-                      ? t(
-                          'homePage.auth.accountManagement.brokerVerification.errors.idImagesRequired',
-                        )
-                      : undefined)
-                  }
-                  disabled={!protectedSectionEnabled}
-                  onRetryUpload={() => {
-                    if (!idFrontFile) return
-                    void uploadDocument('idFront', idFrontFile).catch(
-                      () => undefined,
-                    )
-                  }}
-                  onFileChange={handleIdFrontChange}
-                />
-                <UploadField
-                  label={t(
-                    'homePage.auth.accountManagement.brokerVerification.idBackLabel',
-                  )}
-                  helperText={t(
-                    'homePage.auth.accountManagement.brokerVerification.uploadCta',
-                  )}
-                  file={idBackFile}
-                  preview={idBackPreview}
-                  isUploading={uploadState.idBack.isUploading}
-                  uploadProgress={uploadState.idBack.progress}
-                  uploaded={Boolean(mediaIds.idBack)}
-                  uploadingText={safeT(
-                    'homePage.auth.accountManagement.brokerVerification.uploading',
-                    'Uploading...',
-                  )}
-                  uploadedText={safeT(
-                    'homePage.auth.accountManagement.brokerVerification.uploaded',
-                    'Uploaded',
-                  )}
-                  retryText={safeT(
-                    'homePage.auth.accountManagement.brokerVerification.retryUpload',
-                    'Retry upload',
-                  )}
-                  invalid={idBackError || Boolean(uploadState.idBack.error)}
-                  errorText={
-                    uploadState.idBack.error ||
-                    (idBackError
-                      ? t(
-                          'homePage.auth.accountManagement.brokerVerification.errors.idImagesRequired',
-                        )
-                      : undefined)
-                  }
-                  disabled={!protectedSectionEnabled}
-                  onRetryUpload={() => {
-                    if (!idBackFile) return
-                    void uploadDocument('idBack', idBackFile).catch(
-                      () => undefined,
-                    )
-                  }}
-                  onFileChange={handleIdBackChange}
-                />
-              </div>
-
-              <p className='text-xs text-muted-foreground'>
-                {anyUploadInProgress
-                  ? safeT(
-                      'homePage.auth.accountManagement.brokerVerification.uploadInProgress',
-                      'Documents are still uploading. Please wait for all uploads to finish.',
-                    )
-                  : allUploadsCompleted
-                    ? safeT(
-                        'homePage.auth.accountManagement.brokerVerification.readyToSubmit',
-                        'All documents uploaded. You can submit your application now.',
+                helperText={t(
+                  'homePage.auth.accountManagement.brokerVerification.uploadCta',
+                )}
+                file={idBackFile}
+                preview={idBackPreview}
+                isUploading={uploadState.idBack.isUploading}
+                uploadProgress={uploadState.idBack.progress}
+                uploaded={Boolean(mediaIds.idBack)}
+                uploadingText={safeT(
+                  'homePage.auth.accountManagement.brokerVerification.uploading',
+                  'Uploading...',
+                )}
+                uploadedText={safeT(
+                  'homePage.auth.accountManagement.brokerVerification.uploaded',
+                  'Uploaded',
+                )}
+                retryText={safeT(
+                  'homePage.auth.accountManagement.brokerVerification.retryUpload',
+                  'Retry upload',
+                )}
+                invalid={idBackError || Boolean(uploadState.idBack.error)}
+                errorText={
+                  uploadState.idBack.error ||
+                  (idBackError
+                    ? t(
+                        'homePage.auth.accountManagement.brokerVerification.errors.idImagesRequired',
                       )
-                    : safeT(
-                        'homePage.auth.accountManagement.brokerVerification.uploadRequiredHint',
-                        'Upload all required documents to enable submission.',
-                      )}
-              </p>
-            </section>
-
-            <div className='flex justify-end pt-1'>
-              <Button
-                type='submit'
-                disabled={
-                  isSubmitting ||
-                  registerMutation.isPending ||
-                  anyUploadInProgress ||
-                  !allUploadsCompleted
+                    : undefined)
                 }
-                className='w-full sm:min-w-[190px] sm:w-auto'
-              >
-                <IdCard className='size-4 mr-1' />
-                {isSubmitting || registerMutation.isPending
-                  ? t(
-                      'homePage.auth.accountManagement.brokerVerification.submitting',
-                    )
-                  : t(
-                      'homePage.auth.accountManagement.brokerVerification.submit',
-                    )}
-              </Button>
+                disabled={!protectedSectionEnabled}
+                onRetryUpload={() => {
+                  if (!idBackFile) return
+                  void uploadDocument('idBack', idBackFile).catch(
+                    () => undefined,
+                  )
+                }}
+                onFileChange={handleIdBackChange}
+              />
             </div>
-          </form>
-        )}
-      </div>
-    </Card>
+
+            <p className='text-xs text-muted-foreground'>
+              {anyUploadInProgress
+                ? safeT(
+                    'homePage.auth.accountManagement.brokerVerification.uploadInProgress',
+                    'Documents are still uploading. Please wait for all uploads to finish.',
+                  )
+                : allUploadsCompleted
+                  ? safeT(
+                      'homePage.auth.accountManagement.brokerVerification.readyToSubmit',
+                      'All documents uploaded. You can submit your application now.',
+                    )
+                  : safeT(
+                      'homePage.auth.accountManagement.brokerVerification.uploadRequiredHint',
+                      'Upload all required documents to enable submission.',
+                    )}
+            </p>
+          </section>
+
+          <div className='flex justify-end pt-1'>
+            <Button
+              type='submit'
+              disabled={
+                isSubmitting ||
+                registerMutation.isPending ||
+                anyUploadInProgress ||
+                !allUploadsCompleted
+              }
+              className='w-full sm:min-w-[190px] sm:w-auto'
+            >
+              <IdCard className='size-4 mr-1' />
+              {isSubmitting || registerMutation.isPending
+                ? t(
+                    'homePage.auth.accountManagement.brokerVerification.submitting',
+                  )
+                : t(
+                    'homePage.auth.accountManagement.brokerVerification.submit',
+                  )}
+            </Button>
+          </div>
+        </form>
+      )}
+    </div>
   )
 }
 

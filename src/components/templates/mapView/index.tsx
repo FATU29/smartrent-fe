@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/atoms/button'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { MEDIA_AT_LG } from '@/constants/breakpoints'
 import { Loader2, ExternalLink, ChevronsRight, X } from 'lucide-react'
 import { ENV } from '@/constants/env'
 import { buildApartmentDetailRoute } from '@/constants/route'
@@ -83,7 +84,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   t,
   tCommon,
 }) => {
-  const isDesktopCard = useMediaQuery('(min-width: 1024px)') ?? false
+  const isDesktopCard = useMediaQuery(MEDIA_AT_LG) ?? false
 
   return (
     <div className='flex flex-col h-full bg-background overflow-hidden'>
@@ -216,7 +217,7 @@ const MapContent: React.FC<MapContentProps> = ({
   tCommon,
 }) => {
   const map = useMap()
-  const isDesktopCard = useMediaQuery('(min-width: 1024px)') ?? false
+  const isDesktopCard = useMediaQuery(MEDIA_AT_LG) ?? false
   const isProgrammaticPanRef = useRef(false)
   const panIdleListenerRef = useRef<{ remove: () => void } | null>(null)
   const panSuppressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(

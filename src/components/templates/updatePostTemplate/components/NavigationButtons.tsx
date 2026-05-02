@@ -3,6 +3,16 @@ import { Button } from '@/components/atoms/button'
 import { Card } from '@/components/atoms/card'
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { cn } from '@/lib/utils'
+
+// Same primary-CTA shape as the create-post NavigationButtons.
+const PRIMARY_CTA_CLASSES = cn(
+  'group w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 gap-2 text-base font-semibold',
+  'bg-gradient-to-r from-primary to-blue-600 hover:to-blue-700',
+  'shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35',
+  'transition-all duration-200',
+  'disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none',
+)
 
 interface NavigationButtonsProps {
   currentStep: number
@@ -34,9 +44,9 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
           <Button
             variant='outline'
             onClick={onBack}
-            className='w-full sm:w-auto order-2 sm:order-1 h-12 px-6 sm:px-8'
+            className='w-full sm:w-auto order-2 sm:order-1 h-12 px-6 sm:px-8 gap-2'
           >
-            <ArrowLeft className='w-4 h-4 mr-2' />
+            <ArrowLeft className='size-4' aria-hidden='true' />
             {t('back')}
           </Button>
         )}
@@ -45,18 +55,21 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
           <Button
             onClick={onNext}
             disabled={!canProceed}
-            className='w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
+            className={PRIMARY_CTA_CLASSES}
           >
             {t('next')}
-            <ArrowRight className='w-4 h-4 ml-2' />
+            <ArrowRight
+              className='size-4 transition-transform duration-200 group-hover:translate-x-0.5'
+              aria-hidden='true'
+            />
           </Button>
         ) : (
           <Button
             onClick={onSubmit}
             disabled={!canProceed}
-            className='w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed'
+            className={PRIMARY_CTA_CLASSES}
           >
-            <Save className='w-4 h-4 mr-2' />
+            <Save className='size-4' aria-hidden='true' />
             {tUpdate('updateListing')}
           </Button>
         )}

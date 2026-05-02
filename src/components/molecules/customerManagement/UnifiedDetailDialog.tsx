@@ -22,6 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
 import { Badge } from '@/components/atoms/badge'
 import { Card } from '@/components/atoms/card'
 import { Dialog, DialogContent } from '@/components/atoms/dialog'
+import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 import {
   useUsersWhoClickedListing,
@@ -238,10 +239,14 @@ export default function UnifiedDetailDialog({
 
               {/* Contact Info */}
               <Card className='p-4 border-l-4 border-primary'>
-                <h3 className='text-base font-semibold mb-4 flex items-center gap-2'>
+                <Typography
+                  variant='h6'
+                  as='h3'
+                  className='mb-4 flex items-center gap-2'
+                >
                   <Phone className='h-5 w-5 text-primary' />
                   {t('dialog.customerDetail.contactInfo')}
-                </h3>
+                </Typography>
 
                 <div className='space-y-3'>
                   {/* Email */}
@@ -278,7 +283,7 @@ export default function UnifiedDetailDialog({
                           {customer.contactPhoneVerified && (
                             <Badge
                               variant='outline'
-                              className='text-[10px] h-5 px-1.5 border-primary text-primary'
+                              className='text-2xs h-5 px-1.5 border-primary text-primary'
                             >
                               <CheckCircle2 className='h-2.5 w-2.5 mr-0.5' />
                               {t('table.verified')}
@@ -305,11 +310,15 @@ export default function UnifiedDetailDialog({
 
               {/* Click History */}
               <Card className='p-4 border-l-4 border-primary'>
-                <h3 className='text-base font-semibold mb-4 flex items-center gap-2'>
+                <Typography
+                  variant='h6'
+                  as='h3'
+                  className='mb-4 flex items-center gap-2'
+                >
                   <Calendar className='h-5 w-5 text-primary' />
                   {t('dialog.customerDetail.clickHistory')} (
                   {customer.clickedListings.length})
-                </h3>
+                </Typography>
 
                 <div className='space-y-3'>
                   {customer.clickedListings.map((listingItem, index) => {
@@ -398,10 +407,14 @@ export default function UnifiedDetailDialog({
 
               {/* Interested Users List */}
               <Card className='p-4 border-l-4 border-primary'>
-                <h3 className='text-base font-semibold mb-4 flex items-center gap-2'>
+                <Typography
+                  variant='h6'
+                  as='h3'
+                  className='mb-4 flex items-center gap-2'
+                >
                   <Users className='h-5 w-5 text-primary' />
                   {t('dialog.listingDetail.interestedUsers')}
-                </h3>
+                </Typography>
 
                 {loadingUsers ? (
                   <div className='flex items-center justify-center py-12'>

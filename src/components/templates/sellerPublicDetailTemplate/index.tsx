@@ -24,6 +24,7 @@ import {
   TabsTrigger,
 } from '@/components/atoms/tabs'
 import { Typography } from '@/components/atoms/typography'
+import { PageContainer } from '@/components/atoms/pageContainer'
 import PropertyCard from '@/components/molecules/propertyCard'
 import SellerPublicProfileCard from '@/components/molecules/sellerPublicProfileCard'
 import SellerPublicListings from '@/components/organisms/sellerPublicListings'
@@ -33,6 +34,7 @@ import { AlertCircle } from 'lucide-react'
 import { buildApartmentDetailRoute } from '@/constants/route'
 import Link from 'next/link'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { MEDIA_BELOW_MD } from '@/constants/breakpoints'
 
 interface SellerListingsSection {
   vipType: VipType
@@ -78,7 +80,7 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
   onRetryAll,
 }) => {
   const t = useTranslations('sellerDetailPage')
-  const isMobile = useMediaQuery('(max-width: 767px)')
+  const isMobile = useMediaQuery(MEDIA_BELOW_MD)
 
   const [activeTier, setActiveTier] = React.useState<VipType>('DIAMOND')
   const sectionRefs = React.useRef<
@@ -149,7 +151,7 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
   )
 
   return (
-    <div className='mx-auto w-full max-w-6xl px-4 py-6'>
+    <PageContainer width='content' className='py-6'>
       {/* Page heading */}
       <div className='mb-6'>
         <Typography variant='h2' className='text-xl md:text-2xl'>
@@ -401,7 +403,7 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
           </section>
         </div>
       </div>
-    </div>
+    </PageContainer>
   )
 }
 

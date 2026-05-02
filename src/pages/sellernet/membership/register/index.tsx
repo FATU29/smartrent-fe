@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import type { NextPageWithLayout } from '@/types/next-page'
-import SellernetLayout from '@/components/layouts/sellernet/SellernetLayout'
+import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import MembershipRegisterTemplate from '@/components/templates/membershipRegisterTemplate'
 import { useTranslations } from 'next-intl'
@@ -21,5 +21,5 @@ const MembershipRegisterPage: NextPageWithLayout = () => {
 export default MembershipRegisterPage
 
 MembershipRegisterPage.getLayout = (page: React.ReactNode) => (
-  <SellernetLayout>{page}</SellernetLayout>
+  <SellerLayout>{page}</SellerLayout>
 )
