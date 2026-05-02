@@ -57,6 +57,15 @@ export const useChatSession = (initialMessage: TChatMessage) => {
     })
   }, [])
 
+  const updateMessage = useCallback(
+    (id: string, updater: (msg: TChatMessage) => TChatMessage) => {
+      setSessionMessages((prev) =>
+        prev.map((m) => (m.id === id ? updater(m) : m)),
+      )
+    },
+    [],
+  )
+
   const setMessages = useCallback((messages: TChatMessage[]) => {
     setSessionMessages(messages)
   }, [])
@@ -64,6 +73,7 @@ export const useChatSession = (initialMessage: TChatMessage) => {
   return {
     messages: sessionMessages,
     addMessage,
+    updateMessage,
     setMessages,
     clearSession,
   }

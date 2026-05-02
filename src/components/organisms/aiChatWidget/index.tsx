@@ -35,12 +35,14 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
     messages,
     isLoading,
     isTyping,
+    streamingStatus,
     inputValue,
     scrollRef,
     bottomRef,
     isAtBottom,
     scrollToBottom,
     sendMessage,
+    viewListingDetail,
     handleInputChange,
   } = useChatLogic()
 
@@ -139,12 +141,14 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                 inputValue={inputValue}
                 isLoading={isLoading}
                 isTyping={isTyping}
+                streamingStatus={streamingStatus}
                 scrollRef={scrollRef}
                 bottomRef={bottomRef}
                 isAtBottom={isAtBottom}
                 onScrollToBottom={scrollToBottom}
                 onInputChange={handleInputChange}
                 onSendMessage={sendMessage}
+                onViewListingDetail={viewListingDetail}
                 isMobile
                 className='flex-1 min-h-0'
               />
@@ -195,12 +199,14 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                   inputValue={inputValue}
                   isLoading={isLoading}
                   isTyping={isTyping}
+                  streamingStatus={streamingStatus}
                   scrollRef={scrollRef}
                   bottomRef={bottomRef}
                   isAtBottom={isAtBottom}
                   onScrollToBottom={scrollToBottom}
                   onInputChange={handleInputChange}
                   onSendMessage={sendMessage}
+                  onViewListingDetail={viewListingDetail}
                   isMobile={false}
                   className='flex-1 min-h-0'
                 />

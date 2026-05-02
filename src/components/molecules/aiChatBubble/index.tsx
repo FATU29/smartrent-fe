@@ -25,6 +25,7 @@ import AiChatContactCard from '@/components/molecules/aiChatContactCard'
 type TAiChatBubbleProps = {
   message: TChatMessage
   className?: string
+  onViewListingDetail?: (listingId: number) => void
 }
 
 // Convert [Mã tin: xxx] to clickable links
@@ -195,7 +196,11 @@ const dialogMarkdownComponents: Components = {
 
 const INITIAL_SEARCH_RESULTS = 3
 
-const AiChatBubble: FC<TAiChatBubbleProps> = ({ message, className }) => {
+const AiChatBubble: FC<TAiChatBubbleProps> = ({
+  message,
+  className,
+  onViewListingDetail,
+}) => {
   const isBot = message.sender === 'bot'
   const hasListings = isBot && message.listings && message.listings.length > 0
   const t = useTranslations('chat')
@@ -256,30 +261,34 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({ message, className }) => {
             : 'items-end max-w-[80%] md:max-w-[75%]',
         )}
       >
-        {/* Message Bubble */}
-        <div
-          className={cn(
-            'rounded-2xl px-3 py-2 shadow-sm transition-all duration-200 md:px-4',
-            isBot
-              ? 'bg-muted text-foreground hover:bg-muted/80 break-words overflow-hidden'
-              : 'bg-primary text-primary-foreground hover:bg-primary/90 overflow-hidden',
-          )}
-        >
-          {isBot ? (
-            <div className='prose prose-sm dark:prose-invert max-w-none break-words text-sm leading-relaxed [&>p]:m-0 [&>ul]:my-1 [&>ol]:my-1 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm [&>h1]:font-semibold [&>h2]:font-semibold [&>h3]:font-semibold [&>h1]:my-1 [&>h2]:my-1 [&>h3]:my-1'>
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={bubbleMarkdownComponents}
-              >
-                {processedContent}
-              </ReactMarkdown>
-            </div>
-          ) : (
-            <p className='whitespace-pre-wrap break-words text-sm leading-relaxed'>
-              {message.content}
-            </p>
-          )}
-        </div>
+        {/* Message Bubble — hide for bot when there's no text (e.g. agent
+            returned only listings without a prose answer). User bubbles
+            always render. */}
+        {(!isBot || message.content.trim().length > 0) && (
+          <div
+            className={cn(
+              'rounded-2xl px-3 py-2 shadow-sm transition-all duration-200 md:px-4',
+              isBot
+                ? 'bg-muted text-foreground hover:bg-muted/80 break-words overflow-hidden'
+                : 'bg-primary text-primary-foreground hover:bg-primary/90 overflow-hidden',
+            )}
+          >
+            {isBot ? (
+              <div className='prose prose-sm dark:prose-invert max-w-none break-words text-sm leading-relaxed [&>p]:m-0 [&>ul]:my-1 [&>ol]:my-1 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm [&>h1]:font-semibold [&>h2]:font-semibold [&>h3]:font-semibold [&>h1]:my-1 [&>h2]:my-1 [&>h3]:my-1'>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={bubbleMarkdownComponents}
+                >
+                  {processedContent}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <p className='whitespace-pre-wrap break-words text-sm leading-relaxed'>
+                {message.content}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Expand button - shown when message contains a markdown table */}
         {containsTable && (
@@ -318,6 +327,7 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({ message, className }) => {
                       key={listing.listingId}
                       listing={listing}
                       compact
+                      onViewDetail={onViewListingDetail}
                     />
                   ))}
                 </div>
@@ -344,7 +354,11 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({ message, className }) => {
             {message.listings?.map((listing) => (
               <React.Fragment key={listing.listingId}>
                 {listing.user && <AiChatContactCard listing={listing} />}
-                <CardListingAIDetail listing={listing} compact />
+                <CardListingAIDetail
+                  listing={listing}
+                  compact
+                  onViewDetail={onViewListingDetail}
+                />
               </React.Fragment>
             ))}
           </div>

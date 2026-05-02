@@ -1,12 +1,15 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { AiService } from '@/api/services/ai.service'
+import { streamChat } from '@/api/services/chatbot.service'
 import type {
   ChatMessage,
   ChatListing,
   LastListingRef,
+  ChatStreamStatusPayload,
 } from '@/api/types/ai.type'
+import { ENV } from '@/constants'
 import { useChatSession } from './useChatSession'
 import { useChatScroll } from './useChatScroll'
 import { useAuth } from '@/hooks/useAuth'
@@ -31,6 +34,11 @@ export type TChatState = {
   isLoading: boolean
   isTyping: boolean
 }
+
+export type TStreamingStatus = {
+  phase: ChatStreamStatusPayload['phase']
+  tool?: string
+} | null
 
 function buildLastListings(messages: TChatMessage[]): LastListingRef[] {
   for (let i = messages.length - 1; i >= 0; i--) {
@@ -61,7 +69,7 @@ export const useChatLogic = () => {
   //Init use hook
   const locale = useLocale() as 'vi' | 'en'
   const t = useTranslations('aiChat')
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
 
   // Initialize with welcome message
   const initialMessage: TChatMessage = useMemo(
@@ -78,15 +86,33 @@ export const useChatLogic = () => {
   )
 
   // Use session storage for message persistence
-  const { messages, addMessage, clearSession } = useChatSession(initialMessage)
+  const { messages, addMessage, updateMessage, clearSession } =
+    useChatSession(initialMessage)
 
   //Init state hook
   const [isLoading, setIsLoading] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   const [inputValue, setInputValue] = useState('')
+  const [streamingStatus, setStreamingStatus] = useState<TStreamingStatus>(null)
+
+  const abortRef = useRef<AbortController | null>(null)
 
   const { scrollRef, bottomRef, isAtBottom, scrollToMessage, scrollToBottom } =
     useChatScroll()
+
+  // Mirror isAtBottom into a ref so streaming callbacks read the current value
+  // without re-creating sendMessage on every scroll change.
+  const isAtBottomRef = useRef(isAtBottom)
+  useEffect(() => {
+    isAtBottomRef.current = isAtBottom
+  }, [isAtBottom])
+
+  // Abort any in-flight stream on unmount
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort()
+    }
+  }, [])
 
   const generateMessageId = useCallback(() => {
     const timestamp = Date.now()
@@ -117,6 +143,9 @@ export const useChatLogic = () => {
         return
       }
 
+      // Cancel any prior in-flight stream before starting a new one
+      abortRef.current?.abort()
+
       const userMessage: TChatMessage = {
         id: generateMessageId(),
         content: trimmedContent,
@@ -129,6 +158,7 @@ export const useChatLogic = () => {
       setInputValue('')
       setIsLoading(true)
       setIsTyping(true)
+      setStreamingStatus(null)
 
       scrollToBottom()
 
@@ -147,11 +177,144 @@ export const useChatLogic = () => {
       // Build last_listings from the most recent bot message that had listings
       const lastListings = buildLastListings(messages)
 
-      try {
-        const response = await AiService.chat({
-          messages: conversationHistory,
-          ...(lastListings.length > 0 && { last_listings: lastListings }),
+      const requestPayload = {
+        messages: conversationHistory,
+        ...(lastListings.length > 0 && { last_listings: lastListings }),
+      }
+
+      if (ENV.CHAT_STREAMING_ENABLED) {
+        const controller = new AbortController()
+        abortRef.current = controller
+
+        const botMessageId = generateMessageId()
+        let botMessageAdded = false
+
+        // Scroll-follow: capture user's intent ONCE at stream start. Listen
+        // for wheel/touchmove to detect a real user-initiated scroll-up, then
+        // back off. rAF wraps the actual scrollTop write so we read
+        // scrollHeight AFTER React commits the latest delta.
+        const scrollContainer = scrollRef.current
+        let followBottom = isAtBottomRef.current
+        const handleUserScroll = () => {
+          followBottom = false
+        }
+        scrollContainer?.addEventListener('wheel', handleUserScroll, {
+          passive: true,
         })
+        scrollContainer?.addEventListener('touchmove', handleUserScroll, {
+          passive: true,
+        })
+        const teardownScrollFollow = () => {
+          scrollContainer?.removeEventListener('wheel', handleUserScroll)
+          scrollContainer?.removeEventListener('touchmove', handleUserScroll)
+        }
+        const followScrollToBottom = () => {
+          if (!followBottom || !scrollContainer) return
+          requestAnimationFrame(() => {
+            scrollContainer.scrollTop = scrollContainer.scrollHeight
+          })
+        }
+
+        const ensureBotMessage = () => {
+          if (botMessageAdded) return
+          botMessageAdded = true
+          addMessage({
+            id: botMessageId,
+            content: '',
+            sender: 'bot',
+            timestamp: new Date(),
+          })
+          setIsTyping(false)
+          scrollToMessage(botMessageId)
+        }
+
+        try {
+          await streamChat(
+            {
+              ...requestPayload,
+              user_id: user?.userId ?? null,
+            },
+            {
+              onStatus: (data) => {
+                setStreamingStatus({ phase: data.phase, tool: data.tool })
+              },
+              onTextDelta: (delta) => {
+                ensureBotMessage()
+                updateMessage(botMessageId, (m) => ({
+                  ...m,
+                  content: m.content + delta,
+                }))
+                followScrollToBottom()
+              },
+              onListings: (payload) => {
+                ensureBotMessage()
+                updateMessage(botMessageId, (m) => ({
+                  ...m,
+                  listings: payload.listings,
+                  totalCount: payload.totalCount ?? payload.listings.length,
+                  aiRankings: payload.aiRankings ?? [],
+                }))
+                followScrollToBottom()
+              },
+              onDone: (data) => {
+                ensureBotMessage()
+                const toolsUsed =
+                  data.tools_used ?? data.metadata?.tools_used ?? []
+                if (toolsUsed.length > 0) {
+                  updateMessage(botMessageId, (m) => ({ ...m, toolsUsed }))
+                }
+                setIsTyping(false)
+                setIsLoading(false)
+                setStreamingStatus(null)
+                teardownScrollFollow()
+              },
+              onError: (msg) => {
+                if (botMessageAdded) {
+                  updateMessage(botMessageId, (m) => ({
+                    ...m,
+                    content: m.content || msg || getChatErrorContent(locale, t),
+                  }))
+                } else {
+                  addMessage({
+                    id: botMessageId,
+                    content: msg || getChatErrorContent(locale, t),
+                    sender: 'bot',
+                    timestamp: new Date(),
+                  })
+                }
+                setIsTyping(false)
+                setIsLoading(false)
+                setStreamingStatus(null)
+                teardownScrollFollow()
+              },
+            },
+            controller.signal,
+          )
+        } catch (error: unknown) {
+          // Aborts are expected (user cancelled / new send / unmount).
+          if ((error as Error)?.name === 'AbortError') {
+            setIsTyping(false)
+            setIsLoading(false)
+            setStreamingStatus(null)
+            teardownScrollFollow()
+            return
+          }
+          // onError handler already updated UI for stream-level errors;
+          // anything reaching here is a fatal pre-stream/network failure.
+          if (isLoading) {
+            setIsTyping(false)
+            setIsLoading(false)
+            setStreamingStatus(null)
+          }
+          teardownScrollFollow()
+          console.error('[useChatLogic] Chat stream error:', error)
+        }
+        return
+      }
+
+      // Fallback: blocking JSON path
+      try {
+        const response = await AiService.chat(requestPayload)
 
         const chatResponse = response.data
 
@@ -226,10 +389,12 @@ export const useChatLogic = () => {
     [
       isLoading,
       isAuthenticated,
+      user?.userId,
       scrollToBottom,
       scrollToMessage,
       messages,
       addMessage,
+      updateMessage,
       generateMessageId,
       locale,
       t,
@@ -240,7 +405,33 @@ export const useChatLogic = () => {
     setInputValue(value)
   }, [])
 
+  // Triggers the agent's get_listing_detail tool by sending a natural-language
+  // query that includes the listingId in the [Mã tin: X] format the agent's
+  // system prompt recognizes. The detail then renders as a normal bot message
+  // inline in the chat instead of navigating away to /listing-detail/X.
+  const viewListingDetail = useCallback(
+    (listingId: number | string) => {
+      const query =
+        locale === 'vi'
+          ? `Xem chi tiết tin [Mã tin: ${listingId}]`
+          : `Show me details of listing [Mã tin: ${listingId}]`
+      sendMessage(query)
+    },
+    [locale, sendMessage],
+  )
+
+  const cancelStream = useCallback(() => {
+    abortRef.current?.abort()
+    abortRef.current = null
+    setIsTyping(false)
+    setIsLoading(false)
+    setStreamingStatus(null)
+  }, [])
+
   const clearMessages = useCallback(() => {
+    abortRef.current?.abort()
+    abortRef.current = null
+    setStreamingStatus(null)
     // Clear session storage and reset to initial message
     clearSession()
   }, [clearSession])
@@ -249,12 +440,15 @@ export const useChatLogic = () => {
     messages,
     isLoading,
     isTyping,
+    streamingStatus,
     inputValue,
     scrollRef,
     bottomRef,
     isAtBottom,
     scrollToBottom,
     sendMessage,
+    viewListingDetail,
+    cancelStream,
     handleInputChange,
     clearMessages,
   }

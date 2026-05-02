@@ -36,10 +36,12 @@ export const useChatScroll = () => {
     })
   }, [])
 
-  // Scroll to absolute bottom (for user messages + scroll-to-bottom button)
-  const scrollToBottom = useCallback(() => {
+  // Scroll to absolute bottom (for user messages + scroll-to-bottom button).
+  // Pass 'auto' for instant scroll during streaming so the view tracks new
+  // tokens without smooth-animation lag stacking up across deltas.
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
     requestAnimationFrame(() => {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+      bottomRef.current?.scrollIntoView({ behavior })
     })
   }, [])
 

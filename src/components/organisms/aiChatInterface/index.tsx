@@ -1,8 +1,10 @@
 import { FC, RefObject, useRef } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
 import { TChatMessage } from '@/hooks/useChatAi'
+import type { TStreamingStatus } from '@/hooks/useChatAi/useChatLogic'
+import { getToolLabel } from '@/utils/ai'
 
 import AiChatBubble from '@/components/molecules/aiChatBubble'
 import AiChatInput from '@/components/molecules/aiChatInput'
@@ -14,12 +16,14 @@ type TAiChatInterfaceProps = {
   inputValue: string
   isLoading: boolean
   isTyping: boolean
+  streamingStatus?: TStreamingStatus
   scrollRef: RefObject<HTMLDivElement | null>
   bottomRef: RefObject<HTMLDivElement | null>
   isAtBottom: boolean
   onScrollToBottom: () => void
   onInputChange: (value: string) => void
   onSendMessage: (value: string) => void
+  onViewListingDetail?: (listingId: number) => void
   isMobile?: boolean
   className?: string
 }
@@ -29,16 +33,24 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
   inputValue,
   isLoading,
   isTyping,
+  streamingStatus,
   scrollRef,
   bottomRef,
   isAtBottom,
   onScrollToBottom,
   onInputChange,
   onSendMessage,
+  onViewListingDetail,
   isMobile = false,
   className,
 }) => {
   const t = useTranslations('aiChat')
+  const locale = useLocale() as 'vi' | 'en'
+
+  const statusLabel =
+    streamingStatus?.phase === 'tool_call' && streamingStatus.tool
+      ? getToolLabel(streamingStatus.tool, locale)
+      : undefined
 
   // Track initial message count at mount to avoid animating restored messages
   const initialCountRef = useRef(messages.length)
@@ -90,14 +102,17 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
                         : undefined
                     }
                   >
-                    <AiChatBubble message={message} />
+                    <AiChatBubble
+                      message={message}
+                      onViewListingDetail={onViewListingDetail}
+                    />
                   </div>
                 )
               })}
 
               {isTyping && (
                 <div className='animate-in fade-in slide-in-from-bottom-2 duration-200'>
-                  <AiChatTypingIndicator />
+                  <AiChatTypingIndicator statusLabel={statusLabel} />
                 </div>
               )}
             </div>

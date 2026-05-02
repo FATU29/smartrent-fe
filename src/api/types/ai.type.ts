@@ -196,3 +196,54 @@ export interface ChatResponseData {
   metadata: ChatMetadata
   listings?: ChatListingsData
 }
+
+// Streaming chat (SSE) types — POST /api/v1/chat/stream on FastAPI host
+
+export interface ChatStreamRequest extends ChatRequest {
+  user_id?: string | null
+  auth_token?: string | null
+}
+
+export type ChatStreamStatusPhase = 'thinking' | 'tool_call' | 'tool_result'
+
+export interface ChatStreamStatusPayload {
+  phase: ChatStreamStatusPhase
+  round?: number
+  tool?: string
+  status?: 'success' | 'error'
+}
+
+export interface ChatStreamTextPayload {
+  delta: string
+}
+
+export interface ChatStreamListingsPayload {
+  listings: ChatListing[]
+  totalCount: number
+  selectedFromTotal?: number
+  currentPage?: number
+  pageSize?: number
+  totalPages?: number
+  aiRankings?: ListingRanking[]
+}
+
+export interface ChatStreamDonePayload {
+  metadata: {
+    model?: string
+    tools_used?: string[]
+    rag_context_injected?: boolean
+  }
+  tools_used?: string[]
+}
+
+export interface ChatStreamErrorPayload {
+  message: string
+}
+
+export interface ChatStreamHandlers {
+  onStatus?: (data: ChatStreamStatusPayload) => void
+  onTextDelta?: (delta: string) => void
+  onListings?: (payload: ChatStreamListingsPayload) => void
+  onDone?: (data: ChatStreamDonePayload) => void
+  onError?: (message: string) => void
+}
