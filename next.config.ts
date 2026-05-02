@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: DELOY_ENV === 'production',
   },
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts',
+      'date-fns',
+      'lodash',
+      '@radix-ui/react-icons',
+    ],
+  },
   images: {
     remotePatterns: IMAGE_REMOTE_HOST
       ? [
