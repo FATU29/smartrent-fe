@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button } from '@/components/atoms/button'
+import { Typography } from '@/components/atoms/typography'
 import { AlertTriangle } from 'lucide-react'
 
 interface ErrorBoundaryState {
@@ -55,9 +56,9 @@ function DefaultErrorFallback({
   return (
     <div className='flex flex-col items-center justify-center min-h-[200px] p-6 text-center'>
       <AlertTriangle className='h-12 w-12 text-destructive mb-4' />
-      <h3 className='text-lg font-semibold text-foreground mb-2'>
+      <Typography variant='h5' as='h3' className='text-foreground mb-2'>
         Something went wrong
-      </h3>
+      </Typography>
       <p className='text-muted-foreground mb-4'>
         {error?.message || 'Unable to load component. Please try again.'}
       </p>

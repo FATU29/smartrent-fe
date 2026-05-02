@@ -17,6 +17,11 @@ interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
     | 'large'
     | 'small'
     | 'muted'
+    | 'body'
+    | 'caption'
+    | 'overline'
+    | 'pageTitle'
+    | 'sectionTitle'
   as?: React.ElementType
 }
 
@@ -56,10 +61,18 @@ function getDefaultComponent(variant: TypographyProps['variant']) {
       return 'ul'
     case 'inlineCode':
       return 'code'
+    case 'caption':
+    case 'overline':
+      return 'span'
+    case 'pageTitle':
+      return 'h1'
+    case 'sectionTitle':
+      return 'h2'
     case 'lead':
     case 'large':
     case 'small':
     case 'muted':
+    case 'body':
     case 'p':
     default:
       return 'p'
@@ -96,6 +109,23 @@ function getVariantClasses(variant: TypographyProps['variant']) {
       return 'text-sm font-medium leading-none'
     case 'muted':
       return 'text-sm text-muted-foreground'
+    case 'body':
+      // 15px reading body — sits between text-sm (14) and text-base (16),
+      // intended for marketing/dashboard prose where text-sm feels cramped.
+      return 'text-md leading-relaxed'
+    case 'caption':
+      // 11px micro text for chips, badges, meta lines, kbd hints.
+      return 'text-2xs text-muted-foreground'
+    case 'overline':
+      // 11px uppercase tracking labels (the "ELECTRICITY", "PHONE" overline
+      // pattern that's repeated ~12 times across the codebase).
+      return 'text-2xs font-semibold uppercase tracking-wider text-muted-foreground'
+    case 'pageTitle':
+      // Top-of-page H1. Responsive scale prevents 30px headings on a 360px phone.
+      return 'text-2xl font-bold tracking-tight md:text-3xl'
+    case 'sectionTitle':
+      // Major section heading within a page (e.g. dashboard sub-sections).
+      return 'text-xl font-semibold tracking-tight sm:text-2xl'
     default:
       return ''
   }

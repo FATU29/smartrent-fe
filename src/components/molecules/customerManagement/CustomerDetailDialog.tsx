@@ -17,6 +17,7 @@ import { Badge } from '@/components/atoms/badge'
 import { Button } from '@/components/atoms/button'
 import { Card } from '@/components/atoms/card'
 import { Dialog } from '@/components/atoms/dialog'
+import { Typography } from '@/components/atoms/typography'
 import type { UserPhoneClickDetail } from '@/api/types/phone-click-detail.type'
 import { copyToClipboard, getInitials, formatDate } from './utils'
 
@@ -92,9 +93,9 @@ export default function CustomerDetailDialog({
               </Avatar>
 
               <div className='flex-1'>
-                <h2 className='text-2xl font-bold mb-1'>
+                <Typography variant='h3' as='h2' className='font-bold mb-1'>
                   {customer.firstName} {customer.lastName}
-                </h2>
+                </Typography>
                 <p className='text-primary-foreground/80 text-sm'>
                   {t('dialog.customerDetail.title')}
                 </p>
@@ -137,10 +138,14 @@ export default function CustomerDetailDialog({
 
             {/* Contact Information */}
             <Card className='p-5 mb-6 border-l-4 border-primary'>
-              <h3 className='text-lg font-semibold mb-4 flex items-center gap-2'>
+              <Typography
+                variant='h5'
+                as='h3'
+                className='mb-4 flex items-center gap-2'
+              >
                 <Mail className='h-5 w-5 text-primary' />
                 {t('dialog.customerDetail.contactInfo')}
-              </h3>
+              </Typography>
 
               <div className='space-y-3'>
                 <div className='flex items-center justify-between p-3 bg-muted/40 rounded-lg'>
@@ -204,10 +209,14 @@ export default function CustomerDetailDialog({
 
             {/* Click History */}
             <Card className='p-5 border-l-4 border-primary'>
-              <h3 className='text-lg font-semibold mb-4 flex items-center gap-2'>
+              <Typography
+                variant='h5'
+                as='h3'
+                className='mb-4 flex items-center gap-2'
+              >
                 <Calendar className='h-5 w-5 text-primary' />
                 {t('dialog.customerDetail.clickHistory')}
-              </h3>
+              </Typography>
 
               <div className='space-y-3'>
                 {customer.clickedListings.map((listing, index) => (

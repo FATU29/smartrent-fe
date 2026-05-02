@@ -2,6 +2,8 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { Button } from '@/components/atoms/button'
+import { PageContainer } from '@/components/atoms/pageContainer'
+import { Typography } from '@/components/atoms/typography'
 import { PaymentStatusCard } from '@/components/molecules/paymentStatusCard'
 import type { PaymentStatusType } from '@/components/atoms/paymentStatusBadge/index.constants'
 import { PUBLIC_ROUTES } from '@/constants/route'
@@ -30,11 +32,13 @@ export const PaymentStatusTemplate: React.FC<PaymentStatusTemplateProps> = ({
   const t = useTranslations('paymentStatusPage')
 
   return (
-    <div className='mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10'>
+    <PageContainer width='prose' className='py-6 sm:py-10'>
       <div className='space-y-6'>
         {/* Header */}
         <div className='space-y-2'>
-          <h1 className='text-xl sm:text-2xl font-semibold'>{t('title')}</h1>
+          <Typography variant='sectionTitle' as='h1'>
+            {t('title')}
+          </Typography>
           <p className='text-sm sm:text-base text-muted-foreground'>
             {t('subtitle')}
           </p>
@@ -101,7 +105,7 @@ export const PaymentStatusTemplate: React.FC<PaymentStatusTemplateProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </PageContainer>
   )
 }
 

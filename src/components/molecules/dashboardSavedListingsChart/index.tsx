@@ -1,13 +1,6 @@
 import React, { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/atoms/card'
-import {
   ChartConfig,
   ChartContainer,
   ChartTooltipContent,
@@ -280,370 +273,421 @@ const DashboardSavedListingsChart: React.FC<
     !isSummaryLoading && !isDetailLoading && !hasSavedListingsData
 
   return (
-    <Card className='border-border/70 bg-card/80 shadow-sm'>
-      <CardHeader className='space-y-2 pb-4'>
-        <CardTitle className='text-lg font-semibold tracking-tight'>
-          {t('overview')}
-        </CardTitle>
-        <CardDescription className='max-w-3xl text-sm leading-relaxed'>
-          {t('description')}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className='space-y-7'>
-        {showEmptyState ? (
-          <DashboardNoDataState
-            title={t('emptyState.title')}
-            description={t('emptyState.description')}
-            badgeLabel={t('noData')}
-            hintTitle={t('emptyState.hintTitle')}
-            hints={[
-              t('emptyState.tip1'),
-              t('emptyState.tip2'),
-              t('emptyState.tip3'),
-            ]}
-            metricChips={[
-              t('savesOverTime'),
-              t('savesByListing'),
-              t('allListings'),
-            ]}
-          />
-        ) : (
-          <>
-            <div className='rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50/70 via-amber-50/30 to-background p-4 shadow-sm dark:border-amber-900/50 dark:from-amber-950/25 dark:via-amber-950/10 dark:to-background sm:p-5'>
-              <div className='flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300'>
-                <Heart className='h-4 w-4 text-amber-500' />
-                {t('totalSavesAcrossAll')}
+    <div className='space-y-7'>
+      {showEmptyState ? (
+        <DashboardNoDataState
+          title={t('emptyState.title')}
+          description={t('emptyState.description')}
+          hintTitle={t('emptyState.hintTitle')}
+          hints={[
+            t('emptyState.tip1'),
+            t('emptyState.tip2'),
+            t('emptyState.tip3'),
+          ]}
+          metricChips={[
+            t('savesOverTime'),
+            t('savesByListing'),
+            t('allListings'),
+          ]}
+        />
+      ) : (
+        <>
+          <div className='rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50/70 via-amber-50/30 to-background p-4 shadow-sm dark:border-amber-900/50 dark:from-amber-950/25 dark:via-amber-950/10 dark:to-background sm:p-5'>
+            <div className='flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300'>
+              <Heart className='h-4 w-4 text-amber-500' />
+              {t('totalSavesAcrossAll')}
+            </div>
+            <p className='mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl'>
+              {totalSavesAcrossAll}
+            </p>
+          </div>
+
+          <div className='space-y-2.5'>
+            <p className='text-sm font-semibold tracking-tight'>
+              {t('listing')}
+            </p>
+            <div className='w-full md:w-[420px]'>
+              <Combobox
+                value={selectedListingId ? String(selectedListingId) : ''}
+                onValueChange={(v) => {
+                  if (!v) return
+                  handleSelectListing(Number(v))
+                }}
+                onSearchChange={(v) => {
+                  setSelectKeyword(v)
+                  // reset and reload first page
+                  loadSelectPage(0, false).catch(() => {})
+                }}
+                loading={selectLoading}
+                isLoadingMore={selectLoadingMore}
+                hasMore={selectHasMore}
+                onLoadMore={() => {
+                  if (selectHasMore && !selectLoadingMore) {
+                    loadSelectPage(selectPage + 1, true).catch(() => {})
+                  }
+                }}
+                options={selectOptions.map((l) => ({
+                  value: String(l.listingId),
+                  label: l.listingTitle,
+                }))}
+                placeholder={t('selectListing')}
+                searchPlaceholder={t('searchPlaceholder')}
+                fullWidth
+              />
+            </div>
+          </div>
+
+          <div className='min-h-[260px]'>
+            {isDetailLoading || (isSummaryLoading && !trend) ? (
+              <div className='flex items-center justify-center h-[260px]'>
+                <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
               </div>
-              <p className='mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl'>
-                {totalSavesAcrossAll}
-              </p>
-            </div>
-
-            <div className='space-y-2.5'>
-              <p className='text-sm font-semibold tracking-tight'>
-                {t('listing')}
-              </p>
-              <div className='w-full md:w-[420px]'>
-                <Combobox
-                  value={selectedListingId ? String(selectedListingId) : ''}
-                  onValueChange={(v) => {
-                    if (!v) return
-                    handleSelectListing(Number(v))
-                  }}
-                  onSearchChange={(v) => {
-                    setSelectKeyword(v)
-                    // reset and reload first page
-                    loadSelectPage(0, false).catch(() => {})
-                  }}
-                  loading={selectLoading}
-                  isLoadingMore={selectLoadingMore}
-                  hasMore={selectHasMore}
-                  onLoadMore={() => {
-                    if (selectHasMore && !selectLoadingMore) {
-                      loadSelectPage(selectPage + 1, true).catch(() => {})
-                    }
-                  }}
-                  options={selectOptions.map((l) => ({
-                    value: String(l.listingId),
-                    label: l.listingTitle,
-                  }))}
-                  placeholder={t('selectListing')}
-                  searchPlaceholder={t('searchPlaceholder')}
-                  fullWidth
-                />
-              </div>
-            </div>
-
-            <div className='min-h-[260px]'>
-              {isDetailLoading || (isSummaryLoading && !trend) ? (
-                <div className='flex items-center justify-center h-[260px]'>
-                  <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
-                </div>
-              ) : trend ? (
-                <div className='space-y-8'>
-                  <section
-                    id='saved-listing-trend-chart'
-                    className='space-y-4 border-t border-border/60 pt-6'
-                  >
-                    <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
-                      <div className='space-y-1'>
-                        <h3 className='text-base font-semibold tracking-tight'>
-                          {t('savesOverTime')}
-                        </h3>
-                        <p className='text-sm text-muted-foreground'>
-                          {trend.listingTitle} · {t('totalSaves')}:{' '}
-                          {trend.totalSaves}
-                        </p>
-                      </div>
-                      <Select
-                        value={period}
-                        onValueChange={(v) =>
-                          onPeriodChange?.(
-                            v as '7d' | '30d' | '90d' | '180d' | '365d' | 'all',
-                          )
-                        }
-                      >
-                        <SelectTrigger className='w-full sm:w-[200px]'>
-                          <SelectValue placeholder={t('period')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='7d'>{t('period7d')}</SelectItem>
-                          <SelectItem value='30d'>{t('period30d')}</SelectItem>
-                          <SelectItem value='90d'>{t('period90d')}</SelectItem>
-                          <SelectItem value='180d'>
-                            {t('period180d')}
-                          </SelectItem>
-                          <SelectItem value='365d'>
-                            {t('period365d')}
-                          </SelectItem>
-                          <SelectItem value='all'>{t('periodAll')}</SelectItem>
-                        </SelectContent>
-                      </Select>
+            ) : trend ? (
+              <div className='space-y-8'>
+                <section
+                  id='saved-listing-trend-chart'
+                  className='space-y-4 border-t border-border/60 pt-6'
+                >
+                  <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
+                    <div className='space-y-1'>
+                      <h3 className='text-base font-semibold tracking-tight'>
+                        {t('savesOverTime')}
+                      </h3>
+                      <p className='text-sm text-muted-foreground'>
+                        {trend.listingTitle} · {t('totalSaves')}:{' '}
+                        {trend.totalSaves}
+                      </p>
                     </div>
-                    <div>
-                      <ChartContainer
-                        config={chartConfig}
-                        className={
-                          isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
-                        }
-                      >
-                        <ResponsiveContainer width='100%' height='100%'>
-                          <AreaChart data={savesOverTimeData}>
-                            <defs>
-                              <linearGradient
-                                id='colorSavesTrend'
-                                x1='0'
-                                y1='0'
-                                x2='0'
-                                y2='1'
-                              >
-                                <stop
-                                  offset='5%'
-                                  stopColor='var(--color-saves)'
-                                  stopOpacity={0.5}
-                                />
-                                <stop
-                                  offset='95%'
-                                  stopColor='var(--color-saves)'
-                                  stopOpacity={0.05}
-                                />
-                              </linearGradient>
-                            </defs>
-                            <CartesianGrid
-                              strokeDasharray='3 3'
-                              vertical={false}
-                            />
-                            <XAxis
-                              dataKey='date'
-                              tickLine={false}
-                              axisLine={false}
-                              tickMargin={8}
-                              minTickGap={isMobile ? 24 : 12}
-                            />
-                            <YAxis
-                              tickLine={false}
-                              axisLine={false}
-                              tickMargin={8}
-                              allowDecimals={false}
-                            />
-                            <Tooltip
-                              content={({ active, payload, label }) => {
-                                if (
-                                  !active ||
-                                  !payload ||
-                                  payload.length === 0
-                                ) {
-                                  return null
-                                }
-
-                                return (
-                                  <ChartTooltipContent
-                                    active={active}
-                                    payload={payload.map((item) => ({
-                                      color: item.color,
-                                      dataKey: String(item.dataKey || ''),
-                                      name: String(item.name || ''),
-                                      value: item.value,
-                                    }))}
-                                    labelFormatter={() =>
-                                      `${t('date')}: ${label}`
-                                    }
-                                  />
-                                )
-                              }}
-                            />
-                            <Area
-                              type='monotone'
-                              dataKey='count'
-                              name={t('saves')}
-                              stroke='var(--color-saves)'
-                              fill='url(#colorSavesTrend)'
-                              fillOpacity={1}
-                              strokeWidth={2.5}
-                              connectNulls
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </ChartContainer>
-                    </div>
-                  </section>
-
-                  <section className='space-y-4 border-t border-border/60 pt-6'>
-                    <h3 className='text-base font-semibold tracking-tight'>
-                      {t('savesByListing')}
-                    </h3>
-                    <div>
-                      <ChartContainer
-                        config={chartConfig}
-                        className={
-                          isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
-                        }
-                      >
-                        <ResponsiveContainer width='100%' height='100%'>
-                          <BarChart data={barChartData} layout='vertical'>
-                            <CartesianGrid
-                              strokeDasharray='3 3'
-                              horizontal={false}
-                            />
-                            <XAxis
-                              type='number'
-                              tickLine={false}
-                              axisLine={false}
-                              tickMargin={8}
-                              allowDecimals={false}
-                            />
-                            <YAxis
-                              type='category'
-                              dataKey='name'
-                              width={isMobile ? 120 : 180}
-                              tickLine={false}
-                              axisLine={false}
-                            />
-                            <Tooltip
-                              content={({ active, payload, label }) => {
-                                if (
-                                  !active ||
-                                  !payload ||
-                                  payload.length === 0
-                                ) {
-                                  return null
-                                }
-
-                                return (
-                                  <ChartTooltipContent
-                                    active={active}
-                                    payload={payload.map((item) => ({
-                                      color: item.color,
-                                      dataKey: String(item.dataKey || ''),
-                                      name: String(item.name || ''),
-                                      value: item.value,
-                                    }))}
-                                    labelFormatter={() => String(label)}
-                                  />
-                                )
-                              }}
-                            />
-                            <Bar
-                              dataKey='totalSaves'
-                              name={t('saves')}
-                              radius={[0, 6, 6, 0]}
-                            >
-                              {barChartData.map((item, index) => (
-                                <Cell
-                                  key={`saved-listing-${item.listingId}`}
-                                  fill={BAR_COLORS[index % BAR_COLORS.length]}
-                                />
-                              ))}
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </ChartContainer>
-                    </div>
-                  </section>
-                </div>
-              ) : (
-                <div className='flex h-[260px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 bg-muted/20 text-center text-muted-foreground'>
-                  <ListX className='size-5 text-muted-foreground' />
-                  <p className='text-sm font-medium'>{t('noListings')}</p>
-                </div>
-              )}
-            </div>
-
-            <section className='space-y-4 border-t border-border/60 pt-6'>
-              <h3 className='text-base font-semibold tracking-tight'>
-                {t('allListings')}
-              </h3>
-              <div>
-                <div className='mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
-                  <div className='relative w-full md:w-auto'>
-                    <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground' />
-                    <Input
-                      className='w-full pl-9 md:w-[280px]'
-                      placeholder={t('searchPlaceholder')}
-                      value={searchKeyword || ''}
-                      onChange={(e) => onSearchKeywordChange?.(e.target.value)}
-                    />
-                  </div>
-                  <div className='flex items-center justify-between gap-2 sm:justify-start'>
-                    <span className='text-xs font-medium uppercase tracking-wide text-muted-foreground'>
-                      {t('rowsPerPage')}
-                    </span>
                     <Select
-                      value={String(pageSize || 10)}
-                      onValueChange={(v) => onPageSizeChange?.(Number(v))}
+                      value={period}
+                      onValueChange={(v) =>
+                        onPeriodChange?.(
+                          v as '7d' | '30d' | '90d' | '180d' | '365d' | 'all',
+                        )
+                      }
                     >
-                      <SelectTrigger className='w-[100px]'>
-                        <SelectValue />
+                      <SelectTrigger className='w-full sm:w-[200px]'>
+                        <SelectValue placeholder={t('period')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value='5'>5</SelectItem>
-                        <SelectItem value='10'>10</SelectItem>
-                        <SelectItem value='20'>20</SelectItem>
-                        <SelectItem value='50'>50</SelectItem>
+                        <SelectItem value='7d'>{t('period7d')}</SelectItem>
+                        <SelectItem value='30d'>{t('period30d')}</SelectItem>
+                        <SelectItem value='90d'>{t('period90d')}</SelectItem>
+                        <SelectItem value='180d'>{t('period180d')}</SelectItem>
+                        <SelectItem value='365d'>{t('period365d')}</SelectItem>
+                        <SelectItem value='all'>{t('periodAll')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
+                  <div>
+                    <ChartContainer
+                      config={chartConfig}
+                      className={
+                        isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+                      }
+                    >
+                      <ResponsiveContainer width='100%' height='100%'>
+                        <AreaChart data={savesOverTimeData}>
+                          <defs>
+                            <linearGradient
+                              id='colorSavesTrend'
+                              x1='0'
+                              y1='0'
+                              x2='0'
+                              y2='1'
+                            >
+                              <stop
+                                offset='5%'
+                                stopColor='var(--color-saves)'
+                                stopOpacity={0.5}
+                              />
+                              <stop
+                                offset='95%'
+                                stopColor='var(--color-saves)'
+                                stopOpacity={0.05}
+                              />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid
+                            strokeDasharray='3 3'
+                            vertical={false}
+                          />
+                          <XAxis
+                            dataKey='date'
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                            minTickGap={isMobile ? 24 : 12}
+                          />
+                          <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                            allowDecimals={false}
+                          />
+                          <Tooltip
+                            content={({ active, payload, label }) => {
+                              if (!active || !payload || payload.length === 0) {
+                                return null
+                              }
+
+                              return (
+                                <ChartTooltipContent
+                                  active={active}
+                                  payload={payload.map((item) => ({
+                                    color: item.color,
+                                    dataKey: String(item.dataKey || ''),
+                                    name: String(item.name || ''),
+                                    value: item.value,
+                                  }))}
+                                  labelFormatter={() =>
+                                    `${t('date')}: ${label}`
+                                  }
+                                />
+                              )
+                            }}
+                          />
+                          <Area
+                            type='monotone'
+                            dataKey='count'
+                            name={t('saves')}
+                            stroke='var(--color-saves)'
+                            fill='url(#colorSavesTrend)'
+                            fillOpacity={1}
+                            strokeWidth={2.5}
+                            connectNulls
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                  </div>
+                </section>
+
+                <section className='space-y-4 border-t border-border/60 pt-6'>
+                  <h3 className='text-base font-semibold tracking-tight'>
+                    {t('savesByListing')}
+                  </h3>
+                  <div>
+                    <ChartContainer
+                      config={chartConfig}
+                      className={
+                        isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+                      }
+                    >
+                      <ResponsiveContainer width='100%' height='100%'>
+                        <BarChart data={barChartData} layout='vertical'>
+                          <CartesianGrid
+                            strokeDasharray='3 3'
+                            horizontal={false}
+                          />
+                          <XAxis
+                            type='number'
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                            allowDecimals={false}
+                          />
+                          <YAxis
+                            type='category'
+                            dataKey='name'
+                            width={isMobile ? 120 : 180}
+                            tickLine={false}
+                            axisLine={false}
+                          />
+                          <Tooltip
+                            content={({ active, payload, label }) => {
+                              if (!active || !payload || payload.length === 0) {
+                                return null
+                              }
+
+                              return (
+                                <ChartTooltipContent
+                                  active={active}
+                                  payload={payload.map((item) => ({
+                                    color: item.color,
+                                    dataKey: String(item.dataKey || ''),
+                                    name: String(item.name || ''),
+                                    value: item.value,
+                                  }))}
+                                  labelFormatter={() => String(label)}
+                                />
+                              )
+                            }}
+                          />
+                          <Bar
+                            dataKey='totalSaves'
+                            name={t('saves')}
+                            radius={[0, 6, 6, 0]}
+                          >
+                            {barChartData.map((item, index) => (
+                              <Cell
+                                key={`saved-listing-${item.listingId}`}
+                                fill={BAR_COLORS[index % BAR_COLORS.length]}
+                              />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                  </div>
+                </section>
+              </div>
+            ) : (
+              <div className='flex h-[260px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 bg-muted/20 text-center text-muted-foreground'>
+                <ListX className='size-5 text-muted-foreground' />
+                <p className='text-sm font-medium'>{t('noListings')}</p>
+              </div>
+            )}
+          </div>
+
+          <section className='space-y-4 border-t border-border/60 pt-6'>
+            <h3 className='text-base font-semibold tracking-tight'>
+              {t('allListings')}
+            </h3>
+            <div>
+              <div className='mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+                <div className='relative w-full md:w-auto'>
+                  <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground' />
+                  <Input
+                    className='w-full pl-9 md:w-[280px]'
+                    placeholder={t('searchPlaceholder')}
+                    value={searchKeyword || ''}
+                    onChange={(e) => onSearchKeywordChange?.(e.target.value)}
+                  />
                 </div>
-                {isMobile ? (
-                  <div className='space-y-2.5'>
-                    {isSummaryLoading ? (
-                      Array.from({
-                        length: Math.max(3, Math.min(10, pageSize || 10)),
-                      }).map((_, idx) => (
-                        <div
-                          key={`m-sk-${idx}`}
-                          className='space-y-2.5 rounded-xl border border-border/70 bg-background/75 p-3.5'
-                        >
-                          <Skeleton className='h-4 w-[70%]' />
-                          <div className='flex items-center justify-between'>
-                            <Skeleton className='h-4 w-12' />
-                            <Skeleton className='h-8 w-24 rounded-md' />
-                          </div>
+                <div className='flex items-center justify-between gap-2 sm:justify-start'>
+                  <span className='text-xs font-medium uppercase tracking-wide text-muted-foreground'>
+                    {t('rowsPerPage')}
+                  </span>
+                  <Select
+                    value={String(pageSize || 10)}
+                    onValueChange={(v) => onPageSizeChange?.(Number(v))}
+                  >
+                    <SelectTrigger className='w-[100px]'>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='5'>5</SelectItem>
+                      <SelectItem value='10'>10</SelectItem>
+                      <SelectItem value='20'>20</SelectItem>
+                      <SelectItem value='50'>50</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              {isMobile ? (
+                <div className='space-y-2.5'>
+                  {isSummaryLoading ? (
+                    Array.from({
+                      length: Math.max(3, Math.min(10, pageSize || 10)),
+                    }).map((_, idx) => (
+                      <div
+                        key={`m-sk-${idx}`}
+                        className='space-y-2.5 rounded-xl border border-border/70 bg-background/75 p-3.5'
+                      >
+                        <Skeleton className='h-4 w-[70%]' />
+                        <div className='flex items-center justify-between'>
+                          <Skeleton className='h-4 w-12' />
+                          <Skeleton className='h-8 w-24 rounded-md' />
                         </div>
-                      ))
-                    ) : listings.length === 0 ? (
-                      <div className='flex h-[150px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 text-center'>
-                        <ListX className='size-5 text-muted-foreground' />
-                        <p className='text-sm font-medium text-muted-foreground'>
-                          {t('noListings')}
-                        </p>
                       </div>
+                    ))
+                  ) : listings.length === 0 ? (
+                    <div className='flex h-[150px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 text-center'>
+                      <ListX className='size-5 text-muted-foreground' />
+                      <p className='text-sm font-medium text-muted-foreground'>
+                        {t('noListings')}
+                      </p>
+                    </div>
+                  ) : (
+                    listings.map((listing) => (
+                      <div
+                        key={listing.listingId}
+                        className='space-y-2.5 rounded-xl border border-border/70 bg-background/75 p-3.5'
+                      >
+                        <p className='line-clamp-2 text-sm font-medium leading-5'>
+                          {listing.listingTitle}
+                        </p>
+                        <div className='flex items-center justify-between gap-3'>
+                          <p className='text-sm text-muted-foreground'>
+                            {t('totalSaves')}:{' '}
+                            <strong className='text-foreground'>
+                              {listing.totalSaves}
+                            </strong>
+                          </p>
+                          <Button
+                            variant='outline'
+                            size='sm'
+                            onClick={() =>
+                              handleSelectListing(listing.listingId)
+                            }
+                          >
+                            {t('viewTrend')}
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                        {t('listing')}
+                      </TableHead>
+                      <TableHead className='text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                        {t('totalSaves')}
+                      </TableHead>
+                      <TableHead className='text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                        {t('action')}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isSummaryLoading ? (
+                      <>
+                        {Array.from({
+                          length: Math.max(3, Math.min(10, pageSize || 10)),
+                        }).map((_, idx) => (
+                          <TableRow key={`sk-${idx}`}>
+                            <TableCell>
+                              <Skeleton className='h-4 w-[70%]' />
+                            </TableCell>
+                            <TableCell className='text-right'>
+                              <div className='flex justify-end'>
+                                <Skeleton className='h-4 w-12' />
+                              </div>
+                            </TableCell>
+                            <TableCell className='text-right'>
+                              <div className='flex justify-end'>
+                                <Skeleton className='h-6 w-24 rounded-md' />
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </>
+                    ) : listings.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={3}>
+                          <div className='mx-auto flex h-[150px] w-full max-w-md flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 bg-muted/20 text-center'>
+                            <ListX className='size-5 text-muted-foreground' />
+                            <p className='text-sm font-medium text-muted-foreground'>
+                              {t('noListings')}
+                            </p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
                     ) : (
                       listings.map((listing) => (
-                        <div
-                          key={listing.listingId}
-                          className='space-y-2.5 rounded-xl border border-border/70 bg-background/75 p-3.5'
-                        >
-                          <p className='line-clamp-2 text-sm font-medium leading-5'>
+                        <TableRow key={listing.listingId}>
+                          <TableCell className='font-medium'>
                             {listing.listingTitle}
-                          </p>
-                          <div className='flex items-center justify-between gap-3'>
-                            <p className='text-sm text-muted-foreground'>
-                              {t('totalSaves')}:{' '}
-                              <strong className='text-foreground'>
-                                {listing.totalSaves}
-                              </strong>
-                            </p>
+                          </TableCell>
+                          <TableCell className='text-right'>
+                            {listing.totalSaves}
+                          </TableCell>
+                          <TableCell className='text-right'>
                             <Button
                               variant='outline'
                               size='sm'
@@ -653,142 +697,68 @@ const DashboardSavedListingsChart: React.FC<
                             >
                               {t('viewTrend')}
                             </Button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                          {t('listing')}
-                        </TableHead>
-                        <TableHead className='text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                          {t('totalSaves')}
-                        </TableHead>
-                        <TableHead className='text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                          {t('action')}
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {isSummaryLoading ? (
-                        <>
-                          {Array.from({
-                            length: Math.max(3, Math.min(10, pageSize || 10)),
-                          }).map((_, idx) => (
-                            <TableRow key={`sk-${idx}`}>
-                              <TableCell>
-                                <Skeleton className='h-4 w-[70%]' />
-                              </TableCell>
-                              <TableCell className='text-right'>
-                                <div className='flex justify-end'>
-                                  <Skeleton className='h-4 w-12' />
-                                </div>
-                              </TableCell>
-                              <TableCell className='text-right'>
-                                <div className='flex justify-end'>
-                                  <Skeleton className='h-6 w-24 rounded-md' />
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </>
-                      ) : listings.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={3}>
-                            <div className='mx-auto flex h-[150px] w-full max-w-md flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 bg-muted/20 text-center'>
-                              <ListX className='size-5 text-muted-foreground' />
-                              <p className='text-sm font-medium text-muted-foreground'>
-                                {t('noListings')}
-                              </p>
-                            </div>
                           </TableCell>
                         </TableRow>
-                      ) : (
-                        listings.map((listing) => (
-                          <TableRow key={listing.listingId}>
-                            <TableCell className='font-medium'>
-                              {listing.listingTitle}
-                            </TableCell>
-                            <TableCell className='text-right'>
-                              {listing.totalSaves}
-                            </TableCell>
-                            <TableCell className='text-right'>
-                              <Button
-                                variant='outline'
-                                size='sm'
-                                onClick={() =>
-                                  handleSelectListing(listing.listingId)
-                                }
-                              >
-                                {t('viewTrend')}
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                )}
-                <div className='mt-4 flex flex-col gap-3 border-t border-border/60 pt-3 sm:flex-row sm:items-center sm:justify-between'>
-                  <div className='text-xs text-muted-foreground sm:text-sm'>
-                    {typeof totalElements === 'number' &&
-                    typeof currentPage === 'number' &&
-                    typeof pageSize === 'number'
-                      ? t('paginationInfo', {
-                          from: currentPage * pageSize + 1,
-                          to: Math.min(
-                            (currentPage + 1) * pageSize,
-                            totalElements,
-                          ),
-                          total: totalElements,
-                        })
-                      : null}
-                  </div>
-                  <div className='flex items-center justify-between gap-2 sm:justify-end'>
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      disabled={
-                        isSummaryLoading ||
-                        !onPageChange ||
-                        (currentPage ?? 0) <= 0
-                      }
-                      onClick={() => onPageChange?.((currentPage ?? 0) - 1)}
-                    >
-                      {t('prev')}
-                    </Button>
-                    <span className='min-w-16 text-center text-sm font-medium'>
-                      {typeof currentPage === 'number' &&
-                      typeof totalPages === 'number'
-                        ? `${currentPage + 1} / ${totalPages}`
-                        : ''}
-                    </span>
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      disabled={
-                        isSummaryLoading ||
-                        !onPageChange ||
-                        typeof currentPage !== 'number' ||
-                        typeof totalPages !== 'number' ||
-                        currentPage + 1 >= totalPages
-                      }
-                      onClick={() => onPageChange?.((currentPage ?? 0) + 1)}
-                    >
-                      {t('next')}
-                    </Button>
-                  </div>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              )}
+              <div className='mt-4 flex flex-col gap-3 border-t border-border/60 pt-3 sm:flex-row sm:items-center sm:justify-between'>
+                <div className='text-xs text-muted-foreground sm:text-sm'>
+                  {typeof totalElements === 'number' &&
+                  typeof currentPage === 'number' &&
+                  typeof pageSize === 'number'
+                    ? t('paginationInfo', {
+                        from: currentPage * pageSize + 1,
+                        to: Math.min(
+                          (currentPage + 1) * pageSize,
+                          totalElements,
+                        ),
+                        total: totalElements,
+                      })
+                    : null}
+                </div>
+                <div className='flex items-center justify-between gap-2 sm:justify-end'>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    disabled={
+                      isSummaryLoading ||
+                      !onPageChange ||
+                      (currentPage ?? 0) <= 0
+                    }
+                    onClick={() => onPageChange?.((currentPage ?? 0) - 1)}
+                  >
+                    {t('prev')}
+                  </Button>
+                  <span className='min-w-16 text-center text-sm font-medium'>
+                    {typeof currentPage === 'number' &&
+                    typeof totalPages === 'number'
+                      ? `${currentPage + 1} / ${totalPages}`
+                      : ''}
+                  </span>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    disabled={
+                      isSummaryLoading ||
+                      !onPageChange ||
+                      typeof currentPage !== 'number' ||
+                      typeof totalPages !== 'number' ||
+                      currentPage + 1 >= totalPages
+                    }
+                    onClick={() => onPageChange?.((currentPage ?? 0) + 1)}
+                  >
+                    {t('next')}
+                  </Button>
                 </div>
               </div>
-            </section>
-          </>
-        )}
-      </CardContent>
-    </Card>
+            </div>
+          </section>
+        </>
+      )}
+    </div>
   )
 }
 

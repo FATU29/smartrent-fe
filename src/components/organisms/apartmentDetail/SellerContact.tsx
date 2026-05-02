@@ -137,7 +137,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
               <Button
                 asChild
                 size='sm'
-                className='h-7 px-2.5 text-[11px] md:text-xs bg-primary hover:bg-primary/90 text-primary-foreground'
+                className='h-7 px-2.5 text-2xs md:text-xs bg-primary hover:bg-primary/90 text-primary-foreground'
               >
                 <Link href={sellerListingsUrl}>
                   {t('links.viewSellerListings')}

@@ -61,7 +61,7 @@ const PriceTooltip = ({
 
   return (
     <div className='rounded-xl border border-border/60 bg-background/95 backdrop-blur-md px-3.5 py-2.5 shadow-2xl text-xs min-w-[170px]'>
-      <p className='text-[11px] font-medium text-muted-foreground mb-2 pb-1.5 border-b border-border/50'>
+      <p className='text-2xs font-medium text-muted-foreground mb-2 pb-1.5 border-b border-border/50'>
         {label}
       </p>
       <div className='flex items-center justify-between gap-4'>
@@ -425,7 +425,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
             <div className='rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 px-3 py-2.5'>
               <div className='flex items-center gap-1.5 mb-1'>
                 <div className='w-2 h-2 rounded-full bg-red-400 flex-shrink-0' />
-                <p className='text-[11px] font-medium text-red-600/80 dark:text-red-400/80 truncate'>
+                <p className='text-2xs font-medium text-red-600/80 dark:text-red-400/80 truncate'>
                   {t('apartmentDetail.priceHistory.statistics.minPrice')}
                 </p>
               </div>
@@ -443,7 +443,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                     background: 'transparent',
                   }}
                 />
-                <p className='text-[11px] font-medium text-amber-600/80 dark:text-amber-400/80 truncate'>
+                <p className='text-2xs font-medium text-amber-600/80 dark:text-amber-400/80 truncate'>
                   {t('apartmentDetail.priceHistory.statistics.avgPrice')}
                 </p>
               </div>
@@ -455,7 +455,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
             <div className='rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 px-3 py-2.5'>
               <div className='flex items-center gap-1.5 mb-1'>
                 <div className='w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0' />
-                <p className='text-[11px] font-medium text-emerald-600/80 dark:text-emerald-400/80 truncate'>
+                <p className='text-2xs font-medium text-emerald-600/80 dark:text-emerald-400/80 truncate'>
                   {t('apartmentDetail.priceHistory.statistics.maxPrice')}
                 </p>
               </div>

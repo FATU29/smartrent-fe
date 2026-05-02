@@ -6,6 +6,8 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/atoms/tabs'
+import { PageContainer } from '@/components/atoms/pageContainer'
+import { Typography } from '@/components/atoms/typography'
 import { PersonalInfoForm } from '@/components/molecules/personalInfoForm'
 import { PasswordChangeForm } from '@/components/molecules/passwordChangeForm'
 import { BrokerVerificationForm } from '@/components/molecules/brokerVerificationForm'
@@ -20,7 +22,6 @@ import {
   BadgeCheck,
   Sparkles,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useAuth } from '@/hooks/useAuth'
@@ -83,8 +84,11 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
   }, [profileResponse?.data, updateUser])
 
   const profileUser = profileResponse?.data ?? user
+  // Modern segmented-tab styling: inactive tabs are ghost text on the muted
+  // background, active tabs lift to `bg-background` with a subtle shadow.
+  // No competing borders — the lift alone signals "selected".
   const tabTriggerClassName =
-    'flex min-w-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-2 py-2 text-[11px] leading-tight transition-all sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm data-[state=active]:border-primary/35 data-[state=active]:bg-transparent data-[state=active]:shadow-none'
+    'flex min-w-0 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-2xs font-medium leading-tight text-muted-foreground transition-colors sm:gap-2 sm:px-4 sm:py-2 sm:text-sm hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm'
 
   const isPersonalInfoComplete = React.useMemo(() => {
     if (!profileUser) return false
@@ -201,10 +205,13 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
   }, [router.query.tab])
 
   return (
-    <div className={cn('w-full max-w-4xl mx-auto', className)}>
+    <PageContainer width='form' padded={false} className={className}>
+      <Typography variant='pageTitle' className='mb-6'>
+        {t('homePage.auth.accountManagement.title')}
+      </Typography>
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
-        <TabsList className='mb-6 grid h-auto w-full grid-cols-3 gap-1.5 rounded-xl border bg-transparent p-1'>
+        <TabsList className='mb-6 inline-flex h-auto w-fit max-w-full flex-wrap gap-1 rounded-lg bg-muted/60 p-1'>
           <TabsTrigger value='personal-info' className={tabTriggerClassName}>
             <User className='hidden sm:inline-block h-4 w-4' />
             <span className='truncate sm:hidden'>
@@ -281,13 +288,13 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
           value='broker-verification'
           className='space-y-5 md:space-y-6'
         >
-          <div className='rounded-3xl border border-border/80 p-4 shadow-[0_10px_32px_-24px_hsl(var(--foreground)/0.65)] sm:p-5 md:p-6'>
+          <div className='space-y-4'>
             <div className='flex items-start gap-3 sm:gap-4'>
               <div className='mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full border border-primary/30'>
                 <Sparkles className='size-4.5 text-primary' />
               </div>
               <div className='space-y-2'>
-                <span className='inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground'>
+                <span className='inline-flex items-center rounded-full border px-2.5 py-0.5 text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground'>
                   {safeT(
                     'homePage.auth.accountManagement.brokerHookBanner.badge',
                     'SellerNet Pro',
@@ -362,7 +369,7 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
           />
         </TabsContent>
       </Tabs>
-    </div>
+    </PageContainer>
   )
 }
 

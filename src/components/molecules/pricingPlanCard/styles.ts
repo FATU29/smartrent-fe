@@ -29,7 +29,7 @@ export const getTitleStyles = (compact: boolean) => {
 }
 
 export const getDescriptionStyles = (compact: boolean) => {
-  return cn('max-w-[240px]', compact ? 'text-[11px] leading-snug' : 'text-xs')
+  return cn('max-w-[240px]', compact ? 'text-2xs leading-snug' : 'text-xs')
 }
 
 export const getPriceContainerStyles = (compact: boolean) => {
@@ -41,15 +41,15 @@ export const getPriceStyles = (compact: boolean) => {
 }
 
 export const getPricePeriodStyles = (compact: boolean) => {
-  return cn('text-muted-foreground', compact ? 'text-[11px]' : 'text-sm')
+  return cn('text-muted-foreground', compact ? 'text-2xs' : 'text-sm')
 }
 
 export const getDiscountStyles = (compact: boolean) => {
-  return cn('text-destructive font-medium', compact ? 'text-[11px]' : 'text-sm')
+  return cn('text-destructive font-medium', compact ? 'text-2xs' : 'text-sm')
 }
 
 export const getSavingStyles = (compact: boolean) => {
-  return cn('text-muted-foreground', compact ? 'text-[10px]' : 'text-xs')
+  return cn('text-muted-foreground', compact ? 'text-2xs' : 'text-xs')
 }
 
 export const getContentStyles = (compact: boolean) => {
@@ -57,13 +57,17 @@ export const getContentStyles = (compact: boolean) => {
 }
 
 export const getFeatureGroupTitleStyles = (compact: boolean) => {
-  return cn('font-semibold tracking-tight', compact && 'text-[11px]')
+  return cn('font-semibold tracking-tight', compact && 'text-2xs')
 }
 
 export const getFeatureItemStyles = (compact: boolean) => {
-  return cn('flex items-start gap-2', compact ? 'text-[11px]' : 'text-sm')
+  return cn('flex items-start gap-2', compact ? 'text-2xs' : 'text-sm')
 }
 
-export const getButtonStyles = () => {
-  return cn('w-full')
+export const getButtonStyles = (compact: boolean = false) => {
+  // Full-width CTAs need extra height + weight so they don't read as a
+  // thin colored strip (Button's default h-9 looks too short on a ~400px
+  // pricing card). Match common pricing-CTA conventions: h-11 (44px) for
+  // standard cards, h-10 for the compact carousel variant.
+  return cn('w-full font-semibold', compact ? 'h-10 text-sm' : 'h-11 text-base')
 }

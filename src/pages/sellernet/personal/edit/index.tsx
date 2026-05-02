@@ -2,7 +2,7 @@ import * as React from 'react'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
 import type { NextPageWithLayout } from '@/types/next-page'
-import SellernetLayout from '@/components/layouts/sellernet/SellernetLayout'
+import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useUpdateProfile } from '@/hooks/useAuth'
 
@@ -77,5 +77,5 @@ const PersonalEditPage: NextPageWithLayout = () => {
 export default PersonalEditPage
 
 PersonalEditPage.getLayout = (page: React.ReactNode) => (
-  <SellernetLayout>{page}</SellernetLayout>
+  <SellerLayout>{page}</SellerLayout>
 )

@@ -39,7 +39,7 @@ const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({
                   ) : null
                 })()}
               </div>
-              <p className='font-medium text-foreground text-[11px] md:text-xs line-clamp-2'>
+              <p className='font-medium text-foreground text-2xs md:text-xs line-clamp-2'>
                 {feature.name}
               </p>
             </CardContent>

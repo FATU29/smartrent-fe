@@ -225,7 +225,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
           {vipBadge && (
             <Badge
               variant={vipBadge.variant}
-              className={`${vipBadge.className} text-[11px] px-2 py-0.5`}
+              className={`${vipBadge.className} text-2xs px-2 py-0.5`}
             >
               {vipBadge.text}
             </Badge>
@@ -235,7 +235,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
             <Badge
               key={meta.key}
               variant='outline'
-              className='text-[11px] px-2 py-0.5'
+              className='text-2xs px-2 py-0.5'
             >
               {meta.label}: {meta.value}
             </Badge>
@@ -312,7 +312,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
         <div className='price-gradient bg-gradient-to-r from-primary/10 to-transparent p-4 md:p-5 rounded-xl border border-primary/20'>
           <Typography
             variant='small'
-            className='text-muted-foreground mb-1.5 font-semibold uppercase tracking-wider text-[11px]'
+            className='text-muted-foreground mb-1.5 font-semibold uppercase tracking-wider text-2xs'
           >
             {t('apartmentDetail.property.price')}
           </Typography>
@@ -345,7 +345,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
                 <CardContent className='p-3 md:p-3.5'>
                   <Typography
                     variant='small'
-                    className='text-muted-foreground mb-1 font-semibold text-[11px] uppercase tracking-wider'
+                    className='text-muted-foreground mb-1 font-semibold text-2xs uppercase tracking-wider'
                   >
                     {metric.label}
                   </Typography>

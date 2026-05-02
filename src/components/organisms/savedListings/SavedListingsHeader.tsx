@@ -29,7 +29,7 @@ export const SavedListingsHeader: React.FC<SavedListingsHeaderProps> = ({
       </Button>
       <div className='flex items-center justify-between flex-wrap gap-4'>
         <div>
-          <Typography variant='h1' className='mb-2'>
+          <Typography variant='pageTitle' className='mb-2'>
             {t('title')}
           </Typography>
           <Typography variant='p' className='text-muted-foreground'>

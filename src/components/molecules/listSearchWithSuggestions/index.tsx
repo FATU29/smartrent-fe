@@ -164,7 +164,7 @@ const SuggestionRow: React.FC<SuggestionRowProps> = ({
       joined && joined.toLowerCase() !== item.text.toLowerCase() ? joined : null
   } else if (item.type === 'POPULAR_QUERY' && isPopularMeta(item.metadata)) {
     trailing = (
-      <span className='text-[11px] text-muted-foreground tabular-nums px-1.5 py-0.5 rounded-full bg-muted'>
+      <span className='text-2xs text-muted-foreground tabular-nums px-1.5 py-0.5 rounded-full bg-muted'>
         {item.metadata.hitCount.toLocaleString()}
       </span>
     )
@@ -268,7 +268,7 @@ const RunSearchRow: React.FC<RunSearchRowProps> = ({
         “{query}”
       </span>
     </span>
-    <kbd className='hidden sm:inline-flex items-center gap-1 rounded-md border border-border bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground'>
+    <kbd className='hidden sm:inline-flex items-center gap-1 rounded-md border border-border bg-muted px-1.5 py-0.5 text-2xs text-muted-foreground'>
       <CornerDownLeft className='h-3 w-3' />
     </kbd>
   </div>
@@ -663,10 +663,10 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
 
       return (
         <div key={type} className='py-1'>
-          <div className='px-4 pt-2 pb-1 text-[11px] uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-2'>
+          <div className='px-4 pt-2 pb-1 text-2xs uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-2'>
             <span>{heading}</span>
             <span className='flex-1 h-px bg-border' />
-            <span className='text-[10px] tabular-nums opacity-60'>
+            <span className='text-2xs tabular-nums opacity-60'>
               {items.length}
             </span>
           </div>
@@ -810,16 +810,16 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       >
         {/* Header */}
         <div className='flex items-center justify-between gap-2 px-4 pt-3 pb-1'>
-          <span className='text-[11px] uppercase tracking-wide text-muted-foreground font-medium'>
+          <span className='text-2xs uppercase tracking-wide text-muted-foreground font-medium'>
             {tSuggestions('heading')}
           </span>
           {isSuggestLoading ? (
-            <span className='flex items-center gap-1.5 text-[11px] text-muted-foreground'>
+            <span className='flex items-center gap-1.5 text-2xs text-muted-foreground'>
               <Loader2 className='h-3 w-3 animate-spin' />
               {tSuggestions('loading')}
             </span>
           ) : (
-            <span className='text-[11px] text-muted-foreground tabular-nums'>
+            <span className='text-2xs text-muted-foreground tabular-nums'>
               {tSuggestions('countResults', { count: suggestions.length })}
             </span>
           )}
@@ -862,22 +862,22 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
 
         {/* Footer hints (suppressed in compact contexts like the homepage) */}
         {!hideFooterHints ? (
-          <div className='flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-4 py-2 text-[11px] text-muted-foreground'>
+          <div className='flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-4 py-2 text-2xs text-muted-foreground'>
             <span className='hidden sm:flex items-center gap-2'>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
                 ↑
               </kbd>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
                 ↓
               </kbd>
               <span>{tSuggestions('hintNavigate')}</span>
               <span className='mx-1 opacity-40'>·</span>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
                 Enter
               </kbd>
               <span>{tSuggestions('hintSelect')}</span>
               <span className='mx-1 opacity-40'>·</span>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-[10px]'>
+              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
                 Esc
               </kbd>
               <span>{tSuggestions('hintClose')}</span>

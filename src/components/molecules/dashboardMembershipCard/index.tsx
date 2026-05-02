@@ -147,21 +147,6 @@ const DashboardMembershipCard: React.FC = () => {
               </div>
             </div>
           </motion.div>
-
-          {/* CTA Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Link href={SELLERNET_ROUTES.MEMBERSHIP_REGISTER}>
-              <Button className='w-full' size='lg' variant='default'>
-                <Crown className='mr-2 h-4 w-4' />
-                {t('upgradeNow')}
-                <ArrowRight className='ml-2 h-4 w-4' />
-              </Button>
-            </Link>
-          </motion.div>
         </CardContent>
       </Card>
     )

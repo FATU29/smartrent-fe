@@ -1,6 +1,6 @@
 import React from 'react'
 import type { NextPageWithLayout } from '@/types/next-page'
-import SellernetLayout from '@/components/layouts/sellernet/SellernetLayout'
+import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
 import PricingGuideTemplate from '@/components/templates/pricingGuideTemplate'
@@ -19,5 +19,5 @@ const PricingGuidePage: NextPageWithLayout = () => {
 export default PricingGuidePage
 
 PricingGuidePage.getLayout = (page: React.ReactNode) => (
-  <SellernetLayout>{page}</SellernetLayout>
+  <SellerLayout>{page}</SellerLayout>
 )

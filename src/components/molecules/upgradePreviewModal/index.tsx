@@ -17,6 +17,7 @@ import { formatByLocale } from '@/utils/currency/convert'
 import type { UpgradePreview } from '@/api/types/membership.type'
 import { Alert, AlertDescription, AlertTitle } from '@/components/atoms/alert'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { MEDIA_BELOW_MD } from '@/constants/breakpoints'
 
 export interface UpgradePreviewModalProps {
   readonly open: boolean
@@ -34,7 +35,7 @@ export const UpgradePreviewModal: React.FC<UpgradePreviewModalProps> = ({
   isLoading = false,
 }) => {
   const t = useTranslations('membershipUpgrade.preview')
-  const isMobile = useMediaQuery('(max-width: 767px)')
+  const isMobile = useMediaQuery(MEDIA_BELOW_MD)
 
   const handleClose = useCallback(() => {
     if (!isLoading) {

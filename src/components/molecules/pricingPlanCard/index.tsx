@@ -132,10 +132,9 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
         </CardContent>
         <CardFooter className={cn('mt-auto', compact ? 'pt-3' : 'pt-6')}>
           <Button
-            className={getButtonStyles()}
+            className={getButtonStyles(compact)}
             onClick={onSelect}
             aria-label={resolvedCta}
-            size={compact ? 'sm' : undefined}
           >
             {resolvedCta}
           </Button>

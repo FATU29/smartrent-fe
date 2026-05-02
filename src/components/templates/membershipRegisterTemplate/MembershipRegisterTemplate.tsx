@@ -37,6 +37,7 @@ import {
   TrendingUp,
 } from 'lucide-react'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { MEDIA_BELOW_MD, MEDIA_BELOW_XL } from '@/constants/breakpoints'
 import { Badge } from '@/components/atoms/badge'
 import { Separator } from '@/components/atoms/separator'
 import { Typography } from '@/components/atoms/typography'
@@ -73,8 +74,8 @@ export const MembershipRegisterTemplate: React.FC = () => {
     handleClose: handleClosePreview,
   } = useDialog()
 
-  const isTabletOrBelow = useMediaQuery('(max-width: 1279px)')
-  const isMobile = useMediaQuery('(max-width: 767px)')
+  const isTabletOrBelow = useMediaQuery(MEDIA_BELOW_XL)
+  const isMobile = useMediaQuery(MEDIA_BELOW_MD)
 
   //Init use hook
   const {

@@ -21,7 +21,7 @@ import {
   Bed,
   Bath,
   Maximize2,
-  DollarSign,
+  Banknote,
   ImageOff,
   Sparkles,
   CircleAlert,
@@ -143,7 +143,10 @@ export const DraftCard: React.FC<DraftCardProps> = ({
               alt={draftTitle}
               fill
               className={cn(
-                'object-cover transition-all duration-300 md:object-contain md:p-4',
+                // `object-cover` everywhere fills the container's full height,
+                // matching the card content row. Previous `md:object-contain
+                // md:p-4` left a 16px-padded letterbox on desktop.
+                'object-cover transition-all duration-300',
                 hasImage && 'group-hover:brightness-105',
               )}
               unoptimized={!hasImage}
@@ -195,7 +198,7 @@ export const DraftCard: React.FC<DraftCardProps> = ({
 
                 {missingFields.length > 0 && (
                   <div className='mt-2 flex flex-wrap items-center gap-1.5'>
-                    <span className='inline-flex items-center gap-1 text-[11px] text-muted-foreground'>
+                    <span className='inline-flex items-center gap-1 text-2xs text-muted-foreground'>
                       <CircleAlert className='h-3 w-3' />
                       {t('notProvided')}
                     </span>
@@ -203,7 +206,7 @@ export const DraftCard: React.FC<DraftCardProps> = ({
                       <Badge
                         key={field}
                         variant='outline'
-                        className='h-5 rounded-full border-border/70 bg-background/70 px-2 text-[10px] font-medium text-muted-foreground dark:bg-background/50'
+                        className='h-5 rounded-full border-border/70 bg-background/70 px-2 text-2xs font-medium text-muted-foreground dark:bg-background/50'
                       >
                         {field}
                       </Badge>
@@ -211,7 +214,7 @@ export const DraftCard: React.FC<DraftCardProps> = ({
                     {missingFields.length > 3 && (
                       <Badge
                         variant='outline'
-                        className='h-5 rounded-full border-border/70 bg-background/70 px-2 text-[10px] font-medium text-muted-foreground dark:bg-background/50'
+                        className='h-5 rounded-full border-border/70 bg-background/70 px-2 text-2xs font-medium text-muted-foreground dark:bg-background/50'
                       >
                         +{missingFields.length - 3}
                       </Badge>
@@ -229,7 +232,10 @@ export const DraftCard: React.FC<DraftCardProps> = ({
             </CardHeader>
 
             <CardContent className='px-5 pb-4 sm:px-6'>
-              <div className='grid grid-cols-2 gap-3 lg:grid-cols-4'>
+              {/* Cells size to their content via flex — equal-width grid was
+                  leaving big empty space inside short-value cells like "1
+                  bedroom". `min-w-[140px]` keeps them readable on mobile. */}
+              <div className='flex flex-wrap gap-3 [&>*]:min-w-[140px] [&>*]:flex-1 sm:[&>*]:flex-none'>
                 <div
                   className={cn(
                     'rounded-lg border p-3 transition-colors',
@@ -239,7 +245,7 @@ export const DraftCard: React.FC<DraftCardProps> = ({
                   )}
                 >
                   <div className='mb-1 flex items-center gap-1.5 text-xs text-muted-foreground'>
-                    <DollarSign className='h-3.5 w-3.5' />
+                    <Banknote className='h-3.5 w-3.5' />
                     {t('price')}
                   </div>
                   <p
