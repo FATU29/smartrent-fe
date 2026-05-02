@@ -3,6 +3,7 @@ import { GitCompare } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import { Button } from '@/components/atoms/button'
+import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 
 interface EmptyCompareStateProps {
@@ -26,7 +27,9 @@ const EmptyCompareState: React.FC<EmptyCompareStateProps> = ({ className }) => {
         </div>
       </div>
 
-      <h2 className='text-2xl font-bold mb-2'>{t('empty.title')}</h2>
+      <Typography variant='h3' as='h2' className='font-bold mb-2'>
+        {t('empty.title')}
+      </Typography>
       <p className='text-muted-foreground mb-8 max-w-md'>
         {t('empty.description')}
       </p>

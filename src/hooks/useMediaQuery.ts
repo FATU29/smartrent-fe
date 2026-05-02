@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+import { MEDIA_BELOW_MD, MEDIA_AT_MD } from '@/constants/breakpoints'
+
 export function useMediaQuery(query: string) {
   const [matches, setMatches] = useState<boolean | null>(() => {
     if (typeof window === 'undefined') return null
@@ -29,11 +31,11 @@ export function useMediaQuery(query: string) {
 }
 
 export function useIsMobile() {
-  const matches = useMediaQuery('(max-width: 767px)')
+  const matches = useMediaQuery(MEDIA_BELOW_MD)
   return matches
 }
 
 export function useIsDesktop() {
-  const matches = useMediaQuery('(min-width: 768px)')
+  const matches = useMediaQuery(MEDIA_AT_MD)
   return matches
 }

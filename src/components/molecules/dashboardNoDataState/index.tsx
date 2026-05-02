@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils'
 interface DashboardNoDataStateProps {
   title: string
   description: string
-  badgeLabel?: string
   hintTitle?: string
   hints?: string[]
   metricChips?: string[]
@@ -17,7 +16,6 @@ interface DashboardNoDataStateProps {
 const DashboardNoDataState: React.FC<DashboardNoDataStateProps> = ({
   title,
   description,
-  badgeLabel,
   hintTitle,
   hints,
   metricChips,
@@ -54,18 +52,13 @@ const DashboardNoDataState: React.FC<DashboardNoDataStateProps> = ({
             </div>
 
             <div className='space-y-2.5'>
-              {badgeLabel ? (
-                <Badge
-                  variant='secondary'
-                  className='w-fit rounded-full border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary'
-                >
-                  {badgeLabel}
-                </Badge>
-              ) : null}
-              <h3 className='text-lg font-semibold leading-tight tracking-tight sm:text-xl'>
+              <Badge
+                variant='secondary'
+                className='w-fit rounded-full border-primary/20 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary'
+              >
                 {title}
-              </h3>
-              <p className='max-w-2xl text-sm leading-6 text-muted-foreground sm:text-[15px]'>
+              </Badge>
+              <p className='max-w-2xl text-sm leading-6 text-muted-foreground sm:text-md'>
                 {description}
               </p>
             </div>
@@ -92,7 +85,7 @@ const DashboardNoDataState: React.FC<DashboardNoDataStateProps> = ({
                   <Badge
                     key={chip}
                     variant='outline'
-                    className='rounded-full border-border/70 bg-background/70 px-2.5 py-1 text-[11px] font-medium'
+                    className='rounded-full border-border/70 bg-background/70 px-2.5 py-1 text-2xs font-medium'
                   >
                     {chip}
                   </Badge>

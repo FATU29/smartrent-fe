@@ -47,7 +47,7 @@ const GoogleMapPicker: React.FC<GoogleMapPickerProps> = ({
       <div className='w-5 h-5 rounded-full bg-primary shadow ring-2 ring-background flex items-center justify-center'>
         <MapPin className='w-3 h-3 text-white' />
       </div>
-      <div className='absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-card text-card-foreground text-[10px] px-2 py-0.5 rounded shadow border border-border'>
+      <div className='absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-card text-card-foreground text-2xs px-2 py-0.5 rounded shadow border border-border'>
         {lat?.toFixed(4)}, {lng?.toFixed(4)}
       </div>
     </div>

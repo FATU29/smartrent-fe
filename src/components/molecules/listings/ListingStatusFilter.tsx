@@ -57,7 +57,7 @@ export const ListingStatusFilter: React.FC<ListingStatusFilterProps> = ({
               {((count ?? 0) > 0 || status === POST_STATUS.ALL) && (
                 <span
                   className={cn(
-                    'min-w-5 rounded-full border px-1 text-[10px] leading-none py-1 flex items-center justify-center',
+                    'min-w-5 rounded-full border px-1 text-2xs leading-none py-1 flex items-center justify-center',
                     active
                       ? 'bg-primary/10 border-primary/30 text-primary'
                       : 'bg-muted border-border/50 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/30',

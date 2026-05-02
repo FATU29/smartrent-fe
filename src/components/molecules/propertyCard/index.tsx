@@ -300,7 +300,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               {verified && (
                 <Badge className='bg-emerald-500/90 text-white text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm'>
                   <Check className='w-3 h-3' />
-                  <span className='font-medium text-[11px]'>
+                  <span className='font-medium text-2xs'>
                     {t('homePage.property.verified')}
                   </span>
                 </Badge>
@@ -313,7 +313,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                       className={`${vipBadgeConfig.className} text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm`}
                     >
                       <VipIcon className='w-3 h-3' />
-                      <span className='font-medium text-[11px]'>
+                      <span className='font-medium text-2xs'>
                         {vipBadgeConfig.label}
                       </span>
                     </Badge>
@@ -445,7 +445,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             <Badge
               className={classNames(
                 'bg-emerald-500/90 text-white rounded-full shadow-md flex items-center gap-0.5 backdrop-blur-sm',
-                isCompact ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2.5 py-1',
+                isCompact ? 'text-2xs px-1.5 py-0.5' : 'text-xs px-2.5 py-1',
               )}
             >
               <Check className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
@@ -460,7 +460,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   className={classNames(
                     `${vipBadgeConfig.className} rounded-full shadow-md flex items-center gap-0.5 backdrop-blur-sm`,
                     isCompact
-                      ? 'text-[10px] px-1.5 py-0.5'
+                      ? 'text-2xs px-1.5 py-0.5'
                       : 'text-xs px-2.5 py-1',
                   )}
                 >
@@ -476,7 +476,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           <div
             className={classNames(
               'absolute bottom-1.5 left-1.5 flex items-center gap-1 bg-black/60 text-white rounded-full backdrop-blur-md',
-              isCompact ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2 py-0.5',
+              isCompact ? 'text-2xs px-1.5 py-0.5' : 'text-xs px-2 py-0.5',
             )}
           >
             <Camera className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
@@ -541,7 +541,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                         'flex items-center gap-1 rounded-full font-medium',
                         isCompact
                           ? 'text-xs px-2.5 py-0.5'
-                          : 'text-[10px] px-2 py-0.5',
+                          : 'text-2xs px-2 py-0.5',
                       )}
                     >
                       {ProductTypeIcon && (
@@ -747,7 +747,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     </Typography>
                   )}
                   {isProfessionalBroker && (
-                    <span className='inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-700/40 dark:bg-emerald-950/20 dark:text-emerald-300'>
+                    <span className='inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-50 px-2 py-0.5 text-2xs font-semibold text-emerald-700 dark:border-emerald-700/40 dark:bg-emerald-950/20 dark:text-emerald-300'>
                       {t('userMenu.proBroker')}
                     </span>
                   )}

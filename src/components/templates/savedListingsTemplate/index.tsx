@@ -11,6 +11,7 @@ import {
   SavedListingsLoadingState,
 } from '@/components/organisms/savedListings'
 import { List, useListContext } from '@/contexts/list'
+import { PageContainer } from '@/components/atoms/pageContainer'
 
 /**
  * SavedListingsTemplate
@@ -47,7 +48,7 @@ const SavedListingsContent: React.FC = () => {
 
   // Main content - Only show when there are items
   return (
-    <div className='container mx-auto px-4 py-8'>
+    <PageContainer width='grid' className='py-8'>
       <SavedListingsHeader
         totalElements={pagination.totalCount}
         onBack={() => router.back()}
@@ -64,7 +65,7 @@ const SavedListingsContent: React.FC = () => {
           showPageNumbers={true}
         />
       )}
-    </div>
+    </PageContainer>
   )
 }
 

@@ -53,21 +53,21 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
       )}
     >
       {/* ── Header ── */}
-      <div className='flex items-center gap-2.5 px-3 pt-3 pb-2.5'>
-        <Avatar className='h-9 w-9 flex-shrink-0'>
+      <div className='flex items-center gap-3 p-3'>
+        <Avatar className='h-10 w-10 flex-shrink-0'>
           <AvatarImage src={undefined} alt={displayName} />
-          <AvatarFallback className='bg-blue-50 text-blue-700 text-xs font-semibold'>
+          <AvatarFallback className='bg-blue-50 text-blue-700 text-sm font-semibold'>
             {getInitials(displayName)}
           </AvatarFallback>
         </Avatar>
 
-        <div className='min-w-0'>
-          <p className='text-[13px] font-semibold text-foreground truncate leading-snug'>
+        <div className='min-w-0 flex flex-col gap-0.5'>
+          <p className='text-sm font-semibold text-foreground truncate leading-tight'>
             {displayName}
           </p>
-          <span className='inline-flex items-center gap-1 mt-0.5 bg-muted rounded-full px-2 py-0.5'>
-            <span className='w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0' />
-            <span className='text-[10px] text-muted-foreground'>
+          <span className='inline-flex items-center self-start gap-1.5 bg-muted rounded-full px-2 py-0.5'>
+            <span className='w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0' />
+            <span className='text-xs text-muted-foreground'>
               {t('landlord')}
             </span>
           </span>
@@ -77,24 +77,24 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
       <div className='mx-3 border-t border-border' />
 
       {/* ── Contact rows ── */}
-      <div className='px-2 py-1.5 space-y-0'>
+      <div className='p-2 space-y-0.5'>
         {phone && (
           <a
             href={`tel:${phone.replace(/[\s.-]/g, '')}`}
-            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-accent transition-colors'
+            className='flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-accent transition-colors'
             onClick={(e) => e.stopPropagation()}
           >
-            <div className='w-6 h-6 rounded-md bg-muted/40 border border-border flex items-center justify-center flex-shrink-0'>
+            <div className='w-8 h-8 rounded-md bg-muted/50 border border-border flex items-center justify-center flex-shrink-0'>
               <Phone
-                className='w-3 h-3 text-muted-foreground'
+                className='w-3.5 h-3.5 text-muted-foreground'
                 aria-hidden='true'
               />
             </div>
             <div className='min-w-0 flex-1'>
-              <p className='text-[9px] uppercase tracking-wide text-muted-foreground leading-none mb-0.5'>
+              <p className='text-xs uppercase tracking-wide text-muted-foreground leading-none mb-1'>
                 Điện thoại
               </p>
-              <p className='text-[12px] text-foreground tabular-nums'>
+              <p className='text-sm text-foreground tabular-nums leading-tight'>
                 {formatVNPhone(phone)}
               </p>
             </div>
@@ -104,20 +104,22 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
         {email && (
           <a
             href={`mailto:${email}`}
-            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-accent transition-colors'
+            className='flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-accent transition-colors'
             onClick={(e) => e.stopPropagation()}
           >
-            <div className='w-6 h-6 rounded-md bg-muted/40 border border-border flex items-center justify-center flex-shrink-0'>
+            <div className='w-8 h-8 rounded-md bg-muted/50 border border-border flex items-center justify-center flex-shrink-0'>
               <Mail
-                className='w-3 h-3 text-muted-foreground'
+                className='w-3.5 h-3.5 text-muted-foreground'
                 aria-hidden='true'
               />
             </div>
             <div className='min-w-0 flex-1 overflow-hidden'>
-              <p className='text-[9px] uppercase tracking-wide text-muted-foreground leading-none mb-0.5'>
+              <p className='text-xs uppercase tracking-wide text-muted-foreground leading-none mb-1'>
                 Email
               </p>
-              <p className='text-[12px] text-foreground truncate'>{email}</p>
+              <p className='text-sm text-foreground truncate leading-tight'>
+                {email}
+              </p>
             </div>
           </a>
         )}
@@ -127,25 +129,25 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
             href={zaloLink}
             target='_blank'
             rel='noopener noreferrer'
-            className='flex items-center gap-2.5 py-1.5 px-1.5 rounded-lg hover:bg-accent transition-colors'
+            className='flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-accent transition-colors'
             onClick={(e) => e.stopPropagation()}
           >
-            <div className='w-6 h-6 rounded-md bg-muted/40 border border-border flex items-center justify-center flex-shrink-0'>
+            <div className='w-8 h-8 rounded-md bg-muted/50 border border-border flex items-center justify-center flex-shrink-0'>
               <Image
                 src='/svg/zalo.svg'
                 alt='Zalo'
-                width={14}
-                height={14}
+                width={16}
+                height={16}
                 aria-hidden='true'
               />
             </div>
             <div className='min-w-0 flex-1'>
-              <p className='text-[9px] uppercase tracking-wide text-muted-foreground leading-none mb-0.5'>
+              <p className='text-xs uppercase tracking-wide text-muted-foreground leading-none mb-1'>
                 Nhắn tin
               </p>
-              <p className='text-[12px] text-foreground'>Zalo</p>
+              <p className='text-sm text-foreground leading-tight'>Zalo</p>
             </div>
-            <span className='text-[10px] font-medium bg-blue-50 text-blue-700 rounded-full px-1.5 py-0.5 flex-shrink-0'>
+            <span className='text-xs font-medium bg-blue-50 text-blue-700 rounded-full px-2 py-0.5 flex-shrink-0'>
               Mở
             </span>
           </a>
@@ -157,14 +159,14 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
         href={sellerPageUrl}
         target='_blank'
         rel='noopener noreferrer'
-        className='flex items-center justify-between px-3 py-2 border-t border-border hover:bg-accent transition-colors group'
+        className='flex items-center justify-between px-3 py-2.5 border-t border-border hover:bg-accent transition-colors group'
         onClick={(e) => e.stopPropagation()}
       >
-        <span className='text-[11px] text-blue-600 font-medium'>
+        <span className='text-sm text-blue-600 font-medium'>
           {t('viewSellerPage')}
         </span>
         <ArrowRight
-          className='w-3 h-3 text-blue-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all'
+          className='w-4 h-4 text-blue-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all'
           strokeWidth={2}
           aria-hidden='true'
         />

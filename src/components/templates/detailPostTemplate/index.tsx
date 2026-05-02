@@ -44,6 +44,7 @@ import { ListingDetail } from '@/api/types'
 import { PhoneClickDetailService } from '@/api/services'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { mapListingToRecentlyViewed } from '@/utils/recentlyViewed/mapper'
+import { PageContainer } from '@/components/atoms/pageContainer'
 
 export interface DetailPostTemplateProps {
   listing: ListingDetail
@@ -53,6 +54,11 @@ export interface DetailPostTemplateProps {
   onChatZalo?: () => void
   onPlayVideo?: () => void
   onSimilarPropertyClick?: (listing: ListingDetail) => void
+  // Render without page chrome (no min-h-screen, no centered container, no
+  // sticky-header offset). Sidebar collapses into the main column and the
+  // recently-viewed section is dropped. Used when embedding the detail view
+  // inside a Dialog (e.g. AI chat).
+  embedded?: boolean
 }
 
 interface Section {
@@ -65,6 +71,7 @@ interface Section {
 const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   listing,
   onChatZalo,
+  embedded = false,
 }) => {
   const t = useTranslations()
   const { addListing } = useRecentlyViewed()
@@ -127,7 +134,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
       {
         id: 'sellerContactMobile',
         component: (
-          <div className='lg:hidden'>
+          <div className={embedded ? 'w-full max-w-sm' : 'lg:hidden'}>
             <SellerContact
               host={user}
               onChatZalo={handleChatZalo}
@@ -194,10 +201,10 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         component: (
           <RecentlyViewedSection currentListingId={listing.listingId} />
         ),
-        isVisible: true,
+        isVisible: !embedded,
       },
     ],
-    [listing, t, address, mediaItems, amenities, description],
+    [listing, t, address, mediaItems, amenities, description, embedded],
   )
 
   // Render sections function
@@ -211,9 +218,15 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     )
   }
 
+  if (embedded) {
+    return (
+      <div className='flex flex-col gap-5'>{sections?.map(renderSection)}</div>
+    )
+  }
+
   return (
     <div className='min-h-screen bg-background'>
-      <div className='container max-w-6xl mx-auto px-4 py-6 lg:py-8'>
+      <PageContainer width='content' className='py-6 lg:py-8'>
         <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start'>
           {/* Main Content */}
           <div className='lg:col-span-8 flex flex-col gap-5 lg:gap-7'>
@@ -229,7 +242,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
             />
           </div>
         </div>
-      </div>
+      </PageContainer>
     </div>
   )
 }

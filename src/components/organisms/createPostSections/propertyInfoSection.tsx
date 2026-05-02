@@ -1,4 +1,5 @@
 import React from 'react'
+import dynamic from 'next/dynamic'
 import {
   Card,
   CardContent,
@@ -8,6 +9,7 @@ import {
 import { Button } from '@/components/atoms/button'
 import { Input } from '@/components/atoms/input'
 import { Textarea } from '@/components/atoms/textarea'
+import { Typography } from '@/components/atoms/typography'
 import SelectDropdown from '@/components/atoms/select-dropdown'
 import {
   MapPin,
@@ -49,12 +51,16 @@ import {
 import { getAmenityByCode, AMENITIES_CONFIG } from '@/constants/amenities'
 import { useCategories } from '@/hooks/useCategories'
 import { AddressInput } from '@/components/molecules/createPostAddress'
-import GoogleMapPicker from '@/components/molecules/googleMapPicker'
 import NumberField from '@/components/atoms/number-field'
 import classNames from 'classnames'
 import { useGenerateListingDescription } from '@/hooks/useAI'
 import type { ListingDescriptionRequest } from '@/api/types/ai.type'
 import { toast } from 'sonner'
+
+const GoogleMapPicker = dynamic(
+  () => import('@/components/molecules/googleMapPicker'),
+  { ssr: false },
+)
 
 interface PropertyInfoSectionProps {
   className?: string
@@ -488,10 +494,11 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
   return (
     <div className={classNames(className)}>
-      {/* Layout Wrapper */}
-      <div className='space-y-10'>
+      {/* Layout Wrapper — sections separated by a divider + breathing room
+          for visual scannability now that the outer card chrome is gone. */}
+      <div className='space-y-12 [&>*+*]:border-t [&>*+*]:border-border/50 [&>*+*]:pt-12'>
         {/* Main Property Information Card */}
-        <Card className='mb-6 shadow-lg border'>
+        <Card className='border-0 shadow-none p-0'>
           <CardHeader className='pb-4'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg'>
@@ -690,7 +697,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         </Card>
 
         {/* Property Details Card */}
-        <Card className='mb-6 shadow-lg border'>
+        <Card className='border-0 shadow-none p-0'>
           <CardHeader className='pb-4'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-green-100 dark:bg-green-900/30 rounded-lg'>
@@ -936,7 +943,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     return (
                       <label
                         key={amenity.key}
-                        className='flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-muted border-border text-muted-foreground hover:bg-accent focus-within:border-primary focus-within:bg-primary/5'
+                        className='flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-all duration-200 bg-muted/40 border-border/50 text-muted-foreground hover:bg-accent hover:border-border focus-within:border-primary focus-within:bg-primary/5'
                       >
                         {IconComponent && (
                           <IconComponent className='w-4 h-4 flex-shrink-0' />
@@ -975,7 +982,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         </Card>
 
         {/* Utilities & Structure Card */}
-        <Card className='mb-6 shadow-lg border'>
+        <Card className='border-0 shadow-none p-0'>
           <CardHeader className='pb-4'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg'>
@@ -987,10 +994,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
           <CardContent className='space-y-8'>
             {/* Monthly Utilities */}
             <div className='space-y-4'>
-              <h3 className='text-lg font-semibold text-foreground flex items-center gap-2'>
+              <Typography
+                variant='h5'
+                as='h3'
+                className='text-foreground flex items-center gap-2'
+              >
                 <ZapIcon className='w-5 h-5 text-yellow-500' />
                 {tUtilities('monthlyUtilities')}
-              </h3>
+              </Typography>
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
                 <Controller
                   name='waterPrice'
@@ -1121,10 +1132,14 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
             {/* Structure & Direction */}
             <div className='space-y-4'>
-              <h3 className='text-lg font-semibold text-foreground flex items-center gap-2'>
+              <Typography
+                variant='h5'
+                as='h3'
+                className='text-foreground flex items-center gap-2'
+              >
                 <Navigation className='w-5 h-5 text-orange-500' />
                 {tUtilities('structureDirection')}
-              </h3>
+              </Typography>
               <Controller
                 name='direction'
                 control={control}
@@ -1161,7 +1176,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
         </Card>
 
         {/* AI Content Card */}
-        <Card className='mb-6 shadow-lg border'>
+        <Card className='border-0 shadow-none p-0'>
           <CardHeader className='pb-4'>
             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3'>
               <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>

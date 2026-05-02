@@ -1,7 +1,7 @@
 import { SELLERNET_ROUTES } from '@/constants'
 import React, { useMemo } from 'react'
 import type { NextPageWithLayout } from '@/types/next-page'
-import SellernetLayout from '@/components/layouts/sellernet/SellernetLayout'
+import SellerLayout from '@/components/layouts/sellerLayout/SellerLayout'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
@@ -90,5 +90,5 @@ const MembershipPage: NextPageWithLayout = () => {
 export default MembershipPage
 
 MembershipPage.getLayout = (page: React.ReactNode) => (
-  <SellernetLayout>{page}</SellernetLayout>
+  <SellerLayout>{page}</SellerLayout>
 )

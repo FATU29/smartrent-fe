@@ -255,6 +255,10 @@
       'rlig' 1,
       'calt' 1;
     scroll-behavior: smooth;
+    /* Reserve scrollbar space at all times so popovers/selects/dialogs that
+       lock body-scroll don't cause horizontal layout shift when they open
+       and close. Supported in Chrome 94+, Firefox 97+, Safari 18.2+. */
+    scrollbar-gutter: stable;
   }
 
   /* Ensure full-height layout on mobile and avoid horizontal scroll */

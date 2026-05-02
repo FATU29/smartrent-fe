@@ -3,6 +3,7 @@ import { ProgressSteps } from '@/components/molecules/progressSteps'
 import { HeaderModule } from '@/components/molecules/createPostModules/headerModule'
 import { Card } from '@/components/atoms/card'
 import { Form } from '@/components/atoms/form'
+import { PageContainer } from '@/components/atoms/pageContainer'
 import { ValidationErrors } from '@/components/templates/shared/ValidationErrors'
 import type { ProgressStep } from '@/components/molecules/progressSteps'
 import type { UseFormReturn } from 'react-hook-form'
@@ -45,7 +46,11 @@ export const PostTemplateBase: React.FC<PostTemplateBaseProps> = ({
         className={`min-h-screen bg-background border-0 shadow-none p-0 ${className || ''}`}
       >
         <div ref={topRef} />
-        <Card className='w-full mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-4 sm:py-6 lg:py-8 border-0 shadow-none p-0'>
+        <PageContainer
+          width='form'
+          padded={false}
+          className='px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-4 sm:py-6 lg:py-8'
+        >
           <HeaderModule />
 
           <Card className='mb-6 sm:mb-8 flex justify-center border-0 shadow-none p-0'>
@@ -66,7 +71,7 @@ export const PostTemplateBase: React.FC<PostTemplateBaseProps> = ({
           {navigationButtons}
 
           {children}
-        </Card>
+        </PageContainer>
       </Card>
     </Form>
   )

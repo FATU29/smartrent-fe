@@ -112,7 +112,7 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
               variant='outline'
               className={classNames(
                 'font-medium',
-                isFeatured ? 'text-xs' : 'text-[10px] px-1.5 py-0.5',
+                isFeatured ? 'text-xs' : 'text-2xs px-1.5 py-0.5',
                 catStyle,
               )}
             >
@@ -156,7 +156,7 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
             <div
               className={classNames(
                 'flex flex-wrap items-center text-muted-foreground border-t',
-                isFeatured ? 'gap-2 text-xs pt-3' : 'gap-1.5 text-[11px] pt-2',
+                isFeatured ? 'gap-2 text-xs pt-3' : 'gap-1.5 text-2xs pt-2',
               )}
             >
               <span className='inline-flex items-center gap-1'>

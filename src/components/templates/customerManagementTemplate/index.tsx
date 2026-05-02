@@ -21,6 +21,8 @@ import { Button } from '@/components/atoms/button'
 import { Card } from '@/components/atoms/card'
 import { Badge } from '@/components/atoms/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
+import { PageContainer } from '@/components/atoms/pageContainer'
+import { Typography } from '@/components/atoms/typography'
 import UnifiedDetailDialog from '@/components/molecules/customerManagement/UnifiedDetailDialog'
 import StatsCarousel from '@/components/molecules/customerManagement/StatsCarousel'
 import {
@@ -118,59 +120,73 @@ const CustomerManagementTemplate = () => {
   // Render loading state
   if (isLoading) {
     return (
-      <div className='container mx-auto py-8'>
+      <PageContainer width='grid' className='py-8'>
         <div className='flex items-center justify-center py-24'>
           <Loader2 className='h-8 w-8 animate-spin text-primary' />
           <span className='ml-3 text-lg'>{t('loading')}</span>
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
   // Render error state
   if (error) {
     return (
-      <div className='container mx-auto py-8'>
+      <PageContainer width='grid' className='py-8'>
         <div className='rounded-lg border border-destructive/30 bg-destructive/10 p-6'>
-          <h3 className='text-lg font-semibold text-destructive mb-2'>
+          <Typography variant='h5' as='h3' className='text-destructive mb-2'>
             {t('error')}
-          </h3>
+          </Typography>
           <p className='text-destructive mb-4'>{error.message}</p>
           <Button onClick={() => refetch()} variant='outline'>
             {t('retry')}
           </Button>
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
   // Render empty state
   if (!data?.data || data.data.length === 0) {
     return (
-      <div className='container mx-auto py-8'>
+      <PageContainer width='grid' className='py-8'>
         <div className='mb-8'>
-          <h1 className='text-3xl font-bold'>{t('title')}</h1>
+          <Typography variant='pageTitle'>{t('title')}</Typography>
           <p className='text-muted-foreground mt-2'>{t('subtitle')}</p>
         </div>
 
-        <Card className='p-12 text-center'>
-          <Users className='h-16 w-16 text-muted-foreground/60 mx-auto mb-4' />
-          <h3 className='text-xl font-semibold mb-2'>
+        <div className='relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-background to-primary/5 px-6 py-16 text-center'>
+          {/* Soft radial accent at the top to draw the eye to the icon */}
+          <div
+            className='pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_top,theme(colors.primary/0.18),transparent_70%)]'
+            aria-hidden='true'
+          />
+
+          {/* Solid primary icon — focal point */}
+          <div className='relative mb-6 flex size-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/25'>
+            <Users className='size-8' aria-hidden='true' />
+          </div>
+
+          <Typography
+            variant='h4'
+            as='h3'
+            className='relative mb-2 text-foreground'
+          >
             {t('emptyState.customers.title')}
-          </h3>
-          <p className='text-muted-foreground max-w-md mx-auto'>
+          </Typography>
+          <p className='relative max-w-md text-sm text-muted-foreground'>
             {t('emptyState.customers.description')}
           </p>
-        </Card>
-      </div>
+        </div>
+      </PageContainer>
     )
   }
 
   return (
-    <div className='container mx-auto pt-8 pb-20 space-y-6'>
+    <PageContainer width='grid' className='pt-8 pb-20 space-y-6'>
       {/* Header */}
       <div>
-        <h1 className='text-3xl font-bold'>{t('title')}</h1>
+        <Typography variant='pageTitle'>{t('title')}</Typography>
         <p className='text-muted-foreground mt-2'>{t('subtitle')}</p>
       </div>
 
@@ -255,7 +271,9 @@ const CustomerManagementTemplate = () => {
       {/* Customer Table */}
       <Card className='overflow-hidden'>
         <div className='p-6 border-b'>
-          <h3 className='text-lg font-semibold'>{t('table.customer')}</h3>
+          <Typography variant='h5' as='h3'>
+            {t('table.customer')}
+          </Typography>
           <p className='text-sm text-muted-foreground mt-1'>
             {t('pagination.showing')} {filteredData.length}{' '}
             {t('pagination.results')}
@@ -264,9 +282,9 @@ const CustomerManagementTemplate = () => {
 
         {filteredData.length === 0 ? (
           <div className='text-center py-12'>
-            <h3 className='text-lg font-semibold mb-2'>
+            <Typography variant='h5' as='h3' className='mb-2'>
               {t('emptyState.search.title')}
-            </h3>
+            </Typography>
             <p className='text-muted-foreground'>
               {t('emptyState.search.description')}
             </p>
@@ -494,7 +512,7 @@ const CustomerManagementTemplate = () => {
         onSwitchToCustomer={handleSwitchToCustomer}
         onSwitchToListing={handleSwitchToListing}
       />
-    </div>
+    </PageContainer>
   )
 }
 

@@ -11,6 +11,7 @@ import {
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useChatLogic } from '@/hooks/useChatAi'
 import { OPEN_AI_CHAT_WIDGET_EVENT } from '@/constants/events'
+import { MEDIA_BELOW_MD } from '@/constants/breakpoints'
 
 import AiChatHeader from '@/components/organisms/aiChatHeader'
 import AiChatInterface from '@/components/organisms/aiChatInterface'
@@ -29,18 +30,20 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
   const [isOpen, setIsOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   //Init use hook
-  const isMobile = useMediaQuery('(max-width: 768px)')
+  const isMobile = useMediaQuery(MEDIA_BELOW_MD)
   const t = useTranslations('aiChat')
   const {
     messages,
     isLoading,
     isTyping,
+    streamingStatus,
     inputValue,
     scrollRef,
     bottomRef,
     isAtBottom,
     scrollToBottom,
     sendMessage,
+    viewListingDetail,
     handleInputChange,
   } = useChatLogic()
 
@@ -139,12 +142,14 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                 inputValue={inputValue}
                 isLoading={isLoading}
                 isTyping={isTyping}
+                streamingStatus={streamingStatus}
                 scrollRef={scrollRef}
                 bottomRef={bottomRef}
                 isAtBottom={isAtBottom}
                 onScrollToBottom={scrollToBottom}
                 onInputChange={handleInputChange}
                 onSendMessage={sendMessage}
+                onViewListingDetail={viewListingDetail}
                 isMobile
                 className='flex-1 min-h-0'
               />
@@ -195,12 +200,14 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                   inputValue={inputValue}
                   isLoading={isLoading}
                   isTyping={isTyping}
+                  streamingStatus={streamingStatus}
                   scrollRef={scrollRef}
                   bottomRef={bottomRef}
                   isAtBottom={isAtBottom}
                   onScrollToBottom={scrollToBottom}
                   onInputChange={handleInputChange}
                   onSendMessage={sendMessage}
+                  onViewListingDetail={viewListingDetail}
                   isMobile={false}
                   className='flex-1 min-h-0'
                 />

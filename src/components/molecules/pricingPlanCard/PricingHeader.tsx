@@ -60,7 +60,7 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
         >
           <Badge
             variant='secondary'
-            className='rounded-b-none rounded-t-md px-3 py-1 text-[11px] tracking-wide'
+            className='rounded-b-none rounded-t-md px-3 py-1 text-2xs tracking-wide'
           >
             {bestSellerLabel}
           </Badge>

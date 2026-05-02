@@ -76,7 +76,7 @@ const NotificationPanel: React.FC = () => {
       <div className='flex items-center gap-2'>
         <h3 className='text-base font-semibold sm:text-sm'>{t('title')}</h3>
         {unreadCount > 0 && (
-          <Badge variant='secondary' className='text-[10px]'>
+          <Badge variant='secondary' className='text-2xs'>
             {unreadCount} {t('unread')}
           </Badge>
         )}
@@ -168,7 +168,7 @@ const NotificationPanel: React.FC = () => {
             <BellDot className='h-5 w-5' />
             <Badge
               variant='destructive'
-              className='absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold'
+              className='absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-2xs font-bold'
             >
               {unreadCount > 99 ? '99+' : unreadCount}
             </Badge>

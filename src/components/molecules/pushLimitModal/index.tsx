@@ -164,7 +164,7 @@ const PushLimitModal: React.FC<PushLimitModalProps> = ({
               <Clock className='h-5 w-5' aria-hidden='true' />
             </div>
             <div className='flex-1 min-w-0'>
-              <div className='text-[11px] uppercase tracking-wide text-muted-foreground font-medium'>
+              <div className='text-2xs uppercase tracking-wide text-muted-foreground font-medium'>
                 {t('countdown.label')}
               </div>
               <div
@@ -179,7 +179,7 @@ const PushLimitModal: React.FC<PushLimitModalProps> = ({
           {/* Progress bar */}
           <div className='space-y-1.5'>
             <Progress value={percent} className='h-1.5' />
-            <div className='flex justify-between text-[11px] text-muted-foreground'>
+            <div className='flex justify-between text-2xs text-muted-foreground'>
               <span>{t('progress.start')}</span>
               <span>{t('progress.end')}</span>
             </div>

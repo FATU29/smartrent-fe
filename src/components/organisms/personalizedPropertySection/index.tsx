@@ -13,6 +13,7 @@ import {
   type CarouselApi,
 } from '@/components/atoms/carousel'
 import { Skeleton } from '@/components/atoms/skeleton'
+import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 
 const PersonalizedPropertySection: React.FC = () => {
@@ -90,9 +91,9 @@ const PersonalizedPropertySection: React.FC = () => {
       <div className='flex items-start gap-3 mb-5 sm:mb-6'>
         <div className='w-1 h-7 sm:h-8 rounded-full bg-primary mt-0.5' />
         <div>
-          <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
+          <Typography variant='sectionTitle' className='text-foreground'>
             {t('title')}
-          </h2>
+          </Typography>
           <p className='text-sm text-muted-foreground mt-1'>{t('subtitle')}</p>
         </div>
       </div>

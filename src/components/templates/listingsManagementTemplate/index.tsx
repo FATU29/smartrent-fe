@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { ListingStatusFilterResponsive } from '@/components/molecules/listings/ListingStatusFilterResponsive'
 import { ListingEmptyState } from '@/components/organisms/listings/ListingEmptyState'
 import { ListingToolbar } from '@/components/molecules/listings/ListingToolbar'
-import dynamic from 'next/dynamic'
+import ResidentialFilterDialog from '@/components/molecules/residentialFilterDialog'
 import { ListingsList } from '@/components/organisms/listings-list'
 import { ListingListSkeleton } from '@/components/organisms/listings-list/ListingListSkeleton'
 import { useDeleteListing } from '@/hooks/useListings/useDeleteListing'
@@ -16,13 +16,9 @@ import { MembershipPushDisplay } from '@/components/molecules/listings/Membershi
 import { usePushListing, usePushQuota } from '@/hooks/usePush'
 import PushLimitModal from '@/components/molecules/pushLimitModal'
 import { PushLimitError } from '@/api/types/push.type'
+import { PageContainer } from '@/components/atoms/pageContainer'
+import { Typography } from '@/components/atoms/typography'
 
-const ResidentialFilterDialog = dynamic(
-  () => import('@/components/molecules/residentialFilterDialog'),
-  {
-    ssr: false,
-  },
-)
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { List, useListContext } from '@/contexts/list'
@@ -326,8 +322,8 @@ export interface ListingsManagementTemplateProps {
 const ToolbarWithBadge: React.FC<{
   total: number
   keyword: string
-  onFilterClick: () => void
-}> = ({ total, keyword, onFilterClick }) => {
+  onMoreFiltersClick: () => void
+}> = ({ total, keyword, onMoreFiltersClick }) => {
   const { updateFilters } = useListContext()
 
   return (
@@ -335,7 +331,7 @@ const ToolbarWithBadge: React.FC<{
       total={total}
       keyword={keyword}
       onSearch={(query) => updateFilters({ keyword: query, page: 1 })}
-      onFilterClick={onFilterClick}
+      onMoreFiltersClick={onMoreFiltersClick}
     />
   )
 }
@@ -364,6 +360,7 @@ const FilterDialogWrapper: React.FC<{
 export const ListingsManagementTemplate: React.FC<
   ListingsManagementTemplateProps
 > = ({ children }) => {
+  const tNav = useTranslations('navigation.seller')
   const [status, setStatus] = useState<ListingFilterStatus>(
     POST_STATUS.ALL as ListingFilterStatus,
   )
@@ -447,8 +444,9 @@ export const ListingsManagementTemplate: React.FC<
   )
 
   return (
-    <div className='p-3 sm:p-4'>
-      <div className='mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6'>
+    <PageContainer width='grid' padded={false} className='p-3 sm:p-4'>
+      <div className='flex flex-col gap-4 sm:gap-6'>
+        <Typography variant='pageTitle'>{tNav('listings')}</Typography>
         <ListingStatusFilterResponsive
           value={status}
           onChange={handleStatusChange}
@@ -458,7 +456,7 @@ export const ListingsManagementTemplate: React.FC<
         <ToolbarWithBadge
           total={listings.length}
           keyword={filters.keyword ?? ''}
-          onFilterClick={() => {
+          onMoreFiltersClick={() => {
             setFilterOpen(true)
           }}
         />
@@ -469,6 +467,6 @@ export const ListingsManagementTemplate: React.FC<
           onApply={() => setFilterOpen(false)}
         />
       </div>
-    </div>
+    </PageContainer>
   )
 }

@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils'
 import { CATEGORY_CODE, imageMapCategory } from '@/utils/mapper'
 import type { CategoryStatsItem } from '@/api/types'
 import { Skeleton } from '@/components/atoms/skeleton'
+import { Typography } from '@/components/atoms/typography'
 
 interface TopInterestItem {
   id: number
@@ -89,9 +90,9 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
       <div className='flex items-center justify-between mb-5 sm:mb-6'>
         <div className='flex items-center gap-3'>
           <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
-          <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
+          <Typography variant='sectionTitle' className='text-foreground'>
             {t('title')}
-          </h2>
+          </Typography>
         </div>
         <Link href={PUBLIC_ROUTES.LISTING_LISTING}>
           <Button
@@ -160,7 +161,7 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
                       <p className='text-white font-medium text-sm sm:text-base drop-shadow'>
                         {item.title}
                       </p>
-                      <span className='text-white/80 text-[11px] sm:text-xs'>
+                      <span className='text-white/80 text-2xs sm:text-xs'>
                         {item.listings.toLocaleString()} {t('listingsSuffix')}
                       </span>
                     </div>

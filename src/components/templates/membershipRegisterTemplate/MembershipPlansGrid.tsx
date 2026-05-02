@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import type { Membership } from '@/api/types/membership.type'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { MEDIA_BELOW_MD, MEDIA_BELOW_XL } from '@/constants/breakpoints'
 import { motion } from 'framer-motion'
 import {
   Carousel,
@@ -29,8 +30,8 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
   onPlanSelect,
 }) => {
   const tPage = useTranslations('membershipPage')
-  const isTabletOrBelow = useMediaQuery('(max-width: 1279px)') // xl breakpoint
-  const isMobile = useMediaQuery('(max-width: 767px)') // mobile breakpoint
+  const isTabletOrBelow = useMediaQuery(MEDIA_BELOW_XL)
+  const isMobile = useMediaQuery(MEDIA_BELOW_MD)
 
   const handlePlanSelect = useCallback(
     (membershipId: number) => {
