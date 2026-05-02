@@ -76,9 +76,11 @@ const useSearchSuggestions = ({
     }
 
     const seq = ++requestSeqRef.current
-    setIsLoading(true)
 
-    debounceTimerRef.current = setTimeout(async () => {
+    const timer = setTimeout(async () => {
+      // Only flip to loading once the request actually fires — otherwise every
+      // keystroke would briefly show a spinner that gets cancelled 200ms later.
+      setIsLoading(true)
       try {
         const res = await SearchSuggestionService.getSuggestions({
           q: trimmed,
@@ -105,12 +107,12 @@ const useSearchSuggestions = ({
         }
       }
     }, debounceMs)
+    debounceTimerRef.current = timer
 
+    // Capture the timer in the closure so cleanup clears the right handle even
+    // if a subsequent effect run has already overwritten debounceTimerRef.
     return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-        debounceTimerRef.current = null
-      }
+      clearTimeout(timer)
     }
   }, [query, enabled, debounceMs, limit, provinceId, categoryId])
 
