@@ -275,7 +275,7 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
           <div className='flex items-center gap-4 ml-2'>
             <div
               className={cn(
-                'flex items-center gap-2 rounded-full border px-3 h-9 transition-colors',
+                'flex items-center gap-1.5 rounded-full border px-2.5 h-8 transition-colors',
                 filters.isBroker
                   ? 'bg-primary/10 border-primary/40 text-primary'
                   : 'bg-background border-border text-foreground hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
@@ -283,11 +283,11 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
             >
               <BadgeCheck
                 className={cn(
-                  'h-4 w-4',
+                  'h-3.5 w-3.5',
                   filters.isBroker ? 'text-primary' : 'text-muted-foreground',
                 )}
               />
-              <span className='text-sm font-medium whitespace-nowrap'>
+              <span className='text-xs font-medium whitespace-nowrap'>
                 {t('toggles.professionalBroker')}
               </span>
               <Switch

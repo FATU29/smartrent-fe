@@ -164,7 +164,7 @@ const SuggestionRow: React.FC<SuggestionRowProps> = ({
       joined && joined.toLowerCase() !== item.text.toLowerCase() ? joined : null
   } else if (item.type === 'POPULAR_QUERY' && isPopularMeta(item.metadata)) {
     trailing = (
-      <span className='text-2xs text-muted-foreground tabular-nums px-1.5 py-0.5 rounded-full bg-muted'>
+      <span className='text-2xs text-muted-foreground tabular-nums px-1.5 py-px rounded-full bg-muted'>
         {item.metadata.hitCount.toLocaleString()}
       </span>
     )
@@ -183,7 +183,7 @@ const SuggestionRow: React.FC<SuggestionRowProps> = ({
       onClick={onSelect}
       onMouseEnter={onMouseEnter}
       className={cn(
-        'group flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg mx-2 transition-colors',
+        'group flex items-center gap-2.5 px-2.5 py-1.5 cursor-pointer rounded-md mx-2 transition-colors',
         active
           ? 'bg-accent text-accent-foreground'
           : 'hover:bg-accent/50 hover:text-accent-foreground',
@@ -191,18 +191,18 @@ const SuggestionRow: React.FC<SuggestionRowProps> = ({
     >
       <span
         className={cn(
-          'flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
+          'flex h-7 w-7 shrink-0 items-center justify-center rounded-full',
           TYPE_ACCENT[item.type],
         )}
       >
-        <Icon className='h-4 w-4' />
+        <Icon className='h-3.5 w-3.5' />
       </span>
       <span className='flex-1 min-w-0'>
-        <span className='block truncate text-sm font-medium text-foreground'>
+        <span className='block truncate text-xs font-medium text-foreground leading-tight'>
           {highlighted}
         </span>
         {secondary ? (
-          <span className='block truncate text-xs text-muted-foreground mt-0.5'>
+          <span className='block truncate text-2xs text-muted-foreground mt-0.5 leading-tight'>
             {secondary}
           </span>
         ) : null}
@@ -210,7 +210,7 @@ const SuggestionRow: React.FC<SuggestionRowProps> = ({
       {trailing}
       <ArrowRight
         className={cn(
-          'h-4 w-4 shrink-0 transition-all',
+          'h-3.5 w-3.5 shrink-0 transition-all',
           active
             ? 'text-foreground opacity-100 translate-x-0'
             : 'text-muted-foreground/0 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-muted-foreground',
@@ -246,7 +246,7 @@ const RunSearchRow: React.FC<RunSearchRowProps> = ({
     onClick={onSelect}
     onMouseEnter={onMouseEnter}
     className={cn(
-      'group flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg mx-2 transition-colors',
+      'group flex items-center gap-2.5 px-2.5 py-1.5 cursor-pointer rounded-md mx-2 transition-colors',
       active
         ? 'bg-primary/10 text-foreground'
         : 'hover:bg-accent/50 hover:text-accent-foreground',
@@ -254,21 +254,21 @@ const RunSearchRow: React.FC<RunSearchRowProps> = ({
   >
     <span
       className={cn(
-        'flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
+        'flex h-7 w-7 shrink-0 items-center justify-center rounded-full',
         'bg-primary text-primary-foreground',
       )}
     >
-      <Search className='h-4 w-4' />
+      <Search className='h-3.5 w-3.5' />
     </span>
     <span className='flex-1 min-w-0'>
-      <span className='block truncate text-xs text-muted-foreground'>
+      <span className='block truncate text-2xs text-muted-foreground leading-tight'>
         {label}
       </span>
-      <span className='block truncate text-sm font-semibold text-foreground'>
+      <span className='block truncate text-xs font-semibold text-foreground leading-tight mt-0.5'>
         “{query}”
       </span>
     </span>
-    <kbd className='hidden sm:inline-flex items-center gap-1 rounded-md border border-border bg-muted px-1.5 py-0.5 text-2xs text-muted-foreground'>
+    <kbd className='hidden sm:inline-flex items-center gap-1 rounded-md border border-border bg-muted px-1.5 py-px text-2xs text-muted-foreground'>
       <CornerDownLeft className='h-3 w-3' />
     </kbd>
   </div>
