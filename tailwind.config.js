@@ -246,14 +246,6 @@ module.exports = {
       info: '#007BFF', // blue-500 (primary)
     },
     extend: {
-      fontSize: {
-        // Fills the gap between the default Tailwind text-xs (12px) and
-        // text-sm (14px) / text-base (16px). Replaces the 65 occurrences of
-        // arbitrary `text-[10px]` / `text-[11px]` (collapsed to one token)
-        // and the 5 occurrences of `text-[15px]`.
-        '2xs': ['0.6875rem', { lineHeight: '1rem' }], // 11px / 16
-        md: ['0.9375rem', { lineHeight: '1.375rem' }], // 15px / 22
-      },
       fontFamily: {
         sans: [
           'Helvetica Neue',
