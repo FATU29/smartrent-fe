@@ -65,6 +65,22 @@ const CategoryQuerySync: React.FC<{ categoryFromQuery?: number }> = ({
   return null
 }
 
+// Mirror context filters into the URL so any change inside the filter bar
+// (CategoryDropdown, price/area, isBroker, sort, etc.) shows up as query
+// params and is shareable / restorable. Lives inside ListProvider so it can
+// observe filter state directly via useListContext.
+const FiltersUrlSync: React.FC<{
+  pushFiltersToQuery: (filters: ListingFilterRequest) => void
+}> = ({ pushFiltersToQuery }) => {
+  const { filters } = useListContext<ListingFilterRequest>()
+
+  useEffect(() => {
+    pushFiltersToQuery(filters)
+  }, [filters, pushFiltersToQuery])
+
+  return null
+}
+
 const parseBooleanQueryParam = (
   query: Record<string, unknown>,
   key: string,
@@ -177,7 +193,6 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
       filters: ListingFilterRequest,
     ): Promise<ApiResponse<ListingSearchResponse<ListingDetail>>> => {
       const backendRequest = mapFrontendToBackendRequest(filters)
-      pushFiltersToQuery(filters)
 
       const backendResponse = await ListingService.search(backendRequest)
 
@@ -207,7 +222,7 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
         data: frontendData,
       }
     },
-    [pushFiltersToQuery],
+    [],
   )
 
   if (!clientInit) {
@@ -232,6 +247,7 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
           initialPagination={clientInit.initialPagination}
         >
           <CategoryQuerySync categoryFromQuery={categoryFromQuery} />
+          <FiltersUrlSync pushFiltersToQuery={pushFiltersToQuery} />
           <LocationProvider>
             <ResidentialPropertiesTemplate />
           </LocationProvider>
