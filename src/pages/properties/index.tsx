@@ -45,13 +45,21 @@ const parseNumberFromRouterQuery = (
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
+// Sync URL → filter ONLY when the URL's categoryId changes externally
+// (e.g. the navigation menu pushes a new categoryId while already on
+// /properties). We deliberately do NOT depend on `filters.categoryId`,
+// otherwise this effect re-fires every time the user picks a category in the
+// dropdown — at that point the URL hasn't been pushed yet, so it would clobber
+// the user's selection back to the stale URL value.
 const CategoryQuerySync: React.FC<{ categoryFromQuery?: number }> = ({
   categoryFromQuery,
 }) => {
   const { filters, updateFilters } = useListContext<ListingFilterRequest>()
+  const filtersRef = useRef(filters)
+  filtersRef.current = filters
 
   useEffect(() => {
-    if (filters.categoryId === categoryFromQuery) {
+    if (filtersRef.current.categoryId === categoryFromQuery) {
       return
     }
 
@@ -60,7 +68,7 @@ const CategoryQuerySync: React.FC<{ categoryFromQuery?: number }> = ({
       page: DEFAULT_PAGE,
       size: DEFAULT_PER_PAGE,
     })
-  }, [categoryFromQuery, filters.categoryId, updateFilters])
+  }, [categoryFromQuery, updateFilters])
 
   return null
 }
