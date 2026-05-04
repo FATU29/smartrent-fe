@@ -10,6 +10,11 @@ export interface RepostListingRequest {
   paymentProvider?: 'VNPAY' | 'ZALOPAY' | 'PAYPAL' | 'MOMO'
   /** New active duration in days. Valid: 10, 15, 30. */
   durationDays?: number
+  /**
+   * New VIP tier — only honoured on the quota path. Lets the owner switch
+   * tier at repost time using whichever post-quota they have.
+   */
+  vipType?: 'SILVER' | 'GOLD' | 'DIAMOND'
 }
 
 export interface RepostListingResponse {
@@ -20,6 +25,8 @@ export interface RepostListingResponse {
   repostedAt?: string
   expiryDate?: string
   durationDays?: number
+  /** Final VIP tier the listing ended up at after repost. */
+  vipType?: string
   message?: string
 
   // Only populated when payment is required
