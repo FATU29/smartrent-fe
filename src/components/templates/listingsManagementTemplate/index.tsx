@@ -9,9 +9,12 @@ import { ListingsList } from '@/components/organisms/listings-list'
 import { ListingListSkeleton } from '@/components/organisms/listings-list/ListingListSkeleton'
 import { useDeleteListing } from '@/hooks/useListings/useDeleteListing'
 import { useResubmitListing } from '@/hooks/useListings/useResubmitListing'
+import { useTakeDownListing } from '@/hooks/useListings/useTakeDownListing'
 import { toast } from 'sonner'
 import { DeleteListingDialog } from '@/components/molecules/deleteListingDialog'
+import { TakeDownListingDialog } from '@/components/molecules/takeDownListingDialog'
 import { ResubmitListingDialog } from '@/components/molecules/moderation'
+import { PUBLIC_ROUTES } from '@/constants/route'
 import { MembershipPushDisplay } from '@/components/molecules/listings/MembershipPushDisplay'
 import { usePushListing, usePushQuota } from '@/hooks/usePush'
 import PushLimitModal from '@/components/molecules/pushLimitModal'
@@ -63,11 +66,15 @@ const ListingsWithPagination = () => {
   const { updateFilters } = useListContext<ListingFilterRequest>()
   const deleteMutation = useDeleteListing()
   const resubmitMutation = useResubmitListing()
+  const takeDownMutation = useTakeDownListing()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedListingForDelete, setSelectedListingForDelete] =
     useState<ListingOwnerDetail | null>(null)
   const [resubmitDialogOpen, setResubmitDialogOpen] = useState(false)
   const [selectedListingForResubmit, setSelectedListingForResubmit] =
+    useState<ListingOwnerDetail | null>(null)
+  const [takeDownDialogOpen, setTakeDownDialogOpen] = useState(false)
+  const [selectedListingForTakeDown, setSelectedListingForTakeDown] =
     useState<ListingOwnerDetail | null>(null)
   const [pushLimitState, setPushLimitState] = useState<{
     open: boolean
@@ -85,6 +92,16 @@ const ListingsWithPagination = () => {
       rootMargin: '100px',
     },
   })
+
+  const handleCopyListingLink = async (listing: ListingOwnerDetail) => {
+    const url = `${window.location.origin}${PUBLIC_ROUTES.APARTMENT_DETAIL_PREFIX}/${listing.listingId}`
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success(tSeller('card.toast.copyLinkSuccess'))
+    } catch {
+      toast.error(tSeller('card.toast.copyLinkError'))
+    }
+  }
 
   const handlePushListing = async (listing: ListingOwnerDetail) => {
     const canPush =
@@ -180,26 +197,12 @@ const ListingsWithPagination = () => {
                 `/seller/update-post/${listing.listingId}?resubmit=true`,
               )
             }}
-            onViewReport={() => {
-              // TODO: Implement view report
+            onCopyListing={(listing) => {
+              handleCopyListingLink(listing)
             }}
-            onRequestVerification={() => {
-              // TODO: Implement request verification
-            }}
-            onCopyListing={() => {
-              // TODO: Implement copy listing
-            }}
-            onRequestContact={() => {
-              // TODO: Implement request contact
-            }}
-            onShare={() => {
-              // TODO: Implement share listing
-            }}
-            onActivityHistory={() => {
-              // TODO: Implement activity history
-            }}
-            onTakeDown={() => {
-              // TODO: Implement take down listing
+            onTakeDown={(listing) => {
+              setSelectedListingForTakeDown(listing)
+              setTakeDownDialogOpen(true)
             }}
             onDelete={(listing) => {
               setSelectedListingForDelete(listing)
@@ -235,6 +238,36 @@ const ListingsWithPagination = () => {
               )
             }}
             isLoading={deleteMutation.isPending}
+          />
+
+          <TakeDownListingDialog
+            listing={selectedListingForTakeDown}
+            open={takeDownDialogOpen}
+            onOpenChange={setTakeDownDialogOpen}
+            onConfirm={(listing) => {
+              const id = listing.listingId
+              // Optimistic remove from current view
+              removeItem(id)
+              setSelectedListingForTakeDown(null)
+              setTakeDownDialogOpen(false)
+
+              takeDownMutation.mutate(
+                { listingId: id },
+                {
+                  onSuccess: () => {
+                    toast.success(tSeller('card.toast.takeDownSuccess'))
+                  },
+                  onError: (err) => {
+                    toast.error(
+                      err.message || tSeller('card.toast.takeDownError'),
+                    )
+
+                    updateFilters({ page: 1 })
+                  },
+                },
+              )
+            }}
+            isLoading={takeDownMutation.isPending}
           />
 
           <ResubmitListingDialog

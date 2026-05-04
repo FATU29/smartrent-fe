@@ -2526,12 +2526,7 @@
           "promoteFull": "Push listing",
           "repost": "Repost",
           "repostFull": "Push listing",
-          "viewReport": "View report",
-          "requestVerification": "Request verification",
-          "copyListing": "Copy listing",
-          "requestContact": "Request contact",
-          "share": "Share",
-          "activityHistory": "Activity history",
+          "copyListing": "Copy listing link",
           "takeDown": "Take down",
           "delete": "Delete",
           "resubmit": "Resubmit",
@@ -2543,13 +2538,29 @@
           "confirm": "Delete",
           "cancel": "Cancel"
         },
+        "takeDownConfirm": {
+          "title": "Take down this listing?",
+          "description": "Are you sure you want to take down this listing? Please review the consequences below before confirming.",
+          "risksTitle": "Before you take it down, please note:",
+          "risk1": "The listing will immediately disappear from search results and public pages.",
+          "risk2": "Users currently viewing or who have saved this listing will lose access.",
+          "risk3": "Any active placement or push credits on this listing will be lost and not refunded.",
+          "risk4": "To display it again you must re-publish, which may require a new payment.",
+          "confirm": "Take it down",
+          "cancel": "Cancel",
+          "loading": "Taking down..."
+        },
         "toast": {
           "deleteSuccess": "Listing deleted successfully",
           "deleteError": "Failed to delete listing",
           "pushSuccess": "Listing pushed successfully",
           "pushSuccessWithQuota": "Listing pushed successfully using quota",
           "pushError": "Failed to push listing",
-          "pushNotDisplaying": "Listing must be verified and displaying before it can be pushed"
+          "pushNotDisplaying": "Listing must be verified and displaying before it can be pushed",
+          "takeDownSuccess": "Listing taken down successfully",
+          "takeDownError": "Failed to take down listing",
+          "copyLinkSuccess": "Listing link copied",
+          "copyLinkError": "Failed to copy listing link"
         }
       }
     },

@@ -43,12 +43,7 @@ export interface ListingCardProps {
   onPromote?: () => void
   onRepost?: () => void
   onResubmit?: () => void
-  onViewReport?: () => void
-  onRequestVerification?: () => void
   onCopyListing?: () => void
-  onRequestContact?: () => void
-  onShare?: () => void
-  onActivityHistory?: () => void
   onTakeDown?: () => void
   onDelete?: () => void
   className?: string
@@ -60,12 +55,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   onPromote,
   onRepost,
   onResubmit,
-  onViewReport,
-  onRequestVerification,
   onCopyListing,
-  onRequestContact,
-  onShare,
-  onActivityHistory,
   onTakeDown,
   onDelete,
   className,
@@ -613,12 +603,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 onPromote={onPromote}
                 onRepost={onRepost}
                 onResubmit={onResubmit}
-                onViewReport={onViewReport}
-                onRequestVerification={onRequestVerification}
                 onCopyListing={onCopyListing}
-                onRequestContact={onRequestContact}
-                onShare={onShare}
-                onActivityHistory={onActivityHistory}
                 onTakeDown={onTakeDown}
                 onDelete={onDelete}
                 showPromoteButton={showPromoteButton}

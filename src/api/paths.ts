@@ -127,6 +127,11 @@ export const PATHS = {
     CANCEL_SCHEDULE: '/v1/pushes/schedule/:scheduleId', // Cancel scheduled push
   },
 
+  // Take Down Actions endpoints
+  TAKE_DOWNS: {
+    TAKE_DOWN: '/v1/take-downs/take-down', // Take down (hide) a displaying listing
+  },
+
   // Quota endpoints
   QUOTA: {
     CHECK_PUSH: '/v1/quotas/check/PUSH', // Check push quota
