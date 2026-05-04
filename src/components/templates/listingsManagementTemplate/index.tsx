@@ -288,6 +288,7 @@ const ListingsWithPagination = () => {
               useMembershipQuota,
               durationDays,
               paymentProvider,
+              vipType,
             }) => {
               repostMutation.mutate(
                 {
@@ -297,6 +298,7 @@ const ListingsWithPagination = () => {
                     ? undefined
                     : paymentProvider,
                   durationDays,
+                  vipType: useMembershipQuota ? vipType : undefined,
                 },
                 {
                   onSuccess: (data) => {

@@ -2552,11 +2552,15 @@
           "quota": {
             "title": "Use membership package",
             "recommended": "Best value",
-            "available": "{count} posts left in your package",
-            "exhausted": "You've used up your quota for this tier",
-            "notApplicable": "Standard listings have no package — direct payment only",
-            "fixedDuration": "Each package credit covers {days} days of visibility",
-            "durationLockedHint": "When using your package the active period is fixed at {days} days and can't be customized."
+            "summary": "Quota left in {count} tier(s) — pick one below",
+            "noneAvailable": "You don't have any quota left in your membership",
+            "tierLabel": "Pick a tier to repost as",
+            "tierHelp": "The tier you spend a credit on becomes the listing's new tier.",
+            "remaining": "{count} left",
+            "empty": "None left",
+            "currentTierBadge": "Current",
+            "switchHint": "Listing will switch from {from} to {to} and stay live for {days} days.",
+            "durationLockedHint": "On the package path, the active period is fixed at {days} days and can't be customized."
           },
           "direct": {
             "title": "Pay directly",

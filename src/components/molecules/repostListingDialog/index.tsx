@@ -33,10 +33,12 @@ import { ListingOwnerDetail, VipType } from '@/api/types'
 type DurationDays = 10 | 15 | 30
 type PaymentChoice = 'QUOTA' | 'DIRECT'
 type PaymentProvider = 'VNPAY' | 'ZALOPAY'
+type QuotaTier = 'SILVER' | 'GOLD' | 'DIAMOND'
 
 const DURATION_OPTIONS: DurationDays[] = [10, 15, 30]
 const QUOTA_DURATION_DAYS: DurationDays = 30
 const PROVIDER_OPTIONS: PaymentProvider[] = ['VNPAY', 'ZALOPAY']
+const QUOTA_TIERS: QuotaTier[] = ['SILVER', 'GOLD', 'DIAMOND']
 
 // Mirror of BE PricingConstants — keep in sync with
 // smart-rent/src/main/java/com/smartrent/constants/PricingConstants.java.
@@ -60,7 +62,7 @@ const calcRepostFee = (vipType: VipType, days: DurationDays): number => {
   return Math.round(base * days * (1 - discount))
 }
 
-const VIP_TO_BENEFIT: Partial<Record<VipType, BenefitType>> = {
+const TIER_TO_BENEFIT: Record<QuotaTier, BenefitType> = {
   SILVER: BenefitType.POST_SILVER,
   GOLD: BenefitType.POST_GOLD,
   DIAMOND: BenefitType.POST_DIAMOND,
@@ -75,6 +77,8 @@ export interface RepostListingDialogProps {
     useMembershipQuota: boolean
     durationDays: DurationDays
     paymentProvider: PaymentProvider
+    /** Only set on the quota path — the tier the user picked to spend. */
+    vipType?: QuotaTier
   }) => void
   isLoading?: boolean
 }
@@ -99,9 +103,42 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
     return 30
   }, [listing?.durationDays])
 
+  // Quota counts per tier, derived once from the active benefits list.
+  const quotaByTier = React.useMemo<Record<QuotaTier, number>>(() => {
+    const out: Record<QuotaTier, number> = { SILVER: 0, GOLD: 0, DIAMOND: 0 }
+    const benefits = membership?.benefits ?? []
+    for (const tier of QUOTA_TIERS) {
+      const benefit: UserBenefit | undefined = benefits.find(
+        (b) =>
+          b.benefitType === TIER_TO_BENEFIT[tier] &&
+          b.status === BenefitStatus.ACTIVE,
+      )
+      out[tier] = benefit?.quantityRemaining ?? 0
+    }
+    return out
+  }, [membership?.benefits])
+
+  const anyQuotaAvailable = QUOTA_TIERS.some((tier) => quotaByTier[tier] > 0)
+
+  const listingVipType: VipType = (listing?.vipType ?? 'NORMAL') as VipType
+
+  // Pick a sensible default quota tier when the user enters the quota path:
+  // prefer the listing's existing tier (if it has quota), otherwise the first
+  // available tier in priority order.
+  const defaultQuotaTier = React.useMemo<QuotaTier | null>(() => {
+    if (
+      listingVipType !== 'NORMAL' &&
+      quotaByTier[listingVipType as QuotaTier] > 0
+    ) {
+      return listingVipType as QuotaTier
+    }
+    return QUOTA_TIERS.find((tier) => quotaByTier[tier] > 0) ?? null
+  }, [listingVipType, quotaByTier])
+
   const [duration, setDuration] = React.useState<DurationDays>(initialDuration)
   const [choice, setChoice] = React.useState<PaymentChoice | null>(null)
   const [provider, setProvider] = React.useState<PaymentProvider>('VNPAY')
+  const [quotaTier, setQuotaTier] = React.useState<QuotaTier | null>(null)
 
   // Re-sync state whenever a different listing opens the dialog.
   React.useEffect(() => {
@@ -109,46 +146,47 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
       setDuration(initialDuration)
       setChoice(null)
       setProvider('VNPAY')
+      setQuotaTier(defaultQuotaTier)
     }
-  }, [open, initialDuration])
+  }, [open, initialDuration, defaultQuotaTier])
 
   if (!listing) return null
 
-  const vipType: VipType = (listing.vipType ?? 'NORMAL') as VipType
-  const benefitType = VIP_TO_BENEFIT[vipType]
-  const matchingBenefit: UserBenefit | undefined =
-    benefitType && membership?.benefits
-      ? membership.benefits.find(
-          (b) =>
-            b.benefitType === benefitType && b.status === BenefitStatus.ACTIVE,
-        )
-      : undefined
-  const quotaRemaining = matchingBenefit?.quantityRemaining ?? 0
-  const quotaAvailable = !!benefitType && quotaRemaining > 0
+  const isQuota = choice === 'QUOTA'
+  const isDirect = choice === 'DIRECT'
 
   // Quota path is locked to 30 days — that's what one quota credit covers.
-  const effectiveDuration: DurationDays =
-    choice === 'QUOTA' ? QUOTA_DURATION_DAYS : duration
-  const fee = calcRepostFee(vipType, effectiveDuration)
+  const effectiveDuration: DurationDays = isQuota
+    ? QUOTA_DURATION_DAYS
+    : duration
+  // Show fee preview based on whichever tier is currently relevant in context.
+  const previewVipType: VipType = isQuota
+    ? ((quotaTier ?? listingVipType) as VipType)
+    : listingVipType
+  const fee = calcRepostFee(previewVipType, effectiveDuration)
   const formattedFee = formatByLocale(fee, language)
 
+  const canConfirm = (() => {
+    if (isLoading) return false
+    if (isQuota) return !!quotaTier && quotaByTier[quotaTier] > 0
+    if (isDirect) return true
+    return false
+  })()
+
   const handleConfirm = () => {
-    if (!choice) return
+    if (!choice || !canConfirm) return
     onConfirm({
       listing,
-      useMembershipQuota: choice === 'QUOTA',
+      useMembershipQuota: isQuota,
       durationDays: effectiveDuration,
       paymentProvider: provider,
+      vipType: isQuota ? (quotaTier ?? undefined) : undefined,
     })
   }
 
-  const quotaSubtitleKey = !benefitType
-    ? 'quota.notApplicable'
-    : quotaRemaining > 0
-      ? 'quota.available'
-      : 'quota.exhausted'
-
-  const isDirect = choice === 'DIRECT'
+  const tiersWithQuotaCount = QUOTA_TIERS.filter(
+    (t) => quotaByTier[t] > 0,
+  ).length
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -191,7 +229,7 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
                   className='border-primary/30 text-primary text-xs gap-1 font-medium'
                 >
                   <Crown size={12} />
-                  {t(`vipTypes.${vipType}`)}
+                  {t(`vipTypes.${listingVipType}`)}
                 </Badge>
               </div>
             </div>
@@ -209,22 +247,22 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
               {/* Quota card */}
               <button
                 type='button'
-                disabled={isLoading || !quotaAvailable}
+                disabled={isLoading || !anyQuotaAvailable}
                 onClick={() => setChoice('QUOTA')}
-                aria-pressed={choice === 'QUOTA'}
+                aria-pressed={isQuota}
                 className={cn(
                   'group w-full text-left rounded-lg border-2 p-3.5 transition-all flex items-start gap-3',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
-                  choice === 'QUOTA'
+                  isQuota
                     ? 'border-primary bg-primary/5 shadow-sm'
                     : 'border-border hover:border-primary/40 hover:bg-muted/40',
-                  !quotaAvailable && 'opacity-60 cursor-not-allowed',
+                  !anyQuotaAvailable && 'opacity-60 cursor-not-allowed',
                 )}
               >
                 <div
                   className={cn(
                     'shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-colors',
-                    choice === 'QUOTA'
+                    isQuota
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-primary/10 text-primary',
                   )}
@@ -236,7 +274,7 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
                     <Typography variant='small' className='font-semibold'>
                       {t('quota.title')}
                     </Typography>
-                    {quotaAvailable && (
+                    {anyQuotaAvailable && (
                       <Badge className='bg-primary/15 text-primary border-0 text-2xs uppercase tracking-wide'>
                         {t('quota.recommended')}
                       </Badge>
@@ -246,14 +284,10 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
                     variant='small'
                     className='text-xs text-muted-foreground mt-0.5'
                   >
-                    {t(quotaSubtitleKey, { count: quotaRemaining })}
+                    {anyQuotaAvailable
+                      ? t('quota.summary', { count: tiersWithQuotaCount })
+                      : t('quota.noneAvailable')}
                   </Typography>
-                  {choice === 'QUOTA' && quotaAvailable && (
-                    <div className='mt-2 flex items-center gap-1.5 text-xs text-primary font-medium'>
-                      <CheckCircle2 size={14} />
-                      {t('quota.fixedDuration', { days: QUOTA_DURATION_DAYS })}
-                    </div>
-                  )}
                 </div>
               </button>
 
@@ -286,12 +320,14 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
                     <Typography variant='small' className='font-semibold'>
                       {t('direct.title')}
                     </Typography>
-                    <Typography
-                      variant='small'
-                      className='font-bold text-primary text-sm whitespace-nowrap'
-                    >
-                      {formattedFee}
-                    </Typography>
+                    {isDirect && (
+                      <Typography
+                        variant='small'
+                        className='font-bold text-primary text-sm whitespace-nowrap'
+                      >
+                        {formattedFee}
+                      </Typography>
+                    )}
                   </div>
                   <Typography
                     variant='small'
@@ -303,6 +339,103 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
               </button>
             </div>
           </section>
+
+          {/* Quota path: tier picker (đăng lại có thể chọn lại bạc / vàng / kim cương) */}
+          {isQuota && (
+            <section className='space-y-3 rounded-lg border border-primary/20 bg-primary/[0.03] p-4'>
+              <div>
+                <Typography
+                  variant='small'
+                  className='font-semibold text-sm block'
+                >
+                  {t('quota.tierLabel')}
+                </Typography>
+                <Typography
+                  variant='small'
+                  className='text-xs text-muted-foreground mt-0.5'
+                >
+                  {t('quota.tierHelp')}
+                </Typography>
+              </div>
+              <div className='grid grid-cols-3 gap-2'>
+                {QUOTA_TIERS.map((tier) => {
+                  const remaining = quotaByTier[tier]
+                  const enabled = remaining > 0
+                  const selected = quotaTier === tier
+                  const isCurrent = tier === listingVipType
+                  return (
+                    <button
+                      key={tier}
+                      type='button'
+                      disabled={isLoading || !enabled}
+                      onClick={() => setQuotaTier(tier)}
+                      aria-pressed={selected}
+                      className={cn(
+                        'relative rounded-md border-2 p-3 text-center transition-colors flex flex-col items-center gap-1',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
+                        selected
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : enabled
+                            ? 'border-border bg-background hover:border-primary/40'
+                            : 'border-border bg-muted/30 opacity-60 cursor-not-allowed',
+                      )}
+                    >
+                      {isCurrent && (
+                        <span
+                          className={cn(
+                            'absolute -top-2 right-1 rounded-full px-1.5 py-0.5 text-2xs font-semibold',
+                            selected
+                              ? 'bg-primary-foreground text-primary'
+                              : 'bg-primary/15 text-primary',
+                          )}
+                        >
+                          {t('quota.currentTierBadge')}
+                        </span>
+                      )}
+                      <Crown size={16} />
+                      <Typography
+                        variant='small'
+                        className='font-semibold text-sm'
+                      >
+                        {t(`vipTypes.${tier}`)}
+                      </Typography>
+                      <Typography
+                        variant='small'
+                        className={cn(
+                          'text-xs',
+                          selected
+                            ? 'text-primary-foreground/85'
+                            : 'text-muted-foreground',
+                        )}
+                      >
+                        {enabled
+                          ? t('quota.remaining', { count: remaining })
+                          : t('quota.empty')}
+                      </Typography>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {quotaTier && (
+                <div className='flex items-start gap-2 rounded-md border border-primary/20 bg-primary/5 p-3 text-xs'>
+                  <Info size={14} className='shrink-0 mt-0.5 text-primary' />
+                  <span className='text-foreground/80'>
+                    {quotaTier !== (listingVipType as QuotaTier) &&
+                    listingVipType !== 'NORMAL'
+                      ? t('quota.switchHint', {
+                          from: t(`vipTypes.${listingVipType}`),
+                          to: t(`vipTypes.${quotaTier}`),
+                          days: QUOTA_DURATION_DAYS,
+                        })
+                      : t('quota.durationLockedHint', {
+                          days: QUOTA_DURATION_DAYS,
+                        })}
+                  </span>
+                </div>
+              )}
+            </section>
+          )}
 
           {/* Direct-payment options: provider + duration */}
           {isDirect && (
@@ -394,16 +527,6 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
               </div>
             </section>
           )}
-
-          {/* Quota fixed-duration hint */}
-          {choice === 'QUOTA' && quotaAvailable && (
-            <div className='flex items-start gap-2 rounded-md border border-primary/20 bg-primary/5 p-3 text-xs text-primary-foreground/90'>
-              <Info size={14} className='shrink-0 mt-0.5 text-primary' />
-              <span className='text-foreground/80'>
-                {t('quota.durationLockedHint', { days: QUOTA_DURATION_DAYS })}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Footer */}
@@ -416,7 +539,7 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
             {t('cancel')}
           </Button>
           <Button
-            disabled={isLoading || !choice}
+            disabled={!canConfirm || !choice}
             onClick={handleConfirm}
             className='min-w-[120px]'
           >
