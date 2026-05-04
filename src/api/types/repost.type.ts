@@ -7,7 +7,7 @@
 export interface RepostListingRequest {
   listingId: number
   useMembershipQuota: boolean
-  paymentProvider?: 'VNPAY' | 'PAYPAL' | 'MOMO'
+  paymentProvider?: 'VNPAY' | 'ZALOPAY' | 'PAYPAL' | 'MOMO'
   /** New active duration in days. Valid: 10, 15, 30. */
   durationDays?: number
 }

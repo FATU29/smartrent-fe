@@ -101,7 +101,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
         <Button
           onClick={onRepost}
           size='sm'
-          className='gap-1 bg-cyan-500 hover:bg-cyan-600 text-white dark:bg-cyan-600 dark:hover:bg-cyan-700 text-xs sm:text-sm'
+          className='gap-1 bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm'
         >
           <ChevronsUp size={14} />
           <span className='hidden xs:inline'>{t('repostFull')}</span>

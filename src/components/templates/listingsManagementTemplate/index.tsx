@@ -283,12 +283,19 @@ const ListingsWithPagination = () => {
             open={repostDialogOpen}
             onOpenChange={setRepostDialogOpen}
             isLoading={repostMutation.isPending}
-            onConfirm={({ listing, useMembershipQuota, durationDays }) => {
+            onConfirm={({
+              listing,
+              useMembershipQuota,
+              durationDays,
+              paymentProvider,
+            }) => {
               repostMutation.mutate(
                 {
                   listingId: listing.listingId,
                   useMembershipQuota,
-                  paymentProvider: useMembershipQuota ? undefined : 'VNPAY',
+                  paymentProvider: useMembershipQuota
+                    ? undefined
+                    : paymentProvider,
                   durationDays,
                 },
                 {

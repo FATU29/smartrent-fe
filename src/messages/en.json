@@ -2540,28 +2540,36 @@
         },
         "repostDialog": {
           "title": "Repost listing",
-          "description": "This listing has expired. Choose how to repost it and how long to keep it live.",
+          "description": "This listing has expired. Pick a payment method to bring it back live.",
           "listingLabel": "Listing",
-          "vipType": "Listing tier: {type}",
           "vipTypes": {
             "NORMAL": "Standard",
             "SILVER": "Silver VIP",
             "GOLD": "Gold VIP",
             "DIAMOND": "Diamond VIP"
           },
-          "durationLabel": "Active duration",
-          "durationOption": "{days} days",
           "paymentLabel": "Payment method",
           "quota": {
             "title": "Use membership package",
-            "available": "{count} posts remaining in your membership",
+            "recommended": "Best value",
+            "available": "{count} posts left in your package",
             "exhausted": "You've used up your quota for this tier",
-            "notApplicable": "No package covers Standard listings — direct payment only"
+            "notApplicable": "Standard listings have no package — direct payment only",
+            "fixedDuration": "Each package credit covers {days} days of visibility",
+            "durationLockedHint": "When using your package the active period is fixed at {days} days and can't be customized."
           },
           "direct": {
             "title": "Pay directly",
-            "subtitle": "Pay {price} via VNPay"
+            "subtitle": "Pay based on tier and duration"
           },
+          "providerLabel": "Payment gateway",
+          "providers": {
+            "VNPAY": "VNPay",
+            "ZALOPAY": "ZaloPay"
+          },
+          "durationLabel": "Active duration",
+          "durationOption": "{days} days",
+          "totalLabel": "Total",
           "confirm": "Repost",
           "cancel": "Cancel",
           "loading": "Processing..."
