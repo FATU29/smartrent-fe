@@ -10,9 +10,11 @@ import { ListingListSkeleton } from '@/components/organisms/listings-list/Listin
 import { useDeleteListing } from '@/hooks/useListings/useDeleteListing'
 import { useResubmitListing } from '@/hooks/useListings/useResubmitListing'
 import { useTakeDownListing } from '@/hooks/useListings/useTakeDownListing'
+import { useRepostListing } from '@/hooks/useRepost'
 import { toast } from 'sonner'
 import { DeleteListingDialog } from '@/components/molecules/deleteListingDialog'
 import { TakeDownListingDialog } from '@/components/molecules/takeDownListingDialog'
+import { RepostListingDialog } from '@/components/molecules/repostListingDialog'
 import { ResubmitListingDialog } from '@/components/molecules/moderation'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import { MembershipPushDisplay } from '@/components/molecules/listings/MembershipPushDisplay'
@@ -67,6 +69,7 @@ const ListingsWithPagination = () => {
   const deleteMutation = useDeleteListing()
   const resubmitMutation = useResubmitListing()
   const takeDownMutation = useTakeDownListing()
+  const repostMutation = useRepostListing()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedListingForDelete, setSelectedListingForDelete] =
     useState<ListingOwnerDetail | null>(null)
@@ -75,6 +78,9 @@ const ListingsWithPagination = () => {
     useState<ListingOwnerDetail | null>(null)
   const [takeDownDialogOpen, setTakeDownDialogOpen] = useState(false)
   const [selectedListingForTakeDown, setSelectedListingForTakeDown] =
+    useState<ListingOwnerDetail | null>(null)
+  const [repostDialogOpen, setRepostDialogOpen] = useState(false)
+  const [selectedListingForRepost, setSelectedListingForRepost] =
     useState<ListingOwnerDetail | null>(null)
   const [pushLimitState, setPushLimitState] = useState<{
     open: boolean
@@ -188,8 +194,9 @@ const ListingsWithPagination = () => {
             onPromoteListing={(listing) => {
               handlePushListing(listing)
             }}
-            onRepostListing={() => {
-              // TODO: Implement repost listing
+            onRepostListing={(listing) => {
+              setSelectedListingForRepost(listing)
+              setRepostDialogOpen(true)
             }}
             onResubmitListing={(listing) => {
               // Redirect to update-post with resubmit context
@@ -269,6 +276,46 @@ const ListingsWithPagination = () => {
               )
             }}
             isLoading={takeDownMutation.isPending}
+          />
+
+          <RepostListingDialog
+            listing={selectedListingForRepost}
+            open={repostDialogOpen}
+            onOpenChange={setRepostDialogOpen}
+            isLoading={repostMutation.isPending}
+            onConfirm={({ listing, useMembershipQuota, durationDays }) => {
+              repostMutation.mutate(
+                {
+                  listingId: listing.listingId,
+                  useMembershipQuota,
+                  paymentProvider: useMembershipQuota ? undefined : 'VNPAY',
+                  durationDays,
+                },
+                {
+                  onSuccess: (data) => {
+                    setSelectedListingForRepost(null)
+                    setRepostDialogOpen(false)
+
+                    // Direct-payment path: hook auto-redirects to paymentUrl,
+                    // listing reactivates only after the callback fires.
+                    // Quota path: listing is already live → refetch the list.
+                    if (data.data?.paymentUrl) {
+                      toast.loading(
+                        tSeller('card.toast.repostRedirectingToPayment'),
+                      )
+                    } else {
+                      toast.success(tSeller('card.toast.repostSuccess'))
+                      refetch()
+                    }
+                  },
+                  onError: (err) => {
+                    toast.error(
+                      err.message || tSeller('card.toast.repostError'),
+                    )
+                  },
+                },
+              )
+            }}
           />
 
           <ResubmitListingDialog

@@ -132,6 +132,11 @@ export const PATHS = {
     TAKE_DOWN: '/v1/take-downs/take-down', // Take down (hide) a displaying listing
   },
 
+  // Repost Actions endpoints
+  REPOSTS: {
+    REPOST: '/v1/reposts/repost', // Repost an expired listing (quota or payment)
+  },
+
   // Quota endpoints
   QUOTA: {
     CHECK_PUSH: '/v1/quotas/check/PUSH', // Check push quota
