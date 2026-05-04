@@ -2527,12 +2527,7 @@
           "promoteFull": "Đẩy tin",
           "repost": "Đẩy tin",
           "repostFull": "Đẩy tin",
-          "viewReport": "Xem báo cáo",
-          "requestVerification": "Yêu cầu xác thực",
-          "copyListing": "Sao chép tin đăng",
-          "requestContact": "Yêu cầu liên hệ",
-          "share": "Chia sẻ",
-          "activityHistory": "Lịch sử hoạt động",
+          "copyListing": "Sao chép link bài đăng",
           "takeDown": "Hạ tin",
           "delete": "Xóa tin",
           "resubmit": "Gửi lại",
@@ -2544,13 +2539,29 @@
           "confirm": "Xóa",
           "cancel": "Hủy"
         },
+        "takeDownConfirm": {
+          "title": "Hạ tin đăng?",
+          "description": "Bạn có chắc chắn muốn hạ tin đăng này? Vui lòng đọc kỹ các lưu ý bên dưới trước khi xác nhận.",
+          "risksTitle": "Khi hạ tin, bạn cần lưu ý:",
+          "risk1": "Tin đăng sẽ ngay lập tức biến mất khỏi kết quả tìm kiếm và trang công khai.",
+          "risk2": "Người dùng đang xem hoặc đã lưu tin sẽ không thể truy cập tin đăng nữa.",
+          "risk3": "Vị trí và lượt đẩy tin (nếu có) sẽ bị mất, không được hoàn lại.",
+          "risk4": "Để hiển thị lại, bạn phải đăng lại và có thể phải thanh toán phí mới.",
+          "confirm": "Vẫn hạ tin",
+          "cancel": "Hủy",
+          "loading": "Đang hạ tin..."
+        },
         "toast": {
           "deleteSuccess": "Tin đăng đã được xóa thành công",
           "deleteError": "Không thể xóa tin đăng",
           "pushSuccess": "Đẩy bài thành công",
           "pushSuccessWithQuota": "Đẩy bài thành công bằng lượt đẩy",
           "pushError": "Không thể đẩy bài",
-          "pushNotDisplaying": "Tin phải được xác thực và đang hiển thị mới có thể đẩy tin"
+          "pushNotDisplaying": "Tin phải được xác thực và đang hiển thị mới có thể đẩy tin",
+          "takeDownSuccess": "Đã hạ tin thành công",
+          "takeDownError": "Không thể hạ tin",
+          "copyLinkSuccess": "Đã sao chép link bài đăng",
+          "copyLinkError": "Không thể sao chép link bài đăng"
         }
       }
     },

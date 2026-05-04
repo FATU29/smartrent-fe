@@ -11,12 +11,7 @@ export interface ListingsListProps {
   onPromoteListing?: (listing: ListingOwnerDetail) => void
   onRepostListing?: (listing: ListingOwnerDetail) => void
   onResubmitListing?: (listing: ListingOwnerDetail) => void
-  onViewReport?: (listing: ListingOwnerDetail) => void
-  onRequestVerification?: (listing: ListingOwnerDetail) => void
   onCopyListing?: (listing: ListingOwnerDetail) => void
-  onRequestContact?: (listing: ListingOwnerDetail) => void
-  onShare?: (listing: ListingOwnerDetail) => void
-  onActivityHistory?: (listing: ListingOwnerDetail) => void
   onTakeDown?: (listing: ListingOwnerDetail) => void
   onDelete?: (listing: ListingOwnerDetail) => void
   loading?: boolean
@@ -30,12 +25,7 @@ export const ListingsList: React.FC<ListingsListProps> = ({
   onPromoteListing,
   onRepostListing,
   onResubmitListing,
-  onViewReport,
-  onRequestVerification,
   onCopyListing,
-  onRequestContact,
-  onShare,
-  onActivityHistory,
   onTakeDown,
   onDelete,
   loading = false,
@@ -76,12 +66,7 @@ export const ListingsList: React.FC<ListingsListProps> = ({
           onPromote={() => onPromoteListing?.(listing)}
           onRepost={() => onRepostListing?.(listing)}
           onResubmit={() => onResubmitListing?.(listing)}
-          onViewReport={() => onViewReport?.(listing)}
-          onRequestVerification={() => onRequestVerification?.(listing)}
           onCopyListing={() => onCopyListing?.(listing)}
-          onRequestContact={() => onRequestContact?.(listing)}
-          onShare={() => onShare?.(listing)}
-          onActivityHistory={() => onActivityHistory?.(listing)}
           onTakeDown={() => onTakeDown?.(listing)}
           onDelete={() => onDelete?.(listing)}
         />

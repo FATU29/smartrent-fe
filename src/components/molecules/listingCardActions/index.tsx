@@ -21,12 +21,7 @@ export interface ListingCardActionsProps {
   onPromote?: () => void
   onRepost?: () => void
   onResubmit?: () => void
-  onViewReport?: () => void
-  onRequestVerification?: () => void
   onCopyListing?: () => void
-  onRequestContact?: () => void
-  onShare?: () => void
-  onActivityHistory?: () => void
   onTakeDown?: () => void
   onDelete?: () => void
   showPromoteButton?: boolean
@@ -40,12 +35,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
   onPromote,
   onRepost,
   onResubmit,
-  onViewReport,
-  onRequestVerification,
   onCopyListing,
-  onRequestContact,
-  onShare,
-  onActivityHistory,
   onTakeDown,
   onDelete,
   showPromoteButton = true,
@@ -56,18 +46,11 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
   const t = useTranslations('seller.listingManagement.card.actions')
 
   const menuItems = createMenuItems({
-    onViewReport,
-    onRequestVerification,
     onCopyListing,
-    onRequestContact,
-    onShare,
-    onActivityHistory,
     onPromote,
-    onRepost,
     onTakeDown,
     onDelete,
     showPromoteButton,
-    showRepostButton,
   })
 
   return (
@@ -91,7 +74,6 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-56'>
           {menuItems.map((item) => {
-            // Hide items conditionally
             if (item.show !== undefined && !item.show) return null
 
             return (
