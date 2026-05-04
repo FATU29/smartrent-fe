@@ -51,6 +51,7 @@ const ListingsWithPagination = () => {
     pagination,
     loadMore,
     removeItem,
+    refetch,
   } = useListContext<ListingOwnerDetail>()
   const { user } = useAuthContext()
   const { data: membershipData, isLoading: isMembershipLoading } =
@@ -63,7 +64,6 @@ const ListingsWithPagination = () => {
   const tModeration = useTranslations('seller.moderation.resubmit')
   const { currentPage, totalPages } = pagination
   const hasNext = currentPage < totalPages
-  const { updateFilters } = useListContext<ListingFilterRequest>()
   const deleteMutation = useDeleteListing()
   const resubmitMutation = useResubmitListing()
   const takeDownMutation = useTakeDownListing()
@@ -231,8 +231,8 @@ const ListingsWithPagination = () => {
                     toast.error(
                       err.message || tSeller('card.toast.deleteError'),
                     )
-
-                    updateFilters({ page: 1 })
+                    // Restore the optimistically removed item on failure.
+                    refetch()
                   },
                 },
               )
@@ -246,8 +246,6 @@ const ListingsWithPagination = () => {
             onOpenChange={setTakeDownDialogOpen}
             onConfirm={(listing) => {
               const id = listing.listingId
-              // Optimistic remove from current view
-              removeItem(id)
               setSelectedListingForTakeDown(null)
               setTakeDownDialogOpen(false)
 
@@ -256,13 +254,16 @@ const ListingsWithPagination = () => {
                 {
                   onSuccess: () => {
                     toast.success(tSeller('card.toast.takeDownSuccess'))
+                    // Take-down does not delete — the listing now has EXPIRED
+                    // status. Force a refetch so it reappears (with EXPIRED
+                    // badge) on the "All" / "Expired" tab. updateFilters with
+                    // unchanged values is a no-op in the list context.
+                    refetch()
                   },
                   onError: (err) => {
                     toast.error(
                       err.message || tSeller('card.toast.takeDownError'),
                     )
-
-                    updateFilters({ page: 1 })
                   },
                 },
               )
@@ -282,8 +283,7 @@ const ListingsWithPagination = () => {
                     toast.success(tModeration('success'))
                     setSelectedListingForResubmit(null)
                     setResubmitDialogOpen(false)
-                    // Refresh listings
-                    updateFilters({ page: 1 })
+                    refetch()
                   },
                   onError: (err) => {
                     toast.error(err.message || tModeration('error'))

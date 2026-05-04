@@ -174,9 +174,11 @@ const useListFetch = <T,>(
   setPagination: React.Dispatch<React.SetStateAction<Pagination>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   shouldAppendRef: React.MutableRefObject<boolean>,
+  refetchTick: number,
 ) => {
   const fetcherRef = useRef(fetcher)
   const prevFiltersKeyRef = useRef<string | null>(null)
+  const prevRefetchTickRef = useRef<number>(refetchTick)
   const skipFirstFetchRef = useRef(hasInitialData)
 
   const filtersKey = useMemo(() => JSON.stringify(filters), [filters])
@@ -193,14 +195,19 @@ const useListFetch = <T,>(
     if (skipFirstFetchRef.current) {
       skipFirstFetchRef.current = false
       prevFiltersKeyRef.current = filtersKey
+      prevRefetchTickRef.current = refetchTick
       return
     }
 
-    if (prevFiltersKeyRef.current === filtersKey) {
+    const filtersChanged = prevFiltersKeyRef.current !== filtersKey
+    const refetchRequested = prevRefetchTickRef.current !== refetchTick
+
+    if (!filtersChanged && !refetchRequested) {
       return
     }
 
     prevFiltersKeyRef.current = filtersKey
+    prevRefetchTickRef.current = refetchTick
 
     let isCancelled = false
 
@@ -242,7 +249,7 @@ const useListFetch = <T,>(
     return () => {
       isCancelled = true
     }
-  }, [filtersKey, filters, setItems, setPagination, setIsLoading])
+  }, [filtersKey, filters, refetchTick, setItems, setPagination, setIsLoading])
 
   return { shouldAppendRef }
 }
@@ -276,6 +283,12 @@ export const ListProvider = <T,>({
     activeFilterCount,
   } = useListFilters(initialFilters, shouldAppendRef)
 
+  const [refetchTick, setRefetchTick] = useState(0)
+  const refetch = useCallback(() => {
+    shouldAppendRef.current = false
+    setRefetchTick((t) => t + 1)
+  }, [])
+
   useListFetch(
     fetcher,
     filters,
@@ -284,6 +297,7 @@ export const ListProvider = <T,>({
     setPagination,
     setIsLoading,
     shouldAppendRef,
+    refetchTick,
   )
 
   const removeItem = useCallback((id: string | number) => {
@@ -311,6 +325,7 @@ export const ListProvider = <T,>({
       goToPage,
       setKeyword,
       removeItem,
+      refetch,
     }),
     [
       items,
@@ -324,6 +339,7 @@ export const ListProvider = <T,>({
       goToPage,
       setKeyword,
       removeItem,
+      refetch,
     ],
   )
 

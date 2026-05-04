@@ -34,4 +34,8 @@ export interface ListContextType<T = unknown> {
   goToPage: (page: number) => void
   setKeyword: (keyword: string) => void
   removeItem: (id: string | number) => void
+  // Force a refetch even if filters are unchanged. Use after mutations
+  // (take-down, resubmit, etc.) where the underlying record changed but
+  // the filter inputs did not.
+  refetch: () => void
 }
