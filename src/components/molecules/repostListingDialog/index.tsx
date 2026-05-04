@@ -68,6 +68,42 @@ const TIER_TO_BENEFIT: Record<QuotaTier, BenefitType> = {
   DIAMOND: BenefitType.POST_DIAMOND,
 }
 
+// VIP tier color theme — mirrors the homepage PropertyCard ring colors
+// (SILVER → gray, GOLD → yellow, DIAMOND → blue) so re-list tier buttons
+// stay visually consistent with the listing card on the homepage.
+const TIER_THEME: Record<
+  QuotaTier,
+  {
+    icon: React.ComponentType<{ size?: number; className?: string }>
+    selected: string
+    unselected: string
+    iconColor: string
+    currentBadge: string
+  }
+> = {
+  SILVER: {
+    icon: Tag,
+    selected: 'border-gray-400 bg-gray-400 text-white',
+    unselected: 'border-gray-300 bg-background hover:border-gray-400',
+    iconColor: 'text-gray-500',
+    currentBadge: 'bg-gray-100 text-gray-700',
+  },
+  GOLD: {
+    icon: Crown,
+    selected: 'border-yellow-400 bg-yellow-400 text-white',
+    unselected: 'border-yellow-300 bg-background hover:border-yellow-400',
+    iconColor: 'text-yellow-500',
+    currentBadge: 'bg-yellow-100 text-yellow-700',
+  },
+  DIAMOND: {
+    icon: Sparkles,
+    selected: 'border-blue-400 bg-blue-400 text-white',
+    unselected: 'border-blue-300 bg-background hover:border-blue-400',
+    iconColor: 'text-blue-500',
+    currentBadge: 'bg-blue-100 text-blue-700',
+  },
+}
+
 export interface RepostListingDialogProps {
   listing: ListingOwnerDetail | null
   open: boolean
@@ -363,6 +399,8 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
                   const enabled = remaining > 0
                   const selected = quotaTier === tier
                   const isCurrent = tier === listingVipType
+                  const theme = TIER_THEME[tier]
+                  const TierIcon = theme.icon
                   return (
                     <button
                       key={tier}
@@ -374,9 +412,9 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
                         'relative rounded-md border-2 p-3 text-center transition-colors flex flex-col items-center gap-1',
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
                         selected
-                          ? 'border-primary bg-primary text-primary-foreground'
+                          ? theme.selected
                           : enabled
-                            ? 'border-border bg-background hover:border-primary/40'
+                            ? theme.unselected
                             : 'border-border bg-muted/30 opacity-60 cursor-not-allowed',
                       )}
                     >
@@ -385,14 +423,17 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
                           className={cn(
                             'absolute -top-2 right-1 rounded-full px-1.5 py-0.5 text-2xs font-semibold',
                             selected
-                              ? 'bg-primary-foreground text-primary'
-                              : 'bg-primary/15 text-primary',
+                              ? 'bg-white/90 text-foreground'
+                              : theme.currentBadge,
                           )}
                         >
                           {t('quota.currentTierBadge')}
                         </span>
                       )}
-                      <Crown size={16} />
+                      <TierIcon
+                        size={16}
+                        className={selected ? 'text-white' : theme.iconColor}
+                      />
                       <Typography
                         variant='small'
                         className='font-semibold text-sm'
@@ -403,9 +444,7 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
                         variant='small'
                         className={cn(
                           'text-xs',
-                          selected
-                            ? 'text-primary-foreground/85'
-                            : 'text-muted-foreground',
+                          selected ? 'text-white/85' : 'text-muted-foreground',
                         )}
                       >
                         {enabled
@@ -485,7 +524,6 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
                 <div className='grid grid-cols-3 gap-2'>
                   {DURATION_OPTIONS.map((days) => {
                     const selected = duration === days
-                    const discount = DURATION_DISCOUNT[days]
                     return (
                       <button
                         key={days}
@@ -501,11 +539,6 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
                             : 'border-border bg-background hover:border-primary/40',
                         )}
                       >
-                        {discount > 0 && !selected && (
-                          <span className='absolute -top-2 -right-1.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300 px-1.5 py-0.5 text-2xs font-semibold'>
-                            -{Math.round(discount * 100)}%
-                          </span>
-                        )}
                         {t('durationOption', { days })}
                       </button>
                     )
