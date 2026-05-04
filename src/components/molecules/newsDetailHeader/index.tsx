@@ -48,10 +48,7 @@ const NewsDetailHeader: React.FC<NewsDetailHeaderProps> = ({ news }) => {
       </div>
 
       {/* Title */}
-      <Typography
-        variant='h1'
-        className='text-2xl md:text-4xl font-extrabold mb-5 leading-tight tracking-tight'
-      >
+      <Typography variant='pageTitle' className='mb-5 leading-tight'>
         {news.title}
       </Typography>
 

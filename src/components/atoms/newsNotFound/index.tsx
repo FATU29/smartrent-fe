@@ -14,7 +14,7 @@ const NewsNotFound: React.FC = () => {
       <div className='w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6'>
         <Newspaper className='w-10 h-10 text-muted-foreground' />
       </div>
-      <Typography variant='h1' className='text-2xl font-bold mb-3'>
+      <Typography variant='pageTitle' className='mb-3'>
         {t('notFound')}
       </Typography>
       <Typography

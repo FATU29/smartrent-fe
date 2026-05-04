@@ -420,10 +420,7 @@ const NewsListTemplate: React.FC<NewsListTemplateProps> = ({
       <header className='mb-4'>
         <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3'>
           <div>
-            <Typography
-              variant='h1'
-              className='text-2xl md:text-3xl font-bold mb-1'
-            >
+            <Typography variant='pageTitle' className='mb-1'>
               {t('title')}
             </Typography>
             <Typography variant='p' className='text-muted-foreground text-sm'>
