@@ -1,12 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import {
-  Edit,
-  MoreHorizontal,
-  RefreshCw,
-  ChevronsUp,
-  SendHorizontal,
-} from 'lucide-react'
+import { Edit, MoreHorizontal, ChevronsUp, SendHorizontal } from 'lucide-react'
 import { createMenuItems } from './index.constants'
 import { Button } from '@/components/atoms/button'
 import {
@@ -109,7 +103,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
           size='sm'
           className='gap-1 bg-cyan-500 hover:bg-cyan-600 text-white dark:bg-cyan-600 dark:hover:bg-cyan-700 text-xs sm:text-sm'
         >
-          <RefreshCw size={14} />
+          <ChevronsUp size={14} />
           <span className='hidden xs:inline'>{t('repostFull')}</span>
           <span className='xs:hidden'>{t('repost')}</span>
         </Button>

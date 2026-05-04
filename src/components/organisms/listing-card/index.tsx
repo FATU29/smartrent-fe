@@ -126,7 +126,10 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
   const isExpired = expired || false
   const showRank = rankOfVipType > 0
-  const showPromoteButton = true
+  // Pushing only applies to DISPLAYING listings — hide it for expired/taken-down
+  // so the seller doesn't see two near-identical "đẩy tin" buttons. For expired
+  // listings the only call-to-action is "đăng lại" (repost).
+  const showPromoteButton = !isExpired
   const showRepostButton = isExpired
 
   const postISO = toISO(postDate)

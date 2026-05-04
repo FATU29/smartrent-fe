@@ -2525,7 +2525,7 @@
           "promote": "Push",
           "promoteFull": "Push listing",
           "repost": "Repost",
-          "repostFull": "Push listing",
+          "repostFull": "Repost listing",
           "copyListing": "Copy listing link",
           "takeDown": "Take down",
           "delete": "Delete",
@@ -2537,6 +2537,34 @@
           "description": "Are you sure you want to delete this listing? This action cannot be undone.",
           "confirm": "Delete",
           "cancel": "Cancel"
+        },
+        "repostDialog": {
+          "title": "Repost listing",
+          "description": "This listing has expired. Choose how to repost it and how long to keep it live.",
+          "listingLabel": "Listing",
+          "vipType": "Listing tier: {type}",
+          "vipTypes": {
+            "NORMAL": "Standard",
+            "SILVER": "Silver VIP",
+            "GOLD": "Gold VIP",
+            "DIAMOND": "Diamond VIP"
+          },
+          "durationLabel": "Active duration",
+          "durationOption": "{days} days",
+          "paymentLabel": "Payment method",
+          "quota": {
+            "title": "Use membership package",
+            "available": "{count} posts remaining in your membership",
+            "exhausted": "You've used up your quota for this tier",
+            "notApplicable": "No package covers Standard listings — direct payment only"
+          },
+          "direct": {
+            "title": "Pay directly",
+            "subtitle": "Pay {price} via VNPay"
+          },
+          "confirm": "Repost",
+          "cancel": "Cancel",
+          "loading": "Processing..."
         },
         "takeDownConfirm": {
           "title": "Take down this listing?",
@@ -2559,6 +2587,9 @@
           "pushNotDisplaying": "Listing must be verified and displaying before it can be pushed",
           "takeDownSuccess": "Listing taken down successfully",
           "takeDownError": "Failed to take down listing",
+          "repostSuccess": "Listing reposted successfully",
+          "repostError": "Failed to repost listing",
+          "repostRedirectingToPayment": "Redirecting to payment...",
           "copyLinkSuccess": "Listing link copied",
           "copyLinkError": "Failed to copy listing link"
         }
