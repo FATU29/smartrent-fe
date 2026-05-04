@@ -2541,28 +2541,36 @@
         },
         "repostDialog": {
           "title": "Đăng lại tin",
-          "description": "Tin đã hết hạn. Chọn cách bạn muốn đăng lại tin và thời gian hiển thị.",
+          "description": "Tin đã hết hạn. Chọn cách thanh toán để đưa tin trở lại trang chính.",
           "listingLabel": "Tin đăng",
-          "vipType": "Loại tin: {type}",
           "vipTypes": {
             "NORMAL": "Tin thường",
             "SILVER": "VIP Bạc",
             "GOLD": "VIP Vàng",
             "DIAMOND": "VIP Kim cương"
           },
-          "durationLabel": "Thời gian hiển thị",
-          "durationOption": "{days} ngày",
           "paymentLabel": "Hình thức thanh toán",
           "quota": {
             "title": "Dùng gói có sẵn",
-            "available": "Còn {count} lượt trong gói thành viên của bạn",
+            "recommended": "Tiết kiệm",
+            "available": "Còn {count} lượt trong gói của bạn",
             "exhausted": "Bạn đã hết lượt cho loại tin này",
-            "notApplicable": "Không có gói cho tin thường — chỉ có thể mua trực tiếp"
+            "notApplicable": "Tin thường không có gói — chỉ có thể mua trực tiếp",
+            "fixedDuration": "Mỗi lượt trong gói tương đương {days} ngày hiển thị",
+            "durationLockedHint": "Khi dùng gói có sẵn, thời gian hiển thị mặc định là {days} ngày và không thể tuỳ chỉnh."
           },
           "direct": {
             "title": "Mua trực tiếp",
-            "subtitle": "Thanh toán {price} qua VNPay"
+            "subtitle": "Thanh toán theo giá tin và thời gian"
           },
+          "providerLabel": "Cổng thanh toán",
+          "providers": {
+            "VNPAY": "VNPay",
+            "ZALOPAY": "ZaloPay"
+          },
+          "durationLabel": "Thời gian hiển thị",
+          "durationOption": "{days} ngày",
+          "totalLabel": "Tổng thanh toán",
           "confirm": "Đăng lại",
           "cancel": "Huỷ",
           "loading": "Đang xử lý..."
