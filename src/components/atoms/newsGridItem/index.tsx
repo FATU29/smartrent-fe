@@ -112,7 +112,7 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
               variant='outline'
               className={classNames(
                 'font-medium',
-                isFeatured ? 'text-xs' : 'text-2xs px-1.5 py-0.5',
+                isFeatured ? 'text-xs' : 'text-nano px-1.5 py-px h-auto',
                 catStyle,
               )}
             >
@@ -129,7 +129,7 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
           )}
         >
           <Typography
-            variant={isFeatured ? 'h3' : 'h4'}
+            variant={isFeatured ? 'h3' : 'h6'}
             className={classNames(
               'font-semibold line-clamp-2 group-hover:text-primary transition-colors',
               isFeatured ? 'mb-2' : 'mb-1.5',
@@ -153,22 +153,47 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
           {showMeta && (
             <div
               className={classNames(
-                'flex flex-wrap items-center text-muted-foreground border-t',
-                isFeatured ? 'gap-2 text-xs pt-3' : 'gap-1.5 text-2xs pt-2',
+                'text-sm text-muted-foreground border-t',
+                isFeatured
+                  ? 'flex items-center justify-between gap-2 pt-3'
+                  : 'flex flex-col gap-1 pt-2',
               )}
             >
-              <span className='inline-flex items-center gap-1'>
-                <User className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
-                <span className='truncate max-w-[80px]'>{displayAuthor}</span>
-              </span>
-              <span className='inline-flex items-center gap-1'>
-                <Calendar className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
-                {displayPublishedAt}
-              </span>
-              <span className='inline-flex items-center gap-1'>
-                <Eye className={isFeatured ? 'w-3 h-3' : 'w-2.5 h-2.5'} />
-                {formatViewCount(viewCount)}
-              </span>
+              {isFeatured ? (
+                <div className='flex items-center gap-2 min-w-0'>
+                  <span className='inline-flex items-center gap-1 min-w-0'>
+                    <User className='w-3.5 h-3.5 shrink-0' />
+                    <span className='truncate'>{displayAuthor}</span>
+                  </span>
+                  <span className='inline-flex items-center gap-1 shrink-0'>
+                    <Calendar className='w-3.5 h-3.5' />
+                    {displayPublishedAt}
+                  </span>
+                </div>
+              ) : (
+                <span className='inline-flex items-center gap-1 min-w-0'>
+                  <User className='w-3 h-3 shrink-0' />
+                  <span className='truncate'>{displayAuthor}</span>
+                </span>
+              )}
+
+              {isFeatured ? (
+                <span className='inline-flex items-center gap-1 shrink-0'>
+                  <Eye className='w-3.5 h-3.5' />
+                  {formatViewCount(viewCount)}
+                </span>
+              ) : (
+                <div className='flex items-center justify-between'>
+                  <span className='inline-flex items-center gap-1'>
+                    <Calendar className='w-3.5 h-3.5' />
+                    {displayPublishedAt}
+                  </span>
+                  <span className='inline-flex items-center gap-1'>
+                    <Eye className='w-3.5 h-3.5' />
+                    {formatViewCount(viewCount)}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

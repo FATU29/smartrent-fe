@@ -241,6 +241,8 @@
   --text-meta--line-height: 1rem;
   --text-micro: 0.6875rem; /* 11px — chips, badges, kbd hints */
   --text-micro--line-height: 1rem;
+  --text-nano: 0.625rem; /* 10px — tertiary card-meta (author/date/views) */
+  --text-nano--line-height: 0.875rem;
 
   /* Layout rhythm — surface-level spacing keyed by intent, not pixels.
      Generates `p-card`, `mb-section`, `gap-row`, etc. */

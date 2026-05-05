@@ -198,11 +198,11 @@ const SuggestionRow: React.FC<SuggestionRowProps> = ({
         <Icon className='h-4 w-4' />
       </span>
       <span className='flex-1 min-w-0'>
-        <span className='block truncate text-sm font-medium text-foreground'>
+        <span className='block truncate text-base font-medium text-foreground'>
           {highlighted}
         </span>
         {secondary ? (
-          <span className='block truncate text-xs text-muted-foreground mt-0.5'>
+          <span className='block truncate text-sm text-muted-foreground mt-0.5'>
             {secondary}
           </span>
         ) : null}
@@ -261,10 +261,10 @@ const RunSearchRow: React.FC<RunSearchRowProps> = ({
       <Search className='h-4 w-4' />
     </span>
     <span className='flex-1 min-w-0'>
-      <span className='block truncate text-xs text-muted-foreground'>
+      <span className='block truncate text-sm text-muted-foreground'>
         {label}
       </span>
-      <span className='block truncate text-sm font-semibold text-foreground'>
+      <span className='block truncate text-base font-semibold text-foreground'>
         “{query}”
       </span>
     </span>
@@ -663,10 +663,10 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
 
       return (
         <div key={type} className='py-1'>
-          <div className='px-4 pt-2 pb-1 text-2xs uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-2'>
+          <div className='px-4 pt-2 pb-1 text-xs uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-2'>
             <span>{heading}</span>
             <span className='flex-1 h-px bg-border' />
-            <span className='text-2xs tabular-nums opacity-60'>
+            <span className='text-xs tabular-nums opacity-60'>
               {items.length}
             </span>
           </div>
@@ -707,14 +707,14 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
         >
           <div
             className={classNames(
-              'group flex items-center h-9 rounded-lg border border-input bg-background shadow-xs transition-all duration-200 pl-3 pr-1',
+              'group flex items-center h-11 rounded-lg border border-input bg-background shadow-xs transition-all duration-200 pl-3 pr-1.5',
               'hover:border-primary/40',
               'focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20',
             )}
           >
             <Search
               className={classNames(
-                'h-4 w-4 mr-2 shrink-0 transition-colors duration-200',
+                'h-5 w-5 mr-2.5 shrink-0 transition-colors duration-200',
                 'text-muted-foreground group-focus-within:text-primary',
               )}
             />
@@ -737,7 +737,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
               onFocus={() => setIsFocused(true)}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              className='flex-1 min-w-0 h-full border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 dark:bg-transparent'
+              className='flex-1 min-w-0 h-full border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 dark:bg-transparent text-sm sm:text-base md:text-sm lg:text-base'
             />
             {isLoading && !isSuggestLoading ? (
               <Loader2 className='h-4 w-4 mx-1 shrink-0 animate-spin text-primary pointer-events-none' />
@@ -751,7 +751,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
                   e.preventDefault()
                   handleClear()
                 }}
-                className='h-7 w-7 shrink-0 rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
+                className='h-8 w-8 shrink-0 rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
                 aria-label={tSuggestions('clear')}
               >
                 <X className='h-4 w-4' />
@@ -773,11 +773,11 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
                 e.preventDefault()
                 triggerSearch()
               }}
-              className='ml-1 h-7 shrink-0 rounded-md px-3 text-xs font-medium'
+              className='ml-1 h-9 shrink-0 rounded-md px-4 text-sm font-medium'
               aria-label={tSuggestions('submit')}
             >
-              <Search className='h-3.5 w-3.5' />
-              <span className='hidden sm:inline ml-1'>
+              <Search className='h-4 w-4' />
+              <span className='hidden sm:inline ml-1.5'>
                 {tSuggestions('submit')}
               </span>
             </Button>
@@ -810,16 +810,16 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       >
         {/* Header */}
         <div className='flex items-center justify-between gap-2 px-4 pt-3 pb-1'>
-          <span className='text-2xs uppercase tracking-wide text-muted-foreground font-medium'>
+          <span className='text-xs uppercase tracking-wide text-muted-foreground font-medium'>
             {tSuggestions('heading')}
           </span>
           {isSuggestLoading ? (
-            <span className='flex items-center gap-1.5 text-2xs text-muted-foreground'>
+            <span className='flex items-center gap-1.5 text-xs text-muted-foreground'>
               <Loader2 className='h-3 w-3 animate-spin' />
               {tSuggestions('loading')}
             </span>
           ) : (
-            <span className='text-2xs text-muted-foreground tabular-nums'>
+            <span className='text-xs text-muted-foreground tabular-nums'>
               {tSuggestions('countResults', { count: suggestions.length })}
             </span>
           )}
