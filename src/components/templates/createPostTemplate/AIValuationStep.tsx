@@ -19,10 +19,7 @@ export const AIValuationStep: React.FC<AIValuationStepProps> = ({
     >
       <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
         <Card className='mb-6 sm:mb-8 border-0 shadow-none p-0'>
-          <Typography
-            variant='h2'
-            className='text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3'
-          >
+          <Typography variant='pageTitle' className='mb-2 sm:mb-3'>
             {t('sections.aiValuation.title')}
           </Typography>
           <Typography variant='muted' className='text-sm sm:text-base'>
