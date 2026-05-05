@@ -100,7 +100,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
   if (isLoading) {
     const skeletonItems = Array.from({ length: 4 })
     return (
-      <section className='mb-10 sm:mb-14'>
+      <section>
         <div className='flex items-center gap-3 mb-5 sm:mb-6'>
           <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
           <Typography variant='sectionTitle' className='text-foreground'>
@@ -159,7 +159,7 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
   }
 
   return (
-    <section className='mb-10 sm:mb-14'>
+    <section>
       <div className='flex items-center justify-between mb-5 sm:mb-6'>
         <div className='flex items-center gap-3'>
           <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />

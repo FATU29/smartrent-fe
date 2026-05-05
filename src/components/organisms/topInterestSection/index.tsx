@@ -86,7 +86,7 @@ const TopInterestSection: React.FC<TopInterestSectionProps> = ({
   }, [api])
 
   return (
-    <section className='mb-10 sm:mb-14'>
+    <section className='mb-8 sm:mb-10'>
       <div className='flex items-center justify-between mb-5 sm:mb-6'>
         <div className='flex items-center gap-3'>
           <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />

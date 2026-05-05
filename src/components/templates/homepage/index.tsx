@@ -49,7 +49,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   return (
     <PageContainer width='content'>
       <div className='py-4 sm:py-6 lg:py-8'>
-        <div className='mb-10'>
+        <div className='mb-8 sm:mb-10'>
           <HeroPromoCarousel />
         </div>
         <section className='mb-8 sm:mb-10 relative rounded-2xl overflow-hidden'>
@@ -64,17 +64,17 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
             />
             <div className='absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/20 dark:from-background/75 dark:via-background/55 dark:to-background/25' />
           </div>
-          <div className='relative p-5 sm:p-8 lg:p-10'>
-            <div className='max-w-2xl mb-5 sm:mb-6'>
-              <Typography variant='sectionTitle' className='text-white mb-2'>
+          <div className='relative p-4 sm:p-6 lg:p-8'>
+            <div className='max-w-2xl mb-3 sm:mb-4'>
+              <Typography variant='h4' as='h2' className='text-white mb-1.5'>
                 {t('homePage.searchIntro.title')}
               </Typography>
-              <p className='text-white/80 text-sm sm:text-base leading-relaxed'>
+              <p className='text-white/80 text-sm leading-relaxed'>
                 {t('homePage.searchIntro.description')}
               </p>
             </div>
-            <div className='backdrop-blur-sm bg-white/75 dark:bg-card/70 p-3 sm:p-4 rounded-xl shadow-lg ring-1 ring-white/40 dark:ring-white/10'>
-              <div className='flex flex-col gap-3'>
+            <div className='backdrop-blur-sm bg-white/75 dark:bg-card/70 p-3 sm:p-3.5 rounded-xl shadow-lg ring-1 ring-white/40 dark:ring-white/10'>
+              <div className='flex flex-col gap-2.5'>
                 <ResidentialFilterResponsive hideVerifiedFilterInDialog />
                 <div className='flex justify-between items-center'>
                   <ClearFilterButton show={false} onClick={() => {}} />
