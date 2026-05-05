@@ -132,7 +132,7 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
             variant={isFeatured ? 'h3' : 'h4'}
             className={classNames(
               'font-semibold line-clamp-2 group-hover:text-primary transition-colors',
-              isFeatured ? 'text-lg sm:text-xl mb-2' : 'text-sm mb-1.5',
+              isFeatured ? 'mb-2' : 'mb-1.5',
             )}
           >
             {title}
@@ -140,12 +140,10 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
 
           {showSummary && (
             <Typography
-              variant='p'
+              variant='muted'
               className={classNames(
-                'text-muted-foreground flex-1',
-                isFeatured
-                  ? 'text-sm sm:text-base line-clamp-3 mb-3'
-                  : 'text-xs line-clamp-2 mb-2',
+                'flex-1',
+                isFeatured ? 'line-clamp-3 mb-3' : 'line-clamp-2 mb-2',
               )}
             >
               {summary}

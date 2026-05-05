@@ -206,6 +206,52 @@
   );
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * Design system tokens — typography & spacing
+ *
+ * Single source of truth for the type ramp and the layout rhythm. Values
+ * match what `<Typography>` variants currently produce, so introducing the
+ * tokens is a no-op visually. Components migrate progressively (see
+ * DESIGN_SYSTEM.md).
+ *
+ * These tokens generate Tailwind utilities (`text-title`, `p-card`, …) via
+ * Tailwind v4's `@theme` mechanism. Prefer them over raw `text-2xl` /
+ * `p-5` / `mb-10` in component code; the lint rule warns on the highest-
+ * impact violations.
+ * ──────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* Type ramp — 9 tokens covering display → micro. text-base (16) and
+     text-sm (14) remain as Tailwind primitives; the named tokens here
+     are the ones that carry typographic *role*. */
+  --text-display-xl: 3rem; /* 48px — hero h1 (lg+) */
+  --text-display-xl--line-height: 1;
+  --text-display: 2.25rem; /* 36px — h1 base */
+  --text-display--line-height: 2.5rem;
+  --text-title-lg: 1.875rem; /* 30px — page title (md+), h2 */
+  --text-title-lg--line-height: 2.25rem;
+  --text-title: 1.5rem; /* 24px — page title, h3, sectionTitle (sm+) */
+  --text-title--line-height: 2rem;
+  --text-heading: 1.25rem; /* 20px — section heading, h4 */
+  --text-heading--line-height: 1.75rem;
+  --text-subheading: 1.125rem; /* 18px — h5, lead-in */
+  --text-subheading--line-height: 1.75rem;
+  --text-body: 0.9375rem; /* 15px — reading body */
+  --text-body--line-height: 1.375rem;
+  --text-meta: 0.75rem; /* 12px — meta rows, timestamps */
+  --text-meta--line-height: 1rem;
+  --text-micro: 0.6875rem; /* 11px — chips, badges, kbd hints */
+  --text-micro--line-height: 1rem;
+
+  /* Layout rhythm — surface-level spacing keyed by intent, not pixels.
+     Generates `p-card`, `mb-section`, `gap-row`, etc. */
+  --spacing-row: 0.5rem; /* 8px — between dense rows */
+  --spacing-row-lg: 0.75rem; /* 12px — looser rows */
+  --spacing-card-tight: 0.75rem; /* 12px — dense card padding */
+  --spacing-card: 1rem; /* 16px — standard card padding */
+  --spacing-section: 2rem; /* 32px — between major sections */
+  --spacing-section-lg: 2.5rem; /* 40px — between major sections (lg+) */
+}
+
 /* Base styles */
 @layer base {
   * {

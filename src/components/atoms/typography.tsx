@@ -79,18 +79,22 @@ function getDefaultComponent(variant: TypographyProps['variant']) {
   }
 }
 
+// Variant → design-system token mapping. Token values live in
+// src/styles/globals.css (`@theme`) and are documented in DESIGN_SYSTEM.md.
+// `text-base` (16px) and `text-sm` (14px) stay as Tailwind primitives per
+// the doc — the named tokens carry typographic *role*, not every size.
 function getVariantClasses(variant: TypographyProps['variant']) {
   switch (variant) {
     case 'h1':
-      return 'text-4xl font-extrabold lg:text-5xl'
+      return 'text-display font-extrabold lg:text-display-xl'
     case 'h2':
-      return 'text-3xl font-semibold'
+      return 'text-title-lg font-semibold'
     case 'h3':
-      return 'text-2xl font-semibold'
+      return 'text-title font-semibold'
     case 'h4':
-      return 'text-xl font-semibold'
+      return 'text-heading font-semibold'
     case 'h5':
-      return 'text-lg font-semibold'
+      return 'text-subheading font-semibold'
     case 'h6':
       return 'text-base font-semibold'
     case 'blockquote':
@@ -100,9 +104,9 @@ function getVariantClasses(variant: TypographyProps['variant']) {
     case 'inlineCode':
       return 'relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold'
     case 'lead':
-      return 'text-xl text-muted-foreground'
+      return 'text-heading text-muted-foreground'
     case 'large':
-      return 'text-lg font-semibold'
+      return 'text-subheading font-semibold'
     case 'p':
       return 'leading-7'
     case 'small':
@@ -110,22 +114,25 @@ function getVariantClasses(variant: TypographyProps['variant']) {
     case 'muted':
       return 'text-sm text-muted-foreground'
     case 'body':
-      // 15px reading body — sits between text-sm (14) and text-base (16),
-      // intended for marketing/dashboard prose where text-sm feels cramped.
+      // NOTE: text-md is broken in current build — tailwind.config.js is not
+      // loaded by Tailwind v4 (no @config directive), so this class produces
+      // no CSS rule and elements inherit size from parent. Migrating to
+      // `text-body` would FIX this but break zero-diff. Tracking as a
+      // separate follow-up to repair deliberately.
       return 'text-md leading-relaxed'
     case 'caption':
-      // 11px micro text for chips, badges, meta lines, kbd hints.
+      // NOTE: text-2xs is broken in current build (see body note above).
+      // Migrate to `text-micro` in the broken-legacy-class follow-up.
       return 'text-2xs text-muted-foreground'
     case 'overline':
-      // 11px uppercase tracking labels (the "ELECTRICITY", "PHONE" overline
-      // pattern that's repeated ~12 times across the codebase).
+      // NOTE: text-2xs is broken in current build (see body note above).
       return 'text-2xs font-semibold uppercase tracking-wider text-muted-foreground'
     case 'pageTitle':
       // Top-of-page H1. Responsive scale prevents 30px headings on a 360px phone.
-      return 'text-2xl font-bold tracking-tight md:text-3xl'
+      return 'text-title font-bold tracking-tight md:text-title-lg'
     case 'sectionTitle':
       // Major section heading within a page (e.g. dashboard sub-sections).
-      return 'text-xl font-semibold tracking-tight sm:text-2xl'
+      return 'text-heading font-semibold tracking-tight sm:text-title'
     default:
       return ''
   }
