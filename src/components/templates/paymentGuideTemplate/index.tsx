@@ -75,6 +75,8 @@ const PaymentGuideTemplate = () => {
             <CardDescription>
               {t('hero.metrics.methodCount.label')}
             </CardDescription>
+            {/* Stat-value emphasis on hero metric, not a heading — outside type ramp. */}
+            {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
             <CardTitle className='text-2xl'>
               {t('hero.metrics.methodCount.value')}
             </CardTitle>
@@ -86,6 +88,7 @@ const PaymentGuideTemplate = () => {
             <CardDescription>
               {t('hero.metrics.availability.label')}
             </CardDescription>
+            {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
             <CardTitle className='text-2xl'>
               {t('hero.metrics.availability.value')}
             </CardTitle>

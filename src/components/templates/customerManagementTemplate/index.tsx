@@ -199,6 +199,8 @@ const CustomerManagementTemplate = () => {
             </p>
             <Users className='h-6 w-6 text-primary' />
           </div>
+          {/* Stat-value emphasis (count), not a heading — outside type ramp. */}
+          {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
           <p className='text-3xl font-bold text-primary'>
             {stats.totalCustomers}
           </p>
@@ -211,6 +213,7 @@ const CustomerManagementTemplate = () => {
             </p>
             <MousePointerClick className='h-6 w-6 text-primary' />
           </div>
+          {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
           <p className='text-3xl font-bold text-primary'>{stats.totalClicks}</p>
         </Card>
 
@@ -221,6 +224,7 @@ const CustomerManagementTemplate = () => {
             </p>
             <TrendingUp className='h-6 w-6 text-primary' />
           </div>
+          {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
           <p className='text-3xl font-bold text-primary'>{stats.uniqueUsers}</p>
         </Card>
       </div>

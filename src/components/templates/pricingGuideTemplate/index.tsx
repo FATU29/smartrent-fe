@@ -331,6 +331,8 @@ const PricingGuideTemplate: React.FC = () => {
               <BadgeCheck className='h-4 w-4 text-primary' />
               <span>{t('hero.metrics.packageCount')}</span>
             </CardDescription>
+            {/* Stat-value emphasis on hero metric, not a heading — outside type ramp. */}
+            {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
             <CardTitle className='text-3xl text-primary'>
               {membershipStats.packages}
             </CardTitle>
@@ -342,6 +344,7 @@ const PricingGuideTemplate: React.FC = () => {
               <Crown className='h-4 w-4 text-muted-foreground' />
               <span>{t('hero.metrics.listingTypeCount')}</span>
             </CardDescription>
+            {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
             <CardTitle className='text-3xl'>
               {membershipStats.listingTypes}
             </CardTitle>

@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { Typography } from '@/components/atoms/typography'
 
 type PaymentStatus = 'loading' | 'success' | 'failed' | 'cancelled'
 
@@ -509,9 +510,12 @@ const PaymentResultPage: NextPageWithLayout = () => {
                     className='w-16 h-16 border-4 border-primary border-t-transparent rounded-full'
                   />
                 </div>
-                <h2 className='text-2xl font-bold text-foreground mb-2'>
+                <Typography
+                  variant='pageTitle'
+                  className='text-foreground mb-2'
+                >
                   {t('processing.title')}
-                </h2>
+                </Typography>
                 <p className='text-muted-foreground'>{result.message}</p>
               </div>
             )}
@@ -535,10 +539,15 @@ const PaymentResultPage: NextPageWithLayout = () => {
                     {getStatusIcon(result.status)}
                   </motion.div>
 
+                  {/* Animated success/failure hero on a colored gradient
+                      banner — framer-motion props attach to the heading
+                      element directly, so this stays as motion.h1 with
+                      explicit sizing rather than routed through Typography. */}
                   <motion.h1
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
+                    // eslint-disable-next-line design-system/no-inline-heading-sizes
                     className='text-3xl font-bold text-white mb-2'
                   >
                     {result.status === 'success' && t('success.title')}

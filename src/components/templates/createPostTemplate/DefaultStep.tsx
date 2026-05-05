@@ -18,7 +18,7 @@ export const DefaultStep: React.FC<DefaultStepProps> = ({
     >
       <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
         <Card className='text-center py-12 border-0 shadow-none p-0'>
-          <Typography variant='h2' className='text-2xl font-bold mb-4'>
+          <Typography variant='pageTitle' className='mb-4'>
             {step.title}
           </Typography>
           <Typography variant='muted'>{step.description}</Typography>
