@@ -214,8 +214,8 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
       <div className='w-full'>
         {/* Title */}
         <Typography
-          variant='h1'
-          className='listing-title block w-full text-xl md:text-2xl lg:text-3xl font-bold leading-tight tracking-tight text-foreground'
+          variant='pageTitle'
+          className='listing-title block w-full text-foreground'
         >
           {title}
         </Typography>

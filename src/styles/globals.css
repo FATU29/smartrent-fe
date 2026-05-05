@@ -223,14 +223,14 @@
   /* Type ramp — 9 tokens covering display → micro. text-base (16) and
      text-sm (14) remain as Tailwind primitives; the named tokens here
      are the ones that carry typographic *role*. */
-  --text-display-xl: 3rem; /* 48px — hero h1 (lg+) */
-  --text-display-xl--line-height: 1;
-  --text-display: 2.25rem; /* 36px — h1 base */
-  --text-display--line-height: 2.5rem;
-  --text-title-lg: 1.875rem; /* 30px — page title (md+), h2 */
-  --text-title-lg--line-height: 2.25rem;
-  --text-title: 1.5rem; /* 24px — page title, h3, sectionTitle (sm+) */
-  --text-title--line-height: 2rem;
+  --text-display-xl: 2.25rem; /* 36px — hero h1 (lg+) */
+  --text-display-xl--line-height: 2.5rem;
+  --text-display: 1.875rem; /* 30px — h1 base */
+  --text-display--line-height: 2.25rem;
+  --text-title-lg: 1.625rem; /* 26px — page title (md+), h2 */
+  --text-title-lg--line-height: 2rem;
+  --text-title: 1.375rem; /* 22px — page title, h3, sectionTitle (sm+) */
+  --text-title--line-height: 1.75rem;
   --text-heading: 1.25rem; /* 20px — section heading, h4 */
   --text-heading--line-height: 1.75rem;
   --text-subheading: 1.125rem; /* 18px — h5, lead-in */
