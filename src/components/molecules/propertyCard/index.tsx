@@ -517,9 +517,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           {/* Title & Property Type Row */}
           <div className='flex items-start justify-between gap-2'>
             <Typography
-              variant='h6'
+              variant='h4'
               className={classNames(
-                'text-foreground group-hover/card:text-primary transition-colors duration-200 leading-tight font-semibold flex-1',
+                'text-foreground group-hover/card:text-primary transition-colors duration-200 leading-tight flex-1',
                 isCompact ? 'line-clamp-2 min-h-[2.75rem]' : 'line-clamp-2',
               )}
             >
@@ -580,7 +580,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           {/* Price Row */}
           <div className='flex items-center justify-between gap-2'>
             <Typography
-              variant='h5'
+              variant='h3'
               className='text-primary font-bold tracking-tight'
             >
               {formatByLocale(price, priceUnit)}
