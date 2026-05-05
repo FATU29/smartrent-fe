@@ -87,7 +87,7 @@ const PersonalizedPropertySection: React.FC = () => {
   const displayedListings = listings.slice(0, 10)
 
   return (
-    <section className='mb-10 sm:mb-14'>
+    <section className='mb-8 sm:mb-10'>
       <div className='flex items-start gap-3 mb-5 sm:mb-6'>
         <div className='w-1 h-7 sm:h-8 rounded-full bg-primary mt-0.5' />
         <div>

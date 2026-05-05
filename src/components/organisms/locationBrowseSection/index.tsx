@@ -62,7 +62,7 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
 
   if (!cities || uniqueCities.length === 0) {
     return (
-      <section className='mb-10 sm:mb-14'>
+      <section className='mb-8 sm:mb-10'>
         <div className='flex items-center gap-3 mb-5 sm:mb-6'>
           <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
           <Typography variant='sectionTitle' className='text-foreground'>
@@ -80,7 +80,7 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
   }
 
   return (
-    <section className='mb-10 sm:mb-14'>
+    <section className='mb-8 sm:mb-10'>
       <div className='flex items-center gap-3 mb-5 sm:mb-6'>
         <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
         <Typography variant='sectionTitle' className='text-foreground'>

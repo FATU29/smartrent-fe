@@ -66,8 +66,8 @@ const PromoFeaturesSection: React.FC = () => {
   }, [api])
 
   return (
-    <section className='mt-16'>
-      <div className='relative rounded-2xl border bg-gradient-to-b from-background to-background/70 dark:from-background/60 dark:to-background/20 p-6 sm:p-10 overflow-hidden'>
+    <section className='mt-8 sm:mt-10'>
+      <div className='relative rounded-2xl border bg-gradient-to-b from-background to-background/70 dark:from-background/60 dark:to-background/20 p-5 sm:p-6 overflow-hidden'>
         <div className='pointer-events-none absolute inset-0 [mask-image:radial-gradient(circle_at_50%_40%,black,transparent_75%)]'>
           <div className='absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,hsl(var(--primary)/0.08),transparent_60%)]' />
           <div className='absolute inset-0 bg-[radial-gradient(circle_at_80%_30%,hsl(var(--primary)/0.06),transparent_65%)]' />

@@ -49,10 +49,10 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   return (
     <PageContainer width='content'>
       <div className='py-4 sm:py-6 lg:py-8'>
-        <div className='mb-10'>
+        <div className='mb-8 sm:mb-10'>
           <HeroPromoCarousel />
         </div>
-        <section className='mb-6 sm:mb-8 relative rounded-2xl overflow-hidden'>
+        <section className='mb-8 sm:mb-10 relative rounded-2xl overflow-hidden'>
           <div className='absolute inset-0'>
             <Image
               src='/images/banner-default.jpg'
@@ -65,8 +65,8 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
             <div className='absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/20 dark:from-background/75 dark:via-background/55 dark:to-background/25' />
           </div>
           <div className='relative p-4 sm:p-6 lg:p-8'>
-            <div className='max-w-2xl mb-4 sm:mb-5'>
-              <Typography variant='large' as='h2' className='text-white mb-1.5'>
+            <div className='max-w-2xl mb-3 sm:mb-4'>
+              <Typography variant='h4' as='h2' className='text-white mb-1.5'>
                 {t('homePage.searchIntro.title')}
               </Typography>
               <p className='text-white/80 text-sm leading-relaxed'>

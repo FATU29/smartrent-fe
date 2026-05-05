@@ -717,17 +717,17 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   showBrokerBadge={isProfessionalBroker}
                   fallbackClassName={isCompact ? 'text-sm' : 'text-xs'}
                 />
-                <div className='flex-1 min-w-0'>
+                <div className='flex-1 min-w-0 space-y-0.5'>
                   {userName && (
                     <Typography
                       variant='small'
-                      className='font-medium truncate block'
+                      className='font-medium truncate block leading-tight'
                     >
                       {userName}
                     </Typography>
                   )}
                   {isProfessionalBroker && (
-                    <span className='inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-50 px-2 py-0.5 text-2xs font-semibold text-emerald-700 dark:border-emerald-700/40 dark:bg-emerald-950/20 dark:text-emerald-300'>
+                    <span className='inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-50 px-1.5 py-px text-nano font-semibold text-emerald-700 dark:border-emerald-700/40 dark:bg-emerald-950/20 dark:text-emerald-300'>
                       {t('userMenu.proBroker')}
                     </span>
                   )}
