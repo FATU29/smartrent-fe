@@ -2,6 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
+import { Typography } from '@/components/atoms/typography'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import {
@@ -124,9 +125,9 @@ const HeroPromoCarousel = () => {
                   />
                   <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/10' />
                   <div className='absolute bottom-10 left-6 sm:left-10 max-w-xl text-white'>
-                    <h2 className='text-2xl sm:text-4xl font-semibold tracking-tight mb-3'>
+                    <Typography variant='pageTitle' as='h2' className='mb-3'>
                       {s.heading}
-                    </h2>
+                    </Typography>
                     <p className='text-sm sm:text-base mb-5 leading-relaxed text-white/90'>
                       {s.sub}
                     </p>

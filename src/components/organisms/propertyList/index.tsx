@@ -82,10 +82,7 @@ const PropertyList: React.FC<PropertyListProps> = ({
 
   return (
     <div className='w-full'>
-      <Typography
-        variant='h2'
-        className='text-lg md:text-xl lg:text-2xl font-bold mb-6'
-      >
+      <Typography variant='sectionTitle' className='mb-6'>
         {t('homePage.property.listings')} (
         {isLoading ? '...' : displayedProperties.length})
       </Typography>
