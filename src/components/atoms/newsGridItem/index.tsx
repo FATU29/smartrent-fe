@@ -93,7 +93,7 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
         <div
           className={classNames(
             'relative overflow-hidden bg-muted flex-shrink-0',
-            isFeatured ? 'aspect-[4/3] sm:aspect-[16/10]' : 'aspect-[16/10]',
+            isFeatured ? 'aspect-[16/10] sm:aspect-[16/9]' : 'aspect-[16/10]',
           )}
         >
           <ImageAtom
@@ -125,13 +125,14 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
         <CardContent
           className={classNames(
             'flex flex-col flex-1',
-            isFeatured ? 'p-5' : 'p-3',
+            isFeatured ? 'p-4' : 'p-3',
           )}
         >
           <Typography
-            variant={isFeatured ? 'h3' : 'h4'}
+            variant='h4'
+            as={isFeatured ? 'h3' : 'h4'}
             className={classNames(
-              'font-semibold line-clamp-2 group-hover:text-primary transition-colors',
+              'line-clamp-2 group-hover:text-primary transition-colors',
               isFeatured ? 'mb-2' : 'mb-1.5',
             )}
           >
