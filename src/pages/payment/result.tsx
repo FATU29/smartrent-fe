@@ -535,10 +535,15 @@ const PaymentResultPage: NextPageWithLayout = () => {
                     {getStatusIcon(result.status)}
                   </motion.div>
 
+                  {/* Animated success/failure hero on a colored gradient
+                      banner — framer-motion props attach to the heading
+                      element directly, so this stays as motion.h1 with
+                      explicit sizing rather than routed through Typography. */}
                   <motion.h1
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
+                    // eslint-disable-next-line design-system/no-inline-heading-sizes
                     className='text-3xl font-bold text-white mb-2'
                   >
                     {result.status === 'success' && t('success.title')}
