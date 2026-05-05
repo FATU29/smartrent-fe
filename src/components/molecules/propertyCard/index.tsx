@@ -59,10 +59,7 @@ const StatPill: React.FC<{
     <TooltipTrigger asChild>
       <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/60 hover:bg-muted transition-colors duration-200'>
         <span className='text-primary'>{icon}</span>
-        <Typography
-          variant='small'
-          className='font-semibold text-sm text-foreground'
-        >
+        <Typography variant='small' className='font-semibold text-foreground'>
           {value}
         </Typography>
       </div>
@@ -367,7 +364,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   <div className='text-center'>
                     <Typography
                       variant='small'
-                      className='text-xs font-bold text-muted-foreground'
+                      className='font-bold text-muted-foreground'
                     >
                       +{hiddenThumbnailCount}
                     </Typography>
@@ -523,9 +520,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               variant='h6'
               className={classNames(
                 'text-foreground group-hover/card:text-primary transition-colors duration-200 leading-tight font-semibold flex-1',
-                isCompact
-                  ? 'text-base md:text-lg line-clamp-2 min-h-[2.75rem]'
-                  : 'text-sm sm:text-base line-clamp-2',
+                isCompact ? 'line-clamp-2 min-h-[2.75rem]' : 'line-clamp-2',
               )}
             >
               {title}
@@ -575,10 +570,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               />
               <Typography
                 variant='small'
-                className={classNames(
-                  'text-muted-foreground line-clamp-1 leading-snug',
-                  isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                )}
+                className='text-muted-foreground line-clamp-1 leading-snug'
               >
                 {displayAddress}
               </Typography>
@@ -589,10 +581,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           <div className='flex items-center justify-between gap-2'>
             <Typography
               variant='h5'
-              className={classNames(
-                'text-primary font-bold tracking-tight',
-                isCompact ? 'text-lg md:text-xl' : 'text-base sm:text-lg',
-              )}
+              className='text-primary font-bold tracking-tight'
             >
               {formatByLocale(price, priceUnit)}
             </Typography>
@@ -600,7 +589,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             {area && isCompact && (
               <Typography
                 variant='small'
-                className='text-xs text-muted-foreground font-medium bg-muted/60 px-2 py-0.5 rounded-full'
+                className='text-muted-foreground font-medium bg-muted/60 px-2 py-0.5 rounded-full'
               >
                 {formatByLocale(Math.round(price / area), 'VND')}
                 /m²
@@ -666,7 +655,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               {description && (
                 <Typography
                   variant='small'
-                  className='text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed'
+                  className='text-muted-foreground/80 line-clamp-2 leading-relaxed'
                 >
                   {description}
                 </Typography>
@@ -682,10 +671,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   <TooltipTrigger asChild>
                     <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors'>
                       <Sofa className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
-                      <Typography
-                        variant='small'
-                        className='font-medium text-xs sm:text-sm'
-                      >
+                      <Typography variant='small' className='font-medium'>
                         {tCreatePost(getFurnishingTranslationKey(furnishing))}
                       </Typography>
                     </div>
@@ -703,10 +689,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   <TooltipTrigger asChild>
                     <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors'>
                       <Compass className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
-                      <Typography
-                        variant='small'
-                        className='font-medium text-xs sm:text-sm'
-                      >
+                      <Typography variant='small' className='font-medium'>
                         {tCreatePost(getDirectionTranslationKey(direction))}
                       </Typography>
                     </div>
@@ -738,10 +721,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                   {userName && (
                     <Typography
                       variant='small'
-                      className={classNames(
-                        'font-medium truncate block',
-                        isCompact ? 'text-sm' : 'text-xs sm:text-sm',
-                      )}
+                      className='font-medium truncate block'
                     >
                       {userName}
                     </Typography>

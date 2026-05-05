@@ -132,16 +132,10 @@ const NewsGridSection: React.FC<NewsGridSectionProps> = ({
         <div className='flex items-start gap-3'>
           <div className='w-1 h-7 sm:h-8 rounded-full bg-primary mt-0.5' />
           <div>
-            <Typography
-              variant='h2'
-              className='text-xl sm:text-2xl font-bold text-foreground'
-            >
+            <Typography variant='sectionTitle' className='text-foreground'>
               {t('title')}
             </Typography>
-            <Typography
-              variant='p'
-              className='text-sm text-muted-foreground mt-1'
-            >
+            <Typography variant='muted' className='mt-1'>
               {t('subtitle')}
             </Typography>
           </div>

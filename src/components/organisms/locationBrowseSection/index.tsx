@@ -65,10 +65,7 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
       <section className='mb-10 sm:mb-14'>
         <div className='flex items-center gap-3 mb-5 sm:mb-6'>
           <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
-          <Typography
-            variant='h2'
-            className='text-xl sm:text-2xl font-bold text-foreground'
-          >
+          <Typography variant='sectionTitle' className='text-foreground'>
             {t('title')}
           </Typography>
         </div>
@@ -86,10 +83,7 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
     <section className='mb-10 sm:mb-14'>
       <div className='flex items-center gap-3 mb-5 sm:mb-6'>
         <div className='w-1 h-7 sm:h-8 rounded-full bg-primary' />
-        <Typography
-          variant='h2'
-          className='text-xl sm:text-2xl font-bold text-foreground'
-        >
+        <Typography variant='sectionTitle' className='text-foreground'>
           {t('title')}
         </Typography>
       </div>
