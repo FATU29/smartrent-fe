@@ -134,7 +134,7 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
                     <div className='absolute bottom-6 left-6 right-6 text-white'>
                       <Typography
                         variant='h3'
-                        className='text-2xl font-bold mb-2 text-white drop-shadow'
+                        className='mb-2 text-white drop-shadow'
                       >
                         {city.provinceName}
                       </Typography>

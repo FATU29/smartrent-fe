@@ -189,8 +189,8 @@ const FeaturedArticle: React.FC<{ news: NewsItem }> = ({ news }) => {
         <div className='flex flex-col justify-between flex-1 sm:py-1'>
           <div>
             <Typography
-              variant='h2'
-              className='text-xl sm:text-2xl font-bold leading-tight line-clamp-3 group-hover:text-primary transition-colors mb-3'
+              variant='h3'
+              className='leading-tight line-clamp-3 group-hover:text-primary transition-colors mb-3'
             >
               {news.title}
             </Typography>
