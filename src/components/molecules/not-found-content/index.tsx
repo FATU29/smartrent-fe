@@ -48,8 +48,11 @@ export const NotFoundContent: React.FC<NotFoundContentProps> = ({
 
       {/* Text Content */}
       <div className='flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100'>
+        {/* Intentionally oversized: 404 hero is a marketing-style display
+            heading, not a page title. Sits outside the standard type ramp. */}
         <Typography
           variant='h1'
+          // eslint-disable-next-line design-system/no-inline-heading-sizes
           className='text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight'
         >
           {title || t('title')}

@@ -37,6 +37,8 @@ export const getPriceContainerStyles = (compact: boolean) => {
 }
 
 export const getPriceStyles = (compact: boolean) => {
+  // Price is stat-value emphasis, not a heading — outside type ramp.
+  // eslint-disable-next-line design-system/no-inline-heading-sizes
   return cn('font-semibold', compact ? 'text-xl tracking-tight' : 'text-2xl')
 }
 

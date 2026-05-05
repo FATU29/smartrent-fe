@@ -358,8 +358,10 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             {price && (
               <div className='mb-4'>
                 <div className='flex items-baseline gap-2'>
+                  {/* Price is stat-value emphasis, not a heading — outside type ramp. */}
                   <Typography
                     variant='h3'
+                    // eslint-disable-next-line design-system/no-inline-heading-sizes
                     className='font-bold text-primary text-xl sm:text-2xl'
                   >
                     {typeof price === 'number' && price > 0
