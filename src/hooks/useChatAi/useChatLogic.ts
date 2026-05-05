@@ -208,9 +208,15 @@ export const useChatLogic = () => {
           scrollContainer?.removeEventListener('wheel', handleUserScroll)
           scrollContainer?.removeEventListener('touchmove', handleUserScroll)
         }
+        // Coalesce scroll-follow across bursty deltas: only one rAF in flight
+        // at a time, so 100 deltas in a single frame collapse to a single
+        // scrollTop write at next paint (instead of 100 queued writes).
+        let scrollRafPending = false
         const followScrollToBottom = () => {
-          if (!followBottom || !scrollContainer) return
+          if (!followBottom || !scrollContainer || scrollRafPending) return
+          scrollRafPending = true
           requestAnimationFrame(() => {
+            scrollRafPending = false
             scrollContainer.scrollTop = scrollContainer.scrollHeight
           })
         }
