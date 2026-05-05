@@ -154,9 +154,7 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
     <PageContainer width='content' className='py-6'>
       {/* Page heading */}
       <div className='mb-6'>
-        <Typography variant='h2' className='text-xl md:text-2xl'>
-          {t('title')}
-        </Typography>
+        <Typography variant='pageTitle'>{t('title')}</Typography>
         <Typography variant='p' className='text-muted-foreground mt-1'>
           {t('subtitle')}
         </Typography>

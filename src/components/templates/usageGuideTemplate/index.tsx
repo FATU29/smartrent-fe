@@ -77,8 +77,8 @@ const UsageGuideTemplate = () => {
               </Badge>
 
               <Typography
-                variant='h2'
-                className='max-w-3xl text-2xl leading-tight tracking-tight sm:text-3xl'
+                variant='pageTitle'
+                className='max-w-3xl leading-tight'
               >
                 {t('title')}
               </Typography>

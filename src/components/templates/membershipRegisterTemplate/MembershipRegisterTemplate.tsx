@@ -321,10 +321,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
                       </div>
                       {currentMembership && (
                         <>
-                          <Typography
-                            variant='h2'
-                            className='text-2xl md:text-3xl font-bold tracking-tight'
-                          >
+                          <Typography variant='pageTitle'>
                             {currentMembership.packageName}
                           </Typography>
                           <div className='flex items-center gap-2 text-muted-foreground'>

@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { Typography } from '@/components/atoms/typography'
 
 type PaymentStatus = 'loading' | 'success' | 'failed' | 'cancelled'
 
@@ -509,9 +510,12 @@ const PaymentResultPage: NextPageWithLayout = () => {
                     className='w-16 h-16 border-4 border-primary border-t-transparent rounded-full'
                   />
                 </div>
-                <h2 className='text-2xl font-bold text-foreground mb-2'>
+                <Typography
+                  variant='pageTitle'
+                  className='text-foreground mb-2'
+                >
                   {t('processing.title')}
-                </h2>
+                </Typography>
                 <p className='text-muted-foreground'>{result.message}</p>
               </div>
             )}
