@@ -1,4 +1,4 @@
-import { FC, RefObject, useRef, useState } from 'react'
+import { FC, RefObject, useLayoutEffect, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
@@ -61,6 +61,27 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
   const [fullDetailListingId, setFullDetailListingId] = useState<number | null>(
     null,
   )
+
+  // On panel mount (e.g. user reopens the chat after a page refresh and
+  // sessionStorage rehydrates prior messages), pin the scroll to the bottom
+  // so the most recent turn is visible. Without this, the container starts
+  // at scrollTop=0 and the user sees the oldest message instead.
+  // rAF-after-rAF: first frame writes scrollTop synchronously before paint;
+  // the second covers late layout (listing card images / async fonts) that
+  // would otherwise grow the content after our initial scroll-to-bottom.
+  useLayoutEffect(() => {
+    const container = scrollRef.current
+    if (!container) return
+    container.scrollTop = container.scrollHeight
+    const id1 = requestAnimationFrame(() => {
+      container.scrollTop = container.scrollHeight
+      // Inner rAF intentional — runs after the next layout flush.
+      requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight
+      })
+    })
+    return () => cancelAnimationFrame(id1)
+  }, [scrollRef])
 
   return (
     <div
