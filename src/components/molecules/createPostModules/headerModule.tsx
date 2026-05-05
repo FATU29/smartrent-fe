@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
+import { Typography } from '@/components/atoms/typography'
 
 interface HeaderModuleProps {
   className?: string
@@ -22,9 +23,9 @@ const HeaderModule: React.FC<HeaderModuleProps> = ({ className }) => {
     <div className={`mb-6 sm:mb-8 ${className || ''}`}>
       <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6'>
         <div className='flex-1'>
-          <h1 className='text-xl sm:text-2xl lg:text-3xl font-bold mb-2'>
+          <Typography variant='pageTitle' className='mb-2'>
             {title}
-          </h1>
+          </Typography>
           <p className='text-sm sm:text-base text-muted-foreground'>
             {description}
           </p>
