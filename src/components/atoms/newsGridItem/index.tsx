@@ -129,9 +129,9 @@ const NewsGridItem: React.FC<NewsGridItemProps> = ({
           )}
         >
           <Typography
-            variant={isFeatured ? 'h3' : 'h4'}
+            variant={isFeatured ? 'pageTitle' : 'h4'}
             className={classNames(
-              'font-semibold line-clamp-2 group-hover:text-primary transition-colors',
+              'line-clamp-2 group-hover:text-primary transition-colors',
               isFeatured ? 'mb-2' : 'mb-1.5',
             )}
           >
