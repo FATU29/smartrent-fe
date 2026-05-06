@@ -64,6 +64,22 @@ const designSystemPlugin = {
 }
 
 const eslintConfig = [
+  // Global ignores — apply before any other config blocks. Without this,
+  // ESLint v9 flat config will lint generated/built artifacts (.next, dist,
+  // next-env.d.ts) which produce thousands of errors that aren't fixable in
+  // source code (they're in compiled vendor output).
+  {
+    ignores: [
+      '.next/**',
+      'out/**',
+      'build/**',
+      'dist/**',
+      'coverage/**',
+      'node_modules/**',
+      'next-env.d.ts',
+      'public/**',
+    ],
+  },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     files: ['**/*.ts', '**/*.tsx'],
