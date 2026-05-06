@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react'
+import React, { FC, memo, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ReactMarkdown, { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -403,4 +403,17 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
   )
 }
 
-export default AiChatBubble
+// Memoized so non-streaming bubbles don't re-render on every text delta of
+// the in-flight bot response. updateMessage in useChatSession returns a
+// fresh object only for the streaming message (the rest keep their identity
+// via Array.map), so referential equality on `message` is a sound bail-out.
+// Callbacks come from useCallback / useState setters in the parent and are
+// referentially stable across renders.
+export default memo(AiChatBubble, (prev, next) => {
+  return (
+    prev.message === next.message &&
+    prev.className === next.className &&
+    prev.onViewListingDetail === next.onViewListingDetail &&
+    prev.onOpenFullDetail === next.onOpenFullDetail
+  )
+})
