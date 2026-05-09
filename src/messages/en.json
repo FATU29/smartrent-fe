@@ -2026,6 +2026,7 @@
     "listingsPanelAriaLabel": "Map listings panel",
     "news": "News",
     "savedListings": "Saved Listings",
+    "following": "Following",
     "compare": "Compare",
     "about": "About",
     "contact": "Contact",
@@ -3729,7 +3730,51 @@
       "LISTING_REJECTED": "Listing Rejected",
       "LISTING_REVISION_REQUIRED": "Revision Required",
       "LISTING_SUSPENDED": "Listing Suspended",
-      "LISTING_RESUBMITTED": "Listing Resubmitted"
+      "LISTING_RESUBMITTED": "Listing Resubmitted",
+      "LISTING_EXPIRING": "Listing Expiring Soon",
+      "NEW_LISTING_FROM_FOLLOWED_USER": "New listing from followed user"
+    }
+  },
+  "userFollow": {
+    "actions": {
+      "follow": "Follow",
+      "unfollow": "Following",
+      "followAria": "Follow this user to receive new-listing notifications",
+      "unfollowAria": "Unfollow this user"
+    },
+    "followerCount": "{count, plural, =0 {No followers} one {# follower} other {# followers}}",
+    "messages": {
+      "followed": "You are now following this user",
+      "unfollowed": "You have unfollowed this user",
+      "followFailed": "Could not follow this user. Please try again.",
+      "unfollowFailed": "Could not unfollow this user. Please try again.",
+      "loginRequired": "Please log in to follow this user"
+    }
+  },
+  "followingPage": {
+    "title": "Following",
+    "subtitle": "Manage the people you follow and browse their latest listings",
+    "peopleCount": "{count, plural, =0 {Not following anyone yet} one {# person} other {# people}}",
+    "defaultName": "User",
+    "proBroker": "Professional broker",
+    "tabs": {
+      "people": "Following",
+      "feed": "Feed"
+    },
+    "actions": {
+      "viewListings": "View listings",
+      "retry": "Retry"
+    },
+    "states": {
+      "errorTitle": "Could not load this section",
+      "errorDescription": "Something went wrong. Please try again."
+    },
+    "empty": {
+      "peopleTitle": "You're not following anyone yet",
+      "peopleDescription": "When you follow someone, they appear here. You'll get a notification whenever they post a new listing.",
+      "browseProperties": "Browse properties",
+      "feedTitle": "No new listings yet",
+      "feedDescription": "Listings from people you follow will appear here, newest first."
     }
   }
 }

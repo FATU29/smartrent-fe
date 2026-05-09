@@ -487,6 +487,22 @@ export class ListingService {
   }
 
   /**
+   * Get listings posted by users the current viewer follows.
+   * Authenticated. Mirrors the seller-listings card shape so PropertyCard renders directly.
+   * GET /v1/listings/my-following-feed
+   */
+  static async getMyFollowingFeed(
+    page = 1,
+    size = 12,
+  ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    return apiRequest<ListingSearchBackendResponse>({
+      method: 'GET',
+      url: PATHS.LISTING.MY_FOLLOWING_FEED,
+      params: { page, size },
+    })
+  }
+
+  /**
    * Get current user's listings (owner dashboard)
    * POST /v1/listings/my-listings
    */

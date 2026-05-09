@@ -20,6 +20,7 @@ import {
   UserRoundCheck,
 } from 'lucide-react'
 import BrokerAvatar from '@/components/molecules/brokerAvatar'
+import FollowButton from '@/components/molecules/followButton'
 
 interface SellerPublicProfileCardProps {
   seller?: UserApi | null
@@ -142,6 +143,16 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
                 {t('profile.listingCount', { count: listingCount })}
               </Badge>
             </div>
+
+            {seller?.userId && (
+              <div className='pt-1'>
+                <FollowButton
+                  targetUserId={seller.userId}
+                  showFollowerCount
+                  variant='primary'
+                />
+              </div>
+            )}
           </div>
         </div>
 

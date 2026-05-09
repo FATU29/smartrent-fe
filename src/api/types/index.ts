@@ -50,6 +50,7 @@ export * from './notification.type'
 export * from './owner-listing-analytics.type'
 export * from './broker.type'
 export * from './search-suggestion.type'
+export * from './user-follow.type'
 
 export type {
   PropertyType,

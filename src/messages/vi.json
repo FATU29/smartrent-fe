@@ -1845,6 +1845,7 @@
     "listingsPanelAriaLabel": "Bảng danh sách bất động sản trên bản đồ",
     "news": "Tin tức",
     "savedListings": "Tin đã lưu",
+    "following": "Đang theo dõi",
     "compare": "So Sánh",
     "about": "Giới thiệu",
     "contact": "Liên hệ",
@@ -3730,7 +3731,51 @@
       "LISTING_REJECTED": "Tin đăng bị từ chối",
       "LISTING_REVISION_REQUIRED": "Yêu cầu chỉnh sửa",
       "LISTING_SUSPENDED": "Tin đăng bị tạm ngưng",
-      "LISTING_RESUBMITTED": "Tin đăng đã gửi lại"
+      "LISTING_RESUBMITTED": "Tin đăng đã gửi lại",
+      "LISTING_EXPIRING": "Tin đăng sắp hết hạn",
+      "NEW_LISTING_FROM_FOLLOWED_USER": "Tin mới từ người bạn đang theo dõi"
+    }
+  },
+  "userFollow": {
+    "actions": {
+      "follow": "Theo dõi",
+      "unfollow": "Đang theo dõi",
+      "followAria": "Theo dõi người dùng này để nhận thông báo tin đăng mới",
+      "unfollowAria": "Bỏ theo dõi người dùng này"
+    },
+    "followerCount": "{count, plural, =0 {Chưa có người theo dõi} other {# người theo dõi}}",
+    "messages": {
+      "followed": "Đã theo dõi người dùng này",
+      "unfollowed": "Đã bỏ theo dõi người dùng này",
+      "followFailed": "Không thể theo dõi. Vui lòng thử lại.",
+      "unfollowFailed": "Không thể bỏ theo dõi. Vui lòng thử lại.",
+      "loginRequired": "Vui lòng đăng nhập để theo dõi người dùng này"
+    }
+  },
+  "followingPage": {
+    "title": "Đang theo dõi",
+    "subtitle": "Quản lý những người bạn theo dõi và xem các tin đăng mới nhất",
+    "peopleCount": "{count, plural, =0 {Chưa theo dõi ai} other {# người}}",
+    "defaultName": "Người dùng",
+    "proBroker": "Môi giới chuyên nghiệp",
+    "tabs": {
+      "people": "Đang theo dõi",
+      "feed": "Bảng tin"
+    },
+    "actions": {
+      "viewListings": "Xem tin đăng",
+      "retry": "Thử lại"
+    },
+    "states": {
+      "errorTitle": "Không thể tải mục này",
+      "errorDescription": "Đã xảy ra lỗi. Vui lòng thử lại."
+    },
+    "empty": {
+      "peopleTitle": "Bạn chưa theo dõi ai",
+      "peopleDescription": "Khi bạn theo dõi ai đó, họ sẽ xuất hiện ở đây. Bạn sẽ nhận thông báo khi họ đăng tin mới.",
+      "browseProperties": "Xem tin đăng",
+      "feedTitle": "Chưa có tin đăng mới",
+      "feedDescription": "Tin đăng từ những người bạn theo dõi sẽ hiện ở đây, mới nhất trước."
     }
   }
 }

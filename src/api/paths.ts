@@ -39,6 +39,15 @@ export const PATHS = {
     STATUS: '/v1/users/broker/status',
   },
 
+  // User-to-user follow endpoints
+  USER_FOLLOW: {
+    FOLLOW: '/v1/users/:userId/follow',
+    UNFOLLOW: '/v1/users/:userId/follow',
+    STATUS: '/v1/users/:userId/follow-status',
+    FOLLOWERS: '/v1/users/:userId/followers',
+    FOLLOWING: '/v1/users/:userId/following',
+  },
+
   // Property endpoints (deprecated - use LISTING instead)
   PROPERTY: {
     LIST: '/v1/properties',
@@ -86,6 +95,7 @@ export const PATHS = {
     PROVINCE_STATS: '/v1/listings/stats/provinces',
     CATEGORY_STATS: '/v1/listings/stats/categories',
     MY_DETAIL: '/v1/listings/:id/my-detail',
+    MY_FOLLOWING_FEED: '/v1/listings/my-following-feed',
     RESUBMIT_FOR_REVIEW: '/v1/listings/:id/resubmit-for-review',
     UPDATE_AND_RESUBMIT: '/v1/listings/:id/update-and-resubmit',
   },
