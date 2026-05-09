@@ -3764,7 +3764,13 @@
     },
     "actions": {
       "viewListings": "Xem tin đăng",
+      "viewFeed": "Xem bảng tin",
       "retry": "Thử lại"
+    },
+    "filters": {
+      "label": "Hiển thị",
+      "allUsers": "Tất cả người đang theo dõi",
+      "activeBadge": "Đang lọc theo {name}"
     },
     "states": {
       "errorTitle": "Không thể tải mục này",
@@ -3775,7 +3781,9 @@
       "peopleDescription": "Khi bạn theo dõi ai đó, họ sẽ xuất hiện ở đây. Bạn sẽ nhận thông báo khi họ đăng tin mới.",
       "browseProperties": "Xem tin đăng",
       "feedTitle": "Chưa có tin đăng mới",
-      "feedDescription": "Tin đăng từ những người bạn theo dõi sẽ hiện ở đây, mới nhất trước."
+      "feedDescription": "Tin đăng từ những người bạn theo dõi sẽ hiện ở đây, mới nhất trước.",
+      "feedFilteredTitle": "{name} chưa đăng tin nào",
+      "feedFilteredDescription": "Khi {name} đăng tin mới, tin sẽ hiển thị tại đây."
     }
   }
 }

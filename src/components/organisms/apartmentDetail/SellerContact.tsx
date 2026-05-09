@@ -146,8 +146,8 @@ const SellerContact: React.FC<SellerContactProps> = ({
               </Button>
               <FollowButton
                 targetUserId={host.userId}
-                variant='compact'
-                fullWidth={false}
+                size='sm'
+                className='h-7 px-2.5 text-2xs md:text-xs'
               />
             </div>
           </div>

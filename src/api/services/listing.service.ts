@@ -489,16 +489,22 @@ export class ListingService {
   /**
    * Get listings posted by users the current viewer follows.
    * Authenticated. Mirrors the seller-listings card shape so PropertyCard renders directly.
+   * Pass `userId` to narrow to a single followed user.
    * GET /v1/listings/my-following-feed
    */
   static async getMyFollowingFeed(
     page = 1,
     size = 12,
+    userId?: string,
   ): Promise<ApiResponse<ListingSearchBackendResponse>> {
+    const params: Record<string, unknown> = { page, size }
+    if (userId) {
+      params.userId = userId
+    }
     return apiRequest<ListingSearchBackendResponse>({
       method: 'GET',
       url: PATHS.LISTING.MY_FOLLOWING_FEED,
-      params: { page, size },
+      params,
     })
   }
 

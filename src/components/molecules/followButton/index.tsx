@@ -2,34 +2,51 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
 import { Heart, Loader2, UserCheck, UserPlus } from 'lucide-react'
-import { Button } from '@/components/atoms/button'
+import type { VariantProps } from 'class-variance-authority'
+import { Button, buttonVariants } from '@/components/atoms/button'
 import { cn } from '@/lib/utils'
 import { useToggleFollow } from '@/hooks/useUserFollow'
 
-type FollowButtonVariant = 'primary' | 'outline' | 'compact'
+type ButtonVariantProps = VariantProps<typeof buttonVariants>
+type ButtonVisualVariant = NonNullable<ButtonVariantProps['variant']>
+type ButtonSize = NonNullable<ButtonVariantProps['size']>
 
 export interface FollowButtonProps {
-  /** Target user being followed. When null, the button is disabled (still renders so layouts don't shift). */
+  /** Target user being followed. When null, the button stays disabled. */
   targetUserId: string | null | undefined
-  /** Show "12 followers" subtext under/inside the button. */
+  /** Show "12 followers" subtext below the button (full-width by default). */
   showFollowerCount?: boolean
-  /** Visual treatment. `compact` is small enough to sit beside an avatar on mobile. */
-  variant?: FollowButtonVariant
+  /**
+   * Visual treatment when NOT following. Once isFollowing flips, the button
+   * always renders as `outline` so it reads as a confirmed-toggle state.
+   * Same enum as shadcn Button.
+   */
+  variant?: ButtonVisualVariant
+  /** Mirrors shadcn Button's size scale. Default `default`. */
+  size?: ButtonSize
+  /**
+   * Lands on the inner Button's className — use this to match the height /
+   * padding / text-size of sibling buttons in the same card.
+   */
   className?: string
-  /** Override the default icon (heart). Pass `null` to omit the icon. */
+  /** Override the default leading icon. Pass `null` to omit it. */
   icon?: React.ReactNode | null
-  /** Render as a full-width button (defaults to true on `primary`/`outline`). */
+  /** Defaults to true when `showFollowerCount` is true, false otherwise. */
   fullWidth?: boolean
 }
 
 /**
  * Follow / Unfollow toggle. Optimistically updates and prompts login on first
  * click for unauthenticated users — see `useToggleFollow`.
+ *
+ * Sizing convention: this component does not pick its own height; pass `size`
+ * + `className` so it visually matches the buttons it sits next to.
  */
 const FollowButton: React.FC<FollowButtonProps> = ({
   targetUserId,
   showFollowerCount = false,
-  variant = 'primary',
+  variant = 'default',
+  size = 'default',
   className,
   icon,
   fullWidth,
@@ -55,56 +72,63 @@ const FollowButton: React.FC<FollowButtonProps> = ({
     ? t('actions.unfollowAria')
     : t('actions.followAria')
 
-  const isCompact = variant === 'compact'
-  const buttonVariant =
-    variant === 'outline' || isFollowing ? 'outline' : 'default'
-  const sizeClass = isCompact ? 'h-8 px-3 text-xs' : 'h-9 md:h-10 text-sm'
-  const widthClass = (fullWidth ?? !isCompact) ? 'w-full' : ''
+  const effectiveVariant: ButtonVisualVariant = isFollowing
+    ? 'outline'
+    : variant
+  const isFullWidth = fullWidth ?? showFollowerCount
+
+  // Use `size-*` (not h-/w-) so the icon survives Button's
+  // `[&_svg:not([class*='size-'])]:size-4` enforcement.
+  const iconSizeClass = size === 'sm' || size === 'icon' ? 'size-3.5' : 'size-4'
 
   const renderIcon = () => {
     if (icon === null) return null
     if (icon !== undefined) return icon
-    if (isLoading) return <Loader2 className='h-4 w-4 animate-spin' />
-    if (isFollowing) return <UserCheck className='h-4 w-4' />
-    return isCompact ? (
-      <UserPlus className='h-3.5 w-3.5' />
+    if (isLoading) {
+      return <Loader2 className={cn(iconSizeClass, 'animate-spin')} />
+    }
+    if (isFollowing) return <UserCheck className={iconSizeClass} />
+    return size === 'sm' || size === 'icon' ? (
+      <UserPlus className={iconSizeClass} />
     ) : (
-      <Heart className='h-4 w-4' />
+      <Heart className={iconSizeClass} />
     )
   }
+
+  const buttonNode = (
+    <Button
+      type='button'
+      variant={effectiveVariant}
+      size={size}
+      onClick={toggleFollow}
+      disabled={!targetUserId || isLoading}
+      aria-label={ariaLabel}
+      aria-pressed={isFollowing}
+      className={cn(
+        'font-semibold transition-colors',
+        isFullWidth && 'w-full',
+        isFollowing && 'border-primary/40 text-primary hover:bg-primary/5',
+        className,
+      )}
+    >
+      {renderIcon()}
+      <span>{label}</span>
+    </Button>
+  )
+
+  if (!showFollowerCount) return buttonNode
 
   return (
     <div
       className={cn(
         'flex flex-col gap-1',
-        widthClass,
-        showFollowerCount && !isCompact ? 'items-stretch' : 'items-start',
+        isFullWidth ? 'items-stretch' : 'items-start',
       )}
     >
-      <Button
-        type='button'
-        variant={buttonVariant}
-        onClick={toggleFollow}
-        disabled={!targetUserId || isLoading}
-        aria-label={ariaLabel}
-        aria-pressed={isFollowing}
-        className={cn(
-          'font-semibold transition-colors',
-          sizeClass,
-          widthClass,
-          isFollowing && 'border-primary/40 text-primary hover:bg-primary/5',
-          className,
-        )}
-      >
-        {renderIcon()}
-        <span>{label}</span>
-      </Button>
-
-      {showFollowerCount && (
-        <span className='text-xs text-muted-foreground'>
-          {t('followerCount', { count: followerCount })}
-        </span>
-      )}
+      {buttonNode}
+      <span className='text-xs text-muted-foreground'>
+        {t('followerCount', { count: followerCount })}
+      </span>
     </div>
   )
 }

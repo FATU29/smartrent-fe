@@ -6,14 +6,30 @@ import { mapBackendToFrontendResponse } from '@/utils/property/mapListingRespons
 /**
  * Paginated feed of listings posted by users the current viewer follows.
  * Newest first, public listings only. Auth-required on the server.
+ *
+ * Pass {@code userId} to narrow to a single followed user — useful for the
+ * "show only this person's posts" filter on the /following page. The server
+ * silently returns an empty page if the viewer is not actually following the
+ * given userId, so this can't be used to read arbitrary users' feeds.
  */
-export const useFollowingFeed = (page = 1, size = 12) => {
+export const useFollowingFeed = (page = 1, size = 12, userId?: string) => {
   const { isAuthenticated } = useAuth()
 
   return useQuery({
-    queryKey: ['user-follow', 'feed', page, size, isAuthenticated],
+    queryKey: [
+      'user-follow',
+      'feed',
+      page,
+      size,
+      userId ?? 'all',
+      isAuthenticated,
+    ],
     queryFn: async () => {
-      const response = await ListingService.getMyFollowingFeed(page, size)
+      const response = await ListingService.getMyFollowingFeed(
+        page,
+        size,
+        userId,
+      )
       if (!response?.success || !response?.data) {
         // Surface server-side message so the UI can render a clear error state.
         throw new Error(response?.message || 'Failed to load following feed')
