@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+Disallow: /seller/
+Disallow: /sellernet/personal
+Disallow: /sellernet/business
+Disallow: /sellernet/finance
+Disallow: /sellernet/utilities
+Disallow: /payment/
+Disallow: /auth/callback
+Disallow: /api/
+
+Sitemap: https://smartrent.io.vn/sitemap.xml

@@ -3763,7 +3763,13 @@
     },
     "actions": {
       "viewListings": "View listings",
+      "viewFeed": "View feed",
       "retry": "Retry"
+    },
+    "filters": {
+      "label": "Show",
+      "allUsers": "All followed users",
+      "activeBadge": "Filtering by {name}"
     },
     "states": {
       "errorTitle": "Could not load this section",
@@ -3774,7 +3780,9 @@
       "peopleDescription": "When you follow someone, they appear here. You'll get a notification whenever they post a new listing.",
       "browseProperties": "Browse properties",
       "feedTitle": "No new listings yet",
-      "feedDescription": "Listings from people you follow will appear here, newest first."
+      "feedDescription": "Listings from people you follow will appear here, newest first.",
+      "feedFilteredTitle": "{name} hasn't posted any listings yet",
+      "feedFilteredDescription": "When {name} posts a new listing, it will appear here."
     }
   }
 }

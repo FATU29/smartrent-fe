@@ -146,11 +146,7 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
 
             {seller?.userId && (
               <div className='pt-1'>
-                <FollowButton
-                  targetUserId={seller.userId}
-                  showFollowerCount
-                  variant='primary'
-                />
+                <FollowButton targetUserId={seller.userId} showFollowerCount />
               </div>
             )}
           </div>
