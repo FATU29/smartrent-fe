@@ -20,6 +20,7 @@ import { UserApi } from '@/api/types'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthDialog } from '@/contexts/authDialog'
 import BrokerAvatar from '@/components/molecules/brokerAvatar'
+import FollowButton from '@/components/molecules/followButton'
 import { cn } from '@/lib/utils'
 
 interface SellerContactProps {
@@ -133,7 +134,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
                 {name}
               </Typography>
             </Link>
-            <div className='pt-1'>
+            <div className='pt-1 flex flex-wrap items-center gap-2'>
               <Button
                 asChild
                 size='sm'
@@ -143,6 +144,11 @@ const SellerContact: React.FC<SellerContactProps> = ({
                   {t('links.viewSellerListings')}
                 </Link>
               </Button>
+              <FollowButton
+                targetUserId={host.userId}
+                variant='compact'
+                fullWidth={false}
+              />
             </div>
           </div>
         </div>

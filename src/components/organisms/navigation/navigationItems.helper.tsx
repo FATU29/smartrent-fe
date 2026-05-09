@@ -1,5 +1,5 @@
 import { NavigationItemData } from '@/components/atoms/navigation-item'
-import { Building2, Newspaper, Heart, GitCompare } from 'lucide-react'
+import { Building2, Newspaper, Heart, GitCompare, Users2 } from 'lucide-react'
 import type { CategoryApi } from '@/api/types/category.type'
 
 export const getNavigationItems = (
@@ -36,6 +36,13 @@ export const getNavigationItems = (
       href: '/saved-listings',
       icon: <Heart className='h-4 w-4' />,
       isActive: activeItem === 'savedListings',
+    },
+    {
+      id: 'following',
+      label: t('navigation.following'),
+      href: '/following',
+      icon: <Users2 className='h-4 w-4' />,
+      isActive: activeItem === 'following',
     },
     {
       id: 'compare',
