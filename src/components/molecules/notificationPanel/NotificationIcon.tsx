@@ -9,6 +9,7 @@ import {
   ShieldAlert,
   Ban,
   RotateCcw,
+  Clock,
 } from 'lucide-react'
 
 /**
@@ -40,6 +41,11 @@ export function getNotificationIcon(type: NotificationType) {
       return {
         icon: RotateCcw,
         className: 'text-blue-500',
+      }
+    case 'LISTING_EXPIRING':
+      return {
+        icon: Clock,
+        className: 'text-amber-500',
       }
     case 'NEW_REPORT':
       return {

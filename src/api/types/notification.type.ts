@@ -18,11 +18,18 @@ export type NotificationType =
   | 'LISTING_REVISION_REQUIRED'
   | 'LISTING_SUSPENDED'
   | 'LISTING_RESUBMITTED'
+  // Listing lifecycle — daily aggregate sent by the expiring-listing scheduler
+  | 'LISTING_EXPIRING'
 
 /**
- * Reference type for navigation
+ * Reference type for navigation. `LISTING_DAILY_SUMMARY` is the aggregate-summary
+ * marker used by the expiring-listing scheduler — it has no specific listing id
+ * and should route the user to their listings management page.
  */
-export type NotificationReferenceType = 'LISTING' | 'REPORT'
+export type NotificationReferenceType =
+  | 'LISTING'
+  | 'REPORT'
+  | 'LISTING_DAILY_SUMMARY'
 
 /**
  * Notification entity from API / WebSocket
