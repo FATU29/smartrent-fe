@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { Bell, BellDot, CheckCheck, Inbox, ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
 import { ScrollArea } from '@/components/atoms/scroll-area'
@@ -10,8 +11,11 @@ import { useNotifications } from '@/hooks/useNotifications'
 import type { NotificationItem } from '@/api/types/notification.type'
 import { NotificationItemCard } from './NotificationItemCard'
 
+const MY_LISTINGS_PATH = '/seller/listings'
+
 const NotificationPanel: React.FC = () => {
   const t = useTranslations('notification')
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
 
@@ -62,8 +66,18 @@ const NotificationPanel: React.FC = () => {
       if (!notification.isRead) {
         markAsRead(notification.id)
       }
+      // Aggregate summary from the daily expiring-listing scheduler routes the
+      // user to their listings page so they can review/renew. It carries no
+      // specific listing id (referenceId is null on the backend).
+      if (
+        notification.type === 'LISTING_EXPIRING' &&
+        notification.referenceType === 'LISTING_DAILY_SUMMARY'
+      ) {
+        setOpen(false)
+        router.push(MY_LISTINGS_PATH)
+      }
     },
-    [markAsRead],
+    [markAsRead, router],
   )
 
   const handleMarkAllRead = useCallback(() => {
