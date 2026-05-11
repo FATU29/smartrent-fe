@@ -211,6 +211,20 @@ export interface ChatStreamStatusPayload {
   round?: number
   tool?: string
   status?: 'success' | 'error'
+  /**
+   * Backend-generated, locale-aware one-line label of what the tool is
+   * about to do (`tool_call` phase only). Already in the user's language;
+   * the FE should display it verbatim and skip the static getToolLabel
+   * lookup when present.
+   * Example: "Đang tìm BĐS: quận 765 phòng/căn hộ giá 5-10tr..."
+   */
+  summary?: string
+  /**
+   * Sanitised arguments the agent passed to the tool — `auth_token` and
+   * other secrets are stripped backend-side. Useful for richer FE
+   * progress UI (skeleton card matching the search params, etc.).
+   */
+  args?: Record<string, unknown>
 }
 
 export interface ChatStreamTextPayload {

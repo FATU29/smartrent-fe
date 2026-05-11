@@ -38,6 +38,8 @@ export type TChatState = {
 export type TStreamingStatus = {
   phase: ChatStreamStatusPayload['phase']
   tool?: string
+  /** BE-generated localised label for the tool_call phase (preferred over getToolLabel). */
+  summary?: string
 } | null
 
 function buildLastListings(messages: TChatMessage[]): LastListingRef[] {
@@ -242,7 +244,11 @@ export const useChatLogic = () => {
             },
             {
               onStatus: (data) => {
-                setStreamingStatus({ phase: data.phase, tool: data.tool })
+                setStreamingStatus({
+                  phase: data.phase,
+                  tool: data.tool,
+                  summary: data.summary,
+                })
               },
               onTextDelta: (delta) => {
                 ensureBotMessage()
