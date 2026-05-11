@@ -48,10 +48,18 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
   const t = useTranslations('aiChat')
   const locale = useLocale() as 'vi' | 'en'
 
-  const statusLabel =
-    streamingStatus?.phase === 'tool_call' && streamingStatus.tool
-      ? getToolLabel(streamingStatus.tool, locale)
-      : undefined
+  // Prefer the BE-generated localised summary (carries arg context like
+  // "quận 765 phòng/căn hộ giá 5-10tr"); fall back to the static per-tool
+  // label when the backend didn't send one.
+  const statusLabel = (() => {
+    if (streamingStatus?.phase !== 'tool_call' || !streamingStatus.tool) {
+      return undefined
+    }
+    if (streamingStatus.summary) {
+      return streamingStatus.summary
+    }
+    return getToolLabel(streamingStatus.tool, locale)
+  })()
 
   // Track initial message count at mount to avoid animating restored messages
   const initialCountRef = useRef(messages.length)
