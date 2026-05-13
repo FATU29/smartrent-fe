@@ -3770,7 +3770,11 @@
     "filters": {
       "label": "Hiển thị",
       "allUsers": "Tất cả người đang theo dõi",
-      "activeBadge": "Đang lọc theo {name}"
+      "activeBadge": "Đang lọc theo {name}",
+      "sidebarTitle": "Người bạn đang theo dõi",
+      "sidebarEmpty": "Hãy theo dõi ai đó để lọc tin của họ tại đây.",
+      "allFeedHeading": "Tin đăng mới nhất",
+      "personFeedHeading": "Tin đăng từ {name}"
     },
     "states": {
       "errorTitle": "Không thể tải mục này",

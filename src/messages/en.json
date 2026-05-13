@@ -3769,7 +3769,11 @@
     "filters": {
       "label": "Show",
       "allUsers": "All followed users",
-      "activeBadge": "Filtering by {name}"
+      "activeBadge": "Filtering by {name}",
+      "sidebarTitle": "People you follow",
+      "sidebarEmpty": "Follow someone to filter their listings here.",
+      "allFeedHeading": "Latest listings",
+      "personFeedHeading": "Listings from {name}"
     },
     "states": {
       "errorTitle": "Could not load this section",

@@ -27,11 +27,18 @@ import PropertyCard from '@/components/molecules/propertyCard'
 import PaginationControls from '@/components/molecules/paginationControls'
 import { useFollowingFeed, useFollowingPeople } from '@/hooks/useUserFollow'
 import { FollowedUser, ListingDetail } from '@/api/types'
+import { cn } from '@/lib/utils'
 import {
   buildApartmentDetailRoute,
   buildSellerDetailRoute,
 } from '@/constants/route'
-import { AlertCircle, Newspaper, ShieldCheck, Users2 } from 'lucide-react'
+import {
+  AlertCircle,
+  Newspaper,
+  ShieldCheck,
+  Users2,
+  BadgeCheck,
+} from 'lucide-react'
 
 const PEOPLE_PAGE_SIZE = 20
 const FEED_PAGE_SIZE = 12
@@ -168,89 +175,259 @@ const FollowingPageTemplate: React.FC = () => {
           )}
         </TabsContent>
 
-        <TabsContent value='feed' className='space-y-4'>
-          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
-            <div className='flex items-center gap-2 text-sm'>
-              <Typography variant='small' className='text-muted-foreground'>
-                {t('filters.label')}
-              </Typography>
-              <Select
-                value={feedUserId || FEED_FILTER_ALL}
-                onValueChange={handleFeedFilterChange}
-              >
-                <SelectTrigger className='h-9 w-full sm:w-64'>
-                  <SelectValue placeholder={t('filters.allUsers')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={FEED_FILTER_ALL}>
-                    {t('filters.allUsers')}
-                  </SelectItem>
-                  {filterPeople.map((person) => (
-                    <SelectItem key={person.userId} value={person.userId}>
-                      {formatName(person, t('defaultName'))}
+        <TabsContent
+          value='feed'
+          className='space-y-4 lg:space-y-0 lg:grid lg:grid-cols-[16rem_1fr] lg:gap-6 lg:items-start'
+        >
+          <FeedPeopleSidebar
+            className='hidden lg:block'
+            people={filterPeople}
+            selectedUserId={feedUserId}
+            onSelectAll={() => handleFeedFilterChange(FEED_FILTER_ALL)}
+            onSelectPerson={(userId) => handleFeedFilterChange(userId)}
+            defaultName={t('defaultName')}
+            allLabel={t('filters.allUsers')}
+            titleLabel={t('filters.sidebarTitle')}
+            emptyLabel={t('filters.sidebarEmpty')}
+            proBrokerLabel={t('proBroker')}
+          />
+
+          <div className='space-y-4 min-w-0'>
+            <div className='lg:hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+              <div className='flex items-center gap-2 text-sm'>
+                <Typography variant='small' className='text-muted-foreground'>
+                  {t('filters.label')}
+                </Typography>
+                <Select
+                  value={feedUserId || FEED_FILTER_ALL}
+                  onValueChange={handleFeedFilterChange}
+                >
+                  <SelectTrigger className='h-9 w-full sm:w-64'>
+                    <SelectValue placeholder={t('filters.allUsers')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={FEED_FILTER_ALL}>
+                      {t('filters.allUsers')}
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    {filterPeople.map((person) => (
+                      <SelectItem key={person.userId} value={person.userId}>
+                        {formatName(person, t('defaultName'))}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {selectedPersonName && (
+                <Badge
+                  variant='secondary'
+                  className='gap-1.5 self-start sm:self-auto'
+                >
+                  <Newspaper className='h-3.5 w-3.5' />
+                  {t('filters.activeBadge', { name: selectedPersonName })}
+                </Badge>
+              )}
             </div>
 
-            {selectedPersonName && (
-              <Badge
-                variant='secondary'
-                className='gap-1.5 self-start sm:self-auto'
+            <div className='hidden lg:flex items-center gap-2 min-w-0'>
+              <Newspaper className='h-4 w-4 text-muted-foreground shrink-0' />
+              <Typography
+                variant='h5'
+                className='truncate font-semibold text-base'
               >
-                <Newspaper className='h-3.5 w-3.5' />
-                {t('filters.activeBadge', { name: selectedPersonName })}
-              </Badge>
+                {selectedPersonName
+                  ? t('filters.personFeedHeading', {
+                      name: selectedPersonName,
+                    })
+                  : t('filters.allFeedHeading')}
+              </Typography>
+            </div>
+
+            {feedQuery.isLoading && <FeedSkeleton />}
+
+            {feedQuery.isError && (
+              <ErrorAlert t={t} onRetry={() => feedQuery.refetch()} />
+            )}
+
+            {!feedQuery.isLoading &&
+              !feedQuery.isError &&
+              feedListings.length === 0 && (
+                <EmptyFeedState t={t} filteredName={selectedPersonName} />
+              )}
+
+            {feedListings.length > 0 && (
+              <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4'>
+                {feedListings.map((listing: ListingDetail) => (
+                  <Link
+                    key={listing.listingId}
+                    href={buildApartmentDetailRoute(
+                      listing.listingId.toString(),
+                    )}
+                    className='block'
+                  >
+                    <PropertyCard listing={listing} imageLayout='top' />
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {feedPagination && feedPagination.totalPages > 1 && (
+              <PaginationControls
+                className='pt-2'
+                pagination={{
+                  currentPage: feedPage,
+                  pageSize: FEED_PAGE_SIZE,
+                  totalItems: feedPagination.totalCount,
+                  totalPages: feedPagination.totalPages,
+                }}
+                currentSize={FEED_PAGE_SIZE}
+                showPerPageSelector={false}
+                onPageChange={(page) => setFeedPage(Math.max(1, page))}
+                onSizeChange={() => undefined}
+              />
             )}
           </div>
-
-          {feedQuery.isLoading && <FeedSkeleton />}
-
-          {feedQuery.isError && (
-            <ErrorAlert t={t} onRetry={() => feedQuery.refetch()} />
-          )}
-
-          {!feedQuery.isLoading &&
-            !feedQuery.isError &&
-            feedListings.length === 0 && (
-              <EmptyFeedState t={t} filteredName={selectedPersonName} />
-            )}
-
-          {feedListings.length > 0 && (
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-              {feedListings.map((listing: ListingDetail) => (
-                <Link
-                  key={listing.listingId}
-                  href={buildApartmentDetailRoute(listing.listingId.toString())}
-                  className='block'
-                >
-                  <PropertyCard listing={listing} imageLayout='top' />
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {feedPagination && feedPagination.totalPages > 1 && (
-            <PaginationControls
-              className='pt-2'
-              pagination={{
-                currentPage: feedPage,
-                pageSize: FEED_PAGE_SIZE,
-                totalItems: feedPagination.totalCount,
-                totalPages: feedPagination.totalPages,
-              }}
-              currentSize={FEED_PAGE_SIZE}
-              showPerPageSelector={false}
-              onPageChange={(page) => setFeedPage(Math.max(1, page))}
-              onSizeChange={() => undefined}
-            />
-          )}
         </TabsContent>
       </Tabs>
     </PageContainer>
   )
 }
+
+interface FeedPeopleSidebarProps {
+  className?: string
+  people: FollowedUser[]
+  selectedUserId: string
+  onSelectAll: () => void
+  onSelectPerson: (userId: string) => void
+  defaultName: string
+  allLabel: string
+  titleLabel: string
+  emptyLabel: string
+  proBrokerLabel: string
+}
+
+const FeedPeopleSidebar: React.FC<FeedPeopleSidebarProps> = ({
+  className,
+  people,
+  selectedUserId,
+  onSelectAll,
+  onSelectPerson,
+  defaultName,
+  allLabel,
+  titleLabel,
+  emptyLabel,
+  proBrokerLabel,
+}) => (
+  <aside className={className}>
+    <div className='sticky top-4 space-y-2'>
+      <Typography
+        variant='small'
+        className='px-1 text-muted-foreground font-medium uppercase tracking-wide text-xs'
+      >
+        {titleLabel}
+      </Typography>
+      <Card>
+        <CardContent className='p-2'>
+          <ul className='space-y-1 max-h-[calc(100vh-14rem)] overflow-y-auto'>
+            <li>
+              <SidebarOption
+                isActive={!selectedUserId}
+                onClick={onSelectAll}
+                label={allLabel}
+                leading={
+                  <span className='flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+                    <Users2 className='h-4 w-4' />
+                  </span>
+                }
+              />
+            </li>
+            {people.length === 0 && (
+              <li className='px-2 py-3'>
+                <Typography
+                  variant='small'
+                  className='text-muted-foreground text-xs'
+                >
+                  {emptyLabel}
+                </Typography>
+              </li>
+            )}
+            {people.map((person) => {
+              const isBroker =
+                Boolean(person.isBroker) ||
+                person.brokerVerificationStatus === 'APPROVED'
+              return (
+                <li key={person.userId}>
+                  <SidebarOption
+                    isActive={selectedUserId === person.userId}
+                    onClick={() => onSelectPerson(person.userId)}
+                    label={formatName(person, defaultName)}
+                    sublabel={
+                      isBroker ? (
+                        <span className='inline-flex items-center gap-1 text-2xs text-emerald-700 dark:text-emerald-300'>
+                          <BadgeCheck className='h-3 w-3' />
+                          {proBrokerLabel}
+                        </span>
+                      ) : null
+                    }
+                    leading={
+                      <BrokerAvatar
+                        avatarUrl={person.avatarUrl ?? undefined}
+                        firstName={person.firstName ?? ''}
+                        lastName={person.lastName ?? ''}
+                        alt={formatName(person, defaultName)}
+                        sizeClassName='h-9 w-9'
+                        showBrokerBadge={isBroker}
+                        fallbackClassName='text-xs'
+                        badgeClassName='h-4 w-4'
+                      />
+                    }
+                  />
+                </li>
+              )
+            })}
+          </ul>
+        </CardContent>
+      </Card>
+    </div>
+  </aside>
+)
+
+interface SidebarOptionProps {
+  isActive: boolean
+  onClick: () => void
+  label: string
+  sublabel?: React.ReactNode
+  leading: React.ReactNode
+}
+
+const SidebarOption: React.FC<SidebarOptionProps> = ({
+  isActive,
+  onClick,
+  label,
+  sublabel,
+  leading,
+}) => (
+  <button
+    type='button'
+    onClick={onClick}
+    aria-pressed={isActive}
+    className={cn(
+      'w-full flex items-center gap-3 rounded-md px-2 py-2 text-left transition-colors',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+      isActive
+        ? 'bg-accent text-accent-foreground'
+        : 'hover:bg-muted/60 text-foreground',
+    )}
+  >
+    <span className='shrink-0'>{leading}</span>
+    <span className='min-w-0 flex-1'>
+      <span className='block truncate text-sm font-medium leading-tight'>
+        {label}
+      </span>
+      {sublabel && <span className='mt-0.5 block truncate'>{sublabel}</span>}
+    </span>
+  </button>
+)
 
 interface PersonCardProps {
   person: FollowedUser
