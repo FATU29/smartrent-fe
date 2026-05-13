@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Trash2 } from 'lucide-react'
+import { GitCompare, Trash2 } from 'lucide-react'
 
+import { Badge } from '@/components/atoms/badge'
 import { Button } from '@/components/atoms/button'
 import { PageContainer } from '@/components/atoms/pageContainer'
 import { Typography } from '@/components/atoms/typography'
@@ -41,21 +42,28 @@ const CompareTemplate: React.FC = () => {
   const hasItems = compareList.length > 0
 
   return (
-    <PageContainer width='grid' className='py-8'>
-      {/* Header */}
-      <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6'>
-        <div>
-          <Typography variant='pageTitle' className='mb-2'>
-            {t('title')}
+    <PageContainer width='grid' className='py-6 sm:py-8'>
+      <div className='flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-section'>
+        <div className='min-w-0'>
+          <div className='flex items-center gap-2 flex-wrap'>
+            <Typography variant='pageTitle'>{t('title')}</Typography>
+            {hasItems && (
+              <Badge variant='secondary' className='gap-1.5'>
+                <GitCompare className='h-3.5 w-3.5' />
+                {t('floatingBar.items', { count: compareList.length })}
+              </Badge>
+            )}
+          </div>
+          <Typography variant='p' className='text-muted-foreground mt-1'>
+            {t('subtitle')}
           </Typography>
-          <p className='text-muted-foreground'>{t('subtitle')}</p>
         </div>
 
         {hasItems && (
           <Button
             variant='outline'
             onClick={clearCompare}
-            className='gap-2 shrink-0'
+            className='gap-2 shrink-0 self-start sm:self-auto'
           >
             <Trash2 className='w-4 h-4' />
             {t('actions.clearAll')}
@@ -63,7 +71,6 @@ const CompareTemplate: React.FC = () => {
         )}
       </div>
 
-      {/* Content */}
       {hasItems ? (
         <CompareTable listings={compareList} />
       ) : (

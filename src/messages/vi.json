@@ -2529,7 +2529,7 @@
           "repost": "Đăng lại",
           "repostFull": "Đăng lại tin",
           "copyListing": "Sao chép link bài đăng",
-          "takeDown": "Hạ tin",
+          "takeDown": "Ẩn tin",
           "delete": "Xóa tin",
           "resubmit": "Gửi lại",
           "resubmitFull": "Gửi lại duyệt"
@@ -2581,16 +2581,16 @@
           "loading": "Đang xử lý..."
         },
         "takeDownConfirm": {
-          "title": "Hạ tin đăng?",
-          "description": "Bạn có chắc chắn muốn hạ tin đăng này? Vui lòng đọc kỹ các lưu ý bên dưới trước khi xác nhận.",
-          "risksTitle": "Khi hạ tin, bạn cần lưu ý:",
+          "title": "Ẩn tin đăng?",
+          "description": "Bạn có chắc chắn muốn ẩn tin đăng này? Vui lòng đọc kỹ các lưu ý bên dưới trước khi xác nhận.",
+          "risksTitle": "Khi ẩn tin, bạn cần lưu ý:",
           "risk1": "Tin đăng sẽ ngay lập tức biến mất khỏi kết quả tìm kiếm và trang công khai.",
           "risk2": "Người dùng đang xem hoặc đã lưu tin sẽ không thể truy cập tin đăng nữa.",
           "risk3": "Vị trí và lượt đẩy tin (nếu có) sẽ bị mất, không được hoàn lại.",
           "risk4": "Để hiển thị lại, bạn phải đăng lại và có thể phải thanh toán phí mới.",
-          "confirm": "Vẫn hạ tin",
+          "confirm": "Vẫn ẩn tin",
           "cancel": "Hủy",
-          "loading": "Đang hạ tin..."
+          "loading": "Đang ẩn tin..."
         },
         "toast": {
           "deleteSuccess": "Tin đăng đã được xóa thành công",
@@ -2599,8 +2599,8 @@
           "pushSuccessWithQuota": "Đẩy bài thành công bằng lượt đẩy",
           "pushError": "Không thể đẩy bài",
           "pushNotDisplaying": "Tin phải được xác thực và đang hiển thị mới có thể đẩy tin",
-          "takeDownSuccess": "Đã hạ tin thành công",
-          "takeDownError": "Không thể hạ tin",
+          "takeDownSuccess": "Đã ẩn tin thành công",
+          "takeDownError": "Không thể ẩn tin",
           "repostSuccess": "Đăng lại tin thành công",
           "repostError": "Không thể đăng lại tin",
           "repostRedirectingToPayment": "Đang chuyển đến trang thanh toán...",
@@ -3645,19 +3645,19 @@
     }
   },
   "compare": {
-    "title": "So Sánh Tin Đăng",
-    "subtitle": "So sánh tối đa 3 bất động sản",
+    "title": "So sánh tin đăng",
+    "subtitle": "So sánh tối đa 3 bất động sản cùng lúc",
     "empty": {
-      "title": "Chưa Có Tin Để So Sánh",
-      "description": "Bạn chưa thêm tin nào để so sánh. Hãy khám phá và thêm các bất động sản để so sánh!",
-      "action": "Khám Phá Tin Đăng"
+      "title": "Chưa có tin nào để so sánh",
+      "description": "Bạn chưa thêm tin đăng nào. Hãy khám phá và bấm \"So sánh\" trên các tin bạn quan tâm để xem cạnh nhau tại đây.",
+      "action": "Khám phá tin đăng"
     },
     "actions": {
       "addToCompare": "So sánh",
       "removeFromCompare": "Bỏ khỏi so sánh",
       "clearAll": "Xóa tất cả",
-      "compareNow": "So Sánh Ngay",
-      "viewDetails": "Xem Chi Tiết"
+      "compareNow": "So sánh ngay",
+      "viewDetails": "Xem chi tiết"
     },
     "messages": {
       "added": "Đã thêm vào so sánh",
@@ -3693,10 +3693,10 @@
       "expiryDate": "Ngày hết hạn",
       "updatedAt": "Cập nhật lần cuối",
       "listingId": "Mã tin",
-      "notAvailable": "N/A",
+      "notAvailable": "Chưa cập nhật",
       "yes": "Có",
       "no": "Không",
-      "lowestPrice": "Thấp nhất"
+      "lowestPrice": "Giá thấp nhất"
     },
     "sections": {
       "essentials": "Thông tin cơ bản",
@@ -3708,7 +3708,7 @@
     "floatingBar": {
       "items": "{count} tin",
       "items_plural": "{count} tin",
-      "compareNow": "So Sánh Ngay"
+      "compareNow": "So sánh ngay"
     }
   },
   "notification": {

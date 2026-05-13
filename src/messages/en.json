@@ -3692,10 +3692,10 @@
       "expiryDate": "Expiry Date",
       "updatedAt": "Last Updated",
       "listingId": "Listing ID",
-      "notAvailable": "N/A",
+      "notAvailable": "Not provided",
       "yes": "Yes",
       "no": "No",
-      "lowestPrice": "Lowest"
+      "lowestPrice": "Lowest price"
     },
     "sections": {
       "essentials": "Essentials",

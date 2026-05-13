@@ -25,7 +25,12 @@ import {
 import { ListingApi } from '@/api/types/property.type'
 import { useCompareStore } from '@/store/compare/useCompareStore'
 import { formatByLocale } from '@/utils/currency/convert'
-import { useLanguage } from '@/hooks/useLanguage'
+
+// Compare page is Vietnamese-only for prices: this is a domestic rental site,
+// converting numbers to USD only adds friction. Section labels still follow
+// next-intl, but the numeric VND output never switches to USD.
+const VND_LOCALE = 'vi'
+const VND_INTL_LOCALE = 'vi-VN'
 import {
   getPriceUnitTranslationKey,
   getFurnishingTranslationKey,
@@ -220,8 +225,6 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
   const t = useTranslations('compare')
   const tRoot = useTranslations()
   const { removeFromCompare } = useCompareStore()
-  const { language } = useLanguage()
-  const locale = language === 'vi' ? 'vi-VN' : 'en-US'
   const count = listings.length
 
   const utilityPriceTranslationKeys = {
@@ -300,7 +303,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
       if (!Number.isFinite(utilityValue)) {
         return t('table.notAvailable')
       }
-      return formatByLocale(utilityValue, language)
+      return formatByLocale(utilityValue, VND_LOCALE)
     }
 
     const rawValue = utilityValue.toString().trim()
@@ -320,7 +323,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
     if (/^[\d.,\s]+$/.test(rawValue)) {
       const parsedValue = Number(rawValue.replace(/[\s.,]/g, ''))
       if (Number.isFinite(parsedValue)) {
-        return formatByLocale(parsedValue, language)
+        return formatByLocale(parsedValue, VND_LOCALE)
       }
     }
 
@@ -355,7 +358,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
       return t('table.notAvailable')
     }
 
-    return `${new Intl.NumberFormat(locale).format(area)} m²`
+    return `${new Intl.NumberFormat(VND_INTL_LOCALE).format(area)} m²`
   }
 
   const formatAmenities = (listing: ListingApi): React.ReactNode => {
@@ -427,7 +430,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
       )
     }
 
-    const formattedPrice = formatByLocale(price, language)
+    const formattedPrice = formatByLocale(price, VND_LOCALE)
     const unitKey = priceUnit
       ? tRoot(getPriceUnitTranslationKey(priceUnit))
       : ''
@@ -593,7 +596,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
         ],
       },
     ],
-    [t, tRoot, language, count, locale, lowestPrice],
+    [t, tRoot, count, lowestPrice],
   )
 
   // Distribute column widths equally: feature column fixed, listings share the rest
@@ -766,7 +769,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
                           key={row.key}
                           className='flex items-start gap-3 text-sm'
                         >
-                          <dt className='min-w-[110px] text-muted-foreground shrink-0'>
+                          <dt className='w-[130px] shrink-0 text-muted-foreground'>
                             {row.label}
                           </dt>
                           <dd className='flex-1 min-w-0 font-medium text-foreground'>

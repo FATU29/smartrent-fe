@@ -177,7 +177,7 @@ const FollowingPageTemplate: React.FC = () => {
 
         <TabsContent
           value='feed'
-          className='space-y-4 lg:space-y-0 lg:grid lg:grid-cols-[16rem_1fr] lg:gap-6 lg:items-start'
+          className='space-y-4 lg:space-y-0 lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-6 lg:items-start'
         >
           <FeedPeopleSidebar
             className='hidden lg:block'
@@ -221,10 +221,12 @@ const FollowingPageTemplate: React.FC = () => {
               {selectedPersonName && (
                 <Badge
                   variant='secondary'
-                  className='gap-1.5 self-start sm:self-auto'
+                  className='gap-1.5 self-start sm:self-auto max-w-full'
                 >
-                  <Newspaper className='h-3.5 w-3.5' />
-                  {t('filters.activeBadge', { name: selectedPersonName })}
+                  <Newspaper className='h-3.5 w-3.5 shrink-0' />
+                  <span className='truncate'>
+                    {t('filters.activeBadge', { name: selectedPersonName })}
+                  </span>
                 </Badge>
               )}
             </div>
