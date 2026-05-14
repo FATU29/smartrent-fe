@@ -44,16 +44,16 @@ export const NotificationItemCard: React.FC<NotificationItemCardProps> = ({
                 className={cn(
                   'truncate text-sm font-semibold leading-snug',
                   notification.isRead
-                    ? 'text-muted-foreground'
+                    ? 'text-foreground/80'
                     : 'text-foreground',
                 )}
               >
                 {notification.title}
               </p>
-              <p className='mt-0.5 line-clamp-2 text-xs text-muted-foreground'>
+              <p className='mt-0.5 line-clamp-2 text-xs text-foreground/75'>
                 {notification.message}
               </p>
-              <span className='mt-1 block text-[11px] font-light leading-none text-muted-foreground/70'>
+              <span className='mt-1 block text-[11px] font-medium leading-none text-foreground/60'>
                 {timeAgo}
               </span>
             </div>
