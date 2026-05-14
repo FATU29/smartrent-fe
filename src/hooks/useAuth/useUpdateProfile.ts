@@ -99,11 +99,13 @@ export const useUpdateProfile = () => {
       // Omitting avatarMediaId means "leave avatar unchanged" — BE does not
       // distinguish null vs missing here.
       setPhase('saving-profile')
+      // Empty strings would otherwise hit the BE unique constraint on
+      // id_document / tax_number. Omitting the field tells PATCH to leave it.
       const response = await UserService.updateProfile({
         firstName: data.firstName,
         lastName: data.lastName,
-        idDocument: data.idDocument,
-        taxNumber: data.taxNumber,
+        idDocument: data.idDocument?.trim() || undefined,
+        taxNumber: data.taxNumber?.trim() || undefined,
         contactPhoneNumber: data.contactPhoneNumber,
         avatarMediaId,
       })

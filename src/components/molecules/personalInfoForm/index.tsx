@@ -65,8 +65,12 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       .matches(/^[0-9+\-\s()]+$/, t('homePage.auth.validation.phoneInvalid')),
     idDocument: yup
       .string()
-      .required(t('homePage.auth.validation.idDocumentRequired'))
-      .min(9, t('homePage.auth.validation.idDocumentMinLength')),
+      .optional()
+      .test(
+        'idDocumentMinLength',
+        t('homePage.auth.validation.idDocumentMinLength'),
+        (value) => !value || value.length >= 9,
+      ),
     avatar: yup.mixed().optional(),
   })
 
@@ -216,7 +220,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               label={t(
                 'homePage.auth.accountManagement.personalInfo.idDocument',
               )}
-              required
               placeholder={t('homePage.auth.register.idDocumentPlaceholder')}
               error={errors.idDocument?.message}
               {...idDocumentController.field}
