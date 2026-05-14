@@ -83,14 +83,14 @@ export const RenewListingDialog: React.FC<RenewListingDialogProps> = ({
   const { user } = useAuthContext()
   const { data: membership } = useMyMembership(user?.userId)
 
-  if (!listing) return null
-
-  const listingVipType = (listing.vipType ?? 'NORMAL') as VipType
+  const listingVipType = (listing?.vipType ?? 'NORMAL') as VipType
   const tier = isRenewableTier(listingVipType) ? listingVipType : null
 
   // Remaining quota of the listing's current tier — the renewal feature is
   // strictly "use the same-type benefit", so we don't surface tier switching
   // here (that's what the repost dialog does for expired listings).
+  // Keep this hook above the `!listing` early return so the hook count stays
+  // stable across renders (React error #310).
   const remainingQuota = React.useMemo<number>(() => {
     if (!tier) return 0
     const benefit: UserBenefit | undefined = (membership?.benefits ?? []).find(
@@ -100,6 +100,8 @@ export const RenewListingDialog: React.FC<RenewListingDialogProps> = ({
     )
     return benefit?.quantityRemaining ?? 0
   }, [membership?.benefits, tier])
+
+  if (!listing) return null
 
   const currentExpiry = listing.expiryDate ?? null
   const now = new Date()
