@@ -99,7 +99,11 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
           sizeClassName={sizeClasses[size]}
           showBrokerBadge={isProfessionalBroker}
           fallbackClassName='text-lg font-semibold'
-          badgeClassName='h-6 w-6'
+          // Bigger badge with the inner icon scaled up; positioned on the
+          // circular avatar's bottom-right diagonal edge (size_n × cos(45°)),
+          // not floating past the bounding-box corner.
+          badgeClassName='h-9 w-9 -bottom-0.5 -right-0.5 ring-[3px]'
+          badgeIconClassName='h-5 w-5'
         />
 
         {/* Overlay button on hover */}

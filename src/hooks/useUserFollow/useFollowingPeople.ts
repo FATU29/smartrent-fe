@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserFollowService } from '@/api/services'
-import { USER_FOLLOW_QUERY_KEYS } from '@/api/types'
+import { FollowStatusResponse, USER_FOLLOW_QUERY_KEYS } from '@/api/types'
 import { useAuth } from '@/hooks/useAuth'
 
 /**
@@ -10,8 +11,9 @@ import { useAuth } from '@/hooks/useAuth'
 export const useFollowingPeople = (page = 0, size = 20) => {
   const { user, isAuthenticated } = useAuth()
   const userId = user?.userId ?? ''
+  const queryClient = useQueryClient()
 
-  return useQuery({
+  const query = useQuery({
     queryKey: USER_FOLLOW_QUERY_KEYS.following(userId, page, size),
     queryFn: async () => {
       if (!userId) return null
@@ -22,4 +24,28 @@ export const useFollowingPeople = (page = 0, size = 20) => {
     staleTime: 30 * 1000,
     gcTime: 5 * 60 * 1000,
   })
+
+  // Seed the per-user follow-status cache so every FollowButton in the list
+  // renders with the correct toggle state immediately, without firing one
+  // /follow-status request per row. Backend sets isFollowing on each row; on
+  // the viewer's own "following" tab this is always true.
+  useEffect(() => {
+    const rows = query.data?.content
+    if (!rows || rows.length === 0) return
+    for (const row of rows) {
+      if (!row.userId) continue
+      const key = USER_FOLLOW_QUERY_KEYS.status(row.userId)
+      const existing = queryClient.getQueryData<FollowStatusResponse | null>(
+        key,
+      )
+      if (existing) continue
+      queryClient.setQueryData<FollowStatusResponse>(key, {
+        userId: row.userId,
+        isFollowing: row.isFollowing ?? true,
+        followerCount: 0,
+      })
+    }
+  }, [query.data, queryClient])
+
+  return query
 }

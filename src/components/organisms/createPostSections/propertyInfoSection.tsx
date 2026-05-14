@@ -9,7 +9,6 @@ import {
 import { Button } from '@/components/atoms/button'
 import { Input } from '@/components/atoms/input'
 import { Textarea } from '@/components/atoms/textarea'
-import { Typography } from '@/components/atoms/typography'
 import SelectDropdown from '@/components/atoms/select-dropdown'
 import {
   MapPin,
@@ -828,10 +827,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
             {/* Rooms Section */}
             <div className='space-y-4'>
-              <h3 className='text-sm font-semibold text-foreground'>
-                {tDetails('rooms')}
-              </h3>
-
               <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
                 <Controller
                   name='bedrooms'
@@ -992,9 +987,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
           <CardContent className='space-y-8'>
             {/* Monthly Utilities */}
             <div className='space-y-4'>
-              <Typography variant='h5' as='h3' className='text-foreground'>
-                {tUtilities('monthlyUtilities')}
-              </Typography>
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
                 <Controller
                   name='waterPrice'
@@ -1125,9 +1117,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
             {/* Structure & Direction */}
             <div className='space-y-4'>
-              <Typography variant='h5' as='h3' className='text-foreground'>
-                {tUtilities('structureDirection')}
-              </Typography>
               <Controller
                 name='direction'
                 control={control}

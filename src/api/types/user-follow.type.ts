@@ -16,6 +16,10 @@ export interface FollowedUser {
   avatarUrl?: string | null
   isBroker?: boolean | null
   brokerVerificationStatus?: 'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED' | null
+  // Authoritative follow-state from the viewer's perspective. The list
+  // endpoints populate this in bulk so FollowButton avoids an N+1 round-trip
+  // through /follow-status to render the toggle.
+  isFollowing?: boolean | null
   followedAt?: string | null
 }
 
