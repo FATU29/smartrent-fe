@@ -1900,12 +1900,9 @@
     },
     "noUpgrades": {
       "title": "No Upgrade Options Available",
-      "message": "You are already at the highest tier or there are no upgrade options available at this time.",
       "backButton": "Back to Packages",
       "info1": "You're at the Top Tier",
-      "info1Desc": "You already have access to all premium features and benefits.",
-      "info2": "Maximum Benefits Unlocked",
-      "info2Desc": "Enjoy all the advanced features available in your current plan."
+      "info2": "Maximum Benefits Unlocked"
     },
     "errors": {
       "loadFailedTitle": "Failed to Load Upgrades",

@@ -95,10 +95,7 @@ const UsageGuideTemplate = () => {
       <GuideCard icon={<Package />} title={t('membership.title')}>
         <Indented className='space-y-6'>
           <div className='space-y-2'>
-            <Typography
-              variant='h4'
-              className='text-base leading-snug tracking-tight sm:text-lg'
-            >
+            <Typography variant='h5' className='font-medium tracking-tight'>
               {t('membership.choosingPlan.title')}
             </Typography>
             <BulletList
@@ -109,10 +106,7 @@ const UsageGuideTemplate = () => {
             />
           </div>
           <div className='space-y-2'>
-            <Typography
-              variant='h4'
-              className='text-base leading-snug tracking-tight sm:text-lg'
-            >
+            <Typography variant='h5' className='font-medium tracking-tight'>
               {t('membership.monthlyAllocation.title')}
             </Typography>
             <div className='rounded-2xl border border-border/70 bg-muted/40 p-4'>
@@ -120,7 +114,7 @@ const UsageGuideTemplate = () => {
                 variant='small'
                 className='leading-6 text-muted-foreground'
               >
-                <strong>{t('membership.monthlyAllocation.example')}</strong>
+                {t('membership.monthlyAllocation.example')}
               </Typography>
             </div>
           </div>
@@ -130,11 +124,7 @@ const UsageGuideTemplate = () => {
       <GuideCard icon={<FileText />} title={t('posts.title')}>
         <Indented className='space-y-6'>
           <div className='space-y-3'>
-            <Typography
-              variant='h4'
-              className='flex items-center gap-2 text-base leading-snug tracking-tight sm:text-lg'
-            >
-              <Crown className='h-4 w-4 text-primary' />
+            <Typography variant='h5' className='font-medium tracking-tight'>
               {t('posts.types.title')}
             </Typography>
 
@@ -202,10 +192,7 @@ const UsageGuideTemplate = () => {
             </div>
           </div>
           <div className='space-y-2'>
-            <Typography
-              variant='h4'
-              className='text-base leading-snug tracking-tight sm:text-lg'
-            >
+            <Typography variant='h5' className='font-medium tracking-tight'>
               {t('posts.bestPractices.title')}
             </Typography>
             <BulletList
@@ -216,10 +203,7 @@ const UsageGuideTemplate = () => {
             />
           </div>
           <div className='space-y-2'>
-            <Typography
-              variant='h4'
-              className='text-base leading-snug tracking-tight sm:text-lg'
-            >
+            <Typography variant='h5' className='font-medium tracking-tight'>
               {t('posts.pushing.title')}
             </Typography>
             <div className='rounded-2xl border border-amber-200 bg-amber-50/80 p-4 dark:border-amber-900 dark:bg-amber-950/20'>
@@ -227,7 +211,7 @@ const UsageGuideTemplate = () => {
                 variant='small'
                 className='leading-6 text-amber-900 dark:text-amber-100'
               >
-                <strong>{t('posts.pushing.tip')}</strong>
+                {t('posts.pushing.tip')}
               </Typography>
             </div>
           </div>
@@ -239,8 +223,8 @@ const UsageGuideTemplate = () => {
           {['editing', 'pausing', 'renewing'].map((k) => (
             <Typography
               key={k}
-              variant='h4'
-              className='text-base leading-snug tracking-tight sm:text-lg'
+              variant='h5'
+              className='font-medium tracking-tight'
             >
               {t(`managing.${k}.title`)}
             </Typography>
@@ -264,8 +248,8 @@ const UsageGuideTemplate = () => {
           {['profile', 'notifications'].map((k) => (
             <Typography
               key={k}
-              variant='h4'
-              className='text-base leading-snug tracking-tight sm:text-lg'
+              variant='h5'
+              className='font-medium tracking-tight'
             >
               {t(`settings.${k}.title`)}
             </Typography>
