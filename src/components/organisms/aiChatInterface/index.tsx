@@ -25,6 +25,9 @@ type TAiChatInterfaceProps = {
   onInputChange: (value: string) => void
   onSendMessage: (value: string) => void
   onViewListingDetail?: (listingId: number) => void
+  /** Cancel the in-flight SSE stream — wired through to the typing
+   * indicator's × button. */
+  onStopStreaming?: () => void
   isMobile?: boolean
   className?: string
 }
@@ -42,6 +45,7 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
   onInputChange,
   onSendMessage,
   onViewListingDetail,
+  onStopStreaming,
   isMobile = false,
   className,
 }) => {
@@ -149,7 +153,10 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
 
               {isTyping && (
                 <div className='animate-in fade-in slide-in-from-bottom-2 duration-200'>
-                  <AiChatTypingIndicator statusLabel={statusLabel} />
+                  <AiChatTypingIndicator
+                    statusLabel={statusLabel}
+                    onStop={onStopStreaming}
+                  />
                 </div>
               )}
             </div>

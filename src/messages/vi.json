@@ -40,6 +40,7 @@
     "placeholder": "Nhập tin nhắn...",
     "send": "Gửi tin nhắn",
     "typing": "Bot đang nhập",
+    "stop": "Dừng tạo phản hồi",
     "clearHistory": "Xóa lịch sử chat",
     "close": "Đóng chat",
     "openChat": "Mở chat",

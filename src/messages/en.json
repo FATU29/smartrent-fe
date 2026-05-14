@@ -40,6 +40,7 @@
     "placeholder": "Type a message...",
     "send": "Send message",
     "typing": "Bot is typing",
+    "stop": "Stop generating",
     "clearHistory": "Clear chat history",
     "close": "Close chat",
     "openChat": "Open chat",
