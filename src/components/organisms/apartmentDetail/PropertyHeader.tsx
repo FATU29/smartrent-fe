@@ -209,13 +209,13 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   }
 
   return (
-    <div className='space-y-4 listing-section'>
-      {/* Title block — full width, tighter to gallery, more prominent */}
+    <div className='space-y-4 listing-section w-full'>
+      {/* Title block — extends naturally to fill the left container, no max-width */}
       <div className='w-full'>
         {/* Title */}
         <Typography
           variant='pageTitle'
-          className='listing-title block w-full text-foreground'
+          className='listing-title text-foreground'
         >
           {title}
         </Typography>

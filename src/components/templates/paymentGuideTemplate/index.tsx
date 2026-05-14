@@ -60,12 +60,6 @@ const PaymentGuideTemplate = () => {
             <Sparkles className='h-5 w-5 text-primary' />
             {t('title')}
           </Typography>
-          <Typography
-            variant='muted'
-            className='max-w-3xl text-base leading-relaxed'
-          >
-            {t('description')}
-          </Typography>
         </div>
       </section>
 
@@ -102,9 +96,6 @@ const PaymentGuideTemplate = () => {
             <CreditCard className='h-5 w-5 text-primary' />
             <span className='break-words'>{t('methods.title')}</span>
           </CardTitle>
-          <CardDescription className='max-w-3xl'>
-            {t('methods.description')}
-          </CardDescription>
         </CardHeader>
         <CardContent className='space-y-4 pb-5 md:space-y-5'>
           <div className='hidden gap-4 lg:grid lg:grid-cols-2'>
@@ -130,9 +121,6 @@ const PaymentGuideTemplate = () => {
                               {t(`methods.${method.key}.title`)}
                             </span>
                           </CardTitle>
-                          <CardDescription className='mt-1 leading-relaxed'>
-                            {t(`methods.${method.key}.description`)}
-                          </CardDescription>
                         </div>
                       </div>
 
@@ -207,9 +195,6 @@ const PaymentGuideTemplate = () => {
                                     {t(`methods.${method.key}.title`)}
                                   </span>
                                 </CardTitle>
-                                <CardDescription className='mt-1 text-sm leading-relaxed'>
-                                  {t(`methods.${method.key}.description`)}
-                                </CardDescription>
                               </div>
                             </div>
 
@@ -267,7 +252,6 @@ const PaymentGuideTemplate = () => {
               <Wallet className='h-5 w-5 text-primary' />
               <span className='break-words'>{t('howToPay.title')}</span>
             </CardTitle>
-            <CardDescription>{t('howToPay.description')}</CardDescription>
           </CardHeader>
           <CardContent className='space-y-2.5 pb-5'>
             {PAYMENT_FLOW_STEPS.map((stepKey, index) => (
@@ -275,7 +259,7 @@ const PaymentGuideTemplate = () => {
                 key={stepKey}
                 className='rounded-lg border px-3 py-3 md:px-4'
               >
-                <div className='mb-1 flex items-center gap-2'>
+                <div className='flex items-center gap-2'>
                   <span className='inline-flex h-6 w-6 items-center justify-center rounded-full border text-xs font-semibold'>
                     {index + 1}
                   </span>
@@ -283,12 +267,6 @@ const PaymentGuideTemplate = () => {
                     {t(`howToPay.${stepKey}.title`)}
                   </span>
                 </div>
-                <Typography
-                  variant='small'
-                  className='leading-5 text-muted-foreground'
-                >
-                  {t(`howToPay.${stepKey}.description`)}
-                </Typography>
               </div>
             ))}
           </CardContent>
@@ -300,7 +278,6 @@ const PaymentGuideTemplate = () => {
               <ShieldCheck className='h-5 w-5 text-primary' />
               <span className='break-words'>{t('notes.title')}</span>
             </CardTitle>
-            <CardDescription>{t('notes.description')}</CardDescription>
           </CardHeader>
           <CardContent className='space-y-3 pb-5'>
             <Alert>

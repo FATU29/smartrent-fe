@@ -119,7 +119,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
     }
   }
 
-  const sections: Section[] = useMemo(
+  const topSections: Section[] = useMemo(
     () => [
       {
         id: 'gallery',
@@ -175,6 +175,12 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         ),
         isVisible: true,
       },
+    ],
+    [listing, t, mediaItems, amenities, description, embedded, user],
+  )
+
+  const bottomSections: Section[] = useMemo(
+    () => [
       {
         id: 'map',
         component: (
@@ -193,7 +199,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
       {
         id: 'similarProperties',
         component: <SimilarPropertiesSection listingId={listing.listingId} />,
-        order: 8,
         isVisible: true,
       },
       {
@@ -204,7 +209,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         isVisible: !embedded,
       },
     ],
-    [listing, t, address, mediaItems, amenities, description, embedded],
+    [listing, address, longitude, latitude, embedded],
   )
 
   // Render sections function
@@ -219,21 +224,24 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
   }
 
   if (embedded) {
+    const allSections = [...topSections, ...bottomSections]
     return (
-      <div className='flex flex-col gap-5'>{sections?.map(renderSection)}</div>
+      <div className='flex flex-col gap-5'>
+        {allSections?.map(renderSection)}
+      </div>
     )
   }
 
   return (
     <div className='min-h-screen bg-background'>
       <PageContainer width='content' className='py-6 lg:py-8'>
-        <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start'>
-          {/* Main Content */}
+        <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start mb-5 lg:mb-7'>
+          {/* Main Content - Top sections (stop at map) */}
           <div className='lg:col-span-8 flex flex-col gap-5 lg:gap-7'>
-            {sections?.map(renderSection)}
+            {topSections?.map(renderSection)}
           </div>
 
-          {/* Sidebar - Desktop Only */}
+          {/* Sidebar - Desktop Only, ends at the map */}
           <div className='hidden lg:block lg:col-span-4 lg:sticky lg:top-24 lg:self-start'>
             <SellerContact
               host={user}
@@ -241,6 +249,11 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
               onPhoneClick={handlePhoneClick}
             />
           </div>
+        </div>
+
+        {/* Bottom sections - full content width on desktop */}
+        <div className='flex flex-col gap-5 lg:gap-7'>
+          {bottomSections?.map(renderSection)}
         </div>
       </PageContainer>
     </div>
