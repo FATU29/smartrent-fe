@@ -1,6 +1,12 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { Edit, MoreHorizontal, ChevronsUp, SendHorizontal } from 'lucide-react'
+import {
+  Edit,
+  MoreHorizontal,
+  ChevronsUp,
+  SendHorizontal,
+  CalendarPlus,
+} from 'lucide-react'
 import { createMenuItems } from './index.constants'
 import { Button } from '@/components/atoms/button'
 import {
@@ -14,12 +20,14 @@ export interface ListingCardActionsProps {
   onEdit?: () => void
   onPromote?: () => void
   onRepost?: () => void
+  onRenew?: () => void
   onResubmit?: () => void
   onCopyListing?: () => void
   onTakeDown?: () => void
   onDelete?: () => void
   showPromoteButton?: boolean
   showRepostButton?: boolean
+  showRenewButton?: boolean
   showResubmitButton?: boolean
   className?: string
 }
@@ -28,12 +36,14 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
   onEdit,
   onPromote,
   onRepost,
+  onRenew,
   onResubmit,
   onCopyListing,
   onTakeDown,
   onDelete,
   showPromoteButton = true,
   showRepostButton = false,
+  showRenewButton = false,
   showResubmitButton = false,
   className,
 }) => {
@@ -94,6 +104,19 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
           <ChevronsUp size={14} />
           <span className='hidden xs:inline'>{t('promoteFull')}</span>
           <span className='xs:hidden'>{t('promote')}</span>
+        </Button>
+      )}
+
+      {showRenewButton && (
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={onRenew}
+          className='gap-1 border-emerald-500 text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10 text-xs sm:text-sm'
+        >
+          <CalendarPlus size={14} />
+          <span className='hidden xs:inline'>{t('renewFull')}</span>
+          <span className='xs:hidden'>{t('renew')}</span>
         </Button>
       )}
 

@@ -145,6 +145,7 @@ export const PATHS = {
   // Repost Actions endpoints
   REPOSTS: {
     REPOST: '/v1/reposts/repost', // Repost an expired listing (quota or payment)
+    RENEW: '/v1/reposts/renew', // Renew (gia hạn) an active listing by +30 days, quota-only
   },
 
   // Quota endpoints

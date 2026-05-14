@@ -11,10 +11,12 @@ import { useDeleteListing } from '@/hooks/useListings/useDeleteListing'
 import { useResubmitListing } from '@/hooks/useListings/useResubmitListing'
 import { useTakeDownListing } from '@/hooks/useListings/useTakeDownListing'
 import { useRepostListing } from '@/hooks/useRepost'
+import { useRenewListing } from '@/hooks/useRenew'
 import { toast } from 'sonner'
 import { DeleteListingDialog } from '@/components/molecules/deleteListingDialog'
 import { TakeDownListingDialog } from '@/components/molecules/takeDownListingDialog'
 import { RepostListingDialog } from '@/components/molecules/repostListingDialog'
+import { RenewListingDialog } from '@/components/molecules/renewListingDialog'
 import { ResubmitListingDialog } from '@/components/molecules/moderation'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import { MembershipPushDisplay } from '@/components/molecules/listings/MembershipPushDisplay'
@@ -70,6 +72,7 @@ const ListingsWithPagination = () => {
   const resubmitMutation = useResubmitListing()
   const takeDownMutation = useTakeDownListing()
   const repostMutation = useRepostListing()
+  const renewMutation = useRenewListing()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedListingForDelete, setSelectedListingForDelete] =
     useState<ListingOwnerDetail | null>(null)
@@ -81,6 +84,9 @@ const ListingsWithPagination = () => {
     useState<ListingOwnerDetail | null>(null)
   const [repostDialogOpen, setRepostDialogOpen] = useState(false)
   const [selectedListingForRepost, setSelectedListingForRepost] =
+    useState<ListingOwnerDetail | null>(null)
+  const [renewDialogOpen, setRenewDialogOpen] = useState(false)
+  const [selectedListingForRenew, setSelectedListingForRenew] =
     useState<ListingOwnerDetail | null>(null)
   const [pushLimitState, setPushLimitState] = useState<{
     open: boolean
@@ -197,6 +203,10 @@ const ListingsWithPagination = () => {
             onRepostListing={(listing) => {
               setSelectedListingForRepost(listing)
               setRepostDialogOpen(true)
+            }}
+            onRenewListing={(listing) => {
+              setSelectedListingForRenew(listing)
+              setRenewDialogOpen(true)
             }}
             onResubmitListing={(listing) => {
               // Redirect to update-post with resubmit context
@@ -321,6 +331,29 @@ const ListingsWithPagination = () => {
                     toast.error(
                       err.message || tSeller('card.toast.repostError'),
                     )
+                  },
+                },
+              )
+            }}
+          />
+
+          <RenewListingDialog
+            listing={selectedListingForRenew}
+            open={renewDialogOpen}
+            onOpenChange={setRenewDialogOpen}
+            isLoading={renewMutation.isPending}
+            onConfirm={({ listing }) => {
+              renewMutation.mutate(
+                { listingId: listing.listingId },
+                {
+                  onSuccess: () => {
+                    setSelectedListingForRenew(null)
+                    setRenewDialogOpen(false)
+                    toast.success(tSeller('card.toast.renewSuccess'))
+                    refetch()
+                  },
+                  onError: (err) => {
+                    toast.error(err.message || tSeller('card.toast.renewError'))
                   },
                 },
               )

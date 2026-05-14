@@ -42,6 +42,7 @@ export interface ListingCardProps {
   onEdit?: () => void
   onPromote?: () => void
   onRepost?: () => void
+  onRenew?: () => void
   onResubmit?: () => void
   onCopyListing?: () => void
   onTakeDown?: () => void
@@ -54,6 +55,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   onEdit,
   onPromote,
   onRepost,
+  onRenew,
   onResubmit,
   onCopyListing,
   onTakeDown,
@@ -131,6 +133,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   // listings the only call-to-action is "đăng lại" (repost).
   const showPromoteButton = !isExpired
   const showRepostButton = isExpired
+  // Renewal is the +30-day quota top-up — only meaningful while the listing
+  // is still active. Once expired the only path back is "đăng lại" (repost),
+  // which has its own dialog.
+  const showRenewButton =
+    !isExpired && vipType !== 'NORMAL' && vipType !== undefined
 
   const postISO = toISO(postDate)
   const postDisplay = formatISO(postISO)
@@ -607,12 +614,14 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 onEdit={onEdit}
                 onPromote={onPromote}
                 onRepost={onRepost}
+                onRenew={onRenew}
                 onResubmit={onResubmit}
                 onCopyListing={onCopyListing}
                 onTakeDown={onTakeDown}
                 onDelete={onDelete}
                 showPromoteButton={showPromoteButton}
                 showRepostButton={showRepostButton}
+                showRenewButton={showRenewButton}
                 showResubmitButton={isResubmittable}
               />
             </div>

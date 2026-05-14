@@ -2525,6 +2525,8 @@
           "promoteFull": "Đẩy tin",
           "repost": "Đăng lại",
           "repostFull": "Đăng lại tin",
+          "renew": "Gia hạn",
+          "renewFull": "Gia hạn (+30 ngày)",
           "copyListing": "Sao chép link bài đăng",
           "takeDown": "Ẩn tin",
           "delete": "Xóa tin",
@@ -2577,6 +2579,33 @@
           "cancel": "Huỷ",
           "loading": "Đang xử lý..."
         },
+        "renewDialog": {
+          "title": "Gia hạn tin",
+          "description": "Kéo dài thời gian hiển thị thêm {days} ngày bằng lượt còn lại trong gói cùng hạng.",
+          "listingLabel": "Tin đăng",
+          "vipTypes": {
+            "NORMAL": "Tin thường",
+            "SILVER": "VIP Bạc",
+            "GOLD": "VIP Vàng",
+            "DIAMOND": "VIP Kim cương"
+          },
+          "preview": {
+            "title": "Cộng dồn +{days} ngày",
+            "currentExpiry": "Hạn hiện tại",
+            "newExpiry": "Hạn mới",
+            "unknown": "Không có"
+          },
+          "quota": {
+            "title": "Dùng lượt gói {tier}",
+            "noTierTitle": "Không thể gia hạn",
+            "noTierHint": "Tin thường không có gói cùng hạng để gia hạn. Vui lòng nâng hạng tin để dùng tính năng này.",
+            "remaining": "Còn {count} lượt trong gói",
+            "empty": "Hết lượt {tier} — chờ tin hết hạn rồi dùng đăng lại."
+          },
+          "confirm": "Gia hạn (+30 ngày)",
+          "cancel": "Huỷ",
+          "loading": "Đang gia hạn..."
+        },
         "takeDownConfirm": {
           "title": "Ẩn tin đăng?",
           "description": "Bạn có chắc chắn muốn ẩn tin đăng này? Vui lòng đọc kỹ các lưu ý bên dưới trước khi xác nhận.",
@@ -2601,6 +2630,8 @@
           "repostSuccess": "Đăng lại tin thành công",
           "repostError": "Không thể đăng lại tin",
           "repostRedirectingToPayment": "Đang chuyển đến trang thanh toán...",
+          "renewSuccess": "Đã gia hạn thêm 30 ngày",
+          "renewError": "Không thể gia hạn tin",
           "copyLinkSuccess": "Đã sao chép link bài đăng",
           "copyLinkError": "Không thể sao chép link bài đăng"
         }

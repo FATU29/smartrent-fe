@@ -53,7 +53,7 @@ export const NotificationItemCard: React.FC<NotificationItemCardProps> = ({
               <p className='mt-0.5 line-clamp-2 text-xs text-muted-foreground'>
                 {notification.message}
               </p>
-              <span className='mt-1 block text-2xs font-light text-muted-foreground/70'>
+              <span className='mt-1 block text-[11px] font-light leading-none text-muted-foreground/70'>
                 {timeAgo}
               </span>
             </div>

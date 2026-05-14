@@ -2524,6 +2524,8 @@
           "promoteFull": "Push listing",
           "repost": "Repost",
           "repostFull": "Repost listing",
+          "renew": "Renew",
+          "renewFull": "Renew (+30 days)",
           "copyListing": "Copy listing link",
           "takeDown": "Take down",
           "delete": "Delete",
@@ -2576,6 +2578,33 @@
           "cancel": "Cancel",
           "loading": "Processing..."
         },
+        "renewDialog": {
+          "title": "Renew listing",
+          "description": "Extend this listing's active period by {days} more days using your matching membership quota.",
+          "listingLabel": "Listing",
+          "vipTypes": {
+            "NORMAL": "Standard",
+            "SILVER": "Silver VIP",
+            "GOLD": "Gold VIP",
+            "DIAMOND": "Diamond VIP"
+          },
+          "preview": {
+            "title": "+{days} days, cumulative",
+            "currentExpiry": "Current expiry",
+            "newExpiry": "New expiry",
+            "unknown": "Not available"
+          },
+          "quota": {
+            "title": "Use {tier} package quota",
+            "noTierTitle": "Renewal not available",
+            "noTierHint": "Standard listings have no matching package quota. Upgrade the listing tier to renew this way.",
+            "remaining": "{count} left in your package",
+            "empty": "No {tier} quota left — use the repost flow once the listing expires."
+          },
+          "confirm": "Renew (+30 days)",
+          "cancel": "Cancel",
+          "loading": "Renewing..."
+        },
         "takeDownConfirm": {
           "title": "Take down this listing?",
           "description": "Are you sure you want to take down this listing? Please review the consequences below before confirming.",
@@ -2600,6 +2629,8 @@
           "repostSuccess": "Listing reposted successfully",
           "repostError": "Failed to repost listing",
           "repostRedirectingToPayment": "Redirecting to payment...",
+          "renewSuccess": "Listing renewed for 30 more days",
+          "renewError": "Failed to renew listing",
           "copyLinkSuccess": "Listing link copied",
           "copyLinkError": "Failed to copy listing link"
         }
