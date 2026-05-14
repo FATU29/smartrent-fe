@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import {
   Tabs,
@@ -46,11 +47,43 @@ const FEED_PAGE_SIZE = 12
 // non-empty placeholder because Radix Select disallows empty-string values.
 const FEED_FILTER_ALL = '__all__'
 
-type ActiveTab = 'people' | 'feed'
+type ActiveTab = 'feed' | 'people'
+
+const TAB_QUERY_KEY = 'tab'
+const isActiveTab = (value: unknown): value is ActiveTab =>
+  value === 'feed' || value === 'people'
 
 const FollowingPageTemplate: React.FC = () => {
   const t = useTranslations('followingPage')
-  const [activeTab, setActiveTab] = React.useState<ActiveTab>('people')
+  const router = useRouter()
+  const [activeTab, setActiveTab] = React.useState<ActiveTab>('feed')
+
+  React.useEffect(() => {
+    if (!router.isReady) return
+    const queryTab = router.query[TAB_QUERY_KEY]
+    const tabFromQuery = Array.isArray(queryTab) ? queryTab[0] : queryTab
+    if (isActiveTab(tabFromQuery)) {
+      setActiveTab(tabFromQuery)
+    }
+  }, [router.isReady, router.query])
+
+  const handleTabChange = React.useCallback(
+    (value: string) => {
+      if (!isActiveTab(value)) return
+      setActiveTab(value)
+      if (!router.isReady) return
+      const nextQuery = { ...router.query, [TAB_QUERY_KEY]: value }
+      router.replace(
+        { pathname: router.pathname, query: nextQuery },
+        undefined,
+        {
+          shallow: true,
+          scroll: false,
+        },
+      )
+    },
+    [router],
+  )
 
   // People tab uses 0-based pagination on the backend (Spring Data Page).
   const [peoplePage, setPeoplePage] = React.useState(0)
@@ -77,13 +110,13 @@ const FollowingPageTemplate: React.FC = () => {
     (userId: string) => {
       setFeedUserId(userId)
       setFeedPage(1)
-      setActiveTab('feed')
+      handleTabChange('feed')
       // Scroll up so the user immediately sees the new tab content.
       if (typeof window !== 'undefined') {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     },
-    [setFeedUserId, setFeedPage, setActiveTab],
+    [setFeedUserId, setFeedPage, handleTabChange],
   )
 
   const handleFeedFilterChange = React.useCallback(
@@ -120,15 +153,15 @@ const FollowingPageTemplate: React.FC = () => {
 
       <Tabs
         value={activeTab}
-        onValueChange={(value) => setActiveTab(value as ActiveTab)}
+        onValueChange={handleTabChange}
         className='space-y-5'
       >
         <TabsList className='grid w-full md:w-fit grid-cols-2'>
-          <TabsTrigger value='people' className='px-4'>
-            {t('tabs.people')}
-          </TabsTrigger>
           <TabsTrigger value='feed' className='px-4'>
             {t('tabs.feed')}
+          </TabsTrigger>
+          <TabsTrigger value='people' className='px-4'>
+            {t('tabs.people')}
           </TabsTrigger>
         </TabsList>
 
@@ -365,8 +398,8 @@ const FeedPeopleSidebar: React.FC<FeedPeopleSidebarProps> = ({
                     label={formatName(person, defaultName)}
                     sublabel={
                       isBroker ? (
-                        <span className='inline-flex items-center gap-1 text-2xs text-emerald-700 dark:text-emerald-300'>
-                          <BadgeCheck className='h-3 w-3' />
+                        <span className='inline-flex items-center gap-1 text-2xs font-normal leading-none text-emerald-700 dark:text-emerald-300'>
+                          <BadgeCheck className='h-2.5 w-2.5 shrink-0' />
                           {proBrokerLabel}
                         </span>
                       ) : null

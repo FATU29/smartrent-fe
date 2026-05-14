@@ -33,7 +33,7 @@ export const GuideCard: React.FC<GuideCardProps> = ({
     <Card
       className={`overflow-hidden rounded-2xl border bg-card/90 shadow-sm ${className}`.trim()}
     >
-      <div className='flex items-start gap-3 border-b border-border/60 px-5 py-4 sm:px-6 sm:py-5'>
+      <div className='flex items-center gap-3 border-b border-border/60 px-5 py-4 sm:px-6 sm:py-5'>
         {icon && (
           <div className={`rounded-lg p-2 ${headerBgClass}`.trim()}>
             <div className={`h-6 w-6 ${iconClassName}`}>{icon}</div>

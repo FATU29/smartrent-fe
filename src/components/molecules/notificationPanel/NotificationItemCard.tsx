@@ -1,5 +1,11 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/atoms/tooltip'
 import type { NotificationItem } from '@/api/types/notification.type'
 import { NotificationIcon } from './NotificationIcon'
 import { useTimeAgo } from './useTimeAgo'
@@ -16,45 +22,64 @@ export const NotificationItemCard: React.FC<NotificationItemCardProps> = ({
   const timeAgo = useTimeAgo(notification.createdAt)
 
   return (
-    <button
-      type='button'
-      className={cn(
-        'flex w-full items-start gap-3 rounded-lg px-3 py-3 text-left transition-colors hover:bg-accent/50',
-        !notification.isRead && 'bg-accent/30',
-      )}
-      onClick={() => onClick(notification)}
-    >
-      {/* Icon */}
-      <div className='mt-0.5 shrink-0'>
-        <NotificationIcon type={notification.type} size={20} />
-      </div>
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type='button'
+            className={cn(
+              'flex w-full items-start gap-3 rounded-lg px-3 py-3 text-left transition-colors hover:bg-accent/50',
+              !notification.isRead && 'bg-accent/30',
+            )}
+            onClick={() => onClick(notification)}
+          >
+            {/* Icon */}
+            <div className='mt-0.5 shrink-0'>
+              <NotificationIcon type={notification.type} size={20} />
+            </div>
 
-      {/* Content */}
-      <div className='min-w-0 flex-1'>
-        <p
-          className={cn(
-            'text-sm leading-snug',
-            !notification.isRead
-              ? 'font-semibold text-foreground'
-              : 'font-normal text-muted-foreground',
-          )}
+            {/* Content */}
+            <div className='min-w-0 flex-1'>
+              <p
+                className={cn(
+                  'truncate text-sm font-semibold leading-snug',
+                  notification.isRead
+                    ? 'text-muted-foreground'
+                    : 'text-foreground',
+                )}
+              >
+                {notification.title}
+              </p>
+              <p className='mt-0.5 line-clamp-2 text-xs text-muted-foreground'>
+                {notification.message}
+              </p>
+              <span className='mt-1 block text-2xs font-light text-muted-foreground/70'>
+                {timeAgo}
+              </span>
+            </div>
+
+            {/* Unread dot */}
+            {!notification.isRead && (
+              <div className='mt-2 shrink-0'>
+                <span className='block h-2 w-2 rounded-full bg-primary' />
+              </div>
+            )}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent
+          side='left'
+          align='start'
+          sideOffset={8}
+          className='max-w-xs space-y-1 px-3 py-2'
         >
-          {notification.title}
-        </p>
-        <p className='mt-0.5 line-clamp-2 text-xs text-muted-foreground'>
-          {notification.message}
-        </p>
-        <span className='mt-1 block text-2xs text-muted-foreground/70'>
-          {timeAgo}
-        </span>
-      </div>
-
-      {/* Unread dot */}
-      {!notification.isRead && (
-        <div className='mt-2 shrink-0'>
-          <span className='block h-2 w-2 rounded-full bg-primary' />
-        </div>
-      )}
-    </button>
+          <p className='text-sm font-semibold leading-snug text-popover-foreground'>
+            {notification.title}
+          </p>
+          <p className='whitespace-pre-line text-xs leading-relaxed text-muted-foreground'>
+            {notification.message}
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }
