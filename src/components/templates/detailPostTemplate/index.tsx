@@ -175,12 +175,6 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         ),
         isVisible: true,
       },
-    ],
-    [listing, t, mediaItems, amenities, description, embedded, user],
-  )
-
-  const bottomSections: Section[] = useMemo(
-    () => [
       {
         id: 'map',
         component: (
@@ -196,6 +190,23 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         ),
         isVisible: true,
       },
+    ],
+    [
+      listing,
+      t,
+      mediaItems,
+      amenities,
+      description,
+      embedded,
+      user,
+      address,
+      longitude,
+      latitude,
+    ],
+  )
+
+  const bottomSections: Section[] = useMemo(
+    () => [
       {
         id: 'similarProperties',
         component: <SimilarPropertiesSection listingId={listing.listingId} />,
@@ -209,7 +220,7 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
         isVisible: !embedded,
       },
     ],
-    [listing, address, longitude, latitude, embedded],
+    [listing, embedded],
   )
 
   // Render sections function
