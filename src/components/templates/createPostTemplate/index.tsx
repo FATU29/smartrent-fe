@@ -189,13 +189,6 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       setSuccessTitle(t('successTitle'))
       setSuccessDesc(t('successDescription'))
       setSuccessOpen(true)
-
-      // Redirect to listing detail if listingId is available
-      if (data.listingId) {
-        setTimeout(() => {
-          router.push(`/listing-detail/${data.listingId}`)
-        }, 2000)
-      }
     } catch (err) {
       setErrorTitle(t('errorTitle'))
       setErrorDesc(err instanceof Error ? err.message : t('unexpectedError'))
