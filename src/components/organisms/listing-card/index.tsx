@@ -13,7 +13,7 @@ import { formatByLocale } from '@/utils/currency/convert'
 import { getPriceUnitTranslationKey } from '@/utils/property'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ListingOwnerDetail } from '@/api/types'
-import { ModerationStatus } from '@/api/types/property.type'
+import { ModerationStatus, POST_STATUS } from '@/api/types/property.type'
 import {
   ModerationStatusBadge,
   ModerationBanner,
@@ -133,11 +133,16 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   // listings the only call-to-action is "đăng lại" (repost).
   const showPromoteButton = !isExpired
   const showRepostButton = isExpired
-  // Renewal is the +30-day quota top-up — only meaningful while the listing
-  // is still active. Once expired the only path back is "đăng lại" (repost),
-  // which has its own dialog.
+  // Renewal is the +30-day quota top-up — restricted to listings the backend
+  // has flagged EXPIRING_SOON + APPROVED. A fully-displaying listing with a
+  // healthy expiry doesn't need (and shouldn't see) a renew CTA; once it
+  // tips into EXPIRED the only path back is "đăng lại" (repost).
   const showRenewButton =
-    !isExpired && vipType !== 'NORMAL' && vipType !== undefined
+    !isExpired &&
+    vipType !== 'NORMAL' &&
+    vipType !== undefined &&
+    property.listingStatus === POST_STATUS.EXPIRING_SOON &&
+    moderationStatus === ModerationStatus.APPROVED
 
   const postISO = toISO(postDate)
   const postDisplay = formatISO(postISO)
