@@ -288,8 +288,11 @@ export const MembershipRegisterTemplate: React.FC = () => {
           transition={{ duration: 0.5, type: 'spring', stiffness: 100 }}
           className='max-w-4xl mx-auto'
         >
-          <Card className='relative overflow-hidden border-2 border-primary/20 shadow-lg bg-card'>
-            <CardContent className='p-8 md:p-10'>
+          <Card className='relative overflow-hidden border-2 border-primary/20 shadow-xl bg-card'>
+            <div className='absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-primary/60 to-primary' />
+            <div className='absolute -top-24 -right-24 w-64 h-64 rounded-full bg-primary/5 blur-3xl pointer-events-none' />
+            <div className='absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-primary/5 blur-3xl pointer-events-none' />
+            <CardContent className='relative p-8 md:p-10'>
               <div className='flex flex-col md:flex-row gap-8'>
                 {/* Left Side - Current Membership Info */}
                 <motion.div
@@ -389,80 +392,69 @@ export const MembershipRegisterTemplate: React.FC = () => {
                   )}
                 </motion.div>
 
-                {/* Right Side - No Upgrade Message */}
+                {/* Right Side - Top Tier Achievement */}
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className='flex-1 flex flex-col justify-center space-y-6'
                 >
-                  <div className='text-center space-y-4'>
+                  <div className='text-center space-y-5'>
                     <div className='flex justify-center'>
-                      <div className='flex items-center justify-center w-20 h-20 rounded-2xl bg-primary/10 border-2 border-primary/30 shadow-lg'>
-                        <TrendingUp className='size-10 text-primary' />
-                      </div>
-                    </div>
-                    <div className='space-y-2'>
-                      <Typography
-                        variant='h3'
-                        className='font-bold text-foreground'
+                      <motion.div
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{
+                          duration: 0.6,
+                          delay: 0.4,
+                          type: 'spring',
+                          stiffness: 120,
+                        }}
+                        className='relative'
                       >
-                        {tUpgrade('noUpgrades.title')}
-                      </Typography>
-                      <Typography
-                        variant='p'
-                        className='text-muted-foreground max-w-md mx-auto'
-                      >
-                        {tUpgrade('noUpgrades.message')}
-                      </Typography>
+                        <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-primary to-primary/40 blur-2xl opacity-60' />
+                        <div className='relative flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-xl ring-4 ring-primary/10'>
+                          <TrendingUp className='size-12 text-primary-foreground' />
+                        </div>
+                      </motion.div>
                     </div>
+                    <Typography
+                      variant='h3'
+                      className='font-bold text-foreground'
+                    >
+                      {tUpgrade('noUpgrades.title')}
+                    </Typography>
                   </div>
 
                   <Separator />
 
                   {/* Info Points */}
                   <div className='space-y-3'>
-                    <div className='flex items-start gap-3 p-3 rounded-lg bg-muted/50'>
-                      <div className='flex-shrink-0 mt-0.5'>
-                        <div className='flex items-center justify-center w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30'>
-                          <CheckCircle2 className='size-4 text-green-600 dark:text-green-400' />
+                    <div className='flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800/60'>
+                      <div className='flex-shrink-0'>
+                        <div className='flex items-center justify-center w-10 h-10 rounded-xl bg-green-500 shadow-sm dark:bg-green-600'>
+                          <CheckCircle2 className='size-5 text-white' />
                         </div>
                       </div>
-                      <div>
-                        <Typography
-                          variant='small'
-                          className='font-medium text-foreground'
-                        >
-                          {tUpgrade('noUpgrades.info1')}
-                        </Typography>
-                        <Typography
-                          variant='small'
-                          className='text-muted-foreground'
-                        >
-                          {tUpgrade('noUpgrades.info1Desc')}
-                        </Typography>
-                      </div>
+                      <Typography
+                        variant='small'
+                        className='font-semibold text-foreground'
+                      >
+                        {tUpgrade('noUpgrades.info1')}
+                      </Typography>
                     </div>
-                    <div className='flex items-start gap-3 p-3 rounded-lg bg-muted/50'>
-                      <div className='flex-shrink-0 mt-0.5'>
-                        <div className='flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30'>
-                          <Award className='size-4 text-blue-600 dark:text-blue-400' />
+                    <div className='flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800/60'>
+                      <div className='flex-shrink-0'>
+                        <div className='flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500 shadow-sm dark:bg-blue-600'>
+                          <Award className='size-5 text-white' />
                         </div>
                       </div>
-                      <div>
-                        <Typography
-                          variant='small'
-                          className='font-medium text-foreground'
-                        >
-                          {tUpgrade('noUpgrades.info2')}
-                        </Typography>
-                        <Typography
-                          variant='small'
-                          className='text-muted-foreground'
-                        >
-                          {tUpgrade('noUpgrades.info2Desc')}
-                        </Typography>
-                      </div>
+                      <Typography
+                        variant='small'
+                        className='font-semibold text-foreground'
+                      >
+                        {tUpgrade('noUpgrades.info2')}
+                      </Typography>
                     </div>
                   </div>
                 </motion.div>

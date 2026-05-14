@@ -18,8 +18,6 @@ import {
   Send,
   Home,
   DollarSign,
-  Zap as ZapIcon,
-  Navigation,
   CheckCircle,
   Loader2,
   Bot,
@@ -994,12 +992,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
           <CardContent className='space-y-8'>
             {/* Monthly Utilities */}
             <div className='space-y-4'>
-              <Typography
-                variant='h5'
-                as='h3'
-                className='text-foreground flex items-center gap-2'
-              >
-                <ZapIcon className='w-5 h-5 text-yellow-500' />
+              <Typography variant='h5' as='h3' className='text-foreground'>
                 {tUtilities('monthlyUtilities')}
               </Typography>
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
@@ -1132,12 +1125,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
 
             {/* Structure & Direction */}
             <div className='space-y-4'>
-              <Typography
-                variant='h5'
-                as='h3'
-                className='text-foreground flex items-center gap-2'
-              >
-                <Navigation className='w-5 h-5 text-orange-500' />
+              <Typography variant='h5' as='h3' className='text-foreground'>
                 {tUtilities('structureDirection')}
               </Typography>
               <Controller

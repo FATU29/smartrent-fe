@@ -2186,12 +2186,9 @@
     },
     "noUpgrades": {
       "title": "Không có tùy chọn nâng cấp",
-      "message": "Bạn đã ở gói cao nhất hoặc hiện không có tùy chọn nâng cấp nào.",
       "backButton": "Quay lại danh sách gói",
       "info1": "Bạn đang ở gói cao nhất",
-      "info1Desc": "Bạn đã có quyền truy cập vào tất cả các tính năng và lợi ích cao cấp.",
-      "info2": "Lợi ích tối đa đã được mở khóa",
-      "info2Desc": "Tận hưởng tất cả các tính năng nâng cao có sẵn trong gói hiện tại của bạn."
+      "info2": "Lợi ích tối đa đã được mở khóa"
     },
     "errors": {
       "loadFailedTitle": "Không thể tải tùy chọn nâng cấp",
