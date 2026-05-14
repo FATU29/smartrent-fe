@@ -15,6 +15,7 @@ interface BrokerAvatarProps {
   imageClassName?: string
   showBrokerBadge?: boolean
   badgeClassName?: string
+  badgeIconClassName?: string
 }
 
 const BrokerAvatar: React.FC<BrokerAvatarProps> = ({
@@ -28,6 +29,7 @@ const BrokerAvatar: React.FC<BrokerAvatarProps> = ({
   imageClassName,
   showBrokerBadge = false,
   badgeClassName,
+  badgeIconClassName,
 }) => {
   const t = useTranslations()
   const displayName = alt || `${firstName} ${lastName}`.trim() || 'User'
@@ -70,7 +72,7 @@ const BrokerAvatar: React.FC<BrokerAvatarProps> = ({
           aria-label={brokerLabel}
           title={brokerLabel}
         >
-          <BadgeCheck className='h-3 w-3' />
+          <BadgeCheck className={cn('h-3 w-3', badgeIconClassName)} />
         </span>
       )}
     </div>

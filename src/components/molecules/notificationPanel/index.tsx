@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/atoms/skeleton'
 import { useNotifications } from '@/hooks/useNotifications'
 import type { NotificationItem } from '@/api/types/notification.type'
 import { NotificationItemCard } from './NotificationItemCard'
+import { buildApartmentDetailRoute } from '@/constants/route'
 
 const MY_LISTINGS_PATH = '/seller/listings'
 
@@ -75,6 +76,17 @@ const NotificationPanel: React.FC = () => {
       ) {
         setOpen(false)
         router.push(MY_LISTINGS_PATH)
+        return
+      }
+      // Listing-scoped notifications (new post approved, rejected, revision
+      // required, etc.) carry the listing id in referenceId — navigate to the
+      // public detail page via next/router so the SPA transition is preserved.
+      if (
+        notification.referenceType === 'LISTING' &&
+        notification.referenceId
+      ) {
+        setOpen(false)
+        router.push(buildApartmentDetailRoute(String(notification.referenceId)))
       }
     },
     [markAsRead, router],

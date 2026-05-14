@@ -18,10 +18,10 @@ import {
   CheckCircle2,
   FileCheck2,
   IdCard,
-  ImagePlus,
   Loader2,
   RefreshCcw,
   Upload,
+  UploadCloud,
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -175,45 +175,55 @@ const UploadField: React.FC<UploadFieldProps> = ({
       <label className='text-sm font-medium'>{label}</label>
       <div
         className={cn(
-          'rounded-xl border border-dashed p-4 transition-all duration-200 sm:p-5',
+          'group relative overflow-hidden rounded-xl border border-dashed bg-muted/20 transition-all duration-200',
           invalid && 'border-destructive ring-2 ring-destructive/20',
           disabled
             ? 'cursor-not-allowed opacity-60'
-            : 'hover:border-primary/70 hover:shadow-sm',
+            : 'hover:border-primary/70 hover:bg-muted/30 hover:shadow-sm',
+          preview ? 'p-3 sm:p-3' : 'p-4 sm:p-5',
         )}
       >
         {preview ? (
-          <div className='space-y-3'>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={preview}
-              alt={label}
-              className='h-44 w-full rounded-lg border object-cover sm:h-48'
-            />
-            <div className='flex flex-wrap items-center justify-between gap-2.5'>
-              <p className='text-xs text-muted-foreground truncate'>
-                {file?.name}
-              </p>
-              <Button
-                type='button'
-                variant='ghost'
-                size='sm'
-                onClick={handleRemove}
-                disabled={disabled || isUploading}
-                className='h-8 px-2 text-muted-foreground'
-              >
-                <X className='size-4' />
-              </Button>
+          <div className='space-y-2'>
+            <div className='relative overflow-hidden rounded-lg border'>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={preview}
+                alt={label}
+                className='h-40 w-full object-cover sm:h-44'
+              />
+              {!isUploading && (
+                <button
+                  type='button'
+                  onClick={handleRemove}
+                  disabled={disabled}
+                  className='absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/85 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50'
+                  aria-label='Remove'
+                >
+                  <X className='size-4' />
+                </button>
+              )}
+              {!isUploading && uploaded && !invalid && (
+                <span className='absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-emerald-500/90 px-2 py-0.5 text-2xs font-semibold text-white shadow-sm'>
+                  <CheckCircle2 className='size-3' />
+                  {uploadedText}
+                </span>
+              )}
             </div>
+            <p className='truncate text-xs text-muted-foreground'>
+              {file?.name}
+            </p>
           </div>
         ) : (
           <button
             type='button'
             onClick={handlePick}
             disabled={disabled || isUploading}
-            className='flex w-full flex-col items-center justify-center gap-2 py-8 text-center sm:py-10'
+            className='flex w-full flex-col items-center justify-center gap-2 py-8 text-center transition-transform sm:py-10 group-hover:scale-[1.01]'
           >
-            <ImagePlus className='size-5 text-muted-foreground' />
+            <div className='inline-flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary/15'>
+              <UploadCloud className='size-5' />
+            </div>
             <span className='text-sm font-medium'>{helperText}</span>
             <span className='text-xs text-muted-foreground'>
               JPG, PNG, WEBP - max {MAX_FILE_SIZE_MB}MB
@@ -248,13 +258,6 @@ const UploadField: React.FC<UploadFieldProps> = ({
               />
             </div>
           </div>
-        )}
-
-        {!isUploading && uploaded && !invalid && (
-          <p className='mt-2 inline-flex items-center gap-1.5 text-xs text-emerald-600'>
-            <CheckCircle2 className='size-3.5' />
-            {uploadedText}
-          </p>
         )}
       </div>
 
@@ -951,28 +954,27 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
       )}
 
       {hasSubmittedDocuments && (
-        <section className='space-y-3 rounded-2xl border p-4 sm:p-5'>
-          <div>
-            <div>
-              <h4 className='text-sm font-semibold'>
-                {safeT(
-                  'homePage.auth.accountManagement.brokerVerification.submittedDocsTitle',
-                  'Submitted Documents',
-                )}
-              </h4>
-            </div>
+        <section className='space-y-3 rounded-2xl border bg-muted/10 p-4 sm:p-5'>
+          <div className='flex items-center gap-2'>
+            <FileCheck2 className='size-4 text-muted-foreground' />
+            <h4 className='text-sm font-semibold'>
+              {safeT(
+                'homePage.auth.accountManagement.brokerVerification.submittedDocsTitle',
+                'Submitted Documents',
+              )}
+            </h4>
           </div>
 
-          <div className='grid grid-cols-1 gap-3 md:grid-cols-3'>
+          <div className='grid grid-cols-1 gap-3 sm:grid-cols-3'>
             {documents.map((document) => {
               const loadFailed = Boolean(docLoadError[document.key])
 
               return (
                 <div
                   key={document.key}
-                  className='space-y-2 rounded-xl border p-3'
+                  className='space-y-2 rounded-xl border bg-background p-2.5 shadow-sm'
                 >
-                  <p className='text-xs font-medium text-muted-foreground'>
+                  <p className='px-0.5 text-xs font-medium text-muted-foreground'>
                     {document.label}
                   </p>
 
@@ -981,13 +983,13 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
                       href={document.url}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='block overflow-hidden rounded-lg border'
+                      className='group block overflow-hidden rounded-lg border transition-shadow hover:shadow-md'
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={document.url}
                         alt={document.label}
-                        className='h-36 w-full object-cover'
+                        className='h-36 w-full object-cover transition-transform group-hover:scale-105'
                         onError={() =>
                           setDocLoadError((prev) => ({
                             ...prev,
@@ -1027,10 +1029,28 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
         <form onSubmit={handleSubmit} className='space-y-5 sm:space-y-6'>
           <section
             ref={section1Ref}
-            className='space-y-4 rounded-2xl border p-4 sm:p-5'
+            className={cn(
+              'space-y-4 rounded-2xl border p-4 transition-colors sm:p-5',
+              Boolean(mediaIds.certificate) &&
+                'border-emerald-300/60 bg-emerald-50/30 dark:bg-emerald-950/10',
+            )}
           >
-            <div className='flex items-start justify-between gap-3'>
-              <div className='space-y-1'>
+            <div className='flex items-start gap-3'>
+              <div
+                className={cn(
+                  'flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors',
+                  mediaIds.certificate
+                    ? 'bg-emerald-500 text-white'
+                    : 'border border-primary/40 bg-primary/5 text-primary',
+                )}
+              >
+                {mediaIds.certificate ? (
+                  <CheckCircle2 className='size-5' />
+                ) : (
+                  '1'
+                )}
+              </div>
+              <div className='flex-1 space-y-1'>
                 <h4 className='text-base font-semibold'>
                   {t(
                     'homePage.auth.accountManagement.brokerVerification.section1Title',
@@ -1042,9 +1062,6 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
                   )}
                 </p>
               </div>
-              <span className='shrink-0 rounded-full border px-2 py-0.5 text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground'>
-                Step 1
-              </span>
             </div>
 
             <UploadField
@@ -1094,10 +1111,28 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
 
           <section
             ref={section2Ref}
-            className='space-y-4 rounded-2xl border p-4 sm:p-5'
+            className={cn(
+              'space-y-4 rounded-2xl border p-4 transition-colors sm:p-5',
+              Boolean(mediaIds.idFront && mediaIds.idBack) &&
+                'border-emerald-300/60 bg-emerald-50/30 dark:bg-emerald-950/10',
+            )}
           >
-            <div className='flex items-start justify-between gap-3'>
-              <div className='space-y-1'>
+            <div className='flex items-start gap-3'>
+              <div
+                className={cn(
+                  'flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors',
+                  mediaIds.idFront && mediaIds.idBack
+                    ? 'bg-emerald-500 text-white'
+                    : 'border border-primary/40 bg-primary/5 text-primary',
+                )}
+              >
+                {mediaIds.idFront && mediaIds.idBack ? (
+                  <CheckCircle2 className='size-5' />
+                ) : (
+                  '2'
+                )}
+              </div>
+              <div className='flex-1 space-y-1'>
                 <h4 className='text-base font-semibold'>
                   {t(
                     'homePage.auth.accountManagement.brokerVerification.section2Title',
@@ -1109,9 +1144,6 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
                   )}
                 </p>
               </div>
-              <span className='shrink-0 rounded-full border px-2 py-0.5 text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground'>
-                Step 2
-              </span>
             </div>
 
             {!protectedSectionEnabled && (
@@ -1255,7 +1287,7 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
             </p>
           </section>
 
-          <div className='flex justify-end pt-1'>
+          <div className='sticky bottom-0 -mx-4 mt-2 flex justify-end border-t bg-background/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:pt-1 sm:backdrop-blur-none'>
             <Button
               type='submit'
               disabled={

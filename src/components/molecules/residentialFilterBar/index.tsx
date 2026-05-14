@@ -10,13 +10,15 @@ import { useTranslations } from 'next-intl'
 import { BadgeCheck, Filter, MapIcon } from 'lucide-react'
 import Link from 'next/link'
 
-import { LocationSwitch } from '@/components/atoms'
+// Location filter retired — keep imports commented so the feature can be
+// re-enabled in one change without re-discovering the wiring.
+// import { LocationSwitch } from '@/components/atoms'
 import { Switch } from '@/components/atoms/switch'
 import { useRouter } from 'next/router'
 import { ListingFilterRequest, SortKey } from '@/api/types/property.type'
 import { useListContext } from '@/contexts/list/useListContext'
 import ListSearchWithSuggestions from '@/components/molecules/listSearchWithSuggestions'
-import useLocation from '@/hooks/useLocation'
+// import useLocation from '@/hooks/useLocation'
 import {
   navigateToPropertiesWithFilters,
   navigateToPropertiesWithClearedFilters,
@@ -55,7 +57,8 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
     [isOffListings, router],
   )
 
-  const { disableLocation } = useLocation()
+  // Location filter retired.
+  // const { disableLocation } = useLocation()
 
   // Build URL for apply link
   const buildApplyUrl = () => {
@@ -88,8 +91,8 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
 
   const handleReset = () => {
     resetFilters()
-    // Disable location when filters are reset
-    disableLocation()
+    // Location filter retired:
+    // disableLocation()
 
     // Only navigate to /properties if NOT on homepage (no custom onApply handler)
     if (!onApply) {
@@ -117,25 +120,26 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
     [updateFilters],
   )
 
-  const handleLocationChange = useCallback(
-    (userLatitude?: number, userLongitude?: number) => {
-      if (!userLatitude || !userLongitude) {
-        // Clear coordinates from filters when location is disabled
-        updateFilter({
-          userLatitude: undefined,
-          userLongitude: undefined,
-        })
-        disableLocation()
-      } else {
-        // Update filters with new coordinates
-        updateFilter({
-          userLatitude: userLatitude,
-          userLongitude: userLongitude,
-        })
-      }
-    },
-    [updateFilter, disableLocation],
-  )
+  // Location filter retired — kept commented to make re-enabling trivial.
+  // const handleLocationChange = useCallback(
+  //   (userLatitude?: number, userLongitude?: number) => {
+  //     if (!userLatitude || !userLongitude) {
+  //       // Clear coordinates from filters when location is disabled
+  //       updateFilter({
+  //         userLatitude: undefined,
+  //         userLongitude: undefined,
+  //       })
+  //       disableLocation()
+  //     } else {
+  //       // Update filters with new coordinates
+  //       updateFilter({
+  //         userLatitude: userLatitude,
+  //         userLongitude: userLongitude,
+  //       })
+  //     }
+  //   },
+  //   [updateFilter, disableLocation],
+  // )
 
   return (
     <div className='w-full space-y-3'>
@@ -301,12 +305,14 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
                 }
               />
             </div>
+            {/* Location filter retired — hidden from UI on all pages.
             <div className='flex items-center gap-1'>
               <LocationSwitch
                 onLocationChange={handleLocationChange}
                 disabled={false}
               />
             </div>
+            */}
           </div>
         </div>
 

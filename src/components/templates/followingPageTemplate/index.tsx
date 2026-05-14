@@ -398,8 +398,8 @@ const FeedPeopleSidebar: React.FC<FeedPeopleSidebarProps> = ({
                     label={formatName(person, defaultName)}
                     sublabel={
                       isBroker ? (
-                        <span className='inline-flex items-center gap-1 text-2xs font-normal leading-none text-emerald-700 dark:text-emerald-300'>
-                          <BadgeCheck className='h-2.5 w-2.5 shrink-0' />
+                        <span className='inline-flex items-center gap-0.5 text-[10px] font-normal leading-none text-emerald-700 dark:text-emerald-300'>
+                          <BadgeCheck className='h-2 w-2 shrink-0' />
                           {proBrokerLabel}
                         </span>
                       ) : null
