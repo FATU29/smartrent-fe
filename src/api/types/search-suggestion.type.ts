@@ -5,10 +5,36 @@
  * Backend: POST /v1/listings/search-suggestions/click
  */
 
-export type SuggestionType = 'TITLE' | 'LOCATION' | 'POPULAR_QUERY'
+/**
+ * All suggestion sources the backend can emit. Must stay in sync with the
+ * Java `com.smartrent.enums.SuggestionType` enum:
+ *
+ * - `TITLE`           real listing title (navigates to detail when listingId set)
+ * - `LOCATION`        province / district / ward (applies a location filter)
+ * - `POPULAR_QUERY`   popular clicked query (keyword search)
+ * - `TYPO_CORRECTION` local typo / abbreviation dictionary (keyword search)
+ * - `PHONETIC`        similar-sounding match (keyword search)
+ * - `AI_INTENT`       AI-normalized intent phrase (keyword search)
+ */
+export type SuggestionType =
+  | 'TITLE'
+  | 'LOCATION'
+  | 'POPULAR_QUERY'
+  | 'TYPO_CORRECTION'
+  | 'PHONETIC'
+  | 'AI_INTENT'
 
 export interface TitleSuggestionMetadata {
   address?: string
+}
+
+/**
+ * Metadata attached to AI_INTENT / TYPO_CORRECTION / PHONETIC items. The
+ * backend sends a `matchType` tag (e.g. "AI_INTENT", "LOCAL_DICTIONARY")
+ * for telemetry/debugging — the UI treats all three as keyword phrases.
+ */
+export interface IntentSuggestionMetadata {
+  matchType?: string
 }
 
 /**
@@ -41,6 +67,7 @@ export type SuggestionMetadata =
   | TitleSuggestionMetadata
   | LocationSuggestionMetadata
   | PopularQuerySuggestionMetadata
+  | IntentSuggestionMetadata
   | Record<string, unknown>
   | null
 

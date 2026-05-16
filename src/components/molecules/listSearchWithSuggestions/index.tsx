@@ -21,6 +21,9 @@ import {
   Loader2,
   ArrowRight,
   CornerDownLeft,
+  Sparkles,
+  SpellCheck,
+  AudioLines,
 } from 'lucide-react'
 
 import { Input } from '@/components/atoms/input'
@@ -65,18 +68,34 @@ interface ListSearchWithSuggestionsProps {
   onAfterSubmit?: (filters: ListingFilterRequest) => void
 }
 
-const TYPE_ORDER: SuggestionType[] = ['TITLE', 'LOCATION', 'POPULAR_QUERY']
+// Group display order. Mirrors the backend ranking weights (TITLE 1.5 >
+// AI_INTENT 1.15 > LOCATION 1.0 > TYPO 0.95 > PHONETIC 0.9 > POPULAR 0.8)
+// so the most relevant sources sit at the top of the dropdown.
+const TYPE_ORDER: SuggestionType[] = [
+  'TITLE',
+  'AI_INTENT',
+  'LOCATION',
+  'TYPO_CORRECTION',
+  'PHONETIC',
+  'POPULAR_QUERY',
+]
 
 const TYPE_ICON: Record<SuggestionType, React.ElementType> = {
   TITLE: Building2,
   LOCATION: MapPin,
   POPULAR_QUERY: TrendingUp,
+  AI_INTENT: Sparkles,
+  TYPO_CORRECTION: SpellCheck,
+  PHONETIC: AudioLines,
 }
 
 const TYPE_ACCENT: Record<SuggestionType, string> = {
   TITLE: 'text-primary bg-primary/10',
   LOCATION: 'text-emerald-600 bg-emerald-500/10 dark:text-emerald-400',
   POPULAR_QUERY: 'text-amber-600 bg-amber-500/10 dark:text-amber-400',
+  AI_INTENT: 'text-violet-600 bg-violet-500/10 dark:text-violet-400',
+  TYPO_CORRECTION: 'text-sky-600 bg-sky-500/10 dark:text-sky-400',
+  PHONETIC: 'text-rose-600 bg-rose-500/10 dark:text-rose-400',
 }
 
 const isLocationMeta = (
@@ -338,7 +357,10 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   const grouped = useMemo(() => {
     const buckets: Record<SuggestionType, SearchSuggestionItem[]> = {
       TITLE: [],
+      AI_INTENT: [],
       LOCATION: [],
+      TYPO_CORRECTION: [],
+      PHONETIC: [],
       POPULAR_QUERY: [],
     }
     suggestions.forEach((s) => {
@@ -538,7 +560,9 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
         return
       }
 
-      // TITLE without listingId, or POPULAR_QUERY → free-text keyword search.
+      // Everything else is a text phrase → free-text keyword search:
+      // TITLE without listingId, POPULAR_QUERY, and the AI_INTENT /
+      // TYPO_CORRECTION / PHONETIC normalized phrases.
       runKeywordSearch(item.text)
       setIsFocused(false)
     },
