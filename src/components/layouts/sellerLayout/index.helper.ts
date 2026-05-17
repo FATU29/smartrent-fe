@@ -8,6 +8,7 @@ import {
   PieChart,
   Plus,
   Receipt,
+  ReceiptText,
   User,
   Users,
 } from 'lucide-react'
@@ -19,6 +20,7 @@ type SellerNavKey =
   | 'create'
   | 'drafts'
   | 'customers'
+  | 'transactions'
   | 'membership'
   | 'account'
   | 'pricing'
@@ -97,6 +99,17 @@ export const NAV_ITEMS: SellerNavItem[] = [
     showOnMobile: true,
     mobilePlacement: 'normal',
     mobileOrder: 5,
+  },
+  {
+    key: 'transactions',
+    href: SELLER_ROUTES.TRANSACTIONS,
+    icon: ReceiptText,
+    showOnDesktop: true,
+    // Kept off the 5-slot mobile bottom bar (it only renders 4 normal items);
+    // the page itself is fully responsive and reachable via direct link.
+    showOnMobile: false,
+    mobilePlacement: 'normal',
+    mobileOrder: 6,
   },
   {
     key: 'membership',

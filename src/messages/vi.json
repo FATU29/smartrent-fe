@@ -1874,6 +1874,7 @@
     "occupancy": "Tỷ lệ Lấp đầy",
     "performance": "Hiệu suất Bất động sản",
     "seller": {
+      "transactions": "Lịch sử giao dịch",
       "overview": "Tổng quan",
       "listings": "Tin đăng",
       "create": "Đăng tin",
@@ -2261,6 +2262,80 @@
     }
   },
   "seller": {
+    "transactions": {
+      "title": "Lịch sử giao dịch",
+      "subtitle": "Xem lại mọi khoản thanh toán trên tài khoản của bạn",
+      "seoTitle": "Lịch sử giao dịch – Người bán",
+      "seoDescription": "Xem lại, lọc và kiểm tra mọi giao dịch thanh toán SmartRent của bạn",
+      "filters": {
+        "searchPlaceholder": "Tìm mã giao dịch hoặc mã hóa đơn",
+        "status": "Trạng thái",
+        "type": "Loại thanh toán",
+        "allStatuses": "Tất cả trạng thái",
+        "allTypes": "Tất cả loại",
+        "dateFrom": "Từ ngày",
+        "dateTo": "Đến ngày",
+        "dateRange": "Khoảng thời gian",
+        "reset": "Xóa bộ lọc"
+      },
+      "columns": {
+        "transaction": "Giao dịch",
+        "amount": "Số tiền",
+        "method": "Phương thức",
+        "status": "Trạng thái",
+        "room": "Phòng",
+        "landlord": "Chủ nhà",
+        "created": "Tạo lúc",
+        "completed": "Hoàn tất",
+        "actions": "Thao tác"
+      },
+      "actions": {
+        "viewDetails": "Xem chi tiết",
+        "checkStatus": "Kiểm tra trạng thái",
+        "close": "Đóng"
+      },
+      "empty": {
+        "none": "Chưa có giao dịch nào.",
+        "filtered": "Không có giao dịch nào khớp với bộ lọc."
+      },
+      "states": {
+        "loadError": "Không tải được lịch sử giao dịch.",
+        "detailError": "Không tìm thấy giao dịch."
+      },
+      "detail": {
+        "title": "Chi tiết giao dịch",
+        "transactionCode": "Mã giao dịch",
+        "gateway": "Cổng thanh toán",
+        "gatewayCode": "Mã cổng thanh toán",
+        "paymentMethod": "Phương thức thanh toán",
+        "paymentType": "Loại thanh toán",
+        "amount": "Số tiền",
+        "status": "Trạng thái",
+        "created": "Tạo lúc",
+        "completed": "Hoàn tất",
+        "invoice": "Hóa đơn",
+        "room": "Phòng",
+        "landlord": "Chủ nhà",
+        "orderInfo": "Thông tin đơn",
+        "failureReason": "Lý do thất bại",
+        "timeline": "Tiến trình",
+        "noTimeline": "Chưa có sự kiện nào."
+      },
+      "types": {
+        "ROOM_RENT": "Tiền thuê phòng",
+        "DEPOSIT": "Tiền cọc",
+        "MONTHLY_INVOICE": "Hóa đơn hàng tháng",
+        "UTILITY_BILL": "Hóa đơn tiện ích",
+        "SERVICE_FEE": "Phí dịch vụ",
+        "MEMBERSHIP_PURCHASE": "Mua gói hội viên",
+        "MEMBERSHIP_UPGRADE": "Nâng cấp hội viên",
+        "POST_FEE": "Phí đăng tin",
+        "PUSH_FEE": "Phí đẩy tin",
+        "REPOST_FEE": "Phí đăng lại",
+        "WALLET_TOPUP": "Nạp ví",
+        "REFUND": "Hoàn tiền"
+      }
+    },
     "dashboard": {
       "title": "Bảng điều khiển",
       "description": "Tổng quan về gói hội viên và hiệu suất tin đăng của bạn",

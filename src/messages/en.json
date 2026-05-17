@@ -2052,6 +2052,7 @@
     "occupancy": "Occupancy Rate",
     "performance": "Property Performance",
     "seller": {
+      "transactions": "Transactions",
       "overview": "Overview",
       "listings": "Listings",
       "create": "Create",
@@ -2260,6 +2261,80 @@
     }
   },
   "seller": {
+    "transactions": {
+      "title": "Transaction History",
+      "subtitle": "Review every payment made on your account",
+      "seoTitle": "Transaction History – Seller",
+      "seoDescription": "Review, filter and inspect all of your SmartRent payments",
+      "filters": {
+        "searchPlaceholder": "Search transaction or invoice code",
+        "status": "Status",
+        "type": "Payment type",
+        "allStatuses": "All statuses",
+        "allTypes": "All types",
+        "dateFrom": "From date",
+        "dateTo": "To date",
+        "dateRange": "Date range",
+        "reset": "Reset filters"
+      },
+      "columns": {
+        "transaction": "Transaction",
+        "amount": "Amount",
+        "method": "Method",
+        "status": "Status",
+        "room": "Room",
+        "landlord": "Landlord",
+        "created": "Created",
+        "completed": "Completed",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewDetails": "View details",
+        "checkStatus": "Check status",
+        "close": "Close"
+      },
+      "empty": {
+        "none": "No payments yet.",
+        "filtered": "No transactions match your filters."
+      },
+      "states": {
+        "loadError": "Failed to load transactions.",
+        "detailError": "Transaction not found."
+      },
+      "detail": {
+        "title": "Transaction detail",
+        "transactionCode": "Transaction code",
+        "gateway": "Gateway",
+        "gatewayCode": "Gateway code",
+        "paymentMethod": "Payment method",
+        "paymentType": "Payment type",
+        "amount": "Amount",
+        "status": "Status",
+        "created": "Created",
+        "completed": "Completed",
+        "invoice": "Invoice",
+        "room": "Room",
+        "landlord": "Landlord",
+        "orderInfo": "Order info",
+        "failureReason": "Failure reason",
+        "timeline": "Timeline",
+        "noTimeline": "No timeline events yet."
+      },
+      "types": {
+        "ROOM_RENT": "Room rent",
+        "DEPOSIT": "Deposit",
+        "MONTHLY_INVOICE": "Monthly invoice",
+        "UTILITY_BILL": "Utility bill",
+        "SERVICE_FEE": "Service fee",
+        "MEMBERSHIP_PURCHASE": "Membership purchase",
+        "MEMBERSHIP_UPGRADE": "Membership upgrade",
+        "POST_FEE": "Listing post fee",
+        "PUSH_FEE": "Listing push fee",
+        "REPOST_FEE": "Repost fee",
+        "WALLET_TOPUP": "Wallet top-up",
+        "REFUND": "Refund"
+      }
+    },
     "dashboard": {
       "title": "Dashboard",
       "description": "Overview of your membership and listing performance",

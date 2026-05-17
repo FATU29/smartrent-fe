@@ -25,3 +25,20 @@ export const formatDateWithLocale = (
   if (!dateString) return ''
   return new Date(dateString).toLocaleDateString(locale)
 }
+
+/**
+ * Format an ISO date-time string to a localized short date + time.
+ * @param dateString - ISO date string or undefined
+ * @param locale - Locale string (default: 'vi-VN')
+ * @returns Formatted date-time string, or '' when no input
+ */
+export const formatDateTimeWithLocale = (
+  dateString?: string,
+  locale: string = 'vi-VN',
+): string => {
+  if (!dateString) return ''
+  return new Date(dateString).toLocaleString(locale, {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  })
+}

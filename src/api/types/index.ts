@@ -34,6 +34,7 @@ export type {
 } from './membership.type'
 export * from './pagination.type'
 export * from './payment.type'
+export * from './customer-transaction.type'
 export * from './phone-click-detail.type'
 export * from './push.type'
 export * from './report.type'

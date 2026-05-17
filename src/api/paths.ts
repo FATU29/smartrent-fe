@@ -176,6 +176,13 @@ export const PATHS = {
     CALLBACK: '/v1/payments/callback/:provider',
   },
 
+  // Current-user (customer) transaction history. User is derived from the JWT
+  // principal on the backend — never pass a userId from the frontend here.
+  ME: {
+    TRANSACTIONS: '/v1/me/transactions',
+    TRANSACTION_DETAIL: '/v1/me/transactions/:transactionId',
+  },
+
   // Report endpoints
   REPORT: {
     REASONS: '/v1/listings/reports/reasons',
