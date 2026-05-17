@@ -2268,6 +2268,7 @@
       "seoTitle": "Transaction History – Seller",
       "seoDescription": "Review, filter and inspect all of your SmartRent payments",
       "filters": {
+        "search": "Search",
         "searchPlaceholder": "Search transaction or invoice code",
         "status": "Status",
         "type": "Payment type",
@@ -2276,6 +2277,7 @@
         "dateFrom": "From date",
         "dateTo": "To date",
         "dateRange": "Date range",
+        "dateRangeHint": "Pick a date range",
         "reset": "Reset filters"
       },
       "columns": {

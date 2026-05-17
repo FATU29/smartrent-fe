@@ -2269,6 +2269,7 @@
       "seoTitle": "Lịch sử giao dịch – Người bán",
       "seoDescription": "Xem lại, lọc và kiểm tra mọi giao dịch thanh toán SmartRent của bạn",
       "filters": {
+        "search": "Tìm kiếm",
         "searchPlaceholder": "Tìm mã giao dịch hoặc mã hóa đơn",
         "status": "Trạng thái",
         "type": "Loại thanh toán",
@@ -2277,6 +2278,7 @@
         "dateFrom": "Từ ngày",
         "dateTo": "Đến ngày",
         "dateRange": "Khoảng thời gian",
+        "dateRangeHint": "Chọn khoảng ngày",
         "reset": "Xóa bộ lọc"
       },
       "columns": {

@@ -137,6 +137,41 @@ const DetailBody: React.FC<{ detail: CustomerTransactionDetail }> = ({
   )
 }
 
+const SKELETON_ROWS = 8
+
+/** Loading placeholder that mirrors {@link DetailBody} so the dialog keeps a
+ * stable, comfortably-sized layout instead of collapsing to a few thin bars. */
+const DetailSkeleton: React.FC = () => (
+  <div className='mt-2'>
+    <dl>
+      {Array.from({ length: SKELETON_ROWS }).map((_, i) => (
+        <div
+          key={i}
+          className='grid grid-cols-[7rem_1fr] items-center gap-3 border-b py-2.5 last:border-0'
+        >
+          <Skeleton className='h-4 w-20' />
+          <Skeleton className='h-4 w-full max-w-[220px]' />
+        </div>
+      ))}
+    </dl>
+
+    <div className='mt-5 space-y-3'>
+      <Skeleton className='h-4 w-24' />
+      <div className='space-y-3 border-l pl-4'>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className='space-y-1.5'>
+            <div className='flex items-center gap-2'>
+              <Skeleton className='h-5 w-24 rounded-full' />
+              <Skeleton className='h-3 w-28' />
+            </div>
+            <Skeleton className='h-3 w-2/3' />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)
+
 export const TransactionDetailDialog: React.FC<
   TransactionDetailDialogProps
 > = ({ transactionId, open, onOpenChange }) => {
@@ -146,18 +181,12 @@ export const TransactionDetailDialog: React.FC<
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-h-[85vh] overflow-y-auto sm:max-w-lg'>
+      <DialogContent className='max-h-[85vh] overflow-y-auto sm:max-w-xl'>
         <DialogHeader>
           <DialogTitle>{t('detail.title')}</DialogTitle>
         </DialogHeader>
 
-        {isLoading && (
-          <div className='space-y-2'>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className='h-6 w-full' />
-            ))}
-          </div>
-        )}
+        {isLoading && <DetailSkeleton />}
 
         {!isLoading && isError && (
           <div className='py-6 text-center'>
