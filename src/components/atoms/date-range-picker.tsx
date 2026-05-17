@@ -5,6 +5,8 @@ import {
   Range as RDRRange,
 } from 'react-date-range'
 import { addDays, format, isBefore } from 'date-fns'
+import { CalendarRange } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { Button } from './button'
 import { Popover, PopoverTrigger, PopoverContent } from './popover'
@@ -15,7 +17,11 @@ export interface DateRangePickerProps {
   from?: string
   to?: string
   onChange: (range: { from?: string; to?: string }) => void
-  labels: { from: string; to: string; placeholder: string }
+  /**
+   * Empty-state text for the start/end buttons. The caller is expected to
+   * render its own field label above the picker, so this is just a hint.
+   */
+  placeholder?: string
   className?: string
 }
 
@@ -27,9 +33,10 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   from,
   to,
   onChange,
-  labels,
+  placeholder = '',
   className,
 }) => {
+  const t = useTranslations('components.dateRangePicker')
   const [open, setOpen] = React.useState(false)
   const [activeField, setActiveField] = React.useState<'from' | 'to' | null>(
     null,
@@ -104,7 +111,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     onChange({ from: undefined, to: undefined })
   }
 
-  const renderBtn = (date?: Date, label?: string, field?: 'from' | 'to') => (
+  const renderBtn = (date?: Date, field?: 'from' | 'to') => (
     <Button
       type='button'
       variant='outline'
@@ -113,11 +120,17 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
         setOpen(true)
       }}
       className={cn(
-        'h-12 justify-start rounded-full px-5 font-normal w-full text-left',
+        'h-12 justify-start gap-2 rounded-full px-5 font-normal w-full text-left',
         !date && 'text-muted-foreground',
       )}
     >
-      {date ? format(date, 'dd/MM/yyyy') : label || labels.placeholder}
+      <CalendarRange
+        className='size-4 shrink-0 opacity-70'
+        aria-hidden='true'
+      />
+      <span className='truncate'>
+        {date ? format(date, 'dd/MM/yyyy') : placeholder}
+      </span>
     </Button>
   )
 
@@ -126,7 +139,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
       <div className='grid grid-cols-2 gap-3'>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            {renderBtn(fromDate || partialFrom, labels.from, 'from')}
+            {renderBtn(fromDate || partialFrom, 'from')}
           </PopoverTrigger>
           <PopoverContent className='p-2 w-auto' align='start'>
             <InnerCalendar range={range} onSelect={handleSelect} />
@@ -138,22 +151,17 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
                 onClick={reset}
                 className='rounded-full px-4'
               >
-                Reset
+                {t('reset')}
               </Button>
               {partialFrom && !toDate && (
                 <span className='text-xs text-muted-foreground py-1 px-2'>
-                  Chọn ngày kết thúc…
+                  {t('selectEndDate')}
                 </span>
               )}
             </div>
           </PopoverContent>
         </Popover>
-        {renderBtn(toDate, labels.to, 'to')}
-      </div>
-      <div className='text-xs text-muted-foreground'>
-        {fromDate && toDate
-          ? `${format(fromDate, 'dd/MM/yyyy')} – ${format(toDate, 'dd/MM/yyyy')}`
-          : labels.placeholder}
+        {renderBtn(toDate, 'to')}
       </div>
     </div>
   )
