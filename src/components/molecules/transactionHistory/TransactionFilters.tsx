@@ -57,11 +57,11 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
 
   return (
     <section className='rounded-xl border bg-card p-card shadow-xs'>
-      <div className='flex flex-wrap items-start gap-row'>
-        {/* Search — compact */}
+      <div className='flex flex-col gap-row'>
+        {/* Search — full width so the whole placeholder is visible */}
         <div className={FIELD}>
           <span className={FIELD_LABEL}>{t('search')}</span>
-          <div className='relative w-full sm:w-56'>
+          <div className='relative w-full'>
             <Search
               className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground'
               aria-hidden='true'
@@ -70,95 +70,99 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t('searchPlaceholder')}
-              className='h-9 pl-9'
+              className='h-9 w-full pl-9'
               aria-label={t('search')}
             />
           </div>
         </div>
 
-        {/* Status */}
-        <div className={FIELD}>
-          <span className={FIELD_LABEL}>{t('status')}</span>
-          <Select
-            value={value.status}
-            onValueChange={(status) => onChange({ status })}
-          >
-            <SelectTrigger
-              className='h-9 w-full sm:w-44'
-              aria-label={t('status')}
+        {/* Status / Payment type / Date range — below the search bar */}
+        <div className='flex flex-wrap items-start gap-row'>
+          <div className={FIELD}>
+            <span className={FIELD_LABEL}>{t('status')}</span>
+            <Select
+              value={value.status}
+              onValueChange={(status) => onChange({ status })}
             >
-              <SelectValue placeholder={t('allStatuses')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_VALUE}>{t('allStatuses')}</SelectItem>
-              {TRANSACTION_STATUS_FILTERS.map((status) => (
-                <SelectItem key={status} value={status}>
-                  {tStatus(status.toLowerCase())}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Payment type */}
-        <div className={FIELD}>
-          <span className={FIELD_LABEL}>{t('type')}</span>
-          <Select
-            value={value.type}
-            onValueChange={(type) => onChange({ type })}
-          >
-            <SelectTrigger
-              className='h-9 w-full sm:w-52'
-              aria-label={t('type')}
-            >
-              <SelectValue placeholder={t('allTypes')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_VALUE}>{t('allTypes')}</SelectItem>
-              {TRANSACTION_TYPE_FILTERS.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {typeLabel(type)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Date range — same row; label sits on top, picker keeps its hint */}
-        <div className={FIELD}>
-          <span className={FIELD_LABEL}>{t('dateRange')}</span>
-          <DateRangePicker
-            from={value.fromDate}
-            to={value.toDate}
-            onChange={({ from, to }) =>
-              onChange({ fromDate: from, toDate: to })
-            }
-            labels={{
-              from: t('dateFrom'),
-              to: t('dateTo'),
-              placeholder: t('dateRangeHint'),
-            }}
-            className='w-full sm:w-[280px]'
-          />
-        </div>
-
-        {hasActiveFilters && (
-          <div className={`${FIELD} ml-auto`}>
-            <span className={`${FIELD_LABEL} invisible`} aria-hidden='true'>
-              {t('reset')}
-            </span>
-            <Button
-              type='button'
-              variant='outline'
-              size='sm'
-              onClick={onReset}
-              className='h-9 gap-1.5 text-muted-foreground hover:text-foreground'
-            >
-              <X className='size-4' aria-hidden='true' />
-              {t('reset')}
-            </Button>
+              <SelectTrigger
+                className='h-9 w-full sm:w-44'
+                aria-label={t('status')}
+              >
+                <SelectValue placeholder={t('allStatuses')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_VALUE}>{t('allStatuses')}</SelectItem>
+                {TRANSACTION_STATUS_FILTERS.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {tStatus(status.toLowerCase())}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        )}
+
+          <div className={FIELD}>
+            <span className={FIELD_LABEL}>{t('type')}</span>
+            <Select
+              value={value.type}
+              onValueChange={(type) => onChange({ type })}
+            >
+              <SelectTrigger
+                className='h-9 w-full sm:w-52'
+                aria-label={t('type')}
+              >
+                <SelectValue placeholder={t('allTypes')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_VALUE}>{t('allTypes')}</SelectItem>
+                {TRANSACTION_TYPE_FILTERS.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {typeLabel(type)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Date range — no label (the picker carries its own caption);
+              an invisible spacer keeps it aligned with the selects. */}
+          <div className={FIELD}>
+            <span className={`${FIELD_LABEL} invisible`} aria-hidden='true'>
+              {t('dateRange')}
+            </span>
+            <DateRangePicker
+              from={value.fromDate}
+              to={value.toDate}
+              onChange={({ from, to }) =>
+                onChange({ fromDate: from, toDate: to })
+              }
+              labels={{
+                from: t('dateFrom'),
+                to: t('dateTo'),
+                placeholder: t('dateRangeHint'),
+              }}
+              className='w-full sm:w-[280px]'
+            />
+          </div>
+
+          {hasActiveFilters && (
+            <div className={`${FIELD} ml-auto`}>
+              <span className={`${FIELD_LABEL} invisible`} aria-hidden='true'>
+                {t('reset')}
+              </span>
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                onClick={onReset}
+                className='h-9 gap-1.5 text-muted-foreground hover:text-foreground'
+              >
+                <X className='size-4' aria-hidden='true' />
+                {t('reset')}
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )
