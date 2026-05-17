@@ -170,7 +170,7 @@
       "poweredBy": "Smart suggestions",
       "groups": {
         "TITLE": "Listings",
-        "AI_INTENT": "AI suggestions",
+        "AI_INTENT": "Contextual suggestions",
         "LOCATION": "Locations",
         "TYPO_CORRECTION": "Did you mean",
         "PHONETIC": "Sounds like",

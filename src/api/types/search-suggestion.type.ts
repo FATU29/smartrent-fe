@@ -48,6 +48,13 @@ export interface AppliedSearchFilters {
   /** Raw location phrase, present when it could NOT be resolved to IDs. */
   locationText?: string
   amenities?: string[]
+  /**
+   * Canonical amenity ids resolved by the backend against the live
+   * `amenities` table (NOT the AI service's drift-prone placeholders). When
+   * present, apply these as the structured `amenityIds` filter instead of
+   * folding the amenity display text into the keyword.
+   */
+  amenityIds?: number[]
   keyword?: string
   legacyProvinceId?: number
   legacyDistrictId?: number
