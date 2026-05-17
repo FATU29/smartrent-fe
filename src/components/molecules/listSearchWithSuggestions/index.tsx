@@ -35,8 +35,10 @@ import {
 } from '@/components/atoms/popover'
 import useSearchSuggestions from '@/hooks/useSearchSuggestions'
 import { useListContext } from '@/contexts/list/useListContext'
-import { ListingFilterRequest } from '@/api/types/property.type'
+import { ListingFilterRequest, PropertyType } from '@/api/types/property.type'
 import type {
+  AppliedSearchFilters,
+  IntentSuggestionMetadata,
   LocationSuggestionMetadata,
   PopularQuerySuggestionMetadata,
   SearchSuggestionItem,
@@ -68,13 +70,15 @@ interface ListSearchWithSuggestionsProps {
   onAfterSubmit?: (filters: ListingFilterRequest) => void
 }
 
-// Group display order. Mirrors the backend ranking weights (TITLE 1.5 >
-// AI_INTENT 1.15 > LOCATION 1.0 > TYPO 0.95 > PHONETIC 0.9 > POPULAR 0.8)
-// so the most relevant sources sit at the top of the dropdown.
+// Group display order. The backend ranks by relevance weight (TITLE 1.5 >
+// AI_INTENT 1.15 > LOCATION 1.0 > TYPO 0.95 > PHONETIC 0.9 > POPULAR 0.8),
+// but in the dropdown we intentionally float AI_INTENT and LOCATION above
+// TITLE: a city / intent match is a better first hit for most searches than
+// a single listing title, so users see "where" before individual postings.
 const TYPE_ORDER: SuggestionType[] = [
-  'TITLE',
   'AI_INTENT',
   'LOCATION',
+  'TITLE',
   'TYPO_CORRECTION',
   'PHONETIC',
   'POPULAR_QUERY',
@@ -114,6 +118,140 @@ const isPopularMeta = (
 ): meta is PopularQuerySuggestionMetadata =>
   !!meta &&
   typeof (meta as PopularQuerySuggestionMetadata).hitCount === 'number'
+
+/**
+ * Filters that scope results to a place picked from a LOCATION suggestion.
+ * Running a free-text search or clearing the box must drop all of them
+ * together: the input text is the only visible representation of an applied
+ * location, so leaving any of these set would silently keep results filtered
+ * with no UI cue. Spreading this also prevents a stale new-structure
+ * `provinceCodes` from being sent alongside a legacy `provinceId`
+ * (mapFrontendToBackendRequest forwards both when `isLegacy !== false`).
+ */
+const LOCATION_FILTER_RESET: Partial<ListingFilterRequest> = {
+  provinceId: undefined,
+  provinceCodes: undefined,
+  districtId: undefined,
+  wardId: undefined,
+  isLegacy: undefined,
+}
+
+/**
+ * A free-text submit is an authoritative new intent: it must clear not just
+ * location but every dimension the backend query parser owns
+ * (`productType`, price) so the filter panel reflects the *new* query and
+ * doesn't carry a parser-applied value from a previous search. Manual panel
+ * choices the parser never sets (category, area, bedrooms, amenities, broker,
+ * sort) are intentionally preserved.
+ */
+const FREE_TEXT_FILTER_RESET: Partial<ListingFilterRequest> = {
+  ...LOCATION_FILTER_RESET,
+  productType: undefined,
+  minPrice: undefined,
+  maxPrice: undefined,
+}
+
+const FE_PRODUCT_TYPES: readonly PropertyType[] = [
+  'APARTMENT',
+  'HOUSE',
+  'ROOM',
+  'STUDIO',
+]
+
+const toFiniteNumber = (value: unknown): number | undefined => {
+  const n = typeof value === 'number' ? value : Number(value)
+  return Number.isFinite(n) ? n : undefined
+}
+
+/**
+ * Map the backend-parsed {@link AppliedSearchFilters} onto a filter-context
+ * patch so a free-text / AI_INTENT submit reflects the parsed intent in the
+ * UI (price range, product type, location) instead of only stuffing the raw
+ * text into `keyword`.
+ *
+ * - `rawInput` is the fallback keyword when nothing structured was parsed.
+ * - `listingType` is dropped (no slot in `ListingFilterRequest`) and a
+ *   `productType` outside the FE union (e.g. OFFICE) is folded into the
+ *   keyword so recall via FULLTEXT is preserved.
+ * - Unresolved `locationText` and `amenities` (no FE id mapping) are folded
+ *   into the keyword for the same reason.
+ */
+const appliedFiltersToPatch = (
+  af: AppliedSearchFilters | null | undefined,
+  rawInput: string,
+): Partial<ListingFilterRequest> => {
+  const raw = rawInput.trim()
+  if (!af) {
+    return { keyword: raw, ...LOCATION_FILTER_RESET, page: 1 }
+  }
+
+  const patch: Partial<ListingFilterRequest> = {
+    ...FREE_TEXT_FILTER_RESET,
+    page: 1,
+  }
+  const keywordParts: string[] = []
+
+  if (
+    typeof af.productType === 'string' &&
+    (FE_PRODUCT_TYPES as readonly string[]).includes(af.productType)
+  ) {
+    patch.productType = af.productType as PropertyType
+  } else if (typeof af.productType === 'string' && af.productType) {
+    keywordParts.push(af.productType)
+  }
+
+  const minPrice = toFiniteNumber(af.minPrice)
+  if (minPrice !== undefined) patch.minPrice = minPrice
+  const maxPrice = toFiniteNumber(af.maxPrice)
+  if (maxPrice !== undefined) patch.maxPrice = maxPrice
+
+  const legacyProvinceId = toFiniteNumber(af.legacyProvinceId)
+  if (legacyProvinceId !== undefined) {
+    patch.isLegacy = true
+    patch.provinceId = legacyProvinceId
+    const legacyDistrictId = toFiniteNumber(af.legacyDistrictId)
+    if (legacyDistrictId !== undefined) patch.districtId = legacyDistrictId
+    const legacyWardId = toFiniteNumber(af.legacyWardId)
+    if (legacyWardId !== undefined) patch.wardId = legacyWardId
+  }
+
+  if (af.keyword && af.keyword.trim()) keywordParts.push(af.keyword.trim())
+  // Only fold the location phrase into the keyword when it did NOT resolve to
+  // a structured location filter — otherwise it would double-filter.
+  if (
+    legacyProvinceId === undefined &&
+    af.locationText &&
+    af.locationText.trim()
+  ) {
+    keywordParts.push(af.locationText.trim())
+  }
+  if (Array.isArray(af.amenities) && af.amenities.length > 0) {
+    keywordParts.push(af.amenities.join(' '))
+  }
+
+  const hasStructured =
+    patch.productType !== undefined ||
+    patch.minPrice !== undefined ||
+    patch.maxPrice !== undefined ||
+    legacyProvinceId !== undefined
+  const keyword = keywordParts.join(' ').trim()
+  // Never run an empty search: fall back to the raw input only when neither a
+  // structured filter nor a residual keyword was extracted.
+  patch.keyword = keyword || (hasStructured ? '' : raw)
+
+  return patch
+}
+
+/**
+ * Extract the parsed filters an AI_INTENT suggestion carries in its metadata
+ * (the backend synthesizes these with `matchType === "PARSED_QUERY"`).
+ */
+const intentAppliedFilters = (
+  meta: SearchSuggestionItem['metadata'],
+): AppliedSearchFilters | null => {
+  const af = (meta as IntentSuggestionMetadata | null)?.appliedFilters
+  return af && typeof af === 'object' ? af : null
+}
 
 /**
  * Highlight occurrences of `query` (case-insensitive) inside `text`.
@@ -340,6 +478,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
 
   const {
     suggestions,
+    appliedFilters,
     isLoading: isSuggestLoading,
     recordClick,
     hasFetched,
@@ -469,13 +608,39 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       // left over from a prior pick.
       submitWithPatch({
         keyword: next,
-        provinceId: undefined,
-        provinceCodes: undefined,
-        districtId: undefined,
-        wardId: undefined,
-        isLegacy: undefined,
+        ...LOCATION_FILTER_RESET,
         page: 1,
       })
+    },
+    [submitWithPatch],
+  )
+
+  /**
+   * Free-text submit (Enter / Search button / "Search for X" row with no
+   * suggestion picked). Reflects the backend-parsed structured filters
+   * (`appliedFilters` for the latest resolved query) in the filter panel —
+   * price range, product type, resolved location — instead of only setting
+   * `keyword`. Falls back to a plain keyword search when nothing was parsed.
+   */
+  const runFreeTextSearch = useCallback(() => {
+    // Keep the box showing what the user typed; the parsed filters surface
+    // in the panel, not the input (mirrors the runLocationSearch pattern).
+    setInputValue(inputValue.trim())
+    submitWithPatch(appliedFiltersToPatch(appliedFilters, inputValue))
+  }, [appliedFilters, inputValue, submitWithPatch])
+
+  /**
+   * AI_INTENT pick. Synthesized intent items carry their own parsed filters
+   * in `metadata.appliedFilters` — apply those so the panel auto-fills.
+   * AI_INTENT phrases from the AI server have no parsed filters; the mapper
+   * then degrades to a plain keyword search on the phrase (prior behavior).
+   */
+  const runIntentSearch = useCallback(
+    (item: SearchSuggestionItem) => {
+      setInputValue(item.text)
+      submitWithPatch(
+        appliedFiltersToPatch(intentAppliedFilters(item.metadata), item.text),
+      )
     },
     [submitWithPatch],
   )
@@ -509,14 +674,14 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
 
       const matchType = meta.matchType ?? 'PROVINCE'
       const patch: Partial<ListingFilterRequest> = {
+        // Reset every location field first (incl. stale provinceCodes and a
+        // narrower district/ward from a previous pick), then re-add the
+        // legacy scoping for this selection. The conditional sets below
+        // re-add district/ward for finer granularity.
+        ...LOCATION_FILTER_RESET,
         keyword: undefined,
         isLegacy: true,
         provinceId: meta.legacyProvinceId,
-        // Always reset district/ward; the conditional sets below re-add them
-        // for finer granularity. This avoids carrying stale narrower scoping
-        // from a previous pick when the user now selects a coarser one.
-        districtId: undefined,
-        wardId: undefined,
         page: 1,
       }
 
@@ -560,13 +725,21 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
         return
       }
 
+      // AI_INTENT carries parsed filters → auto-fill the filter panel
+      // instead of treating the phrase as a plain keyword.
+      if (item.type === 'AI_INTENT') {
+        runIntentSearch(item)
+        setIsFocused(false)
+        return
+      }
+
       // Everything else is a text phrase → free-text keyword search:
-      // TITLE without listingId, POPULAR_QUERY, and the AI_INTENT /
+      // TITLE without listingId, POPULAR_QUERY, and the
       // TYPO_CORRECTION / PHONETIC normalized phrases.
       runKeywordSearch(item.text)
       setIsFocused(false)
     },
-    [recordClick, router, runKeywordSearch, runLocationSearch],
+    [recordClick, router, runKeywordSearch, runLocationSearch, runIntentSearch],
   )
 
   const selectFlatRow = useCallback(
@@ -574,13 +747,13 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       const row = flatRows[idx]
       if (!row) return
       if (row.kind === 'run-search') {
-        runKeywordSearch(inputValue)
+        runFreeTextSearch()
         setIsFocused(false)
         return
       }
       handleSelect(row.item, row.rank)
     },
-    [flatRows, inputValue, handleSelect, runKeywordSearch],
+    [flatRows, handleSelect, runFreeTextSearch],
   )
 
   /**
@@ -596,7 +769,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       return
     }
     if (inputValue.trim().length >= 2) {
-      runKeywordSearch(inputValue)
+      runFreeTextSearch()
       setIsFocused(false)
     }
   }, [
@@ -605,7 +778,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
     highlightIndex,
     selectFlatRow,
     inputValue,
-    runKeywordSearch,
+    runFreeTextSearch,
   ])
 
   const handleKeyDown = useCallback(
@@ -637,7 +810,11 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
 
   const handleClear = useCallback(() => {
     setInputValue('')
-    updateFilters({ keyword: '', page: 1 })
+    // Clearing the box must also drop any location scoping a prior LOCATION
+    // pick applied — the input text is its only visible cue, so leaving
+    // province/district/ward/isLegacy set would keep results filtered behind
+    // an empty-looking search box (mirrors runKeywordSearch's reset).
+    updateFilters({ keyword: '', ...LOCATION_FILTER_RESET, page: 1 })
   }, [updateFilters])
 
   const showClearButton = inputValue.length > 0
@@ -861,7 +1038,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
               active={highlightIndex === 0}
               onMouseEnter={() => setHighlightIndex(0)}
               onSelect={() => {
-                runKeywordSearch(inputValue)
+                runFreeTextSearch()
                 setIsFocused(false)
               }}
               rowId={optionId(0)}

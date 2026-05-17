@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SearchSuggestionService } from '@/api/services/search-suggestion.service'
 import type {
+  AppliedSearchFilters,
   SearchSuggestionItem,
   SearchSuggestionClickRequest,
 } from '@/api/types/search-suggestion.type'
@@ -17,6 +18,11 @@ interface UseSearchSuggestionsParams {
 interface UseSearchSuggestionsResult {
   suggestions: SearchSuggestionItem[]
   impressionId: number
+  /**
+   * Structured filters the backend parsed from the latest resolved query,
+   * or null when nothing was parsed. Apply on free-text submit.
+   */
+  appliedFilters: AppliedSearchFilters | null
   isLoading: boolean
   hasFetched: boolean
   reset: () => void
@@ -44,6 +50,8 @@ const useSearchSuggestions = ({
 }: UseSearchSuggestionsParams): UseSearchSuggestionsResult => {
   const [suggestions, setSuggestions] = useState<SearchSuggestionItem[]>([])
   const [impressionId, setImpressionId] = useState(0)
+  const [appliedFilters, setAppliedFilters] =
+    useState<AppliedSearchFilters | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [hasFetched, setHasFetched] = useState(false)
 
@@ -54,6 +62,7 @@ const useSearchSuggestions = ({
     requestSeqRef.current += 1
     setSuggestions([])
     setImpressionId(0)
+    setAppliedFilters(null)
     setIsLoading(false)
     setHasFetched(false)
   }, [])
@@ -70,6 +79,7 @@ const useSearchSuggestions = ({
       requestSeqRef.current += 1
       setSuggestions([])
       setImpressionId(0)
+      setAppliedFilters(null)
       setIsLoading(false)
       setHasFetched(false)
       return
@@ -92,14 +102,17 @@ const useSearchSuggestions = ({
         if (res.success && res.data) {
           setSuggestions(res.data.suggestions ?? [])
           setImpressionId(res.data.impressionId ?? 0)
+          setAppliedFilters(res.data.appliedFilters ?? null)
         } else {
           setSuggestions([])
           setImpressionId(0)
+          setAppliedFilters(null)
         }
       } catch {
         if (seq !== requestSeqRef.current) return
         setSuggestions([])
         setImpressionId(0)
+        setAppliedFilters(null)
       } finally {
         if (seq === requestSeqRef.current) {
           setIsLoading(false)
@@ -129,6 +142,7 @@ const useSearchSuggestions = ({
   return {
     suggestions,
     impressionId,
+    appliedFilters,
     isLoading,
     hasFetched,
     reset,

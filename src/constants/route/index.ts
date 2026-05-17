@@ -4,6 +4,7 @@ export const SELLER_ROUTES = {
   CREATE: '/seller/create-post',
   DRAFTS: '/seller/drafts',
   CUSTOMERS: '/seller/customers',
+  TRANSACTIONS: '/seller/transactions',
   MEMBERSHIP: '/sellernet/membership/register',
   ACCOUNT: '/seller/account',
 } as const
