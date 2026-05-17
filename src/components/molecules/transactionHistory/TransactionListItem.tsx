@@ -35,11 +35,13 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = ({
       <div className='flex items-start justify-between gap-3'>
         <div className='min-w-0'>
           <Typography variant='small' className='font-semibold truncate'>
-            {item.transactionCode}
-          </Typography>
-          <Typography variant='caption' as='span' className='block'>
             {typeLabel(item.paymentType)}
           </Typography>
+          {item.invoice?.invoiceCode && (
+            <Typography variant='caption' as='span' className='block truncate'>
+              {item.invoice.invoiceCode}
+            </Typography>
+          )}
         </div>
         <PaymentStatusBadge status={item.status} />
       </div>
@@ -61,12 +63,6 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = ({
             <dd className='truncate text-foreground'>
               {item.room.roomName || item.room.roomCode}
             </dd>
-          </>
-        ) : null}
-        {item.invoice?.invoiceCode ? (
-          <>
-            <dt>{t('transaction')}</dt>
-            <dd className='truncate'>{item.invoice.invoiceCode}</dd>
           </>
         ) : null}
         <dt>{t('created')}</dt>

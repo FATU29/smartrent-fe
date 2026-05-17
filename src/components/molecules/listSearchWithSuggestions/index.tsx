@@ -36,6 +36,7 @@ import {
 import useSearchSuggestions from '@/hooks/useSearchSuggestions'
 import { useListContext } from '@/contexts/list/useListContext'
 import { ListingFilterRequest, PropertyType } from '@/api/types/property.type'
+import { PUBLIC_ROUTES } from '@/constants/route'
 import type {
   AppliedSearchFilters,
   IntentSuggestionMetadata,
@@ -65,9 +66,12 @@ interface ListSearchWithSuggestionsProps {
    * the filter context has been updated. Receives the post-update filter
    * snapshot — pages that need to navigate (e.g. homepage → /properties)
    * use this rather than reading stale `filters` from the surrounding
-   * useListContext after `updateFilters`.
+   * useListContext after `updateFilters`. `rawQuery` is the original text
+   * the user searched (free-text / AI intent) so the destination listing
+   * page can keep it visible in the box even when it parsed into structured
+   * filters and the residual `keyword` is empty.
    */
-  onAfterSubmit?: (filters: ListingFilterRequest) => void
+  onAfterSubmit?: (filters: ListingFilterRequest, rawQuery?: string) => void
 }
 
 // Group display order. The backend ranks by relevance weight (TITLE 1.5 >
@@ -446,7 +450,19 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   const { filters, updateFilters, isLoading } =
     useListContext<ListingFilterRequest>()
 
-  const [inputValue, setInputValue] = useState(filters.keyword || '')
+  // On the listing page a free-text / AI search arrives with the raw query
+  // in `?q=` (separate from the residual `keyword` filter, which is often
+  // empty once the query parsed into structured filters). Seed the box with
+  // it so the user still sees what they searched and the suggestion dropdown
+  // is contextual. Guarded to the listing route so a stale `q` elsewhere
+  // can never leak into another page's search box.
+  const rawQueryParam =
+    typeof router.query.q === 'string' ? router.query.q : undefined
+  const isListingPage = router.pathname === PUBLIC_ROUTES.LISTING_LISTING
+
+  const [inputValue, setInputValue] = useState(
+    (isListingPage && rawQueryParam) || filters.keyword || '',
+  )
   const [isFocused, setIsFocused] = useState(false)
   const [highlightIndex, setHighlightIndex] = useState(0)
 
@@ -460,12 +476,15 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   const onAfterSubmitRef = useRef(onAfterSubmit)
   onAfterSubmitRef.current = onAfterSubmit
 
-  // Sync from EXTERNAL resets only — read inputValue via ref so typing
-  // does not retrigger this effect and stomp the user's keystrokes.
-  // Typing no longer pushes into filter context: the listing search runs only
-  // on Enter or when a suggestion is selected.
+  // Sync from EXTERNAL resets only — react to an actual change in
+  // `filters.keyword`, not merely to it differing from the input. Without
+  // the prev-keyword guard, the `?q=`-seeded display (where keyword is ''
+  // but the box shows the raw query) would be wiped to '' on first render.
+  const prevKeywordRef = useRef(filters.keyword || '')
   useEffect(() => {
     const keyword = filters.keyword || ''
+    if (keyword === prevKeywordRef.current) return
+    prevKeywordRef.current = keyword
     if (keyword !== inputValueRef.current) {
       setInputValue(keyword)
     }
@@ -589,12 +608,15 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
    * of the stale render-time `filters`.
    */
   const submitWithPatch = useCallback(
-    (patch: Partial<ListingFilterRequest>) => {
+    (patch: Partial<ListingFilterRequest>, rawQuery?: string) => {
       updateFilters(patch)
-      onAfterSubmitRef.current?.({
-        ...filtersRef.current,
-        ...patch,
-      } as ListingFilterRequest)
+      onAfterSubmitRef.current?.(
+        {
+          ...filtersRef.current,
+          ...patch,
+        } as ListingFilterRequest,
+        rawQuery,
+      )
     },
     [updateFilters],
   )
@@ -625,8 +647,11 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   const runFreeTextSearch = useCallback(() => {
     // Keep the box showing what the user typed; the parsed filters surface
     // in the panel, not the input (mirrors the runLocationSearch pattern).
-    setInputValue(inputValue.trim())
-    submitWithPatch(appliedFiltersToPatch(appliedFilters, inputValue))
+    const raw = inputValue.trim()
+    setInputValue(raw)
+    // Pass `raw` so a homepage → /properties navigation keeps the original
+    // query visible there even when it parsed into structured filters.
+    submitWithPatch(appliedFiltersToPatch(appliedFilters, inputValue), raw)
   }, [appliedFilters, inputValue, submitWithPatch])
 
   /**
@@ -640,6 +665,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       setInputValue(item.text)
       submitWithPatch(
         appliedFiltersToPatch(intentAppliedFilters(item.metadata), item.text),
+        item.text,
       )
     },
     [submitWithPatch],

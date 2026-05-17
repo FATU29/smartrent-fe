@@ -14,12 +14,19 @@ import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@/contexts/list/index.type'
 export const navigateToPropertiesWithFilters = (
   router: NextRouter,
   filters: ListingFilterRequest,
+  /**
+   * Original free-text / AI query the user searched. Carried as `?q=` so the
+   * destination listing page can keep it visible in the search box even when
+   * it parsed into structured filters and the residual `keyword` is empty.
+   */
+  searchQuery?: string,
 ) => {
   const amenityIds = filters.amenityIds
 
   pushQueryParams(
     router,
     {
+      q: searchQuery && searchQuery.trim() ? searchQuery.trim() : null,
       categoryId: filters?.categoryId ?? null,
       productType: filters?.productType ?? null,
       keyword: filters?.keyword || null,
@@ -72,6 +79,7 @@ export const navigateToPropertiesWithClearedFilters = (router: NextRouter) => {
   pushQueryParams(
     router,
     {
+      q: null,
       categoryId: null,
       productType: null,
       keyword: null,

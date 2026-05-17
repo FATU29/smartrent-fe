@@ -6,6 +6,7 @@ import {
   LogOut,
   User,
   ShieldCheck,
+  ReceiptText,
   MapIcon,
   Languages,
   Palette,
@@ -216,6 +217,20 @@ const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
                       </Link>
                     </Button>
                   </div>
+
+                  <Button
+                    asChild
+                    variant='secondary'
+                    className='mt-2 h-10 w-full justify-start rounded-lg px-3'
+                  >
+                    <Link
+                      href={SELLER_ROUTES.TRANSACTIONS}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <ReceiptText className='h-4 w-4' />
+                      {t('navigation.seller.transactions')}
+                    </Link>
+                  </Button>
                 </div>
               </div>
 

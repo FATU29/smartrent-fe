@@ -50,9 +50,9 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
   const isOffListings = router.pathname !== PUBLIC_ROUTES.LISTING_LISTING
 
   const handleSearchSubmit = useCallback(
-    (next: ListingFilterRequest) => {
+    (next: ListingFilterRequest, rawQuery?: string) => {
       if (!isOffListings) return
-      navigateToPropertiesWithFilters(router, next)
+      navigateToPropertiesWithFilters(router, next, rawQuery)
     },
     [isOffListings, router],
   )
