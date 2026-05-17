@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
+import { Badge } from '@/components/atoms/badge'
 import PaginationControls from '@/components/molecules/paginationControls'
 import {
   TransactionFilters,
@@ -40,11 +41,18 @@ const TransactionHistoryTemplate: React.FC = () => {
 
   return (
     <div className='flex flex-1 flex-col gap-row-lg'>
-      <header>
-        <Typography variant='pageTitle'>{t('title')}</Typography>
-        <Typography variant='muted' as='p' className='mt-1'>
-          {t('subtitle')}
-        </Typography>
+      <header className='flex flex-col gap-2 border-b pb-4 sm:flex-row sm:items-start sm:justify-between'>
+        <div>
+          <Typography variant='pageTitle'>{t('title')}</Typography>
+          <Typography variant='muted' as='p' className='mt-1'>
+            {t('subtitle')}
+          </Typography>
+        </div>
+        {data && data.totalElements > 0 && (
+          <Badge variant='secondary' className='shrink-0 px-3 py-1'>
+            {t('summary', { count: data.totalElements })}
+          </Badge>
+        )}
       </header>
 
       <TransactionFilters
@@ -65,19 +73,21 @@ const TransactionHistoryTemplate: React.FC = () => {
       />
 
       {data && data.totalElements > 0 && (
-        <PaginationControls
-          showPerPageSelector
-          pagination={{
-            currentPage: data.page,
-            pageSize: data.size,
-            totalItems: data.totalElements,
-            totalPages: data.totalPages,
-          }}
-          currentSize={data.size}
-          pageSizeOptions={PAGE_SIZE_OPTIONS}
-          onPageChange={(page) => patch({ page })}
-          onSizeChange={(size) => patch({ size: Number(size) })}
-        />
+        <div className='rounded-xl border bg-card p-card-tight shadow-xs'>
+          <PaginationControls
+            showPerPageSelector
+            pagination={{
+              currentPage: data.page,
+              pageSize: data.size,
+              totalItems: data.totalElements,
+              totalPages: data.totalPages,
+            }}
+            currentSize={data.size}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
+            onPageChange={(page) => patch({ page })}
+            onSizeChange={(size) => patch({ size: Number(size) })}
+          />
+        </div>
       )}
 
       <TransactionDetailDialog

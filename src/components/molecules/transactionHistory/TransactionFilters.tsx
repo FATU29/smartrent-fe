@@ -27,8 +27,6 @@ export interface TransactionFiltersProps {
   hasActiveFilters: boolean
 }
 
-const FIELD_LABEL = 'text-xs font-medium text-muted-foreground'
-
 export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
   value,
   onChange,
@@ -56,34 +54,30 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
 
   return (
     <section className='rounded-xl border bg-card p-card shadow-xs'>
-      <div className='flex flex-col gap-row lg:flex-row lg:flex-wrap lg:items-end'>
+      <div className='flex flex-col gap-row'>
         {/* Search */}
-        <div className='flex flex-col gap-1.5 lg:flex-1 lg:min-w-[240px]'>
-          <span className={FIELD_LABEL}>{t('searchPlaceholder')}</span>
-          <div className='relative'>
-            <Search
-              className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground'
-              aria-hidden='true'
-            />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t('searchPlaceholder')}
-              className='pl-9'
-              aria-label={t('searchPlaceholder')}
-            />
-          </div>
+        <div className='relative'>
+          <Search
+            className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground'
+            aria-hidden='true'
+          />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('searchPlaceholder')}
+            className='h-10 pl-9'
+            aria-label={t('searchPlaceholder')}
+          />
         </div>
 
-        {/* Status */}
-        <div className='flex flex-col gap-1.5'>
-          <span className={FIELD_LABEL}>{t('status')}</span>
+        {/* Filters — below the search input */}
+        <div className='flex flex-col gap-row sm:flex-row sm:flex-wrap sm:items-center'>
           <Select
             value={value.status}
             onValueChange={(status) => onChange({ status })}
           >
             <SelectTrigger
-              className='h-9 w-full lg:w-44'
+              className='h-9 w-full sm:w-44'
               aria-label={t('status')}
             >
               <SelectValue placeholder={t('allStatuses')} />
@@ -97,17 +91,13 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
               ))}
             </SelectContent>
           </Select>
-        </div>
 
-        {/* Payment type */}
-        <div className='flex flex-col gap-1.5'>
-          <span className={FIELD_LABEL}>{t('type')}</span>
           <Select
             value={value.type}
             onValueChange={(type) => onChange({ type })}
           >
             <SelectTrigger
-              className='h-9 w-full lg:w-52'
+              className='h-9 w-full sm:w-52'
               aria-label={t('type')}
             >
               <SelectValue placeholder={t('allTypes')} />
@@ -121,37 +111,33 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
               ))}
             </SelectContent>
           </Select>
+
+          {hasActiveFilters && (
+            <Button
+              type='button'
+              variant='ghost'
+              size='sm'
+              onClick={onReset}
+              className='gap-1.5 self-start text-muted-foreground hover:text-foreground sm:ml-auto'
+            >
+              <X className='size-4' aria-hidden='true' />
+              {t('reset')}
+            </Button>
+          )}
         </div>
 
-        {/* Date range */}
-        <div className='flex flex-col gap-1.5 lg:min-w-[260px]'>
-          <span className={FIELD_LABEL}>{t('dateRange')}</span>
-          <DateRangePicker
-            from={value.fromDate}
-            to={value.toDate}
-            onChange={({ from, to }) =>
-              onChange({ fromDate: from, toDate: to })
-            }
-            labels={{
-              from: t('dateFrom'),
-              to: t('dateTo'),
-              placeholder: t('dateRange'),
-            }}
-          />
-        </div>
-
-        {hasActiveFilters && (
-          <Button
-            type='button'
-            variant='ghost'
-            size='sm'
-            onClick={onReset}
-            className='gap-1.5 self-start text-muted-foreground hover:text-foreground lg:ml-auto lg:self-end'
-          >
-            <X className='size-4' aria-hidden='true' />
-            {t('reset')}
-          </Button>
-        )}
+        {/* Date range — its own row; the picker carries its own caption */}
+        <DateRangePicker
+          from={value.fromDate}
+          to={value.toDate}
+          onChange={({ from, to }) => onChange({ fromDate: from, toDate: to })}
+          labels={{
+            from: t('dateFrom'),
+            to: t('dateTo'),
+            placeholder: t('dateRange'),
+          }}
+          className='sm:max-w-md'
+        />
       </div>
     </section>
   )

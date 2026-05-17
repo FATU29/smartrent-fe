@@ -2264,6 +2264,7 @@
     "transactions": {
       "title": "Transaction History",
       "subtitle": "Review every payment made on your account",
+      "summary": "{count} transactions",
       "seoTitle": "Transaction History – Seller",
       "seoDescription": "Review, filter and inspect all of your SmartRent payments",
       "filters": {
