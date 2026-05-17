@@ -124,23 +124,17 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
             </Select>
           </div>
 
-          {/* Date range — no label (the picker carries its own caption);
-              an invisible spacer keeps it aligned with the selects. */}
+          {/* Date range — own visible label on top, like the other fields.
+              The picker's built-in caption is blanked so there's only one. */}
           <div className={FIELD}>
-            <span className={`${FIELD_LABEL} invisible`} aria-hidden='true'>
-              {t('dateRange')}
-            </span>
+            <span className={FIELD_LABEL}>{t('dateRange')}</span>
             <DateRangePicker
               from={value.fromDate}
               to={value.toDate}
               onChange={({ from, to }) =>
                 onChange({ fromDate: from, toDate: to })
               }
-              labels={{
-                from: t('dateFrom'),
-                to: t('dateTo'),
-                placeholder: t('dateRangeHint'),
-              }}
+              placeholder={t('dateRangeHint')}
               className='w-full sm:w-[280px]'
             />
           </div>
