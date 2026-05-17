@@ -139,32 +139,54 @@ const DetailBody: React.FC<{ detail: CustomerTransactionDetail }> = ({
 
 const SKELETON_ROWS = 8
 
-/** Loading placeholder that mirrors {@link DetailBody} so the dialog keeps a
- * stable, comfortably-sized layout instead of collapsing to a few thin bars. */
+// Varied bar widths so the placeholder reads like real content instead of a
+// uniform grid of identical bars.
+const SKELETON_VALUE_WIDTHS = [
+  'w-44',
+  'w-28',
+  'w-56',
+  'w-40',
+  'w-36',
+  'w-52',
+  'w-32',
+  'w-48',
+]
+
+/** Loading placeholder that mirrors {@link DetailBody} so the dialog opens at
+ * a comfortable, stable size instead of collapsing to a few thin bars. */
 const DetailSkeleton: React.FC = () => (
-  <div className='mt-2'>
+  <div className='mt-2 min-h-[460px]'>
+    {/* Summary card — mirrors the amount + status that lead the real detail */}
+    <div className='mb-5 flex items-center justify-between gap-4 rounded-xl border bg-muted/30 p-4'>
+      <div className='space-y-2.5'>
+        <Skeleton className='h-3.5 w-24' />
+        <Skeleton className='h-8 w-44' />
+      </div>
+      <Skeleton className='h-8 w-28 rounded-full' />
+    </div>
+
     <dl>
       {Array.from({ length: SKELETON_ROWS }).map((_, i) => (
         <div
           key={i}
-          className='grid grid-cols-[7rem_1fr] items-center gap-3 border-b py-2.5 last:border-0'
+          className='grid grid-cols-[8rem_1fr] items-center gap-4 border-b py-3.5 last:border-0'
         >
-          <Skeleton className='h-4 w-20' />
-          <Skeleton className='h-4 w-full max-w-[220px]' />
+          <Skeleton className='h-4 w-24' />
+          <Skeleton className={`h-4 ${SKELETON_VALUE_WIDTHS[i]}`} />
         </div>
       ))}
     </dl>
 
-    <div className='mt-5 space-y-3'>
-      <Skeleton className='h-4 w-24' />
-      <div className='space-y-3 border-l pl-4'>
+    <div className='mt-7 space-y-4'>
+      <Skeleton className='h-5 w-28' />
+      <div className='space-y-4 border-l pl-4'>
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className='space-y-1.5'>
+          <div key={i} className='space-y-2'>
             <div className='flex items-center gap-2'>
-              <Skeleton className='h-5 w-24 rounded-full' />
-              <Skeleton className='h-3 w-28' />
+              <Skeleton className='h-6 w-28 rounded-full' />
+              <Skeleton className='h-3.5 w-32' />
             </div>
-            <Skeleton className='h-3 w-2/3' />
+            <Skeleton className='h-3.5 w-2/3' />
           </div>
         ))}
       </div>
@@ -181,7 +203,7 @@ export const TransactionDetailDialog: React.FC<
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-h-[85vh] overflow-y-auto sm:max-w-xl'>
+      <DialogContent className='max-h-[85vh] overflow-y-auto sm:max-w-2xl'>
         <DialogHeader>
           <DialogTitle>{t('detail.title')}</DialogTitle>
         </DialogHeader>
