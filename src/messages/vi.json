@@ -2265,6 +2265,7 @@
     "transactions": {
       "title": "Lịch sử giao dịch",
       "subtitle": "Xem lại mọi khoản thanh toán trên tài khoản của bạn",
+      "summary": "{count} giao dịch",
       "seoTitle": "Lịch sử giao dịch – Người bán",
       "seoDescription": "Xem lại, lọc và kiểm tra mọi giao dịch thanh toán SmartRent của bạn",
       "filters": {
