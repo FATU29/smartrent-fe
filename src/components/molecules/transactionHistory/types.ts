@@ -25,11 +25,24 @@ export const FILTER_DEFAULTS = {
   size: 20,
 } as const
 
-/** Status values offered in the filter, matching backend TransactionStatus. */
+/**
+ * Status values offered in the filter dropdown. The badge still renders any
+ * status the API returns (incl. CANCELLED/REFUNDED) — this only limits the
+ * selectable filters to the ones the product surfaces.
+ */
 export const TRANSACTION_STATUS_FILTERS = [
   'PENDING',
   'COMPLETED',
   'FAILED',
-  'CANCELLED',
-  'REFUNDED',
+] as const
+
+/**
+ * Payment-type values offered in the filter dropdown. Other types are still
+ * labeled correctly when returned by the API; they just aren't filterable.
+ */
+export const TRANSACTION_TYPE_FILTERS = [
+  'MEMBERSHIP_PURCHASE',
+  'MEMBERSHIP_UPGRADE',
+  'POST_FEE',
+  'REPOST_FEE',
 ] as const

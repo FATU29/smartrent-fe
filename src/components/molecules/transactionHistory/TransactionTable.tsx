@@ -16,6 +16,7 @@ import type { CustomerTransactionItem } from '@/api/types/customer-transaction.t
 import { useTransactionFormatters } from './helpers'
 
 const EMPTY = '—'
+const HEAD_CLASS = 'text-xs font-semibold uppercase tracking-wide'
 
 export interface TransactionTableProps {
   items: CustomerTransactionItem[]
@@ -38,9 +39,6 @@ const TransactionRow: React.FC<{
     >
       <TableCell>
         <Typography variant='small' className='font-semibold'>
-          {item.transactionCode}
-        </Typography>
-        <Typography variant='caption' as='span' className='block'>
           {typeLabel(item.paymentType)}
         </Typography>
         {item.invoice?.invoiceCode && (
@@ -49,7 +47,7 @@ const TransactionRow: React.FC<{
           </Typography>
         )}
       </TableCell>
-      <TableCell className='font-medium whitespace-nowrap'>
+      <TableCell className='text-right font-semibold tabular-nums whitespace-nowrap'>
         {formatAmount(item.amount)}
       </TableCell>
       <TableCell className='text-sm text-muted-foreground whitespace-nowrap'>
@@ -82,7 +80,7 @@ const TransactionRow: React.FC<{
       <TableCell className='text-sm text-muted-foreground whitespace-nowrap'>
         {item.completedAt ? formatDateTime(item.completedAt) : EMPTY}
       </TableCell>
-      <TableCell>
+      <TableCell className='text-right'>
         <Button
           type='button'
           variant='ghost'
@@ -109,19 +107,23 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
   const tActions = useTranslations('seller.transactions.actions')
 
   return (
-    <div className='rounded-xl border bg-card'>
+    <div className='overflow-hidden rounded-xl border bg-card shadow-xs'>
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t('transaction')}</TableHead>
-            <TableHead>{t('amount')}</TableHead>
-            <TableHead>{t('method')}</TableHead>
-            <TableHead>{t('status')}</TableHead>
-            <TableHead>{t('room')}</TableHead>
-            <TableHead>{t('landlord')}</TableHead>
-            <TableHead>{t('created')}</TableHead>
-            <TableHead>{t('completed')}</TableHead>
-            <TableHead>{t('actions')}</TableHead>
+        <TableHeader className='bg-muted/50'>
+          <TableRow className='hover:bg-transparent'>
+            <TableHead className={HEAD_CLASS}>{t('transaction')}</TableHead>
+            <TableHead className={`${HEAD_CLASS} text-right`}>
+              {t('amount')}
+            </TableHead>
+            <TableHead className={HEAD_CLASS}>{t('method')}</TableHead>
+            <TableHead className={HEAD_CLASS}>{t('status')}</TableHead>
+            <TableHead className={HEAD_CLASS}>{t('room')}</TableHead>
+            <TableHead className={HEAD_CLASS}>{t('landlord')}</TableHead>
+            <TableHead className={HEAD_CLASS}>{t('created')}</TableHead>
+            <TableHead className={HEAD_CLASS}>{t('completed')}</TableHead>
+            <TableHead className={`${HEAD_CLASS} text-right`}>
+              {t('actions')}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
