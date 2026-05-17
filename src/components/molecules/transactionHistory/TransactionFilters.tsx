@@ -58,8 +58,8 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
   return (
     <section className='rounded-xl border bg-card p-card shadow-xs'>
       <div className='flex flex-col gap-row'>
-        {/* Search — full width so the whole placeholder is visible */}
-        <div className={FIELD}>
+        {/* Search — kept compact; it doesn't need the whole row width */}
+        <div className={`${FIELD} w-full sm:w-80`}>
           <span className={FIELD_LABEL}>{t('search')}</span>
           <div className='relative w-full'>
             <Search
@@ -135,7 +135,7 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
                 onChange({ fromDate: from, toDate: to })
               }
               placeholder={t('dateRangeHint')}
-              className='w-full sm:w-[280px]'
+              className='w-full sm:w-[420px]'
             />
           </div>
 

@@ -22,7 +22,7 @@ export const FILTER_DEFAULTS = {
   status: ALL_VALUE,
   type: ALL_VALUE,
   page: 1,
-  size: 20,
+  size: 10,
 } as const
 
 /**
