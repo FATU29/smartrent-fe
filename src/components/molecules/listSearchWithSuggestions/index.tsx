@@ -169,16 +169,20 @@ const toFiniteNumber = (value: unknown): number | undefined => {
 
 /**
  * Map the backend-parsed {@link AppliedSearchFilters} onto a filter-context
- * patch so a free-text / AI_INTENT submit reflects the parsed intent in the
- * UI (price range, product type, location) instead of only stuffing the raw
- * text into `keyword`.
+ * patch so a free-text / contextual submit reflects the parsed intent in the
+ * UI (price range, product type, location, amenities) — never a keyword.
  *
- * - `rawInput` is the fallback keyword when nothing structured was parsed.
+ * `appliedFilters` is a STRUCTURED-ONLY payload: the backend deliberately
+ * strips `keyword`/`locationText` because a title FULLTEXT search off an
+ * error-prone parse is exactly the failure this feature removes. So we only
+ * map structured slots here and never derive a keyword from `af`. The lone
+ * keyword path is the genuine no-parse case (`!af`) where the user just typed
+ * words — that is a real keyword search, not a parsed one.
+ *
  * - `listingType` is dropped (no slot in `ListingFilterRequest`) and a
- *   `productType` outside the FE union (e.g. OFFICE) is folded into the
- *   keyword so recall via FULLTEXT is preserved.
- * - Unresolved `locationText` and `amenities` (no FE id mapping) are folded
- *   into the keyword for the same reason.
+ *   `productType` outside the FE union (e.g. OFFICE) is simply not applied.
+ * - `amenityIds` are applied as the real structured filter (resolved by the
+ *   backend against the live amenities table — not the AI placeholders).
  */
 const appliedFiltersToPatch = (
   af: AppliedSearchFilters | null | undefined,
@@ -193,15 +197,12 @@ const appliedFiltersToPatch = (
     ...FREE_TEXT_FILTER_RESET,
     page: 1,
   }
-  const keywordParts: string[] = []
 
   if (
     typeof af.productType === 'string' &&
     (FE_PRODUCT_TYPES as readonly string[]).includes(af.productType)
   ) {
     patch.productType = af.productType as PropertyType
-  } else if (typeof af.productType === 'string' && af.productType) {
-    keywordParts.push(af.productType)
   }
 
   const minPrice = toFiniteNumber(af.minPrice)
@@ -219,29 +220,25 @@ const appliedFiltersToPatch = (
     if (legacyWardId !== undefined) patch.wardId = legacyWardId
   }
 
-  if (af.keyword && af.keyword.trim()) keywordParts.push(af.keyword.trim())
-  // Only fold the location phrase into the keyword when it did NOT resolve to
-  // a structured location filter — otherwise it would double-filter.
-  if (
-    legacyProvinceId === undefined &&
-    af.locationText &&
-    af.locationText.trim()
-  ) {
-    keywordParts.push(af.locationText.trim())
-  }
-  if (Array.isArray(af.amenities) && af.amenities.length > 0) {
-    keywordParts.push(af.amenities.join(' '))
-  }
+  // Apply the resolved amenity ids as the structured filter instead of
+  // folding amenity text into the keyword (which never matched reliably).
+  const amenityIds = Array.isArray(af.amenityIds)
+    ? af.amenityIds
+        .map((id) => toFiniteNumber(id))
+        .filter((id): id is number => id !== undefined)
+    : []
+  if (amenityIds.length > 0) patch.amenityIds = amenityIds
 
   const hasStructured =
     patch.productType !== undefined ||
     patch.minPrice !== undefined ||
     patch.maxPrice !== undefined ||
-    legacyProvinceId !== undefined
-  const keyword = keywordParts.join(' ').trim()
-  // Never run an empty search: fall back to the raw input only when neither a
-  // structured filter nor a residual keyword was extracted.
-  patch.keyword = keyword || (hasStructured ? '' : raw)
+    legacyProvinceId !== undefined ||
+    amenityIds.length > 0
+  // appliedFilters never yields a keyword. Clear any stale keyword when the
+  // parse produced real filters; only when nothing FE-applicable resolved do
+  // we fall back to the raw text so the search is never empty.
+  patch.keyword = hasStructured ? '' : raw
 
   return patch
 }
@@ -256,6 +253,32 @@ const intentAppliedFilters = (
   const af = (meta as IntentSuggestionMetadata | null)?.appliedFilters
   return af && typeof af === 'object' ? af : null
 }
+
+/**
+ * A contextual (AI_INTENT) suggestion is only useful when it actually carries
+ * applicable filters — the backend strips `keyword`/`locationText`, so an
+ * intent item with an empty/absent `appliedFilters` would apply nothing.
+ * Those (incl. plain AI phrase suggestions that carry no `appliedFilters`)
+ * are hidden so the contextual group only shows actionable rows.
+ */
+const hasMeaningfulAppliedFilters = (
+  af: AppliedSearchFilters | null,
+): boolean => {
+  if (!af) return false
+  return Object.values(af).some((v) => {
+    if (v === null || v === undefined || v === '') return false
+    if (Array.isArray(v)) return v.length > 0
+    return true
+  })
+}
+
+/**
+ * True for an AI_INTENT row the user can act on (has real filters), or any
+ * non-AI_INTENT row. Used to drop meaningless "ready to apply" rows.
+ */
+const isVisibleSuggestion = (item: SearchSuggestionItem): boolean =>
+  item.type !== 'AI_INTENT' ||
+  hasMeaningfulAppliedFilters(intentAppliedFilters(item.metadata))
 
 /**
  * Highlight occurrences of `query` (case-insensitive) inside `text`.
@@ -511,6 +534,13 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       typeof filters.categoryId === 'number' ? filters.categoryId : undefined,
   })
 
+  // Drop contextual rows that carry no applicable filters before anything
+  // else consumes the list (grouping, flattening, counts, telemetry ranks).
+  const visibleSuggestions = useMemo(
+    () => suggestions.filter(isVisibleSuggestion),
+    [suggestions],
+  )
+
   // Group suggestions by type, preserving the backend's relevance order
   const grouped = useMemo(() => {
     const buckets: Record<SuggestionType, SearchSuggestionItem[]> = {
@@ -521,11 +551,11 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       PHONETIC: [],
       POPULAR_QUERY: [],
     }
-    suggestions.forEach((s) => {
+    visibleSuggestions.forEach((s) => {
       buckets[s.type]?.push(s)
     })
     return buckets
-  }, [suggestions])
+  }, [visibleSuggestions])
 
   /**
    * Flatten the visible rows in render order so a single highlight index
@@ -546,31 +576,37 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
     let cursor = 0
     TYPE_ORDER.forEach((type) => {
       grouped[type].forEach((item) => {
-        // Compute the absolute rank inside the original suggestions list
-        const rank = suggestions.indexOf(item, cursor)
+        // Compute the absolute rank inside the visible suggestions list
+        const rank = visibleSuggestions.indexOf(item, cursor)
         rows.push({ kind: 'suggestion', item, rank: rank >= 0 ? rank : 0 })
         if (rank >= 0) cursor = rank + 1
       })
     })
     return rows
-  }, [grouped, suggestions, inputValue])
+  }, [grouped, visibleSuggestions, inputValue])
 
   /**
-   * Pick a default highlight that prefers the most relevant LOCATION row
-   * over the generic "Search for {query}" row. Without this, Enter on a
-   * fresh suggestion list always lands on run-search → keyword search
-   * even when the user clearly typed a city name. With this, Enter on
-   * "Hồ Chí" (a province match) defaults to the LOCATION pick — so the
-   * resulting URL is `?provinceId=…&isLegacy=true` instead of
-   * `?keyword=Hồ Chí Minh`.
+   * Pick the default highlight by context so Enter does the smartest thing:
    *
-   * Heuristic: first LOCATION whose text contains the typed input
-   * (case-insensitive). Falls through to index 0 if nothing matches.
+   * 1. The contextual row (AI_INTENT carrying real `appliedFilters`) — a full
+   *    multi-dimension parse ("phòng trọ hà nội dưới 5 triệu") beats both a
+   *    narrower location-only filter and a raw keyword search.
+   * 2. Else the first LOCATION row whose text contains the typed input — a
+   *    city pick (`?provinceId=…&isLegacy=true`) beats `?keyword=Hà Nội`.
+   * 3. Else index 0 (the "Search for {query}" row).
    */
   const defaultHighlightIndex = useMemo(() => {
     if (flatRows.length === 0) return 0
     const trimmed = inputValue.trim().toLowerCase()
     if (!trimmed) return 0
+
+    const contextualIdx = flatRows.findIndex(
+      (row) =>
+        row.kind === 'suggestion' &&
+        row.item.type === 'AI_INTENT' &&
+        hasMeaningfulAppliedFilters(intentAppliedFilters(row.item.metadata)),
+    )
+    if (contextualIdx >= 0) return contextualIdx
 
     for (let i = 0; i < flatRows.length; i++) {
       const row = flatRows[i]
@@ -846,19 +882,11 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   const showClearButton = inputValue.length > 0
 
   // Used as the Popover anchor + to detect interactions inside the input box.
+  // The dropdown width is driven by the Radix `--radix-popover-trigger-width`
+  // CSS var (set on the portaled content) rather than a JS-measured value:
+  // that removes a first-render race where an unmeasured width let the
+  // content size to its widest child and overflow the viewport on mobile.
   const wrapperRef = useRef<HTMLDivElement | null>(null)
-  const [anchorWidth, setAnchorWidth] = useState<number | undefined>(undefined)
-
-  // Track the input wrapper width so the portaled popover matches it.
-  useEffect(() => {
-    const el = wrapperRef.current
-    if (!el) return
-    setAnchorWidth(el.offsetWidth)
-    if (typeof ResizeObserver === 'undefined') return
-    const ro = new ResizeObserver(() => setAnchorWidth(el.offsetWidth))
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
 
   const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
     const next = e.relatedTarget as Node | null
@@ -1015,8 +1043,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       <PopoverContent
         align='start'
         sideOffset={8}
-        // Match the input width even though portaled
-        style={anchorWidth ? { width: anchorWidth } : undefined}
+        collisionPadding={8}
         // Don't steal focus from the input — the input drives this combobox
         onOpenAutoFocus={(e) => e.preventDefault()}
         onCloseAutoFocus={(e) => e.preventDefault()}
@@ -1031,6 +1058,10 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
         onMouseDown={(e) => e.preventDefault()}
         className={cn(
           'p-0 overflow-hidden',
+          // Match the input width via Radix' trigger-width var, but never
+          // exceed the viewport — the fix for the broken/overflowing mobile
+          // dropdown. min-w-0 lets children truncate instead of pushing wide.
+          'w-[var(--radix-popover-trigger-width)] min-w-0 max-w-[calc(100vw-1rem)]',
           'rounded-2xl border border-border bg-popover text-popover-foreground',
           'shadow-xl ring-1 ring-black/5 dark:ring-white/5',
         )}
@@ -1047,7 +1078,9 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
             </span>
           ) : (
             <span className='text-xs text-muted-foreground tabular-nums'>
-              {tSuggestions('countResults', { count: suggestions.length })}
+              {tSuggestions('countResults', {
+                count: visibleSuggestions.length,
+              })}
             </span>
           )}
         </div>
@@ -1072,7 +1105,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
             />
           ) : null}
 
-          {suggestions.length === 0 && !isSuggestLoading ? (
+          {visibleSuggestions.length === 0 && !isSuggestLoading ? (
             <div className='px-4 py-8 text-center text-sm text-muted-foreground'>
               <div className='mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-muted'>
                 <Search className='h-4 w-4' />

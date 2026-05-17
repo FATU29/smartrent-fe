@@ -158,7 +158,7 @@
       "poweredBy": "Gợi ý thông minh",
       "groups": {
         "TITLE": "Tin đăng",
-        "AI_INTENT": "Gợi ý AI",
+        "AI_INTENT": "Gợi ý theo ngữ cảnh",
         "LOCATION": "Địa điểm",
         "TYPO_CORRECTION": "Có phải bạn muốn tìm",
         "PHONETIC": "Phát âm tương tự",
