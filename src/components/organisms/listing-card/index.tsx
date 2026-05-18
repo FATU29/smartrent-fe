@@ -18,16 +18,7 @@ import {
   ModerationStatusBadge,
   ModerationBanner,
 } from '@/components/molecules/moderation'
-import {
-  MapPin,
-  Calendar,
-  Maximize2,
-  Bed,
-  Bath,
-  Eye,
-  Phone,
-  Users,
-} from 'lucide-react'
+import { MapPin, Calendar, Maximize2, Bed, Bath, Users } from 'lucide-react'
 import { DEFAULT_IMAGE } from '@/constants/common'
 import { AMENITIES_CONFIG } from '@/constants/amenities'
 import {
@@ -78,10 +69,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     verified,
     vipType,
     rankOfVipType,
-    listingViews,
-    interested,
-    customers,
-    statistics,
     media,
     address,
     price,
@@ -108,10 +95,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     )
     return endDate.toISOString()
   }, [postDate, expiryDate, durationDays])
-
-  const viewCount = statistics?.viewCount ?? listingViews ?? 0
-  const contactCount = statistics?.contactCount ?? interested ?? 0
-  const customerCount = customers ?? 0
 
   const coverImage = media?.find(
     (m) =>
@@ -528,63 +511,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                   <Typography variant='small' className='font-semibold'>
                     {expiryDisplay}
                   </Typography>
-                </div>
-              </div>
-
-              {/* Statistics */}
-              <div className='flex items-center gap-4 p-3 rounded-lg bg-gradient-to-br from-muted/30 to-muted/50 border border-muted'>
-                <div className='flex items-center gap-1.5'>
-                  <Eye className='w-4 h-4 text-blue-600 dark:text-blue-400' />
-                  <div className='flex flex-col'>
-                    <Typography
-                      variant='small'
-                      className='text-xs text-muted-foreground leading-none'
-                    >
-                      {t('views')}
-                    </Typography>
-                    <Typography
-                      variant='small'
-                      className='font-bold leading-tight text-sm sm:text-base'
-                    >
-                      {viewCount.toLocaleString()}
-                    </Typography>
-                  </div>
-                </div>
-
-                <div className='flex items-center gap-1.5'>
-                  <Phone className='w-4 h-4 text-green-600 dark:text-green-400' />
-                  <div className='flex flex-col'>
-                    <Typography
-                      variant='small'
-                      className='text-xs text-muted-foreground leading-none'
-                    >
-                      {t('contacts')}
-                    </Typography>
-                    <Typography
-                      variant='small'
-                      className='font-bold leading-tight text-sm sm:text-base'
-                    >
-                      {contactCount.toLocaleString()}
-                    </Typography>
-                  </div>
-                </div>
-
-                <div className='flex items-center gap-1.5'>
-                  <Users className='w-4 h-4 text-purple-600 dark:text-purple-400' />
-                  <div className='flex flex-col'>
-                    <Typography
-                      variant='small'
-                      className='text-xs text-muted-foreground leading-none'
-                    >
-                      {t('customers')}
-                    </Typography>
-                    <Typography
-                      variant='small'
-                      className='font-bold leading-tight text-sm sm:text-base'
-                    >
-                      {customerCount.toLocaleString()}
-                    </Typography>
-                  </div>
                 </div>
               </div>
             </div>
