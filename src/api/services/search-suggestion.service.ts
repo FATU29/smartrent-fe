@@ -17,6 +17,13 @@ import type {
 
 const SESSION_ID_STORAGE_KEY = 'smartrent.searchSuggestion.sessionId'
 
+/**
+ * Module-level memo for the session token. `sessionStorage` access is
+ * synchronous main-thread I/O; reading it on every keystroke-driven
+ * suggestion fetch is wasted work, so resolve it once per tab.
+ */
+let cachedSessionId: string | undefined
+
 const generateSessionId = (): string => {
   if (
     typeof globalThis !== 'undefined' &&
@@ -34,12 +41,14 @@ const generateSessionId = (): string => {
  */
 const getSessionId = (): string | undefined => {
   if (typeof window === 'undefined') return undefined
+  if (cachedSessionId) return cachedSessionId
   try {
     let sessionId = window.sessionStorage.getItem(SESSION_ID_STORAGE_KEY)
     if (!sessionId) {
       sessionId = generateSessionId()
       window.sessionStorage.setItem(SESSION_ID_STORAGE_KEY, sessionId)
     }
+    cachedSessionId = sessionId
     return sessionId
   } catch {
     return undefined
@@ -59,6 +68,7 @@ export class SearchSuggestionService {
    */
   static async getSuggestions(
     params: SearchSuggestionsParams,
+    options?: { signal?: AbortSignal },
   ): Promise<ApiResponse<SearchSuggestionsResponse>> {
     const query = params.q?.trim() ?? ''
     const limit = Math.min(Math.max(params.limit ?? 8, 1), 20)
@@ -76,6 +86,9 @@ export class SearchSuggestionService {
           : {}),
       },
       headers: sessionId ? { 'X-Session-Id': sessionId } : undefined,
+      // Lets the caller cancel an in-flight request the moment a newer
+      // keystroke supersedes it — no wasted bandwidth or stale work.
+      signal: options?.signal,
       skipAuth: true,
     })
   }
