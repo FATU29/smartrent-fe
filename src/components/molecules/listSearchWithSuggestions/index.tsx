@@ -541,6 +541,21 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
     [suggestions],
   )
 
+  // When the backend resolved structured filters from the query
+  // (`appliedFilters`), we deliberately remove the raw-keyword path: the
+  // user must pick a contextual suggestion (the synthesized "ready to
+  // apply" row or a LOCATION row) instead of running a fuzzy keyword
+  // search. The "Search for «text»" row is therefore only offered as the
+  // genuine no-parse fallback (no appliedFilters at all).
+  const hasContextualFilters = useMemo(
+    () => hasMeaningfulAppliedFilters(appliedFilters),
+    [appliedFilters],
+  )
+  const showRunSearch = useMemo(
+    () => inputValue.trim().length >= 2 && !hasContextualFilters,
+    [inputValue, hasContextualFilters],
+  )
+
   // Group suggestions by type, preserving the backend's relevance order
   const grouped = useMemo(() => {
     const buckets: Record<SuggestionType, SearchSuggestionItem[]> = {
@@ -568,8 +583,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       | { kind: 'suggestion'; item: SearchSuggestionItem; rank: number }
 
     const rows: FlatRow[] = []
-    const trimmed = inputValue.trim()
-    if (trimmed.length >= 2) {
+    if (showRunSearch) {
       rows.push({ kind: 'run-search' })
     }
 
@@ -583,7 +597,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       })
     })
     return rows
-  }, [grouped, visibleSuggestions, inputValue])
+  }, [grouped, visibleSuggestions, showRunSearch])
 
   /**
    * Pick the default highlight by context so Enter does the smartest thing:
@@ -899,7 +913,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
 
   const renderedSuggestionRows = useMemo(() => {
     let absoluteIdx = 0
-    if (inputValue.trim().length >= 2) absoluteIdx = 1 // run-search row
+    if (showRunSearch) absoluteIdx = 1 // run-search row
 
     // When the user hasn't typed yet, the backend returns LOCATION defaults
     // (top cities). Use a dedicated heading so the dropdown reads as
@@ -944,9 +958,15 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
         </div>
       )
     })
-  }, [grouped, inputValue, highlightIndex, handleSelect, tSuggestions, listId])
-
-  const showRunSearch = inputValue.trim().length >= 2
+  }, [
+    grouped,
+    inputValue,
+    showRunSearch,
+    highlightIndex,
+    handleSelect,
+    tSuggestions,
+    listId,
+  ])
 
   return (
     <Popover
