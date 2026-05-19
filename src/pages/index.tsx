@@ -50,7 +50,9 @@ const HOMEPAGE_VI_KEYWORDS = [
 const Home: NextPageWithLayout = () => {
   const isClientSide = typeof window !== 'undefined'
 
-  const { data: provinceCities } = useQuery<ProvinceStatsItem[]>({
+  const { data: provinceCities, isPending: isProvinceCitiesPending } = useQuery<
+    ProvinceStatsItem[]
+  >({
     queryKey: ['homepage', 'province-stats'],
     queryFn: async () => {
       const response = await ListingService.getProvinceStats({
@@ -102,6 +104,7 @@ const Home: NextPageWithLayout = () => {
           <div className='container mx-auto space-y-6'>
             <HomepageTemplate
               cities={provinceCities}
+              citiesLoading={isProvinceCitiesPending}
               categoryStats={categoryStats}
               latestNews={latestNews}
             />
