@@ -564,6 +564,13 @@ export interface ListingSearchApiRequest {
   furnishing?: Furnishing
   direction?: Direction
   verified?: boolean
+  /**
+   * Public browse excludes expired listings so the listing-page total
+   * matches the homepage category/location counts (those stats always
+   * exclude expired). Left unset for owner "my listings" (userId set) so
+   * the owner still sees their own expired posts.
+   */
+  excludeExpired?: boolean
 
   waterPrice?: PriceType
   electricityPrice?: PriceType

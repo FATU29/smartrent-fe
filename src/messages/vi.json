@@ -146,6 +146,7 @@
       "emptyHint": "Hãy thử từ khóa hoặc địa điểm khác.",
       "clear": "Xóa từ khóa",
       "submit": "Tìm",
+      "back": "Quay lại",
       "runSearchLabel": "Tìm theo từ khóa",
       "defaultsHeading": "Tỉnh thành phổ biến",
       "locationFilterUnavailable": "Không thể lọc theo địa điểm này. Vui lòng thử lại.",
@@ -1915,7 +1916,7 @@
     },
     "toggles": {
       "verified": "Đã xác thực",
-      "professionalBroker": "Môi giới chuyên nghiệp",
+      "professionalBroker": "Môi giới",
       "location": "Vị trí của bạn",
       "video": "Có video",
       "has360": "Có 3D/360°"
