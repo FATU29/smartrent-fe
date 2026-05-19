@@ -605,7 +605,7 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   const tSuggestions = useTranslations('common.searchSuggestions')
   const router = useRouter()
 
-  const { filters, updateFilters, isLoading } =
+  const { filters, updateFilters, isLoading, activeFilterCount } =
     useListContext<ListingFilterRequest>()
 
   // On the listing page a free-text / AI search arrives with the raw query
@@ -647,6 +647,26 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
       setInputValue(keyword)
     }
   }, [filters.keyword])
+
+  // A contextual (appliedFilters / AI_INTENT) or LOCATION pick leaves the box
+  // showing the parsed query while `filters.keyword` stays '' — so the
+  // keyword-sync effect above never fires when the user hits the "Xóa"/reset
+  // button (it resets every filter but `keyword` was already empty). Treat the
+  // transition into a fully-empty search state (no active filters, no keyword,
+  // no raw `?q=`) as a reset and wipe the now-stale query text. Guarded on
+  // focus so it never yanks text the user is actively typing.
+  const searchActive =
+    activeFilterCount > 0 ||
+    !!filters.keyword ||
+    (isListingPage && !!rawQueryParam)
+  const prevSearchActiveRef = useRef(searchActive)
+  useEffect(() => {
+    const wasActive = prevSearchActiveRef.current
+    prevSearchActiveRef.current = searchActive
+    if (wasActive && !searchActive && inputValueRef.current && !isFocused) {
+      setInputValue('')
+    }
+  }, [searchActive, isFocused])
 
   const provinceIdParam =
     filters.provinceId !== undefined && filters.provinceId !== null
@@ -1206,28 +1226,11 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
                 </Button>
               ) : null}
               {/*
-               * Submit button — pressing this (or Enter) is the only way to
-               * run the listing search. If a suggestion is highlighted, the
-               * search runs by that suggestion's type; otherwise the typed
-               * value is used as a keyword.
+               * No explicit submit button — the search runs from Enter or by
+               * picking a suggestion / the "Search for X" row. If a suggestion
+               * is highlighted Enter runs by that suggestion's type; otherwise
+               * the typed value is used as a keyword (see `triggerSearch`).
                */}
-              <Button
-                type='button'
-                size='sm'
-                onMouseDown={(e) => {
-                  // mousedown (not click) so the input keeps focus and the
-                  // popover doesn't close-then-reopen mid-submit.
-                  e.preventDefault()
-                  triggerSearch()
-                }}
-                className='ml-1 h-9 shrink-0 rounded-md px-4 text-sm font-medium'
-                aria-label={tSuggestions('submit')}
-              >
-                <Search className='h-4 w-4' />
-                <span className='hidden sm:inline ml-1.5'>
-                  {tSuggestions('submit')}
-                </span>
-              </Button>
             </div>
           </div>
         </PopoverAnchor>
@@ -1342,15 +1345,8 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
                 </Button>
               ) : null}
             </div>
-            <Button
-              type='button'
-              size='sm'
-              onClick={triggerSearch}
-              className='h-9 shrink-0 rounded-md px-3 text-sm font-medium'
-              aria-label={tSuggestions('submit')}
-            >
-              <Search className='h-4 w-4' />
-            </Button>
+            {/* No submit button on mobile either — Enter on the soft keyboard
+                or tapping a suggestion / the "Search for X" row runs it. */}
           </div>
 
           <SuggestionPanel {...panelProps} bodyClassName='flex-1 max-h-none' />

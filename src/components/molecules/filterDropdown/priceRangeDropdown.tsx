@@ -54,8 +54,16 @@ const PriceRangeDropdown: React.FC<PriceRangeDropdownProps> = ({
     if (minPrice && maxPrice) {
       return `${formatPrice(minPrice)} - ${formatPrice(maxPrice)} ${t('currency')}`
     }
-    if (minPrice) return `From ${formatPrice(minPrice)} ${t('currency')}`
-    if (maxPrice) return `Up to ${formatPrice(maxPrice)} ${t('currency')}`
+    if (minPrice)
+      return t('from', {
+        price: formatPrice(minPrice),
+        currency: t('currency'),
+      })
+    if (maxPrice)
+      return t('upTo', {
+        price: formatPrice(maxPrice),
+        currency: t('currency'),
+      })
     return t('any')
   }
 

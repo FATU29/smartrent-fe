@@ -867,7 +867,9 @@
         "minPrice": "Giá Tối thiểu",
         "maxPrice": "Giá Tối đa",
         "currency": "VND",
-        "any": "Tất cả Giá"
+        "any": "Tất cả Giá",
+        "from": "Từ {price} {currency}",
+        "upTo": "Đến {price} {currency}"
       },
       "bedrooms": {
         "title": "Phòng ngủ",
