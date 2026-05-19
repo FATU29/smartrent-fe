@@ -158,6 +158,7 @@
       "emptyHint": "Try a different keyword or location.",
       "clear": "Clear search",
       "submit": "Search",
+      "back": "Back",
       "runSearchLabel": "Search for",
       "defaultsHeading": "Popular cities",
       "locationFilterUnavailable": "Couldn't filter by this location. Please try again.",
@@ -2093,7 +2094,7 @@
     },
     "toggles": {
       "verified": "Verified",
-      "professionalBroker": "Professional broker",
+      "professionalBroker": "Broker",
       "location": "Your Location",
       "video": "Has video",
       "has360": "Has 3D/360°"

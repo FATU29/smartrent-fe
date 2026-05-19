@@ -96,6 +96,11 @@ export function mapFrontendToBackendRequest(
     serviceFee: frontendFilter?.serviceFee,
     amenityIds: frontendFilter?.amenityIds,
     keyword: frontendFilter?.keyword,
+    // Public browse (no userId) must exclude expired listings so the
+    // listing-page total matches the homepage category/location counts,
+    // which always exclude expired. For owner "my listings" (userId set)
+    // leave it unset so the owner still sees their expired posts.
+    excludeExpired: frontendFilter?.userId ? undefined : true,
     page: frontendFilter?.page ?? 0,
     size: frontendFilter?.size ?? 10,
     status: frontendFilter?.status,

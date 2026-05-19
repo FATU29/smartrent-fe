@@ -20,6 +20,7 @@ import {
   TrendingUp,
   Loader2,
   ArrowRight,
+  ArrowLeft,
   CornerDownLeft,
   Sparkles,
   SpellCheck,
@@ -33,6 +34,14 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from '@/components/atoms/popover'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  VisuallyHidden,
+} from '@/components/atoms/dialog'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { MEDIA_BELOW_MD } from '@/constants/breakpoints'
 import useSearchSuggestions from '@/hooks/useSearchSuggestions'
 import { useListContext } from '@/contexts/list/useListContext'
 import { ListingFilterRequest, PropertyType } from '@/api/types/property.type'
@@ -458,6 +467,132 @@ const RunSearchRow: React.FC<RunSearchRowProps> = ({
   </div>
 )
 
+/**
+ * The suggestion panel body (header line + scrollable listbox + footer
+ * hints). Extracted so the desktop popover and the mobile fullscreen
+ * dialog render the exact same list/markup from one source — no
+ * duplicated block, single place to evolve.
+ */
+interface SuggestionPanelProps {
+  loading: boolean
+  resultCount: number
+  showRunSearch: boolean
+  runSearchQuery: string
+  runSearchActive: boolean
+  onRunSearchMouseEnter: () => void
+  onRunSearchSelect: () => void
+  runSearchRowId: string
+  isEmpty: boolean
+  rows: React.ReactNode
+  hideFooterHints: boolean
+  listId: string
+  /** Body height. Defaults to the popover cap; mobile passes flex-fill. */
+  bodyClassName?: string
+}
+
+const SuggestionPanel: React.FC<SuggestionPanelProps> = ({
+  loading,
+  resultCount,
+  showRunSearch,
+  runSearchQuery,
+  runSearchActive,
+  onRunSearchMouseEnter,
+  onRunSearchSelect,
+  runSearchRowId,
+  isEmpty,
+  rows,
+  hideFooterHints,
+  listId,
+  bodyClassName,
+}) => {
+  const tSuggestions = useTranslations('common.searchSuggestions')
+
+  return (
+    <>
+      {/* Header */}
+      <div className='flex items-center justify-between gap-2 px-4 pt-3 pb-1'>
+        <span className='text-xs uppercase tracking-wide text-muted-foreground font-medium'>
+          {tSuggestions('heading')}
+        </span>
+        {loading ? (
+          <span className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+            <Loader2 className='h-3 w-3 animate-spin' />
+            {tSuggestions('loading')}
+          </span>
+        ) : (
+          <span className='text-xs text-muted-foreground tabular-nums'>
+            {tSuggestions('countResults', { count: resultCount })}
+          </span>
+        )}
+      </div>
+
+      {/* Body */}
+      <div
+        id={listId}
+        role='listbox'
+        className={cn(
+          'overflow-y-auto py-1',
+          bodyClassName ?? 'max-h-[60vh] sm:max-h-96',
+        )}
+      >
+        {showRunSearch ? (
+          <RunSearchRow
+            query={runSearchQuery}
+            active={runSearchActive}
+            onMouseEnter={onRunSearchMouseEnter}
+            onSelect={onRunSearchSelect}
+            rowId={runSearchRowId}
+            label={tSuggestions('runSearchLabel')}
+          />
+        ) : null}
+
+        {isEmpty ? (
+          <div className='px-4 py-8 text-center text-sm text-muted-foreground'>
+            <div className='mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-muted'>
+              <Search className='h-4 w-4' />
+            </div>
+            <div className='font-medium text-foreground'>
+              {tSuggestions('emptyTitle')}
+            </div>
+            <div className='mt-1'>{tSuggestions('emptyHint')}</div>
+          </div>
+        ) : (
+          rows
+        )}
+      </div>
+
+      {/* Footer hints (suppressed in compact contexts like the homepage) */}
+      {!hideFooterHints ? (
+        <div className='flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-4 py-2 text-2xs text-muted-foreground'>
+          <span className='hidden sm:flex items-center gap-2'>
+            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
+              ↑
+            </kbd>
+            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
+              ↓
+            </kbd>
+            <span>{tSuggestions('hintNavigate')}</span>
+            <span className='mx-1 opacity-40'>·</span>
+            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
+              Enter
+            </kbd>
+            <span>{tSuggestions('hintSelect')}</span>
+            <span className='mx-1 opacity-40'>·</span>
+            <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
+              Esc
+            </kbd>
+            <span>{tSuggestions('hintClose')}</span>
+          </span>
+          <span className='sm:hidden'>{tSuggestions('hintMobile')}</span>
+          <span className='font-medium text-foreground/70'>
+            {tSuggestions('poweredBy')}
+          </span>
+        </div>
+      ) : null}
+    </>
+  )
+}
+
 const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
   placeholder,
   suggestionsDebounceMs = 200,
@@ -645,12 +780,26 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
     // so we don't yank the highlight away from the user mid-arrow-key.
   }, [flatRows])
 
+  // Below `md` the dropdown UX is poor (trigger-width popover, viewport
+  // clipping, tiny tap targets), so on mobile we open a fullscreen dialog
+  // with its own search bar instead. `useMediaQuery` returns null on the
+  // server → desktop path until hydration confirms the viewport.
+  const isMobile = useMediaQuery(MEDIA_BELOW_MD) === true
+
   // Popover opens on focus regardless of input length: when empty, the
   // backend returns curated top-city defaults; while typing, real matches.
   const isOpen = isFocused && (isSuggestLoading || hasFetched)
+  // Desktop uses the popover; mobile uses the fullscreen dialog. Exactly
+  // one is ever open, so the shared listbox id is never duplicated.
+  const desktopOpen = isOpen && !isMobile
+  const mobileOpen = isMobile && isFocused
 
   const listId = useId()
   const optionId = (idx: number) => `${listId}-opt-${idx}`
+  // Wraps the mobile dialog's search input. `Input` is a plain function
+  // component (no ref forwarding), so we focus it through the container in
+  // Radix' onOpenAutoFocus instead of an autoFocus attribute.
+  const mobileHeaderRef = useRef<HTMLDivElement | null>(null)
 
   /**
    * Apply a filter patch and notify the parent (e.g. for navigation). Uses
@@ -968,208 +1117,246 @@ const ListSearchWithSuggestions: React.FC<ListSearchWithSuggestionsProps> = ({
     listId,
   ])
 
+  const panelProps = {
+    loading: isSuggestLoading,
+    resultCount: visibleSuggestions.length,
+    showRunSearch,
+    runSearchQuery: inputValue.trim(),
+    runSearchActive: highlightIndex === 0,
+    onRunSearchMouseEnter: () => setHighlightIndex(0),
+    onRunSearchSelect: () => {
+      runFreeTextSearch()
+      setIsFocused(false)
+    },
+    runSearchRowId: optionId(0),
+    isEmpty: visibleSuggestions.length === 0 && !isSuggestLoading,
+    rows: renderedSuggestionRows,
+    hideFooterHints,
+    listId,
+  }
+
   return (
-    <Popover
-      open={isOpen}
-      onOpenChange={(next) => {
-        if (!next) setIsFocused(false)
-      }}
-    >
-      <PopoverAnchor asChild>
-        <div
-          ref={wrapperRef}
-          className={cn('relative flex-1 min-w-0', className)}
-        >
+    <>
+      <Popover
+        open={desktopOpen}
+        onOpenChange={(next) => {
+          if (!next) setIsFocused(false)
+        }}
+      >
+        <PopoverAnchor asChild>
           <div
-            className={classNames(
-              'group flex items-center h-11 rounded-lg border border-input bg-background shadow-xs transition-all duration-200 pl-3 pr-1.5',
-              'hover:border-primary/40',
-              'focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20',
-            )}
+            ref={wrapperRef}
+            className={cn('relative flex-1 min-w-0', className)}
           >
-            <Search
+            <div
               className={classNames(
-                'h-5 w-5 mr-2.5 shrink-0 transition-colors duration-200',
-                'text-muted-foreground group-focus-within:text-primary',
+                'group flex items-center h-11 rounded-lg border border-input bg-background shadow-xs transition-all duration-200 pl-3 pr-1.5',
+                'hover:border-primary/40',
+                'focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20',
               )}
-            />
-            <Input
-              type='text'
-              role='combobox'
-              aria-expanded={isOpen}
-              aria-autocomplete='list'
-              aria-controls={isOpen ? listId : undefined}
-              aria-activedescendant={
-                isOpen && highlightIndex >= 0
-                  ? optionId(highlightIndex)
-                  : undefined
-              }
-              autoComplete='off'
-              spellCheck={false}
-              placeholder={placeholder || t('placeholder')}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onFocus={() => setIsFocused(true)}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
-              className='flex-1 min-w-0 h-full border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 dark:bg-transparent text-sm sm:text-base md:text-sm lg:text-base'
-            />
-            {isLoading && !isSuggestLoading ? (
-              <Loader2 className='h-4 w-4 mx-1 shrink-0 animate-spin text-primary pointer-events-none' />
-            ) : null}
-            {showClearButton ? (
+            >
+              <Search
+                className={classNames(
+                  'h-5 w-5 mr-2.5 shrink-0 transition-colors duration-200',
+                  'text-muted-foreground group-focus-within:text-primary',
+                )}
+              />
+              <Input
+                type='text'
+                role='combobox'
+                aria-expanded={desktopOpen || mobileOpen}
+                aria-autocomplete='list'
+                aria-controls={desktopOpen ? listId : undefined}
+                aria-activedescendant={
+                  desktopOpen && highlightIndex >= 0
+                    ? optionId(highlightIndex)
+                    : undefined
+                }
+                autoComplete='off'
+                spellCheck={false}
+                // On mobile the bar is just a trigger: read-only so the soft
+                // keyboard doesn't open here (it opens on the dialog input),
+                // and no blur-close (the dialog owns open/close).
+                readOnly={isMobile}
+                placeholder={placeholder || t('placeholder')}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onClick={isMobile ? () => setIsFocused(true) : undefined}
+                onBlur={isMobile ? undefined : handleBlur}
+                onKeyDown={isMobile ? undefined : handleKeyDown}
+                className='flex-1 min-w-0 h-full border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 dark:bg-transparent text-sm sm:text-base md:text-sm lg:text-base'
+              />
+              {isLoading && !isSuggestLoading ? (
+                <Loader2 className='h-4 w-4 mx-1 shrink-0 animate-spin text-primary pointer-events-none' />
+              ) : null}
+              {showClearButton ? (
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    handleClear()
+                  }}
+                  className='h-8 w-8 shrink-0 rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
+                  aria-label={tSuggestions('clear')}
+                >
+                  <X className='h-4 w-4' />
+                </Button>
+              ) : null}
+              {/*
+               * Submit button — pressing this (or Enter) is the only way to
+               * run the listing search. If a suggestion is highlighted, the
+               * search runs by that suggestion's type; otherwise the typed
+               * value is used as a keyword.
+               */}
               <Button
                 type='button'
-                variant='ghost'
-                size='icon'
+                size='sm'
                 onMouseDown={(e) => {
+                  // mousedown (not click) so the input keeps focus and the
+                  // popover doesn't close-then-reopen mid-submit.
                   e.preventDefault()
-                  handleClear()
+                  triggerSearch()
                 }}
-                className='h-8 w-8 shrink-0 rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
-                aria-label={tSuggestions('clear')}
+                className='ml-1 h-9 shrink-0 rounded-md px-4 text-sm font-medium'
+                aria-label={tSuggestions('submit')}
               >
-                <X className='h-4 w-4' />
+                <Search className='h-4 w-4' />
+                <span className='hidden sm:inline ml-1.5'>
+                  {tSuggestions('submit')}
+                </span>
               </Button>
-            ) : null}
-            {/*
-             * Submit button — pressing this (or Enter) is the only way to run
-             * the listing search. If a suggestion is highlighted, the search
-             * runs by that suggestion's type (LOCATION → location filter,
-             * TITLE → keyword/detail nav, POPULAR_QUERY → keyword); otherwise
-             * the typed value is used as a keyword.
-             */}
+            </div>
+          </div>
+        </PopoverAnchor>
+
+        <PopoverContent
+          align='start'
+          sideOffset={8}
+          collisionPadding={8}
+          // Don't steal focus from the input — the input drives this combobox
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          onCloseAutoFocus={(e) => e.preventDefault()}
+          // Clicking inside the input box (still in wrapperRef) shouldn't close
+          onInteractOutside={(e) => {
+            const target = e.target as Node | null
+            if (target && wrapperRef.current?.contains(target)) {
+              e.preventDefault()
+            }
+          }}
+          // Prevent mousedown on the popover chrome from blurring the input
+          onMouseDown={(e) => e.preventDefault()}
+          className={cn(
+            'p-0 overflow-hidden',
+            // Match the input width via Radix' trigger-width var, but never
+            // exceed the viewport. min-w-0 lets children truncate instead
+            // of pushing the panel wide.
+            'w-[var(--radix-popover-trigger-width)] min-w-0 max-w-[calc(100vw-1rem)]',
+            'rounded-2xl border border-border bg-popover text-popover-foreground',
+            'shadow-xl ring-1 ring-black/5 dark:ring-white/5',
+          )}
+        >
+          <SuggestionPanel {...panelProps} />
+        </PopoverContent>
+      </Popover>
+
+      {/*
+       * Mobile (< md): the popover UX is cramped, so focusing the bar opens
+       * a fullscreen dialog with its own search input that drives the same
+       * state. Radix' open auto-focus is prevented so we can move focus to
+       * the dialog input (keeping the soft keyboard on it); close
+       * auto-focus is prevented so focus doesn't return to the read-only
+       * bar trigger and immediately reopen the dialog.
+       */}
+      <Dialog
+        open={mobileOpen}
+        onOpenChange={(next) => {
+          if (!next) setIsFocused(false)
+        }}
+      >
+        <DialogContent
+          showCloseButton={false}
+          onOpenAutoFocus={(e) => {
+            e.preventDefault()
+            mobileHeaderRef.current
+              ?.querySelector<HTMLInputElement>('input')
+              ?.focus()
+          }}
+          onCloseAutoFocus={(e) => e.preventDefault()}
+          className={cn(
+            'p-0 gap-0 border-0 rounded-none bg-background',
+            'top-0 left-0 translate-x-0 translate-y-0',
+            'h-[100dvh] w-screen max-w-none',
+            'flex flex-col',
+          )}
+        >
+          <VisuallyHidden>
+            <DialogTitle>{tSuggestions('heading')}</DialogTitle>
+          </VisuallyHidden>
+
+          <div
+            ref={mobileHeaderRef}
+            className='flex items-center gap-1.5 border-b border-border px-2 h-14 shrink-0'
+          >
+            <Button
+              type='button'
+              variant='ghost'
+              size='icon'
+              onClick={() => setIsFocused(false)}
+              className='h-9 w-9 shrink-0 rounded-full text-muted-foreground'
+              aria-label={tSuggestions('back')}
+            >
+              <ArrowLeft className='h-5 w-5' />
+            </Button>
+            <div className='group flex flex-1 min-w-0 items-center h-10 rounded-lg border border-input bg-background px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20'>
+              <Search className='h-4 w-4 mr-2 shrink-0 text-muted-foreground group-focus-within:text-primary' />
+              <Input
+                type='text'
+                role='combobox'
+                aria-expanded={mobileOpen}
+                aria-autocomplete='list'
+                aria-controls={listId}
+                aria-activedescendant={
+                  highlightIndex >= 0 ? optionId(highlightIndex) : undefined
+                }
+                autoComplete='off'
+                spellCheck={false}
+                placeholder={placeholder || t('placeholder')}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className='flex-1 min-w-0 h-full border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 dark:bg-transparent text-base'
+              />
+              {showClearButton ? (
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  onClick={handleClear}
+                  className='h-7 w-7 shrink-0 rounded-full text-muted-foreground'
+                  aria-label={tSuggestions('clear')}
+                >
+                  <X className='h-4 w-4' />
+                </Button>
+              ) : null}
+            </div>
             <Button
               type='button'
               size='sm'
-              onMouseDown={(e) => {
-                // mousedown (not click) so the input keeps focus and the
-                // popover doesn't close-then-reopen mid-submit.
-                e.preventDefault()
-                triggerSearch()
-              }}
-              className='ml-1 h-9 shrink-0 rounded-md px-4 text-sm font-medium'
+              onClick={triggerSearch}
+              className='h-9 shrink-0 rounded-md px-3 text-sm font-medium'
               aria-label={tSuggestions('submit')}
             >
               <Search className='h-4 w-4' />
-              <span className='hidden sm:inline ml-1.5'>
-                {tSuggestions('submit')}
-              </span>
             </Button>
           </div>
-        </div>
-      </PopoverAnchor>
 
-      <PopoverContent
-        align='start'
-        sideOffset={8}
-        collisionPadding={8}
-        // Don't steal focus from the input — the input drives this combobox
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        onCloseAutoFocus={(e) => e.preventDefault()}
-        // Clicking inside the input box (still in wrapperRef) shouldn't close
-        onInteractOutside={(e) => {
-          const target = e.target as Node | null
-          if (target && wrapperRef.current?.contains(target)) {
-            e.preventDefault()
-          }
-        }}
-        // Prevent mousedown on the popover chrome from blurring the input
-        onMouseDown={(e) => e.preventDefault()}
-        className={cn(
-          'p-0 overflow-hidden',
-          // Match the input width via Radix' trigger-width var, but never
-          // exceed the viewport — the fix for the broken/overflowing mobile
-          // dropdown. min-w-0 lets children truncate instead of pushing wide.
-          'w-[var(--radix-popover-trigger-width)] min-w-0 max-w-[calc(100vw-1rem)]',
-          'rounded-2xl border border-border bg-popover text-popover-foreground',
-          'shadow-xl ring-1 ring-black/5 dark:ring-white/5',
-        )}
-      >
-        {/* Header */}
-        <div className='flex items-center justify-between gap-2 px-4 pt-3 pb-1'>
-          <span className='text-xs uppercase tracking-wide text-muted-foreground font-medium'>
-            {tSuggestions('heading')}
-          </span>
-          {isSuggestLoading ? (
-            <span className='flex items-center gap-1.5 text-xs text-muted-foreground'>
-              <Loader2 className='h-3 w-3 animate-spin' />
-              {tSuggestions('loading')}
-            </span>
-          ) : (
-            <span className='text-xs text-muted-foreground tabular-nums'>
-              {tSuggestions('countResults', {
-                count: visibleSuggestions.length,
-              })}
-            </span>
-          )}
-        </div>
-
-        {/* Body */}
-        <div
-          id={listId}
-          role='listbox'
-          className='max-h-[60vh] sm:max-h-96 overflow-y-auto py-1'
-        >
-          {showRunSearch ? (
-            <RunSearchRow
-              query={inputValue.trim()}
-              active={highlightIndex === 0}
-              onMouseEnter={() => setHighlightIndex(0)}
-              onSelect={() => {
-                runFreeTextSearch()
-                setIsFocused(false)
-              }}
-              rowId={optionId(0)}
-              label={tSuggestions('runSearchLabel')}
-            />
-          ) : null}
-
-          {visibleSuggestions.length === 0 && !isSuggestLoading ? (
-            <div className='px-4 py-8 text-center text-sm text-muted-foreground'>
-              <div className='mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-muted'>
-                <Search className='h-4 w-4' />
-              </div>
-              <div className='font-medium text-foreground'>
-                {tSuggestions('emptyTitle')}
-              </div>
-              <div className='mt-1'>{tSuggestions('emptyHint')}</div>
-            </div>
-          ) : (
-            renderedSuggestionRows
-          )}
-        </div>
-
-        {/* Footer hints (suppressed in compact contexts like the homepage) */}
-        {!hideFooterHints ? (
-          <div className='flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-4 py-2 text-2xs text-muted-foreground'>
-            <span className='hidden sm:flex items-center gap-2'>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
-                ↑
-              </kbd>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
-                ↓
-              </kbd>
-              <span>{tSuggestions('hintNavigate')}</span>
-              <span className='mx-1 opacity-40'>·</span>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
-                Enter
-              </kbd>
-              <span>{tSuggestions('hintSelect')}</span>
-              <span className='mx-1 opacity-40'>·</span>
-              <kbd className='inline-flex items-center rounded border border-border bg-background px-1 py-0.5 text-2xs'>
-                Esc
-              </kbd>
-              <span>{tSuggestions('hintClose')}</span>
-            </span>
-            <span className='sm:hidden'>{tSuggestions('hintMobile')}</span>
-            <span className='font-medium text-foreground/70'>
-              {tSuggestions('poweredBy')}
-            </span>
-          </div>
-        ) : null}
-      </PopoverContent>
-    </Popover>
+          <SuggestionPanel {...panelProps} bodyClassName='flex-1 max-h-none' />
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
