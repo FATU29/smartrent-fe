@@ -52,12 +52,18 @@ const LocationBrowseSection: React.FC<LocationBrowseSectionProps> = ({
     return <LocationBrowseSectionSkeleton />
   }
 
-  // Show empty state when no data
+  // Show empty state when no data.
+  // De-dupe on a stable composite key (provinceCode first, then provinceId).
+  // The backend already returns one row per province with a count that
+  // matches the listing page, but two new-structure provinces can both have
+  // provinceId === null — keying on provinceId alone would wrongly collapse
+  // them into one and drop the row carrying the real count.
   const uniqueCities = cities
-    ? cities.filter(
-        (city, idx, arr) =>
-          arr.findIndex((c) => c.provinceId === city.provinceId) === idx,
-      )
+    ? cities.filter((city, idx, arr) => {
+        const key = (c: ProvinceStatsItem) =>
+          c.provinceCode ?? `id:${c.provinceId}`
+        return arr.findIndex((c) => key(c) === key(city)) === idx
+      })
     : []
 
   if (!cities || uniqueCities.length === 0) {

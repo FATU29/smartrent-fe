@@ -3,7 +3,9 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import RadioRow from '@/components/atoms/mobileFilter/radioRow'
 import ToggleChip from '@/components/atoms/mobileFilter/toggleChip'
-import LocationToggleChip from '@/components/atoms/mobileFilter/locationToggleChip'
+// Location filter retired — the "Vị trí của bạn" toggle is hidden from the
+// dialog. Import/handler kept commented so it can be re-enabled in one change.
+// import LocationToggleChip from '@/components/atoms/mobileFilter/locationToggleChip'
 import ToggleSection from '@/components/molecules/mobileFilter/toggleSection'
 import { Button } from '@/components/atoms/button'
 import {
@@ -29,7 +31,6 @@ interface MobileFilterMainViewProps {
   filters: ListingFilterRequest
   onNavigate: (view: string) => void
   onUpdate: (partial: Partial<ListingFilterRequest>) => void
-  hideLocationFilter?: boolean
   hideVerifiedFilter?: boolean
   hideBrokerFilter?: boolean
   hideViewMapButton?: boolean
@@ -39,7 +40,6 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
   filters,
   onNavigate,
   onUpdate,
-  hideLocationFilter = false,
   hideVerifiedFilter = false,
   hideBrokerFilter = false,
   hideViewMapButton = false,
@@ -55,15 +55,17 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
     return parts.join(' ') + (unit ? ` ${unit}` : '')
   }
 
-  const handleLocationChange = (
-    userLatitude?: number,
-    userLongitude?: number,
-  ) => {
-    onUpdate({
-      userLatitude: userLatitude,
-      userLongitude: userLongitude,
-    })
-  }
+  // Location filter retired — handler kept commented alongside the import so
+  // the "Vị trí của bạn" toggle can be re-enabled in one change.
+  // const handleLocationChange = (
+  //   userLatitude?: number,
+  //   userLongitude?: number,
+  // ) => {
+  //   onUpdate({
+  //     userLatitude: userLatitude,
+  //     userLongitude: userLongitude,
+  //   })
+  // }
 
   return (
     <div className='pb-20'>
@@ -184,14 +186,15 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           </ToggleSection>
         )}
 
-        {!hideLocationFilter && (
-          <ToggleSection
-            icon={<MapPin className='h-4 w-4 text-muted-foreground' />}
-            title={t('toggles.location')}
-          >
-            <LocationToggleChip onLocationChange={handleLocationChange} />
-          </ToggleSection>
-        )}
+        {/* Location filter retired — "Vị trí của bạn" toggle hidden from the
+            dialog on all pages.
+        <ToggleSection
+          icon={<MapPin className='h-4 w-4 text-muted-foreground' />}
+          title={t('toggles.location')}
+        >
+          <LocationToggleChip onLocationChange={handleLocationChange} />
+        </ToggleSection>
+        */}
       </div>
     </div>
   )

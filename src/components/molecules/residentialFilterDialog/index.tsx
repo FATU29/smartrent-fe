@@ -30,7 +30,6 @@ interface ResidentialFilterDialogProps {
   onOpenChange: (open: boolean) => void
   title?: string
   onApply?: () => void
-  hideLocationFilter?: boolean
   hideVerifiedFilter?: boolean
   hideBrokerFilter?: boolean
   hideViewMapButton?: boolean
@@ -55,7 +54,6 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   onOpenChange,
   title,
   onApply: onApplyProp,
-  hideLocationFilter = false,
   hideVerifiedFilter = false,
   hideBrokerFilter = false,
   hideViewMapButton = false,
@@ -242,7 +240,6 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
             filters={draft}
             onNavigate={(v) => setView(v as ViewKey)}
             onUpdate={update}
-            hideLocationFilter={hideLocationFilter}
             hideVerifiedFilter={hideVerifiedFilter}
             hideBrokerFilter={hideBrokerFilter}
             hideViewMapButton={hideViewMapButton}

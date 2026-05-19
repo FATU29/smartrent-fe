@@ -866,7 +866,9 @@
         "minPrice": "Min Price",
         "maxPrice": "Max Price",
         "currency": "VND",
-        "any": "All prices"
+        "any": "All prices",
+        "from": "From {price} {currency}",
+        "upTo": "Up to {price} {currency}"
       },
       "bedrooms": {
         "title": "Bedrooms",
