@@ -23,12 +23,14 @@ import PersonalizedPropertySection from '@/components/organisms/personalizedProp
 
 interface HomepageTemplateProps {
   cities?: ProvinceStatsItem[]
+  citiesLoading?: boolean
   categoryStats?: CategoryStatsItem[]
   latestNews?: NewsItem[]
 }
 
 const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   cities,
+  citiesLoading = false,
   categoryStats,
   latestNews = [],
 }) => {
@@ -109,7 +111,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
           )}
         </div>
 
-        <LocationBrowseSection cities={cities} loading={cities === undefined} />
+        <LocationBrowseSection cities={cities} loading={citiesLoading} />
 
         {latestNews && latestNews.length > 0 && (
           <NewsGridSection news={latestNews} />
