@@ -132,14 +132,14 @@ export const NumberedStepList: React.FC<NumberedStepListProps> = ({
   start = 1,
   className = '',
 }) => (
-  <div className={`space-y-5 ${className}`.trim()}>
+  <div className={`space-y-3 ${className}`.trim()}>
     {steps.map((s, i) => (
       <div key={i}>
         <Typography
-          variant='h4'
-          className='flex items-start gap-2.5 text-base leading-snug tracking-tight sm:text-lg'
+          variant='h5'
+          className='flex items-start gap-2.5 font-medium tracking-tight'
         >
-          <span className='mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground sm:text-sm'>
+          <span className='mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground'>
             {start + i}
           </span>
           {normalizeStepTitle(s.title)}
@@ -147,7 +147,7 @@ export const NumberedStepList: React.FC<NumberedStepListProps> = ({
         {s.description && (
           <Typography
             variant='p'
-            className='ml-9 mt-1.5 text-sm leading-6 text-muted-foreground'
+            className='ml-[2.125rem] mt-1.5 text-sm leading-6 text-muted-foreground'
           >
             {s.description}
           </Typography>

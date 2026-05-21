@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { SavedListing } from '@/api/types'
 import { PUBLIC_ROUTES } from '@/constants/route'
@@ -21,6 +21,16 @@ import { PageContainer } from '@/components/atoms/pageContainer'
 const SavedListingsContent: React.FC = () => {
   const router = useRouter()
   const { items, isLoading, pagination } = useListContext<SavedListing>()
+  // List context starts with isLoading=false and only flips to true inside a
+  // useEffect, so first paint would briefly render the empty state. Track when
+  // the first fetch attempt has actually completed and gate the empty state on
+  // that — until then, render the skeleton.
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false)
+  useEffect(() => {
+    if (isLoading) {
+      setHasFetchedOnce(true)
+    }
+  }, [isLoading])
 
   // Event handlers
   const handleCardClick = useCallback(
@@ -36,13 +46,18 @@ const SavedListingsContent: React.FC = () => {
     router.push(PUBLIC_ROUTES.PROPERTIES_PREFIX)
   }, [router])
 
-  // Loading state
-  if (isLoading && items.length === 0) {
+  // Loading state — covers both in-flight fetches and the pre-fetch first paint
+  if ((isLoading || !hasFetchedOnce) && items.length === 0) {
     return <SavedListingsLoadingState />
   }
 
-  // Empty state - Show when no items AND no loading
-  if (items.length === 0 && !isLoading && pagination.totalCount === 0) {
+  // Empty state - only after we've actually attempted a fetch
+  if (
+    items.length === 0 &&
+    !isLoading &&
+    hasFetchedOnce &&
+    pagination.totalCount === 0
+  ) {
     return <SavedListingsEmptyState onBrowseListings={handleBrowseListings} />
   }
 

@@ -166,13 +166,16 @@ const FollowingPageTemplate: React.FC = () => {
         </TabsList>
 
         <TabsContent value='people' className='space-y-4'>
-          {peopleQuery.isLoading && <PeopleSkeleton />}
+          {/* isPending stays true while the query is disabled (auth not yet
+              ready) AND during the first fetch — using it instead of isLoading
+              avoids flashing the empty state before login resolves. */}
+          {peopleQuery.isPending && !peopleQuery.isError && <PeopleSkeleton />}
 
           {peopleQuery.isError && (
             <ErrorAlert t={t} onRetry={() => peopleQuery.refetch()} />
           )}
 
-          {!peopleQuery.isLoading &&
+          {!peopleQuery.isPending &&
             !peopleQuery.isError &&
             people.length === 0 && <EmptyPeopleState t={t} />}
 
@@ -278,13 +281,13 @@ const FollowingPageTemplate: React.FC = () => {
               </Typography>
             </div>
 
-            {feedQuery.isLoading && <FeedSkeleton />}
+            {feedQuery.isPending && !feedQuery.isError && <FeedSkeleton />}
 
             {feedQuery.isError && (
               <ErrorAlert t={t} onRetry={() => feedQuery.refetch()} />
             )}
 
-            {!feedQuery.isLoading &&
+            {!feedQuery.isPending &&
               !feedQuery.isError &&
               feedListings.length === 0 && (
                 <EmptyFeedState t={t} filteredName={selectedPersonName} />
