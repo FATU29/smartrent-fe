@@ -10,6 +10,7 @@ const AUTH_PROFILE_QUERY_PREFIXES = [
   ['sellernet', 'personal-edit-profile'],
   ['create-post-profile-phone-check'],
   ['create-post-order-summary-profile'],
+  ['notifications'],
 ] as const
 
 export const clearAuthProfileQueries = (queryClient: QueryClient) => {
