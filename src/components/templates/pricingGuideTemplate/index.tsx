@@ -375,7 +375,6 @@ const PricingGuideTemplate: React.FC = () => {
                   <BadgeCheck className='h-5 w-5 text-primary' />
                   <span className='break-words'>{t('membership.title')}</span>
                 </CardTitle>
-                <CardDescription>{t('membership.description')}</CardDescription>
               </div>
               <Button
                 variant='outline'
@@ -410,9 +409,6 @@ const PricingGuideTemplate: React.FC = () => {
               <Crown className='h-5 w-5 text-primary' />
               <span className='break-words'>{t('postTypes.title')}</span>
             </CardTitle>
-            <CardDescription className='max-w-4xl leading-relaxed'>
-              {t('postTypes.description')}
-            </CardDescription>
           </CardHeader>
           <CardContent className='space-y-4 pb-5'>
             {vipTiersByPrice.length > 0 ? (
@@ -460,7 +456,6 @@ const PricingGuideTemplate: React.FC = () => {
               <CheckCircle2 className='h-5 w-5 text-primary' />
               <span className='break-words'>{t('services.title')}</span>
             </CardTitle>
-            <CardDescription>{t('services.description')}</CardDescription>
           </CardHeader>
           <CardContent className='space-y-3 pb-5'>
             <div className='hidden gap-3 md:grid md:grid-cols-3'>
@@ -477,9 +472,6 @@ const PricingGuideTemplate: React.FC = () => {
                   <div className='mb-2 flex items-center gap-2 font-semibold'>
                     <CheckCircle2 className='h-4 w-4 text-primary' />
                     {t(`services.${serviceKey}.name`)}
-                  </div>
-                  <div className='text-sm leading-relaxed text-muted-foreground'>
-                    {t(`services.${serviceKey}.description`)}
                   </div>
                   <div className='mt-3'>
                     <Badge variant='outline'>
@@ -512,9 +504,6 @@ const PricingGuideTemplate: React.FC = () => {
                             <span className='break-words'>
                               {t(`services.${serviceKey}.name`)}
                             </span>
-                          </div>
-                          <div className='text-sm leading-relaxed text-muted-foreground'>
-                            {t(`services.${serviceKey}.description`)}
                           </div>
                           <div className='mt-3'>
                             <Badge variant='outline'>
