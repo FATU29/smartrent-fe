@@ -1,18 +1,11 @@
 import React from 'react'
-import { useTranslations } from 'next-intl'
 import PropertyListContent from '@/components/molecules/propertyListContent'
 
 import PropertyFilterSidebar from '@/components/molecules/propertyFilterSidebar'
-import { Typography } from '@/components/atoms/typography'
-import { useListContext } from '@/contexts/list'
-import { ListingDetail } from '@/api/types/property.type'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
 import Image from 'next/image'
 
 const ResidentialPropertiesTemplate: React.FC = () => {
-  const t = useTranslations('propertiesPage')
-  const { pagination } = useListContext<ListingDetail>()
-
   return (
     <>
       {/* Filter Bar - At the top */}
@@ -35,21 +28,6 @@ const ResidentialPropertiesTemplate: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* Header Section */}
-      <header className='space-y-4 mb-6'>
-        {/* Title and Controls */}
-        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-          <div className='space-y-2'>
-            <Typography variant='p' className='text-muted-foreground'>
-              {t('listingCount', { count: pagination.totalCount })}
-            </Typography>
-          </div>
-
-          {/* Controls placeholder (removed email notification switch) */}
-          <div className='flex items-center gap-4' />
-        </div>
-      </header>
 
       {/* Main Content - Two Column Layout */}
       <div className='flex flex-col lg:flex-row gap-6'>

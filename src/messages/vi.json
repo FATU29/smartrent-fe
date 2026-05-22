@@ -3124,7 +3124,6 @@
     }
   },
   "propertiesPage": {
-    "listingCount": "Hiện có {count} bất động sản.",
     "emailNotification": "Nhận email tin mới",
     "sort": {
       "title": "Sắp xếp",
