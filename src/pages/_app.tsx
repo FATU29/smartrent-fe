@@ -16,6 +16,9 @@ import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { AuthDialogProvider } from '@/contexts/authDialog'
 import { fontVariables } from '@/theme/fonts'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { Query } from '@tanstack/react-query'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 import AuthRouteGate from '@/components/utility/AuthRouteGate'
 import ErrorBoundary from '@/components/atoms/errorBoundary'
 import NextTopLoader from 'nextjs-toploader'
@@ -37,6 +40,31 @@ const ReactQueryDevtools = dynamic(
 type Messages = typeof vi
 
 const queryClient = new QueryClient()
+
+// Persist ONLY the two homepage stats queries to localStorage so they survive a
+// page reload / new tab and stay cached for a full day — matching the permanent
+// backend Redis cache (refreshed by the midnight cron). Everything else (auth,
+// listings, …) is intentionally NOT persisted. SSR-safe: localStorage only
+// exists in the browser, so the persister is null on the server and we fall
+// back to a plain QueryClientProvider there.
+const ONE_DAY_MS = 24 * 60 * 60 * 1000
+
+const queryPersister =
+  typeof window !== 'undefined'
+    ? createSyncStoragePersister({
+        storage: window.localStorage,
+        key: 'SMARTRENT_HOMEPAGE_STATS_CACHE',
+      })
+    : null
+
+const shouldPersistQuery = (query: Query): boolean => {
+  const [scope, section] = query.queryKey
+  return (
+    query.state.status === 'success' &&
+    scope === 'homepage' &&
+    (section === 'province-stats' || section === 'category-stats')
+  )
+}
 
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const { language } = useSwitchLanguage()
@@ -79,6 +107,33 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
     )
   }, [router.pathname])
 
+  const queryTree = (
+    <>
+      <NextIntlClientProvider locale={language} messages={activeMessages}>
+        <NextThemesProvider
+          attribute='class'
+          defaultTheme='light'
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <ThemeDataProvider>
+            <AuthProvider>
+              <AuthDialogProvider>
+                <AuthRouteGate />
+                {getLayout(<Component {...pageProps} />)}
+                <Toaster />
+                {showChatWidget && <AiChatWidget position='bottom-right' />}
+              </AuthDialogProvider>
+            </AuthProvider>
+          </ThemeDataProvider>
+        </NextThemesProvider>
+      </NextIntlClientProvider>
+      {process.env.NODE_ENV === 'development' && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
+    </>
+  )
+
   return (
     <div className={fontVariables}>
       <Head>
@@ -95,30 +150,25 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
         speed={200}
         shadow='0 0 10px var(--primary),0 0 5px var(--primary)'
       />
-      <QueryClientProvider client={queryClient}>
-        <NextIntlClientProvider locale={language} messages={activeMessages}>
-          <NextThemesProvider
-            attribute='class'
-            defaultTheme='light'
-            enableSystem={false}
-            disableTransitionOnChange
-          >
-            <ThemeDataProvider>
-              <AuthProvider>
-                <AuthDialogProvider>
-                  <AuthRouteGate />
-                  {getLayout(<Component {...pageProps} />)}
-                  <Toaster />
-                  {showChatWidget && <AiChatWidget position='bottom-right' />}
-                </AuthDialogProvider>
-              </AuthProvider>
-            </ThemeDataProvider>
-          </NextThemesProvider>
-        </NextIntlClientProvider>
-        {process.env.NODE_ENV === 'development' && (
-          <ReactQueryDevtools initialIsOpen={false} />
-        )}
-      </QueryClientProvider>
+      {queryPersister ? (
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={{
+            persister: queryPersister,
+            maxAge: ONE_DAY_MS,
+            // Bump this string when the stats response shape changes to drop
+            // incompatible cached payloads.
+            buster: 'homepage-stats-v1',
+            dehydrateOptions: { shouldDehydrateQuery: shouldPersistQuery },
+          }}
+        >
+          {queryTree}
+        </PersistQueryClientProvider>
+      ) : (
+        <QueryClientProvider client={queryClient}>
+          {queryTree}
+        </QueryClientProvider>
+      )}
     </div>
   )
 }

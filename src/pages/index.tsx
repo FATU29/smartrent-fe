@@ -17,6 +17,18 @@ const HOMEPAGE_QUERY_CONFIG = {
   gcTime: 10 * 60 * 1000, // 10 minutes
 }
 
+// Province/category stats only change once a day (refreshed by the backend
+// midnight cron, served from a permanent Redis cache). Cache them on the client
+// for a full day and stop window-focus / reconnect refetches so the homepage
+// doesn't keep re-hitting the API during normal browsing.
+const ONE_DAY_MS = 24 * 60 * 60 * 1000
+const DAILY_STATS_QUERY_CONFIG = {
+  staleTime: ONE_DAY_MS,
+  gcTime: ONE_DAY_MS,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+}
+
 const TOP_PROVINCE_IDS = [
   PROVINCE_ID.HANOI,
   PROVINCE_ID.HO_CHI_MINH,
@@ -66,7 +78,7 @@ const Home: NextPageWithLayout = () => {
       return response?.data || []
     },
     enabled: isClientSide,
-    ...HOMEPAGE_QUERY_CONFIG,
+    ...DAILY_STATS_QUERY_CONFIG,
   })
 
   const { data: categoryStats } = useQuery<CategoryStatsItem[]>({
@@ -79,7 +91,7 @@ const Home: NextPageWithLayout = () => {
       return response?.data || []
     },
     enabled: isClientSide,
-    ...HOMEPAGE_QUERY_CONFIG,
+    ...DAILY_STATS_QUERY_CONFIG,
   })
 
   const { data: latestNews } = useQuery<NewsItem[]>({
