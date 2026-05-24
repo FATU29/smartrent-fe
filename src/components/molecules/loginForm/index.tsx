@@ -3,6 +3,8 @@ import { AuthType } from '@/components/organisms/authDialog'
 import { PasswordField } from '../passwordField'
 import { EmailField } from '../emailField'
 import { Button } from '@/components/atoms/button'
+import { Input } from '@/components/atoms/input'
+import { Label } from '@/components/atoms/label'
 import { Typography } from '@/components/atoms/typography'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
@@ -17,7 +19,8 @@ import { googleOAuthURL } from '@/utils/googleOAuth2'
 import { useState, useCallback } from 'react'
 import OtpInput from '../otpInput'
 import SuccessMessage from '../successMessage'
-import { Mail, Sparkles } from 'lucide-react'
+import { Mail } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const ImageAtom = dynamic(() => import('@/components/atoms/imageAtom'), {
   ssr: false,
@@ -32,10 +35,6 @@ type LoginFormProps = {
 type LoginFormData = {
   email: string
   password: string
-}
-
-type MagicLinkFormData = {
-  email: string
 }
 
 type LoginStep =
@@ -86,24 +85,11 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
     },
   })
 
-  const magicLinkSchema = yup.object({
-    email: yup
-      .string()
-      .required(t('homePage.auth.validation.emailRequired'))
-      .matches(
-        VALIDATION_PATTERNS.EMAIL,
-        t('homePage.auth.validation.emailInvalid'),
-      ),
-  })
-
-  const {
-    control: magicLinkControl,
-    handleSubmit: handleMagicLinkSubmit,
-    formState: { isSubmitting: isMagicLinkSubmitting, errors: magicLinkErrors },
-  } = useForm<MagicLinkFormData>({
-    resolver: yupResolver(magicLinkSchema),
-    defaultValues: { email: '' },
-  })
+  const [magicLinkInput, setMagicLinkInput] = useState('')
+  const [magicLinkInputError, setMagicLinkInputError] = useState<string | null>(
+    null,
+  )
+  const [isMagicLinkSubmitting, setIsMagicLinkSubmitting] = useState(false)
 
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -156,25 +142,40 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
     setCurrentStep('login')
     setVerifyEmail('')
     setMagicLinkEmail('')
+    setMagicLinkInput('')
+    setMagicLinkInputError(null)
   }, [])
 
-  const handleMagicLinkRequest = async (data: MagicLinkFormData) => {
-    const result = await requestMagicLink({ email: data.email })
-
-    if (result.success && result.data) {
-      setMagicLinkEmail(data.email)
-      setMagicLinkExpiresIn(result.data.expiresInSeconds)
-      setCurrentStep('magicLinkSent')
-    } else {
-      toast.error(
-        result.message || t('homePage.auth.magicLink.requestErrorMessage'),
-      )
-    }
-  }
-
-  const handleMagicLinkFormSubmit = (e: React.FormEvent) => {
+  const handleMagicLinkFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    handleMagicLinkSubmit(handleMagicLinkRequest)(e)
+
+    const trimmedEmail = magicLinkInput.trim()
+    if (!trimmedEmail) {
+      setMagicLinkInputError(t('homePage.auth.validation.emailRequired'))
+      return
+    }
+    if (!VALIDATION_PATTERNS.EMAIL.test(trimmedEmail)) {
+      setMagicLinkInputError(t('homePage.auth.validation.emailInvalid'))
+      return
+    }
+    setMagicLinkInputError(null)
+
+    setIsMagicLinkSubmitting(true)
+    try {
+      const result = await requestMagicLink({ email: trimmedEmail })
+
+      if (result.success && result.data) {
+        setMagicLinkEmail(trimmedEmail)
+        setMagicLinkExpiresIn(result.data.expiresInSeconds)
+        setCurrentStep('magicLinkSent')
+      } else {
+        toast.error(
+          result.message || t('homePage.auth.magicLink.requestErrorMessage'),
+        )
+      }
+    } finally {
+      setIsMagicLinkSubmitting(false)
+    }
   }
 
   // Verify account OTP step
@@ -217,12 +218,44 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
 
         <form onSubmit={handleMagicLinkFormSubmit}>
           <div className='space-y-2'>
-            <EmailField
-              name='email'
-              control={magicLinkControl}
-              label={t('homePage.auth.common.email')}
-              error={magicLinkErrors.email?.message}
-            />
+            <div>
+              <Label className='mb-2' htmlFor='magic-link-email'>
+                {t('homePage.auth.common.email')}
+                <span className='text-destructive ml-1'>*</span>
+              </Label>
+              <div className='relative'>
+                <div className='absolute left-3 top-1/2 -translate-y-1/2'>
+                  <Mail
+                    className={cn(
+                      'h-4 w-4 text-muted-foreground',
+                      magicLinkInputError && 'text-destructive',
+                    )}
+                  />
+                </div>
+                <Input
+                  id='magic-link-email'
+                  type='email'
+                  autoComplete='email'
+                  value={magicLinkInput}
+                  onChange={(e) => {
+                    setMagicLinkInput(e.target.value)
+                    if (magicLinkInputError) setMagicLinkInputError(null)
+                  }}
+                  placeholder={t('homePage.auth.common.emailPlaceholder')}
+                  aria-invalid={magicLinkInputError ? 'true' : 'false'}
+                  className={cn(
+                    'h-10 md:h-12 pl-10',
+                    magicLinkInputError &&
+                      'border-destructive focus-visible:border-destructive',
+                  )}
+                />
+              </div>
+              {magicLinkInputError && (
+                <Typography variant='small' className='text-destructive mt-2'>
+                  {magicLinkInputError}
+                </Typography>
+              )}
+            </div>
           </div>
 
           <Button
@@ -353,7 +386,7 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
           className='w-full'
           onClick={() => setCurrentStep('magicLink')}
         >
-          <Sparkles className='w-4 h-4 mr-2' />
+          <Mail className='w-4 h-4 mr-2 text-primary' />
           {t('homePage.auth.login.magicLinkButton')}
         </Button>
       </div>
