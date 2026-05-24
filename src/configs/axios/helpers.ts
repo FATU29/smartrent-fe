@@ -1,6 +1,7 @@
 import { InternalAxiosRequestConfig } from 'axios'
 import { ENV } from '@/constants'
 import { decodeToken } from '@/utils/decode-jwt'
+import { cookieManager } from '@/utils/cookies'
 
 // Helper functions for token management to reduce cognitive complexity
 
@@ -16,7 +17,6 @@ const isTokenExpired = (token: string): boolean => {
 
 const clearAuthTokens = () => {
   if (typeof document !== 'undefined') {
-    const { cookieManager } = require('@/utils/cookies')
     cookieManager.clearAuthTokens()
   }
 }

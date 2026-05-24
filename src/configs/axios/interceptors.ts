@@ -87,6 +87,9 @@ export function createAuthRequestInterceptor(
 
       if (newToken) {
         accessToken = newToken
+        // Token was just refreshed preemptively — if the server still answers
+        // 401, the response interceptor must not refresh again.
+        customConfig._retry = true
       } else {
         return config
       }
@@ -102,7 +105,7 @@ export function createAuthRequestInterceptor(
   }
 }
 
-export function createAuthResponseInterceptor() {
+export function createAuthResponseInterceptor(axiosInstance?: AxiosInstance) {
   return {
     onFulfilled: (response: AxiosResponse) => response,
     onRejected: async (error: AxiosError) => {
@@ -116,20 +119,38 @@ export function createAuthResponseInterceptor() {
         return Promise.reject(error)
       }
 
-      // Handle 401 errors - token refresh failed or unauthorized
-      if (error.response?.status === 401) {
-        const refreshTokenValue = getRefreshToken()
-
-        // If refresh token is expired or missing, trigger logout
-        if (!refreshTokenValue || isTokenExpired(refreshTokenValue)) {
-          handleExpiredTokens(refreshTokenValue)
-        } else {
-          // API returned 401 even with valid refresh token
-          handleRefreshFailure()
-        }
+      if (error.response?.status !== 401 || !requestConfig) {
+        return Promise.reject(error)
       }
 
-      return Promise.reject(error)
+      // Already retried with a fresh access token — server still rejects, so
+      // this is a genuine auth failure, not something a refresh can fix.
+      if (requestConfig._retry) {
+        handleRefreshFailure()
+        return Promise.reject(error)
+      }
+
+      const refreshTokenValue = getRefreshToken()
+
+      // Refresh is impossible — refresh token gone or expired → real session end
+      if (!refreshTokenValue || isTokenExpired(refreshTokenValue)) {
+        handleExpiredTokens(refreshTokenValue)
+        return Promise.reject(error)
+      }
+
+      // Try to refresh. Only surface "session expired" if the refresh itself fails.
+      const newToken = await refreshToken()
+      if (!newToken) {
+        handleRefreshFailure()
+        return Promise.reject(error)
+      }
+
+      // Refresh succeeded — silently retry the original request with the new token.
+      requestConfig._retry = true
+      if (!axiosInstance) {
+        return Promise.reject(error)
+      }
+      return axiosInstance(requestConfig)
     },
   }
 }
@@ -142,7 +163,7 @@ export function setupInterceptors(
   axiosInstance.interceptors.request.use(createAuthRequestInterceptor(cookies))
 
   // Response interceptor for handling 401 errors
-  const responseInterceptor = createAuthResponseInterceptor()
+  const responseInterceptor = createAuthResponseInterceptor(axiosInstance)
   axiosInstance.interceptors.response.use(
     responseInterceptor.onFulfilled,
     responseInterceptor.onRejected,
