@@ -2970,7 +2970,8 @@
       "call": "Gọi điện",
       "message": "Nhắn tin",
       "chatZalo": "Chat qua Zalo",
-      "showPhone": "Hiện số"
+      "showPhone": "Hiện số",
+      "sendEmail": "Gửi email"
     },
     "phoneAccess": {
       "loginRequiredTitle": "Đăng nhập để xem số điện thoại",
@@ -3180,11 +3181,8 @@
     },
     "profile": {
       "title": "Thông tin người bán",
-      "subtitle": "Kết nối nhanh với người bán qua điện thoại, Zalo hoặc email",
-      "sellerBadge": "Người bán",
       "professionalBrokerBadge": "Môi giới chuyên nghiệp",
       "professionalBrokerDescription": "Người bán này đã được xác minh là môi giới chuyên nghiệp.",
-      "listingCount": "{count} tin đăng",
       "defaultSellerName": "Người bán",
       "phoneLabel": "Số điện thoại",
       "emailLabel": "Email",

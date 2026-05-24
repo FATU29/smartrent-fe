@@ -12,25 +12,17 @@ import { Skeleton } from '@/components/atoms/skeleton'
 import { Typography } from '@/components/atoms/typography'
 import CopyButton from '@/components/atoms/copy-button'
 import { UserApi } from '@/api/types'
-import {
-  Mail,
-  MessageCircle,
-  Phone,
-  ShieldCheck,
-  UserRoundCheck,
-} from 'lucide-react'
+import { Mail, MessageCircle, Phone, ShieldCheck } from 'lucide-react'
 import BrokerAvatar from '@/components/molecules/brokerAvatar'
 import FollowButton from '@/components/molecules/followButton'
 
 interface SellerPublicProfileCardProps {
   seller?: UserApi | null
-  listingCount: number
   isLoading?: boolean
 }
 
 const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
   seller,
-  listingCount,
   isLoading = false,
 }) => {
   const t = useTranslations('sellerDetailPage')
@@ -40,7 +32,6 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
       <Card className='border-primary/20 overflow-hidden bg-gradient-to-br from-background via-primary/[0.02] to-primary/[0.06] shadow-sm'>
         <CardHeader className='pb-3 space-y-2'>
           <Skeleton className='h-6 w-48' />
-          <Skeleton className='h-4 w-72 max-w-full' />
         </CardHeader>
         <CardContent className='space-y-4 pt-4'>
           <div className='flex items-start gap-4'>
@@ -48,11 +39,7 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
 
             <div className='min-w-0 flex-1 space-y-2'>
               <Skeleton className='h-6 w-52 max-w-full' />
-              <div className='flex flex-wrap items-center gap-2'>
-                <Skeleton className='h-6 w-28 rounded-full' />
-                <Skeleton className='h-6 w-24 rounded-full' />
-                <Skeleton className='h-6 w-20 rounded-full' />
-              </div>
+              <Skeleton className='h-9 w-9 rounded-md' />
             </div>
           </div>
 
@@ -102,9 +89,6 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
     <Card className='border-primary/20 overflow-hidden bg-gradient-to-br from-background via-primary/[0.02] to-primary/[0.06] shadow-sm'>
       <CardHeader className='pb-3'>
         <CardTitle className='text-lg'>{t('profile.title')}</CardTitle>
-        <Typography variant='small' className='text-muted-foreground mt-1'>
-          {t('profile.subtitle')}
-        </Typography>
       </CardHeader>
       <CardContent className='space-y-4 pt-4'>
         <div className='flex items-start gap-4'>
@@ -123,13 +107,8 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
             <Typography variant='h4' className='truncate text-base md:text-lg'>
               {displayName}
             </Typography>
-            <div className='flex flex-wrap items-center gap-2'>
-              <Badge variant='secondary' className='gap-1.5'>
-                <UserRoundCheck className='h-3.5 w-3.5' />
-                {t('profile.sellerBadge')}
-              </Badge>
-
-              {isProfessionalBroker && (
+            {isProfessionalBroker && (
+              <div className='flex flex-wrap items-center gap-2'>
                 <Badge
                   variant='outline'
                   className='gap-1.5 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
@@ -137,16 +116,17 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
                   <ShieldCheck className='h-3.5 w-3.5' />
                   {t('profile.professionalBrokerBadge')}
                 </Badge>
-              )}
-
-              <Badge variant='outline'>
-                {t('profile.listingCount', { count: listingCount })}
-              </Badge>
-            </div>
+              </div>
+            )}
 
             {seller?.userId && (
-              <div className='pt-1'>
-                <FollowButton targetUserId={seller.userId} showFollowerCount />
+              <div className='pt-1 flex items-center gap-2'>
+                <FollowButton
+                  targetUserId={seller.userId}
+                  iconOnly
+                  variant='outline'
+                  className='h-9 w-9 border-primary/40 text-primary hover:bg-primary/10'
+                />
               </div>
             )}
           </div>
