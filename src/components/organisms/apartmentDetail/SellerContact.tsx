@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/atoms/dialog'
-import { Phone } from 'lucide-react'
+import { LayoutList, Mail, Phone } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { PUBLIC_ROUTES, buildSellerDetailRoute } from '@/constants/route'
@@ -57,6 +57,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
     phoneCode = '',
     phoneNumber = '',
     avatarUrl,
+    email = '',
   } = host
   const name = `${firstName} ${lastName}`.trim() || 'Người bán'
   const phone = `${phoneCode} ${phoneNumber}`.trim()
@@ -88,6 +89,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
   }
 
   const hasPhone = Boolean(phoneCode && phoneNumber)
+  const hasEmail = Boolean(email)
   const isProfessionalBroker =
     Boolean(host.isBroker) || host.brokerVerificationStatus === 'APPROVED'
   const professionalBrokerLabel = tCommon('userMenu.proBroker')
@@ -134,20 +136,24 @@ const SellerContact: React.FC<SellerContactProps> = ({
                 {name}
               </Typography>
             </Link>
-            <div className='pt-1 flex flex-wrap items-center gap-2'>
+            <div className='pt-1 flex flex-wrap items-center gap-1.5'>
               <Button
                 asChild
-                size='sm'
-                className='h-7 px-2.5 text-2xs md:text-xs bg-primary hover:bg-primary/90 text-primary-foreground'
+                size='icon'
+                variant='outline'
+                className='h-7 w-7 border-primary/40 text-primary hover:bg-primary/10'
+                aria-label={t('links.viewSellerListings')}
+                title={t('links.viewSellerListings')}
               >
                 <Link href={sellerListingsUrl}>
-                  {t('links.viewSellerListings')}
+                  <LayoutList className='h-3.5 w-3.5' />
                 </Link>
               </Button>
               <FollowButton
                 targetUserId={host.userId}
-                size='sm'
-                className='h-7 px-2.5 text-2xs md:text-xs'
+                iconOnly
+                variant='outline'
+                className='h-7 w-7 border-primary/40 text-primary hover:bg-primary/10'
               />
             </div>
           </div>
@@ -170,6 +176,19 @@ const SellerContact: React.FC<SellerContactProps> = ({
             />
             <span>{t('actions.chatZalo')}</span>
           </Button>
+
+          {hasEmail && (
+            <Button
+              asChild
+              className='w-full bg-card hover:bg-primary/10 text-foreground border-2 border-primary h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground dark:border-primary/80'
+              aria-label={t('actions.sendEmail')}
+            >
+              <a href={`mailto:${email}`}>
+                <Mail className='w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5' />
+                <span>{t('actions.sendEmail')}</span>
+              </a>
+            </Button>
+          )}
 
           <Button
             className='w-full bg-primary hover:bg-primary/90 h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all text-primary-foreground'

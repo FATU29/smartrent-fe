@@ -2969,7 +2969,8 @@
       "call": "Call",
       "message": "Message",
       "chatZalo": "Chat via Zalo",
-      "showPhone": "Show phone"
+      "showPhone": "Show phone",
+      "sendEmail": "Send email"
     },
     "phoneAccess": {
       "loginRequiredTitle": "Log in to view phone number",
@@ -3179,11 +3180,8 @@
     },
     "profile": {
       "title": "Seller information",
-      "subtitle": "Connect quickly with this seller via phone, Zalo, or email",
-      "sellerBadge": "Seller",
       "professionalBrokerBadge": "Professional Broker",
       "professionalBrokerDescription": "This seller is verified as a professional broker.",
-      "listingCount": "{count} listings",
       "defaultSellerName": "Seller",
       "phoneLabel": "Phone number",
       "emailLabel": "Email",

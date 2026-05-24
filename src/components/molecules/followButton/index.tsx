@@ -33,6 +33,12 @@ export interface FollowButtonProps {
   icon?: React.ReactNode | null
   /** Defaults to true when `showFollowerCount` is true, false otherwise. */
   fullWidth?: boolean
+  /**
+   * Render the button as a square icon-only control with no visible label —
+   * the label still ships as `aria-label` for screen readers. Use this in
+   * tight seller-contact cards where a full pill takes too much space.
+   */
+  iconOnly?: boolean
 }
 
 /**
@@ -50,6 +56,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   className,
   icon,
   fullWidth,
+  iconOnly = false,
 }) => {
   const t = useTranslations('userFollow')
   const router = useRouter()
@@ -99,20 +106,21 @@ const FollowButton: React.FC<FollowButtonProps> = ({
     <Button
       type='button'
       variant={effectiveVariant}
-      size={size}
+      size={iconOnly ? 'icon' : size}
       onClick={toggleFollow}
       disabled={!targetUserId || isLoading}
       aria-label={ariaLabel}
+      title={iconOnly ? label : undefined}
       aria-pressed={isFollowing}
       className={cn(
         'font-semibold transition-colors',
-        isFullWidth && 'w-full',
+        isFullWidth && !iconOnly && 'w-full',
         isFollowing && 'border-primary/40 text-primary hover:bg-primary/5',
         className,
       )}
     >
       {renderIcon()}
-      <span>{label}</span>
+      {!iconOnly && <span>{label}</span>}
     </Button>
   )
 
