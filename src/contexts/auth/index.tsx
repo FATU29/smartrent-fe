@@ -97,6 +97,12 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     if (!_hasHydrated) return
 
+    const notifySessionExpired = () => {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('auth:unauthorized'))
+      }
+    }
+
     const initializeAuth = async () => {
       // Cleanup legacy localStorage auth keys from previous implementations
       clearLegacyAuthStorage()
@@ -109,56 +115,62 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         // If localStorage says authenticated but no cookies → logout
         if (currentState.isAuthenticated && !tokens?.accessToken) {
           console.warn('[Auth] Cookies missing on load, logging out...')
-          logout()
+          notifySessionExpired()
           return
         }
 
-        // If we have tokens, validate them
-        if (tokens?.accessToken) {
-          // If access token is expired, try refreshing before calling introspect
-          let activeAccessToken = tokens.accessToken
-          if (
-            isTokenExpired(activeAccessToken) &&
-            tokens.refreshToken &&
-            !isTokenExpired(tokens.refreshToken)
-          ) {
-            try {
-              const refreshResult = await AuthService.refreshToken(
-                tokens.refreshToken,
-              )
-              if (refreshResult.success && refreshResult.data) {
-                cookieManager.setAuthTokens(refreshResult.data)
-                activeAccessToken = refreshResult.data.accessToken
-                tokens = { ...tokens, ...refreshResult.data }
-              } else {
-                logout()
-                return
-              }
-            } catch {
-              logout()
+        // No stored tokens — nothing to validate, stay logged out silently.
+        if (!tokens?.accessToken) {
+          return
+        }
+
+        // If access token is expired, try refreshing before calling introspect
+        let activeAccessToken = tokens.accessToken
+        const accessExpired = isTokenExpired(activeAccessToken)
+        const refreshUsable =
+          !!tokens.refreshToken && !isTokenExpired(tokens.refreshToken)
+
+        if (accessExpired) {
+          if (!refreshUsable) {
+            notifySessionExpired()
+            return
+          }
+          try {
+            const refreshResult = await AuthService.refreshToken(
+              tokens.refreshToken as string,
+            )
+            if (refreshResult.success && refreshResult.data) {
+              cookieManager.setAuthTokens(refreshResult.data)
+              activeAccessToken = refreshResult.data.accessToken
+              tokens = { ...tokens, ...refreshResult.data }
+            } else {
+              notifySessionExpired()
               return
             }
+          } catch {
+            notifySessionExpired()
+            return
           }
+        }
 
-          const result = await validToken(activeAccessToken)
-          if (result.success && 'data' in result && result.data?.valid) {
-            const sessionUser = await resolveAuthenticatedUser(
-              tokens,
-              queryClient,
-            )
-            login(sessionUser, tokens)
-          } else {
-            logout()
-          }
+        const result = await validToken(activeAccessToken)
+        if (result.success && 'data' in result && result.data?.valid) {
+          const sessionUser = await resolveAuthenticatedUser(
+            tokens,
+            queryClient,
+          )
+          login(sessionUser, tokens)
+        } else {
+          notifySessionExpired()
         }
       } catch (error) {
         console.error('Failed to initialize auth:', error)
-        logout()
+        notifySessionExpired()
       }
     }
 
     initializeAuth()
-  }, [_hasHydrated, login, logout, validToken])
+  }, [_hasHydrated, login, queryClient, validToken])
 
   const contextValue: AuthContextType = useMemo(
     () => ({
