@@ -425,11 +425,26 @@
         "submitButton": "Log In",
         "submittingButton": "Logging In…",
         "googleButton": "Log in with Google",
+        "magicLinkButton": "Log in with email link",
         "noAccount": "Don't have an account?",
         "signUp": "Sign up now",
         "registerLink": "Register",
         "successMessage": "Login successful!",
         "errorMessage": "Login failed. Please try again."
+      },
+      "magicLink": {
+        "title": "Sign in with email link",
+        "description": "Enter your email and we'll send you a one-time login link. No password needed.",
+        "submitButton": "Send login link",
+        "submittingButton": "Sending…",
+        "backToLogin": "Back to Login",
+        "sentTitle": "Check your inbox",
+        "sentDescription": "We've sent a login link to {email}. It will expire in {minutes} minutes.",
+        "requestErrorMessage": "Could not send the login link. Please try again.",
+        "errors": {
+          "invalid": "This login link is no longer valid. Please request a new one.",
+          "generic": "Sign-in failed. Please try again."
+        }
       },
       "verifyAccount": {
         "title": "Verify Your Account",
