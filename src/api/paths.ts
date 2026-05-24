@@ -23,6 +23,8 @@ export const PATHS = {
     CHANGE_PASSWORD: '/v1/auth/change-password', // NOSONAR - API endpoint path, not a password
     RESET_PASSWORD: '/v1/auth/reset-password', // NOSONAR - API endpoint path, not a password
     GOOGLE_OAUTH: '/v1/auth/outbound/google',
+    MAGIC_LINK_REQUEST: '/v1/auth/magic-link/request',
+    MAGIC_LINK_VERIFY: '/v1/auth/magic-link/verify',
   },
 
   // User endpoints

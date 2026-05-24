@@ -7,6 +7,10 @@ import {
   ResetPasswordResponse,
   ResetPasswordRequest,
   ChangePasswordRequest,
+  MagicLinkRequest,
+  MagicLinkResponse,
+  MagicLinkVerifyRequest,
+  MagicLinkVerifyResponse,
   API_ERROR_CODES,
 } from '@/api/types/auth.type'
 import { UserApi } from '../types/user.type'
@@ -225,6 +229,41 @@ export class AuthService {
 
     return response
   }
+
+  /**
+   * Request a guest magic-link login email. Always 200 — response shape is the
+   * same regardless of whether the email is registered, so callers cannot
+   * enumerate accounts.
+   */
+  static async requestMagicLink(
+    request: MagicLinkRequest,
+  ): Promise<ApiResponse<MagicLinkResponse>> {
+    const response = await apiRequest<MagicLinkResponse>({
+      method: 'POST',
+      url: ENV.API.AUTH.MAGIC_LINK_REQUEST,
+      data: request,
+      skipAuth: true,
+    })
+
+    return response
+  }
+
+  /**
+   * Exchange a single-use magic-link token for a guest access token.
+   * No refresh token is issued — when this expires the user must request a new link.
+   */
+  static async verifyMagicLink(
+    request: MagicLinkVerifyRequest,
+  ): Promise<ApiResponse<MagicLinkVerifyResponse>> {
+    const response = await apiRequest<MagicLinkVerifyResponse>({
+      method: 'POST',
+      url: ENV.API.AUTH.MAGIC_LINK_VERIFY,
+      data: request,
+      skipAuth: true,
+    })
+
+    return response
+  }
 }
 
 // Export individual methods for convenience
@@ -241,4 +280,6 @@ export const {
   resetPassword,
   changePassword,
   googleOAuth,
+  requestMagicLink,
+  verifyMagicLink,
 } = AuthService

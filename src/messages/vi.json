@@ -425,11 +425,26 @@
         "submitButton": "Đăng nhập",
         "submittingButton": "Đang đăng nhập…",
         "googleButton": "Đăng nhập với Google",
+        "magicLinkButton": "Đăng nhập bằng liên kết qua email",
         "noAccount": "Chưa có tài khoản?",
         "signUp": "Đăng ký ngay",
         "registerLink": "Đăng ký",
         "successMessage": "Đăng nhập thành công!",
         "errorMessage": "Đăng nhập thất bại. Vui lòng thử lại."
+      },
+      "magicLink": {
+        "title": "Đăng nhập bằng liên kết email",
+        "description": "Nhập email của bạn, chúng tôi sẽ gửi một liên kết đăng nhập một lần. Không cần mật khẩu.",
+        "submitButton": "Gửi liên kết đăng nhập",
+        "submittingButton": "Đang gửi…",
+        "backToLogin": "Quay về Đăng nhập",
+        "sentTitle": "Hãy kiểm tra hộp thư",
+        "sentDescription": "Chúng tôi đã gửi liên kết đăng nhập tới {email}. Liên kết sẽ hết hạn sau {minutes} phút.",
+        "requestErrorMessage": "Không thể gửi liên kết đăng nhập. Vui lòng thử lại.",
+        "errors": {
+          "invalid": "Liên kết đăng nhập không còn hiệu lực. Vui lòng yêu cầu liên kết mới.",
+          "generic": "Đăng nhập thất bại. Vui lòng thử lại."
+        }
       },
       "verifyAccount": {
         "title": "Xác Minh Tài Khoản",

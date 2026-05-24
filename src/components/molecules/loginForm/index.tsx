@@ -10,13 +10,14 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import dynamic from 'next/dynamic'
 import SeparatorOr from '@/components/atoms/separatorOr'
-import { useLogin, useResendOtp } from '@/hooks/useAuth'
+import { useLogin, useResendOtp, useRequestMagicLink } from '@/hooks/useAuth'
 import { toast } from 'sonner'
 import { VALIDATION_PATTERNS, API_ERROR_CODES } from '@/api/types/auth.type'
 import { googleOAuthURL } from '@/utils/googleOAuth2'
 import { useState, useCallback } from 'react'
 import OtpInput from '../otpInput'
 import SuccessMessage from '../successMessage'
+import { Mail, Sparkles } from 'lucide-react'
 
 const ImageAtom = dynamic(() => import('@/components/atoms/imageAtom'), {
   ssr: false,
@@ -33,14 +34,26 @@ type LoginFormData = {
   password: string
 }
 
-type LoginStep = 'login' | 'verifyAccount' | 'verifySuccess'
+type MagicLinkFormData = {
+  email: string
+}
+
+type LoginStep =
+  | 'login'
+  | 'verifyAccount'
+  | 'verifySuccess'
+  | 'magicLink'
+  | 'magicLinkSent'
 
 const LoginForm: NextPage<LoginFormProps> = (props) => {
   const t = useTranslations()
   const { loginUser } = useLogin()
   const { resendOtp } = useResendOtp()
+  const { requestMagicLink } = useRequestMagicLink()
   const [currentStep, setCurrentStep] = useState<LoginStep>('login')
   const [verifyEmail, setVerifyEmail] = useState('')
+  const [magicLinkEmail, setMagicLinkEmail] = useState('')
+  const [magicLinkExpiresIn, setMagicLinkExpiresIn] = useState(0)
 
   const { onSuccess } = props
 
@@ -71,6 +84,25 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
       email: '',
       password: '',
     },
+  })
+
+  const magicLinkSchema = yup.object({
+    email: yup
+      .string()
+      .required(t('homePage.auth.validation.emailRequired'))
+      .matches(
+        VALIDATION_PATTERNS.EMAIL,
+        t('homePage.auth.validation.emailInvalid'),
+      ),
+  })
+
+  const {
+    control: magicLinkControl,
+    handleSubmit: handleMagicLinkSubmit,
+    formState: { isSubmitting: isMagicLinkSubmitting, errors: magicLinkErrors },
+  } = useForm<MagicLinkFormData>({
+    resolver: yupResolver(magicLinkSchema),
+    defaultValues: { email: '' },
   })
 
   const onSubmit = async (data: LoginFormData) => {
@@ -123,7 +155,27 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
   const handleBackToLogin = useCallback(() => {
     setCurrentStep('login')
     setVerifyEmail('')
+    setMagicLinkEmail('')
   }, [])
+
+  const handleMagicLinkRequest = async (data: MagicLinkFormData) => {
+    const result = await requestMagicLink({ email: data.email })
+
+    if (result.success && result.data) {
+      setMagicLinkEmail(data.email)
+      setMagicLinkExpiresIn(result.data.expiresInSeconds)
+      setCurrentStep('magicLinkSent')
+    } else {
+      toast.error(
+        result.message || t('homePage.auth.magicLink.requestErrorMessage'),
+      )
+    }
+  }
+
+  const handleMagicLinkFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    handleMagicLinkSubmit(handleMagicLinkRequest)(e)
+  }
 
   // Verify account OTP step
   if (currentStep === 'verifyAccount') {
@@ -147,6 +199,87 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
         buttonText={t('homePage.auth.verifyAccount.backToLogin')}
         showButton={true}
       />
+    )
+  }
+
+  // Magic-link email entry step
+  if (currentStep === 'magicLink') {
+    return (
+      <div className='space-y-3 md:space-y-5'>
+        <div className='space-y-3 text-center'>
+          <Typography variant='h3' className='!mb-2'>
+            {t('homePage.auth.magicLink.title')}
+          </Typography>
+          <Typography variant='muted'>
+            {t('homePage.auth.magicLink.description')}
+          </Typography>
+        </div>
+
+        <form onSubmit={handleMagicLinkFormSubmit}>
+          <div className='space-y-2'>
+            <EmailField
+              name='email'
+              control={magicLinkControl}
+              label={t('homePage.auth.common.email')}
+              error={magicLinkErrors.email?.message}
+            />
+          </div>
+
+          <Button
+            type='submit'
+            disabled={isMagicLinkSubmitting}
+            className='w-full mt-4'
+          >
+            {isMagicLinkSubmitting
+              ? t('homePage.auth.magicLink.submittingButton')
+              : t('homePage.auth.magicLink.submitButton')}
+          </Button>
+        </form>
+
+        <div className='text-center'>
+          <Typography
+            as='span'
+            className='text-sm underline cursor-pointer text-primary'
+            onClick={handleBackToLogin}
+          >
+            {t('homePage.auth.magicLink.backToLogin')}
+          </Typography>
+        </div>
+      </div>
+    )
+  }
+
+  // Magic-link sent confirmation step
+  if (currentStep === 'magicLinkSent') {
+    const minutes = Math.max(1, Math.floor(magicLinkExpiresIn / 60))
+    return (
+      <div className='space-y-6 text-center'>
+        <div className='flex justify-center'>
+          <div className='flex items-center justify-center w-16 h-16 rounded-full bg-primary/10'>
+            <Mail className='w-8 h-8 text-primary' />
+          </div>
+        </div>
+
+        <div className='space-y-3'>
+          <Typography variant='h3' className='!mb-2'>
+            {t('homePage.auth.magicLink.sentTitle')}
+          </Typography>
+          <Typography variant='muted'>
+            {t('homePage.auth.magicLink.sentDescription', {
+              email: magicLinkEmail,
+              minutes,
+            })}
+          </Typography>
+        </div>
+
+        <Button
+          variant='outline'
+          className='w-full'
+          onClick={handleBackToLogin}
+        >
+          {t('homePage.auth.magicLink.backToLogin')}
+        </Button>
+      </div>
     )
   }
 
@@ -197,21 +330,33 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
 
       <SeparatorOr />
 
-      <Button
-        type='button'
-        variant='outline'
-        className='w-full'
-        onClick={handleLoginGoogle}
-      >
-        <ImageAtom
-          src='/svg/google.svg'
-          alt='Google'
-          width={16}
-          height={16}
-          className='mr-2'
-        />
-        {t('homePage.auth.login.googleButton')}
-      </Button>
+      <div className='space-y-2'>
+        <Button
+          type='button'
+          variant='outline'
+          className='w-full'
+          onClick={handleLoginGoogle}
+        >
+          <ImageAtom
+            src='/svg/google.svg'
+            alt='Google'
+            width={16}
+            height={16}
+            className='mr-2'
+          />
+          {t('homePage.auth.login.googleButton')}
+        </Button>
+
+        <Button
+          type='button'
+          variant='outline'
+          className='w-full'
+          onClick={() => setCurrentStep('magicLink')}
+        >
+          <Sparkles className='w-4 h-4 mr-2' />
+          {t('homePage.auth.login.magicLinkButton')}
+        </Button>
+      </div>
 
       <div className='text-center'>
         <Typography variant='p' className='text-sm text-muted-foreground'>

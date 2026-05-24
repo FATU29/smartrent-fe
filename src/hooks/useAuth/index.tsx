@@ -7,7 +7,12 @@ import {
   LoginRequest,
   AdminLoginRequest,
   RegisterRequest,
+  MagicLinkRequest,
+  MagicLinkResponse,
+  MagicLinkVerifyRequest,
+  MagicLinkVerifyResponse,
 } from '@/api/types/auth.type'
+import { ApiResponse } from '@/configs/axios/types'
 import { cookieManager } from '@/utils/cookies'
 import { VerificationAPI } from '@/api/types/verification.type'
 import {
@@ -310,6 +315,102 @@ export const useResendOtp = () => {
   )
 
   return { resendOtp }
+}
+
+export const useRequestMagicLink = () => {
+  const { setLoading, setError } = useAuthStore()
+
+  const requestMagicLink = useCallback(
+    async (
+      data: MagicLinkRequest,
+    ): Promise<ApiResponse<MagicLinkResponse | null>> => {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const result = await AuthService.requestMagicLink(data)
+        const { success, message } = result
+
+        setLoading(false)
+
+        if (!success) {
+          setError(message)
+        }
+
+        return result
+      } catch (error) {
+        setLoading(false)
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to send magic link'
+        setError(errorMessage)
+        return {
+          success: false,
+          message: errorMessage,
+          code: '',
+          data: null,
+        }
+      }
+    },
+    [setLoading, setError],
+  )
+
+  return { requestMagicLink }
+}
+
+export const useVerifyMagicLink = () => {
+  const { setLoading, setError, login } = useAuthStore()
+  const queryClient = useQueryClient()
+
+  const verifyMagicLink = useCallback(
+    async (
+      data: MagicLinkVerifyRequest,
+    ): Promise<ApiResponse<MagicLinkVerifyResponse | null>> => {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const result = await AuthService.verifyMagicLink(data)
+        const { success, message, data: payload } = result
+
+        setLoading(false)
+
+        if (!success || !payload?.accessToken) {
+          setError(message)
+          return result
+        }
+
+        // Guest sessions have no refresh token — only the access token.
+        const tokens = { accessToken: payload.accessToken }
+        const user = await resolveAuthenticatedUser(tokens, queryClient)
+        login(user, tokens)
+
+        try {
+          sessionStorage.removeItem('smart-rent-ai-chat-session')
+        } catch (error) {
+          console.warn(
+            '[useVerifyMagicLink] Failed to clear AI chat session:',
+            error,
+          )
+        }
+
+        return result
+      } catch (error) {
+        setLoading(false)
+        const errorMessage =
+          error instanceof Error ? error.message : 'Magic link verify failed'
+        setError(errorMessage)
+        return {
+          success: false,
+          message: errorMessage,
+          code: '',
+          data: null,
+        }
+      }
+    },
+    [setLoading, setError, login, queryClient],
+  )
+
+  return { verifyMagicLink }
 }
 
 export const useValidToken = () => {

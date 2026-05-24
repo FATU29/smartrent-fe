@@ -13,6 +13,7 @@ import { AvatarUpload } from '../avatarUpload'
 import { User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { VALIDATION_PATTERNS } from '@/api/types/auth.type'
+import { VIETNAM_PHONE_REGEX } from '@/constants/regex'
 import { useAuth } from '@/hooks/useAuth'
 
 type PersonalInfoFormData = {
@@ -62,7 +63,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     contactPhoneNumber: yup
       .string()
       .required(t('homePage.auth.validation.phoneNumberRequired'))
-      .matches(/^[0-9+\-\s()]+$/, t('homePage.auth.validation.phoneInvalid')),
+      .matches(VIETNAM_PHONE_REGEX, t('homePage.auth.validation.phoneInvalid')),
     idDocument: yup
       .string()
       .optional()

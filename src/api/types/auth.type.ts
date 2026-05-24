@@ -49,6 +49,26 @@ export interface ChangePasswordRequest {
   verificationCode: string
 }
 
+export interface MagicLinkRequest {
+  email: string
+}
+
+export interface MagicLinkResponse {
+  email: string
+  expiresInSeconds: number
+}
+
+export interface MagicLinkVerifyRequest {
+  token: string
+}
+
+export interface MagicLinkVerifyResponse {
+  accessToken: string
+  expiresInSeconds: number
+  email: string
+  guest: boolean
+}
+
 // Error Response Types
 export interface ApiErrorResponse {
   code: string
@@ -77,6 +97,8 @@ export const API_ERROR_CODES = {
   INVALID_CREDENTIALS: '5002',
   INVALID_TOKEN: '5003',
   USER_NOT_VERIFIED: '5004',
+  MAGIC_LINK_INVALID: '20001',
+  MAGIC_LINK_ALREADY_USED: '20002',
 } as const
 
 export type ApiErrorCode =
