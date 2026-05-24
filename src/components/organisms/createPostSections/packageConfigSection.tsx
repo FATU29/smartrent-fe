@@ -365,7 +365,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               {t('priceShownPerDay')}
             </CardDescription>
           </CardHeader>
-          <CardContent className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+          <CardContent className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3'>
             {vipTiers.map((tier) => (
               <Button
                 key={tier.tierId}
@@ -373,7 +373,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 onClick={() => handleTierSelect(tier.tierId)}
                 disabled={useMembership}
                 className={cn(
-                  'relative h-auto p-5 text-left transition-all hover:shadow-lg flex-col items-center sm:items-start',
+                  'relative h-auto p-3 text-left transition-all hover:shadow-lg flex-col items-center sm:items-start',
                   selectedTier?.tierId === tier.tierId &&
                     'border-primary bg-primary/5 shadow-md',
                   useMembership && 'opacity-50 cursor-not-allowed',
@@ -381,7 +381,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               >
                 <Card
                   className={cn(
-                    'w-12 h-12 rounded-lg flex items-center justify-center text-2xl mb-3 border-0',
+                    'w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-2 border-0',
                     TIER_BACKGROUNDS[tier.tierCode] || TIER_BACKGROUNDS.NORMAL,
                   )}
                 >
@@ -391,22 +391,16 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 </Card>
                 <Typography
                   variant='h4'
-                  className='font-bold text-base mb-1 text-center sm:text-left break-words w-full'
+                  className='font-bold text-sm mb-2 text-center sm:text-left break-words w-full'
                 >
                   {tier.tierName}
                 </Typography>
-                <Typography
-                  variant='muted'
-                  className='text-xs mb-3 text-center sm:text-left break-words w-full'
-                >
-                  {tier.tierNameEn}
-                </Typography>
-                <Typography className='font-bold text-lg mt-auto text-center sm:text-left w-full break-words'>
+                <Typography className='font-bold text-sm mt-auto text-center sm:text-left w-full break-words'>
                   {tier.pricePerDay.toLocaleString('vi-VN')} đ
                 </Typography>
                 {selectedTier?.tierId === tier.tierId && (
-                  <Card className='absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center border-0 p-0'>
-                    <Check className='w-4 h-4 text-primary-foreground' />
+                  <Card className='absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center border-0 p-0'>
+                    <Check className='w-3 h-3 text-primary-foreground' />
                   </Card>
                 )}
               </Button>

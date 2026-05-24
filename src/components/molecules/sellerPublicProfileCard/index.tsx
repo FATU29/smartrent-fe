@@ -107,6 +107,16 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
             <Typography variant='h4' className='truncate text-base md:text-lg'>
               {displayName}
             </Typography>
+            {seller?.email && (
+              <a
+                href={`mailto:${seller.email}`}
+                title={seller.email}
+                className='inline-flex max-w-full items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary'
+              >
+                <Mail className='h-3.5 w-3.5 shrink-0' />
+                <span className='truncate'>{seller.email}</span>
+              </a>
+            )}
             {isProfessionalBroker && (
               <div className='flex flex-wrap items-center gap-2'>
                 <Badge
