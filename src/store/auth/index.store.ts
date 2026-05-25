@@ -3,6 +3,7 @@ import { create } from 'zustand'
 import { AuthTokens } from '@/configs/axios/types'
 import { cookieManager } from '@/utils/cookies'
 import { clearLegacyAuthStorage } from '@/utils/authLocalStorage'
+import { isGuestToken } from '@/utils/decode-jwt'
 
 interface User extends UserApi {}
 
@@ -10,6 +11,9 @@ interface AuthState {
   // State
   user: User | null
   isAuthenticated: boolean
+  // True when the session was issued by the magic-link guest branch — the JWT
+  // has no `rfId`, so refresh and `/auth/logout` calls would fail.
+  isGuest: boolean
   isLoading: boolean
   error: string | null
   _hasHydrated: boolean
@@ -33,6 +37,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   // Initial state
   user: null,
   isAuthenticated: false,
+  isGuest: false,
   isLoading: false,
   error: null,
   _hasHydrated: true,
@@ -53,6 +58,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     set({
       user,
       isAuthenticated: true,
+      isGuest: isGuestToken(tokens.accessToken),
       isLoading: false,
       error: null,
     })
@@ -67,6 +73,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     set({
       user: null,
       isAuthenticated: false,
+      isGuest: false,
       isLoading: false,
       error: null,
     })
