@@ -64,9 +64,13 @@ export interface MagicLinkVerifyRequest {
 
 export interface MagicLinkVerifyResponse {
   accessToken: string
+  // Returned only when `guest=false`. Guests must request a new link instead.
+  refreshToken?: string
   expiresInSeconds: number
   email: string
   guest: boolean
+  // Registered user's ID. Present only when `guest=false`.
+  userId?: string
 }
 
 // Error Response Types

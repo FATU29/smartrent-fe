@@ -29,6 +29,7 @@ export const useAuth = () => {
     useShallow((state) => ({
       user: state.user,
       isAuthenticated: state.isAuthenticated,
+      isGuest: state.isGuest,
       isLoading: state.isLoading,
       error: state.error,
       login: state.login,
@@ -181,6 +182,8 @@ export const useLogout = () => {
 
   const logoutUser = useCallback(async () => {
     const accessToken = cookieManager.getAccessToken()
+    // Snapshot the guest flag before logout() resets it.
+    const wasGuest = useAuthStore.getState().isGuest
 
     // Clear AI chat session on logout
     try {
@@ -197,6 +200,12 @@ export const useLogout = () => {
     // If no access token, nothing to notify the server about
     if (!accessToken) {
       return { success: true, message: 'Logged out' }
+    }
+
+    // Guest tokens have no `rfId` claim — `/v1/auth/logout` will reject them.
+    // Local clear above is sufficient for guests.
+    if (wasGuest) {
+      return { success: true, message: 'Guest session cleared locally' }
     }
 
     // Notify server in background (fire-and-forget for UX)
@@ -379,8 +388,14 @@ export const useVerifyMagicLink = () => {
           return result
         }
 
-        // Guest sessions have no refresh token — only the access token.
-        const tokens = { accessToken: payload.accessToken }
+        // Registered users get both tokens; guest sessions only get an access
+        // token (refresh is absent in the response and they cannot refresh).
+        const tokens = payload.refreshToken
+          ? {
+              accessToken: payload.accessToken,
+              refreshToken: payload.refreshToken,
+            }
+          : { accessToken: payload.accessToken }
         const user = await resolveAuthenticatedUser(tokens, queryClient)
         login(user, tokens)
 
