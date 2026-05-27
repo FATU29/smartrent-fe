@@ -1,6 +1,5 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { Eye } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -9,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/atoms/table'
-import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import PaymentStatusBadge from '@/components/atoms/paymentStatusBadge'
 import type { CustomerTransactionItem } from '@/api/types/customer-transaction.type'
@@ -19,12 +17,6 @@ const EMPTY = '—'
 const HEAD_CLASS =
   'text-xs font-semibold uppercase tracking-wide whitespace-nowrap'
 
-// Sticky right column shared between header and body cells. Solid `bg-card`
-// keeps the column opaque while rows beneath scroll horizontally; the soft
-// left shadow signals the column is floating above the scrolled content.
-const STICKY_ACTIONS =
-  'sticky right-0 z-10 bg-card shadow-[-6px_0_10px_-8px_rgb(15_23_42_/_0.12)]'
-
 export interface TransactionTableProps {
   items: CustomerTransactionItem[]
   onSelect: (transactionId: string) => void
@@ -33,15 +25,14 @@ export interface TransactionTableProps {
 const TransactionRow: React.FC<{
   item: CustomerTransactionItem
   onSelect: (id: string) => void
-  viewLabel: string
-}> = ({ item, onSelect, viewLabel }) => {
+}> = ({ item, onSelect }) => {
   const { formatAmount, formatDateTime, typeLabel } = useTransactionFormatters()
   const room = item.room
   const landlord = item.landlord
 
   return (
     <TableRow
-      className='group cursor-pointer'
+      className='cursor-pointer'
       onClick={() => onSelect(item.transactionId)}
     >
       <TableCell className='min-w-[200px]'>
@@ -89,23 +80,6 @@ const TransactionRow: React.FC<{
       <TableCell className='min-w-[160px] text-sm text-muted-foreground whitespace-nowrap'>
         {item.completedAt ? formatDateTime(item.completedAt) : EMPTY}
       </TableCell>
-      <TableCell
-        className={`${STICKY_ACTIONS} w-[140px] min-w-[140px] text-right group-hover:bg-muted/50`}
-      >
-        <Button
-          type='button'
-          variant='ghost'
-          size='sm'
-          className='gap-1.5'
-          onClick={(e) => {
-            e.stopPropagation()
-            onSelect(item.transactionId)
-          }}
-        >
-          <Eye className='size-4' aria-hidden='true' />
-          {viewLabel}
-        </Button>
-      </TableCell>
     </TableRow>
   )
 }
@@ -115,7 +89,6 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
   onSelect,
 }) => {
   const t = useTranslations('seller.transactions.columns')
-  const tActions = useTranslations('seller.transactions.actions')
 
   return (
     <div className='overflow-hidden rounded-xl border bg-card shadow-xs'>
@@ -146,11 +119,6 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
             <TableHead className={`${HEAD_CLASS} min-w-[160px]`}>
               {t('completed')}
             </TableHead>
-            <TableHead
-              className={`${HEAD_CLASS} ${STICKY_ACTIONS} w-[140px] min-w-[140px] text-right`}
-            >
-              {t('actions')}
-            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -159,7 +127,6 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
               key={item.transactionId}
               item={item}
               onSelect={onSelect}
-              viewLabel={tActions('viewDetails')}
             />
           ))}
         </TableBody>

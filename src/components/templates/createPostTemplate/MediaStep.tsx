@@ -108,9 +108,9 @@ export const MediaStep: React.FC<MediaStepProps> = ({
           </Typography>
         </Card>
         {tier && (
-          <Alert className='mb-6 border-primary/30 bg-primary/5 text-foreground'>
-            <Info className='h-4 w-4 text-primary' />
-            <AlertDescription className='text-sm'>
+          <Alert className='mb-6 border-primary/50 bg-primary/10 text-foreground'>
+            <Info className='h-5 w-5 text-primary' />
+            <AlertDescription className='text-base font-semibold text-foreground'>
               {t('sections.media.tierLimits', {
                 tierName: tier.tierName,
                 min: minImages,
