@@ -630,43 +630,24 @@ export const MembershipRegisterTemplate: React.FC = () => {
           </motion.div>
         </AnimatePresence>
 
-        {isUpgradeMode && currentMembership && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Alert className='max-w-4xl mx-auto'>
-              <CheckCircle2 className='size-4 text-green-500' />
-              <AlertTitle>{tUpgrade('currentMembership.title')}</AlertTitle>
-              <AlertDescription>
-                {tUpgrade('currentMembership.message', {
-                  planName: currentMembership.packageName,
-                  daysRemaining: currentMembership.daysRemaining,
-                })}
-              </AlertDescription>
-            </Alert>
-          </motion.div>
-        )}
-
         <AnimatePresence mode='wait'>
           {isUpgradeMode ? (
             <motion.div
               key='upgrade-content'
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
             >
               {renderUpgradeGrid()}
             </motion.div>
           ) : (
             <motion.div
               key='purchase-content'
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
             >
               <MembershipPlansGrid
                 loading={membershipLoading}

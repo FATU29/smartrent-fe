@@ -160,19 +160,16 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
     <div className={className}>
       <div className='grid grid-cols-1 gap-8'>
         {/* Top Section - AI Valuation Results */}
-        <Card className='shadow-lg border-0 bg-gradient-to-br from-background to-primary/5'>
-          <CardHeader className='pb-3'>
+        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-lg sm:bg-gradient-to-br sm:from-background sm:to-primary/5 sm:rounded-xl sm:py-6'>
+          <CardHeader className='pb-3 px-0 sm:px-6'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-gradient-to-r from-primary to-primary/70 rounded-lg'>
                 <BarChart3 className='w-6 h-6 text-primary-foreground' />
               </div>
               {t('results.title')}
             </CardTitle>
-            <p className='text-sm text-muted-foreground mt-2'>
-              {t('results.subtitle')}
-            </p>
           </CardHeader>
-          <CardContent className='space-y-5'>
+          <CardContent className='space-y-5 px-0 sm:px-6'>
             {/* Loading State */}
             {isPredicting && !prediction && (
               <div className='flex flex-col items-center justify-center py-12 space-y-4'>
@@ -213,14 +210,8 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                       {formatPrice(prediction.price_range.min)} -{' '}
                       {formatPrice(prediction.price_range.max)}
                     </div>
-                    <div className='text-sm opacity-90 mb-3'>
+                    <div className='text-sm opacity-90'>
                       {prediction.location}
-                    </div>
-                    <div className='flex items-center gap-2 sm:gap-2.5'>
-                      <div className='w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse'></div>
-                      <span className='text-xs sm:text-sm opacity-90'>
-                        {t('results.reliability') || 'Độ tin cậy'}: 85%
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -288,8 +279,8 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
         </Card>
 
         {/* Bottom Section - Property Information Input */}
-        <Card className='shadow-lg border-0 bg-gradient-to-br from-background to-muted'>
-          <CardHeader className='pb-4'>
+        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-lg sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
+          <CardHeader className='pb-4 px-0 sm:px-6'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg'>
                 <Home className='w-6 h-6 text-blue-600 dark:text-blue-400' />
@@ -300,7 +291,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
               {t('propertyInfo.subtitle')}
             </p>
           </CardHeader>
-          <CardContent className='space-y-6'>
+          <CardContent className='space-y-6 px-0 sm:px-6'>
             {/* New Address (Read-only) */}
             {composedNewAddress && (
               <div className='space-y-3'>

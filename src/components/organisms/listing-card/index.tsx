@@ -193,13 +193,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                   <Badge
                     variant='default'
                     className={cn(
-                      'font-semibold shadow-sm border',
+                      'font-medium border',
                       vipType === 'DIAMOND' &&
-                        'bg-gradient-to-r from-violet-500 to-purple-600 text-white border-violet-600',
+                        'bg-violet-600 text-white border-violet-700 hover:bg-violet-600 dark:bg-violet-500 dark:border-violet-600',
                       vipType === 'GOLD' &&
-                        'bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-yellow-600',
+                        'bg-amber-500 text-white border-amber-600 hover:bg-amber-500 dark:bg-amber-500 dark:border-amber-600',
                       vipType === 'SILVER' &&
-                        'bg-gradient-to-r from-gray-300 to-slate-400 text-gray-800 border-gray-400',
+                        'bg-slate-200 text-slate-800 border-slate-300 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600',
                     )}
                   >
                     {t(`vipTypes.${vipType}`)}
@@ -222,8 +222,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             {/* Addresses - Full text display with better styling */}
             <div className='space-y-2 mb-4'>
               {newAddress && (
-                <div className='flex items-start gap-2.5 p-3 rounded-lg bg-primary/5 border border-primary/10'>
-                  <MapPin className='w-5 h-5 mt-0.5 shrink-0 text-primary' />
+                <div className='flex items-start gap-2.5 p-3 rounded-lg bg-muted/40 border border-border/60'>
+                  <MapPin className='w-4 h-4 mt-0.5 shrink-0 text-muted-foreground' />
                   <div className='flex-1 min-w-0'>
                     <Typography
                       variant='small'
@@ -242,8 +242,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 </div>
               )}
               {legacyAddress && (
-                <div className='flex items-start gap-2.5 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900'>
-                  <MapPin className='w-5 h-5 mt-0.5 shrink-0 text-blue-600 dark:text-blue-400' />
+                <div className='flex items-start gap-2.5 p-3 rounded-lg bg-muted/30 border border-border/60 border-dashed'>
+                  <MapPin className='w-4 h-4 mt-0.5 shrink-0 text-muted-foreground' />
                   <div className='flex-1 min-w-0'>
                     <Typography
                       variant='small'
@@ -376,12 +376,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               </div>
             )}
 
-            {/* Property Specs - Column layout on mobile, grid on desktop */}
-            <div className='flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5'>
+            {/* Property Specs — 2 cols on mobile, 4 on desktop */}
+            <div className='grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 mb-5'>
               {property.area && (
-                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 transition-all hover:bg-blue-100 dark:hover:bg-blue-950/50'>
-                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900'>
-                    <Maximize2 className='w-5 h-5 text-blue-600 dark:text-blue-400' />
+                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-muted/40 border border-border/60 transition-colors hover:bg-muted/60'>
+                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-background border border-border/60 shrink-0'>
+                    <Maximize2 className='w-4 h-4 text-muted-foreground' />
                   </div>
                   <div className='min-w-0 flex-1'>
                     <Typography
@@ -392,7 +392,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                     </Typography>
                     <Typography
                       variant='small'
-                      className='font-bold truncate text-blue-700 dark:text-blue-400 text-sm sm:text-base'
+                      className='font-semibold truncate text-foreground text-sm sm:text-base'
                     >
                       {property.area} m²
                     </Typography>
@@ -401,9 +401,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               )}
 
               {roomCapacity !== undefined && roomCapacity > 0 && (
-                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900 transition-all hover:bg-orange-100 dark:hover:bg-orange-950/50'>
-                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900'>
-                    <Users className='w-5 h-5 text-orange-600 dark:text-orange-400' />
+                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-muted/40 border border-border/60 transition-colors hover:bg-muted/60'>
+                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-background border border-border/60 shrink-0'>
+                    <Users className='w-4 h-4 text-muted-foreground' />
                   </div>
                   <div className='min-w-0 flex-1'>
                     <Typography
@@ -414,7 +414,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                     </Typography>
                     <Typography
                       variant='small'
-                      className='font-bold truncate text-orange-700 dark:text-orange-400 text-sm sm:text-base'
+                      className='font-semibold truncate text-foreground text-sm sm:text-base'
                     >
                       {roomCapacity} {t('people')}
                     </Typography>
@@ -423,9 +423,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               )}
 
               {property.bedrooms !== undefined && property.bedrooms > 0 && (
-                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900 transition-all hover:bg-purple-100 dark:hover:bg-purple-950/50'>
-                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900'>
-                    <Bed className='w-5 h-5 text-purple-600 dark:text-purple-400' />
+                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-muted/40 border border-border/60 transition-colors hover:bg-muted/60'>
+                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-background border border-border/60 shrink-0'>
+                    <Bed className='w-4 h-4 text-muted-foreground' />
                   </div>
                   <div className='min-w-0 flex-1'>
                     <Typography
@@ -436,7 +436,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                     </Typography>
                     <Typography
                       variant='small'
-                      className='font-bold truncate text-purple-700 dark:text-purple-400 text-sm sm:text-base'
+                      className='font-semibold truncate text-foreground text-sm sm:text-base'
                     >
                       {property.bedrooms}
                     </Typography>
@@ -445,9 +445,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               )}
 
               {property.bathrooms !== undefined && property.bathrooms > 0 && (
-                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-200 dark:border-cyan-900 transition-all hover:bg-cyan-100 dark:hover:bg-cyan-950/50'>
-                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-cyan-100 dark:bg-cyan-900'>
-                    <Bath className='w-5 h-5 text-cyan-600 dark:text-cyan-400' />
+                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-muted/40 border border-border/60 transition-colors hover:bg-muted/60'>
+                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-background border border-border/60 shrink-0'>
+                    <Bath className='w-4 h-4 text-muted-foreground' />
                   </div>
                   <div className='min-w-0 flex-1'>
                     <Typography
@@ -458,7 +458,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                     </Typography>
                     <Typography
                       variant='small'
-                      className='font-bold truncate text-cyan-700 dark:text-cyan-400 text-sm sm:text-base'
+                      className='font-semibold truncate text-foreground text-sm sm:text-base'
                     >
                       {property.bathrooms}
                     </Typography>

@@ -17,15 +17,15 @@ const PhotoGuidelines: React.FC = () => {
   const [openNormal, setOpenNormal] = useState(false)
 
   return (
-    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-background to-muted'>
-      <CardHeader className='pb-3'>
+    <Card className='mb-6 border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-lg sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
+      <CardHeader className='pb-3 px-0 sm:px-6'>
         <CardTitle className='flex items-center justify-between text-lg'>
           <div className='flex items-center gap-2'>
             <Info className='w-4 h-4' /> {t('guidelines.title')}
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className='space-y-4'>
+      <CardContent className='space-y-4 px-0 sm:px-6'>
         {/* Normal Photos collapsible */}
         <div className='rounded-lg border border-border overflow-hidden'>
           <button

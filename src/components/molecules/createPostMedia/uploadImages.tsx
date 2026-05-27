@@ -25,6 +25,7 @@ interface UploadImagesProps {
 
 const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
   const t = useTranslations('createPost.sections.media')
+  const tValidation = useTranslations('createPost.validation')
   const router = useRouter()
   const listingIdFromQuery = router.query.id
     ? Number(router.query.id)
@@ -120,7 +121,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
 
     if (slice.length === 0) {
       if (validFiles.length > remaining) {
-        toast.error(t('validation.imagesLimitReached', { max: maxImages }))
+        toast.error(tValidation('imagesLimitReached', { max: maxImages }))
       }
       return
     }
@@ -169,13 +170,13 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
   }
 
   return (
-    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-background to-muted'>
-      <CardHeader className='pb-3'>
+    <Card className='mb-6 border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-lg sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
+      <CardHeader className='pb-3 px-0 sm:px-6'>
         <CardTitle className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
           <span className='text-lg sm:text-xl'>{t('title')}</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className='space-y-6'>
+      <CardContent className='space-y-6 px-0 sm:px-6'>
         {/* Dropzone */}
         <div
           className='rounded-2xl border-2 border-dashed border-border p-4 sm:p-6 flex flex-col items-center justify-center text-center bg-card/50'
@@ -241,7 +242,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
                 <Button
                   size='sm'
                   variant='ghost'
-                  className='absolute top-2 right-2 h-8 w-8 p-0 bg-background/80 backdrop-blur-sm text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity'
+                  className='absolute top-2 right-2 h-8 w-8 p-0 bg-background/80 backdrop-blur-sm text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100 transition-opacity'
                   onClick={() => img.mediaId && removeMedia(img.mediaId)}
                   disabled={imagesUploadProgress.isUploading}
                   title={t('uploaded.remove')}
