@@ -188,25 +188,25 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
                   className='object-cover'
                 />
               </div>
-              <div className='p-3 border-t border-border flex items-center justify-between gap-2'>
+              <div className='p-3 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
                 <Button
                   size='sm'
-                  className='rounded-md'
+                  className='rounded-md w-full sm:w-auto'
                   onClick={() => inputRef.current?.click()}
                   disabled={imagesUploadProgress.isUploading}
                 >
-                  <ImagePlus className='w-4 h-4 mr-2' />
-                  {t('replaceCta')}
+                  <ImagePlus className='w-4 h-4 mr-2 shrink-0' />
+                  <span className='truncate'>{t('replaceCta')}</span>
                 </Button>
                 <Button
                   size='sm'
                   variant='destructive'
-                  className='rounded-md'
+                  className='rounded-md w-full sm:w-auto'
                   onClick={handleDeleteCover}
                   disabled={imagesUploadProgress.isUploading}
                 >
-                  <Trash2 className='w-4 h-4 mr-2' />
-                  {t('deleteCta')}
+                  <Trash2 className='w-4 h-4 mr-2 shrink-0' />
+                  <span className='truncate'>{t('deleteCta')}</span>
                 </Button>
               </div>
             </div>

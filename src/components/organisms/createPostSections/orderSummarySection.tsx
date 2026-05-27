@@ -165,9 +165,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
   return (
     <Card className={cn('border-0 shadow-none', className)}>
       <CardHeader className='px-0'>
-        <CardTitle className='text-2xl sm:text-3xl md:text-4xl'>
-          {t('title')}
-        </CardTitle>
+        <Typography variant='pageTitle'>{t('title')}</Typography>
       </CardHeader>
 
       <CardContent className='px-0'>

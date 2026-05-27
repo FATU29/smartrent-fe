@@ -1212,7 +1212,7 @@
           "hint": "Kéo tối đa 24 ảnh hoặc...",
           "uploadFromDevice": "Tải từ Thiết bị",
           "chooseFromLibrary": "Chọn từ Thư viện",
-          "note": "Tối thiểu 4 ảnh nếu không có video · Tối đa 24 · Kích thước tối thiểu 100x100px · Tối đa 15MB mỗi ảnh"
+          "note": "Tối đa 15MB mỗi ảnh"
         },
         "uploaded": {
           "title": "Ảnh đã tải lên",

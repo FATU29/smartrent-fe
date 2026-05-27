@@ -99,10 +99,10 @@ export const MediaStep: React.FC<MediaStepProps> = ({
 
   return (
     <Card
-      className={`w-full mx-auto md:max-w-7xl border-0 shadow-none p-0 ${className || ''}`}
+      className={`w-full mx-auto md:max-w-7xl border-0 shadow-none bg-transparent p-0 ${className || ''}`}
     >
-      <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
-        <Card className='mb-6 sm:mb-8 border-0 shadow-none p-0'>
+      <Card className='border-0 shadow-none bg-transparent rounded-none p-0 sm:bg-card sm:rounded-lg sm:shadow-sm sm:border sm:p-8'>
+        <Card className='mb-4 sm:mb-8 border-0 shadow-none bg-transparent p-0'>
           <Typography variant='pageTitle'>
             {t('sections.media.title')}
           </Typography>

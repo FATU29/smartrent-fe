@@ -1212,7 +1212,7 @@
           "hint": "Drag up to 24 images or...",
           "uploadFromDevice": "Upload From Device",
           "chooseFromLibrary": "Choose From Library",
-          "note": "Minimum 4 images if no video · Maximum 24 · Minimum size 100x100px · Max 15MB per image"
+          "note": "Max 15MB per image"
         },
         "readyToUpload": "Ready to Upload",
         "pendingImages": "Pending Images ({count})",

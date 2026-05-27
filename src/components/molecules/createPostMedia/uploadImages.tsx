@@ -186,8 +186,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
           }}
         >
           <Upload className='w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground mb-2' />
-          <p className='text-sm text-muted-foreground'>{t('dropzone.hint')}</p>
-          <div className='flex flex-col sm:flex-row gap-3 mt-4 w-full sm:w-auto'>
+          <div className='flex flex-col sm:flex-row gap-3 mt-2 w-full sm:w-auto'>
             <Button
               className='rounded-lg w-full sm:w-auto'
               onClick={() => inputRef.current?.click()}
@@ -239,21 +238,16 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
                     className='object-cover'
                   />
                 </div>
-                <div className='p-3 border-t border-border bg-card'>
-                  <p className='text-sm truncate mb-3'>{`Image ${index + 1}`}</p>
-                  <div className='flex items-center justify-end gap-2'>
-                    <Button
-                      size='sm'
-                      variant='ghost'
-                      className='h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950'
-                      onClick={() => img.mediaId && removeMedia(img.mediaId)}
-                      disabled={imagesUploadProgress.isUploading}
-                      title={t('uploaded.remove')}
-                    >
-                      <Trash2 className='w-4 h-4' />
-                    </Button>
-                  </div>
-                </div>
+                <Button
+                  size='sm'
+                  variant='ghost'
+                  className='absolute top-2 right-2 h-8 w-8 p-0 bg-background/80 backdrop-blur-sm text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity'
+                  onClick={() => img.mediaId && removeMedia(img.mediaId)}
+                  disabled={imagesUploadProgress.isUploading}
+                  title={t('uploaded.remove')}
+                >
+                  <Trash2 className='w-4 h-4' />
+                </Button>
               </div>
             ))}
           </div>
