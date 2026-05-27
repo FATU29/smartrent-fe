@@ -16,7 +16,14 @@ import type { CustomerTransactionItem } from '@/api/types/customer-transaction.t
 import { useTransactionFormatters } from './helpers'
 
 const EMPTY = '—'
-const HEAD_CLASS = 'text-xs font-semibold uppercase tracking-wide'
+const HEAD_CLASS =
+  'text-xs font-semibold uppercase tracking-wide whitespace-nowrap'
+
+// Sticky right column shared between header and body cells. Solid `bg-card`
+// keeps the column opaque while rows beneath scroll horizontally; the soft
+// left shadow signals the column is floating above the scrolled content.
+const STICKY_ACTIONS =
+  'sticky right-0 z-10 bg-card shadow-[-6px_0_10px_-8px_rgb(15_23_42_/_0.12)]'
 
 export interface TransactionTableProps {
   items: CustomerTransactionItem[]
@@ -34,10 +41,10 @@ const TransactionRow: React.FC<{
 
   return (
     <TableRow
-      className='cursor-pointer'
+      className='group cursor-pointer'
       onClick={() => onSelect(item.transactionId)}
     >
-      <TableCell>
+      <TableCell className='min-w-[200px]'>
         <Typography variant='small' className='font-semibold'>
           {typeLabel(item.paymentType)}
         </Typography>
@@ -47,18 +54,18 @@ const TransactionRow: React.FC<{
           </Typography>
         )}
       </TableCell>
-      <TableCell className='text-right font-semibold tabular-nums whitespace-nowrap'>
+      <TableCell className='min-w-[140px] text-right font-semibold tabular-nums whitespace-nowrap'>
         {formatAmount(item.amount)}
       </TableCell>
-      <TableCell className='text-sm text-muted-foreground whitespace-nowrap'>
+      <TableCell className='min-w-[160px] text-sm text-muted-foreground whitespace-nowrap'>
         {[item.paymentGateway, item.paymentMethod]
           .filter(Boolean)
           .join(' · ') || EMPTY}
       </TableCell>
-      <TableCell>
+      <TableCell className='min-w-[130px]'>
         <PaymentStatusBadge status={item.status} />
       </TableCell>
-      <TableCell className='max-w-[220px]'>
+      <TableCell className='min-w-[220px] max-w-[280px]'>
         <Typography variant='small' className='block truncate'>
           {room?.roomName || room?.roomCode || EMPTY}
         </Typography>
@@ -68,19 +75,23 @@ const TransactionRow: React.FC<{
           </Typography>
         )}
       </TableCell>
-      <TableCell className='text-sm'>
-        <span className='block'>{landlord?.name || EMPTY}</span>
+      <TableCell className='min-w-[180px] max-w-[220px] text-sm'>
+        <span className='block truncate'>{landlord?.name || EMPTY}</span>
         {landlord?.phone && (
-          <span className='block text-muted-foreground'>{landlord.phone}</span>
+          <span className='block truncate text-muted-foreground'>
+            {landlord.phone}
+          </span>
         )}
       </TableCell>
-      <TableCell className='text-sm text-muted-foreground whitespace-nowrap'>
+      <TableCell className='min-w-[160px] text-sm text-muted-foreground whitespace-nowrap'>
         {formatDateTime(item.createdAt)}
       </TableCell>
-      <TableCell className='text-sm text-muted-foreground whitespace-nowrap'>
+      <TableCell className='min-w-[160px] text-sm text-muted-foreground whitespace-nowrap'>
         {item.completedAt ? formatDateTime(item.completedAt) : EMPTY}
       </TableCell>
-      <TableCell className='text-right'>
+      <TableCell
+        className={`${STICKY_ACTIONS} w-[140px] min-w-[140px] text-right group-hover:bg-muted/50`}
+      >
         <Button
           type='button'
           variant='ghost'
@@ -108,20 +119,36 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
 
   return (
     <div className='overflow-hidden rounded-xl border bg-card shadow-xs'>
-      <Table>
+      <Table aria-label={t('transaction')}>
         <TableHeader className='bg-muted/50'>
           <TableRow className='hover:bg-transparent'>
-            <TableHead className={HEAD_CLASS}>{t('transaction')}</TableHead>
-            <TableHead className={`${HEAD_CLASS} text-right`}>
+            <TableHead className={`${HEAD_CLASS} min-w-[200px]`}>
+              {t('transaction')}
+            </TableHead>
+            <TableHead className={`${HEAD_CLASS} min-w-[140px] text-right`}>
               {t('amount')}
             </TableHead>
-            <TableHead className={HEAD_CLASS}>{t('method')}</TableHead>
-            <TableHead className={HEAD_CLASS}>{t('status')}</TableHead>
-            <TableHead className={HEAD_CLASS}>{t('room')}</TableHead>
-            <TableHead className={HEAD_CLASS}>{t('landlord')}</TableHead>
-            <TableHead className={HEAD_CLASS}>{t('created')}</TableHead>
-            <TableHead className={HEAD_CLASS}>{t('completed')}</TableHead>
-            <TableHead className={`${HEAD_CLASS} text-right`}>
+            <TableHead className={`${HEAD_CLASS} min-w-[160px]`}>
+              {t('method')}
+            </TableHead>
+            <TableHead className={`${HEAD_CLASS} min-w-[130px]`}>
+              {t('status')}
+            </TableHead>
+            <TableHead className={`${HEAD_CLASS} min-w-[220px]`}>
+              {t('room')}
+            </TableHead>
+            <TableHead className={`${HEAD_CLASS} min-w-[180px]`}>
+              {t('landlord')}
+            </TableHead>
+            <TableHead className={`${HEAD_CLASS} min-w-[160px]`}>
+              {t('created')}
+            </TableHead>
+            <TableHead className={`${HEAD_CLASS} min-w-[160px]`}>
+              {t('completed')}
+            </TableHead>
+            <TableHead
+              className={`${HEAD_CLASS} ${STICKY_ACTIONS} w-[140px] min-w-[140px] text-right`}
+            >
               {t('actions')}
             </TableHead>
           </TableRow>

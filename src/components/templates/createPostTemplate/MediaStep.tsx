@@ -103,17 +103,14 @@ export const MediaStep: React.FC<MediaStepProps> = ({
     >
       <Card className='bg-card rounded-lg shadow-sm border p-6 sm:p-8'>
         <Card className='mb-6 sm:mb-8 border-0 shadow-none p-0'>
-          <Typography variant='pageTitle' className='mb-2 sm:mb-3'>
+          <Typography variant='pageTitle'>
             {t('sections.media.title')}
-          </Typography>
-          <Typography variant='muted' className='text-sm sm:text-base'>
-            {t('sections.media.description')}
           </Typography>
         </Card>
         {tier && (
-          <Alert className='mb-6'>
-            <Info className='h-4 w-4' />
-            <AlertDescription>
+          <Alert className='mb-6 border-primary/30 bg-primary/5 text-foreground'>
+            <Info className='h-4 w-4 text-primary' />
+            <AlertDescription className='text-sm'>
               {t('sections.media.tierLimits', {
                 tierName: tier.tierName,
                 min: minImages,

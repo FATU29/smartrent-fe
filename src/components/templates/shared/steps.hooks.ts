@@ -74,12 +74,13 @@ export const usePostSteps = ({
 
   const isStepComplete = useCallback(
     (index: number): boolean => {
-      // For update post: step 2 and 3 have relaxed validation
+      // Step 2 = package-config, step 3 = media after the create-post step swap.
+      // For update post: package step is relaxed and media is optional-ish.
       if (!isCreatePost) {
-        if (index === 3) {
+        if (index === 2) {
           return true
         }
-        if (index === 2) {
+        if (index === 3) {
           return validateStep2(media, false)
         }
       }
@@ -99,14 +100,14 @@ export const usePostSteps = ({
             },
           )
         case 2:
-          return validateStep2(media, isCreatePost)
-        case 3:
           if (isCreatePost) {
             return validateStep3(
               propertyInfo as CreateListingRequest | undefined,
             )
           }
           return true
+        case 3:
+          return validateStep2(media, isCreatePost)
         default:
           return true
       }
@@ -136,7 +137,7 @@ export const usePostSteps = ({
     }
 
     // Handle media step validation - check if media is uploaded
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       if (videoUploadProgress.isUploading) {
         toast.error(
           t('validation.videoUploadInProgress') ||
@@ -165,14 +166,14 @@ export const usePostSteps = ({
     }
 
     // Steps that don't require validation - proceed directly
-    const skipValidationSteps = isCreatePost ? [1, 4] : [1, 3, 4]
+    const skipValidationSteps = isCreatePost ? [1, 4] : [1, 2, 4]
     if (skipValidationSteps.includes(currentStep)) {
       proceedNext()
       return
     }
 
     // Validate steps that require form validation
-    const validationSteps = isCreatePost ? [0, 3] : [0]
+    const validationSteps = isCreatePost ? [0, 2] : [0]
     if (validationSteps.includes(currentStep)) {
       await trigger()
     }

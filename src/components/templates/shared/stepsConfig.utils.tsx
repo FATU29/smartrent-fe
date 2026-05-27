@@ -21,14 +21,14 @@ const STEP_CONFIGS: StepConfig[] = [
     icon: <Brain className='w-4 h-4 sm:w-5 sm:h-5' />,
   },
   {
-    id: 'images-video',
-    translationKey: 'imagesAndVideo',
-    icon: <Camera className='w-4 h-4 sm:w-5 sm:h-5' />,
-  },
-  {
     id: 'package-config',
     translationKey: 'packageAndConfig',
     icon: <FileText className='w-4 h-4 sm:w-5 sm:h-5' />,
+  },
+  {
+    id: 'images-video',
+    translationKey: 'imagesAndVideo',
+    icon: <Camera className='w-4 h-4 sm:w-5 sm:h-5' />,
   },
   {
     id: 'order-summary',

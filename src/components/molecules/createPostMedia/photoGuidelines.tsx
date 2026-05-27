@@ -7,9 +7,13 @@ import {
 } from '@/components/atoms/card'
 import { useTranslations } from 'next-intl'
 import { Check, X, Info, ChevronRight, ChevronDown, Camera } from 'lucide-react'
+import { useCreatePost } from '@/contexts/createPost'
+import { useMediaLimits } from '@/hooks/usePostContext/useMediaLimits'
 
 const PhotoGuidelines: React.FC = () => {
   const t = useTranslations('createPost.sections.media')
+  const { propertyInfo } = useCreatePost()
+  const { minImages, maxImages } = useMediaLimits(propertyInfo?.vipType)
   const [openNormal, setOpenNormal] = useState(false)
 
   return (
@@ -39,7 +43,7 @@ const PhotoGuidelines: React.FC = () => {
               <span>{t('guidelines.normalTitle')}</span>
             </div>
             <span className='text-xs px-2 py-0.5 rounded bg-muted'>
-              {t('guidelines.normalCount')}
+              {t('guidelines.normalCount', { min: minImages, max: maxImages })}
             </span>
           </button>
           {openNormal && (

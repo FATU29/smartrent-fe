@@ -11,7 +11,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@/components/atoms/card'
 import { Separator } from '@/components/atoms/separator'
 import { Badge } from '@/components/atoms/badge'
@@ -169,9 +168,6 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
         <CardTitle className='text-2xl sm:text-3xl md:text-4xl'>
           {t('title')}
         </CardTitle>
-        <CardDescription className='text-sm sm:text-base'>
-          {t('description')}
-        </CardDescription>
       </CardHeader>
 
       <CardContent className='px-0'>
@@ -242,114 +238,111 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
               </CardContent>
             </Card>
 
-            {/* Package & Payment Summary */}
-            <div className='flex flex-col gap-4'>
-              {/* Package Details */}
-              <Card className='h-fit'>
-                <CardHeader className='pb-4'>
-                  <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                    <Package className='w-5 h-5 text-primary' />
-                    <CardTitle className='text-lg'>
-                      {tCreatePost('sections.orderSummary.packageDetails')}
-                    </CardTitle>
-                  </Card>
-                </CardHeader>
+            {/* Combined Package & Payment Summary */}
+            <Card>
+              <CardHeader className='pb-4'>
+                <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                  <Package className='w-5 h-5 text-primary' />
+                  <CardTitle className='text-lg'>
+                    {tCreatePost('sections.orderSummary.packageDetails')}
+                  </CardTitle>
+                </Card>
+              </CardHeader>
 
-                <CardContent className='space-y-3'>
-                  <OrderSummaryRow
-                    label={tCreatePost(
-                      'sections.packageConfig.selectedPackage',
+              <CardContent>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3'>
+                  {/* Left: Package info */}
+                  <div className='space-y-3'>
+                    <OrderSummaryRow
+                      label={tCreatePost(
+                        'sections.packageConfig.selectedPackage',
+                      )}
+                      value={
+                        <Badge variant='default' className='font-medium'>
+                          {packageName}
+                        </Badge>
+                      }
+                      variant='highlight'
+                    />
+                    {(usingMembershipQuota || usingPromotion) && (
+                      <>
+                        <Separator />
+                        <OrderSummaryRow
+                          label={tCreatePost(
+                            'sections.packageConfig.usingMembershipQuota',
+                          )}
+                          value={
+                            <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                              <Award className='w-4 h-4 text-primary' />
+                              <Typography className='text-sm text-primary font-medium'>
+                                {tCreatePost(
+                                  'sections.packageConfig.freePosting',
+                                )}
+                              </Typography>
+                            </Card>
+                          }
+                        />
+                      </>
                     )}
-                    value={
-                      <Badge variant='default' className='font-medium'>
-                        {packageName}
-                      </Badge>
-                    }
-                    variant='highlight'
-                  />
-                  {(usingMembershipQuota || usingPromotion) && (
-                    <>
-                      <Separator />
-                      <OrderSummaryRow
-                        label={tCreatePost(
-                          'sections.packageConfig.usingMembershipQuota',
-                        )}
-                        value={
-                          <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                            <Award className='w-4 h-4 text-primary' />
-                            <Typography className='text-sm text-primary font-medium'>
-                              {tCreatePost(
-                                'sections.packageConfig.freePosting',
-                              )}
-                            </Typography>
-                          </Card>
-                        }
-                      />
-                    </>
-                  )}
-                  <Separator />
-                  <OrderSummaryRow
-                    label={tCreatePost('sections.packageConfig.duration')}
-                    value={`${propertyInfo.durationDays || 0} ${tCreatePost('sections.packageConfig.days')}`}
-                  />
-                  <Separator />
-                  <OrderSummaryRow
-                    label={tCreatePost('sections.packageConfig.startDate')}
-                    value={
-                      <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                        <Calendar className='w-4 h-4 text-muted-foreground' />
-                        <Typography className='text-sm'>
-                          {formatDate(propertyInfo.postDate)}
-                        </Typography>
-                      </Card>
-                    }
-                  />
-                  <Separator />
-                  <OrderSummaryRow
-                    label={tCreatePost('sections.packageConfig.endDate')}
-                    value={
-                      <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                        <Calendar className='w-4 h-4 text-muted-foreground' />
-                        <Typography className='text-sm'>
-                          {getEndDate()}
-                        </Typography>
-                      </Card>
-                    }
-                  />
-                </CardContent>
-              </Card>
+                    <Separator />
+                    <OrderSummaryRow
+                      label={tCreatePost('sections.packageConfig.duration')}
+                      value={`${propertyInfo.durationDays || 0} ${tCreatePost('sections.packageConfig.days')}`}
+                    />
+                    <Separator />
+                    <OrderSummaryRow
+                      label={tCreatePost('sections.packageConfig.startDate')}
+                      value={
+                        <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                          <Calendar className='w-4 h-4 text-muted-foreground' />
+                          <Typography className='text-sm'>
+                            {formatDate(propertyInfo.postDate)}
+                          </Typography>
+                        </Card>
+                      }
+                    />
+                    <Separator />
+                    <OrderSummaryRow
+                      label={tCreatePost('sections.packageConfig.endDate')}
+                      value={
+                        <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
+                          <Calendar className='w-4 h-4 text-muted-foreground' />
+                          <Typography className='text-sm'>
+                            {getEndDate()}
+                          </Typography>
+                        </Card>
+                      }
+                    />
+                  </div>
 
-              {/* Price Breakdown */}
-              <Card className='h-fit'>
-                <CardHeader className='pb-4'>
-                  <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                    <CreditCard className='w-5 h-5 text-primary' />
-                    <CardTitle className='text-lg'>
-                      {tCreatePost('sections.packageConfig.priceBreakdown')}
-                    </CardTitle>
-                  </Card>
-                </CardHeader>
-
-                <CardContent className='space-y-3'>
-                  <OrderSummaryRow
-                    label={tCreatePost('sections.packageConfig.packagePrice')}
-                    value={`${totalPrice.toLocaleString('vi-VN')} đ`}
-                  />
-                  <Separator className='my-4' />
-                  <OrderSummaryRow
-                    label={tCreatePost('sections.packageConfig.totalAmount')}
-                    value={
-                      <Card className='text-right border-0 shadow-none p-0'>
-                        <Typography className='text-2xl font-bold text-primary'>
-                          {totalPrice.toLocaleString('vi-VN')} đ
-                        </Typography>
-                      </Card>
-                    }
-                    variant='total'
-                  />
-                </CardContent>
-              </Card>
-            </div>
+                  {/* Right: Payment breakdown */}
+                  <div className='space-y-3 md:border-l md:pl-8 md:border-border'>
+                    <Card className='flex items-center gap-2 border-0 shadow-none p-0 mb-1'>
+                      <CreditCard className='w-4 h-4 text-primary' />
+                      <Typography className='text-sm font-semibold'>
+                        {tCreatePost('sections.packageConfig.priceBreakdown')}
+                      </Typography>
+                    </Card>
+                    <OrderSummaryRow
+                      label={tCreatePost('sections.packageConfig.packagePrice')}
+                      value={`${totalPrice.toLocaleString('vi-VN')} đ`}
+                    />
+                    <Separator />
+                    <OrderSummaryRow
+                      label={tCreatePost('sections.packageConfig.totalAmount')}
+                      value={
+                        <Card className='text-right border-0 shadow-none p-0'>
+                          <Typography className='text-2xl font-bold text-primary'>
+                            {totalPrice.toLocaleString('vi-VN')} đ
+                          </Typography>
+                        </Card>
+                      }
+                      variant='total'
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Property Preview with Media */}
             <Card>
@@ -441,7 +434,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                           <Typography className='mt-2 font-semibold text-sm break-words'>
                             {propertyInfo.price.toLocaleString('vi-VN')} đ
                             {propertyInfo.priceUnit &&
-                              `/${propertyInfo.priceUnit}`}
+                              `/${tCommon(`priceUnits.${propertyInfo.priceUnit}`)}`}
                           </Typography>
                         </div>
                       </div>

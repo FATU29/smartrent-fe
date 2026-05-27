@@ -351,9 +351,6 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         <CardTitle className='text-2xl sm:text-3xl lg:text-4xl'>
           {t('title')}
         </CardTitle>
-        <CardDescription className='text-sm sm:text-base'>
-          {t('description')}
-        </CardDescription>
       </CardHeader>
 
       <CardContent className='px-0 space-y-6'>
