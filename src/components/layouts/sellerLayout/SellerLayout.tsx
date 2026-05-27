@@ -110,7 +110,11 @@ const SellerLayout: React.FC<SellerLayoutProps> = ({ children }) => {
 
                     <div className='flex items-center justify-center md:justify-end gap-2 sm:gap-3'>
                       <ThemeSwitch />
-                      {isAuthenticated && <NotificationPanel />}
+                      {isAuthenticated && (
+                        <div className='hidden md:inline-flex'>
+                          <NotificationPanel />
+                        </div>
+                      )}
                       {!isAuthenticated && (
                         <Button
                           type='button'
