@@ -243,7 +243,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
             </Card>
 
             {/* Package & Payment Summary */}
-            <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+            <div className='flex flex-col gap-4'>
               {/* Package Details */}
               <Card className='h-fit'>
                 <CardHeader className='pb-4'>

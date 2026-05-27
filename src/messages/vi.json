@@ -1000,8 +1000,8 @@
       "priceUnitInvalid": "Đơn vị giá không hợp lệ",
       "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 4 ảnh hoặc 1 video",
       "imagesRequired": "Vui lòng tải ít nhất 4 ảnh",
-      "imagesMinimum": "Cần ít nhất 4 ảnh",
-      "imagesTooMany": "Bạn có thể tải tối đa 24 ảnh",
+      "imagesMinimum": "Cần ít nhất {min} ảnh",
+      "imagesTooMany": "Bạn có thể tải tối đa {max} ảnh",
       "imageUrlInvalid": "URL ảnh không hợp lệ",
       "videoUrlInvalid": "URL video không hợp lệ",
       "packageRequired": "Vui lòng chọn gói đăng",
@@ -1038,7 +1038,7 @@
       "videoUploadInProgress": "Vui lòng đợi video tải lên hoàn tất trước khi tiếp tục",
       "imageSizeExceeded": "Kích thước ảnh không được vượt quá 10MB",
       "imageFormatInvalid": "Ảnh phải có định dạng jpeg, png, hoặc webp",
-      "imagesLimitReached": "Tối đa 24 ảnh",
+      "imagesLimitReached": "Tối đa {max} ảnh",
       "coverImageRequired": "Ảnh bìa (chính) là bắt buộc"
     },
     "generateAutomatically": "Tạo tự động",
@@ -1206,6 +1206,7 @@
         "title": "Hình ảnh",
         "description": "Tải lên hình ảnh chất lượng cao  để trình bày bất động sản của bạn",
         "downloadSample": "Tải Mẫu",
+        "tierLimits": "Gói {tierName}: tối thiểu {min} ảnh, tối đa {max} ảnh và tối đa {videos} video.",
         "titleWithCount": "{count} / 24 ảnh",
         "dropzone": {
           "hint": "Kéo tối đa 24 ảnh hoặc...",

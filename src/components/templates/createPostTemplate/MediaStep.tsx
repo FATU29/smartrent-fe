@@ -4,8 +4,9 @@ import { Typography } from '@/components/atoms/typography'
 import { MediaSection } from '@/components/organisms/createPostSections/mediaSection'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
+import { useMediaLimits } from '@/hooks/usePostContext/useMediaLimits'
 import { toast } from 'sonner'
-import { Upload } from 'lucide-react'
+import { Upload, Info } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/atoms/alert'
 import { Progress } from '@/components/atoms/progress'
 
@@ -19,13 +20,20 @@ export const MediaStep: React.FC<MediaStepProps> = ({
   onValidationComplete,
 }) => {
   const t = useTranslations('createPost')
-  const { media, videoUploadProgress, imagesUploadProgress } = useCreatePost()
+  const { media, propertyInfo, videoUploadProgress, imagesUploadProgress } =
+    useCreatePost()
+  const { minImages, maxImages, maxVideos, tier } = useMediaLimits(
+    propertyInfo?.vipType,
+  )
 
   // Count uploaded images from media array - must be IMAGE type
   const uploadedImages = media.filter((m) => m.mediaType === 'IMAGE')
   const uploadedImagesCount = uploadedImages.length
   const hasCover = uploadedImages.some((m) => m.isPrimary === true)
-  const isMediaValid = uploadedImagesCount >= 4 && hasCover
+  const isMediaValid =
+    uploadedImagesCount >= minImages &&
+    uploadedImagesCount <= maxImages &&
+    hasCover
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,10 +54,13 @@ export const MediaStep: React.FC<MediaStepProps> = ({
         return false
       }
 
-      if (uploadedImagesCount < 4) {
-        toast.error(
-          t('validation.imagesMinimum') || 'At least 4 photos are required',
-        )
+      if (uploadedImagesCount < minImages) {
+        toast.error(t('validation.imagesMinimum', { min: minImages }))
+        return false
+      }
+
+      if (uploadedImagesCount > maxImages) {
+        toast.error(t('validation.imagesLimitReached', { max: maxImages }))
         return false
       }
 
@@ -69,6 +80,8 @@ export const MediaStep: React.FC<MediaStepProps> = ({
     t,
     uploadedImagesCount,
     videoUploadProgress.isUploading,
+    minImages,
+    maxImages,
   ])
 
   useEffect(() => {
@@ -97,6 +110,20 @@ export const MediaStep: React.FC<MediaStepProps> = ({
             {t('sections.media.description')}
           </Typography>
         </Card>
+        {tier && (
+          <Alert className='mb-6'>
+            <Info className='h-4 w-4' />
+            <AlertDescription>
+              {t('sections.media.tierLimits', {
+                tierName: tier.tierName,
+                min: minImages,
+                max: maxImages,
+                videos: maxVideos,
+              })}
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Images upload progress indicator */}
         {imagesUploadProgress.isUploading && (
           <Alert className='mb-6'>
@@ -131,9 +158,16 @@ export const MediaStep: React.FC<MediaStepProps> = ({
         <MediaSection className='w-full' showHeader={false} />
 
         <div className='mt-6 flex flex-col gap-4'>
-          {uploadedImagesCount < 4 && (
+          {uploadedImagesCount < minImages && (
             <Typography variant='small' className='text-muted-foreground'>
-              {t('validation.imagesMinimum')} ({uploadedImagesCount}/4)
+              {t('validation.imagesMinimum', { min: minImages })} (
+              {uploadedImagesCount}/{minImages})
+            </Typography>
+          )}
+
+          {uploadedImagesCount > maxImages && (
+            <Typography variant='small' className='text-destructive'>
+              {t('validation.imagesLimitReached', { max: maxImages })}
             </Typography>
           )}
 

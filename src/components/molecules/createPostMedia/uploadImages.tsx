@@ -14,9 +14,9 @@ import { ImagePlus, Upload, Trash2 } from 'lucide-react'
 import { MediaService } from '@/api/services'
 import type { MediaItem } from '@/api/types/property.type'
 import type { MediaItem as ApiMediaItem } from '@/api/types/media.type'
+import { useMediaLimits } from '@/hooks/usePostContext/useMediaLimits'
 import { toast } from 'sonner'
 
-const MAX_IMAGES = 24
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
 
 interface UploadImagesProps {
@@ -31,6 +31,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
     : undefined
   const {
     media,
+    propertyInfo,
     updateMedia,
     removeMedia,
     startImagesUpload,
@@ -41,6 +42,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
   } = useCreatePost()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
+  const { maxImages } = useMediaLimits(propertyInfo?.vipType)
   const totalImages = media.filter((item) => item.mediaType === 'IMAGE').length
 
   const mapUploadedImage = (
@@ -96,7 +98,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
       return
     }
 
-    const remaining = Math.max(0, MAX_IMAGES - totalImages)
+    const remaining = Math.max(0, maxImages - totalImages)
 
     // Validate all files first
     const validFiles: File[] = []
@@ -118,10 +120,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
 
     if (slice.length === 0) {
       if (validFiles.length > remaining) {
-        toast.error(
-          t('validation.imagesLimitReached') ||
-            `Maximum ${MAX_IMAGES} images allowed`,
-        )
+        toast.error(t('validation.imagesLimitReached', { max: maxImages }))
       }
       return
     }
@@ -221,7 +220,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
               {t('uploaded.title')}
             </span>
             <span className='text-xs text-muted-foreground'>
-              {totalImages}/{MAX_IMAGES}
+              {totalImages}/{maxImages}
             </span>
           </div>
           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5'>
