@@ -18,7 +18,7 @@ import {
   ModerationStatusBadge,
   ModerationBanner,
 } from '@/components/molecules/moderation'
-import { MapPin, Calendar, Maximize2, Bed, Bath, Users } from 'lucide-react'
+import { MapPin, Calendar, Maximize2, Bed, Bath } from 'lucide-react'
 import { DEFAULT_IMAGE } from '@/constants/common'
 import { AMENITIES_CONFIG } from '@/constants/amenities'
 import {
@@ -74,7 +74,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     price,
     priceUnit,
     amenities,
-    roomCapacity,
   } = property
 
   // Moderation fields
@@ -395,28 +394,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                       className='font-semibold truncate text-foreground text-sm sm:text-base'
                     >
                       {property.area} m²
-                    </Typography>
-                  </div>
-                </div>
-              )}
-
-              {roomCapacity !== undefined && roomCapacity > 0 && (
-                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-muted/40 border border-border/60 transition-colors hover:bg-muted/60'>
-                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-background border border-border/60 shrink-0'>
-                    <Users className='w-4 h-4 text-muted-foreground' />
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <Typography
-                      variant='small'
-                      className='text-xs text-muted-foreground mb-0.5'
-                    >
-                      {t('roomCapacity')}
-                    </Typography>
-                    <Typography
-                      variant='small'
-                      className='font-semibold truncate text-foreground text-sm sm:text-base'
-                    >
-                      {roomCapacity} {t('people')}
                     </Typography>
                   </div>
                 </div>

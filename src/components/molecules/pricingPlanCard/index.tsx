@@ -30,14 +30,12 @@ export const getMembershipLevelIcon = (
   level: MembershipPackageLevel,
 ): React.ReactNode => {
   const iconMap: Record<MembershipPackageLevel, React.ReactNode> = {
-    [MembershipPackageLevel.BASIC]: (
-      <Leaf className='size-10 text-emerald-500' />
-    ),
+    [MembershipPackageLevel.BASIC]: <Leaf className='size-7 text-primary' />,
     [MembershipPackageLevel.STANDARD]: (
-      <Sparkles className='size-10 text-blue-500' />
+      <Sparkles className='size-7 text-primary' />
     ),
     [MembershipPackageLevel.ADVANCED]: (
-      <Crown className='size-10 text-amber-500' />
+      <Crown className='size-7 text-primary' />
     ),
   }
 
@@ -85,14 +83,13 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
   const resolvedIcon = getMembershipLevelIcon(membership.packageLevel)
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 8 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        type: 'spring' as const,
-        stiffness: 100,
-        damping: 15,
+        duration: 0.3,
+        ease: 'easeOut' as const,
       },
     },
   }
@@ -102,7 +99,8 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
       initial='hidden'
       animate='visible'
       variants={cardVariants}
-      whileTap={interactive ? { scale: 0.98 } : undefined}
+      whileHover={interactive ? { y: -2 } : undefined}
+      transition={{ duration: 0.2 }}
       className='h-full w-full'
     >
       <Card

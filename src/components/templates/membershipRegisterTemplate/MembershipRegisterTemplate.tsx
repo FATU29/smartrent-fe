@@ -31,10 +31,10 @@ import {
   AlertCircle,
   CheckCircle2,
   Crown,
-  Sparkles,
   Award,
   Calendar,
   TrendingUp,
+  Sparkles,
 } from 'lucide-react'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { MEDIA_BELOW_MD, MEDIA_BELOW_XL } from '@/constants/breakpoints'
@@ -283,48 +283,47 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
       return (
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, type: 'spring', stiffness: 100 }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
           className='max-w-4xl mx-auto'
         >
-          <Card className='relative overflow-hidden border-2 border-primary/20 shadow-xl bg-card'>
-            <div className='absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-primary/60 to-primary' />
-            <div className='absolute -top-24 -right-24 w-64 h-64 rounded-full bg-primary/5 blur-3xl pointer-events-none' />
-            <div className='absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-primary/5 blur-3xl pointer-events-none' />
+          <Card className='relative overflow-hidden border-border'>
+            <div className='absolute inset-x-0 top-0 h-px bg-primary/40' />
             <CardContent className='relative p-8 md:p-10'>
               <div className='flex flex-col md:flex-row gap-8'>
                 {/* Left Side - Current Membership Info */}
                 <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.05, ease: 'easeOut' }}
                   className='flex-1 space-y-6'
                 >
                   <div className='flex items-start gap-4'>
                     <div className='flex-shrink-0'>
-                      <div className='flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border-2 border-primary/30 shadow-lg'>
-                        {membershipIcon || (
-                          <Crown className='size-8 text-primary' />
-                        )}
+                      <div className='flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary'>
+                        {membershipIcon || <Crown className='size-6' />}
                       </div>
                     </div>
                     <div className='flex-1 space-y-2'>
                       <div className='flex items-center gap-2 flex-wrap'>
                         <Typography
                           variant='small'
-                          className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'
+                          className='text-xs font-medium uppercase tracking-wider text-muted-foreground'
                         >
                           {tUpgrade('currentMembership.title')}
                         </Typography>
-                        <Badge className='bg-green-500 hover:bg-green-600 text-white border-0 px-2.5 py-0.5 gap-1.5 dark:bg-green-600 dark:hover:bg-green-700'>
+                        <Badge
+                          variant='secondary'
+                          className='gap-1.5 px-2 py-0.5 text-xs font-medium'
+                        >
                           <CheckCircle2 className='size-3' />
                           {tPage('currentPlan')}
                         </Badge>
                       </div>
                       {currentMembership && (
                         <>
-                          <Typography variant='pageTitle'>
+                          <Typography variant='h3'>
                             {currentMembership.packageName}
                           </Typography>
                           <div className='flex items-center gap-2 text-muted-foreground'>
@@ -345,44 +344,44 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
                   {/* Membership Details */}
                   {currentMembership && (
-                    <div className='space-y-4'>
-                      <div className='flex items-center gap-3 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800'>
-                        <div className='flex items-center justify-center w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30'>
-                          <Calendar className='size-6 text-blue-600 dark:text-blue-400' />
+                    <div className='space-y-3'>
+                      <div className='flex items-center gap-3 p-4 rounded-lg bg-muted/40 border border-border'>
+                        <div className='flex items-center justify-center size-10 rounded-md bg-background border border-border text-muted-foreground'>
+                          <Calendar className='size-5' />
                         </div>
                         <div className='flex-1'>
                           <Typography
                             variant='small'
-                            className='text-muted-foreground'
+                            className='text-xs uppercase tracking-wider text-muted-foreground'
                           >
                             {tPage('daysRemaining')}
                           </Typography>
                           <Typography
                             variant='h3'
-                            className='font-bold text-blue-600 dark:text-blue-400'
+                            className='font-semibold text-foreground'
                           >
                             {currentMembership.daysRemaining}{' '}
-                            <span className='text-lg font-normal text-muted-foreground'>
+                            <span className='text-base font-normal text-muted-foreground'>
                               {tPage('days')}
                             </span>
                           </Typography>
                         </div>
                       </div>
 
-                      <div className='flex items-center gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800'>
-                        <div className='flex items-center justify-center w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30'>
-                          <Award className='size-6 text-amber-600 dark:text-amber-400' />
+                      <div className='flex items-center gap-3 p-4 rounded-lg bg-muted/40 border border-border'>
+                        <div className='flex items-center justify-center size-10 rounded-md bg-background border border-border text-muted-foreground'>
+                          <Award className='size-5' />
                         </div>
                         <div className='flex-1'>
                           <Typography
                             variant='small'
-                            className='text-muted-foreground'
+                            className='text-xs uppercase tracking-wider text-muted-foreground'
                           >
                             {tPage('status')}
                           </Typography>
                           <Typography
                             variant='h3'
-                            className='font-bold text-amber-600 dark:text-amber-400'
+                            className='font-semibold text-foreground'
                           >
                             {currentMembership.status}
                           </Typography>
@@ -394,33 +393,20 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
                 {/* Right Side - Top Tier Achievement */}
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.1, ease: 'easeOut' }}
                   className='flex-1 flex flex-col justify-center space-y-6'
                 >
-                  <div className='text-center space-y-5'>
+                  <div className='text-center space-y-4'>
                     <div className='flex justify-center'>
-                      <motion.div
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{
-                          duration: 0.6,
-                          delay: 0.4,
-                          type: 'spring',
-                          stiffness: 120,
-                        }}
-                        className='relative'
-                      >
-                        <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-primary to-primary/40 blur-2xl opacity-60' />
-                        <div className='relative flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-xl ring-4 ring-primary/10'>
-                          <TrendingUp className='size-12 text-primary-foreground' />
-                        </div>
-                      </motion.div>
+                      <div className='flex items-center justify-center size-16 rounded-xl bg-primary/10 text-primary border border-primary/15'>
+                        <TrendingUp className='size-8' />
+                      </div>
                     </div>
                     <Typography
                       variant='h3'
-                      className='font-bold text-foreground'
+                      className='font-semibold text-foreground'
                     >
                       {tUpgrade('noUpgrades.title')}
                     </Typography>
@@ -429,30 +415,16 @@ export const MembershipRegisterTemplate: React.FC = () => {
                   <Separator />
 
                   {/* Info Points */}
-                  <div className='space-y-3'>
-                    <div className='flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800/60'>
-                      <div className='flex-shrink-0'>
-                        <div className='flex items-center justify-center w-10 h-10 rounded-xl bg-green-500 shadow-sm dark:bg-green-600'>
-                          <CheckCircle2 className='size-5 text-white' />
-                        </div>
-                      </div>
-                      <Typography
-                        variant='small'
-                        className='font-semibold text-foreground'
-                      >
+                  <div className='space-y-2'>
+                    <div className='flex items-center gap-3 p-3.5 rounded-lg border border-border bg-card'>
+                      <CheckCircle2 className='size-4 text-primary flex-shrink-0' />
+                      <Typography variant='small' className='text-foreground'>
                         {tUpgrade('noUpgrades.info1')}
                       </Typography>
                     </div>
-                    <div className='flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800/60'>
-                      <div className='flex-shrink-0'>
-                        <div className='flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500 shadow-sm dark:bg-blue-600'>
-                          <Award className='size-5 text-white' />
-                        </div>
-                      </div>
-                      <Typography
-                        variant='small'
-                        className='font-semibold text-foreground'
-                      >
+                    <div className='flex items-center gap-3 p-3.5 rounded-lg border border-border bg-card'>
+                      <Award className='size-4 text-primary flex-shrink-0' />
+                      <Typography variant='small' className='text-foreground'>
                         {tUpgrade('noUpgrades.info2')}
                       </Typography>
                     </div>
@@ -518,21 +490,19 @@ export const MembershipRegisterTemplate: React.FC = () => {
       visible: {
         opacity: 1,
         transition: {
-          staggerChildren: 0.1,
+          staggerChildren: 0.06,
         },
       },
     }
 
     const itemVariants = {
-      hidden: { opacity: 0, y: 20, scale: 0.95 },
+      hidden: { opacity: 0, y: 8 },
       visible: {
         opacity: 1,
         y: 0,
-        scale: 1,
         transition: {
-          type: 'spring' as const,
-          stiffness: 100,
-          damping: 15,
+          duration: 0.3,
+          ease: 'easeOut' as const,
         },
       },
     }
@@ -549,7 +519,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
             key={upgrade.targetMembershipId}
             variants={itemVariants}
             className='flex w-full'
-            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            whileHover={{ y: -2, transition: { duration: 0.2 } }}
           >
             <UpgradeCard
               upgrade={upgrade}

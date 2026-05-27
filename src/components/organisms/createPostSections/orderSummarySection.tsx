@@ -410,7 +410,7 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                   <Separator />
 
                   {/* Key Information Grid */}
-                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                  <div className='grid grid-cols-2 gap-3'>
                     {propertyInfo.price && (
                       <div className='rounded-lg border bg-background/70 p-3'>
                         <div className='flex items-center gap-2'>

@@ -8,10 +8,10 @@ export const getCardStyles = (
   className?: string,
 ) => {
   return cn(
-    'relative h-full w-full flex flex-col transition-shadow duration-300',
-    'bg-background border-border',
-    selected && 'ring-2 ring-primary shadow-lg',
-    isBestSeller && 'border-primary shadow-md',
+    'relative h-full w-full flex flex-col bg-card border-border',
+    'transition-colors duration-200 hover:border-primary/40',
+    selected && 'border-primary ring-1 ring-primary/30',
+    isBestSeller && 'border-primary/60',
     className,
   )
 }
