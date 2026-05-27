@@ -14,7 +14,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@/components/atoms/card'
 import { Label } from '@/components/atoms/label'
 import { Typography } from '@/components/atoms/typography'
@@ -358,9 +357,6 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         <Card>
           <CardHeader>
             <CardTitle className='text-lg'>{t('selectPackageType')}</CardTitle>
-            <CardDescription className='pt-1 text-xs leading-relaxed text-muted-foreground'>
-              {t('priceShownPerDay')}
-            </CardDescription>
           </CardHeader>
           <CardContent className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3'>
             {vipTiers.map((tier) => (
@@ -370,7 +366,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 onClick={() => handleTierSelect(tier.tierId)}
                 disabled={useMembership}
                 className={cn(
-                  'relative h-auto p-3 text-left transition-all hover:shadow-lg flex-col items-center sm:items-start',
+                  'relative h-auto p-4 text-center transition-all hover:shadow-lg flex-col items-center justify-center gap-2',
                   selectedTier?.tierId === tier.tierId &&
                     'border-primary bg-primary/5 shadow-md',
                   useMembership && 'opacity-50 cursor-not-allowed',
@@ -378,21 +374,21 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               >
                 <Card
                   className={cn(
-                    'w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-2 border-0',
+                    'w-12 h-12 aspect-square shrink-0 rounded-lg flex items-center justify-center border-0 p-0',
                     TIER_BACKGROUNDS[tier.tierCode] || TIER_BACKGROUNDS.NORMAL,
                   )}
                 >
-                  <Typography as='span'>
+                  <Typography as='span' variant='h4' className='leading-none'>
                     {TIER_ICONS[tier.tierCode] || TIER_ICONS.NORMAL}
                   </Typography>
                 </Card>
                 <Typography
                   variant='h4'
-                  className='font-bold text-sm mb-2 text-center sm:text-left break-words w-full'
+                  className='font-bold text-sm break-words w-full text-center'
                 >
                   {tier.tierName}
                 </Typography>
-                <Typography className='font-bold text-sm mt-auto text-center sm:text-left w-full break-words'>
+                <Typography className='font-bold text-sm mt-auto w-full break-words text-center'>
                   {tier.pricePerDay.toLocaleString('vi-VN')} đ
                 </Typography>
                 {selectedTier?.tierId === tier.tierId && (

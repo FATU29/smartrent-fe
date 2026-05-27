@@ -41,7 +41,7 @@ const TransactionHistoryTemplate: React.FC = () => {
 
   return (
     <div className='flex flex-1 flex-col gap-row-lg'>
-      <header className='flex flex-col gap-2 border-b pb-4 sm:flex-row sm:items-start sm:justify-between'>
+      <header className='flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between'>
         <div>
           <Typography variant='pageTitle'>{t('title')}</Typography>
           <Typography variant='muted' as='p' className='mt-1'>
