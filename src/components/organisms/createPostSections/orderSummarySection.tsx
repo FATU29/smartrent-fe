@@ -238,96 +238,92 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                 </Typography>
               </div>
 
-              <div>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3'>
-                  {/* Left: Package info */}
-                  <div className='space-y-3'>
-                    <OrderSummaryRow
-                      label={tCreatePost(
-                        'sections.packageConfig.selectedPackage',
-                      )}
-                      value={
-                        <Badge variant='default' className='font-medium'>
-                          {packageName}
-                        </Badge>
-                      }
-                      variant='highlight'
-                    />
-                    {(usingMembershipQuota || usingPromotion) && (
-                      <>
-                        <Separator />
-                        <OrderSummaryRow
-                          label={tCreatePost(
-                            'sections.packageConfig.usingMembershipQuota',
-                          )}
-                          value={
-                            <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                              <Award className='w-4 h-4 text-primary' />
-                              <Typography className='text-sm text-primary font-medium'>
-                                {tCreatePost(
-                                  'sections.packageConfig.freePosting',
-                                )}
-                              </Typography>
-                            </Card>
-                          }
-                        />
-                      </>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4'>
+                {/* Left: Package info */}
+                <div className='space-y-3'>
+                  <OrderSummaryRow
+                    label={tCreatePost(
+                      'sections.packageConfig.selectedPackage',
                     )}
-                    <Separator />
-                    <OrderSummaryRow
-                      label={tCreatePost('sections.packageConfig.duration')}
-                      value={`${propertyInfo.durationDays || 0} ${tCreatePost('sections.packageConfig.days')}`}
-                    />
-                    <Separator />
-                    <OrderSummaryRow
-                      label={tCreatePost('sections.packageConfig.startDate')}
-                      value={
-                        <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                          <Calendar className='w-4 h-4 text-muted-foreground' />
-                          <Typography className='text-sm'>
-                            {formatDate(propertyInfo.postDate)}
-                          </Typography>
-                        </Card>
-                      }
-                    />
-                    <Separator />
-                    <OrderSummaryRow
-                      label={tCreatePost('sections.packageConfig.endDate')}
-                      value={
-                        <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                          <Calendar className='w-4 h-4 text-muted-foreground' />
-                          <Typography className='text-sm'>
-                            {getEndDate()}
-                          </Typography>
-                        </Card>
-                      }
-                    />
-                  </div>
+                    value={
+                      <Badge variant='default' className='font-medium'>
+                        {packageName}
+                      </Badge>
+                    }
+                    variant='highlight'
+                  />
 
-                  {/* Right: Payment breakdown */}
-                  <div className='space-y-3 md:border-l md:pl-8 md:border-border'>
-                    <Card className='flex items-center gap-2 border-0 shadow-none p-0 mb-1'>
-                      <CreditCard className='w-4 h-4 text-primary' />
-                      <Typography className='text-sm font-semibold'>
-                        {tCreatePost('sections.packageConfig.priceBreakdown')}
+                  {(usingMembershipQuota || usingPromotion) && (
+                    <div className='flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2'>
+                      <Award className='w-4 h-4 text-primary flex-shrink-0' />
+                      <Typography className='text-sm text-primary font-medium'>
+                        {tCreatePost('sections.packageConfig.freePosting')}
                       </Typography>
-                    </Card>
-                    <OrderSummaryRow
-                      label={tCreatePost('sections.packageConfig.packagePrice')}
-                      value={`${totalPrice.toLocaleString('vi-VN')} đ`}
-                    />
-                    <Separator />
-                    <OrderSummaryRow
-                      label={tCreatePost('sections.packageConfig.totalAmount')}
-                      value={
-                        <Card className='text-right border-0 shadow-none p-0'>
-                          <Typography className='text-2xl font-bold text-primary'>
-                            {totalPrice.toLocaleString('vi-VN')} đ
-                          </Typography>
-                        </Card>
-                      }
-                      variant='total'
-                    />
+                    </div>
+                  )}
+
+                  {/* Compact chip grid: duration + start + end dates */}
+                  <div className='grid grid-cols-3 gap-2'>
+                    <div className='rounded-lg border bg-muted/30 p-2.5 min-w-0'>
+                      <Typography variant='muted' className='text-xs truncate'>
+                        {tCreatePost('sections.packageConfig.duration')}
+                      </Typography>
+                      <Typography className='mt-1 text-sm font-semibold leading-5 break-words'>
+                        {`${propertyInfo.durationDays || 0} ${tCreatePost('sections.packageConfig.days')}`}
+                      </Typography>
+                    </div>
+                    <div className='rounded-lg border bg-muted/30 p-2.5 min-w-0'>
+                      <Typography
+                        variant='muted'
+                        className='text-xs flex items-center gap-1 truncate'
+                      >
+                        <Calendar className='w-3 h-3 flex-shrink-0' />
+                        {tCreatePost('sections.packageConfig.startDate')}
+                      </Typography>
+                      <Typography className='mt-1 text-sm font-semibold leading-5 break-words'>
+                        {formatDate(propertyInfo.postDate)}
+                      </Typography>
+                    </div>
+                    <div className='rounded-lg border bg-muted/30 p-2.5 min-w-0'>
+                      <Typography
+                        variant='muted'
+                        className='text-xs flex items-center gap-1 truncate'
+                      >
+                        <Calendar className='w-3 h-3 flex-shrink-0' />
+                        {tCreatePost('sections.packageConfig.endDate')}
+                      </Typography>
+                      <Typography className='mt-1 text-sm font-semibold leading-5 break-words'>
+                        {getEndDate()}
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Payment breakdown — single tinted card so the total
+                    has visual weight without sprawling on mobile */}
+                <div className='rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3 md:self-start'>
+                  <div className='flex items-center gap-2'>
+                    <CreditCard className='w-4 h-4 text-primary' />
+                    <Typography className='text-sm font-semibold'>
+                      {tCreatePost('sections.packageConfig.priceBreakdown')}
+                    </Typography>
+                  </div>
+                  <div className='flex items-baseline justify-between gap-3'>
+                    <Typography variant='muted' className='text-xs sm:text-sm'>
+                      {tCreatePost('sections.packageConfig.packagePrice')}
+                    </Typography>
+                    <Typography className='text-sm font-medium'>
+                      {`${totalPrice.toLocaleString('vi-VN')} đ`}
+                    </Typography>
+                  </div>
+                  <Separator />
+                  <div className='flex items-baseline justify-between gap-3'>
+                    <Typography className='text-sm font-semibold'>
+                      {tCreatePost('sections.packageConfig.totalAmount')}
+                    </Typography>
+                    <Typography className='text-title font-bold text-primary leading-none'>
+                      {`${totalPrice.toLocaleString('vi-VN')} đ`}
+                    </Typography>
                   </div>
                 </div>
               </div>
