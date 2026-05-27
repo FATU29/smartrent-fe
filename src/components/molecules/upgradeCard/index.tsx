@@ -7,7 +7,7 @@ import {
   Info,
   Sparkles,
   Zap,
-  Gift,
+  Tag,
 } from 'lucide-react'
 import {
   Card,
@@ -60,14 +60,13 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
   )
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 8 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        type: 'spring' as const,
-        stiffness: 100,
-        damping: 15,
+        duration: 0.3,
+        ease: 'easeOut' as const,
       },
     },
   }
@@ -82,50 +81,50 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
         initial='hidden'
         animate='visible'
         variants={cardVariants}
-        whileTap={{ scale: 0.98 }}
         className='h-full w-full'
       >
         <Card
           className={cn(
-            'relative h-full flex flex-col border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 overflow-hidden',
+            'relative h-full flex flex-col bg-card border-border',
+            'transition-colors duration-200 hover:border-primary/40 overflow-hidden',
             className,
           )}
         >
           <CardHeader className='flex flex-col items-center text-center gap-3 pt-6 pb-4 relative'>
-            {/* Discount Badge with Tooltip */}
+            {/* Discount Badge */}
             {upgrade.discountPercentage && upgrade.discountPercentage > 0 && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Badge
-                    variant='default'
-                    className='bg-green-500 hover:bg-green-600 text-white px-3 py-1 gap-2 shadow-lg mb-2 cursor-help border-0 [&>svg]:size-3.5'
+                    variant='secondary'
+                    className='gap-1.5 px-2.5 py-0.5 mb-1 text-xs font-medium border border-border cursor-help [&>svg]:size-3.5'
                   >
-                    <Gift />
+                    <Tag className='text-primary' />
                     <span>
                       {t('savePercent', {
                         percent: upgrade.discountPercentage.toFixed(1),
                       })}
                     </span>
-                    <Info className='opacity-70' />
+                    <Info className='opacity-60' />
                   </Badge>
                 </TooltipTrigger>
-                <TooltipContent
-                  side='top'
-                  className='max-w-xs p-4 bg-background border-2 border-green-200 dark:border-green-800 shadow-xl'
-                >
+                <TooltipContent side='top' className='max-w-xs p-3'>
                   <div className='space-y-2'>
-                    <div className='flex items-center gap-2 text-green-600 dark:text-green-400 font-semibold'>
-                      <Sparkles className='size-4' />
+                    <div className='flex items-center gap-2 text-foreground font-medium'>
+                      <Sparkles className='size-4 text-primary' />
                       <span>{t('discountExplanation.title')}</span>
                     </div>
-                    <Typography variant='small' className='text-foreground'>
+                    <Typography
+                      variant='small'
+                      className='text-muted-foreground'
+                    >
                       {t('discountExplanation.description', {
                         days: upgrade.daysRemaining || 0,
                         percent: upgrade.discountPercentage.toFixed(1),
                       })}
                     </Typography>
-                    <div className='flex items-start gap-2 pt-2 border-t border-green-200 dark:border-green-800'>
-                      <Zap className='size-3.5 text-amber-500 flex-shrink-0 mt-0.5' />
+                    <div className='flex items-start gap-2 pt-2 border-t border-border'>
+                      <Zap className='size-3.5 text-primary flex-shrink-0 mt-0.5' />
                       <Typography
                         variant='small'
                         className='text-xs text-muted-foreground'
@@ -140,16 +139,13 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
               </Tooltip>
             )}
 
-            {/* Icon with animation */}
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-            >
+            {/* Icon tile */}
+            <div className='size-12 flex items-center justify-center rounded-lg bg-primary/10 border border-primary/15'>
               {targetIcon}
-            </motion.div>
+            </div>
 
             <div className='space-y-1'>
-              <Typography variant='h3' className='font-bold'>
+              <Typography variant='h3' className='font-semibold'>
                 {upgrade.targetPackageName}
               </Typography>
               <Tooltip>
@@ -169,9 +165,9 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
               </Tooltip>
             </div>
 
-            <div className='flex items-center gap-2 text-primary bg-primary/10 px-3 py-1.5 rounded-full'>
-              <ArrowUp className='size-4' />
-              <Typography variant='small' className='font-medium'>
+            <div className='flex items-center gap-2 text-muted-foreground bg-muted/50 border border-border px-2.5 py-1 rounded-md'>
+              <ArrowUp className='size-3.5' />
+              <Typography variant='small' className='text-xs font-medium'>
                 {t('upgradingFrom', {
                   currentPlan: upgrade.currentPackageName || '',
                 })}
@@ -180,8 +176,8 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
           </CardHeader>
 
           <CardContent className='flex-1 space-y-4'>
-            {/* Pricing Section with enhanced design */}
-            <div className='rounded-xl bg-muted/50 p-5 space-y-3 border border-border shadow-sm'>
+            {/* Pricing Section */}
+            <div className='rounded-lg bg-muted/40 p-4 space-y-2.5 border border-border'>
               <div className='flex justify-between items-center'>
                 <Typography variant='small' className='text-muted-foreground'>
                   {t('originalPrice')}
@@ -197,13 +193,13 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
                 <div className='flex items-center gap-1.5'>
                   <Typography
                     variant='small'
-                    className='font-semibold text-green-600 dark:text-green-400'
+                    className='font-medium text-foreground'
                   >
                     {t('discount')}
                   </Typography>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Info className='size-3.5 text-green-600 dark:text-green-400 cursor-help' />
+                      <Info className='size-3.5 text-muted-foreground cursor-help' />
                     </TooltipTrigger>
                     <TooltipContent side='top' className='max-w-xs'>
                       <Typography variant='small'>
@@ -214,20 +210,20 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
                 </div>
                 <Typography
                   variant='small'
-                  className='font-semibold text-green-600 dark:text-green-400'
+                  className='font-medium text-foreground'
                 >
                   -{formattedDiscountAmount}
                 </Typography>
               </div>
-              <Separator className='bg-border/50' />
-              <div className='flex justify-between items-center pt-1'>
-                <Typography variant='large' className='font-bold'>
+              <Separator />
+              <div className='flex justify-between items-center pt-0.5'>
+                <Typography variant='large' className='font-semibold'>
                   {t('finalPrice')}
                 </Typography>
                 <div className='flex flex-col items-end'>
                   <Typography
                     variant='large'
-                    className='font-bold text-primary text-xl'
+                    className='font-semibold text-primary'
                   >
                     {formattedFinalPrice}
                   </Typography>
@@ -235,7 +231,7 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
                     upgrade.discountPercentage > 0 && (
                       <Typography
                         variant='small'
-                        className='text-xs text-green-600 dark:text-green-400 font-medium'
+                        className='text-xs text-muted-foreground'
                       >
                         {t('youSave')} {formattedDiscountAmount}
                       </Typography>
@@ -244,21 +240,21 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
               </div>
             </div>
 
-            {/* Forfeited Benefits Warning with improved UI */}
+            {/* Forfeited Benefits Warning */}
             {upgrade.forfeitedBenefits &&
               upgrade.forfeitedBenefits.length > 0 && (
                 <div className='space-y-2'>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className='flex items-center gap-2 cursor-help w-fit'>
-                        <AlertTriangle className='size-4 text-amber-500' />
+                        <AlertTriangle className='size-4 text-destructive' />
                         <Typography
                           variant='small'
-                          className='font-semibold text-amber-600 dark:text-amber-400'
+                          className='font-medium text-foreground'
                         >
                           {t('forfeitedBenefits')}
                         </Typography>
-                        <Info className='size-3.5 text-amber-500' />
+                        <Info className='size-3.5 text-muted-foreground' />
                       </div>
                     </TooltipTrigger>
                     <TooltipContent side='top' className='max-w-xs'>
@@ -267,24 +263,24 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
                       </Typography>
                     </TooltipContent>
                   </Tooltip>
-                  <div className='rounded-xl bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-200 dark:border-amber-800 p-4 space-y-2.5'>
+                  <div className='rounded-lg border border-destructive/30 bg-destructive/5 p-3 space-y-2'>
                     {upgrade.forfeitedBenefits
                       .slice(0, 2)
                       .map((benefit, index) => (
                         <div
                           key={index}
-                          className='flex items-start gap-2 text-amber-900 dark:text-amber-100'
+                          className='flex items-start gap-2 text-foreground'
                         >
-                          <div className='flex-shrink-0 mt-0.5'>
-                            <div className='w-1.5 h-1.5 rounded-full bg-amber-500' />
+                          <div className='flex-shrink-0 mt-1.5'>
+                            <div className='size-1.5 rounded-full bg-destructive/70' />
                           </div>
                           <Typography
                             variant='small'
-                            className='text-sm flex-1 font-medium'
+                            className='text-sm flex-1'
                           >
                             {benefit.benefitName}
                             {benefit.remainingQuantity > 0 && (
-                              <span className='text-muted-foreground ml-1 font-normal'>
+                              <span className='text-muted-foreground ml-1'>
                                 ({benefit.remainingQuantity} {t('remaining')})
                               </span>
                             )}
@@ -294,7 +290,7 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
                     {upgrade.forfeitedBenefits.length > 2 && (
                       <Typography
                         variant='small'
-                        className='text-amber-700 dark:text-amber-300 text-xs font-medium pl-4'
+                        className='text-muted-foreground text-xs pl-3.5'
                       >
                         +{upgrade.forfeitedBenefits.length - 2}{' '}
                         {t('moreForfeited')}
@@ -306,45 +302,36 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
 
             <Separator />
 
-            {/* New Benefits with enhanced styling */}
+            {/* New Benefits */}
             {upgrade.newBenefits && upgrade.newBenefits.length > 0 && (
               <div className='space-y-3'>
                 <div className='flex items-center gap-2'>
                   <Sparkles className='size-4 text-primary' />
                   <Typography
                     variant='small'
-                    className='font-bold text-primary text-base'
+                    className='font-semibold text-foreground'
                   >
                     {t('newBenefits')}
                   </Typography>
                 </div>
-                <div className='space-y-2 pl-1'>
-                  {upgrade.newBenefits.map((benefit, index) => {
-                    const benefitName =
-                      (benefit as any).benefitNameDisplay ||
-                      (benefit as any).benefitName ||
-                      ''
-
-                    return (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className='flex items-start gap-2.5 py-1.5 group'
+                <div className='space-y-1.5 pl-1'>
+                  {upgrade.newBenefits.map((benefit, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -4 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.2, delay: index * 0.04 }}
+                      className='flex items-start gap-2.5 py-1'
+                    >
+                      <CheckCircle2 className='size-4 text-primary flex-shrink-0 mt-0.5' />
+                      <Typography
+                        variant='small'
+                        className='text-sm flex-1 text-foreground'
                       >
-                        <div className='flex-shrink-0 mt-0.5'>
-                          <CheckCircle2 className='size-4 text-green-500 group-hover:scale-110 transition-transform' />
-                        </div>
-                        <Typography
-                          variant='small'
-                          className='text-sm flex-1 font-medium text-foreground'
-                        >
-                          {benefitName}
-                        </Typography>
-                      </motion.div>
-                    )
-                  })}
+                        {benefit.benefitName}
+                      </Typography>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
             )}
@@ -352,12 +339,12 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
 
           <CardFooter className='mt-auto pt-6 pb-6'>
             <Button
-              className='w-full group bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300'
+              className='w-full font-medium transition-colors duration-200'
               onClick={onUpgrade}
               size='lg'
             >
               <span className='flex items-center justify-center gap-2'>
-                <Zap className='size-4 group-hover:scale-110 transition-transform' />
+                <Zap className='size-4' />
                 {t('upgradeButton')}
               </span>
             </Button>

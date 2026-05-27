@@ -69,22 +69,17 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
       <Typography as='div' className={getHeaderStyles(compact, isBestSeller)}>
         {icon ? (
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{
-              type: 'spring' as const,
-              stiffness: 200,
-              damping: 20,
-              delay: 0.1,
-            }}
-            className='size-14 flex items-center justify-center'
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.05, ease: 'easeOut' }}
+            className='size-12 flex items-center justify-center rounded-lg bg-primary/10 border border-primary/15'
           >
             {icon}
           </motion.div>
         ) : (
           <Typography
             as='div'
-            className='size-14 flex items-center justify-center bg-red-100 text-red-500 rounded-full text-xs font-bold'
+            className='size-12 flex items-center justify-center rounded-lg bg-muted text-muted-foreground text-xs font-medium'
             title='Icon missing - check packageLevel prop'
           >
             ?
@@ -95,7 +90,7 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
           className={getTitleStyles(compact)}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          transition={{ duration: 0.25, delay: 0.1 }}
         >
           {name}
         </motion.h3>
@@ -104,7 +99,7 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
             className={getDescriptionStyles(compact)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.25 }}
+            transition={{ duration: 0.25, delay: 0.15 }}
           >
             <Typography variant='muted' as='span'>
               {description}
@@ -113,9 +108,9 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
         )}
         <motion.div
           className={getPriceContainerStyles(compact)}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ duration: 0.25, delay: 0.2 }}
         >
           <Typography as='div' className='flex flex-col items-start gap-1'>
             <Typography

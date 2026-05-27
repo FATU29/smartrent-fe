@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 // shadow + arrow-slide on hover. Same convention as the membership upgrade
 // CTA so primary actions feel consistent across the app.
 const PRIMARY_CTA_CLASSES = cn(
-  'group w-full sm:w-auto order-1 sm:order-2 sm:ml-auto h-12 px-6 sm:px-8 gap-2 text-base font-semibold',
+  'group w-auto order-3 ml-auto h-12 px-4 sm:px-8 gap-2 text-base font-semibold',
   'bg-gradient-to-r from-primary to-blue-600 hover:to-blue-700',
   'shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35',
   'transition-all duration-200',
@@ -64,12 +64,12 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
 
   return (
     <Card className='w-full mx-auto md:max-w-6xl mt-8 sm:mt-12 border-0 shadow-none p-0'>
-      <Card className='flex flex-col sm:flex-row gap-4 sm:gap-6 items-center flex-wrap border-0 shadow-none p-0'>
+      <Card className='flex flex-row gap-3 sm:gap-6 items-center flex-wrap border-0 shadow-none p-0'>
         {showBackButton && (
           <Button
             variant='outline'
             onClick={onBack}
-            className='w-full sm:w-auto order-2 sm:order-1 h-12 px-6 sm:px-8 gap-2'
+            className='w-auto order-1 h-12 px-4 sm:px-8 gap-2'
             disabled={isUpdatingDraft}
           >
             <ArrowLeft className='size-4' aria-hidden='true' />
@@ -82,7 +82,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
             variant='secondary'
             onClick={handleUpdateDraft}
             disabled={isUpdatingDraft}
-            className='w-full sm:w-auto order-3 sm:order-2 h-12 px-6 sm:px-8 gap-2'
+            className='w-auto order-2 h-12 px-4 sm:px-8 gap-2'
           >
             <Save className='size-4' aria-hidden='true' />
             {isUpdatingDraft ? t('updatingDraft') : t('updateDraft')}

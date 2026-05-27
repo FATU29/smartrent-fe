@@ -19,8 +19,11 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # Single job: one `npm ci`, then lint + typecheck + test + build.
+  # Single job: one `npm install`, then lint + typecheck + test + build.
   # Skips drafts. `next build` runs with --no-lint because lint already ran.
+  # Uses `npm install` (not `npm ci`) so transient lockfile drift doesn't
+  # block CI — Renovate/contributors occasionally land package.json changes
+  # without regenerating the lock.
   verify:
     if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
@@ -34,7 +37,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --no-audit --no-fund --prefer-offline
+        run: npm install --no-audit --no-fund --prefer-offline
 
       - name: Lint
         run: npm run lint

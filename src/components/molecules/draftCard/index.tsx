@@ -233,10 +233,11 @@ export const DraftCard: React.FC<DraftCardProps> = ({
             </CardHeader>
 
             <CardContent className='px-5 pb-4 sm:px-6'>
-              {/* Cells size to their content via flex — equal-width grid was
-                  leaving big empty space inside short-value cells like "1
-                  bedroom". `min-w-[140px]` keeps them readable on mobile. */}
-              <div className='flex flex-wrap gap-3 [&>*]:min-w-[140px] [&>*]:flex-1 sm:[&>*]:flex-none'>
+              {/* Mobile: 2-col grid so all four stats stay visible above the
+                  fold. From sm: cells size to their content via flex — equal-
+                  width grid was leaving big empty space inside short-value
+                  cells like "1 bedroom". */}
+              <div className='grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:[&>*]:min-w-[140px] sm:[&>*]:flex-1 md:[&>*]:flex-none'>
                 <div
                   className={cn(
                     'rounded-lg border p-3 transition-colors',

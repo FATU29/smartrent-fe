@@ -124,20 +124,19 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.06,
       },
     },
   }
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 8 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        type: 'spring' as const,
-        stiffness: 100,
-        damping: 15,
+        duration: 0.3,
+        ease: 'easeOut' as const,
       },
     },
   }
