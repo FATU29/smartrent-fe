@@ -8,7 +8,6 @@ interface StatCard {
   icon: React.ReactNode
   value: string | number
   label: string
-  gradient: string
 }
 
 interface StatsCarouselProps {
@@ -104,15 +103,19 @@ export default function StatsCarousel({ stats }: StatsCarouselProps) {
         >
           {stats.map((stat, index) => (
             <div key={index} className='min-w-full px-2'>
-              <Card className={`p-6 ${stat.gradient}`}>
-                <div className='flex items-center justify-between mb-2'>
-                  <div className='text-muted-foreground'>{stat.icon}</div>
+              <Card className='p-5'>
+                <div className='flex items-center gap-3 mb-3'>
+                  <div className='flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground'>
+                    {stat.icon}
+                  </div>
+                  <p className='text-sm font-medium text-muted-foreground'>
+                    {stat.label}
+                  </p>
                 </div>
-                <p className='text-3xl font-bold text-foreground mb-1'>
+                {/* Stat-value emphasis (count), not a heading — outside type ramp. */}
+                {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
+                <p className='text-3xl font-semibold text-foreground tracking-tight'>
                   {stat.value}
-                </p>
-                <p className='text-sm font-medium text-muted-foreground'>
-                  {stat.label}
                 </p>
               </Card>
             </div>

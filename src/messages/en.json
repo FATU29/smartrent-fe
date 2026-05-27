@@ -3841,6 +3841,7 @@
   },
   "notification": {
     "title": "Notifications",
+    "close": "Close",
     "empty": "No notifications yet",
     "emptyDescription": "You're all caught up! We'll notify you when something happens.",
     "markAllRead": "Mark all as read",

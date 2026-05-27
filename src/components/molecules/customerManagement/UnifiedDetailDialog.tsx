@@ -111,7 +111,7 @@ export default function UnifiedDetailDialog({
         )}
       >
         {/* Header */}
-        <header className='relative bg-primary text-primary-foreground flex-shrink-0'>
+        <header className='relative bg-card border-b border-border flex-shrink-0'>
           <div className='px-4 py-4 sm:px-6 sm:py-5'>
             <div className='flex items-center gap-3 mb-4'>
               {/* Back button */}
@@ -120,7 +120,7 @@ export default function UnifiedDetailDialog({
                   onClick={() =>
                     setCurrentView(isCustomerView ? 'listing' : 'customer')
                   }
-                  className='p-2 -ml-2 hover:bg-primary-foreground/20 rounded-full transition-colors active:scale-95'
+                  className='p-2 -ml-2 hover:bg-muted rounded-full transition-colors active:scale-95 text-muted-foreground'
                   aria-label='Go back'
                 >
                   <ArrowLeft className='h-5 w-5' />
@@ -129,26 +129,30 @@ export default function UnifiedDetailDialog({
 
               {/* Avatar/Icon */}
               {isCustomerView && customer ? (
-                <Avatar className='h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary-foreground shadow-lg flex-shrink-0'>
+                <Avatar className='h-11 w-11 sm:h-12 sm:w-12 flex-shrink-0'>
                   {customer.avatarUrl && (
                     <AvatarImage src={customer.avatarUrl} alt={displayName} />
                   )}
-                  <AvatarFallback className='text-base sm:text-lg bg-card text-primary font-bold'>
+                  <AvatarFallback className='bg-muted text-muted-foreground text-sm sm:text-base font-medium'>
                     {getInitials(customer.firstName, customer.lastName)}
                   </AvatarFallback>
                 </Avatar>
               ) : listing ? (
-                <div className='p-2.5 sm:p-3 bg-primary-foreground/20 rounded-xl flex-shrink-0'>
-                  <Home className='h-6 w-6 sm:h-7 sm:w-7' />
+                <div className='flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center bg-muted rounded-lg flex-shrink-0 text-muted-foreground'>
+                  <Home className='h-5 w-5 sm:h-6 sm:w-6' />
                 </div>
               ) : null}
 
               {/* Title */}
               <div className='flex-1 min-w-0'>
-                <h2 className='text-base sm:text-xl font-bold truncate'>
+                <Typography
+                  variant='h5'
+                  as='h2'
+                  className='truncate text-foreground'
+                >
                   {displayName}
-                </h2>
-                <p className='text-primary-foreground/80 text-xs sm:text-sm'>
+                </Typography>
+                <p className='text-muted-foreground text-xs sm:text-sm'>
                   {isCustomerView
                     ? t('dialog.customerDetail.title')
                     : t('dialog.listingDetail.title')}
@@ -158,7 +162,7 @@ export default function UnifiedDetailDialog({
               {/* Close button */}
               <button
                 onClick={() => onOpenChange(false)}
-                className='p-2 -mr-2 hover:bg-primary-foreground/20 rounded-full transition-colors active:scale-95 flex-shrink-0'
+                className='p-2 -mr-2 hover:bg-muted rounded-full transition-colors active:scale-95 flex-shrink-0 text-muted-foreground'
                 aria-label='Close'
               >
                 <X className='h-5 w-5' />
@@ -167,14 +171,14 @@ export default function UnifiedDetailDialog({
 
             {/* Tab Navigation */}
             {customer && listing && (
-              <div className='flex gap-2'>
+              <div className='flex gap-1 p-1 bg-muted/60 rounded-lg'>
                 <button
                   onClick={() => setCurrentView('customer')}
                   className={cn(
-                    'flex-1 py-2.5 px-4 rounded-lg font-medium text-sm transition-all',
+                    'flex-1 py-2 px-3 rounded-md font-medium text-sm transition-all',
                     isCustomerView
-                      ? 'bg-card text-primary shadow-md'
-                      : 'bg-primary-foreground/10 text-primary-foreground/80 hover:bg-primary-foreground/20',
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground',
                   )}
                 >
                   <Users className='h-4 w-4 inline-block mr-2' />
@@ -183,10 +187,10 @@ export default function UnifiedDetailDialog({
                 <button
                   onClick={() => setCurrentView('listing')}
                   className={cn(
-                    'flex-1 py-2.5 px-4 rounded-lg font-medium text-sm transition-all',
+                    'flex-1 py-2 px-3 rounded-md font-medium text-sm transition-all',
                     !isCustomerView
-                      ? 'bg-card text-primary shadow-md'
-                      : 'bg-primary-foreground/10 text-primary-foreground/80 hover:bg-primary-foreground/20',
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground',
                   )}
                 >
                   <Home className='h-4 w-4 inline-block mr-2' />
@@ -200,63 +204,70 @@ export default function UnifiedDetailDialog({
         {/* Content */}
         <div className='flex-1 overflow-y-auto overscroll-contain min-h-0 bg-background'>
           {isCustomerView && customer && (
-            <div className='p-4 sm:p-6 space-y-4 pb-6'>
+            <div className='p-4 sm:p-6 space-y-5 pb-6'>
               {/* Stats Cards */}
               <div className='grid grid-cols-1 xs:grid-cols-3 gap-3 sm:grid-cols-3'>
-                <Card className='p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'>
-                  <TrendingUp className='h-5 w-5 mb-2 text-primary' />
-                  <p className='text-2xl font-bold text-primary'>
+                <Card className='p-4'>
+                  <div className='flex items-center gap-2 mb-2 text-muted-foreground'>
+                    <TrendingUp className='h-4 w-4' />
+                    <p className='text-xs font-medium'>
+                      {t('table.totalClicks')}
+                    </p>
+                  </div>
+                  {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
+                  <p className='text-2xl font-semibold text-foreground tracking-tight'>
                     {customer.clickedListings.reduce(
                       (sum, l) => sum + l.clickCount,
                       0,
                     )}
                   </p>
-                  <p className='text-xs text-muted-foreground mt-1'>
-                    {t('table.totalClicks')}
-                  </p>
                 </Card>
 
-                <Card className='p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'>
-                  <Eye className='h-5 w-5 mb-2 text-primary' />
-                  <p className='text-2xl font-bold text-primary'>
+                <Card className='p-4'>
+                  <div className='flex items-center gap-2 mb-2 text-muted-foreground'>
+                    <Eye className='h-4 w-4' />
+                    <p className='text-xs font-medium'>
+                      {t('dialog.customerDetail.totalListings')}
+                    </p>
+                  </div>
+                  {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
+                  <p className='text-2xl font-semibold text-foreground tracking-tight'>
                     {customer.totalListingsClicked}
                   </p>
-                  <p className='text-xs text-muted-foreground mt-1'>
-                    {t('dialog.customerDetail.totalListings')}
-                  </p>
                 </Card>
 
-                <Card className='p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'>
-                  <Calendar className='h-5 w-5 mb-2 text-primary' />
-                  <p className='text-xs font-semibold text-primary mb-1'>
-                    {t('dialog.customerDetail.lastClick')}
-                  </p>
-                  <p className='text-xs text-muted-foreground'>
+                <Card className='p-4'>
+                  <div className='flex items-center gap-2 mb-2 text-muted-foreground'>
+                    <Calendar className='h-4 w-4' />
+                    <p className='text-xs font-medium'>
+                      {t('dialog.customerDetail.lastClick')}
+                    </p>
+                  </div>
+                  <p className='text-sm font-medium text-foreground'>
                     {formatDate(customer.clickedListings[0]?.clickedAt || '')}
                   </p>
                 </Card>
               </div>
 
               {/* Contact Info */}
-              <Card className='p-4 border-l-4 border-primary'>
+              <section>
                 <Typography
                   variant='h6'
                   as='h3'
-                  className='mb-4 flex items-center gap-2'
+                  className='mb-3 text-muted-foreground uppercase tracking-wider text-xs font-medium'
                 >
-                  <Phone className='h-5 w-5 text-primary' />
                   {t('dialog.customerDetail.contactInfo')}
                 </Typography>
 
-                <div className='space-y-3'>
+                <Card className='p-2 divide-y divide-border'>
                   {/* Email */}
-                  <div className='flex items-center gap-3 p-3 bg-muted/50 rounded-lg'>
-                    <Mail className='h-5 w-5 text-muted-foreground flex-shrink-0' />
+                  <div className='flex items-center gap-3 p-3'>
+                    <Mail className='h-4 w-4 text-muted-foreground flex-shrink-0' />
                     <div className='flex-1 min-w-0'>
                       <p className='text-xs text-muted-foreground mb-0.5'>
                         {t('table.email')}
                       </p>
-                      <p className='font-medium text-sm truncate'>
+                      <p className='font-medium text-sm truncate text-foreground'>
                         {customer.email}
                       </p>
                     </div>
@@ -264,17 +275,17 @@ export default function UnifiedDetailDialog({
                       onClick={() =>
                         handleCopyToClipboard(customer.email, 'email')
                       }
-                      className='p-2 hover:bg-primary/10 rounded-lg transition-colors active:scale-95 flex-shrink-0'
+                      className='p-2 hover:bg-muted rounded-md transition-colors active:scale-95 flex-shrink-0 text-muted-foreground'
                       aria-label='Copy email'
                     >
-                      <Copy className='h-4 w-4 text-primary' />
+                      <Copy className='h-4 w-4' />
                     </button>
                   </div>
 
                   {/* Phone */}
                   {customer.contactPhone && (
-                    <div className='flex items-center gap-3 p-3 bg-muted/50 rounded-lg'>
-                      <Phone className='h-5 w-5 text-muted-foreground flex-shrink-0' />
+                    <div className='flex items-center gap-3 p-3'>
+                      <Phone className='h-4 w-4 text-muted-foreground flex-shrink-0' />
                       <div className='flex-1 min-w-0'>
                         <div className='flex items-center gap-2 mb-0.5 flex-wrap'>
                           <p className='text-xs text-muted-foreground'>
@@ -282,15 +293,15 @@ export default function UnifiedDetailDialog({
                           </p>
                           {customer.contactPhoneVerified && (
                             <Badge
-                              variant='outline'
-                              className='text-2xs h-5 px-1.5 border-primary text-primary'
+                              variant='secondary'
+                              className='text-2xs h-5 px-1.5'
                             >
                               <CheckCircle2 className='h-2.5 w-2.5 mr-0.5' />
                               {t('table.verified')}
                             </Badge>
                           )}
                         </div>
-                        <p className='font-medium text-sm'>
+                        <p className='font-medium text-sm text-foreground'>
                           {customer.contactPhone}
                         </p>
                       </div>
@@ -298,30 +309,29 @@ export default function UnifiedDetailDialog({
                         onClick={() =>
                           handleCopyToClipboard(customer.contactPhone, 'phone')
                         }
-                        className='p-2 hover:bg-primary/10 rounded-lg transition-colors active:scale-95 flex-shrink-0'
+                        className='p-2 hover:bg-muted rounded-md transition-colors active:scale-95 flex-shrink-0 text-muted-foreground'
                         aria-label='Copy phone'
                       >
-                        <Copy className='h-4 w-4 text-primary' />
+                        <Copy className='h-4 w-4' />
                       </button>
                     </div>
                   )}
-                </div>
-              </Card>
+                </Card>
+              </section>
 
               {/* Click History */}
-              <Card className='p-4 border-l-4 border-primary'>
+              <section>
                 <Typography
                   variant='h6'
                   as='h3'
-                  className='mb-4 flex items-center gap-2'
+                  className='mb-3 text-muted-foreground uppercase tracking-wider text-xs font-medium'
                 >
-                  <Calendar className='h-5 w-5 text-primary' />
                   {t('dialog.customerDetail.clickHistory')} (
                   {customer.clickedListings.length})
                 </Typography>
 
-                <div className='space-y-3'>
-                  {customer.clickedListings.map((listingItem, index) => {
+                <div className='space-y-2'>
+                  {customer.clickedListings.map((listingItem) => {
                     const handleKeyDown = (e: React.KeyboardEvent) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault()
@@ -330,75 +340,79 @@ export default function UnifiedDetailDialog({
                     }
 
                     return (
-                      <div
+                      <Card
                         key={listingItem.listingId}
                         role='button'
                         tabIndex={0}
-                        className='group p-3 bg-muted/50 hover:bg-primary/5 rounded-lg border border-border hover:border-primary/30 transition-all cursor-pointer active:scale-[0.98]'
+                        className='group p-3 hover:bg-muted/40 transition-colors cursor-pointer active:scale-[0.99]'
                         onClick={() => switchToListing(listingItem)}
                         onKeyDown={handleKeyDown}
                         aria-label={`View listing: ${listingItem.listingTitle}`}
                       >
                         <div className='flex items-start gap-3'>
                           <div className='flex-1 min-w-0'>
-                            <div className='flex items-center gap-2 mb-2 flex-wrap'>
-                              <Badge variant='secondary' className='text-xs'>
-                                #{index + 1}
-                              </Badge>
-                              <Badge variant='outline' className='text-xs'>
-                                {listingItem.clickCount}{' '}
-                                {t('dialog.customerDetail.times')}
-                              </Badge>
-                            </div>
-                            <h4 className='font-semibold text-sm text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-2'>
+                            <h4 className='font-medium text-sm text-foreground mb-1 line-clamp-2'>
                               {listingItem.listingTitle}
                             </h4>
-                            <p className='text-xs text-muted-foreground flex items-center gap-1'>
-                              <Calendar className='h-3 w-3' />
-                              {formatDate(listingItem.clickedAt)}
-                            </p>
+                            <div className='text-xs text-muted-foreground flex items-center gap-2 flex-wrap'>
+                              <span className='flex items-center gap-1'>
+                                <Calendar className='h-3 w-3' />
+                                {formatDate(listingItem.clickedAt)}
+                              </span>
+                              <span>·</span>
+                              <span>
+                                {listingItem.clickCount}{' '}
+                                {t('dialog.customerDetail.times')}
+                              </span>
+                            </div>
                           </div>
-                          <ExternalLink className='h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 mt-1' />
+                          <ExternalLink className='h-4 w-4 text-muted-foreground/60 group-hover:text-muted-foreground transition-colors flex-shrink-0 mt-0.5' />
                         </div>
-                      </div>
+                      </Card>
                     )
                   })}
                 </div>
-              </Card>
+              </section>
             </div>
           )}
 
           {!isCustomerView && listing && (
-            <div className='p-4 sm:p-6 space-y-4 pb-6'>
+            <div className='p-4 sm:p-6 space-y-5 pb-6'>
               {/* Stats */}
               <div className='grid grid-cols-2 gap-3'>
-                <Card className='p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'>
+                <Card className='p-4'>
                   {loadingStats ? (
-                    <Loader2 className='h-5 w-5 mb-2 animate-spin text-primary' />
+                    <Loader2 className='h-5 w-5 mb-2 animate-spin text-muted-foreground' />
                   ) : (
                     <>
-                      <MousePointerClick className='h-5 w-5 mb-2 text-primary' />
-                      <p className='text-2xl font-bold text-primary'>
+                      <div className='flex items-center gap-2 mb-2 text-muted-foreground'>
+                        <MousePointerClick className='h-4 w-4' />
+                        <p className='text-xs font-medium'>
+                          {t('dialog.listingDetail.totalClicks')}
+                        </p>
+                      </div>
+                      {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
+                      <p className='text-2xl font-semibold text-foreground tracking-tight'>
                         {stats?.totalClicks || listing.clickCount}
-                      </p>
-                      <p className='text-xs text-muted-foreground mt-1'>
-                        {t('dialog.listingDetail.totalClicks')}
                       </p>
                     </>
                   )}
                 </Card>
 
-                <Card className='p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'>
+                <Card className='p-4'>
                   {loadingStats ? (
-                    <Loader2 className='h-5 w-5 mb-2 animate-spin text-primary' />
+                    <Loader2 className='h-5 w-5 mb-2 animate-spin text-muted-foreground' />
                   ) : (
                     <>
-                      <Users className='h-5 w-5 mb-2 text-primary' />
-                      <p className='text-2xl font-bold text-primary'>
+                      <div className='flex items-center gap-2 mb-2 text-muted-foreground'>
+                        <Users className='h-4 w-4' />
+                        <p className='text-xs font-medium'>
+                          {t('dialog.listingDetail.uniqueUsers')}
+                        </p>
+                      </div>
+                      {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
+                      <p className='text-2xl font-semibold text-foreground tracking-tight'>
                         {stats?.uniqueUsers || usersData?.data.length || 0}
-                      </p>
-                      <p className='text-xs text-muted-foreground mt-1'>
-                        {t('dialog.listingDetail.uniqueUsers')}
                       </p>
                     </>
                   )}
@@ -406,32 +420,31 @@ export default function UnifiedDetailDialog({
               </div>
 
               {/* Interested Users List */}
-              <Card className='p-4 border-l-4 border-primary'>
+              <section>
                 <Typography
                   variant='h6'
                   as='h3'
-                  className='mb-4 flex items-center gap-2'
+                  className='mb-3 text-muted-foreground uppercase tracking-wider text-xs font-medium'
                 >
-                  <Users className='h-5 w-5 text-primary' />
                   {t('dialog.listingDetail.interestedUsers')}
                 </Typography>
 
                 {loadingUsers ? (
                   <div className='flex items-center justify-center py-12'>
-                    <Loader2 className='h-6 w-6 animate-spin text-primary mr-2' />
+                    <Loader2 className='h-5 w-5 animate-spin text-muted-foreground mr-2' />
                     <span className='text-sm text-muted-foreground'>
                       {t('dialog.listingDetail.loadingUsers')}
                     </span>
                   </div>
                 ) : !usersData?.data || usersData.data.length === 0 ? (
                   <div className='text-center py-12'>
-                    <Users className='h-12 w-12 text-muted-foreground/30 mx-auto mb-3' />
+                    <Users className='h-10 w-10 text-muted-foreground/40 mx-auto mb-3' />
                     <p className='text-sm text-muted-foreground'>
                       {t('dialog.listingDetail.noUsers')}
                     </p>
                   </div>
                 ) : (
-                  <div className='space-y-3'>
+                  <div className='space-y-2'>
                     {usersData.data.map((user: UserPhoneClickDetail) => (
                       <InterestedUserCard
                         key={user.userId}
@@ -443,7 +456,7 @@ export default function UnifiedDetailDialog({
                     ))}
                   </div>
                 )}
-              </Card>
+              </section>
             </div>
           )}
         </div>

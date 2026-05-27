@@ -23,7 +23,6 @@ import {
   Maximize2,
   Banknote,
   ImageOff,
-  Sparkles,
   CircleAlert,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -169,7 +168,10 @@ export const DraftCard: React.FC<DraftCardProps> = ({
               >
                 {propertyType}
               </Badge>
-              <Badge className='border-yellow-400/40 bg-yellow-500/90 font-medium text-white hover:bg-yellow-500 dark:bg-yellow-500/85 dark:hover:bg-yellow-500'>
+              <Badge
+                variant='outline'
+                className='border-border/60 bg-background/90 font-medium text-foreground backdrop-blur-sm dark:bg-background/80'
+              >
                 {t('draft')}
               </Badge>
             </div>
@@ -184,14 +186,13 @@ export const DraftCard: React.FC<DraftCardProps> = ({
                 {draftDescription}
               </CardDescription>
 
-              <div className='rounded-lg border border-primary/20 bg-primary/5 p-3 dark:border-primary/25 dark:bg-primary/10'>
+              <div className='rounded-lg border border-border/60 bg-muted/40 p-3'>
                 <div className='mb-2 flex items-center justify-between gap-2'>
-                  <div className='flex items-center gap-1.5 text-xs font-medium text-primary'>
-                    <Sparkles className='h-3.5 w-3.5' />
+                  <div className='flex items-center gap-1.5 text-xs font-medium text-foreground'>
                     {t('completion')}
                   </div>
                   <span className='text-xs font-medium text-muted-foreground'>
-                    {completionPercent}% - {completionLabel}
+                    {completionPercent}% · {completionLabel}
                   </span>
                 </div>
                 <Progress value={completionPercent} className='h-1.5' />
@@ -223,8 +224,8 @@ export const DraftCard: React.FC<DraftCardProps> = ({
                 )}
               </div>
 
-              <div className='flex items-start gap-2.5 rounded-lg border border-primary/15 bg-primary/5 p-3 dark:border-primary/25 dark:bg-primary/10'>
-                <MapPin className='mt-0.5 h-4 w-4 shrink-0 text-primary' />
+              <div className='flex items-start gap-2.5 rounded-lg border border-border/60 bg-muted/40 p-3'>
+                <MapPin className='mt-0.5 h-4 w-4 shrink-0 text-muted-foreground' />
                 <p className='line-clamp-2 text-sm leading-relaxed text-foreground'>
                   {address}
                 </p>

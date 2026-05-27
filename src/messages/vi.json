@@ -3842,6 +3842,7 @@
   },
   "notification": {
     "title": "Thông báo",
+    "close": "Đóng",
     "empty": "Chưa có thông báo",
     "emptyDescription": "Bạn đã xem hết! Chúng tôi sẽ thông báo khi có điều gì mới.",
     "markAllRead": "Đánh dấu tất cả đã đọc",

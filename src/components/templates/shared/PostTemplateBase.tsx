@@ -49,7 +49,7 @@ export const PostTemplateBase: React.FC<PostTemplateBaseProps> = ({
         <PageContainer
           width='form'
           padded={false}
-          className='px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-4 sm:py-6 lg:py-8'
+          className='px-2 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-4 sm:py-6 lg:py-8'
         >
           <HeaderModule />
 

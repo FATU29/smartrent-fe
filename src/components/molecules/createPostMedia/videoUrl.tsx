@@ -81,13 +81,13 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
   }
 
   return (
-    <Card className='mb-6 shadow-lg border-0 bg-gradient-to-br from-background to-muted'>
-      <CardHeader className='pb-3'>
+    <Card className='mb-6 border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-lg sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
+      <CardHeader className='pb-3 px-0 sm:px-6'>
         <CardTitle className='text-lg sm:text-xl flex items-center gap-2'>
           <Link2 className='w-4 h-4' /> {t('video.title')}
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className='px-0 sm:px-6'>
         {isUploadedVideo ? (
           <div className='p-4 bg-muted rounded-xl border border-border'>
             <p className='text-sm text-muted-foreground text-center'>

@@ -354,11 +354,11 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
 
       <CardContent className='px-0 space-y-6'>
         {/* Package Type Selection */}
-        <Card>
-          <CardHeader>
+        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:bg-card sm:border sm:rounded-xl sm:py-6'>
+          <CardHeader className='px-0 sm:px-6'>
             <CardTitle className='text-lg'>{t('selectPackageType')}</CardTitle>
           </CardHeader>
-          <CardContent className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3'>
+          <CardContent className='grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 px-0 sm:px-6'>
             {vipTiers.map((tier) => (
               <Button
                 key={tier.tierId}
@@ -402,11 +402,11 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         </Card>
 
         {/* Duration Selection */}
-        <Card className='bg-muted/50'>
-          <CardHeader>
+        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:bg-muted/50 sm:border sm:rounded-xl sm:py-6'>
+          <CardHeader className='px-0 sm:px-6'>
             <CardTitle className='text-base'>{t('selectDuration')}</CardTitle>
           </CardHeader>
-          <CardContent className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
+          <CardContent className='grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 px-0 sm:px-6'>
             {durationOptions.map((option) => (
               <Button
                 key={option.days}
@@ -450,7 +450,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         </Card>
 
         {/* Date Selection */}
-        <Card className='grid grid-cols-1 sm:grid-cols-2 gap-6 p-6'>
+        <Card className='grid grid-cols-1 sm:grid-cols-2 gap-6 border-0 shadow-none bg-transparent rounded-none p-0 sm:bg-card sm:border sm:rounded-xl sm:p-6'>
           <CardContent className='space-y-2 p-0'>
             <Label className='text-sm font-medium flex items-center gap-2'>
               <Calendar className='w-4 h-4' />
@@ -528,7 +528,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         />
 
         {/* Summary */}
-        <Card className='flex flex-col lg:flex-row gap-6 p-6'>
+        <Card className='flex flex-col lg:flex-row gap-6 border-0 shadow-none bg-transparent rounded-none p-0 sm:bg-card sm:border sm:rounded-xl sm:p-6'>
           <Card className='flex-1 space-y-3 border-0 shadow-none p-0'>
             <Card className='flex justify-between border-0 shadow-none p-0'>
               <Typography variant='muted' className='text-sm'>

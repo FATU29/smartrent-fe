@@ -6,12 +6,7 @@ import { useAuthContext } from '@/contexts/auth'
 import { useMyMembership } from '@/hooks/useMembership'
 import { useQuery } from '@tanstack/react-query'
 import { UserService } from '@/api/services/user.service'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/atoms/card'
+import { Card, CardContent, CardHeader } from '@/components/atoms/card'
 import { Separator } from '@/components/atoms/separator'
 import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
@@ -172,15 +167,13 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
         {/* Stacked Layout: Main Content on top, Payment Summary below */}
         <div className='flex flex-col gap-6'>
           {/* Top - Main Content */}
-          <div className='space-y-6'>
+          <div className='space-y-8 sm:space-y-10'>
             {/* Contact Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-lg'>
-                  {tCommon('contactInformation')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+            <section className='space-y-3'>
+              <Typography variant='h4' className='font-semibold'>
+                {tCommon('contactInformation')}
+              </Typography>
+              <div>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'>
                   <div className='h-full min-h-[92px] rounded-lg border bg-muted/30 p-3'>
                     <div className='flex flex-col items-center justify-center gap-2 h-full text-center'>
@@ -233,21 +226,19 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
 
             {/* Combined Package & Payment Summary */}
-            <Card>
-              <CardHeader className='pb-4'>
-                <Card className='flex items-center gap-2 border-0 shadow-none p-0'>
-                  <Package className='w-5 h-5 text-primary' />
-                  <CardTitle className='text-lg'>
-                    {tCreatePost('sections.orderSummary.packageDetails')}
-                  </CardTitle>
-                </Card>
-              </CardHeader>
+            <section className='space-y-3'>
+              <div className='flex items-center gap-2'>
+                <Package className='w-5 h-5 text-primary' />
+                <Typography variant='h4' className='font-semibold'>
+                  {tCreatePost('sections.orderSummary.packageDetails')}
+                </Typography>
+              </div>
 
-              <CardContent>
+              <div>
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3'>
                   {/* Left: Package info */}
                   <div className='space-y-3'>
@@ -339,17 +330,15 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                     />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
 
             {/* Property Preview with Media */}
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-lg'>
-                  {tCreatePost('sections.propertyInfo.title')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-4'>
+            <section className='space-y-3'>
+              <Typography variant='h4' className='font-semibold'>
+                {tCreatePost('sections.propertyInfo.title')}
+              </Typography>
+              <div className='space-y-4'>
                 {/* Media Section - Video Priority or Cover Image - Responsive */}
                 {(videoUrl || coverImage) && (
                   <div className='relative w-full rounded-lg overflow-hidden bg-muted'>
@@ -396,8 +385,12 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                 {/* Property Details */}
                 <div className='space-y-4'>
                   <Typography
-                    variant='h3'
-                    className='font-bold text-xl sm:text-2xl break-words leading-tight'
+                    variant='h4'
+                    title={
+                      propertyInfo.title ||
+                      tCreatePost('sections.propertyInfo.noTitle')
+                    }
+                    className='font-semibold break-words leading-snug line-clamp-2 hover:line-clamp-none'
                   >
                     {propertyInfo.title ||
                       tCreatePost('sections.propertyInfo.noTitle')}
@@ -661,8 +654,8 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
                       </>
                     )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </div>
         </div>
       </CardContent>

@@ -152,29 +152,18 @@ const CustomerManagementTemplate = () => {
       <PageContainer width='grid' className='py-8'>
         <div className='mb-8'>
           <Typography variant='pageTitle'>{t('title')}</Typography>
-          <p className='text-muted-foreground mt-2'>{t('subtitle')}</p>
+          <p className='text-muted-foreground mt-2 text-sm'>{t('subtitle')}</p>
         </div>
 
-        <div className='relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-background to-primary/5 px-6 py-16 text-center'>
-          {/* Soft radial accent at the top to draw the eye to the icon */}
-          <div
-            className='pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_top,theme(colors.primary/0.18),transparent_70%)]'
-            aria-hidden='true'
-          />
-
-          {/* Solid primary icon — focal point */}
-          <div className='relative mb-6 flex size-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/25'>
-            <Users className='size-8' aria-hidden='true' />
+        <div className='flex flex-col items-center justify-center rounded-xl border border-border bg-card px-6 py-16 text-center'>
+          <div className='mb-5 flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+            <Users className='size-7' aria-hidden='true' />
           </div>
 
-          <Typography
-            variant='h4'
-            as='h3'
-            className='relative mb-2 text-foreground'
-          >
+          <Typography variant='h5' as='h3' className='mb-2 text-foreground'>
             {t('emptyState.customers.title')}
           </Typography>
-          <p className='relative max-w-md text-sm text-muted-foreground'>
+          <p className='max-w-md text-sm text-muted-foreground'>
             {t('emptyState.customers.description')}
           </p>
         </div>
@@ -182,297 +171,373 @@ const CustomerManagementTemplate = () => {
     )
   }
 
+  const statCards = [
+    {
+      icon: Users,
+      value: stats.totalCustomers,
+      label: t('stats.totalCustomers'),
+    },
+    {
+      icon: MousePointerClick,
+      value: stats.totalClicks,
+      label: t('stats.totalClicks'),
+    },
+    {
+      icon: TrendingUp,
+      value: stats.uniqueUsers,
+      label: t('stats.uniqueUsers'),
+    },
+  ]
+
+  const openListingDetail = (listing: ListingClickInfo) => {
+    setSelectedListing(listing)
+    setInitialView('listing')
+    setDialogOpen(true)
+  }
+
   return (
     <PageContainer width='grid' className='pt-8 pb-20 space-y-6'>
       {/* Header */}
       <div>
         <Typography variant='pageTitle'>{t('title')}</Typography>
-        <p className='text-muted-foreground mt-2'>{t('subtitle')}</p>
+        <p className='text-muted-foreground mt-2 text-sm'>{t('subtitle')}</p>
       </div>
 
       {/* Stats Cards - Desktop Grid */}
       <div className='hidden md:grid gap-4 md:grid-cols-3'>
-        <Card className='p-6 hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-primary/10 to-background border-primary/20'>
-          <div className='flex items-center justify-between mb-2'>
-            <p className='text-sm font-medium text-muted-foreground'>
-              {t('stats.totalCustomers')}
+        {statCards.map(({ icon: Icon, value, label }) => (
+          <Card
+            key={label}
+            className='p-5 hover:border-border/80 transition-colors'
+          >
+            <div className='flex items-center gap-3 mb-3'>
+              <div className='flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground'>
+                <Icon className='h-5 w-5' />
+              </div>
+              <p className='text-sm font-medium text-muted-foreground'>
+                {label}
+              </p>
+            </div>
+            {/* Stat-value emphasis (count), not a heading — outside type ramp. */}
+            {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
+            <p className='text-3xl font-semibold text-foreground tracking-tight'>
+              {value}
             </p>
-            <Users className='h-6 w-6 text-primary' />
-          </div>
-          {/* Stat-value emphasis (count), not a heading — outside type ramp. */}
-          {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
-          <p className='text-3xl font-bold text-primary'>
-            {stats.totalCustomers}
-          </p>
-        </Card>
-
-        <Card className='p-6 hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-primary/10 to-background border-primary/20'>
-          <div className='flex items-center justify-between mb-2'>
-            <p className='text-sm font-medium text-muted-foreground'>
-              {t('stats.totalClicks')}
-            </p>
-            <MousePointerClick className='h-6 w-6 text-primary' />
-          </div>
-          {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
-          <p className='text-3xl font-bold text-primary'>{stats.totalClicks}</p>
-        </Card>
-
-        <Card className='p-6 hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-primary/10 to-background border-primary/20'>
-          <div className='flex items-center justify-between mb-2'>
-            <p className='text-sm font-medium text-muted-foreground'>
-              {t('stats.uniqueUsers')}
-            </p>
-            <TrendingUp className='h-6 w-6 text-primary' />
-          </div>
-          {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
-          <p className='text-3xl font-bold text-primary'>{stats.uniqueUsers}</p>
-        </Card>
+          </Card>
+        ))}
       </div>
 
       {/* Stats Carousel - Mobile Only */}
       <div className='md:hidden'>
         <StatsCarousel
-          stats={[
-            {
-              icon: <Users className='h-6 w-6 text-primary' />,
-              value: stats.totalCustomers,
-              label: t('stats.totalCustomers'),
-              gradient:
-                'bg-gradient-to-br from-primary/10 to-background border-primary/20',
-            },
-            {
-              icon: <MousePointerClick className='h-6 w-6 text-primary' />,
-              value: stats.totalClicks,
-              label: t('stats.totalClicks'),
-              gradient:
-                'bg-gradient-to-br from-primary/10 to-background border-primary/20',
-            },
-            {
-              icon: <TrendingUp className='h-6 w-6 text-primary' />,
-              value: stats.uniqueUsers,
-              label: t('stats.uniqueUsers'),
-              gradient:
-                'bg-gradient-to-br from-primary/10 to-background border-primary/20',
-            },
-          ]}
+          stats={statCards.map(({ icon: Icon, value, label }) => ({
+            icon: <Icon className='h-5 w-5' />,
+            value,
+            label,
+          }))}
         />
       </div>
 
       {/* Search */}
-      <Card className='p-4 shadow-sm hover:shadow-md transition-shadow duration-200'>
-        <div className='relative'>
-          <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground' />
-          <input
-            type='text'
-            placeholder={t('searchPlaceholder')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className='w-full pl-10 pr-4 py-2 border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-          />
-        </div>
-      </Card>
+      <div className='relative'>
+        <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+        <input
+          type='text'
+          placeholder={t('searchPlaceholder')}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className='w-full pl-9 pr-4 py-2.5 text-sm border border-border bg-card rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground'
+        />
+      </div>
 
-      {/* Customer Table */}
-      <Card className='overflow-hidden'>
-        <div className='p-6 border-b'>
-          <Typography variant='h5' as='h3'>
-            {t('table.customer')}
+      {/* Customer List Header */}
+      <div className='flex items-baseline justify-between'>
+        <Typography variant='h5' as='h3'>
+          {t('table.customer')}
+        </Typography>
+        <p className='text-sm text-muted-foreground'>
+          {t('pagination.showing')} {filteredData.length}{' '}
+          {t('pagination.results')}
+        </p>
+      </div>
+
+      {filteredData.length === 0 ? (
+        <Card className='text-center py-12'>
+          <Typography variant='h5' as='h3' className='mb-2'>
+            {t('emptyState.search.title')}
           </Typography>
-          <p className='text-sm text-muted-foreground mt-1'>
-            {t('pagination.showing')} {filteredData.length}{' '}
-            {t('pagination.results')}
+          <p className='text-sm text-muted-foreground'>
+            {t('emptyState.search.description')}
           </p>
-        </div>
+        </Card>
+      ) : (
+        <>
+          {/* Customer Table - Desktop */}
+          <Card className='hidden md:block overflow-hidden p-0'>
+            <div className='overflow-x-auto'>
+              <table className='w-full'>
+                <thead className='bg-muted/40 border-b border-border'>
+                  <tr>
+                    <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
+                      {t('table.customer')}
+                    </th>
+                    <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
+                      {t('table.email')}
+                    </th>
+                    <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
+                      {t('table.phone')}
+                    </th>
+                    <th className='px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider'>
+                      {t('table.totalClicks')}
+                    </th>
+                    <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
+                      {t('table.clickedListings')}
+                    </th>
+                    <th className='px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider'>
+                      {t('table.actions')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className='bg-card divide-y divide-border'>
+                  {filteredData.map((customer: UserPhoneClickDetail) => {
+                    const totalClicks = customer.clickedListings.reduce(
+                      (sum, l) => sum + l.clickCount,
+                      0,
+                    )
 
-        {filteredData.length === 0 ? (
-          <div className='text-center py-12'>
-            <Typography variant='h5' as='h3' className='mb-2'>
-              {t('emptyState.search.title')}
-            </Typography>
-            <p className='text-muted-foreground'>
-              {t('emptyState.search.description')}
-            </p>
-          </div>
-        ) : (
-          <div className='overflow-x-auto'>
-            <table className='w-full'>
-              <thead className='bg-muted/50'>
-                <tr>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
-                    {t('table.customer')}
-                  </th>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
-                    {t('table.email')}
-                  </th>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
-                    {t('table.phone')}
-                  </th>
-                  <th className='px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider'>
-                    {t('table.totalClicks')}
-                  </th>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
-                    {t('table.clickedListings')}
-                  </th>
-                  <th className='px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider'>
-                    {t('table.actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className='bg-background divide-y divide-border'>
-                {filteredData.map((customer: UserPhoneClickDetail) => {
-                  const totalClicks = customer.clickedListings.reduce(
-                    (sum, l) => sum + l.clickCount,
-                    0,
-                  )
-
-                  return (
-                    <tr
-                      key={customer.userId}
-                      className='hover:bg-primary/5 transition-colors duration-150 cursor-pointer group'
-                      onClick={() => openCustomerDetail(customer)}
-                    >
-                      <td className='px-6 py-4 whitespace-nowrap'>
-                        <div className='flex items-center gap-3'>
-                          <Avatar className='group-hover:ring-2 group-hover:ring-primary transition-all duration-200'>
-                            {customer.avatarUrl && (
-                              <AvatarImage
-                                src={customer.avatarUrl}
-                                alt={`${customer.firstName} ${customer.lastName}`}
-                              />
-                            )}
-                            <AvatarFallback>
-                              {getInitials(
-                                customer.firstName,
-                                customer.lastName,
+                    return (
+                      <tr
+                        key={customer.userId}
+                        className='hover:bg-muted/40 transition-colors duration-150 cursor-pointer group'
+                        onClick={() => openCustomerDetail(customer)}
+                      >
+                        <td className='px-6 py-4 whitespace-nowrap'>
+                          <div className='flex items-center gap-3'>
+                            <Avatar>
+                              {customer.avatarUrl && (
+                                <AvatarImage
+                                  src={customer.avatarUrl}
+                                  alt={`${customer.firstName} ${customer.lastName}`}
+                                />
                               )}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className='font-medium text-foreground group-hover:text-primary transition-colors'>
+                              <AvatarFallback className='bg-muted text-muted-foreground text-xs font-medium'>
+                                {getInitials(
+                                  customer.firstName,
+                                  customer.lastName,
+                                )}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className='font-medium text-sm text-foreground'>
                               {customer.firstName} {customer.lastName}
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className='px-6 py-4'>
-                        <div className='flex items-center gap-2'>
-                          <Mail className='h-4 w-4 text-muted-foreground' />
-                          <span className='text-sm text-foreground'>
-                            {customer.email}
-                          </span>
-                        </div>
-                      </td>
-                      <td className='px-6 py-4'>
-                        <div className='flex items-center gap-2'>
-                          <Phone className='h-4 w-4 text-muted-foreground' />
-                          <span className='text-sm text-foreground'>
-                            {customer.contactPhone || 'N/A'}
-                          </span>
-                          {customer.contactPhoneVerified ? (
-                            <CheckCircle2 className='h-4 w-4 text-primary' />
-                          ) : (
-                            <XCircle className='h-4 w-4 text-muted-foreground' />
-                          )}
-                        </div>
-                      </td>
-                      <td className='px-6 py-4 text-center'>
-                        <Badge variant='secondary' className='font-semibold'>
-                          {totalClicks}
-                        </Badge>
-                      </td>
-                      <td className='px-6 py-4'>
-                        <div className='space-y-2 max-w-xs'>
-                          {customer.clickedListings
-                            .slice(0, 2)
-                            .map((listing) => {
-                              const handleListingKeyDown = (
-                                e: React.KeyboardEvent,
-                              ) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault()
-                                  e.stopPropagation()
-                                  setSelectedListing(listing)
-                                  setInitialView('listing')
-                                  setDialogOpen(true)
-                                }
-                              }
-
-                              return (
-                                <div
-                                  key={listing.listingId}
-                                  role='button'
-                                  tabIndex={0}
-                                  className='text-sm p-2 rounded-lg hover:bg-primary/5 transition-colors cursor-pointer border border-transparent hover:border-primary/20'
-                                  onClick={(e) => {
+                        </td>
+                        <td className='px-6 py-4'>
+                          <div className='flex items-center gap-2'>
+                            <Mail className='h-4 w-4 text-muted-foreground' />
+                            <span className='text-sm text-foreground'>
+                              {customer.email}
+                            </span>
+                          </div>
+                        </td>
+                        <td className='px-6 py-4'>
+                          <div className='flex items-center gap-2'>
+                            <Phone className='h-4 w-4 text-muted-foreground' />
+                            <span className='text-sm text-foreground'>
+                              {customer.contactPhone || 'N/A'}
+                            </span>
+                            {customer.contactPhoneVerified ? (
+                              <CheckCircle2 className='h-4 w-4 text-muted-foreground' />
+                            ) : (
+                              <XCircle className='h-4 w-4 text-muted-foreground/50' />
+                            )}
+                          </div>
+                        </td>
+                        <td className='px-6 py-4 text-center'>
+                          <Badge
+                            variant='secondary'
+                            className='font-medium tabular-nums'
+                          >
+                            {totalClicks}
+                          </Badge>
+                        </td>
+                        <td className='px-6 py-4'>
+                          <div className='space-y-1.5 max-w-xs'>
+                            {customer.clickedListings
+                              .slice(0, 2)
+                              .map((listing) => {
+                                const handleListingKeyDown = (
+                                  e: React.KeyboardEvent,
+                                ) => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault()
                                     e.stopPropagation()
-                                    setSelectedListing(listing)
-                                    setInitialView('listing')
-                                    setDialogOpen(true)
-                                  }}
-                                  onKeyDown={handleListingKeyDown}
-                                  aria-label={`View listing: ${listing.listingTitle}`}
-                                >
-                                  <div className='font-medium truncate text-foreground hover:text-primary transition-colors'>
-                                    {listing.listingTitle}
+                                    openListingDetail(listing)
+                                  }
+                                }
+
+                                return (
+                                  <div
+                                    key={listing.listingId}
+                                    role='button'
+                                    tabIndex={0}
+                                    className='text-sm p-2 rounded-md hover:bg-muted transition-colors cursor-pointer'
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      openListingDetail(listing)
+                                    }}
+                                    onKeyDown={handleListingKeyDown}
+                                    aria-label={`View listing: ${listing.listingTitle}`}
+                                  >
+                                    <div className='font-medium truncate text-foreground text-sm'>
+                                      {listing.listingTitle}
+                                    </div>
+                                    <div className='text-xs text-muted-foreground flex items-center gap-2 mt-0.5'>
+                                      <span>
+                                        {formatDate(listing.clickedAt)}
+                                      </span>
+                                      <span>·</span>
+                                      <span>
+                                        {listing.clickCount}{' '}
+                                        {t('listingCard.clicks')}
+                                      </span>
+                                    </div>
                                   </div>
-                                  <div className='text-xs text-muted-foreground flex items-center gap-2'>
-                                    <span>{formatDate(listing.clickedAt)}</span>
-                                    <span>·</span>
-                                    <Badge
-                                      variant='outline'
-                                      className='text-xs'
-                                    >
-                                      {listing.clickCount}{' '}
-                                      {t('listingCard.clicks')}
-                                    </Badge>
-                                  </div>
-                                </div>
-                              )
-                            })}
-                          {customer.clickedListings.length > 2 && (
-                            <div className='text-xs text-primary font-medium hover:text-primary/80 cursor-pointer'>
-                              +{customer.clickedListings.length - 2} more
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className='px-6 py-4 text-right'>
-                        <div className='flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
-                          {customer.contactPhone && (
+                                )
+                              })}
+                            {customer.clickedListings.length > 2 && (
+                              <div className='text-xs text-muted-foreground font-medium pl-2'>
+                                +{customer.clickedListings.length - 2} more
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td className='px-6 py-4 text-right'>
+                          <div className='flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
+                            {customer.contactPhone && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleCopyToClipboard(
+                                    customer.contactPhone,
+                                    'phone',
+                                  )
+                                }}
+                                className='p-2 hover:bg-muted rounded-md transition-colors'
+                                title={t('table.copyPhone')}
+                              >
+                                <Copy className='h-4 w-4 text-muted-foreground' />
+                              </button>
+                            )}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
-                                handleCopyToClipboard(
-                                  customer.contactPhone,
-                                  'phone',
-                                )
+                                handleCopyToClipboard(customer.email, 'email')
                               }}
-                              className='p-2 hover:bg-primary/10 rounded-lg transition-colors'
-                              title={t('table.copyPhone')}
+                              className='p-2 hover:bg-muted rounded-md transition-colors'
+                              title={t('table.copyEmail')}
                             >
-                              <Copy className='h-4 w-4 text-primary' />
+                              <Mail className='h-4 w-4 text-muted-foreground' />
                             </button>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleCopyToClipboard(customer.email, 'email')
-                            }}
-                            className='p-2 hover:bg-primary/10 rounded-lg transition-colors'
-                            title={t('table.copyEmail')}
-                          >
-                            <Mail className='h-4 w-4 text-primary' />
-                          </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* Customer List - Mobile Cards */}
+          <div className='md:hidden space-y-3'>
+            {filteredData.map((customer: UserPhoneClickDetail) => {
+              const totalClicks = customer.clickedListings.reduce(
+                (sum, l) => sum + l.clickCount,
+                0,
+              )
+              const handleCardKeyDown = (e: React.KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  openCustomerDetail(customer)
+                }
+              }
+
+              return (
+                <Card
+                  key={customer.userId}
+                  role='button'
+                  tabIndex={0}
+                  onClick={() => openCustomerDetail(customer)}
+                  onKeyDown={handleCardKeyDown}
+                  className='p-4 cursor-pointer active:scale-[0.99] transition-transform'
+                >
+                  <div className='flex items-start gap-3'>
+                    <Avatar className='h-11 w-11 flex-shrink-0'>
+                      {customer.avatarUrl && (
+                        <AvatarImage
+                          src={customer.avatarUrl}
+                          alt={`${customer.firstName} ${customer.lastName}`}
+                        />
+                      )}
+                      <AvatarFallback className='bg-muted text-muted-foreground text-sm font-medium'>
+                        {getInitials(customer.firstName, customer.lastName)}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className='flex-1 min-w-0'>
+                      <div className='flex items-start justify-between gap-2 mb-2'>
+                        <div className='font-medium text-sm text-foreground truncate'>
+                          {customer.firstName} {customer.lastName}
                         </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+                        <Badge
+                          variant='secondary'
+                          className='font-medium tabular-nums flex-shrink-0'
+                        >
+                          {totalClicks}
+                        </Badge>
+                      </div>
+
+                      <div className='space-y-1 text-xs text-muted-foreground'>
+                        <div className='flex items-center gap-1.5 truncate'>
+                          <Mail className='h-3.5 w-3.5 flex-shrink-0' />
+                          <span className='truncate'>{customer.email}</span>
+                        </div>
+                        {customer.contactPhone && (
+                          <div className='flex items-center gap-1.5'>
+                            <Phone className='h-3.5 w-3.5 flex-shrink-0' />
+                            <span>{customer.contactPhone}</span>
+                            {customer.contactPhoneVerified && (
+                              <CheckCircle2 className='h-3.5 w-3.5 text-muted-foreground' />
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {customer.clickedListings.length > 0 && (
+                        <div className='mt-3 pt-3 border-t border-border'>
+                          <p className='text-xs font-medium text-foreground truncate'>
+                            {customer.clickedListings[0].listingTitle}
+                          </p>
+                          <p className='text-xs text-muted-foreground mt-0.5'>
+                            {formatDate(customer.clickedListings[0].clickedAt)}
+                            {customer.clickedListings.length > 1 && (
+                              <span>
+                                {' · +'}
+                                {customer.clickedListings.length - 1} more
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              )
+            })}
           </div>
-        )}
-      </Card>
+        </>
+      )}
 
       {/* Pagination */}
       {data && data.totalPages > 1 && (
@@ -487,7 +552,6 @@ const CustomerManagementTemplate = () => {
               size='sm'
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className='hover:bg-primary/5 hover:border-primary/30 transition-colors'
             >
               <ChevronLeft className='h-4 w-4 mr-1' />
               {t('pagination.previous')}
@@ -497,7 +561,6 @@ const CustomerManagementTemplate = () => {
               size='sm'
               onClick={() => setPage((p) => Math.min(data.totalPages, p + 1))}
               disabled={page === data.totalPages}
-              className='hover:bg-primary/5 hover:border-primary/30 transition-colors'
             >
               {t('pagination.next')}
               <ChevronRight className='h-4 w-4 ml-1' />

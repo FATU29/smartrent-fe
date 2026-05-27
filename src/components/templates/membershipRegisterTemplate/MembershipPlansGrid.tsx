@@ -4,10 +4,12 @@ import PricingPlanCard, {
 } from '@/components/molecules/pricingPlanCard'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
+import { Card, CardContent } from '@/components/atoms/card'
 import type { Membership } from '@/api/types/membership.type'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { MEDIA_BELOW_MD, MEDIA_BELOW_XL } from '@/constants/breakpoints'
 import { motion } from 'framer-motion'
+import { PackageOpen } from 'lucide-react'
 import {
   Carousel,
   CarouselContent,
@@ -42,11 +44,11 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
 
   if (loading) {
     return (
-      <span className='grid gap-6 sm:grid-cols-2 xl:grid-cols-3 auto-rows-fr'>
+      <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-3 auto-rows-fr'>
         {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
           <PricingPlanCardSkeleton key={`skeleton-${index}`} />
         ))}
-      </span>
+      </div>
     )
   }
 
@@ -56,9 +58,21 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
 
   if (safeMemberships.length === 0) {
     return (
-      <span className='flex items-center justify-center py-12'>
-        <Typography variant='muted'>{tPage('noPlansAvailable')}</Typography>
-      </span>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, type: 'spring', stiffness: 120 }}
+        className='mx-auto max-w-md'
+      >
+        <Card className='border-dashed'>
+          <CardContent className='flex flex-col items-center text-center gap-3 py-12'>
+            <div className='flex size-14 items-center justify-center rounded-full bg-muted'>
+              <PackageOpen className='size-7 text-muted-foreground' />
+            </div>
+            <Typography variant='muted'>{tPage('noPlansAvailable')}</Typography>
+          </CardContent>
+        </Card>
+      </motion.div>
     )
   }
 
