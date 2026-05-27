@@ -24,9 +24,9 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
     case 1:
       return <AIValuationStep />
     case 2:
-      return <MediaStep />
-    case 3:
       return <PackageConfigStep />
+    case 3:
+      return <MediaStep />
     case 4:
       return <OrderSummaryStep />
     default:

@@ -10,10 +10,11 @@ export const getStepFields = (stepIndex: number): readonly string[] => {
   switch (stepIndex) {
     case 0:
       return STEP_0_FIELDS
+    // Step 2 is package-config, step 3 is media after the create-post step swap
     case 2:
-      return STEP_2_FIELDS
-    case 3:
       return STEP_3_FIELDS
+    case 3:
+      return STEP_2_FIELDS
     default:
       return []
   }

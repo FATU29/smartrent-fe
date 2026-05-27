@@ -32,8 +32,9 @@ export const usePostValidation = ({
     const errorList: ValidationError[] = []
     const fieldsToCheck = getStepFields(currentStep)
 
-    // Skip form validation for update post at step 3
-    const skipFormValidation = !isCreatePost && currentStep === 3
+    // Skip form validation for update post at the package step (now step 2
+    // after the create-post step swap).
+    const skipFormValidation = !isCreatePost && currentStep === 2
 
     if (!skipFormValidation) {
       fieldsToCheck.forEach((field) => {
@@ -91,8 +92,8 @@ export const usePostValidation = ({
       })
     }
 
-    // Step 3: Package config validation
-    if (currentStep === 3) {
+    // Step 2: Package config validation (after the create-post step swap)
+    if (currentStep === 2) {
       const pi = propertyInfo as unknown as Record<string, unknown>
 
       // For create post: validate package selection and postDate
@@ -120,8 +121,8 @@ export const usePostValidation = ({
       // They already have a package and postDate is optional to change
     }
 
-    // Step 2: Media validation
-    if (currentStep === 2) {
+    // Step 3: Media validation (after the create-post step swap)
+    if (currentStep === 3) {
       const images = media.filter((m) => m.mediaType === 'IMAGE')
       const imagesCount = images.length
       const hasCover = images.some((m) => m.isPrimary === true)

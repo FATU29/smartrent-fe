@@ -1273,7 +1273,7 @@
           "collapse": "Collapse",
           "expand": "Expand",
           "normalTitle": "Normal Photos (Recommended)",
-          "normalCount": "12-24 photos",
+          "normalCount": "{min}-{max} photos",
           "do": {
             "title": "DO",
             "placeholder": "YouTube URL...",

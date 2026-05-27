@@ -1274,7 +1274,7 @@
           "collapse": "Thu gọn",
           "expand": "Mở rộng",
           "normalTitle": "Ảnh thường (Khuyến nghị)",
-          "normalCount": "12-24 ảnh",
+          "normalCount": "{min}-{max} ảnh",
           "do": {
             "title": "NÊN",
             "placeholder": "URL YouTube...",
