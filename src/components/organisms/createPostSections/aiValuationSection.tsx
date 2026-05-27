@@ -412,7 +412,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                 {t('propertyInfo.amenities')}
               </label>
               <div className='max-h-[400px] overflow-y-auto overflow-x-hidden pr-2'>
-                <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3'>
                   {getAmenityItems(tPropertyInfo).map((amenity) => {
                     const amenityConfig = getAmenityByCode(amenity.key)
                     const IconComponent = amenityConfig?.icon
@@ -424,18 +424,18 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                     return (
                       <label
                         key={amenity.key}
-                        className='flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-muted border-border text-muted-foreground hover:bg-accent focus-within:border-primary focus-within:bg-primary/5 w-full'
+                        className='flex items-center gap-3 min-w-0 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-muted border-border text-muted-foreground hover:bg-accent focus-within:border-primary focus-within:bg-primary/5 w-full'
                       >
-                        {IconComponent && (
-                          <IconComponent className='w-4 h-4 flex-shrink-0' />
-                        )}
                         <input
                           type='checkbox'
                           className='w-4 h-4 rounded border-2 border-input text-primary focus:ring-0 focus:outline-none focus-visible:outline-none flex-shrink-0 pointer-events-none'
                           checked={hasAmenity}
                           readOnly
                         />
-                        <span className='text-sm font-medium whitespace-normal break-words leading-snug'>
+                        {IconComponent && (
+                          <IconComponent className='w-4 h-4 flex-shrink-0' />
+                        )}
+                        <span className='text-sm font-medium whitespace-normal break-words leading-snug min-w-0 flex-1'>
                           {amenity.label}
                         </span>
                       </label>
