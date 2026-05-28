@@ -554,12 +554,11 @@ export interface ListingSearchApiRequest {
   vipType?: VipType
   productType?: PropertyType
 
-  minPrice?: number
-  maxPrice?: number
-  minArea?: number
-  maxArea?: number
-  minBedrooms?: number
-  maxBedrooms?: number
+  // Range filters are single `from..to` strings. Either side may be empty:
+  // "5000000..15000000", "5000000..", "..15000000".
+  price?: string
+  area?: string
+  bedroomsRange?: string
   bathrooms?: number
   furnishing?: Furnishing
   direction?: Direction
