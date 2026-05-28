@@ -12,6 +12,7 @@ import { ListingFilterRequest, ListingOwnerDetail } from '@/api/types'
 import type { ApiResponse } from '@/configs/axios/types'
 import { ListingService } from '@/api/services/listing.service'
 import { mapMyListingsBackendToFrontend } from '@/utils/property/mapMyListingsResponse'
+import { mapFrontendToBackendRequest } from '@/utils/property/mapListingResponse'
 import { getFiltersFromQuery, pushQueryParams } from '@/utils/queryParams'
 import { SELLER_ROUTES } from '@/constants/route'
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@/contexts/list/index.type'
@@ -30,8 +31,17 @@ const fetchMyListings = async (
     }
   }>
 > => {
+  // Route through the same backend mapper as the public search so that
+  // range filters (price/area/bedrooms) are converted from min/max into the
+  // backend's `from..to` string format. Owner-scoped filters (userId,
+  // listingStatus, moderationStatus, expired/draft) are passed through.
   const request = {
-    ...filters,
+    ...mapFrontendToBackendRequest(filters),
+    listingStatus: filters.listingStatus,
+    moderationStatus: filters.moderationStatus,
+    expired: filters.expired,
+    isDraft: filters.isDraft,
+    isVerify: filters.isVerify,
   }
 
   const response = await ListingService.getMyListings(request)

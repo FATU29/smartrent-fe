@@ -25,6 +25,19 @@ export function mapBackendToFrontendResponse(
   }
 }
 
+// Backend accepts range filters as a single `from..to` string (either side
+// optional), not as separate min/max fields. Returning undefined keeps the
+// field out of the payload entirely when neither bound is set.
+function toRangeString(
+  min: number | undefined | null,
+  max: number | undefined | null,
+): string | undefined {
+  const hasMin = min !== undefined && min !== null
+  const hasMax = max !== undefined && max !== null
+  if (!hasMin && !hasMax) return undefined
+  return `${hasMin ? min : ''}..${hasMax ? max : ''}`
+}
+
 /**
  * Map frontend filter request to backend API request
  *
@@ -80,12 +93,12 @@ export function mapFrontendToBackendRequest(
     categoryId: frontendFilter?.categoryId,
     vipType: frontendFilter?.vipType,
     productType: frontendFilter?.productType,
-    minPrice: frontendFilter?.minPrice,
-    maxPrice: frontendFilter?.maxPrice,
-    minArea: frontendFilter?.minArea,
-    maxArea: frontendFilter?.maxArea,
-    minBedrooms: frontendFilter?.minBedrooms,
-    maxBedrooms: frontendFilter?.maxBedrooms,
+    price: toRangeString(frontendFilter?.minPrice, frontendFilter?.maxPrice),
+    area: toRangeString(frontendFilter?.minArea, frontendFilter?.maxArea),
+    bedroomsRange: toRangeString(
+      frontendFilter?.minBedrooms,
+      frontendFilter?.maxBedrooms,
+    ),
     bathrooms: frontendFilter?.bathrooms,
     furnishing: frontendFilter?.furnishing,
     direction: frontendFilter?.direction,
