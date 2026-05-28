@@ -192,9 +192,14 @@ const NotificationPanel: React.FC = () => {
         <Button
           variant='ghost'
           size='icon'
-          className='relative h-9 w-9'
+          className='relative h-9 w-9 focus:bg-transparent focus-visible:bg-transparent'
           aria-label={t('title')}
-          onClick={() => setOpen((prev) => !prev)}
+          onClick={(e) => {
+            // Drop focus so the ghost hover-look doesn't stick after a tap on
+            // touch devices that emulate :hover until the next interaction.
+            e.currentTarget.blur()
+            setOpen((prev) => !prev)
+          }}
         >
           {bellContent}
         </Button>
@@ -233,7 +238,10 @@ const NotificationPanel: React.FC = () => {
         <Button
           variant='ghost'
           size='icon'
-          className='relative h-9 w-9'
+          // Suppress the ghost hover/focus background while the popover is open
+          // so the trigger doesn't look "active" after click — the popover itself
+          // is the visible affordance. Hover only kicks in via real mouse move.
+          className='relative h-9 w-9 focus:bg-transparent focus-visible:bg-transparent data-[state=open]:bg-transparent data-[state=open]:hover:bg-transparent'
           aria-label={t('title')}
         >
           {bellContent}

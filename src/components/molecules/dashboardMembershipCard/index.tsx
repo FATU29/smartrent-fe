@@ -1,4 +1,3 @@
-import { SELLERNET_ROUTES } from '@/constants'
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import {
@@ -14,7 +13,6 @@ import {
   Calendar,
   Gift,
   Loader2,
-  ArrowRight,
   Sparkles,
   CheckCircle2,
   TrendingUp,
@@ -23,8 +21,6 @@ import { useMyMembership } from '@/hooks/useMembership'
 import { useAuth } from '@/hooks/useAuth'
 import { MembershipStatus, BenefitStatus } from '@/api/types/membership.type'
 import { format } from 'date-fns'
-import { Button } from '@/components/atoms/button'
-import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
@@ -262,7 +258,7 @@ const DashboardMembershipCard: React.FC = () => {
                 <TrendingUp className='h-5 w-5' />
                 <span className='font-semibold'>{t('daysRemaining')}</span>
               </div>
-              <span className='text-2xl font-bold'>
+              <span className='text-heading font-bold'>
                 {membership.daysRemaining}
               </span>
             </div>
@@ -353,36 +349,6 @@ const DashboardMembershipCard: React.FC = () => {
             </div>
           </motion.div>
         )}
-
-        {/* Upgrade/Purchase CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className='pt-4 border-t'
-        >
-          <Link href={SELLERNET_ROUTES.MEMBERSHIP_REGISTER} className='block'>
-            <Button
-              variant={isActive ? 'outline' : 'default'}
-              className='w-full gap-2'
-              size='lg'
-            >
-              {isActive ? (
-                <>
-                  <TrendingUp className='h-4 w-4' />
-                  {t('upgradeButton')}
-                  <ArrowRight className='h-4 w-4' />
-                </>
-              ) : (
-                <>
-                  <Sparkles className='h-4 w-4' />
-                  {t('purchasePlans')}
-                  <ArrowRight className='h-4 w-4' />
-                </>
-              )}
-            </Button>
-          </Link>
-        </motion.div>
       </CardContent>
     </Card>
   )

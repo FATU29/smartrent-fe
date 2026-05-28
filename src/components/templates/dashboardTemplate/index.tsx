@@ -199,11 +199,11 @@ const DashboardTemplate: React.FC = () => {
   }, [selectedListingAnalytics])
 
   return (
-    <div className='space-y-7'>
+    <div className='space-y-section'>
       {/* Header */}
-      <div className='space-y-1.5'>
+      <div className='border-b border-border/60 pb-6 space-y-2'>
         <Typography variant='pageTitle'>{t('title')}</Typography>
-        <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-md'>
+        <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base'>
           {t('description')}
         </p>
       </div>
@@ -224,15 +224,21 @@ const DashboardTemplate: React.FC = () => {
 
       {/* Phone Click Statistics */}
       <div id='phone-click-analytics' className='space-y-6'>
-        <div className='space-y-1.5'>
-          <Typography
-            variant='sectionTitle'
-            id='phone-click-analytics-title'
-            className='scroll-mt-24'
-          >
-            {t('phoneClickStats.title')}
-          </Typography>
-          <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-md'>
+        <div className='space-y-2'>
+          <div className='flex items-center gap-3'>
+            <span
+              aria-hidden='true'
+              className='h-6 w-1 rounded-full bg-primary'
+            />
+            <Typography
+              variant='sectionTitle'
+              id='phone-click-analytics-title'
+              className='scroll-mt-24'
+            >
+              {t('phoneClickStats.title')}
+            </Typography>
+          </div>
+          <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base'>
             {t('phoneClickStats.description')}
           </p>
         </div>
@@ -278,15 +284,21 @@ const DashboardTemplate: React.FC = () => {
 
       {/* Saved Listings Statistics */}
       <div id='saved-listings-analytics' className='space-y-6'>
-        <div className='space-y-1.5'>
-          <Typography
-            variant='sectionTitle'
-            id='saved-listings-analytics-title'
-            className='scroll-mt-24'
-          >
-            {t('savedListingsStats.title')}
-          </Typography>
-          <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-md'>
+        <div className='space-y-2'>
+          <div className='flex items-center gap-3'>
+            <span
+              aria-hidden='true'
+              className='h-6 w-1 rounded-full bg-primary'
+            />
+            <Typography
+              variant='sectionTitle'
+              id='saved-listings-analytics-title'
+              className='scroll-mt-24'
+            >
+              {t('savedListingsStats.title')}
+            </Typography>
+          </div>
+          <p className='max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base'>
             {t('savedListingsStats.description')}
           </p>
         </div>
