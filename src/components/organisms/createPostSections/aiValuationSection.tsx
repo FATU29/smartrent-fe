@@ -261,20 +261,6 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                 </p>
               </div>
             )}
-
-            {/* Optimization Tip */}
-            {prediction && (
-              <div className='bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800 rounded-2xl p-4'>
-                <h4 className='text-sm font-semibold text-yellow-800 dark:text-yellow-200 mb-2 flex items-center gap-2'>
-                  <div className='w-2 h-2 bg-yellow-500 rounded-full'></div>
-                  {t('results.optimizationTip.title') || 'Lưu ý về dự đoán giá'}
-                </h4>
-                <p className='text-sm text-yellow-700 dark:text-yellow-300 leading-relaxed'>
-                  {t('results.optimizationTip.description') ||
-                    'Giá dự đoán dựa trên AI/ML models và có thể khác với giá thực tế. Đây chỉ là tham khảo để bạn có cơ sở định giá ban đầu.'}
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
 
