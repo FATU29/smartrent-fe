@@ -1790,10 +1790,6 @@
           "minPrice": "Minimum price",
           "maxPrice": "Maximum price",
           "propertyType": "Property type",
-          "optimizationTip": {
-            "title": "Optimization Tip",
-            "description": "To increase views, set the price in the range of 2.9-3.1M"
-          },
           "actions": {
             "save": "Save evaluation",
             "share": "Share"

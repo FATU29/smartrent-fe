@@ -1791,10 +1791,6 @@
           "minPrice": "Giá tối thiểu",
           "maxPrice": "Giá tối đa",
           "propertyType": "Loại hình",
-          "optimizationTip": {
-            "title": "Gợi ý Tối ưu",
-            "description": "Để tăng lượt xem, đặt giá trong khoảng 2.9-3.1M"
-          },
           "actions": {
             "save": "Lưu đánh giá",
             "share": "Chia sẻ"
