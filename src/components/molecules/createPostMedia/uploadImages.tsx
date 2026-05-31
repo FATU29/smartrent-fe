@@ -170,7 +170,7 @@ const UploadImages: React.FC<UploadImagesProps> = ({ images = [] }) => {
   }
 
   return (
-    <Card className='mb-6 border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-lg sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
+    <Card className='mb-6 border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-sm sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
       <CardHeader className='pb-3 px-0 sm:px-6'>
         <CardTitle className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
           <span className='text-lg sm:text-xl'>{t('title')}</span>

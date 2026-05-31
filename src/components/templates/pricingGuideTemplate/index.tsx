@@ -389,6 +389,7 @@ const PricingGuideTemplate: React.FC = () => {
             <MembershipPlansGrid
               memberships={sortedMemberships}
               onPlanSelect={handleMembershipPlanSelect}
+              showCta={false}
             />
 
             <Alert className='border-primary/20 bg-primary/5'>

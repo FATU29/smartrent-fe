@@ -990,6 +990,8 @@
     "validation": {
       "imagesUploadInProgress": "Vui lòng đợi quá trình tải ảnh hoàn tất trước khi tiếp tục",
       "categoryTypeRequired": "Loại danh mục là bắt buộc",
+      "listingTypeRequired": "Nhu cầu là bắt buộc",
+      "listingTypeInvalid": "Nhu cầu không hợp lệ",
       "propertyTypeRequired": "Loại bất động sản là bắt buộc",
       "propertyTypeInvalid": "Loại bất động sản không hợp lệ",
       "addressRequired": "Vui lòng chọn tỉnh/thành phố và phường/xã",
@@ -1207,7 +1209,7 @@
         "title": "Hình ảnh",
         "description": "Tải lên hình ảnh chất lượng cao  để trình bày bất động sản của bạn",
         "downloadSample": "Tải Mẫu",
-        "tierLimits": "Gói {tierName}: tối thiểu {min} ảnh, tối đa {max} ảnh và tối đa {videos} video.",
+        "tierLimits": "Gói <b>{tierName}</b>: tối thiểu <b>{min}</b> ảnh, tối đa <b>{max}</b> ảnh và tối đa <b>{videos}</b> video.",
         "titleWithCount": "{count} / 24 ảnh",
         "dropzone": {
           "hint": "Kéo tối đa 24 ảnh hoặc...",
@@ -1534,6 +1536,11 @@
           "unfurnished": "Không nội thất"
         },
         "propertyType": "Loại Bất động sản",
+        "listingTypeLabel": "Nhu cầu",
+        "listingType": {
+          "RENT": "Cho thuê",
+          "SHARE": "Ở ghép"
+        },
         "area": "Diện tích",
         "price": "Giá",
         "priceUnit": "Đơn vị giá",
@@ -1589,7 +1596,7 @@
           "southwest": "Tây Nam"
         },
         "generateAutomatically": "Tạo tự động",
-        "title": "Tiện ích & Kết cấu",
+        "title": "Chi phí dịch vụ & Hướng nhà",
         "description": "Mô tả tiện ích và kết cấu bất động sản",
         "moveInDate": "Ngày chuyển vào",
         "dateFormat": "Định dạng: dd/mm/yyyy",
@@ -1597,6 +1604,7 @@
           "selectListingType": "Chọn",
           "selectCategoryType": "Chọn",
           "selectPropertyType": "Chọn",
+          "selectListingType": "Chọn nhu cầu",
           "enterArea": "45",
           "enterPrice": "5,000,000",
           "selectPriceUnit": "Chọn",
@@ -1625,8 +1633,8 @@
         "propertyDescription": "Mô tả Bất động sản"
       },
       "aiContent": {
-        "title": "Nội dung do AI tạo",
-        "description": "Dùng AI để tạo nội dung hấp dẫn",
+        "title": "Tiêu đề & Mô tả",
+        "description": "Tự nhập, hoặc bấm \"Tạo tự động\" để AI gợi ý nội dung",
         "listingTitle": "Tiêu đề Tin đăng",
         "propertyDescription": "Mô tả Bất động sản",
         "titleLength": "Độ dài tối ưu: 30-99 ký tự",
@@ -1929,7 +1937,13 @@
       "reset": "Đặt lại",
       "back": "Quay lại"
     },
+    "listingType": {
+      "any": "Tất cả",
+      "RENT": "Cho thuê",
+      "SHARE": "Ở ghép"
+    },
     "toggles": {
+      "listingType": "Nhu cầu",
       "verified": "Đã xác thực",
       "professionalBroker": "Môi giới",
       "location": "Vị trí của bạn",
@@ -2506,6 +2520,7 @@
         "searchPlaceholder": "Tìm kiếm tin...",
         "filter": "Lọc",
         "type": "Loại",
+        "listingType": "Nhu cầu",
         "sort": "Sắp xếp",
         "moreFilters": "Bộ lọc khác",
         "export": "Xuất",
@@ -3409,6 +3424,7 @@
       "viewListings": "Xem Tin Đăng Của Tôi",
       "goToDashboard": "Về Trang Quản Lý",
       "returnHome": "Về Trang Chủ",
+      "backToListingDraft": "Quay Lại Bài Đăng",
       "tryAgain": "Thử Lại",
       "goBack": "Quay Lại"
     }

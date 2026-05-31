@@ -155,7 +155,8 @@ export function mapListingToFormData(listing: ListingDetail): MappedFormData {
   const mappedPropertyInfo: Partial<CreateListingRequest> = {
     title: listing.title || '',
     description: listing.description || '',
-    listingType: 'RENT' as CreateListingRequest['listingType'],
+    listingType: (listing.listingType ||
+      'RENT') as CreateListingRequest['listingType'],
     categoryId: (listing as ExtendedListingDetail).categoryId,
     productType: listing.productType,
     price: listing.price,

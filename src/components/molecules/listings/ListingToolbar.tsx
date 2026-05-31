@@ -8,7 +8,12 @@ import { Input } from '@/components/atoms/input'
 import { useListContext } from '@/contexts/list/useListContext'
 import { cn } from '@/lib/utils'
 import { NUMBERS } from '@/constants/numbers'
-import { type PropertyType, SortKey } from '@/api/types/property.type'
+import {
+  type PropertyType,
+  type listingType,
+  LISTING_TYPE,
+  SortKey,
+} from '@/api/types/property.type'
 
 interface ListingToolbarProps {
   total: number
@@ -33,6 +38,15 @@ const PROPERTY_TYPE_OPTIONS: Array<{
   { value: 'STUDIO', i18nKey: 'studio' },
 ]
 
+const LISTING_TYPE_OPTIONS: Array<{
+  value?: listingType
+  i18nKey: string
+}> = [
+  { value: undefined, i18nKey: 'any' },
+  { value: LISTING_TYPE.RENT, i18nKey: 'RENT' },
+  { value: LISTING_TYPE.SHARE, i18nKey: 'SHARE' },
+]
+
 const SORT_OPTIONS: Array<{ value: SortKey; i18nKey: string }> = [
   { value: SortKey.DEFAULT, i18nKey: 'default' },
   { value: SortKey.NEWEST, i18nKey: 'newest' },
@@ -50,6 +64,7 @@ export const ListingToolbar: React.FC<ListingToolbarProps> = ({
 }) => {
   const t = useTranslations('seller.listingManagement.toolbar')
   const tType = useTranslations('residentialFilter.propertyType')
+  const tIntent = useTranslations('residentialFilter.listingType')
   const tSort = useTranslations('propertiesPage.sort')
 
   const { filters, updateFilters } = useListContext()
@@ -85,6 +100,19 @@ export const ListingToolbar: React.FC<ListingToolbarProps> = ({
 
   const setProductType = (next?: PropertyType) => {
     updateFilters({ productType: next, page: 1 })
+  }
+
+  // ── Listing intent (Nhu cầu) chip ──
+  const listingTypeValue = filters.listingType as listingType | undefined
+  const intentOption = LISTING_TYPE_OPTIONS.find(
+    (o) => o.value === listingTypeValue,
+  )
+  const intentChipValue = listingTypeValue
+    ? tIntent(intentOption?.i18nKey ?? 'any')
+    : null
+
+  const setListingType = (next?: listingType) => {
+    updateFilters({ listingType: next, page: 1 })
   }
 
   // ── Sort chip ──
@@ -135,6 +163,22 @@ export const ListingToolbar: React.FC<ListingToolbarProps> = ({
           </Button>
         )}
       </div>
+
+      {/* Listing intent (Nhu cầu) chip */}
+      <FilterChip
+        label={t('listingType')}
+        value={intentChipValue}
+        onClear={() => setListingType(undefined)}
+      >
+        <RadioList
+          options={LISTING_TYPE_OPTIONS.map((o) => ({
+            key: o.i18nKey,
+            label: tIntent(o.i18nKey),
+            selected: listingTypeValue === o.value,
+            onSelect: () => setListingType(o.value),
+          }))}
+        />
+      </FilterChip>
 
       {/* Type chip */}
       <FilterChip

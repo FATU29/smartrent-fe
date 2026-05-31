@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/atoms/card'
-import { ImagePlus, Trash2 } from 'lucide-react'
+import { ImagePlus, Trash2, Upload } from 'lucide-react'
 import type { MediaItem } from '@/api/types/property.type'
 import type { MediaItem as ApiMediaItem } from '@/api/types/media.type'
 import { useCreatePost } from '@/contexts/createPost'
@@ -167,14 +167,14 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
   const displayImage = coverImage?.url
 
   return (
-    <Card className='mb-6 border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-lg sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
+    <Card className='mb-6 border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-sm sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
       <CardHeader className='pb-3 px-0 sm:px-6'>
         <CardTitle className='text-lg sm:text-xl'>
           <span>{t('title')}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className='px-0 sm:px-6'>
-        <div className='mx-auto w-full max-w-xl'>
+        <div className='w-full'>
           {displayImage ? (
             <div className='relative rounded-xl overflow-hidden border border-border bg-card'>
               <div className='relative aspect-[4/3]'>
@@ -211,18 +211,28 @@ const CoverUpload: React.FC<CoverUploadProps> = ({ coverImage }) => {
               </div>
             </div>
           ) : (
-            <div className='rounded-2xl border-2 border-dashed border-border p-6 flex flex-col items-center justify-center text-center bg-card/50'>
-              <p className='text-sm text-muted-foreground'>
+            <div
+              className='rounded-2xl border-2 border-dashed border-border p-4 sm:p-6 flex flex-col items-center justify-center text-center bg-card/50'
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault()
+                handleFiles(e.dataTransfer.files)
+              }}
+            >
+              <Upload className='w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground mb-2' />
+              <div className='flex flex-col sm:flex-row gap-3 mt-2 w-full sm:w-auto'>
+                <Button
+                  className='rounded-lg w-full sm:w-auto'
+                  onClick={() => inputRef.current?.click()}
+                  disabled={imagesUploadProgress.isUploading}
+                >
+                  <ImagePlus className='w-4 h-4 mr-2' />
+                  {t('uploadCta')}
+                </Button>
+              </div>
+              <p className='text-xs text-muted-foreground mt-3'>
                 {t('description')}
               </p>
-              <Button
-                className='mt-4 rounded-lg'
-                onClick={() => inputRef.current?.click()}
-                disabled={imagesUploadProgress.isUploading}
-              >
-                <ImagePlus className='w-4 h-4 mr-2' />
-                {t('uploadCta')}
-              </Button>
             </div>
           )}
         </div>

@@ -31,9 +31,12 @@ const AiChatWidget = dynamic(
   { ssr: false },
 )
 
-const ReactQueryDevtools = dynamic(
-  () =>
-    import('@tanstack/react-query-devtools').then((m) => m.ReactQueryDevtools),
+// Dev-only React Query Devtools. Isolated in its own dynamically-imported
+// chunk so the `process.env.NODE_ENV` gate lives there, NOT in this entry
+// module — referencing it here makes Turbopack require the `process` polyfill
+// at module evaluation, which crashes dev ("module factory is not available").
+const DevtoolsGate = dynamic(
+  () => import('@/components/utility/DevtoolsGate'),
   { ssr: false },
 )
 
@@ -128,9 +131,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
           </ThemeDataProvider>
         </NextThemesProvider>
       </NextIntlClientProvider>
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
+      <DevtoolsGate />
     </>
   )
 

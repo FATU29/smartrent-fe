@@ -1,6 +1,8 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
+import { useMediaLimits } from '@/hooks/usePostContext/useMediaLimits'
+import { Typography } from '@/components/atoms/typography'
 import { UploadImages } from '@/components/molecules/createPostMedia/uploadImages'
 import { CoverUpload } from '@/components/molecules/createPostMedia/coverUpload'
 import { UploadVideo } from '@/components/molecules/createPostMedia/uploadVideo'
@@ -17,7 +19,9 @@ const MediaSection: React.FC<MediaSectionProps> = ({
   showHeader = true,
 }) => {
   const t = useTranslations('createPost.sections.media')
-  const { media } = useCreatePost()
+  const tValidation = useTranslations('createPost.validation')
+  const { media, propertyInfo } = useCreatePost()
+  const { minImages, maxImages } = useMediaLimits(propertyInfo?.vipType)
 
   const coverImage = media.find(
     (img) => img.mediaType === 'IMAGE' && img.isPrimary === true,
@@ -26,6 +30,10 @@ const MediaSection: React.FC<MediaSectionProps> = ({
   const otherImages = media.filter(
     (img) => img.mediaType === 'IMAGE' && img.isPrimary === false,
   )
+
+  // Total uploaded images (cover + others) — drives the min/max hints shown
+  // directly under each section so users see the requirement in context.
+  const imageCount = media.filter((img) => img.mediaType === 'IMAGE').length
 
   const video = media.find(
     (item) =>
@@ -62,7 +70,33 @@ const MediaSection: React.FC<MediaSectionProps> = ({
         </div>
       )}
       <CoverUpload coverImage={coverImage} />
+      {!coverImage && (
+        <Typography
+          variant='small'
+          className='-mt-4 mb-6 block text-muted-foreground'
+        >
+          {tValidation('coverImageRequired')}
+        </Typography>
+      )}
+
       <UploadImages images={otherImages} />
+      {imageCount < minImages && (
+        <Typography
+          variant='small'
+          className='-mt-4 mb-6 block text-muted-foreground'
+        >
+          {tValidation('imagesMinimum', { min: minImages })} ({imageCount}/
+          {minImages})
+        </Typography>
+      )}
+      {imageCount > maxImages && (
+        <Typography
+          variant='small'
+          className='-mt-4 mb-6 block text-destructive'
+        >
+          {tValidation('imagesLimitReached', { max: maxImages })}
+        </Typography>
+      )}
 
       {/* Video Upload Section - Show when no video exists */}
       {showUploadVideo && <UploadVideo video={uploadedVideo} />}
