@@ -9,6 +9,8 @@ export const PRODUCT_TYPE_TRANSLATION_KEYS: Record<PropertyType, string> = {
   HOUSE: 'createPost.sections.propertyDetails.propertyTypes.house',
   ROOM: 'createPost.sections.propertyDetails.propertyTypes.room',
   STUDIO: 'createPost.sections.propertyDetails.propertyTypes.studio',
+  OFFICE: 'createPost.sections.propertyDetails.propertyTypes.office',
+  STORE: 'createPost.sections.propertyDetails.propertyTypes.store',
 } as const
 
 /**

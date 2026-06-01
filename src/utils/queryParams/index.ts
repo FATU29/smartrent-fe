@@ -113,6 +113,13 @@ export function getFiltersFromQuery(
       productTypeParam as ListingFilterRequest['productType']
   }
 
+  // Listing intent (Nhu cầu): RENT / SHARE
+  const listingTypeParam = parseStringParam(query, 'listingType')
+  if (listingTypeParam) {
+    filters.listingType =
+      listingTypeParam as ListingFilterRequest['listingType']
+  }
+
   // Search keyword
   const keywordParam = parseStringParam(query, 'keyword')
   if (keywordParam) {

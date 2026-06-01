@@ -23,8 +23,10 @@ import {
   Bed,
   Receipt,
   MapIcon,
+  Tag,
 } from 'lucide-react'
 import { ListingFilterRequest } from '@/api/types'
+import { LISTING_TYPE } from '@/api/types/property.type'
 import { PUBLIC_ROUTES } from '@/constants/route'
 
 interface MobileFilterMainViewProps {
@@ -79,6 +81,41 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
           </Link>
         </div>
       )}
+
+      {/* Listing intent (Nhu cầu) — primary axis, shown inline at the top */}
+      <div className='p-4 pb-2'>
+        <ToggleSection
+          icon={<Tag className='h-4 w-4 text-muted-foreground' />}
+          title={t('toggles.listingType')}
+        >
+          <div className='flex flex-wrap gap-2'>
+            <ToggleChip
+              label={t('listingType.RENT')}
+              active={filters.listingType === LISTING_TYPE.RENT}
+              onClick={() =>
+                onUpdate({
+                  listingType:
+                    filters.listingType === LISTING_TYPE.RENT
+                      ? undefined
+                      : LISTING_TYPE.RENT,
+                })
+              }
+            />
+            <ToggleChip
+              label={t('listingType.SHARE')}
+              active={filters.listingType === LISTING_TYPE.SHARE}
+              onClick={() =>
+                onUpdate({
+                  listingType:
+                    filters.listingType === LISTING_TYPE.SHARE
+                      ? undefined
+                      : LISTING_TYPE.SHARE,
+                })
+              }
+            />
+          </div>
+        </ToggleSection>
+      </div>
 
       <div className='space-y-1'>
         <RadioRow

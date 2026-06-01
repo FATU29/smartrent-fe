@@ -988,6 +988,8 @@
     },
     "validation": {
       "categoryTypeRequired": "Category type is required",
+      "listingTypeRequired": "Listing type is required",
+      "listingTypeInvalid": "Invalid listing type",
       "propertyTypeRequired": "Property type is required",
       "propertyTypeInvalid": "Invalid property type",
       "addressRequired": "Please select province/city and ward/commune",
@@ -1207,7 +1209,7 @@
         "allImagesUploaded": "All images uploaded",
         "description": "Upload high-quality images and optional video to present your property",
         "downloadSample": "Download Sample",
-        "tierLimits": "Package {tierName}: minimum {min} images, maximum {max} images and up to {videos} video.",
+        "tierLimits": "Package <b>{tierName}</b>: minimum <b>{min}</b> images, maximum <b>{max}</b> images and up to <b>{videos}</b> video.",
         "titleWithCount": "{count} / 24 images",
         "dropzone": {
           "hint": "Drag up to 24 images or...",
@@ -1533,6 +1535,11 @@
           "unfurnished": "Unfurnished"
         },
         "propertyType": "Property Type",
+        "listingTypeLabel": "Listing Type",
+        "listingType": {
+          "RENT": "For Rent",
+          "SHARE": "Shared"
+        },
         "area": "Area",
         "price": "Price",
         "priceUnit": "Price Unit",
@@ -1588,7 +1595,7 @@
           "southwest": "Southwest"
         },
         "generateAutomatically": "Generate Automatically",
-        "title": "Utilities & Structure",
+        "title": "Service Costs & Direction",
         "description": "Describe property utilities and structure",
         "moveInDate": "Move-in Date",
         "dateFormat": "Format: dd/mm/yyyy",
@@ -1596,6 +1603,7 @@
           "selectListingType": "Select",
           "selectCategoryType": "Select",
           "selectPropertyType": "Select",
+          "selectListingType": "Select listing type",
           "enterArea": "45",
           "enterPrice": "5,000,000",
           "selectPriceUnit": "Select",
@@ -1624,8 +1632,8 @@
         "propertyDescription": "Property Description"
       },
       "aiContent": {
-        "title": "AI Generated Content",
-        "description": "Use AI to create engaging content",
+        "title": "Title & Description",
+        "description": "Write your own, or click \"Generate\" to let AI draft it",
         "listingTitle": "Listing Title",
         "propertyDescription": "Property Description",
         "titleLength": "Optimal length: 30-99 characters",
@@ -2107,7 +2115,13 @@
       "reset": "Reset",
       "back": "Back"
     },
+    "listingType": {
+      "any": "All",
+      "RENT": "For Rent",
+      "SHARE": "Shared"
+    },
     "toggles": {
+      "listingType": "Listing Type",
       "verified": "Verified",
       "professionalBroker": "Broker",
       "location": "Your Location",
@@ -2505,6 +2519,7 @@
         "searchPlaceholder": "Search listings...",
         "filter": "Filter",
         "type": "Type",
+        "listingType": "Listing Type",
         "sort": "Sort",
         "moreFilters": "More filters",
         "export": "Export",

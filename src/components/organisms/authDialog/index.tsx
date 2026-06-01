@@ -67,7 +67,7 @@ const AuthDialog: NextPage<AuthDialogProps> = (props) => {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className='w-full overflow-y-auto h-dvh rounded-none md:rounded-xl md:h-[80vh] md:max-w-[60rem]'>
+      <DialogContent className='w-full h-dvh max-h-dvh overflow-y-auto rounded-none md:rounded-xl md:h-auto md:max-h-[92vh] md:max-w-[60rem]'>
         <VisuallyHidden>
           <DialogTitle>
             {authType === 'login'
@@ -88,9 +88,9 @@ const AuthDialog: NextPage<AuthDialogProps> = (props) => {
                   : 'Authentication required'}
           </DialogDescription>
         </VisuallyHidden>
-        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-          <div className='flex flex-col gap-8 md:flex-row md:gap-10'>
-            <div className='flex justify-center items-center'>
+        <div className='flex min-h-full items-center justify-center'>
+          <div className='flex flex-col gap-8 md:flex-row md:items-center md:gap-10'>
+            <div className='flex shrink-0 justify-center items-center'>
               <div className='w-[8rem] h-[8rem] md:h-[20rem] md:w-[20rem]'>
                 <ImageAtom
                   src={`${basePath}/images/rental-auth-bg.jpg`}
@@ -101,8 +101,8 @@ const AuthDialog: NextPage<AuthDialogProps> = (props) => {
                 />
               </div>
             </div>
-            <div className='flex justify-center md:overflow-y-auto'>
-              <div className='w-[20rem] md:w-[24rem] max-h-[70vh] p-4 md:p-6 py-6 md:py-8'>
+            <div className='flex justify-center'>
+              <div className='w-[20rem] md:w-[24rem] p-4 md:p-6'>
                 <Suspense
                   fallback={
                     <div className='space-y-4'>
