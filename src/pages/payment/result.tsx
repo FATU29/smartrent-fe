@@ -880,6 +880,17 @@ const PaymentResultPage: NextPageWithLayout = () => {
                     {(result.status === 'failed' ||
                       result.status === 'cancelled') && (
                       <>
+                        {paymentType === 'listing' && listingInfo?.draftId && (
+                          <button
+                            onClick={() =>
+                              (window.location.href = `/seller/create-post?draftId=${listingInfo.draftId}`)
+                            }
+                            className='flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+                          >
+                            {t('actions.backToListingDraft')}
+                            <ArrowRight className='w-5 h-5' />
+                          </button>
+                        )}
                         <button
                           onClick={() => (window.location.href = '/')}
                           className='flex-1 px-6 py-3 bg-secondary hover:bg-secondary/80 text-foreground font-semibold rounded-xl transition-all duration-300'
