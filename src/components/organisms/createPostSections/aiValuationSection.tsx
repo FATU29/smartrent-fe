@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from '@/components/atoms/card'
 import { Button } from '@/components/atoms/button'
+import { Alert, AlertDescription } from '@/components/atoms/alert'
 import {
   BarChart3,
   RefreshCw,
@@ -160,7 +161,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
     <div className={className}>
       <div className='grid grid-cols-1 gap-8'>
         {/* Top Section - AI Valuation Results */}
-        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-lg sm:bg-gradient-to-br sm:from-background sm:to-primary/5 sm:rounded-xl sm:py-6'>
+        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-sm sm:bg-gradient-to-br sm:from-background sm:to-primary/5 sm:rounded-xl sm:py-6'>
           <CardHeader className='pb-3 px-0 sm:px-6'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-gradient-to-r from-primary to-primary/70 rounded-lg'>
@@ -265,7 +266,18 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
         </Card>
 
         {/* Bottom Section - Property Information Input */}
-        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-lg sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
+        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-sm sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
+          {/* Warning callout above the section: these fields mirror the data
+              entered earlier, so completeness/accuracy there drives the AI
+              valuation quality. */}
+          <div className='px-0 sm:px-6 pb-4'>
+            <Alert className='border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200'>
+              <AlertCircle />
+              <AlertDescription className='text-amber-800 dark:text-amber-200'>
+                {t('propertyInfo.subtitle')}
+              </AlertDescription>
+            </Alert>
+          </div>
           <CardHeader className='pb-4 px-0 sm:px-6'>
             <CardTitle className='flex items-center gap-3 text-xl font-semibold text-foreground'>
               <div className='p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg'>
@@ -273,9 +285,6 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
               </div>
               {t('propertyInfo.title')}
             </CardTitle>
-            <p className='text-sm text-muted-foreground mt-2'>
-              {t('propertyInfo.subtitle')}
-            </p>
           </CardHeader>
           <CardContent className='space-y-6 px-0 sm:px-6'>
             {/* New Address (Read-only) */}
@@ -388,7 +397,7 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                 <CheckCircle className='w-4 h-4 text-green-500' />
                 {t('propertyInfo.amenities')}
               </label>
-              <div className='max-h-[400px] overflow-y-auto overflow-x-hidden pr-2'>
+              <div>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3'>
                   {getAmenityItems(tPropertyInfo).map((amenity) => {
                     const amenityConfig = getAmenityByCode(amenity.key)
@@ -423,23 +432,25 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             </div>
 
             {/* Re-evaluate Button */}
-            <Button
-              onClick={handleReevaluate}
-              disabled={!canPredict || isPredicting}
-              className='w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
-            >
-              {isPredicting ? (
-                <>
-                  <Loader2 className='w-5 h-5 mr-2 animate-spin' />
-                  {t('propertyInfo.predicting') || 'Đang dự đoán...'}
-                </>
-              ) : (
-                <>
-                  <RefreshCw className='w-5 h-5 mr-2' />
-                  {t('propertyInfo.reevaluate')}
-                </>
-              )}
-            </Button>
+            <div className='flex justify-end'>
+              <Button
+                onClick={handleReevaluate}
+                disabled={!canPredict || isPredicting}
+                className='w-full sm:w-auto px-10 h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
+              >
+                {isPredicting ? (
+                  <>
+                    <Loader2 className='w-5 h-5 mr-2 animate-spin' />
+                    {t('propertyInfo.predicting') || 'Đang dự đoán...'}
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className='w-5 h-5 mr-2' />
+                    {t('propertyInfo.reevaluate')}
+                  </>
+                )}
+              </Button>
+            </div>
             {!canPredict && (
               <p className='text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1'>
                 <AlertCircle className='w-3 h-3' />

@@ -9,6 +9,7 @@ import {
   type AmenityCategory as AmenityCategoryConfig,
 } from '@/constants/amenities'
 import { FURNISHING, PropertyType } from '@/api/types'
+import { LISTING_TYPE } from '@/api/types/property.type'
 import type { LucideIcon } from 'lucide-react'
 import type { CategoryApi } from '@/api/types/category.type'
 
@@ -145,12 +146,6 @@ export const getPriceUnitOptions = (t: (key: string) => string): Option[] => {
   }))
 }
 
-export const getPropertyTypeOptions = (t: (key: string) => string): Option[] =>
-  PROPERTY_TYPE_OPTIONS.map((type) => ({
-    value: type.value.toLowerCase(),
-    label: t(`propertyTypes.${type.translationKey}`),
-  }))
-
 export const getCategoryOptions = (
   t: (key: string) => string,
   categories: CategoryApi[] = [],
@@ -159,6 +154,35 @@ export const getCategoryOptions = (
     value: category.categoryId.toString(),
     label: category.name,
   }))
+}
+
+// A category already encodes the property kind via its `icon` field
+// (room/apartment/house/... — see backend seed V7). This map lets the form
+// derive `productType` from the selected category so the two fields can never
+// contradict each other. Commercial kinds (office/store) have no residential
+// PropertyType and return null, leaving the productType field editable.
+const CATEGORY_ICON_TO_PRODUCT_TYPE: Record<string, PropertyType> = {
+  room: 'ROOM',
+  apartment: 'APARTMENT',
+  house: 'HOUSE',
+  studio: 'STUDIO',
+  office: 'OFFICE',
+  store: 'STORE',
+}
+
+// "Nhu cầu" axis — the intent of a listing, orthogonal to the property kind.
+// Wired to the existing `listingType` enum (backend already supports RENT/SHARE).
+export const getListingTypeOptions = (t: (key: string) => string): Option[] => [
+  { value: LISTING_TYPE.RENT, label: t('listingType.RENT') },
+  { value: LISTING_TYPE.SHARE, label: t('listingType.SHARE') },
+]
+
+export const deriveProductTypeFromCategory = (
+  category?: Pick<CategoryApi, 'icon' | 'slug'>,
+): PropertyType | null => {
+  if (!category) return null
+  const key = category.icon?.trim().toLowerCase()
+  return (key && CATEGORY_ICON_TO_PRODUCT_TYPE[key]) || null
 }
 
 export const getToneOptions = (t: (key: string) => string): Option[] => {

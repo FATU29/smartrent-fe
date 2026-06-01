@@ -110,13 +110,18 @@ export const MediaStep: React.FC<MediaStepProps> = ({
         {tier && (
           <Alert className='mb-6 border-primary/50 bg-primary/10 text-foreground'>
             <Info className='h-5 w-5 text-primary' />
-            <AlertDescription className='text-base font-semibold text-foreground'>
-              {t('sections.media.tierLimits', {
-                tierName: tier.tierName,
-                min: minImages,
-                max: maxImages,
-                videos: maxVideos,
-              })}
+            <AlertDescription className='text-sm text-foreground'>
+              <p>
+                {t.rich('sections.media.tierLimits', {
+                  tierName: tier.tierName,
+                  min: minImages,
+                  max: maxImages,
+                  videos: maxVideos,
+                  b: (chunks) => (
+                    <span className='font-semibold'>{chunks}</span>
+                  ),
+                })}
+              </p>
             </AlertDescription>
           </Alert>
         )}
@@ -153,27 +158,6 @@ export const MediaStep: React.FC<MediaStepProps> = ({
         )}
 
         <MediaSection className='w-full' showHeader={false} />
-
-        <div className='mt-6 flex flex-col gap-4'>
-          {uploadedImagesCount < minImages && (
-            <Typography variant='small' className='text-muted-foreground'>
-              {t('validation.imagesMinimum', { min: minImages })} (
-              {uploadedImagesCount}/{minImages})
-            </Typography>
-          )}
-
-          {uploadedImagesCount > maxImages && (
-            <Typography variant='small' className='text-destructive'>
-              {t('validation.imagesLimitReached', { max: maxImages })}
-            </Typography>
-          )}
-
-          {!hasCover && (
-            <Typography variant='small' className='text-muted-foreground'>
-              {t('validation.coverImageRequired')}
-            </Typography>
-          )}
-        </div>
       </Card>
     </Card>
   )

@@ -2,7 +2,15 @@ import * as yup from 'yup'
 
 type ValidationMode = 'strict' | 'draft'
 
-const PROPERTY_TYPES = ['APARTMENT', 'HOUSE', 'ROOM', 'STUDIO'] as const
+const PROPERTY_TYPES = [
+  'APARTMENT',
+  'HOUSE',
+  'ROOM',
+  'STUDIO',
+  'OFFICE',
+  'STORE',
+] as const
+const LISTING_TYPES = ['RENT', 'SHARE'] as const
 const PRICE_UNITS = ['MONTH', 'YEAR'] as const
 const UTILITY_PRICE_TYPES = [
   'NEGOTIABLE',
@@ -108,6 +116,15 @@ const getPropertyInfoFields = (mode: ValidationMode = 'strict') => {
 
   return {
     categoryId: yup.string().required('categoryTypeRequired'),
+    listingType: strictMode
+      ? yup
+          .string()
+          .required('listingTypeRequired')
+          .oneOf(LISTING_TYPES, 'listingTypeInvalid')
+      : yup.string().optional().oneOf(LISTING_TYPES, 'listingTypeInvalid'),
+    // productType is no longer a user input — it is derived from the selected
+    // category (see deriveProductTypeFromCategory). We keep it required in
+    // strict mode because the derive always fills it; the field is hidden.
     productType: strictMode
       ? yup
           .string()

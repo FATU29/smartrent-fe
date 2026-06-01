@@ -174,7 +174,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ video }) => {
   const showVideoPreview = videoUrl && (isBlobUrl || isUploadedVideo)
 
   return (
-    <Card className='mb-6 border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-lg sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
+    <Card className='mb-6 border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-sm sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
       <CardHeader className='pb-3 px-0 sm:px-6'>
         <CardTitle className='text-lg sm:text-xl flex items-center gap-2'>
           <Video className='w-4 h-4' />{' '}
