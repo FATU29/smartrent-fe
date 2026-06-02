@@ -37,18 +37,20 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { MEDIA_BELOW_MD, MEDIA_BELOW_XL } from '@/constants/breakpoints'
+import { MEDIA_BELOW_MD } from '@/constants/breakpoints'
 import { Badge } from '@/components/atoms/badge'
 import { Separator } from '@/components/atoms/separator'
 import { Typography } from '@/components/atoms/typography'
-import { getMembershipLevelIcon } from '@/components/molecules/pricingPlanCard'
+import {
+  getMembershipLevelIcon,
+  getMembershipLevelTileClasses,
+} from '@/components/molecules/pricingPlanCard'
+import { cn } from '@/lib/utils'
 import { MembershipPackageLevel } from '@/api/types/membership.type'
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from '@/components/atoms/carousel'
 
 export const MembershipRegisterTemplate: React.FC = () => {
@@ -74,7 +76,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
     handleClose: handleClosePreview,
   } = useDialog()
 
-  const isTabletOrBelow = useMediaQuery(MEDIA_BELOW_XL)
   const isMobile = useMediaQuery(MEDIA_BELOW_MD)
 
   //Init use hook
@@ -301,7 +302,16 @@ export const MembershipRegisterTemplate: React.FC = () => {
                 >
                   <div className='flex items-start gap-4'>
                     <div className='flex-shrink-0'>
-                      <div className='flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary'>
+                      <div
+                        className={cn(
+                          'flex items-center justify-center size-12 rounded-lg border',
+                          currentMembership
+                            ? getMembershipLevelTileClasses(
+                                currentMembership.packageLevel as MembershipPackageLevel,
+                              )
+                            : 'bg-primary/10 border-primary/15 text-primary',
+                        )}
+                      >
                         {membershipIcon || <Crown className='size-6' />}
                       </div>
                     </div>
@@ -437,11 +447,11 @@ export const MembershipRegisterTemplate: React.FC = () => {
       )
     }
 
-    // Tablet and below: Carousel
-    if (isTabletOrBelow) {
+    // Mobile only: Carousel (one card at a time)
+    if (isMobile) {
       return (
         <motion.div
-          className={isMobile ? 'relative' : 'relative px-12'}
+          className='relative'
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -453,11 +463,11 @@ export const MembershipRegisterTemplate: React.FC = () => {
             }}
             className='w-full'
           >
-            <CarouselContent className='-ml-2 md:-ml-4'>
+            <CarouselContent className='-ml-2'>
               {upgrades.map((upgrade, index) => (
                 <CarouselItem
                   key={upgrade.targetMembershipId}
-                  className='pl-2 md:pl-4 basis-full md:basis-[90%] lg:basis-[85%]'
+                  className='pl-2 basis-full'
                 >
                   <motion.div
                     initial={{ opacity: 0, x: 50 }}
@@ -473,18 +483,13 @@ export const MembershipRegisterTemplate: React.FC = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            {!isMobile && (
-              <>
-                <CarouselPrevious />
-                <CarouselNext />
-              </>
-            )}
           </Carousel>
         </motion.div>
       )
     }
 
-    // Desktop: Grid with stagger animation
+    // Tablet and desktop: centered grid. Only up to 3 upgrades, so flex +
+    // justify-center keeps 1/2/3 cards centered instead of left-aligned.
     const containerVariants = {
       hidden: { opacity: 0 },
       visible: {
@@ -509,7 +514,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
     return (
       <motion.div
-        className='grid gap-6 sm:grid-cols-2 xl:grid-cols-3'
+        className='flex flex-wrap justify-center gap-6'
         variants={containerVariants}
         initial='hidden'
         animate='visible'
@@ -518,7 +523,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
           <motion.div
             key={upgrade.targetMembershipId}
             variants={itemVariants}
-            className='flex w-full'
+            className='flex w-full md:w-[calc(50%_-_0.75rem)] xl:w-[calc(33.333%_-_1rem)] max-w-md'
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
           >
             <UpgradeCard

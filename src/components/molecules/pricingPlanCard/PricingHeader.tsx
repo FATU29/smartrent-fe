@@ -2,6 +2,7 @@ import React from 'react'
 import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
 import { formatSavingByLocale } from '@/utils/currency/convert'
+import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import {
   getHeaderStyles,
@@ -18,6 +19,7 @@ interface PricingHeaderProps {
   readonly isBestSeller: boolean
   readonly bestSellerLabel: string
   readonly icon?: React.ReactNode
+  readonly iconWrapperClassName?: string
   readonly name: string
   readonly description?: string
   readonly formattedSalePrice: string
@@ -36,6 +38,7 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
   isBestSeller,
   bestSellerLabel,
   icon,
+  iconWrapperClassName,
   name,
   description,
   formattedSalePrice,
@@ -72,7 +75,10 @@ export const PricingHeader: React.FC<PricingHeaderProps> = ({
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.05, ease: 'easeOut' }}
-            className='size-12 flex items-center justify-center rounded-lg bg-primary/10 border border-primary/15'
+            className={cn(
+              'size-12 flex items-center justify-center rounded-lg border',
+              iconWrapperClassName ?? 'bg-primary/10 border-primary/15',
+            )}
           >
             {icon}
           </motion.div>

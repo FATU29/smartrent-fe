@@ -236,27 +236,17 @@ export const UpgradePreviewModal: React.FC<UpgradePreviewModalProps> = ({
                     {t('newBenefitsTitle')}
                   </Typography>
                   <div className='space-y-1.5'>
-                    {preview.newBenefits.map((benefit, index) => {
-                      const benefitName =
-                        (benefit as any).benefitNameDisplay ||
-                        (benefit as any).benefitName ||
-                        ''
-
-                      return (
-                        <div
-                          key={index}
-                          className='flex items-start gap-2 py-1.5'
-                        >
-                          <CheckCircle2 className='size-3.5 text-green-500 mt-0.5 flex-shrink-0' />
-                          <Typography
-                            variant='small'
-                            className='text-sm flex-1'
-                          >
-                            {benefitName}
-                          </Typography>
-                        </div>
-                      )
-                    })}
+                    {preview.newBenefits.map((benefit, index) => (
+                      <div
+                        key={index}
+                        className='flex items-start gap-2 py-1.5'
+                      >
+                        <CheckCircle2 className='size-3.5 text-green-500 mt-0.5 flex-shrink-0' />
+                        <Typography variant='small' className='text-sm flex-1'>
+                          {benefit.benefitNameDisplay}
+                        </Typography>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </>

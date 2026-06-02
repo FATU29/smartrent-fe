@@ -6,6 +6,27 @@ import { PageContainer } from '@/components/atoms/pageContainer'
 const STAT_KEYS = ['totalCustomers', 'totalClicks', 'uniqueUsers']
 const ROW_KEYS = ['row-1', 'row-2', 'row-3', 'row-4', 'row-5', 'row-6']
 
+/** Skeleton for just the customer rows — reused while a search/page refetches. */
+export const CustomerRowsSkeleton: React.FC = () => {
+  return (
+    <Card className='overflow-hidden p-0'>
+      <div className='divide-y divide-border'>
+        {ROW_KEYS.map((key) => (
+          <div key={key} className='flex items-center gap-4 px-6 py-4'>
+            <Skeleton className='h-10 w-10 rounded-full flex-shrink-0' />
+            <div className='flex-1 space-y-2'>
+              <Skeleton className='h-4 w-40 max-w-full' />
+              <Skeleton className='h-3 w-56 max-w-full' />
+            </div>
+            <Skeleton className='hidden md:block h-4 w-28' />
+            <Skeleton className='h-6 w-12 rounded-full flex-shrink-0' />
+          </div>
+        ))}
+      </div>
+    </Card>
+  )
+}
+
 const CustomerManagementSkeleton: React.FC = () => {
   return (
     <PageContainer width='grid' className='pt-8 pb-20 space-y-6'>
@@ -29,7 +50,10 @@ const CustomerManagementSkeleton: React.FC = () => {
       </div>
 
       {/* Search */}
-      <Skeleton className='h-11 w-full rounded-lg' />
+      <div className='flex items-center gap-2 max-w-md'>
+        <Skeleton className='h-10 flex-1 rounded-lg' />
+        <Skeleton className='h-10 w-24 rounded-lg' />
+      </div>
 
       {/* List header */}
       <div className='flex items-center justify-between'>
@@ -38,21 +62,7 @@ const CustomerManagementSkeleton: React.FC = () => {
       </div>
 
       {/* Customer rows */}
-      <Card className='overflow-hidden p-0'>
-        <div className='divide-y divide-border'>
-          {ROW_KEYS.map((key) => (
-            <div key={key} className='flex items-center gap-4 px-6 py-4'>
-              <Skeleton className='h-10 w-10 rounded-full flex-shrink-0' />
-              <div className='flex-1 space-y-2'>
-                <Skeleton className='h-4 w-40 max-w-full' />
-                <Skeleton className='h-3 w-56 max-w-full' />
-              </div>
-              <Skeleton className='hidden md:block h-4 w-28' />
-              <Skeleton className='h-6 w-12 rounded-full flex-shrink-0' />
-            </div>
-          ))}
-        </div>
-      </Card>
+      <CustomerRowsSkeleton />
     </PageContainer>
   )
 }

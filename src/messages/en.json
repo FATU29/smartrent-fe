@@ -2859,6 +2859,8 @@
       "unviewed": "Unviewed",
       "total": "Total",
       "searchPlaceholder": "Search by customer name or email...",
+      "search": "Search",
+      "clearSearch": "Clear search",
       "tabs": {
         "customers": "Customers",
         "listings": "Listings"

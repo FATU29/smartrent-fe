@@ -174,7 +174,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
               height={16}
               className='mr-1.5 w-4 h-4'
             />
-            <span>{t('actions.chatZalo')}</span>
+            <span className='text-xs md:text-sm'>{t('actions.chatZalo')}</span>
           </Button>
 
           {hasEmail && (
@@ -185,7 +185,9 @@ const SellerContact: React.FC<SellerContactProps> = ({
             >
               <a href={`mailto:${email}`}>
                 <Mail className='w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5' />
-                <span>{t('actions.sendEmail')}</span>
+                <span className='text-xs md:text-sm'>
+                  {t('actions.sendEmail')}
+                </span>
               </a>
             </Button>
           )}
@@ -197,7 +199,9 @@ const SellerContact: React.FC<SellerContactProps> = ({
             aria-label={showPhone ? phone : t('actions.showPhone')}
           >
             <Phone className='w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5' />
-            {showPhone ? phone : t('actions.showPhone')}
+            <span className='text-xs md:text-sm'>
+              {showPhone ? phone : t('actions.showPhone')}
+            </span>
           </Button>
         </div>
       </CardContent>

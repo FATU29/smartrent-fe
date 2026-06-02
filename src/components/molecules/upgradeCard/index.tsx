@@ -29,7 +29,10 @@ import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
 import { motion } from 'framer-motion'
 import type { UpgradePreview } from '@/api/types/membership.type'
-import { getMembershipLevelIcon } from '@/components/molecules/pricingPlanCard'
+import {
+  getMembershipLevelIcon,
+  getMembershipLevelTileClasses,
+} from '@/components/molecules/pricingPlanCard'
 import { MembershipPackageLevel } from '@/api/types/membership.type'
 
 export interface UpgradeCardProps {
@@ -55,9 +58,9 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
   )
   const formattedFinalPrice = formatByLocale(upgrade.finalPrice || 0, 'vi')
 
-  const targetIcon = getMembershipLevelIcon(
-    upgrade.targetPackageLevel as MembershipPackageLevel,
-  )
+  const targetLevel = upgrade.targetPackageLevel as MembershipPackageLevel
+  const targetIcon = getMembershipLevelIcon(targetLevel)
+  const targetIconTile = getMembershipLevelTileClasses(targetLevel)
 
   const cardVariants = {
     hidden: { opacity: 0, y: 8 },
@@ -140,7 +143,12 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
             )}
 
             {/* Icon tile */}
-            <div className='size-12 flex items-center justify-center rounded-lg bg-primary/10 border border-primary/15'>
+            <div
+              className={cn(
+                'size-12 flex items-center justify-center rounded-lg border',
+                targetIconTile,
+              )}
+            >
               {targetIcon}
             </div>
 
@@ -328,7 +336,7 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
                         variant='small'
                         className='text-sm flex-1 text-foreground'
                       >
-                        {benefit.benefitName}
+                        {benefit.benefitNameDisplay}
                       </Typography>
                     </motion.div>
                   ))}
