@@ -2458,6 +2458,7 @@
         "action": "Action",
         "viewDetails": "View Details",
         "openListing": "Open listing in new tab",
+        "zoomHint": "Drag the slider handles to zoom in / out",
         "days": {
           "MON": "Mon",
           "TUE": "Tue",
@@ -2493,6 +2494,7 @@
         "action": "Action",
         "viewTrend": "View Trend",
         "openListing": "Open listing in new tab",
+        "zoomHint": "Drag the slider handles to zoom in / out",
         "noData": "No data available",
         "emptyState": {
           "title": "No saved-listing analytics yet",

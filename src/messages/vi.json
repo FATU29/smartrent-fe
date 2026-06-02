@@ -2459,6 +2459,7 @@
         "action": "Hành động",
         "viewDetails": "Xem chi tiết",
         "openListing": "Mở tin đăng ở tab mới",
+        "zoomHint": "Kéo hai đầu thanh trượt để phóng to / thu nhỏ",
         "days": {
           "MON": "Th 2",
           "TUE": "Th 3",
@@ -2494,6 +2495,7 @@
         "action": "Hành động",
         "viewTrend": "Xem xu hướng",
         "openListing": "Mở tin đăng ở tab mới",
+        "zoomHint": "Kéo hai đầu thanh trượt để phóng to / thu nhỏ",
         "noData": "Chưa có dữ liệu",
         "emptyState": {
           "title": "Chưa có dữ liệu phân tích lượt lưu",
