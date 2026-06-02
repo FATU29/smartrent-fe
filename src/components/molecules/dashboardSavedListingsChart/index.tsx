@@ -39,7 +39,14 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { ExternalLink, Loader2, Heart, ListX, Search } from 'lucide-react'
+import {
+  ExternalLink,
+  GripHorizontal,
+  Loader2,
+  Heart,
+  ListX,
+  Search,
+} from 'lucide-react'
 import { format, parseISO, eachDayOfInterval, subDays } from 'date-fns'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import type {
@@ -489,6 +496,12 @@ const DashboardSavedListingsChart: React.FC<
                         </AreaChart>
                       </ResponsiveContainer>
                     </ChartContainer>
+                    {savesOverTimeData.length > 1 && (
+                      <p className='mt-2 flex items-center gap-1.5 text-xs text-muted-foreground'>
+                        <GripHorizontal className='size-3.5 shrink-0' />
+                        {t('zoomHint')}
+                      </p>
+                    )}
                   </div>
                 </section>
 
@@ -608,7 +621,7 @@ const DashboardSavedListingsChart: React.FC<
                 <div className='space-y-2.5'>
                   {isSummaryLoading ? (
                     Array.from({
-                      length: Math.max(3, Math.min(10, pageSize || 10)),
+                      length: Math.max(3, Math.min(10, pageSize || 5)),
                     }).map((_, idx) => (
                       <div
                         key={`m-sk-${idx}`}
@@ -695,7 +708,7 @@ const DashboardSavedListingsChart: React.FC<
                     {isSummaryLoading ? (
                       <>
                         {Array.from({
-                          length: Math.max(3, Math.min(10, pageSize || 10)),
+                          length: Math.max(3, Math.min(10, pageSize || 5)),
                         }).map((_, idx) => (
                           <TableRow key={`sk-${idx}`}>
                             <TableCell>

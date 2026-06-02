@@ -36,7 +36,13 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { ExternalLink, ListX, Loader2, Search } from 'lucide-react'
+import {
+  ExternalLink,
+  GripHorizontal,
+  ListX,
+  Loader2,
+  Search,
+} from 'lucide-react'
 import { format, parseISO, eachDayOfInterval, subDays } from 'date-fns'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import type {
@@ -436,6 +442,12 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                         </LineChart>
                       </ResponsiveContainer>
                     </ChartContainer>
+                    {clicksOverTimeData.length > 1 && (
+                      <p className='mt-2 flex items-center gap-1.5 text-xs text-muted-foreground'>
+                        <GripHorizontal className='size-3.5 shrink-0' />
+                        {t('zoomHint')}
+                      </p>
+                    )}
                   </div>
                 </section>
 
@@ -541,7 +553,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                     <div className='space-y-2.5'>
                       {isSummaryLoading ? (
                         Array.from({
-                          length: Math.max(3, Math.min(10, pageSize || 10)),
+                          length: Math.max(3, Math.min(10, pageSize || 5)),
                         }).map((_, idx) => (
                           <div
                             key={`m-sk-${idx}`}
@@ -628,7 +640,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                         {isSummaryLoading ? (
                           <>
                             {Array.from({
-                              length: Math.max(3, Math.min(10, pageSize || 10)),
+                              length: Math.max(3, Math.min(10, pageSize || 5)),
                             }).map((_, idx) => (
                               <TableRow key={`sk-${idx}`}>
                                 <TableCell>

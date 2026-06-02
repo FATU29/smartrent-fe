@@ -22,7 +22,6 @@ import { useAuth } from '@/hooks/useAuth'
 import { MembershipStatus, BenefitStatus } from '@/api/types/membership.type'
 import { format } from 'date-fns'
 import { motion } from 'framer-motion'
-import { cn } from '@/lib/utils'
 
 const DashboardMembershipCard: React.FC = () => {
   const t = useTranslations('seller.dashboard.membership')
@@ -179,20 +178,6 @@ const DashboardMembershipCard: React.FC = () => {
     return (remaining / total) * 100
   }
 
-  const getBenefitColor = (remaining: number, total: number) => {
-    const percentage = (remaining / total) * 100
-    if (percentage > 50) return 'text-foreground bg-muted border-border'
-    if (percentage > 20) return 'text-foreground bg-amber-50 border-amber-200'
-    return 'text-foreground bg-red-50 border-red-200'
-  }
-
-  const getBenefitProgressColor = (remaining: number, total: number) => {
-    const percentage = (remaining / total) * 100
-    if (percentage > 50) return 'bg-primary'
-    if (percentage > 20) return 'bg-amber-500'
-    return 'bg-red-500'
-  }
-
   return (
     <Card className='relative overflow-hidden'>
       {/* Subtle brand wash behind the header for a more premium feel */}
@@ -301,23 +286,12 @@ const DashboardMembershipCard: React.FC = () => {
                   benefit.quantityRemaining,
                   benefit.totalQuantity,
                 )
-                const colorClass = getBenefitColor(
-                  benefit.quantityRemaining,
-                  benefit.totalQuantity,
-                )
-                const progressColor = getBenefitProgressColor(
-                  benefit.quantityRemaining,
-                  benefit.totalQuantity,
-                )
 
                 return (
                   <motion.div
                     key={benefit.userBenefitId}
                     variants={itemVariants}
-                    className={cn(
-                      'h-full p-3 rounded-lg border transition-all hover:shadow-md',
-                      colorClass,
-                    )}
+                    className='h-full p-3 rounded-lg border border-border bg-muted text-foreground transition-all hover:shadow-md'
                   >
                     <div className='flex items-start justify-between mb-2'>
                       <div className='flex items-start gap-2 flex-1'>
@@ -352,7 +326,7 @@ const DashboardMembershipCard: React.FC = () => {
                           delay: 0.5 + index * 0.1,
                           ease: 'easeOut',
                         }}
-                        className={cn('h-full', progressColor)}
+                        className='h-full bg-primary'
                       />
                     </div>
                   </motion.div>
