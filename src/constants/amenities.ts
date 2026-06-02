@@ -1,16 +1,16 @@
 import {
-  Wind,
+  AirVent,
   Waves,
   Shirt,
   Bed,
   Sofa,
   Wifi,
   ArrowUpDown,
-  Car,
+  SquareParking,
   Square,
-  SquareStack,
-  DoorOpen,
-  Camera,
+  Blinds,
+  Bath,
+  Cctv,
   Shield,
   Lock,
   Fingerprint,
@@ -19,14 +19,15 @@ import {
   Bus,
   Train,
   Plane,
-  Building2,
+  Hospital,
   GraduationCap,
   ShoppingCart,
-  Box,
+  Refrigerator,
+  WashingMachine,
   type LucideIcon,
 } from 'lucide-react'
 
-// Note: Using Waves for washing-machine and swimming-pool, need separate icons later
+// Note: Using Waves for swimming-pool
 const SwimmingPool = Waves
 
 export type AmenityCategory =
@@ -63,21 +64,21 @@ export const AMENITIES_CONFIG: readonly AmenityConfig[] = [
     code: 'ac',
     translationKey: 'ac',
     category: 'BASIC',
-    icon: Wind,
+    icon: AirVent,
   },
   {
     id: 2,
     code: 'fridge',
     translationKey: 'fridge',
     category: 'BASIC',
-    icon: Box, // Box icon for refrigerator
+    icon: Refrigerator,
   },
   {
     id: 3,
     code: 'washing-machine',
     translationKey: 'washingMachine',
     category: 'BASIC',
-    icon: Waves,
+    icon: WashingMachine,
   },
   {
     id: 4,
@@ -120,7 +121,7 @@ export const AMENITIES_CONFIG: readonly AmenityConfig[] = [
     code: 'parking',
     translationKey: 'parking',
     category: 'CONVENIENCE',
-    icon: Car,
+    icon: SquareParking,
   },
   {
     id: 10,
@@ -134,14 +135,14 @@ export const AMENITIES_CONFIG: readonly AmenityConfig[] = [
     code: 'window',
     translationKey: 'window',
     category: 'CONVENIENCE',
-    icon: SquareStack,
+    icon: Blinds,
   },
   {
     id: 12,
     code: 'bathroom',
     translationKey: 'bathroom',
     category: 'CONVENIENCE',
-    icon: DoorOpen,
+    icon: Bath,
   },
   // SECURITY
   {
@@ -149,7 +150,7 @@ export const AMENITIES_CONFIG: readonly AmenityConfig[] = [
     code: 'security-camera',
     translationKey: 'securityCamera',
     category: 'SECURITY',
-    icon: Camera,
+    icon: Cctv,
   },
   {
     id: 14,
@@ -228,7 +229,7 @@ export const AMENITIES_CONFIG: readonly AmenityConfig[] = [
     code: 'hospital',
     translationKey: 'hospital',
     category: 'TRANSPORT',
-    icon: Building2,
+    icon: Hospital,
   },
   {
     id: 25,
