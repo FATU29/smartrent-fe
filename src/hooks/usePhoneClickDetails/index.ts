@@ -3,7 +3,7 @@
  * @module hooks/usePhoneClickDetails
  */
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { PhoneClickDetailService } from '@/api/services'
 import type { PhoneClickDetail } from '@/api/types/phone-click-detail.type'
 
@@ -11,8 +11,14 @@ import type { PhoneClickDetail } from '@/api/types/phone-click-detail.type'
 export const phoneClickDetailKeys = {
   all: ['phoneClickDetails'] as const,
   myListings: () => [...phoneClickDetailKeys.all, 'myListings'] as const,
-  myListingsUsers: (page?: number, size?: number) =>
-    [...phoneClickDetailKeys.all, 'myListingsUsers', page, size] as const,
+  myListingsUsers: (page?: number, size?: number, keyword?: string) =>
+    [
+      ...phoneClickDetailKeys.all,
+      'myListingsUsers',
+      page,
+      size,
+      keyword,
+    ] as const,
   byListing: (listingId: string | number, page?: number, size?: number) =>
     [...phoneClickDetailKeys.all, 'listing', listingId, page, size] as const,
   listingUsers: (listingId: string | number, page?: number, size?: number) =>
@@ -162,13 +168,18 @@ export const usePhoneClickStats = (listingId: string | number) => {
  * Query hook for fetching users who clicked on my listings (for seller dashboard)
  * Returns paginated UserPhoneClickDetail with their clicked listings
  */
-export const useUsersForMyListings = (page: number = 1, size: number = 10) => {
+export const useUsersForMyListings = (
+  page: number = 1,
+  size: number = 10,
+  keyword: string = '',
+) => {
   return useQuery({
-    queryKey: phoneClickDetailKeys.myListingsUsers(page, size),
+    queryKey: phoneClickDetailKeys.myListingsUsers(page, size, keyword),
     queryFn: async () => {
       const response = await PhoneClickDetailService.getUsersForMyListings(
         page,
         size,
+        keyword,
       )
 
       if (!response.data || response.code !== '999999') {
@@ -179,6 +190,7 @@ export const useUsersForMyListings = (page: number = 1, size: number = 10) => {
 
       return response.data
     },
+    placeholderData: keepPreviousData,
     staleTime: 30 * 1000,
     gcTime: 5 * 60 * 1000,
   })

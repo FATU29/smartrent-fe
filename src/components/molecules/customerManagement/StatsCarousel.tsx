@@ -8,6 +8,7 @@ interface StatCard {
   icon: React.ReactNode
   value: string | number
   label: string
+  iconClass?: string
 }
 
 interface StatsCarouselProps {
@@ -105,7 +106,11 @@ export default function StatsCarousel({ stats }: StatsCarouselProps) {
             <div key={index} className='min-w-full px-2'>
               <Card className='p-5'>
                 <div className='flex items-center gap-3 mb-3'>
-                  <div className='flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground'>
+                  <div
+                    className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                      stat.iconClass ?? 'bg-muted text-muted-foreground'
+                    }`}
+                  >
                     {stat.icon}
                   </div>
                   <p className='text-sm font-medium text-muted-foreground'>
