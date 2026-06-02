@@ -26,16 +26,32 @@ import { getCardStyles, getButtonStyles } from './styles'
 import type { Membership } from '@/api/types/membership.type'
 import { MembershipPackageLevel } from '@/api/types/membership.type'
 
+// Each membership tier gets its own colour so the icon reads as a rank at a
+// glance: emerald (entry / growth) → sky (mid) → amber-gold (top tier). The
+// tile classes tint the icon's container to match instead of the flat primary.
+const MEMBERSHIP_LEVEL_TILE_CLASSES: Record<MembershipPackageLevel, string> = {
+  [MembershipPackageLevel.BASIC]: 'bg-emerald-500/10 border-emerald-500/20',
+  [MembershipPackageLevel.STANDARD]: 'bg-sky-500/10 border-sky-500/20',
+  [MembershipPackageLevel.ADVANCED]: 'bg-amber-500/10 border-amber-500/20',
+}
+
+export const getMembershipLevelTileClasses = (
+  level: MembershipPackageLevel,
+): string =>
+  MEMBERSHIP_LEVEL_TILE_CLASSES[level] ?? 'bg-primary/10 border-primary/15'
+
 export const getMembershipLevelIcon = (
   level: MembershipPackageLevel,
 ): React.ReactNode => {
   const iconMap: Record<MembershipPackageLevel, React.ReactNode> = {
-    [MembershipPackageLevel.BASIC]: <Leaf className='size-7 text-primary' />,
+    [MembershipPackageLevel.BASIC]: (
+      <Leaf className='size-7 text-emerald-600 dark:text-emerald-400' />
+    ),
     [MembershipPackageLevel.STANDARD]: (
-      <Sparkles className='size-7 text-primary' />
+      <Sparkles className='size-7 text-sky-600 dark:text-sky-400' />
     ),
     [MembershipPackageLevel.ADVANCED]: (
-      <Crown className='size-7 text-primary' />
+      <Crown className='size-7 text-amber-500 dark:text-amber-400' />
     ),
   }
 
@@ -81,6 +97,9 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
   const resolvedCta = translations.buyNow
   const discountText = formatDiscountText(membership.discountPercentage)
   const resolvedIcon = getMembershipLevelIcon(membership.packageLevel)
+  const resolvedIconTile = getMembershipLevelTileClasses(
+    membership.packageLevel,
+  )
 
   const cardVariants = {
     hidden: { opacity: 0, y: 8 },
@@ -112,6 +131,7 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
             isBestSeller={isBestSeller}
             bestSellerLabel={translations.bestSeller}
             icon={resolvedIcon}
+            iconWrapperClassName={resolvedIconTile}
             name={membership.packageName}
             description={membership.description}
             formattedSalePrice={formattedSalePrice}

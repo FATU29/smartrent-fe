@@ -146,11 +146,18 @@ export interface ForfeitedBenefit {
   readonly estimatedValue: number
 }
 
+// Mirrors BE MembershipPackageBenefitResponse — the upgrade preview returns the
+// target package's benefits using these exact field names (benefitNameDisplay,
+// not benefitName). Reading the wrong field is why "Quyền lợi mới" rendered blank.
 export interface NewBenefit {
+  readonly benefitId: number
   readonly benefitType: string
-  readonly benefitName: string
-  readonly quantity: number
-  readonly description: string
+  readonly benefitNameDisplay: string
+  readonly quantityPerMonth: number
+  readonly vipTierCode?: string | null
+  readonly maxImages?: number | null
+  readonly maxVideos?: number | null
+  readonly createdAt?: string
 }
 
 export interface UpgradePreview {

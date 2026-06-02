@@ -7,15 +7,13 @@ import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
 import type { Membership } from '@/api/types/membership.type'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { MEDIA_BELOW_MD, MEDIA_BELOW_XL } from '@/constants/breakpoints'
+import { MEDIA_BELOW_MD } from '@/constants/breakpoints'
 import { motion } from 'framer-motion'
 import { PackageOpen } from 'lucide-react'
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from '@/components/atoms/carousel'
 
 interface MembershipPlansGridProps {
@@ -32,7 +30,6 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
   onPlanSelect,
 }) => {
   const tPage = useTranslations('membershipPage')
-  const isTabletOrBelow = useMediaQuery(MEDIA_BELOW_XL)
   const isMobile = useMediaQuery(MEDIA_BELOW_MD)
 
   const handlePlanSelect = useCallback(
@@ -76,11 +73,11 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
     )
   }
 
-  // Show carousel for tablet and below
-  if (isTabletOrBelow) {
+  // Mobile only: carousel (limited width, one card at a time)
+  if (isMobile) {
     return (
       <motion.div
-        className={isMobile ? 'relative' : 'relative px-12'}
+        className='relative'
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -92,12 +89,9 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
           }}
           className='w-full'
         >
-          <CarouselContent className='-ml-2 md:-ml-4'>
+          <CarouselContent className='-ml-2'>
             {safeMemberships.map((plan) => (
-              <CarouselItem
-                key={plan.membershipId}
-                className='pl-2 md:pl-4 basis-full md:basis-[90%] lg:basis-[85%]'
-              >
+              <CarouselItem key={plan.membershipId} className='pl-2 basis-full'>
                 <div className='h-full'>
                   <PricingPlanCard
                     membership={plan}
@@ -107,18 +101,14 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
               </CarouselItem>
             ))}
           </CarouselContent>
-          {!isMobile && (
-            <>
-              <CarouselPrevious />
-              <CarouselNext />
-            </>
-          )}
         </Carousel>
       </motion.div>
     )
   }
 
-  // Show grid for desktop (xl and above)
+  // Tablet and desktop: centered grid. With only up to 3 packages it never
+  // fills more than one row, so flex + justify-center keeps 1/2/3 cards
+  // centered instead of left-aligned in a rigid grid.
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -143,7 +133,7 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
 
   return (
     <motion.div
-      className='grid gap-6 sm:grid-cols-2 xl:grid-cols-3'
+      className='flex flex-wrap justify-center gap-6'
       variants={containerVariants}
       initial='hidden'
       animate='visible'
@@ -152,7 +142,7 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
         <motion.div
           key={plan.membershipId}
           variants={itemVariants}
-          className='flex w-full'
+          className='flex w-full md:w-[calc(50%_-_0.75rem)] xl:w-[calc(33.333%_-_1rem)] max-w-md'
         >
           <PricingPlanCard
             membership={plan}
