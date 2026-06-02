@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { useUsersForMyListings } from '@/hooks/usePhoneClickDetails'
-import { useDebounce } from '@/hooks/useDebounce'
 import {
   Search,
   Mail,
@@ -17,8 +16,10 @@ import {
   MousePointerClick,
   TrendingUp,
   Loader2,
+  X,
 } from 'lucide-react'
 import { Button } from '@/components/atoms/button'
+import { Input } from '@/components/atoms/input'
 import { Card } from '@/components/atoms/card'
 import { Badge } from '@/components/atoms/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
@@ -26,7 +27,9 @@ import { PageContainer } from '@/components/atoms/pageContainer'
 import { Typography } from '@/components/atoms/typography'
 import UnifiedDetailDialog from '@/components/molecules/customerManagement/UnifiedDetailDialog'
 import StatsCarousel from '@/components/molecules/customerManagement/StatsCarousel'
-import CustomerManagementSkeleton from '@/components/molecules/customerManagement/customerManagementSkeleton'
+import CustomerManagementSkeleton, {
+  CustomerRowsSkeleton,
+} from '@/components/molecules/customerManagement/customerManagementSkeleton'
 import {
   copyToClipboard,
   getInitials,
@@ -43,6 +46,7 @@ const CustomerManagementTemplate = () => {
   const t = useTranslations('seller.customers')
   const [page, setPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
+  const [submittedSearch, setSubmittedSearch] = useState('')
   const [selectedCustomer, setSelectedCustomer] =
     useState<UserPhoneClickDetail | null>(null)
   const [selectedListing, setSelectedListing] =
@@ -51,20 +55,26 @@ const CustomerManagementTemplate = () => {
   const [initialView, setInitialView] = useState<ViewType>('customer')
   const pageSize = 10
 
-  // Debounce the search input so we only hit the API once the user pauses typing
-  const debouncedSearch = useDebounce(searchQuery, 400)
-  const hasSearch = debouncedSearch.trim().length > 0
+  // Search runs only when explicitly submitted (button / Enter) — no debounce
+  const hasSearch = submittedSearch.trim().length > 0
 
-  // Reset to the first page whenever the search term changes
-  useEffect(() => {
+  const runSearch = () => {
+    const next = searchQuery.trim()
+    setSubmittedSearch(next)
     setPage(1)
-  }, [debouncedSearch])
+  }
+
+  const clearSearch = () => {
+    setSearchQuery('')
+    setSubmittedSearch('')
+    setPage(1)
+  }
 
   // Fetch data — search is performed server-side via the keyword param
   const { data, isLoading, isFetching, error, refetch } = useUsersForMyListings(
     page,
     pageSize,
-    debouncedSearch,
+    submittedSearch,
   )
 
   // The API already returns the (optionally filtered) page of customers
@@ -239,18 +249,38 @@ const CustomerManagementTemplate = () => {
       </div>
 
       {/* Search */}
-      <div className='relative'>
-        <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary' />
-        <input
-          type='text'
-          placeholder={t('searchPlaceholder')}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className='w-full pl-9 pr-10 py-2.5 text-sm border border-border bg-card rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground'
-        />
-        {isFetching && (
-          <Loader2 className='absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-primary' />
-        )}
+      <div className='flex items-center gap-2 max-w-md'>
+        <div className='relative flex-1'>
+          <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary' />
+          <Input
+            type='text'
+            placeholder={t('searchPlaceholder')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') runSearch()
+            }}
+            className='pl-9 pr-9'
+          />
+          {searchQuery && (
+            <button
+              type='button'
+              onClick={clearSearch}
+              className='absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors'
+              aria-label={t('clearSearch')}
+            >
+              <X className='h-4 w-4' />
+            </button>
+          )}
+        </div>
+        <Button onClick={runSearch} disabled={isFetching} className='gap-1.5'>
+          {isFetching ? (
+            <Loader2 className='h-4 w-4 animate-spin' />
+          ) : (
+            <Search className='h-4 w-4' />
+          )}
+          {t('search')}
+        </Button>
       </div>
 
       {/* Customer List Header */}
@@ -263,7 +293,9 @@ const CustomerManagementTemplate = () => {
         </p>
       </div>
 
-      {customers.length === 0 ? (
+      {isFetching ? (
+        <CustomerRowsSkeleton />
+      ) : customers.length === 0 ? (
         <Card className='text-center py-12'>
           <Typography variant='h5' as='h3' className='mb-2'>
             {t('emptyState.search.title')}
