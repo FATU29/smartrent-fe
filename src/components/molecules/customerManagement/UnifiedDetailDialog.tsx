@@ -104,8 +104,8 @@ export default function UnifiedDetailDialog({
           'h-fit-none w-fit-none p-0 gap-0',
           // Mobile: fullscreen
           'h-screen w-screen max-w-none rounded-none',
-          // Desktop: large modal, keep centered positioning from default
-          'sm:h-auto sm:w-full sm:max-w-4xl sm:max-h-[90vh] sm:rounded-lg',
+          // Desktop: large modal with a fixed height so inner lists scroll
+          'sm:h-[85vh] sm:w-full sm:max-w-4xl sm:rounded-lg',
           // Layout
           'flex flex-col overflow-hidden',
         )}
@@ -138,7 +138,7 @@ export default function UnifiedDetailDialog({
                   </AvatarFallback>
                 </Avatar>
               ) : listing ? (
-                <div className='flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center bg-muted rounded-lg flex-shrink-0 text-muted-foreground'>
+                <div className='flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center bg-primary/10 rounded-lg flex-shrink-0 text-primary'>
                   <Home className='h-5 w-5 sm:h-6 sm:w-6' />
                 </div>
               ) : null}
@@ -202,15 +202,15 @@ export default function UnifiedDetailDialog({
         </header>
 
         {/* Content */}
-        <div className='flex-1 overflow-y-auto overscroll-contain min-h-0 bg-background'>
+        <div className='flex-1 min-h-0 flex flex-col bg-background'>
           {isCustomerView && customer && (
-            <div className='p-4 sm:p-6 space-y-5 pb-6'>
+            <div className='flex flex-col flex-1 min-h-0 p-4 sm:p-6 gap-5'>
               {/* Stats Cards */}
-              <div className='grid grid-cols-1 xs:grid-cols-3 gap-3 sm:grid-cols-3'>
+              <div className='grid grid-cols-1 xs:grid-cols-3 gap-3 sm:grid-cols-3 flex-shrink-0'>
                 <Card className='p-4'>
-                  <div className='flex items-center gap-2 mb-2 text-muted-foreground'>
-                    <TrendingUp className='h-4 w-4' />
-                    <p className='text-xs font-medium'>
+                  <div className='flex items-center gap-2 mb-2'>
+                    <TrendingUp className='h-4 w-4 text-orange-600' />
+                    <p className='text-xs font-medium text-muted-foreground'>
                       {t('table.totalClicks')}
                     </p>
                   </div>
@@ -224,9 +224,9 @@ export default function UnifiedDetailDialog({
                 </Card>
 
                 <Card className='p-4'>
-                  <div className='flex items-center gap-2 mb-2 text-muted-foreground'>
-                    <Eye className='h-4 w-4' />
-                    <p className='text-xs font-medium'>
+                  <div className='flex items-center gap-2 mb-2'>
+                    <Eye className='h-4 w-4 text-primary' />
+                    <p className='text-xs font-medium text-muted-foreground'>
                       {t('dialog.customerDetail.totalListings')}
                     </p>
                   </div>
@@ -237,9 +237,9 @@ export default function UnifiedDetailDialog({
                 </Card>
 
                 <Card className='p-4'>
-                  <div className='flex items-center gap-2 mb-2 text-muted-foreground'>
-                    <Calendar className='h-4 w-4' />
-                    <p className='text-xs font-medium'>
+                  <div className='flex items-center gap-2 mb-2'>
+                    <Calendar className='h-4 w-4 text-purple-600' />
+                    <p className='text-xs font-medium text-muted-foreground'>
                       {t('dialog.customerDetail.lastClick')}
                     </p>
                   </div>
@@ -250,7 +250,7 @@ export default function UnifiedDetailDialog({
               </div>
 
               {/* Contact Info */}
-              <section>
+              <section className='flex-shrink-0'>
                 <Typography
                   variant='h6'
                   as='h3'
@@ -262,7 +262,7 @@ export default function UnifiedDetailDialog({
                 <Card className='p-2 divide-y divide-border'>
                   {/* Email */}
                   <div className='flex items-center gap-3 p-3'>
-                    <Mail className='h-4 w-4 text-muted-foreground flex-shrink-0' />
+                    <Mail className='h-4 w-4 text-primary flex-shrink-0' />
                     <div className='flex-1 min-w-0'>
                       <p className='text-xs text-muted-foreground mb-0.5'>
                         {t('table.email')}
@@ -275,7 +275,7 @@ export default function UnifiedDetailDialog({
                       onClick={() =>
                         handleCopyToClipboard(customer.email, 'email')
                       }
-                      className='p-2 hover:bg-muted rounded-md transition-colors active:scale-95 flex-shrink-0 text-muted-foreground'
+                      className='p-2 hover:bg-primary/10 rounded-md transition-colors active:scale-95 flex-shrink-0 text-primary'
                       aria-label='Copy email'
                     >
                       <Copy className='h-4 w-4' />
@@ -285,7 +285,7 @@ export default function UnifiedDetailDialog({
                   {/* Phone */}
                   {customer.contactPhone && (
                     <div className='flex items-center gap-3 p-3'>
-                      <Phone className='h-4 w-4 text-muted-foreground flex-shrink-0' />
+                      <Phone className='h-4 w-4 text-green-600 flex-shrink-0' />
                       <div className='flex-1 min-w-0'>
                         <div className='flex items-center gap-2 mb-0.5 flex-wrap'>
                           <p className='text-xs text-muted-foreground'>
@@ -294,7 +294,7 @@ export default function UnifiedDetailDialog({
                           {customer.contactPhoneVerified && (
                             <Badge
                               variant='secondary'
-                              className='text-2xs h-5 px-1.5'
+                              className='text-2xs h-5 px-1.5 text-green-600'
                             >
                               <CheckCircle2 className='h-2.5 w-2.5 mr-0.5' />
                               {t('table.verified')}
@@ -309,7 +309,7 @@ export default function UnifiedDetailDialog({
                         onClick={() =>
                           handleCopyToClipboard(customer.contactPhone, 'phone')
                         }
-                        className='p-2 hover:bg-muted rounded-md transition-colors active:scale-95 flex-shrink-0 text-muted-foreground'
+                        className='p-2 hover:bg-green-500/10 rounded-md transition-colors active:scale-95 flex-shrink-0 text-green-600'
                         aria-label='Copy phone'
                       >
                         <Copy className='h-4 w-4' />
@@ -320,17 +320,17 @@ export default function UnifiedDetailDialog({
               </section>
 
               {/* Click History */}
-              <section>
+              <section className='flex flex-col flex-1 min-h-0'>
                 <Typography
                   variant='h6'
                   as='h3'
-                  className='mb-3 text-muted-foreground uppercase tracking-wider text-xs font-medium'
+                  className='mb-3 text-muted-foreground uppercase tracking-wider text-xs font-medium flex-shrink-0'
                 >
                   {t('dialog.customerDetail.clickHistory')} (
                   {customer.clickedListings.length})
                 </Typography>
 
-                <div className='space-y-2'>
+                <div className='space-y-2 flex-1 min-h-0 overflow-y-auto overscroll-contain pr-1 -mr-1'>
                   {customer.clickedListings.map((listingItem) => {
                     const handleKeyDown = (e: React.KeyboardEvent) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -377,17 +377,17 @@ export default function UnifiedDetailDialog({
           )}
 
           {!isCustomerView && listing && (
-            <div className='p-4 sm:p-6 space-y-5 pb-6'>
+            <div className='flex flex-col flex-1 min-h-0 p-4 sm:p-6 gap-5'>
               {/* Stats */}
-              <div className='grid grid-cols-2 gap-3'>
+              <div className='grid grid-cols-2 gap-3 flex-shrink-0'>
                 <Card className='p-4'>
                   {loadingStats ? (
-                    <Loader2 className='h-5 w-5 mb-2 animate-spin text-muted-foreground' />
+                    <Loader2 className='h-5 w-5 mb-2 animate-spin text-primary' />
                   ) : (
                     <>
-                      <div className='flex items-center gap-2 mb-2 text-muted-foreground'>
-                        <MousePointerClick className='h-4 w-4' />
-                        <p className='text-xs font-medium'>
+                      <div className='flex items-center gap-2 mb-2'>
+                        <MousePointerClick className='h-4 w-4 text-orange-600' />
+                        <p className='text-xs font-medium text-muted-foreground'>
                           {t('dialog.listingDetail.totalClicks')}
                         </p>
                       </div>
@@ -401,12 +401,12 @@ export default function UnifiedDetailDialog({
 
                 <Card className='p-4'>
                   {loadingStats ? (
-                    <Loader2 className='h-5 w-5 mb-2 animate-spin text-muted-foreground' />
+                    <Loader2 className='h-5 w-5 mb-2 animate-spin text-primary' />
                   ) : (
                     <>
-                      <div className='flex items-center gap-2 mb-2 text-muted-foreground'>
-                        <Users className='h-4 w-4' />
-                        <p className='text-xs font-medium'>
+                      <div className='flex items-center gap-2 mb-2'>
+                        <Users className='h-4 w-4 text-green-600' />
+                        <p className='text-xs font-medium text-muted-foreground'>
                           {t('dialog.listingDetail.uniqueUsers')}
                         </p>
                       </div>
@@ -420,18 +420,18 @@ export default function UnifiedDetailDialog({
               </div>
 
               {/* Interested Users List */}
-              <section>
+              <section className='flex flex-col flex-1 min-h-0'>
                 <Typography
                   variant='h6'
                   as='h3'
-                  className='mb-3 text-muted-foreground uppercase tracking-wider text-xs font-medium'
+                  className='mb-3 text-muted-foreground uppercase tracking-wider text-xs font-medium flex-shrink-0'
                 >
                   {t('dialog.listingDetail.interestedUsers')}
                 </Typography>
 
                 {loadingUsers ? (
                   <div className='flex items-center justify-center py-12'>
-                    <Loader2 className='h-5 w-5 animate-spin text-muted-foreground mr-2' />
+                    <Loader2 className='h-5 w-5 animate-spin text-primary mr-2' />
                     <span className='text-sm text-muted-foreground'>
                       {t('dialog.listingDetail.loadingUsers')}
                     </span>
@@ -444,7 +444,7 @@ export default function UnifiedDetailDialog({
                     </p>
                   </div>
                 ) : (
-                  <div className='space-y-2'>
+                  <div className='space-y-2 flex-1 min-h-0 overflow-y-auto overscroll-contain pr-1 -mr-1'>
                     {usersData.data.map((user: UserPhoneClickDetail) => (
                       <InterestedUserCard
                         key={user.userId}

@@ -57,18 +57,18 @@ export function InterestedUserCard({
               {user.firstName} {user.lastName}
             </h4>
             {user.contactPhoneVerified && (
-              <CheckCircle2 className='h-3.5 w-3.5 text-muted-foreground flex-shrink-0' />
+              <CheckCircle2 className='h-3.5 w-3.5 text-green-600 flex-shrink-0' />
             )}
           </div>
 
           <div className='flex flex-col gap-0.5 text-xs text-muted-foreground'>
             <div className='flex items-center gap-1 truncate'>
-              <Mail className='h-3 w-3 flex-shrink-0' />
+              <Mail className='h-3 w-3 flex-shrink-0 text-primary' />
               <span className='truncate'>{user.email}</span>
             </div>
             {user.contactPhone && (
               <div className='flex items-center gap-1'>
-                <Phone className='h-3 w-3 flex-shrink-0' />
+                <Phone className='h-3 w-3 flex-shrink-0 text-green-600' />
                 <span>{user.contactPhone}</span>
               </div>
             )}

@@ -26,6 +26,7 @@ import { PageContainer } from '@/components/atoms/pageContainer'
 import { Typography } from '@/components/atoms/typography'
 import UnifiedDetailDialog from '@/components/molecules/customerManagement/UnifiedDetailDialog'
 import StatsCarousel from '@/components/molecules/customerManagement/StatsCarousel'
+import CustomerManagementSkeleton from '@/components/molecules/customerManagement/customerManagementSkeleton'
 import {
   copyToClipboard,
   getInitials,
@@ -116,16 +117,9 @@ const CustomerManagementTemplate = () => {
     setSelectedListing(listing)
   }
 
-  // Render loading state
+  // Render loading state with a layout-matching skeleton
   if (isLoading) {
-    return (
-      <PageContainer width='grid' className='py-8'>
-        <div className='flex items-center justify-center py-24'>
-          <Loader2 className='h-8 w-8 animate-spin text-primary' />
-          <span className='ml-3 text-lg'>{t('loading')}</span>
-        </div>
-      </PageContainer>
-    )
+    return <CustomerManagementSkeleton />
   }
 
   // Render error state
