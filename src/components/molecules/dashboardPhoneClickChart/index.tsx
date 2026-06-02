@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import {
   ChartConfig,
@@ -26,6 +27,7 @@ import { Button } from '@/components/atoms/button'
 import {
   Bar,
   BarChart,
+  Brush,
   CartesianGrid,
   Line,
   LineChart,
@@ -34,7 +36,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { ListX, Loader2, Search } from 'lucide-react'
+import { ExternalLink, ListX, Loader2, Search } from 'lucide-react'
 import { format, parseISO, eachDayOfInterval, subDays } from 'date-fns'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import type {
@@ -44,6 +46,10 @@ import type {
 import { PhoneClickDetailService } from '@/api/services'
 import { Skeleton } from '@/components/atoms/skeleton'
 import DashboardNoDataState from '@/components/molecules/dashboardNoDataState'
+
+// Number of most-recent data points the zoom brush shows by default before the
+// user drags to widen/narrow the window.
+const DEFAULT_BRUSH_WINDOW = 45
 
 interface DashboardPhoneClickChartProps {
   listings: OwnerListingAnalyticsSummaryItem[]
@@ -219,6 +225,14 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
     })
   }, [analytics?.clicksOverTime, period])
 
+  // When the range is long (e.g. 365 days) the x-axis gets cramped. Default the
+  // zoom brush to the most recent window so the chart reads clearly, while still
+  // letting the user drag the handles to zoom in/out or pan across the range.
+  const clicksBrushStartIndex = useMemo(() => {
+    const len = clicksOverTimeData.length
+    return len > DEFAULT_BRUSH_WINDOW ? len - DEFAULT_BRUSH_WINDOW : 0
+  }, [clicksOverTimeData.length])
+
   const dayOrder = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
   const clicksByDayData = useMemo(() => {
     if (!analytics?.clicksByDayOfWeek) return []
@@ -344,7 +358,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                     <ChartContainer
                       config={chartConfig}
                       className={
-                        isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+                        isMobile ? 'h-[260px] w-full' : 'h-[300px] w-full'
                       }
                     >
                       <ResponsiveContainer width='100%' height='100%'>
@@ -407,6 +421,18 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                             }}
                             name={t('clicks')}
                           />
+                          {clicksOverTimeData.length > 1 && (
+                            <Brush
+                              dataKey='date'
+                              height={26}
+                              travellerWidth={10}
+                              gap={1}
+                              stroke='var(--color-count)'
+                              fill='hsl(var(--muted))'
+                              startIndex={clicksBrushStartIndex}
+                              className='text-xs'
+                            />
+                          )}
                         </LineChart>
                       </ResponsiveContainer>
                     </ChartContainer>
@@ -496,7 +522,7 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                         {t('rowsPerPage')}
                       </span>
                       <Select
-                        value={String(pageSize || 10)}
+                        value={String(pageSize || 5)}
                         onValueChange={(v) => onPageSizeChange?.(Number(v))}
                       >
                         <SelectTrigger className='w-[100px]'>
@@ -551,15 +577,33 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                                   {listing.totalClicks}
                                 </strong>
                               </p>
-                              <Button
-                                variant='outline'
-                                size='sm'
-                                onClick={() =>
-                                  handleSelectListing(listing.listingId)
-                                }
-                              >
-                                {t('viewDetails')}
-                              </Button>
+                              <div className='flex items-center gap-2'>
+                                <Button
+                                  variant='outline'
+                                  size='sm'
+                                  onClick={() =>
+                                    handleSelectListing(listing.listingId)
+                                  }
+                                >
+                                  {t('viewDetails')}
+                                </Button>
+                                <Button
+                                  asChild
+                                  variant='ghost'
+                                  size='icon'
+                                  className='size-8'
+                                >
+                                  <Link
+                                    href={`/listing-detail/${listing.listingId}`}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    title={t('openListing')}
+                                    aria-label={t('openListing')}
+                                  >
+                                    <ExternalLink className='size-4' />
+                                  </Link>
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         ))
@@ -624,15 +668,33 @@ const DashboardPhoneClickChart: React.FC<DashboardPhoneClickChartProps> = ({
                                 {listing.totalClicks}
                               </TableCell>
                               <TableCell className='text-right'>
-                                <Button
-                                  variant='outline'
-                                  size='sm'
-                                  onClick={() =>
-                                    handleSelectListing(listing.listingId)
-                                  }
-                                >
-                                  {t('viewDetails')}
-                                </Button>
+                                <div className='flex items-center justify-end gap-2'>
+                                  <Button
+                                    variant='outline'
+                                    size='sm'
+                                    onClick={() =>
+                                      handleSelectListing(listing.listingId)
+                                    }
+                                  >
+                                    {t('viewDetails')}
+                                  </Button>
+                                  <Button
+                                    asChild
+                                    variant='ghost'
+                                    size='icon'
+                                    className='size-8'
+                                  >
+                                    <Link
+                                      href={`/listing-detail/${listing.listingId}`}
+                                      target='_blank'
+                                      rel='noopener noreferrer'
+                                      title={t('openListing')}
+                                      aria-label={t('openListing')}
+                                    >
+                                      <ExternalLink className='size-4' />
+                                    </Link>
+                                  </Button>
+                                </div>
                               </TableCell>
                             </TableRow>
                           ))

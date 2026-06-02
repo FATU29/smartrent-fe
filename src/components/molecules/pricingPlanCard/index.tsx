@@ -26,13 +26,14 @@ import { getCardStyles, getButtonStyles } from './styles'
 import type { Membership } from '@/api/types/membership.type'
 import { MembershipPackageLevel } from '@/api/types/membership.type'
 
-// Each membership tier gets its own colour so the icon reads as a rank at a
-// glance: emerald (entry / growth) → sky (mid) → amber-gold (top tier). The
-// tile classes tint the icon's container to match instead of the flat primary.
+// Lower tiers get a subtle colour so the icon reads as a rank at a glance:
+// emerald (entry / growth) → sky (mid). The diamond (top) tier intentionally
+// drops the amber-gold tint and uses the neutral brand primary instead, so it
+// reads as premium without the loud gold colour mapping.
 const MEMBERSHIP_LEVEL_TILE_CLASSES: Record<MembershipPackageLevel, string> = {
   [MembershipPackageLevel.BASIC]: 'bg-emerald-500/10 border-emerald-500/20',
   [MembershipPackageLevel.STANDARD]: 'bg-sky-500/10 border-sky-500/20',
-  [MembershipPackageLevel.ADVANCED]: 'bg-amber-500/10 border-amber-500/20',
+  [MembershipPackageLevel.ADVANCED]: 'bg-primary/10 border-primary/15',
 }
 
 export const getMembershipLevelTileClasses = (
@@ -51,7 +52,7 @@ export const getMembershipLevelIcon = (
       <Sparkles className='size-7 text-sky-600 dark:text-sky-400' />
     ),
     [MembershipPackageLevel.ADVANCED]: (
-      <Crown className='size-7 text-amber-500 dark:text-amber-400' />
+      <Crown className='size-7 text-primary' />
     ),
   }
 

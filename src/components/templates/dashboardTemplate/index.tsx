@@ -75,7 +75,7 @@ const DashboardTemplate: React.FC = () => {
     '7d' | '30d' | '90d' | '180d' | '365d' | 'all'
   >('30d')
   const [clicksPage, setClicksPage] = React.useState(0)
-  const [clicksSize, setClicksSize] = React.useState(10)
+  const [clicksSize, setClicksSize] = React.useState(5)
   const [clicksKeyword, setClicksKeyword] = React.useState('')
   const debouncedClicksKeyword = useDebounce(clicksKeyword, 300)
   const { data: clicksListingsPage, isLoading: isClicksPageLoading } =
@@ -139,7 +139,7 @@ const DashboardTemplate: React.FC = () => {
     useOwnerSavedListingsAnalyticsSummary()
   // paging + search state for saved listings
   const [savesPage, setSavesPage] = React.useState(0)
-  const [savesSize, setSavesSize] = React.useState(10)
+  const [savesSize, setSavesSize] = React.useState(5)
   const [savesKeyword, setSavesKeyword] = React.useState('')
   const debouncedSavesKeyword = useDebounce(savesKeyword, 300)
   const { data: savedListingsPage, isLoading: isSavedPageLoading } =

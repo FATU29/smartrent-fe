@@ -2457,6 +2457,7 @@
         "allListings": "All Listings Summary",
         "action": "Action",
         "viewDetails": "View Details",
+        "openListing": "Open listing in new tab",
         "days": {
           "MON": "Mon",
           "TUE": "Tue",
@@ -2491,6 +2492,7 @@
         "allListings": "All Listings Save Summary",
         "action": "Action",
         "viewTrend": "View Trend",
+        "openListing": "Open listing in new tab",
         "noData": "No data available",
         "emptyState": {
           "title": "No saved-listing analytics yet",

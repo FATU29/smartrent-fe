@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import {
   ChartConfig,
@@ -30,6 +31,7 @@ import {
   AreaChart,
   Bar,
   BarChart,
+  Brush,
   CartesianGrid,
   Cell,
   ResponsiveContainer,
@@ -37,7 +39,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Loader2, Heart, ListX, Search } from 'lucide-react'
+import { ExternalLink, Loader2, Heart, ListX, Search } from 'lucide-react'
 import { format, parseISO, eachDayOfInterval, subDays } from 'date-fns'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import type {
@@ -67,6 +69,10 @@ interface DashboardSavedListingsChartProps {
   period?: '7d' | '30d' | '90d' | '180d' | '365d' | 'all'
   onPeriodChange?: (p: '7d' | '30d' | '90d' | '180d' | '365d' | 'all') => void
 }
+
+// Number of most-recent data points the zoom brush shows by default before the
+// user drags to widen/narrow the window.
+const DEFAULT_BRUSH_WINDOW = 45
 
 const BAR_COLORS = [
   'var(--chart-1)',
@@ -241,6 +247,13 @@ const DashboardSavedListingsChart: React.FC<
     return filled
   }, [trend?.savesOverTime, period])
 
+  // Long ranges (e.g. 365 days) crowd the x-axis; default the zoom brush to the
+  // most recent window and let the user drag to zoom in/out or pan.
+  const savesBrushStartIndex = useMemo(() => {
+    const len = savesOverTimeData.length
+    return len > DEFAULT_BRUSH_WINDOW ? len - DEFAULT_BRUSH_WINDOW : 0
+  }, [savesOverTimeData.length])
+
   const barChartData = useMemo(() => {
     return listings.map((item) => ({
       name:
@@ -292,14 +305,18 @@ const DashboardSavedListingsChart: React.FC<
         />
       ) : (
         <>
-          <div className='rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50/70 via-amber-50/30 to-background p-4 shadow-sm dark:border-amber-900/50 dark:from-amber-950/25 dark:via-amber-950/10 dark:to-background sm:p-5'>
-            <div className='flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300'>
+          <div className='inline-flex items-center gap-3 rounded-lg border border-amber-200/70 bg-amber-50/50 px-4 py-2.5 shadow-sm dark:border-amber-900/50 dark:bg-amber-950/15'>
+            <span className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40'>
               <Heart className='h-4 w-4 text-amber-500' />
-              {t('totalSavesAcrossAll')}
+            </span>
+            <div className='flex flex-col leading-tight'>
+              <span className='text-xs font-medium text-muted-foreground'>
+                {t('totalSavesAcrossAll')}
+              </span>
+              <span className='text-xl font-semibold tracking-tight text-foreground'>
+                {totalSavesAcrossAll}
+              </span>
             </div>
-            <p className='mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl'>
-              {totalSavesAcrossAll}
-            </p>
           </div>
 
           <div className='space-y-2.5'>
@@ -383,7 +400,7 @@ const DashboardSavedListingsChart: React.FC<
                     <ChartContainer
                       config={chartConfig}
                       className={
-                        isMobile ? 'h-[220px] w-full' : 'h-[260px] w-full'
+                        isMobile ? 'h-[260px] w-full' : 'h-[300px] w-full'
                       }
                     >
                       <ResponsiveContainer width='100%' height='100%'>
@@ -457,6 +474,18 @@ const DashboardSavedListingsChart: React.FC<
                             strokeWidth={2.5}
                             connectNulls
                           />
+                          {savesOverTimeData.length > 1 && (
+                            <Brush
+                              dataKey='date'
+                              height={26}
+                              travellerWidth={10}
+                              gap={1}
+                              stroke='var(--color-saves)'
+                              fill='hsl(var(--muted))'
+                              startIndex={savesBrushStartIndex}
+                              className='text-xs'
+                            />
+                          )}
                         </AreaChart>
                       </ResponsiveContainer>
                     </ChartContainer>
@@ -560,7 +589,7 @@ const DashboardSavedListingsChart: React.FC<
                     {t('rowsPerPage')}
                   </span>
                   <Select
-                    value={String(pageSize || 10)}
+                    value={String(pageSize || 5)}
                     onValueChange={(v) => onPageSizeChange?.(Number(v))}
                   >
                     <SelectTrigger className='w-[100px]'>
@@ -615,15 +644,33 @@ const DashboardSavedListingsChart: React.FC<
                               {listing.totalSaves}
                             </strong>
                           </p>
-                          <Button
-                            variant='outline'
-                            size='sm'
-                            onClick={() =>
-                              handleSelectListing(listing.listingId)
-                            }
-                          >
-                            {t('viewTrend')}
-                          </Button>
+                          <div className='flex items-center gap-2'>
+                            <Button
+                              variant='outline'
+                              size='sm'
+                              onClick={() =>
+                                handleSelectListing(listing.listingId)
+                              }
+                            >
+                              {t('viewTrend')}
+                            </Button>
+                            <Button
+                              asChild
+                              variant='ghost'
+                              size='icon'
+                              className='size-8'
+                            >
+                              <Link
+                                href={`/listing-detail/${listing.listingId}`}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                title={t('openListing')}
+                                aria-label={t('openListing')}
+                              >
+                                <ExternalLink className='size-4' />
+                              </Link>
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))
@@ -688,15 +735,33 @@ const DashboardSavedListingsChart: React.FC<
                             {listing.totalSaves}
                           </TableCell>
                           <TableCell className='text-right'>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              onClick={() =>
-                                handleSelectListing(listing.listingId)
-                              }
-                            >
-                              {t('viewTrend')}
-                            </Button>
+                            <div className='flex items-center justify-end gap-2'>
+                              <Button
+                                variant='outline'
+                                size='sm'
+                                onClick={() =>
+                                  handleSelectListing(listing.listingId)
+                                }
+                              >
+                                {t('viewTrend')}
+                              </Button>
+                              <Button
+                                asChild
+                                variant='ghost'
+                                size='icon'
+                                className='size-8'
+                              >
+                                <Link
+                                  href={`/listing-detail/${listing.listingId}`}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  title={t('openListing')}
+                                  aria-label={t('openListing')}
+                                >
+                                  <ExternalLink className='size-4' />
+                                </Link>
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))
