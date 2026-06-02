@@ -289,17 +289,19 @@ export class PhoneClickDetailService {
    * Retrieves detailed information about users interested in seller's listings
    * @param page - Page number (1-indexed)
    * @param size - Number of items per page
+   * @param keyword - Optional keyword to filter users by name, email or contact phone
    * @param instance - Optional axios instance for server-side rendering
    * @returns Promise with paginated user phone click details
    * @example
    * ```ts
-   * const response = await PhoneClickDetailService.getUsersForMyListings(1, 10)
+   * const response = await PhoneClickDetailService.getUsersForMyListings(1, 10, 'john')
    * console.log(response.data.data) // Array of UserPhoneClickDetail objects with clicked listings
    * ```
    */
   static async getUsersForMyListings(
     page: number = 1,
     size: number = 10,
+    keyword?: string,
     instance?: AxiosInstance,
   ): Promise<
     ApiResponse<{
@@ -310,6 +312,7 @@ export class PhoneClickDetailService {
       data: UserPhoneClickDetail[]
     }>
   > {
+    const trimmedKeyword = keyword?.trim()
     return apiRequest<{
       page: number
       size: number
@@ -323,6 +326,7 @@ export class PhoneClickDetailService {
         params: {
           page,
           size,
+          ...(trimmedKeyword ? { keyword: trimmedKeyword } : {}),
         },
       },
       instance,

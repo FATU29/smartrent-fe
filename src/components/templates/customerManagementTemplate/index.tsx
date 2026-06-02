@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { useUsersForMyListings } from '@/hooks/usePhoneClickDetails'
+import { useDebounce } from '@/hooks/useDebounce'
 import {
   Search,
   Mail,
@@ -25,6 +26,7 @@ import { PageContainer } from '@/components/atoms/pageContainer'
 import { Typography } from '@/components/atoms/typography'
 import UnifiedDetailDialog from '@/components/molecules/customerManagement/UnifiedDetailDialog'
 import StatsCarousel from '@/components/molecules/customerManagement/StatsCarousel'
+import CustomerManagementSkeleton from '@/components/molecules/customerManagement/customerManagementSkeleton'
 import {
   copyToClipboard,
   getInitials,
@@ -49,26 +51,24 @@ const CustomerManagementTemplate = () => {
   const [initialView, setInitialView] = useState<ViewType>('customer')
   const pageSize = 10
 
-  // Fetch data
-  const { data, isLoading, error, refetch } = useUsersForMyListings(
+  // Debounce the search input so we only hit the API once the user pauses typing
+  const debouncedSearch = useDebounce(searchQuery, 400)
+  const hasSearch = debouncedSearch.trim().length > 0
+
+  // Reset to the first page whenever the search term changes
+  useEffect(() => {
+    setPage(1)
+  }, [debouncedSearch])
+
+  // Fetch data — search is performed server-side via the keyword param
+  const { data, isLoading, isFetching, error, refetch } = useUsersForMyListings(
     page,
     pageSize,
+    debouncedSearch,
   )
 
-  // Filter data by search query
-  const filteredData = useMemo(() => {
-    if (!data?.data) return []
-    if (!searchQuery.trim()) return data.data
-
-    const query = searchQuery.toLowerCase()
-    return data.data.filter(
-      (customer: UserPhoneClickDetail) =>
-        customer.firstName?.toLowerCase().includes(query) ||
-        customer.lastName?.toLowerCase().includes(query) ||
-        customer.email?.toLowerCase().includes(query) ||
-        customer.contactPhone?.includes(query),
-    )
-  }, [data?.data, searchQuery])
+  // The API already returns the (optionally filtered) page of customers
+  const customers = data?.data ?? []
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -117,16 +117,9 @@ const CustomerManagementTemplate = () => {
     setSelectedListing(listing)
   }
 
-  // Render loading state
+  // Render loading state with a layout-matching skeleton
   if (isLoading) {
-    return (
-      <PageContainer width='grid' className='py-8'>
-        <div className='flex items-center justify-center py-24'>
-          <Loader2 className='h-8 w-8 animate-spin text-primary' />
-          <span className='ml-3 text-lg'>{t('loading')}</span>
-        </div>
-      </PageContainer>
-    )
+    return <CustomerManagementSkeleton />
   }
 
   // Render error state
@@ -146,8 +139,9 @@ const CustomerManagementTemplate = () => {
     )
   }
 
-  // Render empty state
-  if (!data?.data || data.data.length === 0) {
+  // Render empty state (only when there is genuinely no customer data, not an
+  // empty search result — that is handled inline below so the search box stays)
+  if (!hasSearch && (!data?.data || data.data.length === 0)) {
     return (
       <PageContainer width='grid' className='py-8'>
         <div className='mb-8'>
@@ -176,16 +170,19 @@ const CustomerManagementTemplate = () => {
       icon: Users,
       value: stats.totalCustomers,
       label: t('stats.totalCustomers'),
+      iconClass: 'bg-primary/10 text-primary',
     },
     {
       icon: MousePointerClick,
       value: stats.totalClicks,
       label: t('stats.totalClicks'),
+      iconClass: 'bg-orange-500/10 text-orange-600',
     },
     {
       icon: TrendingUp,
       value: stats.uniqueUsers,
       label: t('stats.uniqueUsers'),
+      iconClass: 'bg-green-500/10 text-green-600',
     },
   ]
 
@@ -205,13 +202,15 @@ const CustomerManagementTemplate = () => {
 
       {/* Stats Cards - Desktop Grid */}
       <div className='hidden md:grid gap-4 md:grid-cols-3'>
-        {statCards.map(({ icon: Icon, value, label }) => (
+        {statCards.map(({ icon: Icon, value, label, iconClass }) => (
           <Card
             key={label}
             className='p-5 hover:border-border/80 transition-colors'
           >
             <div className='flex items-center gap-3 mb-3'>
-              <div className='flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground'>
+              <div
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${iconClass}`}
+              >
                 <Icon className='h-5 w-5' />
               </div>
               <p className='text-sm font-medium text-muted-foreground'>
@@ -230,24 +229,28 @@ const CustomerManagementTemplate = () => {
       {/* Stats Carousel - Mobile Only */}
       <div className='md:hidden'>
         <StatsCarousel
-          stats={statCards.map(({ icon: Icon, value, label }) => ({
+          stats={statCards.map(({ icon: Icon, value, label, iconClass }) => ({
             icon: <Icon className='h-5 w-5' />,
             value,
             label,
+            iconClass,
           }))}
         />
       </div>
 
       {/* Search */}
       <div className='relative'>
-        <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+        <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary' />
         <input
           type='text'
           placeholder={t('searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className='w-full pl-9 pr-4 py-2.5 text-sm border border-border bg-card rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground'
+          className='w-full pl-9 pr-10 py-2.5 text-sm border border-border bg-card rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground'
         />
+        {isFetching && (
+          <Loader2 className='absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-primary' />
+        )}
       </div>
 
       {/* Customer List Header */}
@@ -256,12 +259,11 @@ const CustomerManagementTemplate = () => {
           {t('table.customer')}
         </Typography>
         <p className='text-sm text-muted-foreground'>
-          {t('pagination.showing')} {filteredData.length}{' '}
-          {t('pagination.results')}
+          {t('pagination.showing')} {customers.length} {t('pagination.results')}
         </p>
       </div>
 
-      {filteredData.length === 0 ? (
+      {customers.length === 0 ? (
         <Card className='text-center py-12'>
           <Typography variant='h5' as='h3' className='mb-2'>
             {t('emptyState.search.title')}
@@ -299,7 +301,7 @@ const CustomerManagementTemplate = () => {
                   </tr>
                 </thead>
                 <tbody className='bg-card divide-y divide-border'>
-                  {filteredData.map((customer: UserPhoneClickDetail) => {
+                  {customers.map((customer: UserPhoneClickDetail) => {
                     const totalClicks = customer.clickedListings.reduce(
                       (sum, l) => sum + l.clickCount,
                       0,
@@ -334,7 +336,7 @@ const CustomerManagementTemplate = () => {
                         </td>
                         <td className='px-6 py-4'>
                           <div className='flex items-center gap-2'>
-                            <Mail className='h-4 w-4 text-muted-foreground' />
+                            <Mail className='h-4 w-4 text-primary' />
                             <span className='text-sm text-foreground'>
                               {customer.email}
                             </span>
@@ -342,12 +344,12 @@ const CustomerManagementTemplate = () => {
                         </td>
                         <td className='px-6 py-4'>
                           <div className='flex items-center gap-2'>
-                            <Phone className='h-4 w-4 text-muted-foreground' />
+                            <Phone className='h-4 w-4 text-green-600' />
                             <span className='text-sm text-foreground'>
                               {customer.contactPhone || 'N/A'}
                             </span>
                             {customer.contactPhoneVerified ? (
-                              <CheckCircle2 className='h-4 w-4 text-muted-foreground' />
+                              <CheckCircle2 className='h-4 w-4 text-green-600' />
                             ) : (
                               <XCircle className='h-4 w-4 text-muted-foreground/50' />
                             )}
@@ -423,10 +425,10 @@ const CustomerManagementTemplate = () => {
                                     'phone',
                                   )
                                 }}
-                                className='p-2 hover:bg-muted rounded-md transition-colors'
+                                className='p-2 hover:bg-primary/10 rounded-md transition-colors'
                                 title={t('table.copyPhone')}
                               >
-                                <Copy className='h-4 w-4 text-muted-foreground' />
+                                <Copy className='h-4 w-4 text-primary' />
                               </button>
                             )}
                             <button
@@ -434,10 +436,10 @@ const CustomerManagementTemplate = () => {
                                 e.stopPropagation()
                                 handleCopyToClipboard(customer.email, 'email')
                               }}
-                              className='p-2 hover:bg-muted rounded-md transition-colors'
+                              className='p-2 hover:bg-primary/10 rounded-md transition-colors'
                               title={t('table.copyEmail')}
                             >
-                              <Mail className='h-4 w-4 text-muted-foreground' />
+                              <Mail className='h-4 w-4 text-primary' />
                             </button>
                           </div>
                         </td>
@@ -451,7 +453,7 @@ const CustomerManagementTemplate = () => {
 
           {/* Customer List - Mobile Cards */}
           <div className='md:hidden space-y-3'>
-            {filteredData.map((customer: UserPhoneClickDetail) => {
+            {customers.map((customer: UserPhoneClickDetail) => {
               const totalClicks = customer.clickedListings.reduce(
                 (sum, l) => sum + l.clickCount,
                 0,
@@ -500,15 +502,15 @@ const CustomerManagementTemplate = () => {
 
                       <div className='space-y-1 text-xs text-muted-foreground'>
                         <div className='flex items-center gap-1.5 truncate'>
-                          <Mail className='h-3.5 w-3.5 flex-shrink-0' />
+                          <Mail className='h-3.5 w-3.5 flex-shrink-0 text-primary' />
                           <span className='truncate'>{customer.email}</span>
                         </div>
                         {customer.contactPhone && (
                           <div className='flex items-center gap-1.5'>
-                            <Phone className='h-3.5 w-3.5 flex-shrink-0' />
+                            <Phone className='h-3.5 w-3.5 flex-shrink-0 text-green-600' />
                             <span>{customer.contactPhone}</span>
                             {customer.contactPhoneVerified && (
-                              <CheckCircle2 className='h-3.5 w-3.5 text-muted-foreground' />
+                              <CheckCircle2 className='h-3.5 w-3.5 text-green-600' />
                             )}
                           </div>
                         )}
