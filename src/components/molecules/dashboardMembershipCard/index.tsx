@@ -194,23 +194,35 @@ const DashboardMembershipCard: React.FC = () => {
   }
 
   return (
-    <Card className='overflow-hidden'>
-      <CardHeader>
-        <div className='flex items-start justify-between'>
+    <Card className='relative overflow-hidden'>
+      {/* Subtle brand wash behind the header for a more premium feel */}
+      <div
+        aria-hidden='true'
+        className='pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/5 to-transparent'
+      />
+      <CardHeader className='relative'>
+        <div className='flex items-start justify-between gap-4'>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
+            className='flex items-start gap-3'
           >
-            <CardTitle className='flex items-center gap-2'>
-              <Crown className='h-6 w-6 text-blue-600' />
-              <span className='text-foreground'>{membership.packageName}</span>
-            </CardTitle>
-            <CardDescription className='mt-1 flex items-center gap-2'>
-              <Sparkles className='h-3 w-3 text-blue-600' />
-              {t('packageLevel')}:{' '}
-              <span className='font-semibold'>{membership.packageLevel}</span>
-            </CardDescription>
+            <span className='flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/15'>
+              <Crown className='h-6 w-6 text-primary' />
+            </span>
+            <div className='space-y-1'>
+              <CardTitle className='text-foreground'>
+                {membership.packageName}
+              </CardTitle>
+              <CardDescription className='flex items-center gap-1.5'>
+                <Sparkles className='h-3.5 w-3.5 text-primary' />
+                {t('packageLevel')}:{' '}
+                <span className='font-semibold text-foreground'>
+                  {membership.packageLevel}
+                </span>
+              </CardDescription>
+            </div>
           </motion.div>
           <motion.div
             initial={{ opacity: 0 }}
@@ -234,8 +246,8 @@ const DashboardMembershipCard: React.FC = () => {
           transition={{ delay: 0.2 }}
           className='flex items-center gap-3 p-3 rounded-lg bg-muted border border-border'
         >
-          <div className='flex items-center justify-center w-10 h-10 rounded-full bg-blue-100'>
-            <Calendar className='h-5 w-5 text-blue-600' />
+          <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/10'>
+            <Calendar className='h-5 w-5 text-primary' />
           </div>
           <div className='flex-1'>
             <p className='text-xs text-muted-foreground'>{t('validUntil')}</p>
@@ -275,7 +287,7 @@ const DashboardMembershipCard: React.FC = () => {
           >
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-2 text-sm font-semibold'>
-                <Gift className='h-5 w-5 text-blue-600' />
+                <Gift className='h-5 w-5 text-primary' />
                 <span className='text-foreground'>{t('activeBenefits')}</span>
               </div>
               <Badge variant='secondary' className='font-semibold'>

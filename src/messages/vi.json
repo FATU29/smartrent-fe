@@ -2443,6 +2443,7 @@
         "allListings": "Tổng quan tất cả tin đăng",
         "action": "Hành động",
         "viewDetails": "Xem chi tiết",
+        "openListing": "Mở tin đăng ở tab mới",
         "days": {
           "MON": "Th 2",
           "TUE": "Th 3",
@@ -2477,6 +2478,7 @@
         "allListings": "Tổng quan lượt lưu tất cả tin đăng",
         "action": "Hành động",
         "viewTrend": "Xem xu hướng",
+        "openListing": "Mở tin đăng ở tab mới",
         "noData": "Chưa có dữ liệu",
         "emptyState": {
           "title": "Chưa có dữ liệu phân tích lượt lưu",
