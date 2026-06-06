@@ -44,10 +44,13 @@ const getVipStyle = (vipType: VipType): VipStyle => {
         icon: <Star className='h-3 w-3' />,
       }
     default:
+      // Normal (non-VIP) posts are the majority, so give them a solid, visible
+      // colour instead of the neutral card surface, otherwise the markers blend
+      // into the map and look colourless.
       return {
-        badge: 'bg-card hover:bg-muted border-border',
-        text: 'text-foreground',
-        arrow: 'border-t-card',
+        badge: 'bg-emerald-600 hover:bg-emerald-700 border-emerald-700',
+        text: 'text-white',
+        arrow: 'border-t-emerald-600',
         icon: null,
       }
   }
