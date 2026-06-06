@@ -1,61 +1,74 @@
 import React from 'react'
 import { Badge } from '@/components/atoms/badge'
 import { formatByLocale } from '@/utils/currency/convert'
-import { VipType } from '@/api/types'
+import { VipType, LISTING_TYPE } from '@/api/types/property.type'
+import type { listingType as ListingPostType } from '@/api/types/property.type'
 import { Crown, Sparkles, Star } from 'lucide-react'
 
 interface MapMarkerProps {
   price: number
   vipType: VipType
+  listingType?: ListingPostType
   isSelected?: boolean
   onClick?: () => void
 }
 
-const getVipConfig = (vipType: VipType) => {
-  switch (vipType) {
-    case 'DIAMOND':
+interface ListingTypeStyle {
+  badge: string
+  text: string
+  arrow: string
+}
+
+// Color the marker by the listing type so rent vs share posts are
+// distinguishable at a glance. The VIP tier is shown via the leading icon.
+const getListingTypeStyle = (
+  listingType?: ListingPostType,
+): ListingTypeStyle => {
+  switch (listingType) {
+    case LISTING_TYPE.SHARE:
       return {
-        color: 'bg-blue-600 hover:bg-blue-700 border-blue-700',
-        icon: <Sparkles className='h-3 w-3' />,
-        textColor: 'text-white',
+        badge: 'bg-emerald-600 hover:bg-emerald-700 border-emerald-700',
+        text: 'text-white',
+        arrow: 'border-t-emerald-600',
       }
-    case 'GOLD':
+    case LISTING_TYPE.RENT:
       return {
-        color: 'bg-yellow-500 hover:bg-yellow-600 border-yellow-600',
-        icon: <Crown className='h-3 w-3' />,
-        textColor: 'text-white',
-      }
-    case 'SILVER':
-      return {
-        color: 'bg-gray-400 hover:bg-gray-500 border-gray-500',
-        icon: <Star className='h-3 w-3' />,
-        textColor: 'text-white',
+        badge: 'bg-blue-600 hover:bg-blue-700 border-blue-700',
+        text: 'text-white',
+        arrow: 'border-t-blue-600',
       }
     default:
       return {
-        color: 'bg-card hover:bg-muted border-border',
-        icon: null,
-        textColor: 'text-foreground',
+        badge: 'bg-card hover:bg-muted border-border',
+        text: 'text-foreground',
+        arrow: 'border-t-card',
       }
+  }
+}
+
+const getVipIcon = (vipType: VipType) => {
+  switch (vipType) {
+    case 'DIAMOND':
+      return <Sparkles className='h-3 w-3' />
+    case 'GOLD':
+      return <Crown className='h-3 w-3' />
+    case 'SILVER':
+      return <Star className='h-3 w-3' />
+    default:
+      return null
   }
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({
   price,
   vipType,
+  listingType,
   isSelected = false,
   onClick,
 }) => {
-  const config = getVipConfig(vipType)
+  const style = getListingTypeStyle(listingType)
+  const vipIcon = getVipIcon(vipType)
   const formattedPrice = formatByLocale(price, 'vi-VN')
-
-  // Determine arrow border color based on vipType
-  const getArrowBorderColor = () => {
-    if (vipType === 'DIAMOND') return 'border-t-blue-600'
-    if (vipType === 'GOLD') return 'border-t-yellow-500'
-    if (vipType === 'SILVER') return 'border-t-gray-400'
-    return 'border-t-card'
-  }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if ((event.key === 'Enter' || event.key === ' ') && onClick) {
@@ -70,19 +83,18 @@ const MapMarker: React.FC<MapMarkerProps> = ({
       tabIndex={0}
       onClick={onClick}
       onKeyDown={handleKeyDown}
-      className={`
-        relative cursor-pointer transition-all duration-200 transform
-        ${isSelected ? 'scale-110 z-50' : 'hover:scale-105 z-10'}
-      `}
+      className={`relative cursor-pointer transition-all duration-200 transform ${
+        isSelected ? 'scale-110' : 'hover:scale-105'
+      }`}
     >
       <Badge
         className={`
-          ${config.color} ${config.textColor}
+          ${style.badge} ${style.text}
           border-2 shadow-lg flex items-center gap-1 px-2 py-1
           ${isSelected ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
         `}
       >
-        {config.icon}
+        {vipIcon}
         <span className='font-semibold text-xs whitespace-nowrap'>
           {formattedPrice}
         </span>
@@ -93,7 +105,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({
           absolute left-1/2 -bottom-1 transform -translate-x-1/2
           w-0 h-0 border-l-4 border-r-4 border-t-4
           border-l-transparent border-r-transparent
-          ${getArrowBorderColor()}
+          ${style.arrow}
         `}
       />
     </div>
