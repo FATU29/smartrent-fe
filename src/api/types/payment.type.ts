@@ -1,7 +1,7 @@
 // Payment domain types
 
 export enum PaymentProviderCode {
-  VNPAY = 'VNPAY',
+  SEPAY = 'SEPAY',
   PAYPAL = 'PAYPAL',
   MOMO = 'MOMO',
   ZALOPAY = 'ZALOPAY',
@@ -10,6 +10,41 @@ export enum PaymentProviderCode {
 export type PaymentProvider =
   | keyof typeof PaymentProviderCode
   | PaymentProviderCode
+
+/**
+ * SePay bank-transfer details returned inside `providerData`.
+ * Shown to users who pay manually instead of scanning the VietQR.
+ */
+export interface SePayProviderData {
+  accountNumber?: string
+  bankCode?: string
+  accountName?: string
+  amount?: number
+  /** The code that MUST appear in the transfer description for matching. */
+  transferContent?: string
+  qrUrl?: string
+  [key: string]: string | number | boolean | null | undefined
+}
+
+/**
+ * Shared shape returned by every initiate-purchase endpoint when paying with
+ * SePay. SePay is a bank-transfer (VietQR) gateway — there is no redirect, so
+ * the UI renders `qrCodeData`/`providerData` and polls the transaction status.
+ */
+export interface SePayInitiationData {
+  transactionRef: string
+  provider?: string
+  amount?: number
+  currency?: string
+  /** VietQR image URL — drop straight into an <img>. */
+  paymentUrl?: string
+  /** Same VietQR image URL as `paymentUrl`. */
+  qrCodeData?: string
+  providerData?: SePayProviderData
+  createdAt?: string
+  /** ISO timestamp when the QR window closes; stop polling after this. */
+  expiresAt?: string
+}
 
 export enum PaymentStatus {
   PENDING = 'PENDING',

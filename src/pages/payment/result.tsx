@@ -5,14 +5,24 @@ import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import {
   clearPendingTransactionRef,
-  extractVNPayTransactionInfo,
   getPendingTransactionRef,
-  getVNPayResponseMessage,
-  isVNPaySuccess,
-  isVNPayCancelled,
-  validateVNPayCallback,
 } from '@/utils/payment'
 import type { PaymentCallbackResponse } from '@/api/types/payment.type'
+
+/**
+ * Transaction details extracted from a redirect-provider callback (ZaloPay).
+ * SePay never reaches this page — it confirms via webhook + in-page polling.
+ */
+interface PaymentTransactionInfo {
+  transactionRef: string
+  amount: number
+  responseCode: string
+  transactionStatus: string
+  transactionNo: string
+  bankCode: string
+  payDate: string
+  orderInfo: string
+}
 import {
   Check,
   X,
@@ -34,7 +44,7 @@ interface PaymentResultState {
   status: PaymentStatus
   message: string
   details?: PaymentCallbackResponse
-  transactionInfo?: ReturnType<typeof extractVNPayTransactionInfo>
+  transactionInfo?: PaymentTransactionInfo
 }
 
 interface StoredMembershipInfo {
@@ -156,9 +166,6 @@ const PaymentResultPage: NextPageWithLayout = () => {
       return t('success.messageDefault')
     }
 
-    const isVNPayCallback = (params: URLSearchParams) =>
-      Array.from(params.keys()).some((key) => key.startsWith('vnp_'))
-
     const isZaloPayCallback = (params: URLSearchParams) =>
       [
         'status',
@@ -264,94 +271,6 @@ const PaymentResultPage: NextPageWithLayout = () => {
         }
 
         const queryParams = new URLSearchParams(rawQueryString)
-
-        if (isVNPayCallback(queryParams)) {
-          const validation = validateVNPayCallback(queryParams)
-          if (!validation.isValid) {
-            setResult({
-              status: 'failed',
-              message: `${t('failed.invalidData')}: ${validation.errors.join(', ')}`,
-            })
-            return
-          }
-
-          const transactionInfo = extractVNPayTransactionInfo(queryParams)
-          const callbackResponse =
-            await PaymentService.vnpayCallback(rawQueryString)
-
-          if (!callbackResponse.success) {
-            throw new Error('PAYMENT_GATEWAY_UNREACHABLE')
-          }
-
-          const callbackData = callbackResponse.data
-
-          if (callbackData?.signatureValid === false) {
-            setResult({
-              status: 'failed',
-              message: t('failed.signatureFailed'),
-              details: callbackData,
-              transactionInfo,
-            })
-            clearPendingPaymentStorage()
-            return
-          }
-
-          const callbackStatus = callbackData?.status?.toUpperCase()
-          const callbackIsSuccess =
-            callbackData?.success === true || callbackStatus === 'COMPLETED'
-          const callbackIsCancelled = callbackStatus === 'CANCELLED'
-
-          const vnpIsSuccess = isVNPaySuccess(transactionInfo.responseCode)
-          const vnpIsCancelled = isVNPayCancelled(transactionInfo.responseCode)
-
-          if (vnpIsCancelled || callbackIsCancelled) {
-            setResult({
-              status: 'cancelled',
-              message: t('cancelled.message'),
-              details: callbackData,
-              transactionInfo,
-            })
-            clearPendingPaymentStorage()
-            return
-          }
-
-          if (vnpIsSuccess && callbackIsSuccess) {
-            const successMessage =
-              getSuccessMessageByPaymentType(detectedPaymentType)
-
-            setResult({
-              status: 'success',
-              message: successMessage,
-              details: callbackData,
-              transactionInfo,
-            })
-
-            await deleteDraftAfterSuccessfulListingPayment(
-              detectedPaymentType,
-              storedListing,
-            )
-            clearPendingPaymentStorage()
-            return
-          }
-
-          const vnpErrorMessage = vnpIsSuccess
-            ? null
-            : getVNPayResponseMessage(transactionInfo.responseCode)
-
-          setResult({
-            status: 'failed',
-            message: normalizeFailedMessage(
-              callbackData?.message || callbackResponse.message,
-              vnpErrorMessage,
-            ),
-            details: callbackData,
-            transactionInfo,
-          })
-
-          clearPendingPaymentStorage()
-
-          return
-        }
 
         if (isZaloPayCallback(queryParams)) {
           const redirectStatus =

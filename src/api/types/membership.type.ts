@@ -1,3 +1,5 @@
+import type { SePayProviderData } from './payment.type'
+
 export enum MembershipPackageLevel {
   BASIC = 'BASIC',
   STANDARD = 'STANDARD',
@@ -32,7 +34,7 @@ export enum BenefitStatus {
 }
 
 export enum PaymentProvider {
-  VNPAY = 'VNPAY',
+  SEPAY = 'SEPAY',
   MOMO = 'MOMO',
   PAYPAL = 'PAYPAL',
   ZALOPAY = 'ZALOPAY',
@@ -48,6 +50,12 @@ export interface PurchaseMembershipResponse {
   readonly transactionRef: string
   readonly amount: number
   readonly provider: string
+  // SePay-only: bank-transfer QR + details (no redirect)
+  readonly qrCodeData?: string
+  readonly currency?: string
+  readonly providerData?: SePayProviderData
+  readonly createdAt?: string
+  readonly expiresAt?: string
 }
 
 export interface MembershipBenefit {
@@ -197,6 +205,10 @@ export interface UpgradeResponse {
   readonly finalAmount: number
   readonly status: 'PENDING_PAYMENT' | 'COMPLETED'
   readonly message: string
+  // SePay-only: bank-transfer QR + details (no redirect)
+  readonly qrCodeData?: string
+  readonly providerData?: SePayProviderData
+  readonly expiresAt?: string
 }
 
 export type GetAvailableUpgradesResponse = UpgradePreview[]

@@ -10,7 +10,11 @@ import {
   PushLimitError,
   parsePushLimitWaitMinutes,
 } from '@/api/types/push.type'
-import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
+import {
+  isSePayResult,
+  redirectToPayment,
+  setPendingTransactionRef,
+} from '@/utils/payment'
 
 /**
  * Hook to check push quota availability
@@ -88,8 +92,9 @@ export function usePushListing() {
       // Also invalidate membership data as it might have changed
       queryClient.invalidateQueries({ queryKey: ['memberships', 'my'] })
 
-      // If payment URL is returned, redirect to payment
-      if (data.data?.paymentUrl) {
+      // If payment URL is returned, redirect to payment. SePay has no redirect
+      // — the caller opens the QR checkout instead.
+      if (data.data?.paymentUrl && !isSePayResult(data.data)) {
         setPendingTransactionRef(data.data.transactionRef)
         redirectToPayment(data.data.paymentUrl)
       }

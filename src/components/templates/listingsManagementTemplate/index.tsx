@@ -31,6 +31,8 @@ import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { List, useListContext } from '@/contexts/list'
 import { useMyMembership } from '@/hooks/useMembership'
 import { useAuthContext } from '@/contexts/auth'
+import { useSePayCheckout } from '@/contexts/sepayCheckout'
+import { isSePayResult, toSePayInitData } from '@/utils/payment'
 import {
   ListingOwnerDetail,
   PostStatus,
@@ -62,6 +64,7 @@ const ListingsWithPagination = () => {
     useMyMembership(user?.userId)
   const { data: quotaData, refetch: refetchQuota } = usePushQuota()
   const pushMutation = usePushListing()
+  const { openSePayCheckout } = useSePayCheckout()
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tSeller = useTranslations('seller.listingManagement')
@@ -132,12 +135,21 @@ const ListingsWithPagination = () => {
       const result = await pushMutation.mutateAsync({
         listingId: listing.listingId,
         useMembershipQuota: useMembershipQuota,
-        paymentProvider: useMembershipQuota ? undefined : 'VNPAY',
+        paymentProvider: useMembershipQuota ? undefined : 'SEPAY',
       })
 
-      // If payment URL is returned, it will be handled in the hook's onSuccess
-      if (result.data?.paymentUrl) {
-        toast.loading('Redirecting to payment...')
+      if (isSePayResult(result.data)) {
+        // SePay: render the QR + poll. Push applies once the webhook confirms.
+        openSePayCheckout(toSePayInitData(result.data), {
+          onCompleted: () => {
+            toast.success(tSeller('card.toast.pushSuccess'))
+            refetchQuota()
+            refetch()
+          },
+        })
+      } else if (result.data?.paymentUrl) {
+        // Hosted-checkout providers (e.g. ZaloPay) redirect in the hook.
+        toast.loading(tSeller('card.toast.pushRedirectingToPayment'))
       } else {
         const successMessage = useMembershipQuota
           ? tSeller('card.toast.pushSuccessWithQuota')
@@ -315,10 +327,17 @@ const ListingsWithPagination = () => {
                     setSelectedListingForRepost(null)
                     setRepostDialogOpen(false)
 
-                    // Direct-payment path: hook auto-redirects to paymentUrl,
-                    // listing reactivates only after the callback fires.
+                    // SePay: render the QR + poll; listing reactivates on the
+                    // webhook. ZaloPay etc: hook redirects to the paymentUrl.
                     // Quota path: listing is already live → refetch the list.
-                    if (data.data?.paymentUrl) {
+                    if (isSePayResult(data.data)) {
+                      openSePayCheckout(toSePayInitData(data.data), {
+                        onCompleted: () => {
+                          toast.success(tSeller('card.toast.repostSuccess'))
+                          refetch()
+                        },
+                      })
+                    } else if (data.data?.paymentUrl) {
                       toast.loading(
                         tSeller('card.toast.repostRedirectingToPayment'),
                       )

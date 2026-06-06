@@ -5,7 +5,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { PushService } from '@/api/services'
 import type { PushListingRequest } from '@/api/types/push.type'
-import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
+import {
+  isSePayResult,
+  redirectToPayment,
+  setPendingTransactionRef,
+} from '@/utils/payment'
+
+type DirectPushProvider = 'SEPAY' | 'ZALOPAY' | 'PAYPAL' | 'MOMO'
 
 /**
  * Hook to push a listing (with payment or membership quota)
@@ -21,7 +27,7 @@ import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
  * pushListing.mutate({
  *   listingId: 123,
  *   useMembershipQuota: false,
- *   paymentProvider: 'VNPAY'
+ *   paymentProvider: 'SEPAY'
  * })
  *
  * // With membership quota
@@ -55,8 +61,9 @@ export function usePushListing(options?: {
       return response.data
     },
     onSuccess: (data, variables) => {
-      // Redirect to payment URL if payment is required and auto-redirect is enabled
-      if (data.paymentUrl && autoRedirect) {
+      // Redirect to payment URL if payment is required and auto-redirect is enabled.
+      // SePay has no redirect — the caller opens the QR checkout instead.
+      if (data.paymentUrl && autoRedirect && !isSePayResult(data)) {
         setPendingTransactionRef(data.transactionRef)
         redirectToPayment(data.paymentUrl)
       }
@@ -89,7 +96,7 @@ export function usePushListing(options?: {
  *
  * pushWithPayment.mutate({
  *   listingId: 123,
- *   paymentProvider: 'VNPAY'
+ *   paymentProvider: 'SEPAY'
  * })
  * ```
  */
@@ -104,7 +111,7 @@ export function usePushListingWithPayment(options?: {
     ...pushListing,
     mutate: (params: {
       listingId: number
-      paymentProvider: 'VNPAY' | 'PAYPAL' | 'MOMO'
+      paymentProvider: DirectPushProvider
     }) => {
       pushListing.mutate({
         ...params,
@@ -113,7 +120,7 @@ export function usePushListingWithPayment(options?: {
     },
     mutateAsync: async (params: {
       listingId: number
-      paymentProvider: 'VNPAY' | 'PAYPAL' | 'MOMO'
+      paymentProvider: DirectPushProvider
     }) => {
       return pushListing.mutateAsync({
         ...params,

@@ -256,7 +256,6 @@
       "rejected": "Rejected",
       "archived": "Archived"
     },
-
     "rankDisplay": {
       "page": "Page {page}",
       "position": "Rank {position}"
@@ -2688,7 +2687,7 @@
           },
           "providerLabel": "Payment gateway",
           "providers": {
-            "VNPAY": "VNPay",
+            "SEPAY": "SePay",
             "ZALOPAY": "ZaloPay"
           },
           "durationLabel": "Active duration",
@@ -2752,7 +2751,8 @@
           "renewSuccess": "Listing renewed for 30 more days",
           "renewError": "Failed to renew listing",
           "copyLinkSuccess": "Listing link copied",
-          "copyLinkError": "Failed to copy listing link"
+          "copyLinkError": "Failed to copy listing link",
+          "pushRedirectingToPayment": "Redirecting to payment..."
         }
       }
     },
@@ -2972,10 +2972,39 @@
   "paymentMethodDialog": {
     "title": "Payment Method",
     "description": "Select your preferred payment method",
-    "vnpay": "VNPAY",
+    "sepay": "SePay",
     "momo": "MoMo Wallet",
     "paypal": "PayPal",
     "zalopay": "ZaloPay"
+  },
+  "sepayCheckout": {
+    "title": "Scan the VietQR to pay",
+    "description": "Use any banking app to scan the code, or transfer manually with the details below.",
+    "scanInstruction": "Open your banking app and scan the QR code below to pay.",
+    "manualInstruction": "Or transfer manually:",
+    "bank": "Bank",
+    "accountNumber": "Account number",
+    "accountName": "Account holder",
+    "amount": "Amount",
+    "transferContent": "Transfer content",
+    "transferContentWarning": "Keep the transfer content exactly as shown — it is how we match your payment.",
+    "waiting": "Waiting for payment…",
+    "copy": "Copy",
+    "copied": "Copied",
+    "qrAlt": "VietQR payment code",
+    "close": "Close",
+    "success": {
+      "title": "Payment successful!",
+      "message": "Your service has been activated."
+    },
+    "failed": {
+      "title": "Payment failed",
+      "message": "The payment could not be completed. Please try again."
+    },
+    "expired": {
+      "title": "QR code expired",
+      "message": "The payment window has closed. Please start the payment again."
+    }
   },
   "pushDetailsPage": {
     "title": "Push Packages",
@@ -3482,16 +3511,16 @@
           "bestFor": "Users paying mostly on mobile",
           "channels": "ZaloPay app, linked bank card"
         },
-        "vnpay": {
-          "shortLabel": "VNPay",
-          "badge": "Bank network",
-          "title": "Pay via VNPay",
-          "description": "Broad banking support through VNPay gateway with clear transaction references.",
-          "feature1": "Supports major domestic banking channels",
-          "feature2": "Stable flow for membership and feature purchases",
-          "feature3": "Clear transaction code for support and reconciliation",
-          "bestFor": "Users preferring bank-driven checkout",
-          "channels": "VNPay QR, ATM card, banking apps"
+        "sepay": {
+          "shortLabel": "SePay",
+          "badge": "Bank transfer",
+          "title": "Pay via SePay",
+          "description": "Scan the VietQR or transfer manually; payment is confirmed automatically the moment the bank transfer lands.",
+          "feature1": "Scan-to-pay with any VietQR-enabled banking app",
+          "feature2": "No account or card details entered on our site",
+          "feature3": "Auto-confirmed via bank webhook, no redirect needed",
+          "bestFor": "Users who prefer fast bank-transfer QR payments",
+          "channels": "VietQR, mobile banking apps, manual transfer"
         }
       },
       "howToPay": {
@@ -3745,7 +3774,7 @@
         "title": "Transaction Details",
         "amount": "Amount",
         "bank": "Bank",
-        "vnpayTxnNo": "VNPay Transaction No",
+        "vnpayTxnNo": "Transaction No",
         "errorCode": "Error Code"
       }
     },

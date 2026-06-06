@@ -26,7 +26,7 @@ function useTransactionRefFromQuery() {
   const router = useRouter()
   return useMemo(() => {
     const q = router.query
-    // Try common keys from providers (VNPAY often uses vnp_TxnRef)
+    // Try common keys from providers (e.g. transactionRef / txnRef)
     const byStd = (q.transactionRef || q.txnRef || q.txRef) as
       | string
       | undefined

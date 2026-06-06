@@ -10,7 +10,7 @@ export class RepostService {
   /**
    * Repost an expired listing — either consume membership post-quota for
    * the listing's vipType (POST_SILVER / POST_GOLD / POST_DIAMOND) or pay
-   * the per-day listing fee via VNPay.
+   * the per-day listing fee via SePay.
    */
   static async repostListing(
     request: RepostListingRequest,

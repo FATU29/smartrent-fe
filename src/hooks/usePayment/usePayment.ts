@@ -11,6 +11,7 @@ import type {
   ProviderParams,
 } from '@/api/types/payment.type'
 import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
+import { PAYMENT_STATUS, SEPAY_CONFIG } from '@/constants/payment'
 
 /**
  * Hook to create a payment
@@ -22,7 +23,7 @@ import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
  *
  * const handlePayment = async () => {
  *   const result = await createPayment.mutateAsync({
- *     provider: 'VNPAY',
+ *     provider: 'SEPAY',
  *     amount: 100000,
  *     currency: 'VND',
  *     orderInfo: 'Membership purchase'
@@ -83,6 +84,48 @@ export function useTransaction(
     refetchInterval: options?.refetchInterval,
     staleTime: 1000, // 1 second
     gcTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+/**
+ * Poll a SePay transaction until it leaves PENDING.
+ *
+ * SePay has no redirect — the only signal that the bank transfer landed is the
+ * backend webhook flipping the transaction to COMPLETED. This hook re-checks
+ * the status every `intervalMs` and automatically stops once a terminal state
+ * (COMPLETED / FAILED / CANCELLED / REFUNDED) is reached.
+ *
+ * @param txnRef - Transaction reference to poll
+ * @param options - `enabled` gates polling (e.g. only while the QR is visible)
+ */
+export function useTransactionPolling(
+  txnRef: string | undefined,
+  options?: { enabled?: boolean; intervalMs?: number },
+) {
+  const interval = options?.intervalMs ?? SEPAY_CONFIG.POLL_INTERVAL
+
+  return useQuery({
+    queryKey: ['payment', 'transaction', 'poll', txnRef],
+    queryFn: async () => {
+      if (!txnRef) return null
+
+      const response = await PaymentService.getTransaction(txnRef)
+
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to fetch transaction')
+      }
+
+      return response.data ?? null
+    },
+    enabled: !!txnRef && (options?.enabled ?? true),
+    refetchInterval: (query) => {
+      const status = query.state.data?.status
+      // Keep polling only while still PENDING.
+      if (status && status !== PAYMENT_STATUS.PENDING) return false
+      return interval
+    },
+    staleTime: 0,
+    gcTime: 60 * 1000,
   })
 }
 
@@ -168,7 +211,7 @@ export function useTransactionExists(transactionRef: string | undefined) {
  *
  * useEffect(() => {
  *   const params = new URLSearchParams(window.location.search)
- *   handleCallback.mutate({ provider: 'VNPAY', params })
+ *   handleCallback.mutate({ provider: 'SEPAY', params })
  * }, [])
  * ```
  */
@@ -343,7 +386,7 @@ export function usePaymentProviders() {
  *
  * const handlePayment = () => {
  *   initiatePayment.mutate({
- *     provider: 'VNPAY',
+ *     provider: 'SEPAY',
  *     amount: 100000,
  *     currency: 'VND',
  *     orderInfo: 'Purchase'

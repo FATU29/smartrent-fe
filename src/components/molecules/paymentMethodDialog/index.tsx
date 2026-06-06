@@ -37,13 +37,13 @@ export const PaymentMethodDialog: React.FC<PaymentMethodDialogProps> = ({
 
   const paymentMethods = [
     {
-      provider: PaymentProvider.VNPAY,
-      label: t('vnpay'),
+      provider: PaymentProvider.SEPAY,
+      label: t('sepay'),
       logo: (
         <>
           <Image
-            src='/images/vnpay-logo.png'
-            alt='VNPAY'
+            src='/images/sepay-logo.png'
+            alt='SePay'
             width={64}
             height={64}
             className='object-contain w-16 h-16 rounded-md'
@@ -52,7 +52,7 @@ export const PaymentMethodDialog: React.FC<PaymentMethodDialogProps> = ({
             as='div'
             className='hidden size-16 items-center justify-center bg-blue-600 text-white font-bold text-lg rounded-lg'
           >
-            VN
+            SP
           </Typography>
         </>
       ),

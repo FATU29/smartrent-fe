@@ -1,5 +1,6 @@
 import { Pagination } from './pagination.type'
 import { UserApi } from './user.type'
+import type { SePayProviderData } from './payment.type'
 
 export type PropertyType =
   | 'APARTMENT'
@@ -51,7 +52,7 @@ export enum POST_STATUS {
 }
 
 export enum PAYMENT_PROVIDER {
-  VNPAY = 'VNPAY',
+  SEPAY = 'SEPAY',
   MOMO = 'MOMO',
   PAYPAL = 'PAYPAL',
   ZALOPAY = 'ZALOPAY',
@@ -60,7 +61,7 @@ export enum PAYMENT_PROVIDER {
 export type PaymentProvider =
   | PAYMENT_PROVIDER.MOMO
   | PAYMENT_PROVIDER.PAYPAL
-  | PAYMENT_PROVIDER.VNPAY
+  | PAYMENT_PROVIDER.SEPAY
   | PAYMENT_PROVIDER.ZALOPAY
 
 export enum DURATIONDAYS {
@@ -364,6 +365,25 @@ export interface CreateListingRequest {
   durationDays?: DurationDays
   useMembershipQuota?: boolean
   paymentProvider?: PaymentProvider
+}
+
+/**
+ * Response from creating a listing. Carries either a created listingId (quota /
+ * free) or payment details. For SePay it also carries the VietQR + bank info.
+ */
+export interface CreateListingResponse {
+  listingId?: number | null
+  status?: string
+  paymentRequired?: boolean
+  transactionId?: string
+  amount?: number
+  paymentUrl?: string
+  message?: string
+  // SePay-only: bank-transfer QR + details (no redirect)
+  qrCodeData?: string
+  providerData?: SePayProviderData
+  expiresAt?: string
+  provider?: string
 }
 
 /**

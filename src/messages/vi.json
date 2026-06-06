@@ -256,7 +256,6 @@
       "rejected": "Bị từ chối",
       "archived": "Đã lưu trữ"
     },
-
     "rankDisplay": {
       "page": "Trang {page}",
       "position": "Đứng thứ {position}"
@@ -537,7 +536,6 @@
         "success": "Đặt lại mật khẩu thành công!",
         "error": "Đặt lại mật khẩu thất bại. Vui lòng thử lại."
       },
-
       "common": {
         "password": "Mật khẩu",
         "hidePassword": "Ẩn mật khẩu",
@@ -2689,7 +2687,7 @@
           },
           "providerLabel": "Cổng thanh toán",
           "providers": {
-            "VNPAY": "VNPay",
+            "SEPAY": "SePay",
             "ZALOPAY": "ZaloPay"
           },
           "durationLabel": "Thời gian hiển thị",
@@ -2753,7 +2751,8 @@
           "renewSuccess": "Đã gia hạn thêm 30 ngày",
           "renewError": "Không thể gia hạn tin",
           "copyLinkSuccess": "Đã sao chép link bài đăng",
-          "copyLinkError": "Không thể sao chép link bài đăng"
+          "copyLinkError": "Không thể sao chép link bài đăng",
+          "pushRedirectingToPayment": "Đang chuyển đến trang thanh toán..."
         }
       }
     },
@@ -2973,10 +2972,39 @@
   "paymentMethodDialog": {
     "title": "Phương thức thanh toán",
     "description": "Chọn phương thức thanh toán phù hợp với bạn",
-    "vnpay": "VNPAY",
+    "sepay": "SePay",
     "momo": "Ví MoMo",
     "paypal": "PayPal",
     "zalopay": "ZaloPay"
+  },
+  "sepayCheckout": {
+    "title": "Quét mã VietQR để thanh toán",
+    "description": "Dùng ứng dụng ngân hàng bất kỳ để quét mã, hoặc chuyển khoản thủ công theo thông tin bên dưới.",
+    "scanInstruction": "Mở ứng dụng ngân hàng và quét mã QR bên dưới để thanh toán.",
+    "manualInstruction": "Hoặc chuyển khoản thủ công:",
+    "bank": "Ngân hàng",
+    "accountNumber": "Số tài khoản",
+    "accountName": "Chủ tài khoản",
+    "amount": "Số tiền",
+    "transferContent": "Nội dung chuyển khoản",
+    "transferContentWarning": "Giữ nguyên nội dung chuyển khoản như hiển thị — đây là cách hệ thống đối soát giao dịch của bạn.",
+    "waiting": "Đang chờ thanh toán…",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép",
+    "qrAlt": "Mã thanh toán VietQR",
+    "close": "Đóng",
+    "success": {
+      "title": "Thanh toán thành công!",
+      "message": "Dịch vụ của bạn đã được kích hoạt."
+    },
+    "failed": {
+      "title": "Thanh toán thất bại",
+      "message": "Không thể hoàn tất thanh toán. Vui lòng thử lại."
+    },
+    "expired": {
+      "title": "Mã QR đã hết hạn",
+      "message": "Cửa sổ thanh toán đã đóng. Vui lòng thực hiện lại."
+    }
   },
   "pushDetailsPage": {
     "title": "Gói Đẩy Tin",
@@ -3424,7 +3452,7 @@
         "title": "Chi tiết Giao dịch",
         "amount": "Số tiền",
         "bank": "Ngân hàng",
-        "vnpayTxnNo": "Mã giao dịch VNPay",
+        "vnpayTxnNo": "Mã giao dịch",
         "errorCode": "Mã lỗi"
       }
     },
@@ -3595,16 +3623,16 @@
           "bestFor": "Người dùng thanh toán chủ yếu trên mobile",
           "channels": "Ứng dụng ZaloPay, thẻ liên kết ngân hàng"
         },
-        "vnpay": {
-          "shortLabel": "VNPay",
-          "badge": "Mạng lưới ngân hàng",
-          "title": "Thanh toán qua VNPay",
-          "description": "Hỗ trợ ngân hàng rộng qua cổng VNPay, dễ đối soát nhờ mã giao dịch rõ ràng.",
-          "feature1": "Hỗ trợ đa dạng kênh ngân hàng nội địa",
-          "feature2": "Luồng ổn định cho mua gói hội viên và tiện ích",
-          "feature3": "Có mã giao dịch rõ ràng để hỗ trợ và kiểm tra",
-          "bestFor": "Người dùng ưu tiên thanh toán qua ngân hàng",
-          "channels": "VNPay QR, thẻ ATM, ứng dụng ngân hàng"
+        "sepay": {
+          "shortLabel": "SePay",
+          "badge": "Chuyển khoản ngân hàng",
+          "title": "Thanh toán qua SePay",
+          "description": "Quét mã VietQR hoặc chuyển khoản thủ công; giao dịch được xác nhận tự động ngay khi tiền vào tài khoản.",
+          "feature1": "Quét mã thanh toán bằng mọi ứng dụng ngân hàng hỗ trợ VietQR",
+          "feature2": "Không cần nhập thông tin tài khoản hay thẻ trên trang của chúng tôi",
+          "feature3": "Tự động xác nhận qua webhook ngân hàng, không cần chuyển trang",
+          "bestFor": "Người dùng ưu tiên thanh toán nhanh bằng QR chuyển khoản",
+          "channels": "VietQR, ứng dụng ngân hàng, chuyển khoản thủ công"
         }
       },
       "howToPay": {

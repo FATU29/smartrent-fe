@@ -16,7 +16,13 @@ import { PaymentProvider as MembershipPaymentProvider } from '@/api/types/member
 import { PAYMENT_PROVIDER } from '@/api/types/property.type'
 import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
-import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
+import {
+  isSePayResult,
+  redirectToPayment,
+  setPendingTransactionRef,
+  toSePayInitData,
+} from '@/utils/payment'
+import { useSePayCheckout } from '@/contexts/sepayCheckout'
 import { useUpdateDraft } from '@/hooks/useListings/useUpdateDraft'
 import { useDeleteDraft } from '@/hooks/useListings/useDeleteDraft'
 import { useCreateDraft } from '@/hooks/useListings/useCreateDraft'
@@ -62,6 +68,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
   const { mutate: updateDraft, isPending: isUpdatingDraft } = useUpdateDraft()
   const { mutateAsync: deleteDraft } = useDeleteDraft()
+  const { openSePayCheckout } = useSePayCheckout()
   const { mutateAsync: createDraftAsync } = useCreateDraft()
 
   React.useEffect(() => {
@@ -120,8 +127,8 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       let paymentProvider: PAYMENT_PROVIDER | undefined
       if (selectedProvider) {
         switch (selectedProvider) {
-          case MembershipPaymentProvider.VNPAY:
-            paymentProvider = PAYMENT_PROVIDER.VNPAY
+          case MembershipPaymentProvider.SEPAY:
+            paymentProvider = PAYMENT_PROVIDER.SEPAY
             break
           case MembershipPaymentProvider.ZALOPAY:
             paymentProvider = PAYMENT_PROVIDER.ZALOPAY
@@ -146,10 +153,34 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       }
 
       // Check if payment is required
-      if (data.paymentRequired && data.paymentUrl) {
+      if (data.paymentRequired && (data.paymentUrl || isSePayResult(data))) {
         // Clear any previous payment session storage
         sessionStorage.removeItem('pendingMembership')
         sessionStorage.removeItem('pendingMembershipUpgrade')
+
+        // SePay: no redirect — render the QR and poll. The listing is created
+        // in PENDING_PAYMENT and activates once the webhook confirms.
+        if (isSePayResult(data)) {
+          setIsSubmitSuccess(true)
+          window.dispatchEvent(
+            new CustomEvent(CREATE_POST_BYPASS_DRAFT_GUARD_EVENT),
+          )
+          openSePayCheckout(toSePayInitData(data), {
+            onCompleted: async () => {
+              if (draftId) {
+                try {
+                  await deleteDraft(draftId)
+                } catch (error) {
+                  console.error('Failed to delete draft after payment:', error)
+                }
+              }
+              setSuccessTitle(t('successTitle'))
+              setSuccessDesc(t('successDescription'))
+              setSuccessOpen(true)
+            },
+          })
+          return
+        }
 
         // Redirecting to the payment gateway is a full-page navigation that
         // destroys the in-memory form state (CreatePostProvider). If the user
@@ -193,13 +224,13 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
         setPendingTransactionRef(data.transactionId)
 
-        // Redirect to payment page using safe redirect utility
-        // This preserves exact URL encoding required for VNPay signature verification
+        // Redirect to the hosted checkout (e.g. ZaloPay) using the safe
+        // redirect utility, preserving the exact URL from the backend.
         setIsSubmitSuccess(true)
         window.dispatchEvent(
           new CustomEvent(CREATE_POST_BYPASS_DRAFT_GUARD_EVENT),
         )
-        redirectToPayment(data.paymentUrl)
+        if (data.paymentUrl) redirectToPayment(data.paymentUrl)
         return
       }
 

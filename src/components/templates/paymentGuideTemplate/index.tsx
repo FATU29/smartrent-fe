@@ -27,12 +27,12 @@ import {
 
 const PAYMENT_METHODS = [
   {
-    key: 'zalopay',
-    logo: '/images/zalopay-icon.png',
+    key: 'sepay',
+    logo: '/images/sepay-logo.png',
   },
   {
-    key: 'vnpay',
-    logo: '/images/vnpay-logo.png',
+    key: 'zalopay',
+    logo: '/images/zalopay-icon.png',
   },
 ] as const
 

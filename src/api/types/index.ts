@@ -81,6 +81,7 @@ export type {
   ListingNewAddress,
   ListingAddress,
   CreateListingRequest,
+  CreateListingResponse,
   CreateVipListingRequest,
   QuotaCheckResponse,
   UpdatePriceRequest,

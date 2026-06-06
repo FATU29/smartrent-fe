@@ -32,12 +32,12 @@ import { ListingOwnerDetail, VipType } from '@/api/types'
 
 type DurationDays = 10 | 15 | 30
 type PaymentChoice = 'QUOTA' | 'DIRECT'
-type PaymentProvider = 'VNPAY' | 'ZALOPAY'
+type PaymentProvider = 'SEPAY' | 'ZALOPAY'
 type QuotaTier = 'SILVER' | 'GOLD' | 'DIAMOND'
 
 const DURATION_OPTIONS: DurationDays[] = [10, 15, 30]
 const QUOTA_DURATION_DAYS: DurationDays = 30
-const PROVIDER_OPTIONS: PaymentProvider[] = ['VNPAY', 'ZALOPAY']
+const PROVIDER_OPTIONS: PaymentProvider[] = ['SEPAY', 'ZALOPAY']
 const QUOTA_TIERS: QuotaTier[] = ['SILVER', 'GOLD', 'DIAMOND']
 
 // Mirror of BE PricingConstants — keep in sync with
@@ -173,7 +173,7 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
 
   const [duration, setDuration] = React.useState<DurationDays>(initialDuration)
   const [choice, setChoice] = React.useState<PaymentChoice | null>(null)
-  const [provider, setProvider] = React.useState<PaymentProvider>('VNPAY')
+  const [provider, setProvider] = React.useState<PaymentProvider>('SEPAY')
   const [quotaTier, setQuotaTier] = React.useState<QuotaTier | null>(null)
 
   // Re-sync state whenever a different listing opens the dialog.
@@ -181,7 +181,7 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
     if (open) {
       setDuration(initialDuration)
       setChoice(null)
-      setProvider('VNPAY')
+      setProvider('SEPAY')
       setQuotaTier(defaultQuotaTier)
     }
   }, [open, initialDuration, defaultQuotaTier])

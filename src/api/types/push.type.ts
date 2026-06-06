@@ -1,3 +1,5 @@
+import type { SePayProviderData } from './payment.type'
+
 export enum PushDetailCode {
   SINGLE_PUSH = 'SINGLE_PUSH',
   PUSH_PACKAGE_3 = 'PUSH_PACKAGE_3',
@@ -54,15 +56,20 @@ export interface TransformedPushDetail {
 export interface PushListingRequest {
   listingId: number
   useMembershipQuota: boolean // true = use quota, false = direct payment
-  paymentProvider?: 'VNPAY' | 'PAYPAL' | 'MOMO' // Required if useMembershipQuota is false
+  paymentProvider?: 'SEPAY' | 'ZALOPAY' | 'PAYPAL' | 'MOMO' // Required if useMembershipQuota is false
 }
 
 export interface PushListingResponse {
   paymentUrl?: string // Present if payment is required
   transactionRef?: string // Present if payment is required
+  transactionId?: string // BE alias for transactionRef on the push endpoint
   amount?: number // Present if payment is required
   currency?: string // Present if payment is required
   provider?: string // Present if payment is required
+  // SePay-only: bank-transfer QR + details (no redirect)
+  qrCodeData?: string
+  providerData?: SePayProviderData
+  expiresAt?: string
   message?: string // Confirmation message if quota is used
   success?: boolean // true if quota used successfully
   pushId?: number // ID of the push record
