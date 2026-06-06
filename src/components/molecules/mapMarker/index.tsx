@@ -9,7 +9,8 @@ interface MapMarkerProps {
 }
 
 interface VipStyle {
-  dot: string
+  bg: string
+  hover: string
   arrow: string
   icon: React.ReactNode
 }
@@ -22,25 +23,29 @@ const getVipStyle = (vipType: VipType): VipStyle => {
   switch (vipType) {
     case 'DIAMOND':
       return {
-        dot: 'bg-blue-600 hover:bg-blue-700',
+        bg: 'bg-blue-600',
+        hover: 'hover:bg-blue-700',
         arrow: 'border-t-blue-600',
         icon: <Sparkles size={ICON_SIZE} />,
       }
     case 'GOLD':
       return {
-        dot: 'bg-yellow-500 hover:bg-yellow-600',
+        bg: 'bg-yellow-500',
+        hover: 'hover:bg-yellow-600',
         arrow: 'border-t-yellow-500',
         icon: <Crown size={ICON_SIZE} />,
       }
     case 'SILVER':
       return {
-        dot: 'bg-gray-400 hover:bg-gray-500',
+        bg: 'bg-gray-400',
+        hover: 'hover:bg-gray-500',
         arrow: 'border-t-gray-400',
         icon: <Star size={ICON_SIZE} />,
       }
     default:
       return {
-        dot: 'bg-emerald-600 hover:bg-emerald-700',
+        bg: 'bg-emerald-600',
+        hover: 'hover:bg-emerald-700',
         arrow: 'border-t-emerald-600',
         icon: <Home size={ICON_SIZE} />,
       }
@@ -68,12 +73,19 @@ const MapMarker: React.FC<MapMarkerProps> = ({
       onClick={onClick}
       onKeyDown={handleKeyDown}
       className={`relative cursor-pointer transition-all duration-200 transform ${
-        isSelected ? 'scale-125' : 'hover:scale-110'
+        isSelected ? 'scale-125 z-50' : 'hover:scale-110'
       }`}
     >
+      {/* Pulsing halo so a focused marker is easy to spot among the others */}
+      {isSelected && (
+        <span
+          aria-hidden
+          className={`absolute left-0 top-0 h-8 w-8 rounded-full opacity-60 animate-ping ${style.bg}`}
+        />
+      )}
       <div
         className={`
-          ${style.dot}
+          relative ${style.bg} ${style.hover}
           flex items-center justify-center h-8 w-8 rounded-full
           border-2 border-white text-white shadow-lg
           ${isSelected ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
