@@ -168,7 +168,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                 <div className='pointer-events-none flex-1'>
                   <PropertyCard
                     listing={listing}
-                    className={`${isDesktopCard ? '' : 'compact '}border-0 shadow-none h-full`}
+                    className={`${isDesktopCard ? '' : 'compact '}border-0 shadow-none rounded-none h-full`}
                     imageLayout='top'
                     hideFooterDivider
                   />
