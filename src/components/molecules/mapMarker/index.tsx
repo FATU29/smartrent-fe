@@ -1,73 +1,65 @@
 import React from 'react'
 import { Badge } from '@/components/atoms/badge'
 import { formatByLocale } from '@/utils/currency/convert'
-import { VipType, LISTING_TYPE } from '@/api/types/property.type'
-import type { listingType as ListingPostType } from '@/api/types/property.type'
+import { VipType } from '@/api/types/property.type'
 import { Crown, Sparkles, Star } from 'lucide-react'
 
 interface MapMarkerProps {
   price: number
   vipType: VipType
-  listingType?: ListingPostType
   isSelected?: boolean
   onClick?: () => void
 }
 
-interface ListingTypeStyle {
+interface VipStyle {
   badge: string
   text: string
   arrow: string
+  icon: React.ReactNode
 }
 
-// Color the marker by the listing type so rent vs share posts are
-// distinguishable at a glance. The VIP tier is shown via the leading icon.
-const getListingTypeStyle = (
-  listingType?: ListingPostType,
-): ListingTypeStyle => {
-  switch (listingType) {
-    case LISTING_TYPE.SHARE:
-      return {
-        badge: 'bg-emerald-600 hover:bg-emerald-700 border-emerald-700',
-        text: 'text-white',
-        arrow: 'border-t-emerald-600',
-      }
-    case LISTING_TYPE.RENT:
+// Color the marker by VIP tier (diamond / gold / silver) so premium posts
+// stand out on the map; normal posts use the neutral card surface.
+const getVipStyle = (vipType: VipType): VipStyle => {
+  switch (vipType) {
+    case 'DIAMOND':
       return {
         badge: 'bg-blue-600 hover:bg-blue-700 border-blue-700',
         text: 'text-white',
         arrow: 'border-t-blue-600',
+        icon: <Sparkles className='h-3 w-3' />,
+      }
+    case 'GOLD':
+      return {
+        badge: 'bg-yellow-500 hover:bg-yellow-600 border-yellow-600',
+        text: 'text-white',
+        arrow: 'border-t-yellow-500',
+        icon: <Crown className='h-3 w-3' />,
+      }
+    case 'SILVER':
+      return {
+        badge: 'bg-gray-400 hover:bg-gray-500 border-gray-500',
+        text: 'text-white',
+        arrow: 'border-t-gray-400',
+        icon: <Star className='h-3 w-3' />,
       }
     default:
       return {
         badge: 'bg-card hover:bg-muted border-border',
         text: 'text-foreground',
         arrow: 'border-t-card',
+        icon: null,
       }
-  }
-}
-
-const getVipIcon = (vipType: VipType) => {
-  switch (vipType) {
-    case 'DIAMOND':
-      return <Sparkles className='h-3 w-3' />
-    case 'GOLD':
-      return <Crown className='h-3 w-3' />
-    case 'SILVER':
-      return <Star className='h-3 w-3' />
-    default:
-      return null
   }
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({
   price,
   vipType,
-  listingType,
   isSelected = false,
   onClick,
 }) => {
-  const style = getListingTypeStyle(listingType)
-  const vipIcon = getVipIcon(vipType)
+  const style = getVipStyle(vipType)
   const formattedPrice = formatByLocale(price, 'vi-VN')
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -94,7 +86,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({
           ${isSelected ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
         `}
       >
-        {vipIcon}
+        {style.icon}
         <span className='font-semibold text-xs whitespace-nowrap'>
           {formattedPrice}
         </span>

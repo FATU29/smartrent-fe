@@ -489,9 +489,9 @@ const MapContent: React.FC<MapContentProps> = ({
         </div>
       )}
 
-      {/* Mobile Selected Property Card Overlay */}
+      {/* Selected property card: bottom sheet on mobile, right-side card on desktop */}
       {selectedListing && (
-        <div className='absolute bottom-4 left-4 right-4 z-30 md:left-6 md:right-6 lg:top-6 lg:bottom-auto lg:left-auto lg:right-6 lg:w-[420px] xl:w-[460px]'>
+        <div className='absolute bottom-4 left-4 right-4 z-30 md:left-6 md:right-6 lg:top-20 lg:bottom-auto lg:left-auto lg:right-6 lg:w-[420px] xl:w-[460px]'>
           <div className='relative bg-background rounded-xl shadow-2xl border border-border/50'>
             <PropertyCard
               listing={selectedListing}
@@ -535,7 +535,6 @@ const MapContent: React.FC<MapContentProps> = ({
               <MapMarker
                 price={listing.price}
                 vipType={listing.vipType}
-                listingType={listing.listingType}
                 onClick={() => onMarkerClick(listing)}
               />
             </AdvancedMarker>
@@ -573,7 +572,6 @@ const MapContent: React.FC<MapContentProps> = ({
           <MapMarker
             price={selectedListing.price}
             vipType={selectedListing.vipType}
-            listingType={selectedListing.listingType}
             isSelected
             onClick={() => onMarkerClick(selectedListing)}
           />
