@@ -14,6 +14,7 @@ import vi from '@/messages/vi.json'
 import { Toaster } from '@/components/atoms/sonner'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { AuthDialogProvider } from '@/contexts/authDialog'
+import { SePayCheckoutProvider } from '@/contexts/sepayCheckout'
 import { fontVariables } from '@/theme/fonts'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { Query } from '@tanstack/react-query'
@@ -119,10 +120,12 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
           <ThemeDataProvider>
             <AuthProvider>
               <AuthDialogProvider>
-                <AuthRouteGate />
-                {getLayout(<Component {...pageProps} />)}
-                <Toaster />
-                {showChatWidget && <AiChatWidget position='bottom-right' />}
+                <SePayCheckoutProvider>
+                  <AuthRouteGate />
+                  {getLayout(<Component {...pageProps} />)}
+                  <Toaster />
+                  {showChatWidget && <AiChatWidget position='bottom-right' />}
+                </SePayCheckoutProvider>
               </AuthDialogProvider>
             </AuthProvider>
           </ThemeDataProvider>

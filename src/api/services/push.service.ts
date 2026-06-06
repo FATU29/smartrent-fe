@@ -95,7 +95,7 @@ export class PushService {
    * const response = await PushService.pushListing({
    *   listingId: 123,
    *   useMembershipQuota: false,
-   *   paymentProvider: 'VNPAY'
+   *   paymentProvider: 'SEPAY'
    * })
    * if (response.data.paymentUrl) {
    *   window.location.href = response.data.paymentUrl

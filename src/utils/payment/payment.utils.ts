@@ -2,18 +2,75 @@
  * General payment utility functions
  */
 
-import type { PaymentProvider } from '@/api/types/payment.type'
+import type {
+  PaymentProvider,
+  SePayInitiationData,
+  SePayProviderData,
+} from '@/api/types/payment.type'
 
 export const PENDING_TRANSACTION_REF_KEY = 'pendingTransactionRef'
 
 /**
- * Redirect to payment URL preserving exact URL encoding.
+ * Loose shape of an initiate-purchase response across all flows (membership,
+ * upgrade, push, repost, listing). Field names vary slightly between endpoints
+ * (`transactionRef` vs `transactionId`), so this accepts both.
+ */
+export interface SePayResultLike {
+  provider?: string | null
+  transactionRef?: string | null
+  transactionId?: string | null
+  amount?: number | null
+  currency?: string | null
+  // Some endpoints type this as `string | null` (e.g. a free upgrade).
+  paymentUrl?: string | null
+  qrCodeData?: string | null
+  providerData?: SePayProviderData
+  expiresAt?: string | null
+}
+
+/**
+ * Whether an initiate-purchase response should be handled as a SePay bank
+ * transfer (render the QR + poll) rather than a redirect to a hosted checkout.
+ */
+export function isSePayResult(result?: SePayResultLike | null): boolean {
+  if (!result) return false
+  if (
+    typeof result.provider === 'string' &&
+    result.provider.toUpperCase() === 'SEPAY'
+  ) {
+    return true
+  }
+  return !!result.qrCodeData || !!result.providerData
+}
+
+/**
+ * Normalise any initiate-purchase response into the shape the SePay checkout
+ * dialog consumes, reconciling the `transactionRef` / `transactionId` and
+ * `paymentUrl` / `qrCodeData` / `providerData.qrUrl` aliases.
+ */
+export function toSePayInitData(result: SePayResultLike): SePayInitiationData {
+  const qr =
+    result.qrCodeData ||
+    result.paymentUrl ||
+    result.providerData?.qrUrl ||
+    undefined
+  return {
+    transactionRef: result.transactionRef || result.transactionId || '',
+    provider: result.provider ?? undefined,
+    amount: result.amount ?? result.providerData?.amount,
+    currency: result.currency ?? undefined,
+    paymentUrl: qr,
+    qrCodeData: qr,
+    providerData: result.providerData,
+    expiresAt: result.expiresAt ?? undefined,
+  }
+}
+
+/**
+ * Redirect to a hosted-checkout payment URL preserving exact URL encoding.
  *
- * CRITICAL FOR VNPAY: VNPay calculates signatures based on the exact URL-encoded query string.
- * The backend generates the URL with specific encoding (e.g., spaces as '+', special chars as %XX).
- * If the browser re-encodes the URL differently, the signature becomes invalid ("sai chữ ký").
- *
- * This function uses an anchor element click to navigate, which preserves the URL exactly as-is.
+ * Used for redirect providers (e.g. ZaloPay) whose signed URLs must not be
+ * re-encoded. SePay does NOT use this — it renders a VietQR and polls instead.
  *
  * @param paymentUrl - Payment URL to redirect to (must be the exact URL from backend)
  * @param newWindow - Whether to open in new window (default: false)
@@ -148,7 +205,7 @@ export function comparePaymentUrls(
  */
 export function getPaymentProviderName(provider: string): string {
   const providerNames: Record<string, string> = {
-    VNPAY: 'VNPay',
+    SEPAY: 'SePay',
     PAYPAL: 'PayPal',
     MOMO: 'MoMo',
     ZALOPAY: 'ZaloPay',
@@ -294,7 +351,7 @@ export function parseQueryParams(search: string): Record<string, string> {
  */
 export function isPaymentProviderSupported(provider: string): boolean {
   const supportedProviders: PaymentProvider[] = [
-    'VNPAY',
+    'SEPAY',
     'PAYPAL',
     'MOMO',
     'ZALOPAY',
@@ -329,17 +386,10 @@ export function extractTransactionRef(
     return (
       params.get('transactionRef') ||
       params.get('txnRef') ||
-      params.get('vnp_TxnRef') ||
       params.get('txRef') ||
       null
     )
   }
 
-  return (
-    params.transactionRef ||
-    params.txnRef ||
-    params.vnp_TxnRef ||
-    params.txRef ||
-    null
-  )
+  return params.transactionRef || params.txnRef || params.txRef || null
 }

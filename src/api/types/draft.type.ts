@@ -14,6 +14,7 @@ import {
   listingType,
   PriceType,
 } from './property.type'
+import type { SePayProviderData } from './payment.type'
 
 /**
  * Request DTO for creating/updating draft listings
@@ -161,7 +162,7 @@ export interface PublishDraftRequest extends Partial<DraftListingRequest> {
   // Option 2: Direct payment
   vipType?: 'SILVER' | 'GOLD' | 'DIAMOND'
   durationDays?: number
-  paymentProvider?: 'VNPAY' | 'MOMO' | 'PAYPAL' | 'ZALOPAY'
+  paymentProvider?: 'SEPAY' | 'MOMO' | 'PAYPAL' | 'ZALOPAY'
 }
 
 /**
@@ -178,7 +179,13 @@ export interface PublishDraftResponse {
 
   // Payment required case
   transactionId?: string
+  paymentRequired?: boolean
   paymentUrl?: string
   amount?: number
   message?: string
+  // SePay-only: bank-transfer QR + details (no redirect)
+  qrCodeData?: string
+  providerData?: SePayProviderData
+  expiresAt?: string
+  provider?: string
 }

@@ -30,7 +30,7 @@ import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
  * const handlePurchase = () => {
  *   purchaseMembership.mutate({
  *     membershipId: 2,
- *     paymentProvider: 'VNPAY',
+ *     paymentProvider: 'SEPAY',
  *     userId: user.id
  *   })
  * }
@@ -111,7 +111,7 @@ export function useMembershipPurchase(options?: {
  * const handlePurchase = async () => {
  *   const result = await initiatePurchase.mutateAsync({
  *     membershipId: 2,
- *     paymentProvider: 'VNPAY',
+ *     paymentProvider: 'SEPAY',
  *     userId: user.id
  *   })
  *

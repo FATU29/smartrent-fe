@@ -6,7 +6,7 @@
  * Payment providers supported by the application
  */
 export const PAYMENT_PROVIDERS = {
-  VNPAY: 'VNPAY',
+  SEPAY: 'SEPAY',
   PAYPAL: 'PAYPAL',
   MOMO: 'MOMO',
   ZALOPAY: 'ZALOPAY',
@@ -42,7 +42,7 @@ export const TERMINAL_PAYMENT_STATUSES: PaymentStatusKey[] = [
  */
 export const PAYMENT_CONFIG = {
   DEFAULT_CURRENCY: 'VND',
-  DEFAULT_PROVIDER: 'VNPAY',
+  DEFAULT_PROVIDER: 'SEPAY',
   DEFAULT_RETURN_URL: '/payment/result',
   DEFAULT_CANCEL_URL: '/payment/cancelled',
   POLL_INTERVAL: 2000, // 2 seconds
@@ -52,20 +52,15 @@ export const PAYMENT_CONFIG = {
 } as const
 
 /**
- * VNPay specific constants
+ * SePay (VietQR bank-transfer) specific constants.
+ * SePay confirms payment via a backend webhook only — the frontend renders the
+ * QR and polls the transaction status until it flips to COMPLETED.
  */
-export const VNPAY_CONFIG = {
-  PARAM_PREFIX: 'vnp_',
-  REQUIRED_PARAMS: [
-    'vnp_TxnRef',
-    'vnp_Amount',
-    'vnp_ResponseCode',
-    'vnp_TransactionStatus',
-    'vnp_SecureHash',
-  ],
-  SUCCESS_CODE: '00',
-  CANCELLED_CODE: '24',
-  AMOUNT_MULTIPLIER: 100, // VNPay sends amount * 100
+export const SEPAY_CONFIG = {
+  // How often the QR screen re-checks the transaction status (ms).
+  POLL_INTERVAL: 3000,
+  // Fallback QR-window length used only if the API omits `expiresAt` (ms).
+  DEFAULT_EXPIRY_MS: 15 * 60 * 1000,
 } as const
 
 /**
@@ -117,7 +112,7 @@ export type TransactionTypeKey = keyof typeof TRANSACTION_TYPES
  * Payment method display names
  */
 export const PAYMENT_METHOD_NAMES: Record<string, string> = {
-  VNPAY: 'VNPay',
+  SEPAY: 'SePay',
   PAYPAL: 'PayPal',
   MOMO: 'MoMo',
   ZALOPAY: 'ZaloPay',

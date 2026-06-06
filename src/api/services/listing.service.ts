@@ -11,6 +11,7 @@ import { PATHS } from '@/api/paths'
 import { AxiosInstance, isAxiosError } from 'axios'
 import {
   CreateListingRequest,
+  CreateListingResponse,
   CreateVipListingRequest,
   DraftListingRequest,
   DraftListingResponse,
@@ -108,26 +109,10 @@ export class ListingService {
    * @param data - Listing creation request
    * @returns Response with listingId if no payment required, or paymentUrl if payment needed
    */
-  static async create(data: CreateListingRequest): Promise<
-    ApiResponse<{
-      listingId?: number | null
-      status?: string
-      paymentRequired?: boolean
-      transactionId?: string
-      amount?: number
-      paymentUrl?: string
-      message?: string
-    }>
-  > {
-    return apiRequest<{
-      listingId?: number | null
-      status?: string
-      paymentRequired?: boolean
-      transactionId?: string
-      amount?: number
-      paymentUrl?: string
-      message?: string
-    }>({
+  static async create(
+    data: CreateListingRequest,
+  ): Promise<ApiResponse<CreateListingResponse>> {
+    return apiRequest<CreateListingResponse>({
       method: 'POST',
       url: PATHS.LISTING.CREATE,
       data,
