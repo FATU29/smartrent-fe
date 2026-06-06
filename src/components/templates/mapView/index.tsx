@@ -385,10 +385,13 @@ const MapContent: React.FC<MapContentProps> = ({
     handleMapChange()
   }, [handleMapChange])
 
-  // Setup bounds listener
+  // Report the viewport on `idle` (fires once when the map stops moving)
+  // rather than on `bounds_changed` (fires on every frame while panning).
+  // This avoids re-rendering the whole map/sidebar on each drag frame, which
+  // is what made light panning feel laggy.
   useEffect(() => {
     if (!map) return
-    const listener = map.addListener('bounds_changed', handleMapChange)
+    const listener = map.addListener('idle', handleMapChange)
     return () => {
       if (listener?.remove) {
         listener.remove()
