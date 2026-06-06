@@ -93,6 +93,7 @@ export function mapFrontendToBackendRequest(
     categoryId: frontendFilter?.categoryId,
     vipType: frontendFilter?.vipType,
     productType: frontendFilter?.productType,
+    listingType: frontendFilter?.listingType,
     price: toRangeString(frontendFilter?.minPrice, frontendFilter?.maxPrice),
     area: toRangeString(frontendFilter?.minArea, frontendFilter?.maxArea),
     bedroomsRange: toRangeString(

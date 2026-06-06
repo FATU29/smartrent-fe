@@ -2,7 +2,13 @@ import { Pagination } from './pagination.type'
 import { UserApi } from './user.type'
 import type { SePayProviderData } from './payment.type'
 
-export type PropertyType = 'APARTMENT' | 'HOUSE' | 'ROOM' | 'STUDIO'
+export type PropertyType =
+  | 'APARTMENT'
+  | 'HOUSE'
+  | 'ROOM'
+  | 'STUDIO'
+  | 'OFFICE'
+  | 'STORE'
 export type VipType = 'NORMAL' | 'SILVER' | 'GOLD' | 'DIAMOND'
 export type PriceUnit = 'MONTH' | 'YEAR' | 'DAY'
 export enum PRICE_UNIT {
@@ -513,6 +519,7 @@ export interface ListingFilterRequest {
   categoryId?: number
   vipType?: VipType
   productType?: PropertyType
+  listingType?: listingType
 
   minPrice?: number
   maxPrice?: number
@@ -573,6 +580,7 @@ export interface ListingSearchApiRequest {
   categoryId?: number
   vipType?: VipType
   productType?: PropertyType
+  listingType?: listingType
 
   // Range filters are single `from..to` strings. Either side may be empty:
   // "5000000..15000000", "5000000..", "..15000000".

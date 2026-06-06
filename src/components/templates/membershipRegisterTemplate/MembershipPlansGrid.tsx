@@ -20,6 +20,8 @@ interface MembershipPlansGridProps {
   readonly loading?: boolean
   readonly memberships?: readonly Membership[]
   readonly onPlanSelect?: (membershipId: number) => void
+  /** Forwarded to each card; set false to hide the buy CTA (e.g. pricing guide). */
+  readonly showCta?: boolean
 }
 
 const SKELETON_COUNT = 3
@@ -28,6 +30,7 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
   loading = false,
   memberships = [],
   onPlanSelect,
+  showCta = true,
 }) => {
   const tPage = useTranslations('membershipPage')
   const isMobile = useMediaQuery(MEDIA_BELOW_MD)
@@ -95,6 +98,7 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
                 <div className='h-full'>
                   <PricingPlanCard
                     membership={plan}
+                    showCta={showCta}
                     onSelect={() => handlePlanSelect(plan.membershipId)}
                   />
                 </div>
@@ -146,6 +150,7 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
         >
           <PricingPlanCard
             membership={plan}
+            showCta={showCta}
             onSelect={() => handlePlanSelect(plan.membershipId)}
           />
         </motion.div>

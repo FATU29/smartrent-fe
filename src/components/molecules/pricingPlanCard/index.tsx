@@ -74,6 +74,9 @@ export interface PricingPlanCardProps {
   readonly headingId?: string
   readonly interactive?: boolean
   readonly compact?: boolean
+  /** Show the call-to-action button. Hidden e.g. on the pricing guide page
+   *  where cards are informational only. Defaults to true. */
+  readonly showCta?: boolean
 }
 
 const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
@@ -85,6 +88,7 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
   headingId,
   interactive = true,
   compact = false,
+  showCta = true,
 }) => {
   const t = useTranslations('pricing')
   const { language } = useSwitchLanguage()
@@ -149,15 +153,17 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
         <CardContent>
           <PricingFeatures benefits={membership.benefits} compact={compact} />
         </CardContent>
-        <CardFooter className={cn('mt-auto', compact ? 'pt-3' : 'pt-6')}>
-          <Button
-            className={getButtonStyles(compact)}
-            onClick={onSelect}
-            aria-label={resolvedCta}
-          >
-            {resolvedCta}
-          </Button>
-        </CardFooter>
+        {showCta && (
+          <CardFooter className={cn('mt-auto', compact ? 'pt-3' : 'pt-6')}>
+            <Button
+              className={getButtonStyles(compact)}
+              onClick={onSelect}
+              aria-label={resolvedCta}
+            >
+              {resolvedCta}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </motion.div>
   )

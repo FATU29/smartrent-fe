@@ -31,8 +31,8 @@ import type {
   FURNISHING,
   PriceType,
   PriceUnit,
-  PropertyType,
 } from '@/api/types/property.type'
+import { LISTING_TYPE } from '@/api/types/property.type'
 import { useLocationContext } from '@/contexts/location'
 import {
   getInteriorConditionOptions,
@@ -41,9 +41,10 @@ import {
   getDirectionOptions,
   getAmenityItems,
   getPriceUnitOptions,
-  getPropertyTypeOptions,
+  getListingTypeOptions,
   getCategoryOptions,
   getToneOptions,
+  deriveProductTypeFromCategory,
 } from './index.helper'
 import { getAmenityByCode, AMENITIES_CONFIG } from '@/constants/amenities'
 import { useCategories } from '@/hooks/useCategories'
@@ -123,6 +124,26 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
     amenityIds,
   } = propertyInfo
 
+  // Category drives productType: a category already encodes the property kind
+  // (its `icon`), so we derive and lock "Loại BĐS" to keep the two fields in
+  // sync. Commercial categories (office/store) have no residential
+  // PropertyType, so the field stays editable as a fallback.
+  const selectedCategory = React.useMemo(
+    () => categories.find((c) => c.categoryId === categoryId),
+    [categories, categoryId],
+  )
+  const derivedProductType = React.useMemo(
+    () => deriveProductTypeFromCategory(selectedCategory),
+    [selectedCategory],
+  )
+
+  React.useEffect(() => {
+    if (derivedProductType && derivedProductType !== productType) {
+      updatePropertyInfo({ productType: derivedProductType })
+      setValue('productType', derivedProductType, { shouldValidate: true })
+    }
+  }, [derivedProductType, productType, updatePropertyInfo, setValue])
+
   const [titleInput, setTitleInput] = React.useState<string>(title || '')
   const [descriptionInput, setDescriptionInput] = React.useState<string>(
     description || '',
@@ -195,6 +216,11 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
   React.useEffect(() => {
     const shouldValidate = !isInitialMount.current
 
+    if (propertyInfo?.listingType) {
+      setValue('listingType', propertyInfo?.listingType, {
+        shouldValidate,
+      })
+    }
     if (propertyInfo?.categoryId) {
       setValue('categoryId', propertyInfo?.categoryId, {
         shouldValidate,
@@ -505,7 +531,44 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent className='space-y-6'>
-            {/* Category Type */}
+            {/* Listing Intent (Nhu cầu) — orthogonal to property kind */}
+            <Controller
+              name='listingType'
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <div className='space-y-2'>
+                  <SelectDropdown
+                    label={
+                      <>
+                        {tDetails('listingTypeLabel')}
+                        <span className='text-destructive ml-1'>*</span>
+                      </>
+                    }
+                    value={field.value ?? propertyInfo.listingType}
+                    onValueChange={(value) => {
+                      const next =
+                        value === LISTING_TYPE.SHARE
+                          ? LISTING_TYPE.SHARE
+                          : LISTING_TYPE.RENT
+                      field.onChange(next)
+                      updatePropertyInfo({ listingType: next })
+                      trigger('listingType')
+                    }}
+                    placeholder={tPlaceholders('selectListingType')}
+                    options={getListingTypeOptions(tDetails)}
+                    error={
+                      error?.message
+                        ? tValidation(getValidationKey(error.message))
+                        : undefined
+                    }
+                  />
+                </div>
+              )}
+            />
+            {/* Property Kind (Loại BĐS). The category already encodes the
+                property kind, so it is the single source of truth here and
+                `productType` is derived from it (see effect above) — no
+                separate, contradictable selector. */}
             <Controller
               name='categoryId'
               control={control}
@@ -528,39 +591,6 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                     }}
                     placeholder={tPlaceholders('selectCategoryType')}
                     options={getCategoryOptions(tCommon, categories)}
-                    error={
-                      error?.message
-                        ? tValidation(getValidationKey(error.message))
-                        : undefined
-                    }
-                  />
-                </div>
-              )}
-            />
-            {/* Property Type */}
-            <Controller
-              name='productType'
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <div className='space-y-2'>
-                  <SelectDropdown
-                    label={
-                      <>
-                        {tDetails('propertyType')}
-                        <span className='text-destructive ml-1'>*</span>
-                      </>
-                    }
-                    value={(field.value ?? productType)?.toLowerCase()}
-                    onValueChange={(value) => {
-                      const upperValue = value.toUpperCase() as PropertyType
-                      field.onChange(upperValue)
-                      updatePropertyInfo({
-                        productType: upperValue,
-                      })
-                      trigger('productType')
-                    }}
-                    placeholder={tPlaceholders('selectPropertyType')}
-                    options={getPropertyTypeOptions(tDetails)}
                     error={
                       error?.message
                         ? tValidation(getValidationKey(error.message))
@@ -927,7 +957,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                 <CheckCircle className='w-4 h-4 text-green-500' />
                 {tValuation('propertyInfo.amenities')}
               </label>
-              <div className='max-h-[400px] overflow-y-auto overflow-x-hidden pr-2'>
+              <div>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3'>
                   {getAmenityItems(t).map((amenity) => {
                     const amenityConfig = getAmenityByCode(amenity.key)

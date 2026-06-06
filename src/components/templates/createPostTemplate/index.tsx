@@ -25,6 +25,7 @@ import {
 import { useSePayCheckout } from '@/contexts/sepayCheckout'
 import { useUpdateDraft } from '@/hooks/useListings/useUpdateDraft'
 import { useDeleteDraft } from '@/hooks/useListings/useDeleteDraft'
+import { useCreateDraft } from '@/hooks/useListings/useCreateDraft'
 
 interface CreatePostTemplateProps {
   className?: string
@@ -68,6 +69,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const { mutate: updateDraft, isPending: isUpdatingDraft } = useUpdateDraft()
   const { mutateAsync: deleteDraft } = useDeleteDraft()
   const { openSePayCheckout } = useSePayCheckout()
+  const { mutateAsync: createDraftAsync } = useCreateDraft()
 
   React.useEffect(() => {
     if (draftId && propertyInfo && Object.keys(propertyInfo).length > 1) {
@@ -180,6 +182,32 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           return
         }
 
+        // Redirecting to the payment gateway is a full-page navigation that
+        // destroys the in-memory form state (CreatePostProvider). If the user
+        // abandons or fails the payment, the form would otherwise be lost.
+        // Persist the listing content as a DB draft first so it can be
+        // recovered via /seller/create-post?draftId=... on return.
+        // When already editing an existing draft, reuse it instead of creating
+        // a duplicate.
+        let recoverableDraftId: string | number | null = draftId || null
+        if (!recoverableDraftId) {
+          try {
+            const draftResponse = await createDraftAsync({
+              ...propertyInfo,
+              isDraft: true,
+            })
+            if (draftResponse.success && draftResponse.data) {
+              recoverableDraftId = draftResponse.data.listingId
+            }
+          } catch (draftError) {
+            // Non-fatal: payment can still proceed, only recovery is unavailable.
+            console.error(
+              'Failed to auto-save draft before payment redirect:',
+              draftError,
+            )
+          }
+        }
+
         // Store listing info in session storage for tracking after payment callback
         const listingPaymentInfo = {
           title: propertyInfo?.title,
@@ -187,7 +215,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           durationDays: propertyInfo?.durationDays,
           transactionId: data.transactionId,
           transactionType: 'POST_FEE',
-          draftId: draftId || null, // Store draftId to delete after successful payment
+          draftId: recoverableDraftId, // Used to recover on failure / delete on success
         }
         sessionStorage.setItem(
           'pendingListingCreation',

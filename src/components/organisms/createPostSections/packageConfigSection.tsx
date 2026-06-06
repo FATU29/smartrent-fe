@@ -17,6 +17,7 @@ import {
 } from '@/components/atoms/card'
 import { Label } from '@/components/atoms/label'
 import { Typography } from '@/components/atoms/typography'
+import { FileText, Medal, Crown, Gem, type LucideIcon } from 'lucide-react'
 import {
   Calendar,
   Tag,
@@ -37,11 +38,13 @@ interface DurationOption {
   price: number
 }
 
-const TIER_ICONS: Record<string, string> = {
-  NORMAL: '📄',
-  SILVER: '🥈',
-  GOLD: '🥇',
-  DIAMOND: '💎',
+// Tiered line icons (lucide) instead of emoji — cleaner and on-brand with the
+// rest of the app's icon set. Rendered white on the tier gradient.
+const TIER_ICONS: Record<string, LucideIcon> = {
+  NORMAL: FileText,
+  SILVER: Medal,
+  GOLD: Crown,
+  DIAMOND: Gem,
 }
 
 const TIER_BACKGROUNDS: Record<string, string> = {
@@ -378,9 +381,11 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                     TIER_BACKGROUNDS[tier.tierCode] || TIER_BACKGROUNDS.NORMAL,
                   )}
                 >
-                  <Typography as='span' variant='h4' className='leading-none'>
-                    {TIER_ICONS[tier.tierCode] || TIER_ICONS.NORMAL}
-                  </Typography>
+                  {(() => {
+                    const TierIcon =
+                      TIER_ICONS[tier.tierCode] || TIER_ICONS.NORMAL
+                    return <TierIcon className='w-6 h-6 text-white' />
+                  })()}
                 </Card>
                 <Typography
                   variant='h4'
