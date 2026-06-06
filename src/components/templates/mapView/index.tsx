@@ -41,10 +41,12 @@ const MAP_LISTINGS_LIMIT = 200
 const MIN_LISTING_FETCH_ZOOM = 11
 const MAP_BOUNDS_COORDINATE_PRECISION = 4
 const PROGRAMMATIC_PAN_SUPPRESS_MS = 600
-// Marker clustering: listings whose pins fall within this pixel radius of each
-// other are merged into one cluster bubble so adjacent posts never hide each
-// other. The grid size is derived from the Web Mercator tile size and zoom.
-const CLUSTER_PIXEL_RADIUS = 56
+// Marker clustering: only pins that sit within this pixel radius of each other
+// (i.e. genuinely stacked) are merged into a cluster bubble. Kept small so that
+// in normal browsing the markers stay individual — clickable and color-coded —
+// and only fully-overlapping pins collapse. Grid size derives from the Web
+// Mercator tile size and zoom.
+const CLUSTER_PIXEL_RADIUS = 24
 const WORLD_TILE_SIZE = 256
 const CLUSTER_EXPAND_ZOOM_STEP = 2
 const MAX_CLUSTER_EXPAND_ZOOM = 18
