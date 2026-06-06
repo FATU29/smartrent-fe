@@ -459,7 +459,6 @@ const MapContent: React.FC<MapContentProps> = ({
             }}
           >
             <MapMarker
-              price={listing.price}
               vipType={listing.vipType}
               isSelected={isSelected}
               onClick={() => onMarkerClick(listing)}
