@@ -1,69 +1,58 @@
 import React from 'react'
-import { Badge } from '@/components/atoms/badge'
-import { formatByLocale } from '@/utils/currency/convert'
 import { VipType } from '@/api/types/property.type'
-import { Crown, Sparkles, Star } from 'lucide-react'
+import { Crown, Sparkles, Star, Home } from 'lucide-react'
 
 interface MapMarkerProps {
-  price: number
   vipType: VipType
   isSelected?: boolean
   onClick?: () => void
 }
 
 interface VipStyle {
-  badge: string
-  text: string
+  dot: string
   arrow: string
   icon: React.ReactNode
 }
 
-// Color the marker by VIP tier (diamond / gold / silver) so premium posts
-// stand out on the map; normal posts use the neutral card surface.
+const ICON_SIZE = 14
+
+// Each marker is just a coloured icon pin (no price/label). Colour and icon
+// encode the VIP tier so posts are distinguishable at a glance.
 const getVipStyle = (vipType: VipType): VipStyle => {
   switch (vipType) {
     case 'DIAMOND':
       return {
-        badge: 'bg-blue-600 hover:bg-blue-700 border-blue-700',
-        text: 'text-white',
+        dot: 'bg-blue-600 hover:bg-blue-700',
         arrow: 'border-t-blue-600',
-        icon: <Sparkles className='h-3 w-3' />,
+        icon: <Sparkles size={ICON_SIZE} />,
       }
     case 'GOLD':
       return {
-        badge: 'bg-yellow-500 hover:bg-yellow-600 border-yellow-600',
-        text: 'text-white',
+        dot: 'bg-yellow-500 hover:bg-yellow-600',
         arrow: 'border-t-yellow-500',
-        icon: <Crown className='h-3 w-3' />,
+        icon: <Crown size={ICON_SIZE} />,
       }
     case 'SILVER':
       return {
-        badge: 'bg-gray-400 hover:bg-gray-500 border-gray-500',
-        text: 'text-white',
+        dot: 'bg-gray-400 hover:bg-gray-500',
         arrow: 'border-t-gray-400',
-        icon: <Star className='h-3 w-3' />,
+        icon: <Star size={ICON_SIZE} />,
       }
     default:
-      // Normal (non-VIP) posts are the majority, so give them a solid, visible
-      // colour instead of the neutral card surface, otherwise the markers blend
-      // into the map and look colourless.
       return {
-        badge: 'bg-emerald-600 hover:bg-emerald-700 border-emerald-700',
-        text: 'text-white',
+        dot: 'bg-emerald-600 hover:bg-emerald-700',
         arrow: 'border-t-emerald-600',
-        icon: null,
+        icon: <Home size={ICON_SIZE} />,
       }
   }
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({
-  price,
   vipType,
   isSelected = false,
   onClick,
 }) => {
   const style = getVipStyle(vipType)
-  const formattedPrice = formatByLocale(price, 'vi-VN')
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if ((event.key === 'Enter' || event.key === ' ') && onClick) {
@@ -79,21 +68,19 @@ const MapMarker: React.FC<MapMarkerProps> = ({
       onClick={onClick}
       onKeyDown={handleKeyDown}
       className={`relative cursor-pointer transition-all duration-200 transform ${
-        isSelected ? 'scale-110' : 'hover:scale-105'
+        isSelected ? 'scale-125' : 'hover:scale-110'
       }`}
     >
-      <Badge
+      <div
         className={`
-          ${style.badge} ${style.text}
-          border-2 shadow-lg flex items-center gap-1 px-2 py-1
+          ${style.dot}
+          flex items-center justify-center h-8 w-8 rounded-full
+          border-2 border-white text-white shadow-lg
           ${isSelected ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
         `}
       >
         {style.icon}
-        <span className='font-semibold text-xs whitespace-nowrap'>
-          {formattedPrice}
-        </span>
-      </Badge>
+      </div>
       {/* Arrow pointing down */}
       <div
         className={`
