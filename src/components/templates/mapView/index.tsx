@@ -451,7 +451,12 @@ const MapContent: React.FC<MapContentProps> = ({
               lng: listing.address.longitude,
             }}
             zIndex={isSelected ? SELECTED_MARKER_Z_INDEX : undefined}
-            onClick={() => onMarkerClick(listing)}
+            onClick={(event) => {
+              // Stop the event so the map's own onClick (which closes the card)
+              // does not also fire and immediately clear the selection.
+              event.stop()
+              onMarkerClick(listing)
+            }}
           >
             <MapMarker
               price={listing.price}
