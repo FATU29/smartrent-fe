@@ -18,6 +18,7 @@ import {
   ChevronsRight,
   X,
   LocateFixed,
+  MapPin,
 } from 'lucide-react'
 import { ENV } from '@/constants/env'
 import { useLocationContext } from '@/contexts/location'
@@ -150,7 +151,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                 key={listing.listingId}
                 role='button'
                 tabIndex={0}
-                className={`flex flex-col h-full cursor-pointer transition-all duration-200 rounded-xl border bg-card overflow-hidden ${
+                className={`relative flex flex-col h-full cursor-pointer transition-all duration-200 rounded-xl border bg-card overflow-hidden ${
                   isSelected
                     ? 'border-primary ring-2 ring-primary/20 shadow-md'
                     : 'border-border/50 hover:border-primary/50 hover:shadow-sm'
@@ -163,6 +164,21 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                   }
                 }}
               >
+                {/* Focus this listing's marker on the map (pan + open card + animate) */}
+                <Button
+                  type='button'
+                  size='icon'
+                  variant='secondary'
+                  className='absolute top-2 right-2 z-10 h-8 w-8 rounded-full shadow-md pointer-events-auto'
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onSelectListing(listing)
+                  }}
+                  aria-label={t('showOnMap')}
+                >
+                  <MapPin className='h-4 w-4' />
+                </Button>
+
                 {/* Ensure standard click won't bubble up improperly from PropertyCard */}
                 <div className='pointer-events-none flex-1'>
                   <PropertyCard
