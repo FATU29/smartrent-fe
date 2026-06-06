@@ -47,9 +47,6 @@ interface PropertyCardProps {
   className?: string
   bottomContent?: React.ReactNode
   imageLayout?: 'left' | 'top'
-  // Hide the divider line above the agent/footer section (used where the card
-  // sits inside another bordered container, e.g. the map listings drawer).
-  hideFooterDivider?: boolean
 }
 
 // Stats pill component for consistent styling
@@ -82,7 +79,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     className,
     bottomContent,
     imageLayout = 'left',
-    hideFooterDivider = false,
   } = props
 
   const {
@@ -711,12 +707,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
           {/* User Info & Post Date Footer */}
           {user && (
-            <div
-              className={classNames(
-                'flex items-center justify-between gap-2 mt-auto pt-2.5',
-                { 'border-t border-border/60': !hideFooterDivider },
-              )}
-            >
+            <div className='flex items-center justify-between gap-2 mt-auto pt-2.5 border-t border-border/60'>
               <div className='flex items-center gap-2 flex-1 min-w-0'>
                 <BrokerAvatar
                   avatarUrl={user.avatarUrl}
