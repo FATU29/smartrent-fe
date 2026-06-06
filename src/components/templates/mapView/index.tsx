@@ -170,6 +170,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                     listing={listing}
                     className={`${isDesktopCard ? '' : 'compact '}border-0 shadow-none h-full`}
                     imageLayout='top'
+                    hideFooterDivider
                   />
                 </div>
 
