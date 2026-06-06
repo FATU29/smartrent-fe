@@ -24,7 +24,6 @@ import { useLocationContext } from '@/contexts/location'
 import { buildApartmentDetailRoute } from '@/constants/route'
 import { ListingDetail, VipType } from '@/api/types/property.type'
 import MapMarker from '@/components/molecules/mapMarker'
-import MapCluster from '@/components/molecules/mapCluster'
 import PropertyCard from '@/components/molecules/propertyCard'
 import { ListingService } from '@/api/services/listing.service'
 import { Typography } from '@/components/atoms/typography'
@@ -41,15 +40,8 @@ const MAP_LISTINGS_LIMIT = 200
 const MIN_LISTING_FETCH_ZOOM = 11
 const MAP_BOUNDS_COORDINATE_PRECISION = 4
 const PROGRAMMATIC_PAN_SUPPRESS_MS = 600
-// Marker clustering: only pins that sit within this pixel radius of each other
-// (i.e. genuinely stacked) are merged into a cluster bubble. Kept small so that
-// in normal browsing the markers stay individual — clickable and color-coded —
-// and only fully-overlapping pins collapse. Grid size derives from the Web
-// Mercator tile size and zoom.
-const CLUSTER_PIXEL_RADIUS = 24
-const WORLD_TILE_SIZE = 256
-const CLUSTER_EXPAND_ZOOM_STEP = 2
-const MAX_CLUSTER_EXPAND_ZOOM = 18
+// Selected marker is lifted above the others so it is never hidden when pins
+// overlap.
 const SELECTED_MARKER_Z_INDEX = 9999
 
 interface MapViewport {
@@ -76,51 +68,6 @@ const normalizeViewport = (viewport: MapViewport): MapViewport => ({
   swLng: roundCoordinate(viewport.swLng),
   zoom: Math.round(viewport.zoom),
 })
-
-interface MarkerCluster {
-  id: string
-  lat: number
-  lng: number
-  items: ListingDetail[]
-}
-
-// Group listings into a grid whose cell size matches CLUSTER_PIXEL_RADIUS at
-// the current zoom, so nearby pins collapse into a single cluster bubble.
-const clusterListings = (
-  listings: ListingDetail[],
-  zoom: number,
-): MarkerCluster[] => {
-  const degreesPerCell =
-    (CLUSTER_PIXEL_RADIUS * 360) / (WORLD_TILE_SIZE * 2 ** zoom)
-  // A plain record is used instead of `Map` because the `Map` identifier is
-  // the Google map component imported above.
-  const cells: Record<string, ListingDetail[]> = {}
-
-  listings.forEach((listing) => {
-    const { latitude, longitude } = listing.address
-    const cellKey = `${Math.floor(latitude / degreesPerCell)}:${Math.floor(
-      longitude / degreesPerCell,
-    )}`
-    const bucket = cells[cellKey]
-    if (bucket) {
-      bucket.push(listing)
-    } else {
-      cells[cellKey] = [listing]
-    }
-  })
-
-  return Object.entries(cells).map(([cellKey, items]) => {
-    const total = items.length
-    const sumLat = items.reduce((acc, item) => acc + item.address.latitude, 0)
-    const sumLng = items.reduce((acc, item) => acc + item.address.longitude, 0)
-    return {
-      id: cellKey,
-      lat: sumLat / total,
-      lng: sumLng / total,
-      items,
-    }
-  })
-}
 
 interface MapSidebarProps {
   isLoading: boolean
@@ -296,7 +243,6 @@ const MapContent: React.FC<MapContentProps> = ({
   const panSuppressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   )
-  const [zoomLevel, setZoomLevel] = useState(DEFAULT_ZOOM)
 
   const handleMapChange = useCallback(() => {
     if (!map) return
@@ -305,9 +251,6 @@ const MapContent: React.FC<MapContentProps> = ({
     const bounds = map.getBounds()
     const zoom = map.getZoom()
     if (!bounds || zoom === null || zoom === undefined) return
-
-    const roundedZoom = Math.round(zoom)
-    setZoomLevel((prev) => (prev === roundedZoom ? prev : roundedZoom))
 
     const ne = bounds.getNorthEast()
     const sw = bounds.getSouthWest()
@@ -354,33 +297,6 @@ const MapContent: React.FC<MapContentProps> = ({
     }
     requestLocation()
   }, [userCoordinates, centerOnUser, requestLocation])
-
-  // Keep the selected listing as its own marker so it is never hidden inside a
-  // cluster; cluster everything else by proximity at the current zoom.
-  const selectedListingId = selectedListing?.listingId
-  const clusters = useMemo(
-    () =>
-      clusterListings(
-        listings.filter((listing) => listing.listingId !== selectedListingId),
-        zoomLevel,
-      ),
-    [listings, selectedListingId, zoomLevel],
-  )
-
-  const handleClusterClick = useCallback(
-    (cluster: MarkerCluster) => {
-      if (!map) return
-      const currentMapZoom = map.getZoom() ?? zoomLevel
-      map.panTo({ lat: cluster.lat, lng: cluster.lng })
-      map.setZoom(
-        Math.min(
-          currentMapZoom + CLUSTER_EXPAND_ZOOM_STEP,
-          MAX_CLUSTER_EXPAND_ZOOM,
-        ),
-      )
-    },
-    [map, zoomLevel],
-  )
 
   // Initial fetch triggering
   useEffect(() => {
@@ -524,64 +440,33 @@ const MapContent: React.FC<MapContentProps> = ({
         </div>
       )}
 
-      {/* Markers and clusters */}
-      {clusters.map((cluster) => {
-        if (cluster.items.length === 1) {
-          const listing = cluster.items[0]
-          return (
-            <AdvancedMarker
-              key={listing.listingId}
-              position={{
-                lat: listing.address.latitude,
-                lng: listing.address.longitude,
-              }}
-              onClick={() => onMarkerClick(listing)}
-            >
-              <MapMarker
-                price={listing.price}
-                vipType={listing.vipType}
-                onClick={() => onMarkerClick(listing)}
-              />
-            </AdvancedMarker>
-          )
-        }
-
+      {/* Markers */}
+      {listings.map((listing) => {
+        const isSelected = selectedListing?.listingId === listing.listingId
         return (
           <AdvancedMarker
-            key={cluster.id}
-            position={{ lat: cluster.lat, lng: cluster.lng }}
-            onClick={() => handleClusterClick(cluster)}
+            key={listing.listingId}
+            position={{
+              lat: listing.address.latitude,
+              lng: listing.address.longitude,
+            }}
+            zIndex={isSelected ? SELECTED_MARKER_Z_INDEX : undefined}
+            onClick={(event) => {
+              // Stop the event so the map's own onClick (which closes the card)
+              // does not also fire and immediately clear the selection.
+              event.stop()
+              onMarkerClick(listing)
+            }}
           >
-            <MapCluster
-              count={cluster.items.length}
-              ariaLabel={t('propertiesInCluster', {
-                count: cluster.items.length,
-              })}
-              onClick={() => handleClusterClick(cluster)}
+            <MapMarker
+              price={listing.price}
+              vipType={listing.vipType}
+              isSelected={isSelected}
+              onClick={() => onMarkerClick(listing)}
             />
           </AdvancedMarker>
         )
       })}
-
-      {/* Selected listing always renders on top of clusters/markers */}
-      {selectedListing && (
-        <AdvancedMarker
-          key={`selected-${selectedListing.listingId}`}
-          position={{
-            lat: selectedListing.address.latitude,
-            lng: selectedListing.address.longitude,
-          }}
-          zIndex={SELECTED_MARKER_Z_INDEX}
-          onClick={() => onMarkerClick(selectedListing)}
-        >
-          <MapMarker
-            price={selectedListing.price}
-            vipType={selectedListing.vipType}
-            isSelected
-            onClick={() => onMarkerClick(selectedListing)}
-          />
-        </AdvancedMarker>
-      )}
     </>
   )
 }
