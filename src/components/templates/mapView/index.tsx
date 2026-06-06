@@ -9,8 +9,6 @@ import {
 } from '@vis.gl/react-google-maps'
 import { Button } from '@/components/atoms/button'
 import { useDebounce } from '@/hooks/useDebounce'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { MEDIA_AT_LG } from '@/constants/breakpoints'
 import {
   Loader2,
   ExternalLink,
@@ -24,7 +22,7 @@ import { useLocationContext } from '@/contexts/location'
 import { buildApartmentDetailRoute } from '@/constants/route'
 import { ListingDetail, VipType } from '@/api/types/property.type'
 import MapMarker from '@/components/molecules/mapMarker'
-import PropertyCard from '@/components/molecules/propertyCard'
+import MapPropertyCard from '@/components/molecules/mapPropertyCard'
 import { ListingService } from '@/api/services/listing.service'
 import { Typography } from '@/components/atoms/typography'
 
@@ -98,7 +96,6 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   t,
   tCommon,
 }) => {
-  const isDesktopCard = useMediaQuery(MEDIA_AT_LG) ?? false
   const router = useRouter()
 
   return (
@@ -164,14 +161,9 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                   }
                 }}
               >
-                {/* Ensure standard click won't bubble up improperly from PropertyCard */}
+                {/* Ensure standard click won't bubble up improperly from the card */}
                 <div className='pointer-events-none flex-1'>
-                  <PropertyCard
-                    listing={listing}
-                    className={`${isDesktopCard ? '' : 'compact '}border-0 shadow-none rounded-none h-full`}
-                    imageLayout='top'
-                    hideFooterDivider
-                  />
+                  <MapPropertyCard listing={listing} />
                 </div>
 
                 <div className='px-4 pb-4 pt-0'>
@@ -249,7 +241,6 @@ const MapContent: React.FC<MapContentProps> = ({
 }) => {
   const map = useMap()
   const router = useRouter()
-  const isDesktopCard = useMediaQuery(MEDIA_AT_LG) ?? false
   const {
     coordinates: userCoordinates,
     isLoading: isLocating,
@@ -431,11 +422,9 @@ const MapContent: React.FC<MapContentProps> = ({
       {/* Selected property card: bottom sheet on mobile, right-side card on desktop */}
       {selectedListing && (
         <div className='absolute bottom-4 left-4 right-4 z-30 md:left-6 md:right-6 lg:top-20 lg:bottom-auto lg:left-auto lg:right-6 lg:w-[420px] xl:w-[460px]'>
-          <div className='relative bg-background rounded-xl shadow-2xl border border-border/50'>
-            <PropertyCard
+          <div className='relative overflow-hidden bg-background rounded-xl shadow-2xl border border-border/50'>
+            <MapPropertyCard
               listing={selectedListing}
-              className={`${isDesktopCard ? '' : 'compact '}border-0 shadow-none`}
-              imageLayout='top'
               bottomContent={
                 <Button
                   className='w-full shadow-sm'
