@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import {
@@ -100,6 +99,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   tCommon,
 }) => {
   const isDesktopCard = useMediaQuery(MEDIA_AT_LG) ?? false
+  const router = useRouter()
 
   return (
     <div className='flex flex-col h-full bg-background overflow-hidden'>
@@ -151,7 +151,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                 key={listing.listingId}
                 role='button'
                 tabIndex={0}
-                className={`relative flex flex-col h-full cursor-pointer transition-all duration-200 rounded-xl border bg-card overflow-hidden ${
+                className={`flex flex-col h-full cursor-pointer transition-all duration-200 rounded-xl border bg-card overflow-hidden ${
                   isSelected
                     ? 'border-primary ring-2 ring-primary/20 shadow-md'
                     : 'border-border/50 hover:border-primary/50 hover:shadow-sm'
@@ -164,21 +164,6 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                   }
                 }}
               >
-                {/* Focus this listing's marker on the map (pan + open card + animate) */}
-                <Button
-                  type='button'
-                  size='icon'
-                  variant='secondary'
-                  className='absolute top-2 right-2 z-10 h-8 w-8 rounded-full shadow-md pointer-events-auto'
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onSelectListing(listing)
-                  }}
-                  aria-label={t('showOnMap')}
-                >
-                  <MapPin className='h-4 w-4' />
-                </Button>
-
                 {/* Ensure standard click won't bubble up improperly from PropertyCard */}
                 <div className='pointer-events-none flex-1'>
                   <PropertyCard
@@ -189,21 +174,36 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
                 </div>
 
                 <div className='px-4 pb-4 pt-0'>
-                  <Button
-                    size='sm'
-                    className='w-full pointer-events-auto'
-                    asChild
-                  >
-                    <Link
-                      href={buildApartmentDetailRoute(
-                        String(listing.listingId),
-                      )}
-                      onClick={(e) => e.stopPropagation()}
+                  <div className='flex items-center gap-2 pointer-events-auto'>
+                    <Button
+                      size='sm'
+                      className='flex-1'
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(
+                          buildApartmentDetailRoute(String(listing.listingId)),
+                        )
+                      }}
                     >
                       <ExternalLink className='h-4 w-4 mr-2' />
                       {tCommon('viewDetails')}
-                    </Link>
-                  </Button>
+                    </Button>
+                    {/* Focus this listing's marker on the map (pan + animate) */}
+                    <Button
+                      type='button'
+                      size='icon'
+                      variant='secondary'
+                      className='shrink-0'
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onSelectListing(listing)
+                      }}
+                      aria-label={t('showOnMap')}
+                      title={t('showOnMap')}
+                    >
+                      <MapPin className='h-4 w-4' />
+                    </Button>
+                  </div>
                 </div>
               </div>
             )
@@ -247,6 +247,7 @@ const MapContent: React.FC<MapContentProps> = ({
   tCommon,
 }) => {
   const map = useMap()
+  const router = useRouter()
   const isDesktopCard = useMediaQuery(MEDIA_AT_LG) ?? false
   const {
     coordinates: userCoordinates,
@@ -439,16 +440,16 @@ const MapContent: React.FC<MapContentProps> = ({
                   className='w-full shadow-sm'
                   variant='default'
                   size='sm'
-                  asChild
+                  onClick={() =>
+                    router.push(
+                      buildApartmentDetailRoute(
+                        String(selectedListing.listingId),
+                      ),
+                    )
+                  }
                 >
-                  <Link
-                    href={buildApartmentDetailRoute(
-                      String(selectedListing.listingId),
-                    )}
-                  >
-                    <ExternalLink className='h-4 w-4 mr-2' />
-                    {tCommon('viewDetails')}
-                  </Link>
+                  <ExternalLink className='h-4 w-4 mr-2' />
+                  {tCommon('viewDetails')}
                 </Button>
               }
             />
