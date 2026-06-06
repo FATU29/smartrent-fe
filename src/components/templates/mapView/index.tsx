@@ -12,8 +12,15 @@ import { Button } from '@/components/atoms/button'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { MEDIA_AT_LG } from '@/constants/breakpoints'
-import { Loader2, ExternalLink, ChevronsRight, X } from 'lucide-react'
+import {
+  Loader2,
+  ExternalLink,
+  ChevronsRight,
+  X,
+  LocateFixed,
+} from 'lucide-react'
 import { ENV } from '@/constants/env'
+import { useLocationContext } from '@/contexts/location'
 import { buildApartmentDetailRoute } from '@/constants/route'
 import { ListingDetail, VipType } from '@/api/types/property.type'
 import MapMarker from '@/components/molecules/mapMarker'
@@ -21,8 +28,12 @@ import PropertyCard from '@/components/molecules/propertyCard'
 import { ListingService } from '@/api/services/listing.service'
 import { Typography } from '@/components/atoms/typography'
 
+// Fallback center used when the device location is unavailable (Đà Nẵng).
 const VIETNAM_CENTER = { lat: 16.0544, lng: 108.2022 }
 const DEFAULT_ZOOM = 12
+// Zoom applied when centering on the user's device location so nearby
+// listings load immediately (must be >= MIN_LISTING_FETCH_ZOOM).
+const USER_LOCATION_ZOOM = 14
 const MAP_HEIGHT = 'h-[calc(100vh-80px)]'
 const MAP_INTERACTION_DEBOUNCE_MS = 1000
 const MAP_LISTINGS_LIMIT = 200
@@ -218,6 +229,12 @@ const MapContent: React.FC<MapContentProps> = ({
 }) => {
   const map = useMap()
   const isDesktopCard = useMediaQuery(MEDIA_AT_LG) ?? false
+  const {
+    coordinates: userCoordinates,
+    isLoading: isLocating,
+    requestLocation,
+  } = useLocationContext()
+  const hasCenteredOnUserRef = useRef(false)
   const isProgrammaticPanRef = useRef(false)
   const panIdleListenerRef = useRef<{ remove: () => void } | null>(null)
   const panSuppressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -243,6 +260,40 @@ const MapContent: React.FC<MapContentProps> = ({
       zoom,
     })
   }, [map, onViewportChange])
+
+  const centerOnUser = useCallback(
+    (coords: { latitude: number; longitude: number }) => {
+      if (!map) return
+      map.panTo({ lat: coords.latitude, lng: coords.longitude })
+      if ((map.getZoom() ?? 0) < USER_LOCATION_ZOOM) {
+        map.setZoom(USER_LOCATION_ZOOM)
+      }
+    },
+    [map],
+  )
+
+  // Ask for the device location on first load so the map opens near the user
+  // instead of always defaulting to Đà Nẵng. Falls back to the default center
+  // when the user denies the prompt or geolocation is unavailable.
+  useEffect(() => {
+    requestLocation()
+  }, [requestLocation])
+
+  // Recenter once the first location fix arrives.
+  useEffect(() => {
+    if (userCoordinates && map && !hasCenteredOnUserRef.current) {
+      hasCenteredOnUserRef.current = true
+      centerOnUser(userCoordinates)
+    }
+  }, [userCoordinates, map, centerOnUser])
+
+  const handleLocateClick = useCallback(() => {
+    hasCenteredOnUserRef.current = false
+    if (userCoordinates) {
+      centerOnUser(userCoordinates)
+    }
+    requestLocation()
+  }, [userCoordinates, centerOnUser, requestLocation])
 
   // Initial fetch triggering
   useEffect(() => {
@@ -310,6 +361,26 @@ const MapContent: React.FC<MapContentProps> = ({
 
   return (
     <>
+      {/* My location control */}
+      <div className='absolute top-4 right-16 z-20'>
+        <Button
+          type='button'
+          variant='secondary'
+          size='icon'
+          className='h-10 w-10 rounded-full shadow-lg'
+          onClick={handleLocateClick}
+          disabled={isLocating}
+          aria-label={t('myLocation')}
+          title={t('myLocation')}
+        >
+          {isLocating ? (
+            <Loader2 className='h-5 w-5 animate-spin' />
+          ) : (
+            <LocateFixed className='h-5 w-5' />
+          )}
+        </Button>
+      </div>
+
       {/* Loading Indicator (Top Center) - Visible when loading */}
       {isLoading && (
         <div className='absolute top-4 left-1/2 -translate-x-1/2 z-10'>
