@@ -38,6 +38,9 @@ const DEFAULT_ZOOM = 12
 // Zoom applied when centering on the user's device location so nearby
 // listings load immediately (must be >= MIN_LISTING_FETCH_ZOOM).
 const USER_LOCATION_ZOOM = 14
+// Zoom applied when a listing is picked from the panel/marker, so the map
+// closes in on the exact spot (and the pin breaks out of any cluster).
+const LOCATE_LISTING_ZOOM = 16
 const MAP_HEIGHT = 'h-[calc(100vh-80px)]'
 const MAP_INTERACTION_DEBOUNCE_MS = 1000
 const MAP_LISTINGS_LIMIT = 200
@@ -290,16 +293,16 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
 
 interface ClusteredMarkerProps {
   listing: ListingDetail
-  isSelected: boolean
   onMarkerClick: (listing: ListingDetail) => void
   setMarkerRef: (marker: Marker | null, listingId: number) => void
 }
 
-// A single map pin. Extracted (and memoized) so its `ref` callback identity is
-// stable across parent re-renders — an inline ref would make React detach and
-// reattach every marker on each render, thrashing the clusterer.
+// A single clustered map pin. Extracted (and memoized) so its `ref` callback
+// identity is stable across parent re-renders — an inline ref would make React
+// detach and reattach every marker on each render, thrashing the clusterer.
+// The selected pin is rendered separately (see SelectedMarker), never here.
 const ClusteredMarker: React.FC<ClusteredMarkerProps> = React.memo(
-  ({ listing, isSelected, onMarkerClick, setMarkerRef }) => {
+  ({ listing, onMarkerClick, setMarkerRef }) => {
     const handleRef = useCallback(
       (marker: Marker | null) => setMarkerRef(marker, listing.listingId),
       [setMarkerRef, listing.listingId],
@@ -312,7 +315,6 @@ const ClusteredMarker: React.FC<ClusteredMarkerProps> = React.memo(
           lat: listing.address.latitude,
           lng: listing.address.longitude,
         }}
-        zIndex={isSelected ? SELECTED_MARKER_Z_INDEX : undefined}
         onClick={(event) => {
           // Stop the event so the map's own onClick (which closes the card)
           // does not also fire and immediately clear the selection.
@@ -322,7 +324,6 @@ const ClusteredMarker: React.FC<ClusteredMarkerProps> = React.memo(
       >
         <MapMarker
           vipType={listing.vipType}
-          isSelected={isSelected}
           onClick={() => onMarkerClick(listing)}
         />
       </AdvancedMarker>
@@ -330,6 +331,37 @@ const ClusteredMarker: React.FC<ClusteredMarkerProps> = React.memo(
   },
 )
 ClusteredMarker.displayName = 'ClusteredMarker'
+
+interface SelectedMarkerProps {
+  listing: ListingDetail
+  onMarkerClick: (listing: ListingDetail) => void
+}
+
+// The pin for the listing the user is locating. Rendered on its own (never
+// handed to the clusterer) so it is always visible — lifted above the others
+// with a pulsing halo so it is obvious which point on the map is selected.
+const SelectedMarker: React.FC<SelectedMarkerProps> = ({
+  listing,
+  onMarkerClick,
+}) => (
+  <AdvancedMarker
+    position={{
+      lat: listing.address.latitude,
+      lng: listing.address.longitude,
+    }}
+    zIndex={SELECTED_MARKER_Z_INDEX}
+    onClick={(event) => {
+      event.stop()
+      onMarkerClick(listing)
+    }}
+  >
+    <MapMarker
+      vipType={listing.vipType}
+      isSelected
+      onClick={() => onMarkerClick(listing)}
+    />
+  </AdvancedMarker>
+)
 
 interface MapContentProps {
   listings: ListingDetail[]
@@ -544,11 +576,15 @@ const MapContent: React.FC<MapContentProps> = ({
         panSuppressTimeoutRef.current = null
       }, PROGRAMMATIC_PAN_SUPPRESS_MS)
 
-      // Only pan if it's slightly outside the center to prevent jitter on marker click
+      // Centre on the listing and zoom in so it stands out (and breaks out of
+      // any cluster). Never zoom back out if the user is already closer.
       map.panTo({
         lat: selectedListing.address.latitude,
         lng: selectedListing.address.longitude,
       })
+      if ((map.getZoom() ?? 0) < LOCATE_LISTING_ZOOM) {
+        map.setZoom(LOCATE_LISTING_ZOOM)
+      }
     }
   }, [selectedListing, map])
 
@@ -636,16 +672,25 @@ const MapContent: React.FC<MapContentProps> = ({
         </div>
       )}
 
-      {/* Markers (grouped by the clusterer above) */}
-      {listings.map((listing) => (
-        <ClusteredMarker
-          key={listing.listingId}
-          listing={listing}
-          isSelected={selectedListing?.listingId === listing.listingId}
+      {/* Markers grouped by the clusterer (everything except the located one) */}
+      {listings
+        .filter((listing) => listing.listingId !== selectedListing?.listingId)
+        .map((listing) => (
+          <ClusteredMarker
+            key={listing.listingId}
+            listing={listing}
+            onMarkerClick={onMarkerClick}
+            setMarkerRef={setMarkerRef}
+          />
+        ))}
+
+      {/* The located listing, always visible on top with its pulsing halo */}
+      {selectedListing && (
+        <SelectedMarker
+          listing={selectedListing}
           onMarkerClick={onMarkerClick}
-          setMarkerRef={setMarkerRef}
         />
-      ))}
+      )}
     </>
   )
 }
