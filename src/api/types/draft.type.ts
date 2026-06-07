@@ -14,7 +14,7 @@ import {
   listingType,
   PriceType,
 } from './property.type'
-import type { SePayProviderData } from './payment.type'
+import type { SePayGatewayData } from './payment.type'
 
 /**
  * Request DTO for creating/updating draft listings
@@ -183,9 +183,8 @@ export interface PublishDraftResponse {
   paymentUrl?: string
   amount?: number
   message?: string
-  // SePay-only: bank-transfer QR + details (no redirect)
-  qrCodeData?: string
-  providerData?: SePayProviderData
+  // SePay Payment Gateway: hosted-checkout form data ({ method, checkoutUrl, fields })
+  providerData?: SePayGatewayData
   expiresAt?: string
   provider?: string
 }

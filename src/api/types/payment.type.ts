@@ -12,38 +12,15 @@ export type PaymentProvider =
   | PaymentProviderCode
 
 /**
- * SePay bank-transfer details returned inside `providerData`.
- * Shown to users who pay manually instead of scanning the VietQR.
+ * SePay Payment Gateway hosted-checkout data returned inside `providerData`.
+ * The frontend builds a hidden form from `fields` and POSTs it to `checkoutUrl`
+ * (`method` is "POST") to send the user to SePay's hosted payment page. The
+ * `fields` (including `signature`) must be POSTed exactly as given, in order.
  */
-export interface SePayProviderData {
-  accountNumber?: string
-  bankCode?: string
-  accountName?: string
-  amount?: number
-  /** The code that MUST appear in the transfer description for matching. */
-  transferContent?: string
-  qrUrl?: string
-  [key: string]: string | number | boolean | null | undefined
-}
-
-/**
- * Shared shape returned by every initiate-purchase endpoint when paying with
- * SePay. SePay is a bank-transfer (VietQR) gateway — there is no redirect, so
- * the UI renders `qrCodeData`/`providerData` and polls the transaction status.
- */
-export interface SePayInitiationData {
-  transactionRef: string
-  provider?: string
-  amount?: number
-  currency?: string
-  /** VietQR image URL — drop straight into an <img>. */
-  paymentUrl?: string
-  /** Same VietQR image URL as `paymentUrl`. */
-  qrCodeData?: string
-  providerData?: SePayProviderData
-  createdAt?: string
-  /** ISO timestamp when the QR window closes; stop polling after this. */
-  expiresAt?: string
+export interface SePayGatewayData {
+  method?: string
+  checkoutUrl?: string
+  fields?: Record<string, string>
 }
 
 export enum PaymentStatus {

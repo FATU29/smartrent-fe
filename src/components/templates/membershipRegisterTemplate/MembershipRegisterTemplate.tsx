@@ -23,12 +23,6 @@ import {
   useInitiateUpgrade,
 } from '@/hooks/useMembership'
 import { toast } from 'sonner'
-import {
-  isSePayResult,
-  redirectToPayment,
-  toSePayInitData,
-} from '@/utils/payment'
-import { useSePayCheckout } from '@/contexts/sepayCheckout'
 import { Card, CardContent } from '@/components/atoms/card'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/atoms/alert'
@@ -101,7 +95,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
   const purchaseMutation = usePurchaseMembership()
   const initiateMutation = useInitiateUpgrade()
-  const { openSePayCheckout } = useSePayCheckout()
 
   // Determine if showing purchase or upgrade mode
   const isUpgradeMode = !!currentMembership
@@ -140,7 +133,10 @@ export const MembershipRegisterTemplate: React.FC = () => {
           )
         }
 
-        const result = await purchaseMutation.mutateAsync({
+        // The purchase hook sends the user to the gateway in its onSuccess
+        // (SePay POST-form / others GET-redirect); pendingMembership above is
+        // read back by /payment/result once the browser returns.
+        await purchaseMutation.mutateAsync({
           request: {
             membershipId: membershipId,
             paymentProvider: provider,
@@ -149,16 +145,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
         })
 
         handleClosePayment()
-
-        if (isSePayResult(result)) {
-          openSePayCheckout(toSePayInitData(result), {
-            onCompleted: () => toast.success(tPage('success.purchaseSuccess')),
-          })
-        } else if (result.paymentUrl) {
-          redirectToPayment(result.paymentUrl)
-        } else {
-          toast.success(tPage('success.purchaseSuccess'))
-        }
       } catch (error) {
         console.error('Purchase failed:', error)
         toast.error(
@@ -175,7 +161,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
       purchaseMutation,
       tPage,
       memberships,
-      openSePayCheckout,
     ],
   )
 
@@ -236,35 +221,10 @@ export const MembershipRegisterTemplate: React.FC = () => {
           toast.success(result.message)
           handleClosePayment()
           router.push(SELLERNET_ROUTES.PREFIX + '/membership')
-        } else if (isSePayResult(result)) {
-          // SePay: no redirect — show the QR checkout and poll until paid.
-          sessionStorage.removeItem('pendingMembershipUpgrade')
-          handleClosePayment()
-          openSePayCheckout(toSePayInitData(result), {
-            onCompleted: () => {
-              toast.success(result.message)
-              router.push(SELLERNET_ROUTES.PREFIX + '/membership')
-            },
-          })
-        } else if (result.paymentUrl) {
-          // Update storage with transaction ref
-          const storedUpgrade = sessionStorage.getItem(
-            'pendingMembershipUpgrade',
-          )
-          if (storedUpgrade) {
-            try {
-              const parsed = JSON.parse(storedUpgrade)
-              parsed.transactionRef = result.transactionRef
-              sessionStorage.setItem(
-                'pendingMembershipUpgrade',
-                JSON.stringify(parsed),
-              )
-            } catch (error) {
-              console.error('Error updating upgrade storage:', error)
-            }
-          }
-          // Will auto-redirect to payment URL via mutation
         }
+        // Otherwise (PENDING_PAYMENT) the upgrade hook sends the user to the
+        // gateway in its onSuccess; pendingMembershipUpgrade above is read back
+        // by /payment/result once the browser returns.
       } catch (error) {
         // Clear storage on error
         sessionStorage.removeItem('pendingMembershipUpgrade')
@@ -283,7 +243,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
       initiateMutation,
       tUpgrade,
       router,
-      openSePayCheckout,
     ],
   )
 

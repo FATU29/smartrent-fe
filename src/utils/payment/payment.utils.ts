@@ -4,8 +4,7 @@
 
 import type {
   PaymentProvider,
-  SePayInitiationData,
-  SePayProviderData,
+  SePayGatewayData,
 } from '@/api/types/payment.type'
 
 export const PENDING_TRANSACTION_REF_KEY = 'pendingTransactionRef'
@@ -19,18 +18,19 @@ export interface SePayResultLike {
   provider?: string | null
   transactionRef?: string | null
   transactionId?: string | null
-  amount?: number | null
+  amount?: number | string | null
   currency?: string | null
   // Some endpoints type this as `string | null` (e.g. a free upgrade).
   paymentUrl?: string | null
-  qrCodeData?: string | null
-  providerData?: SePayProviderData
+  /** SePay Payment Gateway hosted-checkout data ({ method, checkoutUrl, fields }). */
+  providerData?: SePayGatewayData
   expiresAt?: string | null
 }
 
 /**
- * Whether an initiate-purchase response should be handled as a SePay bank
- * transfer (render the QR + poll) rather than a redirect to a hosted checkout.
+ * Whether an initiate-purchase response is a SePay Payment Gateway checkout —
+ * SePay sends signed form `fields` that must be POSTed to its hosted page,
+ * unlike redirect providers (e.g. ZaloPay) that hand back a plain `paymentUrl`.
  */
 export function isSePayResult(result?: SePayResultLike | null): boolean {
   if (!result) return false
@@ -40,37 +40,78 @@ export function isSePayResult(result?: SePayResultLike | null): boolean {
   ) {
     return true
   }
-  return !!result.qrCodeData || !!result.providerData
+  return !!result.providerData?.checkoutUrl
 }
 
 /**
- * Normalise any initiate-purchase response into the shape the SePay checkout
- * dialog consumes, reconciling the `transactionRef` / `transactionId` and
- * `paymentUrl` / `qrCodeData` / `providerData.qrUrl` aliases.
+ * Send the user to SePay's hosted checkout by auto-submitting a hidden POST
+ * form built from the signed `fields`. The fields (including `signature`) must
+ * be POSTed exactly as returned, in the same order — the signature is computed
+ * over them and the gateway rejects any change.
+ *
+ * @returns true if a form was submitted (navigation started), false otherwise.
  */
-export function toSePayInitData(result: SePayResultLike): SePayInitiationData {
-  const qr =
-    result.qrCodeData ||
-    result.paymentUrl ||
-    result.providerData?.qrUrl ||
-    undefined
-  return {
-    transactionRef: result.transactionRef || result.transactionId || '',
-    provider: result.provider ?? undefined,
-    amount: result.amount ?? result.providerData?.amount,
-    currency: result.currency ?? undefined,
-    paymentUrl: qr,
-    qrCodeData: qr,
-    providerData: result.providerData,
-    expiresAt: result.expiresAt ?? undefined,
+export function submitSePayCheckout(
+  providerData?: SePayGatewayData | null,
+): boolean {
+  if (typeof window === 'undefined') return false
+  const checkoutUrl = providerData?.checkoutUrl
+  const fields = providerData?.fields
+  if (!checkoutUrl || !fields) {
+    console.error('[SePay] Missing checkoutUrl or fields; cannot submit form')
+    return false
   }
+
+  const form = document.createElement('form')
+  form.method = (providerData?.method || 'POST').toUpperCase()
+  form.action = checkoutUrl
+
+  // Preserve field order exactly as returned (the signature depends on it).
+  Object.entries(fields).forEach(([name, value]) => {
+    const input = document.createElement('input')
+    input.type = 'hidden'
+    input.name = name
+    input.value = value
+    form.appendChild(input)
+  })
+
+  document.body.appendChild(form)
+  form.submit()
+  return true
+}
+
+/**
+ * Send the user to the payment gateway from any initiate-purchase response.
+ *
+ * SePay → auto-submit the signed `fields` as a POST to its hosted checkout.
+ * Other providers (e.g. ZaloPay) → GET-redirect to their `paymentUrl`.
+ * Persists the pending transaction ref first so the result page can poll it.
+ *
+ * @returns true if a redirect/submit was initiated, false if nothing to do
+ *   (e.g. a quota path with no payment, or a free upgrade).
+ */
+export function startGatewayCheckout(result: SePayResultLike): boolean {
+  const ref = result.transactionRef || result.transactionId || undefined
+
+  if (isSePayResult(result) && result.providerData?.checkoutUrl) {
+    setPendingTransactionRef(ref)
+    return submitSePayCheckout(result.providerData)
+  }
+
+  if (result.paymentUrl) {
+    setPendingTransactionRef(ref)
+    redirectToPayment(result.paymentUrl)
+    return true
+  }
+
+  return false
 }
 
 /**
  * Redirect to a hosted-checkout payment URL preserving exact URL encoding.
  *
  * Used for redirect providers (e.g. ZaloPay) whose signed URLs must not be
- * re-encoded. SePay does NOT use this — it renders a VietQR and polls instead.
+ * re-encoded. SePay does NOT use this — it POST-submits signed fields instead.
  *
  * @param paymentUrl - Payment URL to redirect to (must be the exact URL from backend)
  * @param newWindow - Whether to open in new window (default: false)

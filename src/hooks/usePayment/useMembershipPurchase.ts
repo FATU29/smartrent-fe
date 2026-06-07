@@ -8,7 +8,7 @@ import type {
   PurchaseMembershipRequest,
   PaymentProvider,
 } from '@/api/types/membership.type'
-import { redirectToPayment, setPendingTransactionRef } from '@/utils/payment'
+import { startGatewayCheckout } from '@/utils/payment'
 
 /**
  * Hook to initiate membership purchase with payment
@@ -76,10 +76,9 @@ export function useMembershipPurchase(options?: {
       return response.data
     },
     onSuccess: (data, variables) => {
-      // Redirect to payment URL if auto-redirect is enabled
-      if (data.paymentUrl && autoRedirect) {
-        setPendingTransactionRef(data.transactionRef)
-        redirectToPayment(data.paymentUrl)
+      // Send the user to the gateway (SePay POST-form / others GET-redirect).
+      if (autoRedirect) {
+        startGatewayCheckout(data)
       }
 
       // Invalidate membership queries to refresh data after payment

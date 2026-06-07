@@ -4,11 +4,7 @@ import type {
   RepostListingRequest,
   RepostListingResponse,
 } from '@/api/types/repost.type'
-import {
-  isSePayResult,
-  redirectToPayment,
-  setPendingTransactionRef,
-} from '@/utils/payment'
+import { startGatewayCheckout } from '@/utils/payment'
 
 /**
  * Repost (đăng lại) an expired listing. On success either reactivates the
@@ -38,12 +34,10 @@ export function useRepostListing() {
       queryClient.invalidateQueries({ queryKey: ['quota', 'all'] })
       queryClient.invalidateQueries({ queryKey: ['memberships', 'my'] })
 
-      // SePay has no redirect — the caller opens the QR checkout instead.
-      const paymentUrl = data.data?.paymentUrl
-      if (paymentUrl && !isSePayResult(data.data)) {
-        const ref = data.data?.transactionRef ?? data.data?.transactionId
-        setPendingTransactionRef(ref)
-        redirectToPayment(paymentUrl)
+      // If payment is required, send the user to the gateway (SePay POST-form /
+      // others GET-redirect). Quota path returns no payment data → no-op.
+      if (data.data) {
+        startGatewayCheckout(data.data)
       }
     },
   })

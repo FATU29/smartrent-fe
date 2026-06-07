@@ -16,13 +16,7 @@ import { PaymentProvider as MembershipPaymentProvider } from '@/api/types/member
 import { PAYMENT_PROVIDER } from '@/api/types/property.type'
 import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
-import {
-  isSePayResult,
-  redirectToPayment,
-  setPendingTransactionRef,
-  toSePayInitData,
-} from '@/utils/payment'
-import { useSePayCheckout } from '@/contexts/sepayCheckout'
+import { isSePayResult, startGatewayCheckout } from '@/utils/payment'
 import { useUpdateDraft } from '@/hooks/useListings/useUpdateDraft'
 import { useDeleteDraft } from '@/hooks/useListings/useDeleteDraft'
 import { useCreateDraft } from '@/hooks/useListings/useCreateDraft'
@@ -68,7 +62,6 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
 
   const { mutate: updateDraft, isPending: isUpdatingDraft } = useUpdateDraft()
   const { mutateAsync: deleteDraft } = useDeleteDraft()
-  const { openSePayCheckout } = useSePayCheckout()
   const { mutateAsync: createDraftAsync } = useCreateDraft()
 
   React.useEffect(() => {
@@ -158,37 +151,13 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         sessionStorage.removeItem('pendingMembership')
         sessionStorage.removeItem('pendingMembershipUpgrade')
 
-        // SePay: no redirect — render the QR and poll. The listing is created
-        // in PENDING_PAYMENT and activates once the webhook confirms.
-        if (isSePayResult(data)) {
-          setIsSubmitSuccess(true)
-          window.dispatchEvent(
-            new CustomEvent(CREATE_POST_BYPASS_DRAFT_GUARD_EVENT),
-          )
-          openSePayCheckout(toSePayInitData(data), {
-            onCompleted: async () => {
-              if (draftId) {
-                try {
-                  await deleteDraft(draftId)
-                } catch (error) {
-                  console.error('Failed to delete draft after payment:', error)
-                }
-              }
-              setSuccessTitle(t('successTitle'))
-              setSuccessDesc(t('successDescription'))
-              setSuccessOpen(true)
-            },
-          })
-          return
-        }
-
-        // Redirecting to the payment gateway is a full-page navigation that
-        // destroys the in-memory form state (CreatePostProvider). If the user
-        // abandons or fails the payment, the form would otherwise be lost.
-        // Persist the listing content as a DB draft first so it can be
-        // recovered via /seller/create-post?draftId=... on return.
-        // When already editing an existing draft, reuse it instead of creating
-        // a duplicate.
+        // Redirecting to the payment gateway (SePay hosted checkout or e.g.
+        // ZaloPay) is a full-page navigation that destroys the in-memory form
+        // state (CreatePostProvider). If the user abandons or fails the
+        // payment, the form would otherwise be lost. Persist the listing
+        // content as a DB draft first so it can be recovered via
+        // /seller/create-post?draftId=... on return. When already editing an
+        // existing draft, reuse it instead of creating a duplicate.
         let recoverableDraftId: string | number | null = draftId || null
         if (!recoverableDraftId) {
           try {
@@ -208,7 +177,8 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           }
         }
 
-        // Store listing info in session storage for tracking after payment callback
+        // Store listing info in session storage for tracking after payment
+        // callback (the draft is deleted on success by /payment/result).
         const listingPaymentInfo = {
           title: propertyInfo?.title,
           vipType: propertyInfo?.vipType,
@@ -222,15 +192,13 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           JSON.stringify(listingPaymentInfo),
         )
 
-        setPendingTransactionRef(data.transactionId)
-
-        // Redirect to the hosted checkout (e.g. ZaloPay) using the safe
-        // redirect utility, preserving the exact URL from the backend.
+        // Send the user to the gateway: SePay POST-submits the signed fields,
+        // others GET-redirect to the paymentUrl. Persists the pending txn ref.
         setIsSubmitSuccess(true)
         window.dispatchEvent(
           new CustomEvent(CREATE_POST_BYPASS_DRAFT_GUARD_EVENT),
         )
-        if (data.paymentUrl) redirectToPayment(data.paymentUrl)
+        startGatewayCheckout(data)
         return
       }
 
