@@ -5,11 +5,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { PushService } from '@/api/services'
 import type { PushListingRequest } from '@/api/types/push.type'
-import {
-  isSePayResult,
-  redirectToPayment,
-  setPendingTransactionRef,
-} from '@/utils/payment'
+import { startGatewayCheckout } from '@/utils/payment'
 
 type DirectPushProvider = 'SEPAY' | 'ZALOPAY' | 'PAYPAL' | 'MOMO'
 
@@ -61,11 +57,10 @@ export function usePushListing(options?: {
       return response.data
     },
     onSuccess: (data, variables) => {
-      // Redirect to payment URL if payment is required and auto-redirect is enabled.
-      // SePay has no redirect — the caller opens the QR checkout instead.
-      if (data.paymentUrl && autoRedirect && !isSePayResult(data)) {
-        setPendingTransactionRef(data.transactionRef)
-        redirectToPayment(data.paymentUrl)
+      // Send the user to the gateway when payment is required (SePay POST-form /
+      // others GET-redirect). Quota path returns no providerData/paymentUrl → no-op.
+      if (autoRedirect) {
+        startGatewayCheckout(data)
       }
 
       // Invalidate relevant queries

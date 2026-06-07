@@ -1,11 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MembershipService } from '@/api/services'
 import type { UpgradeRequest } from '@/api/types/membership.type'
-import {
-  isSePayResult,
-  redirectToPayment,
-  setPendingTransactionRef,
-} from '@/utils/payment'
+import { startGatewayCheckout } from '@/utils/payment'
 
 //==================== AVAILABLE UPGRADES ====================
 /**
@@ -84,15 +80,10 @@ export const useInitiateUpgrade = () => {
       return response.data
     },
     onSuccess: (data, variables) => {
-      // Redirect to payment URL if present and payment is required.
-      // SePay has no redirect — the caller opens the QR checkout instead.
-      if (
-        data.paymentUrl &&
-        data.status === 'PENDING_PAYMENT' &&
-        !isSePayResult(data)
-      ) {
-        setPendingTransactionRef(data.transactionRef)
-        redirectToPayment(data.paymentUrl)
+      // Send the user to the gateway when payment is required (SePay POST-form /
+      // others GET-redirect). A free upgrade (status COMPLETED) is a no-op here.
+      if (data.status === 'PENDING_PAYMENT') {
+        startGatewayCheckout(data)
       }
 
       // Invalidate relevant queries to refresh data

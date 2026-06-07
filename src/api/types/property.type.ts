@@ -1,6 +1,6 @@
 import { Pagination } from './pagination.type'
 import { UserApi } from './user.type'
-import type { SePayProviderData } from './payment.type'
+import type { SePayGatewayData } from './payment.type'
 
 export type PropertyType =
   | 'APARTMENT'
@@ -379,9 +379,8 @@ export interface CreateListingResponse {
   amount?: number
   paymentUrl?: string
   message?: string
-  // SePay-only: bank-transfer QR + details (no redirect)
-  qrCodeData?: string
-  providerData?: SePayProviderData
+  // SePay Payment Gateway: hosted-checkout form data ({ method, checkoutUrl, fields })
+  providerData?: SePayGatewayData
   expiresAt?: string
   provider?: string
 }

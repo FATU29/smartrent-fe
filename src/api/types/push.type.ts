@@ -1,4 +1,4 @@
-import type { SePayProviderData } from './payment.type'
+import type { SePayGatewayData } from './payment.type'
 
 export enum PushDetailCode {
   SINGLE_PUSH = 'SINGLE_PUSH',
@@ -66,9 +66,8 @@ export interface PushListingResponse {
   amount?: number // Present if payment is required
   currency?: string // Present if payment is required
   provider?: string // Present if payment is required
-  // SePay-only: bank-transfer QR + details (no redirect)
-  qrCodeData?: string
-  providerData?: SePayProviderData
+  // SePay Payment Gateway: hosted-checkout form data ({ method, checkoutUrl, fields })
+  providerData?: SePayGatewayData
   expiresAt?: string
   message?: string // Confirmation message if quota is used
   success?: boolean // true if quota used successfully

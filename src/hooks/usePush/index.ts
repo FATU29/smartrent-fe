@@ -10,11 +10,7 @@ import {
   PushLimitError,
   parsePushLimitWaitMinutes,
 } from '@/api/types/push.type'
-import {
-  isSePayResult,
-  redirectToPayment,
-  setPendingTransactionRef,
-} from '@/utils/payment'
+import { startGatewayCheckout } from '@/utils/payment'
 
 /**
  * Hook to check push quota availability
@@ -92,11 +88,10 @@ export function usePushListing() {
       // Also invalidate membership data as it might have changed
       queryClient.invalidateQueries({ queryKey: ['memberships', 'my'] })
 
-      // If payment URL is returned, redirect to payment. SePay has no redirect
-      // — the caller opens the QR checkout instead.
-      if (data.data?.paymentUrl && !isSePayResult(data.data)) {
-        setPendingTransactionRef(data.data.transactionRef)
-        redirectToPayment(data.data.paymentUrl)
+      // If payment is required, send the user to the gateway (SePay POST-form /
+      // others GET-redirect). Quota path returns no payment data → no-op.
+      if (data.data) {
+        startGatewayCheckout(data.data)
       }
     },
   })

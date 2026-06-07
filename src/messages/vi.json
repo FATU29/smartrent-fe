@@ -2977,35 +2977,6 @@
     "paypal": "PayPal",
     "zalopay": "ZaloPay"
   },
-  "sepayCheckout": {
-    "title": "Quét mã VietQR để thanh toán",
-    "description": "Dùng ứng dụng ngân hàng bất kỳ để quét mã, hoặc chuyển khoản thủ công theo thông tin bên dưới.",
-    "scanInstruction": "Mở ứng dụng ngân hàng và quét mã QR bên dưới để thanh toán.",
-    "manualInstruction": "Hoặc chuyển khoản thủ công:",
-    "bank": "Ngân hàng",
-    "accountNumber": "Số tài khoản",
-    "accountName": "Chủ tài khoản",
-    "amount": "Số tiền",
-    "transferContent": "Nội dung chuyển khoản",
-    "transferContentWarning": "Giữ nguyên nội dung chuyển khoản như hiển thị — đây là cách hệ thống đối soát giao dịch của bạn.",
-    "waiting": "Đang chờ thanh toán…",
-    "copy": "Sao chép",
-    "copied": "Đã sao chép",
-    "qrAlt": "Mã thanh toán VietQR",
-    "close": "Đóng",
-    "success": {
-      "title": "Thanh toán thành công!",
-      "message": "Dịch vụ của bạn đã được kích hoạt."
-    },
-    "failed": {
-      "title": "Thanh toán thất bại",
-      "message": "Không thể hoàn tất thanh toán. Vui lòng thử lại."
-    },
-    "expired": {
-      "title": "Mã QR đã hết hạn",
-      "message": "Cửa sổ thanh toán đã đóng. Vui lòng thực hiện lại."
-    }
-  },
   "pushDetailsPage": {
     "title": "Gói Đẩy Tin",
     "description": "Chọn gói đẩy tin phù hợp để tăng độ hiển thị cho bài đăng của bạn",
@@ -3413,6 +3384,7 @@
       "messageListing": "Thanh toán hoàn tất! Tin VIP của bạn đã được tạo.",
       "messageMembership": "Thanh toán hoàn tất! Tài khoản hội viên của bạn đã được kích hoạt.",
       "messageMembershipUpgrade": "Thanh toán hoàn tất! Gói hội viên của bạn đã được nâng cấp thành công.",
+      "messagePushRepost": "Thanh toán hoàn tất! Tin đăng của bạn đã được đẩy thành công.",
       "messageDefault": "Thanh toán hoàn tất thành công!"
     },
     "failed": {

@@ -31,8 +31,8 @@ import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { List, useListContext } from '@/contexts/list'
 import { useMyMembership } from '@/hooks/useMembership'
 import { useAuthContext } from '@/contexts/auth'
-import { useSePayCheckout } from '@/contexts/sepayCheckout'
-import { isSePayResult, toSePayInitData } from '@/utils/payment'
+import { isSePayResult } from '@/utils/payment'
+import { PENDING_SELLER_LISTING_ACTION_KEY } from '@/constants/payment'
 import {
   ListingOwnerDetail,
   PostStatus,
@@ -64,7 +64,6 @@ const ListingsWithPagination = () => {
     useMyMembership(user?.userId)
   const { data: quotaData, refetch: refetchQuota } = usePushQuota()
   const pushMutation = usePushListing()
-  const { openSePayCheckout } = useSePayCheckout()
   const isMobile = useIsMobile()
   const t = useTranslations('common')
   const tSeller = useTranslations('seller.listingManagement')
@@ -131,6 +130,15 @@ const ListingsWithPagination = () => {
     const hasQuota = quotaData?.data && quotaData.data.totalAvailable > 0
     const useMembershipQuota = hasQuota ?? false
 
+    // On the payment path the user leaves for the gateway and returns to
+    // /payment/result — leave a marker so it routes back to the listings.
+    if (!useMembershipQuota) {
+      sessionStorage.setItem(
+        PENDING_SELLER_LISTING_ACTION_KEY,
+        JSON.stringify({ type: 'push' }),
+      )
+    }
+
     try {
       const result = await pushMutation.mutateAsync({
         listingId: listing.listingId,
@@ -138,19 +146,13 @@ const ListingsWithPagination = () => {
         paymentProvider: useMembershipQuota ? undefined : 'SEPAY',
       })
 
-      if (isSePayResult(result.data)) {
-        // SePay: render the QR + poll. Push applies once the webhook confirms.
-        openSePayCheckout(toSePayInitData(result.data), {
-          onCompleted: () => {
-            toast.success(tSeller('card.toast.pushSuccess'))
-            refetchQuota()
-            refetch()
-          },
-        })
-      } else if (result.data?.paymentUrl) {
-        // Hosted-checkout providers (e.g. ZaloPay) redirect in the hook.
+      if (isSePayResult(result.data) || result.data?.paymentUrl) {
+        // Payment required — the push hook is sending the user to the gateway
+        // (SePay POST-form / others GET-redirect). Push applies on the webhook.
         toast.loading(tSeller('card.toast.pushRedirectingToPayment'))
       } else {
+        // Quota path: push already applied — refresh and stay on the page.
+        sessionStorage.removeItem(PENDING_SELLER_LISTING_ACTION_KEY)
         const successMessage = useMembershipQuota
           ? tSeller('card.toast.pushSuccessWithQuota')
           : tSeller('card.toast.pushSuccess')
@@ -159,6 +161,7 @@ const ListingsWithPagination = () => {
         refetchQuota()
       }
     } catch (error: unknown) {
+      sessionStorage.removeItem(PENDING_SELLER_LISTING_ACTION_KEY)
       if (error instanceof PushLimitError) {
         setPushLimitState({
           open: true,
@@ -312,6 +315,14 @@ const ListingsWithPagination = () => {
               paymentProvider,
               vipType,
             }) => {
+              // On the payment path the user leaves for the gateway and returns
+              // to /payment/result — mark so it routes back to the listings.
+              if (!useMembershipQuota) {
+                sessionStorage.setItem(
+                  PENDING_SELLER_LISTING_ACTION_KEY,
+                  JSON.stringify({ type: 'repost' }),
+                )
+              }
               repostMutation.mutate(
                 {
                   listingId: listing.listingId,
@@ -327,26 +338,24 @@ const ListingsWithPagination = () => {
                     setSelectedListingForRepost(null)
                     setRepostDialogOpen(false)
 
-                    // SePay: render the QR + poll; listing reactivates on the
-                    // webhook. ZaloPay etc: hook redirects to the paymentUrl.
-                    // Quota path: listing is already live → refetch the list.
-                    if (isSePayResult(data.data)) {
-                      openSePayCheckout(toSePayInitData(data.data), {
-                        onCompleted: () => {
-                          toast.success(tSeller('card.toast.repostSuccess'))
-                          refetch()
-                        },
-                      })
-                    } else if (data.data?.paymentUrl) {
+                    // Payment required: the repost hook is sending the user to
+                    // the gateway (SePay POST-form / others GET-redirect); the
+                    // listing reactivates on the webhook. Quota path: already
+                    // live → refetch the list.
+                    if (isSePayResult(data.data) || data.data?.paymentUrl) {
                       toast.loading(
                         tSeller('card.toast.repostRedirectingToPayment'),
                       )
                     } else {
+                      sessionStorage.removeItem(
+                        PENDING_SELLER_LISTING_ACTION_KEY,
+                      )
                       toast.success(tSeller('card.toast.repostSuccess'))
                       refetch()
                     }
                   },
                   onError: (err) => {
+                    sessionStorage.removeItem(PENDING_SELLER_LISTING_ACTION_KEY)
                     toast.error(
                       err.message || tSeller('card.toast.repostError'),
                     )

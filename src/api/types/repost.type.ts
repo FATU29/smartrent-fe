@@ -4,7 +4,7 @@
  * post-quota for their listing's vipType or paying the per-day fee via SePay.
  */
 
-import type { SePayProviderData } from './payment.type'
+import type { SePayGatewayData } from './payment.type'
 
 export interface RepostListingRequest {
   listingId: number
@@ -35,9 +35,8 @@ export interface RepostListingResponse {
   paymentUrl?: string
   transactionRef?: string
   transactionId?: string
-  // SePay-only: bank-transfer QR + details (no redirect)
-  qrCodeData?: string
-  providerData?: SePayProviderData
+  // SePay Payment Gateway: hosted-checkout form data ({ method, checkoutUrl, fields })
+  providerData?: SePayGatewayData
   expiresAt?: string
   amount?: number
 }

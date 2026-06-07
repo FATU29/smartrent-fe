@@ -2977,35 +2977,6 @@
     "paypal": "PayPal",
     "zalopay": "ZaloPay"
   },
-  "sepayCheckout": {
-    "title": "Scan the VietQR to pay",
-    "description": "Use any banking app to scan the code, or transfer manually with the details below.",
-    "scanInstruction": "Open your banking app and scan the QR code below to pay.",
-    "manualInstruction": "Or transfer manually:",
-    "bank": "Bank",
-    "accountNumber": "Account number",
-    "accountName": "Account holder",
-    "amount": "Amount",
-    "transferContent": "Transfer content",
-    "transferContentWarning": "Keep the transfer content exactly as shown — it is how we match your payment.",
-    "waiting": "Waiting for payment…",
-    "copy": "Copy",
-    "copied": "Copied",
-    "qrAlt": "VietQR payment code",
-    "close": "Close",
-    "success": {
-      "title": "Payment successful!",
-      "message": "Your service has been activated."
-    },
-    "failed": {
-      "title": "Payment failed",
-      "message": "The payment could not be completed. Please try again."
-    },
-    "expired": {
-      "title": "QR code expired",
-      "message": "The payment window has closed. Please start the payment again."
-    }
-  },
   "pushDetailsPage": {
     "title": "Push Packages",
     "description": "Choose the right push package to increase visibility for your listings",
@@ -3735,6 +3706,7 @@
       "messageListing": "Payment completed! Your VIP listing has been created.",
       "messageMembership": "Payment completed! Your membership has been activated.",
       "messageMembershipUpgrade": "Payment completed! Your membership has been upgraded successfully.",
+      "messagePushRepost": "Payment completed! Your listing has been promoted successfully.",
       "messageDefault": "Payment completed successfully!"
     },
     "failed": {

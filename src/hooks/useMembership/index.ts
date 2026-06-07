@@ -1,11 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MembershipService } from '@/api/services'
 import type { PurchaseMembershipRequest } from '@/api/types/membership.type'
-import {
-  isSePayResult,
-  redirectToPayment,
-  setPendingTransactionRef,
-} from '@/utils/payment'
+import { startGatewayCheckout } from '@/utils/payment'
 
 // Export upgrade hooks
 export * from './useMembershipUpgrade'
@@ -105,11 +101,8 @@ export const usePurchaseMembership = () => {
       return response.data
     },
     onSuccess: (data, variables) => {
-      // SePay has no redirect — the caller opens the QR checkout instead.
-      if (data.paymentUrl && !isSePayResult(data)) {
-        setPendingTransactionRef(data.transactionRef)
-        redirectToPayment(data.paymentUrl)
-      }
+      // Send the user to the gateway (SePay POST-form / others GET-redirect).
+      startGatewayCheckout(data)
 
       // Invalidate relevant queries to refresh data
       queryClient.invalidateQueries({

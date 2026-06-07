@@ -52,15 +52,13 @@ export const PAYMENT_CONFIG = {
 } as const
 
 /**
- * SePay (VietQR bank-transfer) specific constants.
- * SePay confirms payment via a backend webhook only — the frontend renders the
- * QR and polls the transaction status until it flips to COMPLETED.
+ * SePay Payment Gateway constants. SePay redirects back to /payment/result and
+ * the IPN settles the payment on the backend, so the result page polls the
+ * transaction status until it leaves PENDING.
  */
 export const SEPAY_CONFIG = {
-  // How often the QR screen re-checks the transaction status (ms).
+  // How often /payment/result re-checks the transaction status (ms).
   POLL_INTERVAL: 3000,
-  // Fallback QR-window length used only if the API omits `expiresAt` (ms).
-  DEFAULT_EXPIRY_MS: 15 * 60 * 1000,
 } as const
 
 /**
@@ -160,6 +158,13 @@ export const PAYMENT_NOTIFICATIONS = {
     message: 'Please wait while we process your payment',
   },
 } as const
+
+/**
+ * sessionStorage key holding a marker for a seller push/repost payment in
+ * flight. Set before redirecting to the gateway so /payment/result knows to
+ * send the user back to their listings on success.
+ */
+export const PENDING_SELLER_LISTING_ACTION_KEY = 'pendingSellerListingAction'
 
 /**
  * Payment routes

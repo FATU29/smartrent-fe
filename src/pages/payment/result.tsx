@@ -7,11 +7,20 @@ import {
   clearPendingTransactionRef,
   getPendingTransactionRef,
 } from '@/utils/payment'
-import type { PaymentCallbackResponse } from '@/api/types/payment.type'
+import type {
+  PaymentCallbackResponse,
+  PaymentTransaction,
+} from '@/api/types/payment.type'
+import {
+  PAYMENT_STATUS,
+  PENDING_SELLER_LISTING_ACTION_KEY,
+  SEPAY_CONFIG,
+} from '@/constants/payment'
 
 /**
- * Transaction details extracted from a redirect-provider callback (ZaloPay).
- * SePay never reaches this page — it confirms via webhook + in-page polling.
+ * Transaction details for the result page — built either from a redirect-
+ * provider callback (ZaloPay) or from the polled transaction (SePay hosted
+ * checkout, which redirects back here with ?status=success|error|cancel).
  */
 interface PaymentTransactionInfo {
   transactionRef: string
@@ -82,7 +91,7 @@ interface StoredListingInfo {
   draftId?: string | number | null
 }
 
-type PaymentType = 'membership' | 'membershipUpgrade' | 'listing'
+type PaymentType = 'membership' | 'membershipUpgrade' | 'listing' | 'pushRepost'
 
 const PaymentResultPage: NextPageWithLayout = () => {
   const t = useTranslations('paymentResultPage')
@@ -96,10 +105,13 @@ const PaymentResultPage: NextPageWithLayout = () => {
   const [paymentType, setPaymentType] = useState<PaymentType | null>(null)
 
   useEffect(() => {
+    let cancelled = false
+
     const clearPendingPaymentStorage = () => {
       sessionStorage.removeItem('pendingMembership')
       sessionStorage.removeItem('pendingMembershipUpgrade')
       sessionStorage.removeItem('pendingListingCreation')
+      sessionStorage.removeItem(PENDING_SELLER_LISTING_ACTION_KEY)
       clearPendingTransactionRef()
     }
 
@@ -163,6 +175,10 @@ const PaymentResultPage: NextPageWithLayout = () => {
         return t('success.messageMembershipUpgrade')
       }
 
+      if (type === 'pushRepost') {
+        return t('success.messagePushRepost')
+      }
+
       return t('success.messageDefault')
     }
 
@@ -215,6 +231,101 @@ const PaymentResultPage: NextPageWithLayout = () => {
       }
     }
 
+    const buildSePayTransactionInfo = (
+      txn: PaymentTransaction | null,
+      fallbackRef: string,
+    ): PaymentTransactionInfo => ({
+      transactionRef: txn?.transactionRef || fallbackRef,
+      amount: typeof txn?.amount === 'number' ? txn.amount : 0,
+      responseCode: txn?.responseCode || '',
+      transactionStatus: txn?.status ? String(txn.status) : '',
+      transactionNo: txn?.providerTransactionId || '',
+      bankCode: txn?.bankCode || txn?.paymentMethod || 'SEPAY',
+      payDate: txn?.paymentDate || '',
+      orderInfo: txn?.orderInfo || '',
+    })
+
+    // The IPN is the source of truth, so don't trust the redirect's status
+    // param — poll the transaction until it leaves PENDING (or the window ends).
+    const pollSePayTransaction = async (
+      ref: string,
+    ): Promise<PaymentTransaction | null> => {
+      const maxAttempts = 40 // ~2 min at the SePay poll interval
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        if (cancelled) return null
+        try {
+          const res = await PaymentService.getTransaction(ref)
+          const txn = res.data ?? null
+          const status = txn?.status ? String(txn.status).toUpperCase() : ''
+          if (status && status !== PAYMENT_STATUS.PENDING) {
+            return txn
+          }
+        } catch (error) {
+          // Transient errors are expected while the IPN is in flight — keep polling.
+          console.error('SePay transaction poll error:', error)
+        }
+        await new Promise((resolve) =>
+          setTimeout(resolve, SEPAY_CONFIG.POLL_INTERVAL),
+        )
+      }
+      return null
+    }
+
+    const processSePayResult = async (
+      isCancelStatus: boolean,
+      type: PaymentType | null,
+      storedListingRaw: string | null,
+    ) => {
+      // The user cancelled on the hosted page — there is no payment to confirm.
+      if (isCancelStatus) {
+        setResult({ status: 'cancelled', message: t('cancelled.message') })
+        clearPendingPaymentStorage()
+        return
+      }
+
+      const ref = getPendingTransactionRef()
+      if (!ref) {
+        setResult({ status: 'failed', message: t('failed.invalidData') })
+        clearPendingPaymentStorage()
+        return
+      }
+
+      const txn = await pollSePayTransaction(ref)
+      if (cancelled) return
+
+      const status = txn?.status ? String(txn.status).toUpperCase() : ''
+      const transactionInfo = buildSePayTransactionInfo(txn, ref)
+
+      if (status === PAYMENT_STATUS.COMPLETED) {
+        setResult({
+          status: 'success',
+          message: getSuccessMessageByPaymentType(type),
+          transactionInfo,
+        })
+        await deleteDraftAfterSuccessfulListingPayment(type, storedListingRaw)
+        clearPendingPaymentStorage()
+        return
+      }
+
+      if (status === PAYMENT_STATUS.CANCELLED) {
+        setResult({
+          status: 'cancelled',
+          message: t('cancelled.message'),
+          transactionInfo,
+        })
+        clearPendingPaymentStorage()
+        return
+      }
+
+      // FAILED, or still PENDING after the polling window elapsed.
+      setResult({
+        status: 'failed',
+        message: t('failed.errorProcessing'),
+        transactionInfo,
+      })
+      clearPendingPaymentStorage()
+    }
+
     const storedUpgrade = sessionStorage.getItem('pendingMembershipUpgrade')
     const storedMembership = sessionStorage.getItem('pendingMembership')
     const storedListing = sessionStorage.getItem('pendingListingCreation')
@@ -254,6 +365,17 @@ const PaymentResultPage: NextPageWithLayout = () => {
       } catch (error) {
         console.error('Error parsing stored listing:', error)
       }
+    }
+
+    // Push/repost leave only a lightweight marker so the success button routes
+    // back to the seller's listings.
+    if (
+      !detectedPaymentType &&
+      sessionStorage.getItem(PENDING_SELLER_LISTING_ACTION_KEY)
+    ) {
+      detectedPaymentType = 'pushRepost'
+      setMembershipInfo(null)
+      setListingInfo(null)
     }
 
     setPaymentType(detectedPaymentType)
@@ -359,6 +481,26 @@ const PaymentResultPage: NextPageWithLayout = () => {
           return
         }
 
+        // SePay Payment Gateway redirects back here with ?status=success|error|
+        // cancel. Confirm via polling (the IPN is the source of truth), not the
+        // redirect param alone.
+        const sePayStatus = queryParams.get('status')
+        const isCancelStatus = sePayStatus === 'cancel'
+        const isSePayReturn =
+          isCancelStatus ||
+          sePayStatus === 'success' ||
+          sePayStatus === 'error' ||
+          !!getPendingTransactionRef()
+
+        if (isSePayReturn) {
+          await processSePayResult(
+            isCancelStatus,
+            detectedPaymentType,
+            storedListing,
+          )
+          return
+        }
+
         setResult({
           status: 'failed',
           message: t('failed.invalidData'),
@@ -375,6 +517,11 @@ const PaymentResultPage: NextPageWithLayout = () => {
     }
 
     processPaymentResult()
+
+    return () => {
+      // Stop any in-flight SePay polling when the page unmounts.
+      cancelled = true
+    }
   }, []) // Only run once on mount
 
   const getStatusIcon = (status: PaymentStatus) => {
@@ -773,8 +920,12 @@ const PaymentResultPage: NextPageWithLayout = () => {
                       <>
                         <button
                           onClick={() => {
-                            // Redirect based on payment type
-                            if (paymentType === 'listing') {
+                            // Listings flows (VIP post, push, repost) go back to
+                            // the seller's listings; everything else to the dashboard.
+                            if (
+                              paymentType === 'listing' ||
+                              paymentType === 'pushRepost'
+                            ) {
                               window.location.href = '/seller/listings'
                             } else {
                               window.location.href = '/seller/dashboard'
@@ -782,7 +933,8 @@ const PaymentResultPage: NextPageWithLayout = () => {
                           }}
                           className='flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                         >
-                          {paymentType === 'listing'
+                          {paymentType === 'listing' ||
+                          paymentType === 'pushRepost'
                             ? t('actions.viewListings')
                             : t('actions.goToDashboard')}
                           <ArrowRight className='w-5 h-5' />

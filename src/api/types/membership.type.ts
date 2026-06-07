@@ -1,4 +1,4 @@
-import type { SePayProviderData } from './payment.type'
+import type { SePayGatewayData } from './payment.type'
 
 export enum MembershipPackageLevel {
   BASIC = 'BASIC',
@@ -50,10 +50,9 @@ export interface PurchaseMembershipResponse {
   readonly transactionRef: string
   readonly amount: number
   readonly provider: string
-  // SePay-only: bank-transfer QR + details (no redirect)
-  readonly qrCodeData?: string
+  // SePay Payment Gateway: hosted-checkout form data ({ method, checkoutUrl, fields })
   readonly currency?: string
-  readonly providerData?: SePayProviderData
+  readonly providerData?: SePayGatewayData
   readonly createdAt?: string
   readonly expiresAt?: string
 }
@@ -205,9 +204,8 @@ export interface UpgradeResponse {
   readonly finalAmount: number
   readonly status: 'PENDING_PAYMENT' | 'COMPLETED'
   readonly message: string
-  // SePay-only: bank-transfer QR + details (no redirect)
-  readonly qrCodeData?: string
-  readonly providerData?: SePayProviderData
+  // SePay Payment Gateway: hosted-checkout form data ({ method, checkoutUrl, fields })
+  readonly providerData?: SePayGatewayData
   readonly expiresAt?: string
 }
 
