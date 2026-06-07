@@ -76,11 +76,13 @@ const MapMarker: React.FC<MapMarkerProps> = ({
         isSelected ? 'scale-125 z-50' : 'hover:scale-110'
       }`}
     >
-      {/* Pulsing halo so a focused marker is easy to spot among the others */}
+      {/* Pulsing halo so a focused marker is easy to spot among the others.
+          Larger than the pin and centred on it so it clearly radiates outward,
+          signalling "this is the listing you picked". */}
       {isSelected && (
         <span
           aria-hidden
-          className={`absolute left-0 top-0 h-8 w-8 rounded-full opacity-60 animate-ping ${style.bg}`}
+          className={`absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 animate-ping ${style.bg}`}
         />
       )}
       <div
