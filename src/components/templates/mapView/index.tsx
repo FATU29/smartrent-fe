@@ -7,6 +7,7 @@ import {
   AdvancedMarker,
   useMap,
 } from '@vis.gl/react-google-maps'
+import { MarkerClusterer, type Marker } from '@googlemaps/markerclusterer'
 import { Button } from '@/components/atoms/button'
 import { useDebounce } from '@/hooks/useDebounce'
 import {
@@ -35,14 +36,11 @@ const USER_LOCATION_ZOOM = 14
 const MAP_HEIGHT = 'h-[calc(100vh-80px)]'
 const MAP_INTERACTION_DEBOUNCE_MS = 1000
 const MAP_LISTINGS_LIMIT = 200
-// Hard cap on markers handed to Google Maps at once. The accumulating cache can
-// hold far more points than any single viewport ever showed before; rendering
-// thousands of AdvancedMarkers makes Google's marker code recurse and throw
-// "Maximum call stack size exceeded". Capping at the per-fetch limit keeps the
-// rendered count within the range the map already handled.
-const MAX_RENDERED_MARKERS = MAP_LISTINGS_LIMIT
-// Render priority when the in-view set exceeds the cap: VIP tiers win so the
-// most important pins are never the ones dropped.
+// Max cards shown in the side panel at once (the map itself shows every cached
+// pin via clustering; the list stays bounded for scroll performance).
+const SIDEBAR_LISTINGS_LIMIT = 200
+// Ordering for the in-view set: VIP tiers first so the panel surfaces the most
+// important listings, then stable by id.
 const VIP_RENDER_PRIORITY: Record<VipType, number> = {
   DIAMOND: 0,
   GOLD: 1,
@@ -258,6 +256,49 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   )
 }
 
+interface ClusteredMarkerProps {
+  listing: ListingDetail
+  isSelected: boolean
+  onMarkerClick: (listing: ListingDetail) => void
+  setMarkerRef: (marker: Marker | null, listingId: number) => void
+}
+
+// A single map pin. Extracted (and memoized) so its `ref` callback identity is
+// stable across parent re-renders — an inline ref would make React detach and
+// reattach every marker on each render, thrashing the clusterer.
+const ClusteredMarker: React.FC<ClusteredMarkerProps> = React.memo(
+  ({ listing, isSelected, onMarkerClick, setMarkerRef }) => {
+    const handleRef = useCallback(
+      (marker: Marker | null) => setMarkerRef(marker, listing.listingId),
+      [setMarkerRef, listing.listingId],
+    )
+
+    return (
+      <AdvancedMarker
+        ref={handleRef}
+        position={{
+          lat: listing.address.latitude,
+          lng: listing.address.longitude,
+        }}
+        zIndex={isSelected ? SELECTED_MARKER_Z_INDEX : undefined}
+        onClick={(event) => {
+          // Stop the event so the map's own onClick (which closes the card)
+          // does not also fire and immediately clear the selection.
+          event.stop()
+          onMarkerClick(listing)
+        }}
+      >
+        <MapMarker
+          vipType={listing.vipType}
+          isSelected={isSelected}
+          onClick={() => onMarkerClick(listing)}
+        />
+      </AdvancedMarker>
+    )
+  },
+)
+ClusteredMarker.displayName = 'ClusteredMarker'
+
 interface MapContentProps {
   listings: ListingDetail[]
   selectedListing: ListingDetail | null
@@ -294,6 +335,54 @@ const MapContent: React.FC<MapContentProps> = ({
   const panSuppressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   )
+
+  // Marker clustering: collect the rendered AdvancedMarker elements by
+  // listingId and feed them to a MarkerClusterer. Dense areas group into
+  // clusters instead of rendering every pin, so the full cached set can be
+  // shown at any zoom without overflowing Google's marker.js — and the pins no
+  // longer change as you zoom the same spot.
+  const clustererRef = useRef<MarkerClusterer | null>(null)
+  const [markerElements, setMarkerElements] = useState<Record<string, Marker>>(
+    {},
+  )
+
+  const setMarkerRef = useCallback(
+    (marker: Marker | null, listingId: number) => {
+      const key = String(listingId)
+      setMarkerElements((prev) => {
+        if (marker && prev[key]) return prev
+        if (!marker && !prev[key]) return prev
+        if (marker) {
+          return { ...prev, [key]: marker }
+        }
+        const next = { ...prev }
+        delete next[key]
+        return next
+      })
+    },
+    [],
+  )
+
+  // Lazily create the clusterer once the map is ready, then keep its marker set
+  // in sync with what is rendered. Keyed on both `map` and `markerElements` so
+  // markers collected before the map loads are still added once it appears.
+  useEffect(() => {
+    if (!map) return
+    if (!clustererRef.current) {
+      clustererRef.current = new MarkerClusterer({ map })
+    }
+    const clusterer = clustererRef.current
+    clusterer.clearMarkers()
+    clusterer.addMarkers(Object.values(markerElements))
+  }, [map, markerElements])
+
+  // Detach the clusterer when the map view unmounts.
+  useEffect(() => {
+    return () => {
+      clustererRef.current?.clearMarkers()
+      clustererRef.current = null
+    }
+  }, [])
 
   const handleMapChange = useCallback(() => {
     if (!map) return
@@ -489,32 +578,16 @@ const MapContent: React.FC<MapContentProps> = ({
         </div>
       )}
 
-      {/* Markers */}
-      {listings.map((listing) => {
-        const isSelected = selectedListing?.listingId === listing.listingId
-        return (
-          <AdvancedMarker
-            key={listing.listingId}
-            position={{
-              lat: listing.address.latitude,
-              lng: listing.address.longitude,
-            }}
-            zIndex={isSelected ? SELECTED_MARKER_Z_INDEX : undefined}
-            onClick={(event) => {
-              // Stop the event so the map's own onClick (which closes the card)
-              // does not also fire and immediately clear the selection.
-              event.stop()
-              onMarkerClick(listing)
-            }}
-          >
-            <MapMarker
-              vipType={listing.vipType}
-              isSelected={isSelected}
-              onClick={() => onMarkerClick(listing)}
-            />
-          </AdvancedMarker>
-        )
-      })}
+      {/* Markers (grouped by the clusterer above) */}
+      {listings.map((listing) => (
+        <ClusteredMarker
+          key={listing.listingId}
+          listing={listing}
+          isSelected={selectedListing?.listingId === listing.listingId}
+          onMarkerClick={onMarkerClick}
+          setMarkerRef={setMarkerRef}
+        />
+      ))}
     </>
   )
 }
@@ -601,19 +674,23 @@ const MapViewTemplate: React.FC = () => {
         inView.push(listing)
       }
     })
-    if (inView.length <= MAX_RENDERED_MARKERS) {
-      return inView
-    }
-    // Too many pins for one render — keep the highest-priority ones (VIP tier,
-    // then stable by id) and cap, so Google's marker code never overflows.
+    // Return every cached pin in view (clustering renders them all without
+    // overflow), ordered VIP-first then stable by id so the set never reshuffles
+    // or swaps marker types as the same area is zoomed in and out.
     inView.sort((a, b) => {
       const priorityDelta =
         VIP_RENDER_PRIORITY[a.vipType] - VIP_RENDER_PRIORITY[b.vipType]
       return priorityDelta !== 0 ? priorityDelta : a.listingId - b.listingId
     })
-    return inView.slice(0, MAX_RENDERED_MARKERS)
+    return inView
     // cacheVersion bumps whenever the (ref-held) cache mutates, forcing recompute.
   }, [cacheVersion, currentViewport, isBelowMinZoom])
+
+  // The side panel stays bounded for scroll performance; the map shows all pins.
+  const sidebarListings = useMemo(
+    () => visibleListings.slice(0, SIDEBAR_LISTINGS_LIMIT),
+    [visibleListings],
+  )
 
   useEffect(() => {
     if (!debouncedViewport) {
@@ -747,7 +824,7 @@ const MapViewTemplate: React.FC = () => {
           >
             <MapListingsPanelContent
               isLoading={isLoading}
-              listings={visibleListings}
+              listings={sidebarListings}
               selectedListing={selectedListing}
               totalCount={totalCount}
               hasMore={hasMore}
