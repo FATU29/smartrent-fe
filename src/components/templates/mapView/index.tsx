@@ -37,6 +37,12 @@ const MAP_INTERACTION_DEBOUNCE_MS = 1000
 const MAP_LISTINGS_LIMIT = 200
 const MIN_LISTING_FETCH_ZOOM = 11
 const MAP_BOUNDS_COORDINATE_PRECISION = 4
+// Cap on how many fully-loaded viewports we remember for the "skip already
+// loaded" check, so the list can't grow without bound over a long session.
+const MAX_COMPLETED_REGIONS = 60
+// Slack when testing whether one bounding box contains another, to absorb the
+// rounding applied by normalizeViewport.
+const BOUNDS_EPSILON = 1e-6
 const PROGRAMMATIC_PAN_SUPPRESS_MS = 600
 // Selected marker is lifted above the others so it is never hidden when pins
 // overlap.
@@ -66,6 +72,28 @@ const normalizeViewport = (viewport: MapViewport): MapViewport => ({
   swLng: roundCoordinate(viewport.swLng),
   zoom: Math.round(viewport.zoom),
 })
+
+// True when `outer` fully encloses `inner`. Used to skip a fetch when the new
+// viewport sits entirely inside an area we have already loaded completely.
+const boundsContain = (outer: MapViewport, inner: MapViewport): boolean =>
+  outer.swLat <= inner.swLat + BOUNDS_EPSILON &&
+  outer.swLng <= inner.swLng + BOUNDS_EPSILON &&
+  outer.neLat >= inner.neLat - BOUNDS_EPSILON &&
+  outer.neLng >= inner.neLng - BOUNDS_EPSILON
+
+// True when a listing's coordinates fall inside the given viewport.
+const listingInViewport = (
+  listing: ListingDetail,
+  viewport: MapViewport,
+): boolean => {
+  const { latitude, longitude } = listing.address
+  return (
+    latitude >= viewport.swLat &&
+    latitude <= viewport.neLat &&
+    longitude >= viewport.swLng &&
+    longitude <= viewport.neLng
+  )
+}
 
 interface MapSidebarProps {
   isLoading: boolean
@@ -481,7 +509,22 @@ const MapViewTemplate: React.FC = () => {
   const router = useRouter()
   const t = useTranslations('navigation')
   const tCommon = useTranslations('common')
-  const [listings, setListings] = useState<ListingDetail[]>([])
+  // Accumulating cache of every listing we have fetched this session, keyed by
+  // listingId. Markers are rendered from here so panning back to an
+  // already-loaded area is instant and never flickers. A ref (not state) holds
+  // the data; `cacheVersion` is bumped to trigger re-renders when it mutates.
+  const listingsCacheRef = useRef<Map<number, ListingDetail>>(
+    new globalThis.Map(),
+  )
+  // Viewports we have loaded in full (backend reported no more results). A new
+  // viewport contained in one of these is served from cache with no network.
+  const completedRegionsRef = useRef<MapViewport[]>([])
+  // Filter set the cache was populated under; when it changes the cache is reset.
+  const activeFilterKeyRef = useRef<string | null>(null)
+  const [cacheVersion, setCacheVersion] = useState(0)
+  const [currentViewport, setCurrentViewport] = useState<MapViewport | null>(
+    null,
+  )
   const [selectedListing, setSelectedListing] = useState<ListingDetail | null>(
     null,
   )
@@ -520,6 +563,34 @@ const MapViewTemplate: React.FC = () => {
     }
   }, [router.query.categoryId, router.query.vipType, router.query.verifiedOnly])
 
+  // Stable signature of the active filters. When it changes the accumulated
+  // cache no longer applies and must be discarded before the next fetch.
+  const filterKey = useMemo(
+    () =>
+      `${mapFilters.categoryId ?? ''}|${mapFilters.vipType ?? ''}|${mapFilters.verifiedOnly}`,
+    [mapFilters],
+  )
+
+  const currentZoom = currentViewport?.zoom ?? DEFAULT_ZOOM
+  const isBelowMinZoom = currentZoom < MIN_LISTING_FETCH_ZOOM
+
+  // Listings to show right now: everything in the cache that falls inside the
+  // current viewport. Derived from the cache (not replaced on every fetch) so
+  // pins already loaded stay visible while neighbouring areas load.
+  const visibleListings = useMemo<ListingDetail[]>(() => {
+    if (!currentViewport || isBelowMinZoom) {
+      return []
+    }
+    const result: ListingDetail[] = []
+    listingsCacheRef.current.forEach((listing) => {
+      if (listingInViewport(listing, currentViewport)) {
+        result.push(listing)
+      }
+    })
+    return result
+    // cacheVersion bumps whenever the (ref-held) cache mutates, forcing recompute.
+  }, [cacheVersion, currentViewport, isBelowMinZoom])
+
   useEffect(() => {
     if (!debouncedViewport) {
       return
@@ -527,11 +598,29 @@ const MapViewTemplate: React.FC = () => {
 
     const normalizedViewport = normalizeViewport(debouncedViewport)
 
+    // Filters changed since the cache was filled — drop it so stale pins from a
+    // previous filter set don't linger.
+    if (activeFilterKeyRef.current !== filterKey) {
+      activeFilterKeyRef.current = filterKey
+      listingsCacheRef.current.clear()
+      completedRegionsRef.current = []
+      setCacheVersion((version) => version + 1)
+    }
+
     if (normalizedViewport.zoom < MIN_LISTING_FETCH_ZOOM) {
       setIsLoading(false)
       setError(null)
-      setListings([])
-      setTotalCount(0)
+      return
+    }
+
+    // Already fully loaded this area — serve from cache, no network call. This
+    // is what stops re-loading points the UI already has.
+    const alreadyCovered = completedRegionsRef.current.some((region) =>
+      boundsContain(region, normalizedViewport),
+    )
+    if (alreadyCovered) {
+      setIsLoading(false)
+      setError(null)
       setHasMore(false)
       return
     }
@@ -540,11 +629,6 @@ const MapViewTemplate: React.FC = () => {
 
     setIsLoading(true)
     setError(null)
-
-    setListings([])
-    setTotalCount(0)
-    setHasMore(false)
-    setSelectedListing(null)
 
     const fetchMapBoundsListings = async () => {
       try {
@@ -564,7 +648,23 @@ const MapViewTemplate: React.FC = () => {
           return
         }
 
-        setListings(response.data.listings)
+        // Merge (not replace) so previously loaded pins are retained.
+        const cache = listingsCacheRef.current
+        response.data.listings.forEach((listing) => {
+          cache.set(listing.listingId, listing)
+        })
+
+        // Remember a region only when the backend returned it in full. A capped
+        // region is incomplete, so it must be re-queried when the user zooms in.
+        if (!response.data.hasMore) {
+          const regions = completedRegionsRef.current
+          regions.push(normalizedViewport)
+          if (regions.length > MAX_COMPLETED_REGIONS) {
+            regions.splice(0, regions.length - MAX_COMPLETED_REGIONS)
+          }
+        }
+
+        setCacheVersion((version) => version + 1)
         setTotalCount(response.data.totalCount)
         setHasMore(response.data.hasMore)
       } catch (err) {
@@ -577,9 +677,6 @@ const MapViewTemplate: React.FC = () => {
             ? err.message
             : 'An error occurred while loading properties',
         )
-        setListings([])
-        setTotalCount(0)
-        setHasMore(false)
       } finally {
         if (isSubscribed) {
           setIsLoading(false)
@@ -592,13 +689,14 @@ const MapViewTemplate: React.FC = () => {
     return () => {
       isSubscribed = false
     }
-  }, [debouncedViewport, mapFilters])
+  }, [debouncedViewport, mapFilters, filterKey])
 
   const handleViewportChange = useCallback((viewport: MapViewport) => {
+    // Update the viewport used for filtering immediately (so cached pins for a
+    // revisited area appear at once) and queue the debounced fetch.
+    setCurrentViewport(normalizeViewport(viewport))
     setPendingViewport(viewport)
   }, [])
-
-  const currentZoom = pendingViewport?.zoom ?? DEFAULT_ZOOM
 
   const handleMarkerClick = useCallback((listing: ListingDetail) => {
     setSelectedListing(listing)
@@ -625,14 +723,14 @@ const MapViewTemplate: React.FC = () => {
           >
             <MapListingsPanelContent
               isLoading={isLoading}
-              listings={listings}
+              listings={visibleListings}
               selectedListing={selectedListing}
               totalCount={totalCount}
               hasMore={hasMore}
               onSelectListing={handleMarkerClick}
               onClosePanel={() => setIsListingsDrawerOpen(false)}
               error={error}
-              isBelowMinZoom={currentZoom < MIN_LISTING_FETCH_ZOOM}
+              isBelowMinZoom={isBelowMinZoom}
               t={t}
               tCommon={tCommon}
             />
@@ -664,7 +762,7 @@ const MapViewTemplate: React.FC = () => {
             onClick={handleCloseCard}
           >
             <MapContent
-              listings={listings}
+              listings={visibleListings}
               selectedListing={selectedListing}
               isLoading={isLoading}
               error={error}
