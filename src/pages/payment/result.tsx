@@ -182,13 +182,16 @@ const PaymentResultPage: NextPageWithLayout = () => {
       return t('success.messageDefault')
     }
 
+    // Only match parameters that are unique to ZaloPay's redirect. SePay
+    // returns with a bare `?status=success|error|cancel` (and may carry a
+    // generic `bankcode`), so neither `status` nor `bankcode` can be used to
+    // discriminate — including them here misclassifies every SePay return as a
+    // ZaloPay callback and fires a bogus ZALOPAY callback request.
     const isZaloPayCallback = (params: URLSearchParams) =>
       [
-        'status',
         'apptransid',
         'checksum',
         'appid',
-        'bankcode',
         // Backward compatibility with older ZaloPay redirect schemas
         'resultCode',
         'orderId',
