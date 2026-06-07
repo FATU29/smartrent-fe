@@ -19,6 +19,7 @@
     "test:run": "vitest run"
   },
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.6.2",
     "@hookform/resolvers": "^5.2.1",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@radix-ui/react-avatar": "^1.1.10",
