@@ -35,6 +35,20 @@ const USER_LOCATION_ZOOM = 14
 const MAP_HEIGHT = 'h-[calc(100vh-80px)]'
 const MAP_INTERACTION_DEBOUNCE_MS = 1000
 const MAP_LISTINGS_LIMIT = 200
+// Hard cap on markers handed to Google Maps at once. The accumulating cache can
+// hold far more points than any single viewport ever showed before; rendering
+// thousands of AdvancedMarkers makes Google's marker code recurse and throw
+// "Maximum call stack size exceeded". Capping at the per-fetch limit keeps the
+// rendered count within the range the map already handled.
+const MAX_RENDERED_MARKERS = MAP_LISTINGS_LIMIT
+// Render priority when the in-view set exceeds the cap: VIP tiers win so the
+// most important pins are never the ones dropped.
+const VIP_RENDER_PRIORITY: Record<VipType, number> = {
+  DIAMOND: 0,
+  GOLD: 1,
+  SILVER: 2,
+  NORMAL: 3,
+}
 const MIN_LISTING_FETCH_ZOOM = 11
 const MAP_BOUNDS_COORDINATE_PRECISION = 4
 // Cap on how many fully-loaded viewports we remember for the "skip already
@@ -581,13 +595,23 @@ const MapViewTemplate: React.FC = () => {
     if (!currentViewport || isBelowMinZoom) {
       return []
     }
-    const result: ListingDetail[] = []
+    const inView: ListingDetail[] = []
     listingsCacheRef.current.forEach((listing) => {
       if (listingInViewport(listing, currentViewport)) {
-        result.push(listing)
+        inView.push(listing)
       }
     })
-    return result
+    if (inView.length <= MAX_RENDERED_MARKERS) {
+      return inView
+    }
+    // Too many pins for one render — keep the highest-priority ones (VIP tier,
+    // then stable by id) and cap, so Google's marker code never overflows.
+    inView.sort((a, b) => {
+      const priorityDelta =
+        VIP_RENDER_PRIORITY[a.vipType] - VIP_RENDER_PRIORITY[b.vipType]
+      return priorityDelta !== 0 ? priorityDelta : a.listingId - b.listingId
+    })
+    return inView.slice(0, MAX_RENDERED_MARKERS)
     // cacheVersion bumps whenever the (ref-held) cache mutates, forcing recompute.
   }, [cacheVersion, currentViewport, isBelowMinZoom])
 
