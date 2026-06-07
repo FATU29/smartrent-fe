@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
@@ -7,7 +8,11 @@ import {
   AdvancedMarker,
   useMap,
 } from '@vis.gl/react-google-maps'
-import { MarkerClusterer, type Marker } from '@googlemaps/markerclusterer'
+import {
+  MarkerClusterer,
+  type Marker,
+  type Renderer,
+} from '@googlemaps/markerclusterer'
 import { Button } from '@/components/atoms/button'
 import { useDebounce } from '@/hooks/useDebounce'
 import {
@@ -105,6 +110,33 @@ const listingInViewport = (
     longitude >= viewport.swLng &&
     longitude <= viewport.neLng
   )
+}
+
+// Bubble shown for a cluster. The number is the count of listings grouped at
+// that spot — click it (or zoom in) to break the cluster apart into individual
+// pins. Sized up a little for bigger groups so dense areas stand out.
+const buildClusterContent = (count: number): HTMLElement => {
+  const size = count >= 100 ? 52 : count >= 10 ? 44 : 36
+  const el = document.createElement('div')
+  el.className =
+    'flex items-center justify-center rounded-full bg-primary text-white font-semibold border-2 border-white shadow-lg'
+  el.style.width = `${size}px`
+  el.style.height = `${size}px`
+  el.style.fontSize = size >= 44 ? '14px' : '12px'
+  el.textContent = String(count)
+  return el
+}
+
+// Custom cluster renderer so the count reads clearly and matches the brand
+// colour instead of the library's default blue blobs.
+const clusterRenderer: Renderer = {
+  render: ({ count, position }) =>
+    new google.maps.marker.AdvancedMarkerElement({
+      position,
+      content: buildClusterContent(count),
+      // Sit above ordinary pins but below the selected one.
+      zIndex: 1000 + count,
+    }),
 }
 
 interface MapSidebarProps {
@@ -342,6 +374,10 @@ const MapContent: React.FC<MapContentProps> = ({
   // shown at any zoom without overflowing Google's marker.js — and the pins no
   // longer change as you zoom the same spot.
   const clustererRef = useRef<MarkerClusterer | null>(null)
+  // The marker set last handed to the clusterer, so we can sync incrementally
+  // (add/remove only what changed) instead of clearing and rebuilding every
+  // pan — a full rebuild flashes all the clusters.
+  const syncedMarkersRef = useRef<Set<Marker>>(new Set())
   const [markerElements, setMarkerElements] = useState<Record<string, Marker>>(
     {},
   )
@@ -369,11 +405,32 @@ const MapContent: React.FC<MapContentProps> = ({
   useEffect(() => {
     if (!map) return
     if (!clustererRef.current) {
-      clustererRef.current = new MarkerClusterer({ map })
+      clustererRef.current = new MarkerClusterer({
+        map,
+        renderer: clusterRenderer,
+      })
     }
     const clusterer = clustererRef.current
-    clusterer.clearMarkers()
-    clusterer.addMarkers(Object.values(markerElements))
+
+    // Diff against the previously synced set so only changed markers are
+    // touched; redraw once at the end.
+    const current = new Set(Object.values(markerElements))
+    const previous = syncedMarkersRef.current
+    const toAdd: Marker[] = []
+    current.forEach((marker) => {
+      if (!previous.has(marker)) toAdd.push(marker)
+    })
+    const toRemove: Marker[] = []
+    previous.forEach((marker) => {
+      if (!current.has(marker)) toRemove.push(marker)
+    })
+
+    if (toAdd.length === 0 && toRemove.length === 0) return
+
+    if (toRemove.length > 0) clusterer.removeMarkers(toRemove, true)
+    if (toAdd.length > 0) clusterer.addMarkers(toAdd, true)
+    clusterer.render()
+    syncedMarkersRef.current = current
   }, [map, markerElements])
 
   // Detach the clusterer when the map view unmounts.
@@ -381,6 +438,7 @@ const MapContent: React.FC<MapContentProps> = ({
     return () => {
       clustererRef.current?.clearMarkers()
       clustererRef.current = null
+      syncedMarkersRef.current = new Set()
     }
   }, [])
 
@@ -749,10 +807,18 @@ const MapViewTemplate: React.FC = () => {
           return
         }
 
-        // Merge (not replace) so previously loaded pins are retained.
+        // Merge (not replace), and keep the existing object reference for pins
+        // already cached. Overwriting with a fresh object would change the prop
+        // identity, re-render that marker, and make vis.gl re-assert it onto the
+        // map — which yanks it out of its cluster for a frame and flickers the
+        // icon (house ↔ VIP). New listings are added; seen ones stay put.
         const cache = listingsCacheRef.current
+        let added = 0
         response.data.listings.forEach((listing) => {
-          cache.set(listing.listingId, listing)
+          if (!cache.has(listing.listingId)) {
+            cache.set(listing.listingId, listing)
+            added += 1
+          }
         })
 
         // Remember a region only when the backend returned it in full. A capped
@@ -765,7 +831,10 @@ const MapViewTemplate: React.FC = () => {
           }
         }
 
-        setCacheVersion((version) => version + 1)
+        // Only force a re-render when new pins actually arrived.
+        if (added > 0) {
+          setCacheVersion((version) => version + 1)
+        }
         setTotalCount(response.data.totalCount)
         setHasMore(response.data.hasMore)
       } catch (err) {
