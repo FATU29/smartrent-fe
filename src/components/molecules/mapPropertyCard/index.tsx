@@ -45,7 +45,7 @@ const StatPill: React.FC<{ icon: React.ReactNode; value: React.ReactNode }> = ({
 // chrome (border / rounded corners / footer divider) so it sits flush inside
 // the map containers, which provide their own border and rounding. PropertyCard
 // is intentionally not reused here to avoid those nested-card artifacts.
-const MapPropertyCard: React.FC<MapPropertyCardProps> = ({
+const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
   listing,
   onClick,
   bottomContent,
@@ -214,5 +214,12 @@ const MapPropertyCard: React.FC<MapPropertyCardProps> = ({
     </div>
   )
 }
+
+// Memoized: the same `listing` object reference is kept in the map cache, so a
+// row's card skips re-rendering when the parent re-renders on pan / loading
+// toggles. Only the selected-card overlay (which passes a fresh `bottomContent`)
+// re-renders, and that is a single instance.
+const MapPropertyCard = React.memo(MapPropertyCardBase)
+MapPropertyCard.displayName = 'MapPropertyCard'
 
 export default MapPropertyCard
