@@ -5,7 +5,6 @@ import { Crown, Sparkles, Star, Home } from 'lucide-react'
 interface MapMarkerProps {
   vipType: VipType
   isSelected?: boolean
-  onClick?: () => void
 }
 
 interface VipStyle {
@@ -52,27 +51,20 @@ const getVipStyle = (vipType: VipType): VipStyle => {
   }
 }
 
+// Purely presentational: the click target is the enclosing AdvancedMarker
+// (which is `gmpClickable` and carries the single onClick + keyboard handling).
+// Adding an interactive `role=button`/onClick here too created a second,
+// competing click path that didn't stop the map's close handler — so clicks
+// raced and the detail card often closed itself, needing several clicks.
 const MapMarker: React.FC<MapMarkerProps> = ({
   vipType,
   isSelected = false,
-  onClick,
 }) => {
   const style = getVipStyle(vipType)
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if ((event.key === 'Enter' || event.key === ' ') && onClick) {
-      event.preventDefault()
-      onClick()
-    }
-  }
-
   return (
     <div
-      role='button'
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={handleKeyDown}
-      className={`relative cursor-pointer transition-all duration-200 transform ${
+      className={`relative transition-all duration-200 transform ${
         isSelected ? 'scale-125 z-50' : 'hover:scale-110'
       }`}
     >

@@ -142,6 +142,81 @@ const clusterRenderer: Renderer = {
     }),
 }
 
+interface SidebarListingCardProps {
+  listing: ListingDetail
+  isSelected: boolean
+  onSelect: (listing: ListingDetail) => void
+  onViewDetails: (listingId: number) => void
+}
+
+// One row in the listings drawer. Memoized so that selecting a listing (or the
+// parent re-rendering on every map pan / loading toggle) only re-renders the row
+// whose `isSelected` flipped — not all ~200 cards. Translations are read inside
+// the row so they don't widen the memo's prop surface, and the two callbacks are
+// stable (useCallback in the template), so referential equality holds.
+const SidebarListingCard: React.FC<SidebarListingCardProps> = React.memo(
+  ({ listing, isSelected, onSelect, onViewDetails }) => {
+    const t = useTranslations('navigation')
+    const tCommon = useTranslations('common')
+
+    return (
+      <div
+        role='button'
+        tabIndex={0}
+        className={`flex flex-col h-full cursor-pointer transition-all duration-200 rounded-xl border bg-card overflow-hidden ${
+          isSelected
+            ? 'border-primary ring-2 ring-primary/20 shadow-md'
+            : 'border-border/50 hover:border-primary/50 hover:shadow-sm'
+        }`}
+        onClick={() => onSelect(listing)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onSelect(listing)
+          }
+        }}
+      >
+        {/* Ensure standard click won't bubble up improperly from the card */}
+        <div className='pointer-events-none flex-1'>
+          <MapPropertyCard listing={listing} />
+        </div>
+
+        <div className='px-4 pb-4 pt-0'>
+          <div className='flex items-center gap-2 pointer-events-auto'>
+            <Button
+              size='sm'
+              className='flex-1'
+              onClick={(e) => {
+                e.stopPropagation()
+                onViewDetails(listing.listingId)
+              }}
+            >
+              <ExternalLink className='h-4 w-4 mr-2' />
+              {tCommon('viewDetails')}
+            </Button>
+            {/* Focus this listing's marker on the map (pan + animate) */}
+            <Button
+              type='button'
+              size='icon'
+              variant='secondary'
+              className='shrink-0'
+              onClick={(e) => {
+                e.stopPropagation()
+                onSelect(listing)
+              }}
+              aria-label={t('showOnMap')}
+              title={t('showOnMap')}
+            >
+              <MapPin className='h-4 w-4' />
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  },
+)
+SidebarListingCard.displayName = 'SidebarListingCard'
+
 interface MapSidebarProps {
   isLoading: boolean
   listings: ListingDetail[]
@@ -149,13 +224,12 @@ interface MapSidebarProps {
   totalCount: number
   hasMore: boolean
   onSelectListing: (listing: ListingDetail) => void
+  onViewDetails: (listingId: number) => void
   onClosePanel: () => void
   error: string | null
   isBelowMinZoom: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tCommon: any
 }
 
 const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
@@ -165,14 +239,12 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
   totalCount,
   hasMore,
   onSelectListing,
+  onViewDetails,
   onClosePanel,
   error,
   isBelowMinZoom,
   t,
-  tCommon,
 }) => {
-  const router = useRouter()
-
   return (
     <div className='flex flex-col h-full bg-background overflow-hidden'>
       <div className='p-5 border-b border-border bg-card'>
@@ -216,66 +288,15 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
 
       <div className='flex-1 overflow-y-auto p-4 bg-muted/20'>
         <div className='grid grid-cols-1 gap-5 lg:grid-cols-2'>
-          {listings.map((listing) => {
-            const isSelected = selectedListing?.listingId === listing.listingId
-            return (
-              <div
-                key={listing.listingId}
-                role='button'
-                tabIndex={0}
-                className={`flex flex-col h-full cursor-pointer transition-all duration-200 rounded-xl border bg-card overflow-hidden ${
-                  isSelected
-                    ? 'border-primary ring-2 ring-primary/20 shadow-md'
-                    : 'border-border/50 hover:border-primary/50 hover:shadow-sm'
-                }`}
-                onClick={() => onSelectListing(listing)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    onSelectListing(listing)
-                  }
-                }}
-              >
-                {/* Ensure standard click won't bubble up improperly from the card */}
-                <div className='pointer-events-none flex-1'>
-                  <MapPropertyCard listing={listing} />
-                </div>
-
-                <div className='px-4 pb-4 pt-0'>
-                  <div className='flex items-center gap-2 pointer-events-auto'>
-                    <Button
-                      size='sm'
-                      className='flex-1'
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        router.push(
-                          buildApartmentDetailRoute(String(listing.listingId)),
-                        )
-                      }}
-                    >
-                      <ExternalLink className='h-4 w-4 mr-2' />
-                      {tCommon('viewDetails')}
-                    </Button>
-                    {/* Focus this listing's marker on the map (pan + animate) */}
-                    <Button
-                      type='button'
-                      size='icon'
-                      variant='secondary'
-                      className='shrink-0'
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onSelectListing(listing)
-                      }}
-                      aria-label={t('showOnMap')}
-                      title={t('showOnMap')}
-                    >
-                      <MapPin className='h-4 w-4' />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
+          {listings.map((listing) => (
+            <SidebarListingCard
+              key={listing.listingId}
+              listing={listing}
+              isSelected={selectedListing?.listingId === listing.listingId}
+              onSelect={onSelectListing}
+              onViewDetails={onViewDetails}
+            />
+          ))}
         </div>
         {listings.length === 0 && !isLoading && !error && (
           <div className='flex flex-col items-center justify-center h-40 text-muted-foreground space-y-3'>
@@ -322,10 +343,7 @@ const ClusteredMarker: React.FC<ClusteredMarkerProps> = React.memo(
           onMarkerClick(listing)
         }}
       >
-        <MapMarker
-          vipType={listing.vipType}
-          onClick={() => onMarkerClick(listing)}
-        />
+        <MapMarker vipType={listing.vipType} />
       </AdvancedMarker>
     )
   },
@@ -355,11 +373,7 @@ const SelectedMarker: React.FC<SelectedMarkerProps> = ({
       onMarkerClick(listing)
     }}
   >
-    <MapMarker
-      vipType={listing.vipType}
-      isSelected
-      onClick={() => onMarkerClick(listing)}
-    />
+    <MapMarker vipType={listing.vipType} isSelected />
   </AdvancedMarker>
 )
 
@@ -429,6 +443,18 @@ const MapContent: React.FC<MapContentProps> = ({
       })
     },
     [],
+  )
+
+  // Markers handed to the clusterer: every in-view listing except the selected
+  // one (which is rendered separately, always on top). Memoized so the filtered
+  // array — and therefore the marker children — keep a stable identity across
+  // re-renders that don't change the listing set or the selection.
+  const clusteredListings = useMemo(
+    () =>
+      listings.filter(
+        (listing) => listing.listingId !== selectedListing?.listingId,
+      ),
+    [listings, selectedListing?.listingId],
   )
 
   // Lazily create the clusterer once the map is ready, then keep its marker set
@@ -673,16 +699,14 @@ const MapContent: React.FC<MapContentProps> = ({
       )}
 
       {/* Markers grouped by the clusterer (everything except the located one) */}
-      {listings
-        .filter((listing) => listing.listingId !== selectedListing?.listingId)
-        .map((listing) => (
-          <ClusteredMarker
-            key={listing.listingId}
-            listing={listing}
-            onMarkerClick={onMarkerClick}
-            setMarkerRef={setMarkerRef}
-          />
-        ))}
+      {clusteredListings.map((listing) => (
+        <ClusteredMarker
+          key={listing.listingId}
+          listing={listing}
+          onMarkerClick={onMarkerClick}
+          setMarkerRef={setMarkerRef}
+        />
+      ))}
 
       {/* The located listing, always visible on top with its pulsing halo */}
       {selectedListing && (
@@ -921,6 +945,19 @@ const MapViewTemplate: React.FC = () => {
     setSelectedListing(null)
   }, [])
 
+  // Stable callbacks so the memoized sidebar rows don't re-render on every
+  // parent render. `router` from next/router is a stable singleton.
+  const handleViewDetails = useCallback(
+    (listingId: number) => {
+      router.push(buildApartmentDetailRoute(String(listingId)))
+    },
+    [router],
+  )
+
+  const handleClosePanel = useCallback(() => {
+    setIsListingsDrawerOpen(false)
+  }, [])
+
   return (
     <div
       className={`relative flex w-full ${MAP_HEIGHT} overflow-hidden bg-background`}
@@ -943,11 +980,11 @@ const MapViewTemplate: React.FC = () => {
               totalCount={totalCount}
               hasMore={hasMore}
               onSelectListing={handleMarkerClick}
-              onClosePanel={() => setIsListingsDrawerOpen(false)}
+              onViewDetails={handleViewDetails}
+              onClosePanel={handleClosePanel}
               error={error}
               isBelowMinZoom={isBelowMinZoom}
               t={t}
-              tCommon={tCommon}
             />
           </aside>
         </div>
