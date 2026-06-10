@@ -8,6 +8,36 @@ import { formatDateTimeWithLocale } from '@/utils/date/formatters'
 const KNOWN_TYPES = new Set<string>(CUSTOMER_TRANSACTION_TYPES)
 
 /**
+ * Display names for payment gateways. These are brand names, so they are not
+ * translated. VNPAY is mapped temporarily: it is no longer an active gateway,
+ * but legacy transactions made before the SePay migration still reference it.
+ */
+const GATEWAY_LABELS: Record<string, string> = {
+  SEPAY: 'SePay',
+  VNPAY: 'VNPay',
+  PAYPAL: 'PayPal',
+  MOMO: 'MoMo',
+  ZALOPAY: 'ZaloPay',
+}
+
+/** Map a raw gateway code to its display name, falling back to the raw value. */
+export function getGatewayLabel(gateway?: string | null): string | null {
+  if (!gateway) return null
+  return GATEWAY_LABELS[gateway.toUpperCase()] ?? gateway
+}
+
+/**
+ * Format the "method" cell shared by the list, table and detail views:
+ * the mapped gateway label joined with the raw payment method (e.g. "VNPay").
+ */
+export function formatPaymentMethod(
+  gateway?: string | null,
+  method?: string | null,
+): string | null {
+  return [getGatewayLabel(gateway), method].filter(Boolean).join(' · ') || null
+}
+
+/**
  * Title-case an unknown enum-ish value (e.g. `NEW_FEE_TYPE` -> `New Fee Type`)
  * so the UI never crashes or shows a raw SCREAMING_CASE token.
  */

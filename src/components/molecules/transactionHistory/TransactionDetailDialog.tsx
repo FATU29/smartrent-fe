@@ -13,7 +13,7 @@ import { Typography } from '@/components/atoms/typography'
 import PaymentStatusBadge from '@/components/atoms/paymentStatusBadge'
 import { useCustomerTransactionDetail } from '@/hooks/useCustomerTransactions'
 import type { CustomerTransactionDetail } from '@/api/types/customer-transaction.type'
-import { useTransactionFormatters } from './helpers'
+import { getGatewayLabel, useTransactionFormatters } from './helpers'
 
 export interface TransactionDetailDialogProps {
   transactionId: string | null
@@ -50,7 +50,10 @@ const DetailBody: React.FC<{ detail: CustomerTransactionDetail }> = ({
       />
       <Row label={t('amount')} value={formatAmount(detail.amount)} />
       <Row label={t('paymentType')} value={typeLabel(detail.paymentType)} />
-      <Row label={t('gateway')} value={detail.paymentGateway} />
+      <Row
+        label={t('gateway')}
+        value={getGatewayLabel(detail.paymentGateway)}
+      />
       <Row label={t('gatewayCode')} value={detail.gatewayTransactionCode} />
       <Row label={t('paymentMethod')} value={detail.paymentMethod} />
       <Row label={t('created')} value={formatDateTime(detail.createdAt)} />

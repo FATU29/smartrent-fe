@@ -5,7 +5,7 @@ import { Card } from '@/components/atoms/card'
 import { Typography } from '@/components/atoms/typography'
 import PaymentStatusBadge from '@/components/atoms/paymentStatusBadge'
 import type { CustomerTransactionItem } from '@/api/types/customer-transaction.type'
-import { useTransactionFormatters } from './helpers'
+import { formatPaymentMethod, useTransactionFormatters } from './helpers'
 
 export interface TransactionListItemProps {
   item: CustomerTransactionItem
@@ -19,9 +19,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = ({
   const t = useTranslations('seller.transactions.columns')
   const { formatAmount, formatDateTime, typeLabel } = useTransactionFormatters()
 
-  const method =
-    [item.paymentGateway, item.paymentMethod].filter(Boolean).join(' · ') ||
-    null
+  const method = formatPaymentMethod(item.paymentGateway, item.paymentMethod)
   const roomLabel = item.room?.roomName || item.room?.roomCode
 
   return (
