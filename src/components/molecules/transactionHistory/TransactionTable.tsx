@@ -11,7 +11,7 @@ import {
 import { Typography } from '@/components/atoms/typography'
 import PaymentStatusBadge from '@/components/atoms/paymentStatusBadge'
 import type { CustomerTransactionItem } from '@/api/types/customer-transaction.type'
-import { useTransactionFormatters } from './helpers'
+import { formatPaymentMethod, useTransactionFormatters } from './helpers'
 
 const EMPTY = '—'
 const HEAD_CLASS =
@@ -27,8 +27,6 @@ const TransactionRow: React.FC<{
   onSelect: (id: string) => void
 }> = ({ item, onSelect }) => {
   const { formatAmount, formatDateTime, typeLabel } = useTransactionFormatters()
-  const room = item.room
-  const landlord = item.landlord
 
   return (
     <TableRow
@@ -49,36 +47,13 @@ const TransactionRow: React.FC<{
         {formatAmount(item.amount)}
       </TableCell>
       <TableCell className='min-w-[160px] text-sm text-muted-foreground whitespace-nowrap'>
-        {[item.paymentGateway, item.paymentMethod]
-          .filter(Boolean)
-          .join(' · ') || EMPTY}
+        {formatPaymentMethod(item.paymentGateway, item.paymentMethod) || EMPTY}
       </TableCell>
       <TableCell className='min-w-[130px]'>
         <PaymentStatusBadge status={item.status} />
       </TableCell>
-      <TableCell className='min-w-[220px] max-w-[280px]'>
-        <Typography variant='small' className='block truncate'>
-          {room?.roomName || room?.roomCode || EMPTY}
-        </Typography>
-        {room?.address && (
-          <Typography variant='caption' as='span' className='block truncate'>
-            {room.address}
-          </Typography>
-        )}
-      </TableCell>
-      <TableCell className='min-w-[180px] max-w-[220px] text-sm'>
-        <span className='block truncate'>{landlord?.name || EMPTY}</span>
-        {landlord?.phone && (
-          <span className='block truncate text-muted-foreground'>
-            {landlord.phone}
-          </span>
-        )}
-      </TableCell>
       <TableCell className='min-w-[160px] text-sm text-muted-foreground whitespace-nowrap'>
         {formatDateTime(item.createdAt)}
-      </TableCell>
-      <TableCell className='min-w-[160px] text-sm text-muted-foreground whitespace-nowrap'>
-        {item.completedAt ? formatDateTime(item.completedAt) : EMPTY}
       </TableCell>
     </TableRow>
   )
@@ -107,17 +82,8 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
             <TableHead className={`${HEAD_CLASS} min-w-[130px]`}>
               {t('status')}
             </TableHead>
-            <TableHead className={`${HEAD_CLASS} min-w-[220px]`}>
-              {t('room')}
-            </TableHead>
-            <TableHead className={`${HEAD_CLASS} min-w-[180px]`}>
-              {t('landlord')}
-            </TableHead>
             <TableHead className={`${HEAD_CLASS} min-w-[160px]`}>
               {t('created')}
-            </TableHead>
-            <TableHead className={`${HEAD_CLASS} min-w-[160px]`}>
-              {t('completed')}
             </TableHead>
           </TableRow>
         </TableHeader>
