@@ -12,6 +12,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/atoms/popover'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/atoms/tooltip'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useNotifications } from '@/hooks/useNotifications'
 import type { NotificationItem } from '@/api/types/notification.type'
@@ -98,15 +104,22 @@ const NotificationPanel: React.FC = () => {
         )}
       </div>
       {unreadCount > 0 && (
-        <Button
-          variant='ghost'
-          size='sm'
-          className='h-auto px-2 py-1 text-xs text-muted-foreground hover:text-foreground'
-          onClick={handleMarkAllRead}
-        >
-          <CheckCheck className='mr-1 h-3.5 w-3.5' />
-          {t('markAllRead')}
-        </Button>
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground'
+                onClick={handleMarkAllRead}
+                aria-label={t('markAllRead')}
+              >
+                <CheckCheck className='h-4 w-4' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side='bottom'>{t('markAllRead')}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
     </>
   )
