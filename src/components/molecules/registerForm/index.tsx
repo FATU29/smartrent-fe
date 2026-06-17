@@ -44,10 +44,12 @@ const RegisterForm: NextPage<RegisterFormProps> = (props) => {
   const registerSchema = yup.object({
     firstName: yup
       .string()
+      .trim()
       .required(t('homePage.auth.validation.firstNameRequired'))
       .min(2, t('homePage.auth.validation.firstNameMinLength')),
     lastName: yup
       .string()
+      .trim()
       .required(t('homePage.auth.validation.lastNameRequired'))
       .min(2, t('homePage.auth.validation.lastNameMinLength')),
     email: yup
