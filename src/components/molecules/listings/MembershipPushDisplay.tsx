@@ -99,8 +99,8 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
       {/* Divider (desktop only) */}
       <div className='hidden h-9 w-px bg-primary/15 sm:block' />
 
-      {/* Push benefits */}
-      <div className='flex flex-wrap items-center gap-2'>
+      {/* Push benefits — full-width rows on mobile, compact pills on desktop */}
+      <div className='flex w-full flex-wrap items-center gap-2 sm:w-auto'>
         {pushBenefits.map((benefit) => {
           const progress = getBenefitProgress(
             benefit.quantityRemaining,
@@ -111,29 +111,17 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
             <div
               key={benefit.userBenefitId}
               title={`${t('expires')}: ${format(new Date(benefit.expiresAt), 'dd/MM/yyyy')}`}
-              className='flex min-w-0 items-center gap-2 rounded-md border border-border bg-background/60 px-2.5 py-1.5'
+              className='flex w-full min-w-0 items-center gap-2 rounded-md border border-border bg-background/60 px-2.5 py-1.5 sm:w-auto'
             >
               <Zap className='h-4 w-4 flex-shrink-0 text-primary' />
-              <div className='min-w-0'>
-                <p className='max-w-[180px] truncate text-xs font-medium text-foreground'>
-                  {benefit.benefitNameDisplay}
-                </p>
-                <div className='mt-1 flex items-center gap-1.5'>
-                  <div className='h-1 w-14 overflow-hidden rounded-full bg-muted'>
-                    <div
-                      className={cn(
-                        'h-full rounded-full',
-                        getProgressColor(
-                          benefit.quantityRemaining,
-                          benefit.totalQuantity,
-                        ),
-                      )}
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
+              <div className='min-w-0 flex-1'>
+                <div className='flex items-center justify-between gap-2'>
+                  <p className='truncate text-xs font-medium text-foreground sm:max-w-[180px]'>
+                    {benefit.benefitNameDisplay}
+                  </p>
                   <span
                     className={cn(
-                      'text-micro font-semibold tabular-nums',
+                      'shrink-0 text-micro font-semibold tabular-nums',
                       getCountColor(
                         benefit.quantityRemaining,
                         benefit.totalQuantity,
@@ -142,6 +130,18 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
                   >
                     {benefit.quantityRemaining}/{benefit.totalQuantity}
                   </span>
+                </div>
+                <div className='mt-1 h-1 w-full overflow-hidden rounded-full bg-muted sm:w-14'>
+                  <div
+                    className={cn(
+                      'h-full rounded-full',
+                      getProgressColor(
+                        benefit.quantityRemaining,
+                        benefit.totalQuantity,
+                      ),
+                    )}
+                    style={{ width: `${progress}%` }}
+                  />
                 </div>
               </div>
             </div>

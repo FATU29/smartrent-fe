@@ -42,7 +42,7 @@ export const GuideCard: React.FC<GuideCardProps> = ({
         <div className='min-w-0'>
           <Typography
             variant='h4'
-            className='text-base leading-snug tracking-tight sm:text-lg'
+            className='text-lg leading-snug tracking-tight sm:text-xl'
           >
             {title}
           </Typography>
@@ -81,34 +81,6 @@ export const BulletList: React.FC<BulletListProps> = ({
       <li key={i} className='flex items-start gap-1.5'>
         <span className={`${markerClassName} mt-0.5 shrink-0`}>•</span>
         <span className='min-w-0'>{content}</span>
-      </li>
-    ))}
-  </ul>
-)
-
-interface CheckListProps {
-  items: React.ReactNode[]
-  marker?: React.ReactNode
-  markerClassName?: string
-  className?: string
-}
-
-export const CheckList: React.FC<CheckListProps> = ({
-  items,
-  marker = '✓',
-  markerClassName = 'text-green-600 dark:text-green-400',
-  className = '',
-}) => (
-  <ul className={`space-y-2 ${className}`.trim()}>
-    {items.map((content, i) => (
-      <li key={i} className='flex items-start gap-1.5'>
-        <span className={`${markerClassName} mt-0.5 shrink-0`}>{marker}</span>
-        <Typography
-          variant='p'
-          className='min-w-0 text-sm leading-6 text-green-900 dark:text-green-100'
-        >
-          {content}
-        </Typography>
       </li>
     ))}
   </ul>

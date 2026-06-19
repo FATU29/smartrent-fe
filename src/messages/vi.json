@@ -3563,7 +3563,7 @@
     },
     "payment": {
       "title": "Hướng Dẫn Thanh Toán",
-      "description": "Thanh toán an toàn với 2 cổng được hỗ trợ: ZaloPay và VNPay.",
+      "description": "Thanh toán an toàn với 2 cổng được hỗ trợ: ZaloPay và SePay.",
       "hero": {
         "badge": "Thanh toán bảo mật cho SellerNet",
         "metrics": {
@@ -3579,7 +3579,7 @@
       },
       "methods": {
         "title": "Phương Thức Thanh Toán Được Hỗ Trợ",
-        "description": "Trang này chỉ hỗ trợ ZaloPay và VNPay. Không còn thanh toán thẻ riêng lẻ hoặc chuyển khoản thủ công.",
+        "description": "Trang này chỉ hỗ trợ ZaloPay và SePay. Không còn thanh toán thẻ riêng lẻ hoặc chuyển khoản thủ công.",
         "metaLabels": {
           "bestFor": "Phù hợp với",
           "channels": "Kênh thanh toán"
@@ -3615,7 +3615,7 @@
           "description": "Chọn gói hội viên hoặc tiện ích trả phí bạn muốn mua trong SellerNet."
         },
         "step2": {
-          "title": "Chọn ZaloPay hoặc VNPay",
+          "title": "Chọn ZaloPay hoặc SePay",
           "description": "Chọn 1 trong 2 cổng được hỗ trợ và tiếp tục tới trang thanh toán bảo mật."
         },
         "step3": {
@@ -3631,8 +3631,8 @@
         "title": "Lưu Ý Quan Trọng",
         "description": "Đọc kỹ các lưu ý sau trước khi thanh toán.",
         "securityTitle": "Nhắc nhở bảo mật",
-        "securityDescription": "Luôn kiểm tra bạn đang được chuyển đến đúng tên miền chính thức của ZaloPay hoặc VNPay trước khi xác nhận.",
-        "note1": "Trang hướng dẫn này chỉ hỗ trợ ZaloPay và VNPay.",
+        "securityDescription": "Luôn kiểm tra bạn đang được chuyển đến đúng tên miền chính thức của ZaloPay hoặc SePay trước khi xác nhận.",
+        "note1": "Trang hướng dẫn này chỉ hỗ trợ ZaloPay và SePay.",
         "note2": "Không làm mới hoặc đóng trình duyệt khi cổng thanh toán đang xử lý.",
         "note3": "Nếu đã trừ tiền nhưng trạng thái còn chờ, hãy đợi 1-3 phút rồi kiểm tra lịch sử giao dịch.",
         "note4": "Liên hệ hỗ trợ và cung cấp mã giao dịch để được xử lý nhanh hơn."
