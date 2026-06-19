@@ -311,7 +311,10 @@ const PricingGuideTemplate: React.FC = () => {
             <Sparkles className='mr-1 h-3.5 w-3.5' />
             {t('hero.badge')}
           </Badge>
-          <Typography variant='h2' className='mb-2 flex items-center gap-2'>
+          <Typography
+            variant='pageTitle'
+            className='mb-2 flex items-center gap-2'
+          >
             <Layers3 className='h-5 w-5 text-primary' />
             {t('title')}
           </Typography>
@@ -325,38 +328,39 @@ const PricingGuideTemplate: React.FC = () => {
       </section>
 
       <section className='grid gap-3 md:grid-cols-3'>
-        <Card className='border-primary/20 bg-primary/5 py-0'>
+        <Card className='py-0'>
           <CardHeader className='pt-5 pb-3 md:pt-6'>
             <CardDescription className='flex items-center gap-2'>
-              <BadgeCheck className='h-4 w-4 text-primary' />
+              <BadgeCheck className='h-4 w-4 text-muted-foreground' />
               <span>{t('hero.metrics.packageCount')}</span>
             </CardDescription>
             {/* Stat-value emphasis on hero metric, not a heading — outside type ramp. */}
             {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
-            <CardTitle className='text-3xl text-primary'>
+            <CardTitle className='text-2xl'>
               {membershipStats.packages}
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card className='border-accent bg-accent/30 py-0'>
+        <Card className='py-0'>
           <CardHeader className='pt-5 pb-3 md:pt-6'>
             <CardDescription className='flex items-center gap-2'>
               <Crown className='h-4 w-4 text-muted-foreground' />
               <span>{t('hero.metrics.listingTypeCount')}</span>
             </CardDescription>
             {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
-            <CardTitle className='text-3xl'>
+            <CardTitle className='text-2xl'>
               {membershipStats.listingTypes}
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card className='bg-muted/20 py-0'>
+        <Card className='py-0'>
           <CardHeader className='pt-5 pb-3 md:pt-6'>
             <CardDescription className='flex items-center gap-2'>
               <ArrowRight className='h-4 w-4 text-muted-foreground' />
               <span>{t('hero.metrics.priceRange')}</span>
             </CardDescription>
-            <CardTitle className='text-xl'>
+            {/* eslint-disable-next-line design-system/no-inline-heading-sizes */}
+            <CardTitle className='text-2xl'>
               {formatPrice(priceRange.min)} - {formatPrice(priceRange.max)}
               <span className='ml-1 text-sm font-medium text-muted-foreground'>
                 {t('hero.metrics.currencyPerDay')}
@@ -392,7 +396,7 @@ const PricingGuideTemplate: React.FC = () => {
               showCta={false}
             />
 
-            <Alert className='border-primary/20 bg-primary/5'>
+            <Alert>
               <TrendingUp className='h-4 w-4' />
               <AlertTitle>{t('membership.note.title')}</AlertTitle>
               <AlertDescription>
@@ -460,15 +464,10 @@ const PricingGuideTemplate: React.FC = () => {
           </CardHeader>
           <CardContent className='space-y-3 pb-5'>
             <div className='hidden gap-3 md:grid md:grid-cols-3'>
-              {['broker', 'push', 'verification'].map((serviceKey, index) => (
+              {['broker', 'push', 'verification'].map((serviceKey) => (
                 <div
                   key={serviceKey}
-                  className={cn(
-                    'rounded-xl border p-4',
-                    index === 0 && 'bg-primary/5 border-primary/20',
-                    index === 1 && 'bg-accent/30 border-border',
-                    index === 2 && 'bg-muted/30 border-border',
-                  )}
+                  className='rounded-xl border bg-muted/20 p-4'
                 >
                   <div className='mb-2 flex items-center gap-2 font-semibold'>
                     <CheckCircle2 className='h-4 w-4 text-primary' />
@@ -489,32 +488,23 @@ const PricingGuideTemplate: React.FC = () => {
                 className='w-full'
               >
                 <CarouselContent>
-                  {['broker', 'push', 'verification'].map(
-                    (serviceKey, index) => (
-                      <CarouselItem key={serviceKey} className='basis-full'>
-                        <div
-                          className={cn(
-                            'rounded-xl border p-4',
-                            index === 0 && 'bg-primary/5 border-primary/20',
-                            index === 1 && 'bg-accent/30 border-border',
-                            index === 2 && 'bg-muted/30 border-border',
-                          )}
-                        >
-                          <div className='mb-2 flex items-center gap-2 font-semibold'>
-                            <CheckCircle2 className='h-4 w-4 text-primary' />
-                            <span className='break-words'>
-                              {t(`services.${serviceKey}.name`)}
-                            </span>
-                          </div>
-                          <div className='mt-3'>
-                            <Badge variant='outline'>
-                              {t(`services.${serviceKey}.price`)}
-                            </Badge>
-                          </div>
+                  {['broker', 'push', 'verification'].map((serviceKey) => (
+                    <CarouselItem key={serviceKey} className='basis-full'>
+                      <div className='rounded-xl border bg-muted/20 p-4'>
+                        <div className='mb-2 flex items-center gap-2 font-semibold'>
+                          <CheckCircle2 className='h-4 w-4 text-primary' />
+                          <span className='break-words'>
+                            {t(`services.${serviceKey}.name`)}
+                          </span>
                         </div>
-                      </CarouselItem>
-                    ),
-                  )}
+                        <div className='mt-3'>
+                          <Badge variant='outline'>
+                            {t(`services.${serviceKey}.price`)}
+                          </Badge>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
                 </CarouselContent>
               </Carousel>
             </div>

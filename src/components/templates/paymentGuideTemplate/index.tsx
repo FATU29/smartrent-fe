@@ -2,14 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
-import {
-  CheckCircle2,
-  Clock3,
-  CreditCard,
-  ShieldCheck,
-  Sparkles,
-  Wallet,
-} from 'lucide-react'
+import { CreditCard, ShieldCheck, Sparkles, Wallet } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/atoms/alert'
 import { Badge } from '@/components/atoms/badge'
 import {
@@ -24,6 +17,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/atoms/carousel'
+import { BulletList } from '@/components/templates/guide/shared'
 
 const PAYMENT_METHODS = [
   {
@@ -56,7 +50,10 @@ const PaymentGuideTemplate = () => {
             {t('hero.badge')}
           </Badge>
 
-          <Typography variant='h2' className='mb-2 flex items-center gap-2'>
+          <Typography
+            variant='pageTitle'
+            className='mb-2 flex items-center gap-2'
+          >
             <Sparkles className='h-5 w-5 text-primary' />
             {t('title')}
           </Typography>
@@ -137,7 +134,9 @@ const PaymentGuideTemplate = () => {
                           key={featureKey}
                           className='flex items-start gap-2'
                         >
-                          <CheckCircle2 className='mt-0.5 h-4 w-4 shrink-0 text-primary' />
+                          <span className='mt-0.5 shrink-0 text-primary'>
+                            •
+                          </span>
                           <span>
                             {t(`methods.${method.key}.${featureKey}`)}
                           </span>
@@ -211,7 +210,9 @@ const PaymentGuideTemplate = () => {
                                 key={featureKey}
                                 className='flex items-start gap-2'
                               >
-                                <CheckCircle2 className='mt-0.5 h-4 w-4 shrink-0 text-primary' />
+                                <span className='mt-0.5 shrink-0 text-primary'>
+                                  •
+                                </span>
                                 <span>
                                   {t(`methods.${method.key}.${featureKey}`)}
                                 </span>
@@ -259,11 +260,11 @@ const PaymentGuideTemplate = () => {
                 key={stepKey}
                 className='rounded-lg border px-3 py-3 md:px-4'
               >
-                <div className='flex items-center gap-2'>
-                  <span className='inline-flex h-6 w-6 items-center justify-center rounded-full border text-xs font-semibold'>
+                <div className='flex items-center gap-2.5'>
+                  <span className='inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground'>
                     {index + 1}
                   </span>
-                  <span className='text-sm font-semibold md:text-base'>
+                  <span className='text-sm font-medium'>
                     {t(`howToPay.${stepKey}.title`)}
                   </span>
                 </div>
@@ -288,22 +289,9 @@ const PaymentGuideTemplate = () => {
               </AlertDescription>
             </Alert>
 
-            <div className='space-y-2'>
-              {NOTE_KEYS.map((noteKey) => (
-                <div
-                  key={noteKey}
-                  className='flex items-start gap-2 rounded-lg border px-3 py-2.5'
-                >
-                  <Clock3 className='mt-0.5 h-4 w-4 shrink-0 text-muted-foreground' />
-                  <Typography
-                    variant='small'
-                    className='leading-5 text-muted-foreground'
-                  >
-                    {t(`notes.${noteKey}`)}
-                  </Typography>
-                </div>
-              ))}
-            </div>
+            <BulletList
+              items={NOTE_KEYS.map((noteKey) => t(`notes.${noteKey}`))}
+            />
           </CardContent>
         </Card>
       </div>

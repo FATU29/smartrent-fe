@@ -22,7 +22,6 @@ import {
 import {
   GuideCard,
   BulletList,
-  CheckList,
   NumberedStepList,
   Indented,
 } from '@/components/templates/guide/shared'
@@ -206,10 +205,10 @@ const UsageGuideTemplate = () => {
             <Typography variant='h5' className='font-medium tracking-tight'>
               {t('posts.pushing.title')}
             </Typography>
-            <div className='rounded-2xl border border-amber-200 bg-amber-50/80 p-4 dark:border-amber-900 dark:bg-amber-950/20'>
+            <div className='rounded-2xl border border-border/70 bg-muted/40 p-4'>
               <Typography
                 variant='small'
-                className='leading-6 text-amber-900 dark:text-amber-100'
+                className='leading-6 text-muted-foreground'
               >
                 {t('posts.pushing.tip')}
               </Typography>
@@ -257,15 +256,9 @@ const UsageGuideTemplate = () => {
         </Indented>
       </GuideCard>
 
-      <GuideCard
-        icon={<Bell />}
-        title={t('tips.title')}
-        className='border-emerald-200/70 bg-emerald-50/70 dark:border-emerald-900/50 dark:bg-emerald-950/20'
-        headerBgClass='bg-emerald-100 dark:bg-emerald-900/40'
-        iconClassName='text-green-600 dark:text-green-400'
-      >
+      <GuideCard icon={<Bell />} title={t('tips.title')}>
         <Indented className='space-y-3'>
-          <CheckList
+          <BulletList
             items={['tip1', 'tip2', 'tip3', 'tip4', 'tip5'].map((k) =>
               t(`tips.${k}`),
             )}
