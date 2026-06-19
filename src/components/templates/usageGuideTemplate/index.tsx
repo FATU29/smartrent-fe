@@ -22,7 +22,6 @@ import {
 import {
   GuideCard,
   BulletList,
-  NumberedStepList,
   Indented,
 } from '@/components/templates/guide/shared'
 
@@ -83,10 +82,10 @@ const UsageGuideTemplate = () => {
 
       <GuideCard icon={<UserPlus />} title={t('gettingStarted.title')}>
         <Indented className='space-y-4'>
-          <NumberedStepList
-            steps={['step1', 'step2', 'step3'].map((k) => ({
-              title: t(`gettingStarted.${k}.title`),
-            }))}
+          <BulletList
+            items={['step1', 'step2', 'step3'].map((k) =>
+              t(`gettingStarted.${k}.title`).replace(/^\d+\.\s*/, ''),
+            )}
           />
         </Indented>
       </GuideCard>
@@ -219,15 +218,11 @@ const UsageGuideTemplate = () => {
 
       <GuideCard icon={<TrendingUp />} title={t('managing.title')}>
         <Indented className='space-y-4'>
-          {['editing', 'pausing', 'renewing'].map((k) => (
-            <Typography
-              key={k}
-              variant='h5'
-              className='font-medium tracking-tight'
-            >
-              {t(`managing.${k}.title`)}
-            </Typography>
-          ))}
+          <BulletList
+            items={['editing', 'pausing', 'renewing'].map((k) =>
+              t(`managing.${k}.title`),
+            )}
+          />
         </Indented>
       </GuideCard>
 
@@ -244,15 +239,11 @@ const UsageGuideTemplate = () => {
 
       <GuideCard icon={<Settings />} title={t('settings.title')}>
         <Indented className='space-y-4'>
-          {['profile', 'notifications'].map((k) => (
-            <Typography
-              key={k}
-              variant='h5'
-              className='font-medium tracking-tight'
-            >
-              {t(`settings.${k}.title`)}
-            </Typography>
-          ))}
+          <BulletList
+            items={['profile', 'notifications'].map((k) =>
+              t(`settings.${k}.title`),
+            )}
+          />
         </Indented>
       </GuideCard>
 

@@ -86,49 +86,6 @@ export const BulletList: React.FC<BulletListProps> = ({
   </ul>
 )
 
-interface NumberedStepListProps {
-  steps: { title: React.ReactNode; description?: React.ReactNode }[]
-  start?: number
-  className?: string
-}
-
-const STEP_NUMBER_PREFIX_REGEX = /^\s*\d+\s*(?:[.)-]\s*)?/
-
-const normalizeStepTitle = (title: React.ReactNode) => {
-  if (typeof title !== 'string') return title
-  return title.replace(STEP_NUMBER_PREFIX_REGEX, '').trim()
-}
-
-export const NumberedStepList: React.FC<NumberedStepListProps> = ({
-  steps,
-  start = 1,
-  className = '',
-}) => (
-  <div className={`space-y-3 ${className}`.trim()}>
-    {steps.map((s, i) => (
-      <div key={i}>
-        <Typography
-          variant='h5'
-          className='flex items-start gap-2.5 font-medium tracking-tight'
-        >
-          <span className='mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground'>
-            {start + i}
-          </span>
-          {normalizeStepTitle(s.title)}
-        </Typography>
-        {s.description && (
-          <Typography
-            variant='p'
-            className='ml-[2.125rem] mt-1.5 text-sm leading-6 text-muted-foreground'
-          >
-            {s.description}
-          </Typography>
-        )}
-      </div>
-    ))}
-  </div>
-)
-
 /** Simple helper layout for indented content within a GuideCard */
 export const Indented: React.FC<
   React.PropsWithChildren<{ className?: string }>
