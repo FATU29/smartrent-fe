@@ -2052,6 +2052,7 @@
     "listingsPanelAriaLabel": "Map listings panel",
     "myLocation": "My location",
     "showOnMap": "Show on map",
+    "clusterAriaLabel": "{count, plural, one {# listing grouped here} other {# listings grouped here}} — click to zoom in",
     "news": "News",
     "savedListings": "Saved Listings",
     "following": "Following",
