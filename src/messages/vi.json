@@ -1873,6 +1873,7 @@
     "listingsPanelAriaLabel": "Bảng danh sách bất động sản trên bản đồ",
     "myLocation": "Vị trí của tôi",
     "showOnMap": "Xem trên bản đồ",
+    "clusterAriaLabel": "{count, plural, other {# tin đăng được gộp tại đây}} — nhấn để phóng to",
     "news": "Tin tức",
     "savedListings": "Tin đã lưu",
     "following": "Đang theo dõi",
