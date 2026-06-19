@@ -70,7 +70,7 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        'flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-lg border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 p-2.5 sm:p-3',
+        'flex w-full max-w-full flex-wrap items-center gap-x-4 gap-y-2.5 rounded-lg border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 p-2.5 sm:w-fit sm:p-3',
         className,
       )}
     >
@@ -100,7 +100,7 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
       <div className='hidden h-9 w-px bg-primary/15 sm:block' />
 
       {/* Push benefits */}
-      <div className='flex flex-1 flex-wrap items-center gap-2'>
+      <div className='flex flex-wrap items-center gap-2'>
         {pushBenefits.map((benefit) => {
           const progress = getBenefitProgress(
             benefit.quantityRemaining,
