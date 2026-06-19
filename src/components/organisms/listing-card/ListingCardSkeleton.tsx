@@ -22,7 +22,7 @@ export const ListingCardSkeleton: React.FC<ListingCardSkeletonProps> = ({
         >
           <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
             {/* Image Skeleton */}
-            <div className='relative w-full h-48 sm:w-32 sm:h-24 flex-shrink-0'>
+            <div className='relative w-full aspect-[16/10] sm:aspect-auto sm:w-32 sm:h-24 flex-shrink-0'>
               <div className='w-full h-full bg-muted rounded-md' />
               {/* Package Badge Skeleton */}
               <div className='absolute top-2 left-2 w-16 h-6 bg-muted-foreground/20 rounded-lg' />
