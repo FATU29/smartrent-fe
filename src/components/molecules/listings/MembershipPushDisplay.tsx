@@ -131,7 +131,7 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
                     {benefit.quantityRemaining}/{benefit.totalQuantity}
                   </span>
                 </div>
-                <div className='mt-1 h-1 w-full overflow-hidden rounded-full bg-muted sm:w-14'>
+                <div className='mt-1 h-1 w-full overflow-hidden rounded-full bg-muted'>
                   <div
                     className={cn(
                       'h-full rounded-full',
