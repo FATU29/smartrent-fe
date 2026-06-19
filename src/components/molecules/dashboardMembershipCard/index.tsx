@@ -223,7 +223,7 @@ const DashboardMembershipCard: React.FC = () => {
           </motion.div>
         </div>
       </CardHeader>
-      <CardContent className='space-y-6'>
+      <CardContent className='space-y-4 sm:space-y-6'>
         {/* Membership Period */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -231,8 +231,8 @@ const DashboardMembershipCard: React.FC = () => {
           transition={{ delay: 0.2 }}
           className='flex items-center gap-3 p-3 rounded-lg bg-muted border border-border'
         >
-          <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/10'>
-            <Calendar className='h-5 w-5 text-primary' />
+          <div className='flex items-center justify-center w-9 h-9 shrink-0 rounded-full bg-primary/10 sm:w-10 sm:h-10'>
+            <Calendar className='h-4 w-4 text-primary sm:h-5 sm:w-5' />
           </div>
           <div className='flex-1'>
             <p className='text-xs text-muted-foreground'>{t('validUntil')}</p>
@@ -248,12 +248,14 @@ const DashboardMembershipCard: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className='rounded-lg bg-primary p-4 text-primary-foreground'
+            className='rounded-lg bg-primary p-3 text-primary-foreground sm:p-4'
           >
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-2'>
-                <TrendingUp className='h-5 w-5' />
-                <span className='font-semibold'>{t('daysRemaining')}</span>
+                <TrendingUp className='h-4 w-4 sm:h-5 sm:w-5' />
+                <span className='text-sm font-semibold sm:text-base'>
+                  {t('daysRemaining')}
+                </span>
               </div>
               <span className='text-heading font-bold'>
                 {membership.daysRemaining}
