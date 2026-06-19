@@ -144,7 +144,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     >
       <CardContent className='p-0'>
         <div className='flex flex-col sm:flex-row sm:items-start'>
-          <div className='relative w-full aspect-square sm:w-56 shrink-0 bg-gradient-to-br from-muted/50 to-muted'>
+          <div className='relative w-full aspect-[16/10] sm:aspect-square sm:w-56 shrink-0 bg-gradient-to-br from-muted/50 to-muted'>
             <Image
               src={imageUrl}
               alt={title}
@@ -177,9 +177,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           </div>
 
           {/* Content Section - Enhanced alignment */}
-          <div className='flex-1 min-w-0 flex flex-col p-5 sm:p-6 text-base'>
+          <div className='flex-1 min-w-0 flex flex-col p-4 sm:p-6 text-base'>
             {/* Title & Badges */}
-            <div className='space-y-2 mb-4'>
+            <div className='space-y-2 mb-3 sm:mb-4'>
               <Typography
                 variant='h4'
                 className='line-clamp-2 group-hover:text-primary transition-colors leading-tight text-lg sm:text-xl'
@@ -219,7 +219,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             </div>
 
             {/* Addresses - Full text display with better styling */}
-            <div className='space-y-2 mb-4'>
+            <div className='space-y-2 mb-3 sm:mb-4'>
               {newAddress && (
                 <div className='flex items-start gap-2.5 p-3 rounded-lg bg-muted/40 border border-border/60'>
                   <MapPin className='w-4 h-4 mt-0.5 shrink-0 text-muted-foreground' />
@@ -264,7 +264,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
             {/* Amenities - Limit to 5 items with show more dialog */}
             {amenities && amenities.length > 0 && (
-              <div className='mb-4'>
+              <div className='mb-3 sm:mb-4'>
                 <Typography
                   variant='small'
                   className='text-xs text-muted-foreground mb-2 font-medium'
@@ -350,7 +350,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
             {/* Price - Large display without card */}
             {price && (
-              <div className='mb-4'>
+              <div className='mb-3 sm:mb-4'>
                 <div className='flex items-baseline gap-2'>
                   {/* Price is stat-value emphasis, not a heading — outside type ramp. */}
                   <Typography
@@ -375,23 +375,21 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               </div>
             )}
 
-            {/* Property Specs — 2 cols on mobile, 4 on desktop */}
-            <div className='grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 mb-5'>
+            {/* Property Specs — even 3-up row, compact on mobile */}
+            <div className='grid grid-cols-3 gap-2 sm:gap-3 mb-4'>
               {property.area && (
-                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-muted/40 border border-border/60 transition-colors hover:bg-muted/60'>
-                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-background border border-border/60 shrink-0'>
-                    <Maximize2 className='w-4 h-4 text-muted-foreground' />
-                  </div>
+                <div className='flex items-center gap-2 p-2.5 rounded-lg bg-muted/40 border border-border/60'>
+                  <Maximize2 className='w-4 h-4 shrink-0 text-muted-foreground' />
                   <div className='min-w-0 flex-1'>
                     <Typography
                       variant='small'
-                      className='text-xs text-muted-foreground mb-0.5'
+                      className='block text-micro text-muted-foreground'
                     >
                       {t('area')}
                     </Typography>
                     <Typography
                       variant='small'
-                      className='font-semibold truncate text-foreground text-sm sm:text-base'
+                      className='block font-semibold truncate text-foreground text-sm'
                     >
                       {property.area} m²
                     </Typography>
@@ -400,20 +398,18 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               )}
 
               {property.bedrooms !== undefined && property.bedrooms > 0 && (
-                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-muted/40 border border-border/60 transition-colors hover:bg-muted/60'>
-                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-background border border-border/60 shrink-0'>
-                    <Bed className='w-4 h-4 text-muted-foreground' />
-                  </div>
+                <div className='flex items-center gap-2 p-2.5 rounded-lg bg-muted/40 border border-border/60'>
+                  <Bed className='w-4 h-4 shrink-0 text-muted-foreground' />
                   <div className='min-w-0 flex-1'>
                     <Typography
                       variant='small'
-                      className='text-xs text-muted-foreground mb-0.5'
+                      className='block text-micro text-muted-foreground'
                     >
                       {t('bedrooms')}
                     </Typography>
                     <Typography
                       variant='small'
-                      className='font-semibold truncate text-foreground text-sm sm:text-base'
+                      className='block font-semibold truncate text-foreground text-sm'
                     >
                       {property.bedrooms}
                     </Typography>
@@ -422,20 +418,18 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               )}
 
               {property.bathrooms !== undefined && property.bathrooms > 0 && (
-                <div className='flex items-center gap-2.5 p-3 rounded-lg bg-muted/40 border border-border/60 transition-colors hover:bg-muted/60'>
-                  <div className='flex items-center justify-center w-9 h-9 rounded-full bg-background border border-border/60 shrink-0'>
-                    <Bath className='w-4 h-4 text-muted-foreground' />
-                  </div>
+                <div className='flex items-center gap-2 p-2.5 rounded-lg bg-muted/40 border border-border/60'>
+                  <Bath className='w-4 h-4 shrink-0 text-muted-foreground' />
                   <div className='min-w-0 flex-1'>
                     <Typography
                       variant='small'
-                      className='text-xs text-muted-foreground mb-0.5'
+                      className='block text-micro text-muted-foreground'
                     >
                       {t('bathrooms')}
                     </Typography>
                     <Typography
                       variant='small'
-                      className='font-semibold truncate text-foreground text-sm sm:text-base'
+                      className='block font-semibold truncate text-foreground text-sm'
                     >
                       {property.bathrooms}
                     </Typography>

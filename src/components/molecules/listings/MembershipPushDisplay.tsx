@@ -49,128 +49,106 @@ export const MembershipPushDisplay: React.FC<MembershipPushDisplayProps> = ({
     return null
   }
 
-  const getBenefitProgress = (remaining: number, total: number) => {
-    return (remaining / total) * 100
-  }
+  const getBenefitProgress = (remaining: number, total: number) =>
+    total > 0 ? (remaining / total) * 100 : 0
 
-  const getBenefitColor = (remaining: number, total: number) => {
-    const percentage = (remaining / total) * 100
-    if (percentage > 50) return 'text-foreground bg-muted border-border'
-    if (percentage > 20)
-      return 'text-foreground bg-amber-50 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/30'
-    return 'text-foreground bg-red-50 border-red-200 dark:bg-red-500/10 dark:border-red-500/30'
-  }
-
-  const getBenefitProgressColor = (remaining: number, total: number) => {
-    const percentage = (remaining / total) * 100
+  const getProgressColor = (remaining: number, total: number) => {
+    const percentage = getBenefitProgress(remaining, total)
     if (percentage > 50) return 'bg-primary'
     if (percentage > 20) return 'bg-amber-500'
     return 'bg-red-500'
   }
 
-  return (
-    <div className={cn('space-y-3', className)}>
-      {/* Membership Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className='flex items-center justify-between gap-3 p-3 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20'
-      >
-        <div className='flex items-center gap-3'>
-          <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/15'>
-            <Crown className='h-5 w-5 text-primary' />
-          </div>
-          <div>
-            <p className='text-sm font-semibold text-foreground'>
-              {membershipData.packageName}
-            </p>
-            <p className='text-xs text-muted-foreground'>
-              {membershipData.packageLevel}
-            </p>
-          </div>
-        </div>
-        <div className='text-right'>
-          <div className='flex items-center gap-1.5'>
-            <Calendar className='h-3.5 w-3.5 text-primary' />
-            <p className='text-xs text-muted-foreground'>
-              {t('daysRemaining')}
-            </p>
-          </div>
-          <p className='text-lg font-bold text-primary'>
-            {membershipData.daysRemaining}
-          </p>
-        </div>
-      </motion.div>
+  const getCountColor = (remaining: number, total: number) =>
+    getBenefitProgress(remaining, total) > 20
+      ? 'text-foreground'
+      : 'text-red-600 dark:text-red-400'
 
-      {/* Push Benefits */}
-      <div className='space-y-2'>
-        {pushBenefits.map((benefit, index) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={cn(
+        'flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-lg border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 p-2.5 sm:p-3',
+        className,
+      )}
+    >
+      {/* Membership summary */}
+      <div className='flex min-w-0 items-center gap-2.5'>
+        <div className='flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/15 sm:h-9 sm:w-9'>
+          <Crown className='h-4 w-4 text-primary sm:h-5 sm:w-5' />
+        </div>
+        <div className='min-w-0'>
+          <p className='truncate text-sm font-semibold text-foreground'>
+            {membershipData.packageName}
+          </p>
+          <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+            <span className='truncate'>{membershipData.packageLevel}</span>
+            <span aria-hidden className='text-muted-foreground/50'>
+              ·
+            </span>
+            <span className='flex items-center gap-1 whitespace-nowrap'>
+              <Calendar className='h-3 w-3' />
+              {t('daysLeftShort', { days: membershipData.daysRemaining })}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Divider (desktop only) */}
+      <div className='hidden h-9 w-px bg-primary/15 sm:block' />
+
+      {/* Push benefits */}
+      <div className='flex flex-1 flex-wrap items-center gap-2'>
+        {pushBenefits.map((benefit) => {
           const progress = getBenefitProgress(
-            benefit.quantityRemaining,
-            benefit.totalQuantity,
-          )
-          const colorClass = getBenefitColor(
-            benefit.quantityRemaining,
-            benefit.totalQuantity,
-          )
-          const progressColor = getBenefitProgressColor(
             benefit.quantityRemaining,
             benefit.totalQuantity,
           )
 
           return (
-            <motion.div
+            <div
               key={benefit.userBenefitId}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className={cn(
-                'p-3 rounded-lg border transition-all hover:shadow-md',
-                colorClass,
-              )}
+              title={`${t('expires')}: ${format(new Date(benefit.expiresAt), 'dd/MM/yyyy')}`}
+              className='flex min-w-0 items-center gap-2 rounded-md border border-border bg-background/60 px-2.5 py-1.5'
             >
-              <div className='flex items-start justify-between mb-2'>
-                <div className='flex items-start gap-2 flex-1'>
-                  <Zap className='h-4 w-4 mt-0.5 flex-shrink-0 text-blue-600' />
-                  <div className='flex-1 min-w-0'>
-                    <p className='text-sm font-semibold leading-tight'>
-                      {benefit.benefitNameDisplay}
-                    </p>
-                    <p className='text-xs opacity-75 mt-0.5'>
-                      {t('expires')}:{' '}
-                      {format(new Date(benefit.expiresAt), 'dd/MM/yyyy')}
-                    </p>
+              <Zap className='h-4 w-4 flex-shrink-0 text-primary' />
+              <div className='min-w-0'>
+                <p className='max-w-[180px] truncate text-xs font-medium text-foreground'>
+                  {benefit.benefitNameDisplay}
+                </p>
+                <div className='mt-1 flex items-center gap-1.5'>
+                  <div className='h-1 w-14 overflow-hidden rounded-full bg-muted'>
+                    <div
+                      className={cn(
+                        'h-full rounded-full',
+                        getProgressColor(
+                          benefit.quantityRemaining,
+                          benefit.totalQuantity,
+                        ),
+                      )}
+                      style={{ width: `${progress}%` }}
+                    />
                   </div>
-                </div>
-                <div className='text-right ml-2'>
-                  <p className='text-sm font-bold'>
-                    {benefit.quantityRemaining}
-                  </p>
-                  <p className='text-xs opacity-75'>
-                    {t('of')} {benefit.totalQuantity}
-                  </p>
+                  <span
+                    className={cn(
+                      'text-micro font-semibold tabular-nums',
+                      getCountColor(
+                        benefit.quantityRemaining,
+                        benefit.totalQuantity,
+                      ),
+                    )}
+                  >
+                    {benefit.quantityRemaining}/{benefit.totalQuantity}
+                  </span>
                 </div>
               </div>
-
-              {/* Progress Bar */}
-              <div className='w-full bg-background/50 rounded-full h-1.5 overflow-hidden'>
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{
-                    duration: 1,
-                    delay: 0.3 + index * 0.1,
-                    ease: 'easeOut',
-                  }}
-                  className={cn('h-full', progressColor)}
-                />
-              </div>
-            </motion.div>
+            </div>
           )
         })}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
