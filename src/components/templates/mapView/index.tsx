@@ -115,94 +115,39 @@ const listingInViewport = (
   )
 }
 
-// Density tiers for clusters. Colour (not just the count) tells the user how
-// busy a spot is at a glance — calm green for a few, amber for a crowd, rose for
-// a hotspot — so dense areas are obvious before the eye even reads a number.
-interface ClusterTier {
-  // px diameter of the core bubble
-  size: number
-  // solid core colour
-  core: string
-  // translucent halo colour (the "stacked pins" ring behind the core)
-  halo: string
-  // icon stroke colour shown in the white corner badge
-  iconColor: string
-}
+// Diameter (px) of the cluster bubble. It grows a little with the group size so
+// busier spots stand out, but the colour is always the same — see below.
+const getClusterSize = (count: number): number =>
+  count >= 50 ? 52 : count >= 10 ? 44 : 36
 
-const getClusterTier = (count: number): ClusterTier => {
-  if (count >= 50) {
-    return {
-      size: 52,
-      core: 'bg-rose-600',
-      halo: 'bg-rose-400',
-      iconColor: 'text-rose-600',
-    }
-  }
-  if (count >= 10) {
-    return {
-      size: 44,
-      core: 'bg-amber-500',
-      halo: 'bg-amber-400',
-      iconColor: 'text-amber-500',
-    }
-  }
-  return {
-    size: 36,
-    core: 'bg-emerald-600',
-    halo: 'bg-emerald-400',
-    iconColor: 'text-emerald-600',
-  }
-}
+// Lucide "layers" glyph as inline SVG, sized to sit in the centre of the bubble.
+// `currentColor` inherits the bubble's white text colour. This icon is what marks
+// the bubble as a *cluster* (a group of pins) rather than a single listing.
+const buildLayersIcon = (size: number): string =>
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="M22 17.65 12.83 21.8a2 2 0 0 1-1.66 0L2 17.65"/><path d="M22 12.65 12.83 16.8a2 2 0 0 1-1.66 0L2 12.65"/></svg>`
 
-// Lucide "layers" glyph as inline SVG. Used as a corner badge so a cluster is
-// unmistakably a *group* of pins, not a single one — recognisable even for the
-// colour-blind, who can't rely on the tier colour alone.
-const LAYERS_ICON_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="M22 17.65 12.83 21.8a2 2 0 0 1-1.66 0L2 17.65"/><path d="M22 12.65 12.83 16.8a2 2 0 0 1-1.66 0L2 12.65"/></svg>'
-
-// Bubble shown for a cluster. It is built to read as a *cluster* on sight:
-//  • a coloured core whose hue + size encode the density tier,
-//  • a soft halo behind it that looks like overlapping pins (a "stack"),
-//  • a white corner badge with a layers icon — a colour-independent signal that
-//    this is a group, not one listing.
-// The count is kept (people genuinely want to know "how many"), but it's no
-// longer the *only* thing telling you it's a cluster.
+// Bubble shown for a cluster: a solid red circle with a layers icon in the
+// centre — no number. The red colour + the icon are enough to read it as "a
+// group of listings, tap to zoom in"; the exact count stays in the aria-label
+// for screen readers.
 const buildClusterContent = (count: number, label: string): HTMLElement => {
-  const tier = getClusterTier(count)
+  const size = getClusterSize(count)
 
   const wrapper = document.createElement('div')
-  wrapper.className = 'relative flex items-center justify-center'
-  wrapper.style.width = `${tier.size}px`
-  wrapper.style.height = `${tier.size}px`
+  wrapper.className =
+    'flex items-center justify-center rounded-full bg-rose-600 text-white border-2 border-white shadow-lg'
+  wrapper.style.width = `${size}px`
+  wrapper.style.height = `${size}px`
   wrapper.setAttribute('role', 'button')
   wrapper.setAttribute('aria-label', label)
+  wrapper.innerHTML = buildLayersIcon(Math.round(size * 0.5))
 
-  // Halo: a larger translucent disc behind the core that gives the "stacked
-  // pins" look so the bubble reads as a group, not a single marker.
-  const halo = document.createElement('span')
-  halo.setAttribute('aria-hidden', 'true')
-  halo.className = `absolute -inset-1.5 rounded-full ${tier.halo} opacity-30`
-
-  // Core: the solid, tier-coloured bubble holding the count.
-  const core = document.createElement('div')
-  core.className = `relative flex h-full w-full items-center justify-center rounded-full ${tier.core} font-semibold text-white border-2 border-white shadow-lg`
-  core.style.fontSize = tier.size >= 44 ? '14px' : '12px'
-  core.textContent = String(count)
-
-  // Corner badge: white circle with the layers icon, the colour-independent
-  // "this is a group" cue.
-  const badge = document.createElement('span')
-  badge.setAttribute('aria-hidden', 'true')
-  badge.className = `absolute -right-1 -top-1 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-white shadow ${tier.iconColor}`
-  badge.innerHTML = LAYERS_ICON_SVG
-
-  wrapper.append(halo, core, badge)
   return wrapper
 }
 
-// Custom cluster renderer: the count reads clearly, the density tier colour and
-// the layers badge make it obvious it's a cluster, and an aria-label exposes the
-// same to screen readers. Built as a factory so it can pull a localised label.
+// Custom cluster renderer: a red layers-icon bubble that obviously reads as a
+// cluster, with an aria-label exposing the count to screen readers. Built as a
+// factory so it can pull a localised label.
 const createClusterRenderer = (
   getClusterLabel: (count: number) => string,
 ): Renderer => ({
