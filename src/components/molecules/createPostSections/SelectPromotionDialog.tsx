@@ -179,28 +179,23 @@ export const SelectBenefitDialog: React.FC<SelectBenefitDialogProps> = ({
                   )}
                 </div>
                 <CardContent className='p-0 flex-1'>
-                  <div className='flex items-start justify-between gap-2'>
-                    <div className='flex-1'>
-                      <Typography className='font-medium mb-1'>
-                        {benefit.benefitNameDisplay}
+                  <div className='flex-1'>
+                    <Typography className='font-medium mb-1'>
+                      {benefit.benefitNameDisplay}
+                    </Typography>
+                    <div className='flex flex-col gap-1'>
+                      <Typography variant='muted' className='text-xs'>
+                        {t('remaining', { count: benefit.quantityRemaining })} /{' '}
+                        {benefit.totalQuantity}
                       </Typography>
-                      <div className='flex flex-col gap-1'>
-                        <Typography variant='muted' className='text-xs'>
-                          {t('remaining', { count: benefit.quantityRemaining })}{' '}
-                          / {benefit.totalQuantity}
-                        </Typography>
-                        <Typography
-                          variant='muted'
-                          className='text-xs flex items-center gap-1'
-                        >
-                          <Calendar className='w-3 h-3' />
-                          {t('expires')}: {expiresAt}
-                        </Typography>
-                      </div>
+                      <Typography
+                        variant='muted'
+                        className='text-xs flex items-center gap-1'
+                      >
+                        <Calendar className='w-3 h-3' />
+                        {t('expires')}: {expiresAt}
+                      </Typography>
                     </div>
-                    <Badge variant='outline' className='text-xs shrink-0'>
-                      {benefit.benefitType}
-                    </Badge>
                   </div>
                 </CardContent>
               </div>
