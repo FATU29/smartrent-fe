@@ -6,6 +6,7 @@ import { streamChat } from '@/api/services/chatbot.service'
 import type {
   ChatMessage,
   ChatListing,
+  ChatSuggestion,
   LastListingRef,
   ChatStreamStatusPayload,
 } from '@/api/types/ai.type'
@@ -27,6 +28,7 @@ export type TChatMessage = {
     reason: string
   }>
   toolsUsed?: string[]
+  suggestions?: ChatSuggestion[]
 }
 
 export type TChatState = {
@@ -265,6 +267,14 @@ export const useChatLogic = () => {
                   listings: payload.listings,
                   totalCount: payload.totalCount ?? payload.listings.length,
                   aiRankings: payload.aiRankings ?? [],
+                }))
+                followScrollToBottom()
+              },
+              onSuggestions: (payload) => {
+                ensureBotMessage()
+                updateMessage(botMessageId, (m) => ({
+                  ...m,
+                  suggestions: payload.items,
                 }))
                 followScrollToBottom()
               },

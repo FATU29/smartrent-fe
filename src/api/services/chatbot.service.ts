@@ -8,6 +8,7 @@ import type {
   ChatStreamStatusPayload,
   ChatStreamTextPayload,
   ChatStreamListingsPayload,
+  ChatStreamSuggestionsPayload,
   ChatStreamDonePayload,
   ChatStreamErrorPayload,
 } from '@/api/types/ai.type'
@@ -77,6 +78,9 @@ export async function streamChat(
           return
         case 'listings':
           handlers.onListings?.(data as ChatStreamListingsPayload)
+          return
+        case 'suggestions':
+          handlers.onSuggestions?.(data as ChatStreamSuggestionsPayload)
           return
         case 'done':
           handlers.onDone?.(data as ChatStreamDonePayload)

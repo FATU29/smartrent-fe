@@ -25,8 +25,10 @@ import AiChatContactCard from '@/components/molecules/aiChatContactCard'
 type TAiChatBubbleProps = {
   message: TChatMessage
   className?: string
+  isLast?: boolean
   onViewListingDetail?: (listingId: number) => void
   onOpenFullDetail?: (listingId: number) => void
+  onSuggestionClick?: (query: string) => void
 }
 
 // Convert [Mã tin: xxx] to clickable links
@@ -189,8 +191,10 @@ const INITIAL_SEARCH_RESULTS = 3
 const AiChatBubble: FC<TAiChatBubbleProps> = ({
   message,
   className,
+  isLast,
   onViewListingDetail,
   onOpenFullDetail,
+  onSuggestionClick,
 }) => {
   const isBot = message.sender === 'bot'
   const hasListings = isBot && message.listings && message.listings.length > 0
@@ -373,6 +377,29 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
             <AiChatCompare listings={message.listings!} />
           </div>
         )}
+
+        {isBot &&
+          isLast &&
+          message.suggestions &&
+          message.suggestions.length > 0 && (
+            <div
+              className='mt-2 flex flex-wrap gap-2'
+              aria-label={tAi('suggestionsLabel')}
+            >
+              {message.suggestions.map((suggestion) => (
+                <Button
+                  key={suggestion.query}
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  className='h-auto rounded-full px-3 py-1 text-sm font-normal'
+                  onClick={() => onSuggestionClick?.(suggestion.query)}
+                >
+                  {suggestion.label}
+                </Button>
+              ))}
+            </div>
+          )}
       </div>
 
       {!isBot && <AiChatAvatar type='user' className='mt-0.5' />}
@@ -413,7 +440,9 @@ export default memo(AiChatBubble, (prev, next) => {
   return (
     prev.message === next.message &&
     prev.className === next.className &&
+    prev.isLast === next.isLast &&
     prev.onViewListingDetail === next.onViewListingDetail &&
-    prev.onOpenFullDetail === next.onOpenFullDetail
+    prev.onOpenFullDetail === next.onOpenFullDetail &&
+    prev.onSuggestionClick === next.onSuggestionClick
   )
 })
