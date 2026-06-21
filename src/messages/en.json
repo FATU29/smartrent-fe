@@ -55,7 +55,8 @@
     "loginRequired": "Please log in to use the AI assistant. Logging in helps us provide a better experience and save your conversation history.",
     "scrollToBottom": "Scroll to bottom",
     "expandTable": "View full",
-    "expandTableTitle": "Comparison Details"
+    "expandTableTitle": "Comparison Details",
+    "suggestionsLabel": "Suggested follow-ups"
   },
   "chat": {
     "title": "AI Property Assistant",

@@ -144,8 +144,10 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
                   >
                     <AiChatBubble
                       message={message}
+                      isLast={index === messages.length - 1}
                       onViewListingDetail={onViewListingDetail}
                       onOpenFullDetail={setFullDetailListingId}
+                      onSuggestionClick={onSendMessage}
                     />
                   </div>
                 )

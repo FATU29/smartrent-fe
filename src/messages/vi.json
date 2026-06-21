@@ -55,7 +55,8 @@
     "loginRequired": "Vui lòng đăng nhập để sử dụng trợ lý AI. Đăng nhập giúp chúng tôi cung cấp trải nghiệm tốt hơn và lưu lịch sử trò chuyện của bạn.",
     "scrollToBottom": "Cuộn xuống cuối",
     "expandTable": "Xem đầy đủ",
-    "expandTableTitle": "Chi tiết so sánh"
+    "expandTableTitle": "Chi tiết so sánh",
+    "suggestionsLabel": "Gợi ý tiếp theo"
   },
   "chat": {
     "title": "Trợ Lý Tìm Nhà AI",

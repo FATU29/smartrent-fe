@@ -254,10 +254,22 @@ export interface ChatStreamErrorPayload {
   message: string
 }
 
+export interface ChatSuggestion {
+  /** Text shown on the chip. */
+  label: string
+  /** Message sent when the chip is tapped (often equals label). */
+  query: string
+}
+
+export interface ChatStreamSuggestionsPayload {
+  items: ChatSuggestion[]
+}
+
 export interface ChatStreamHandlers {
   onStatus?: (data: ChatStreamStatusPayload) => void
   onTextDelta?: (delta: string) => void
   onListings?: (payload: ChatStreamListingsPayload) => void
+  onSuggestions?: (payload: ChatStreamSuggestionsPayload) => void
   onDone?: (data: ChatStreamDonePayload) => void
   onError?: (message: string) => void
 }
