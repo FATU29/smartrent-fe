@@ -17,14 +17,14 @@ const HOMEPAGE_QUERY_CONFIG = {
   gcTime: 10 * 60 * 1000, // 10 minutes
 }
 
-// Province/category stats only change once a day (refreshed by the backend
-// midnight cron, served from a permanent Redis cache). Cache them on the client
-// for a full day and stop window-focus / reconnect refetches so the homepage
-// doesn't keep re-hitting the API during normal browsing.
-const ONE_DAY_MS = 24 * 60 * 60 * 1000
+// Province/category stats change rarely (refreshed by the backend midnight cron,
+// served from a permanent Redis cache). Cache them on the client for 5 minutes
+// and stop window-focus / reconnect refetches so the homepage doesn't keep
+// re-hitting the API during normal browsing.
+const FIVE_MIN_MS = 5 * 60 * 1000
 const DAILY_STATS_QUERY_CONFIG = {
-  staleTime: ONE_DAY_MS,
-  gcTime: ONE_DAY_MS,
+  staleTime: FIVE_MIN_MS,
+  gcTime: FIVE_MIN_MS,
   refetchOnWindowFocus: false,
   refetchOnReconnect: false,
 }
