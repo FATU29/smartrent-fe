@@ -63,6 +63,7 @@ export const PATHS = {
   LISTING: {
     LIST: '/v1/listings',
     SEARCH: '/v1/listings/search',
+    HOMEPAGE_TIER: '/v1/listings/homepage-tier',
     SELLER_DIAMOND: '/v1/listings/sellers/:userId/diamond',
     SELLER_GOLD: '/v1/listings/sellers/:userId/gold',
     SELLER_SILVER: '/v1/listings/sellers/:userId/silver',
