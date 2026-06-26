@@ -21,12 +21,13 @@ interface UseRecommendedListingsByVipReturn {
 /**
  * Hook to fetch listings for a single VIP tier (one homepage carousel).
  *
- * Each carousel calls POST /v1/listings/search with only the params that vary —
- * vipType is pinned, everything else is fixed (verified=true, page=1, a small
- * size, optional NEWEST sort). No user coordinates are sent: the tier carousels
- * aren't ranked by distance, and omitting them keeps the request identical
- * across all users so the backend's listing-search cache is actually shared
- * (a per-user coordinate would mint a fresh cache key for the same result).
+ * Calls the dedicated GET /v1/listings/homepage-tier endpoint, which returns the
+ * top N of one tier with NO paging and NO total count — much faster than the
+ * paginated POST /search (whose COUNT(*) over the huge NORMAL tier was the cause
+ * of the slow "Tin mới" section). vipType is pinned; no coordinates are sent
+ * (tiers aren't ranked by distance), so the backend response caches across all
+ * users. Ordering (newest-first within tier) preserves push: a pushed listing
+ * bumps updatedAt and rises to the top, same as the old search path.
  */
 export const useRecommendedListingsByVip = (
   options: UseRecommendedListingsByVipOptions,
@@ -36,17 +37,8 @@ export const useRecommendedListingsByVip = (
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['recommended-listings-by-vip', vipType, sortBy, page, size],
     queryFn: async () => {
-      const response = await ListingService.search({
-        vipType,
-        verified: true,
-        page,
-        size,
-        ...(sortBy ? { sortBy: sortBy as any } : {}),
-      })
-
-      const listings = response.data?.listings || []
-
-      return listings
+      const response = await ListingService.getHomepageTier(vipType, size)
+      return response.data || []
     },
     enabled: enabled,
     // Even the NEWEST (sorted) carousel gets a non-zero staleTime so re-mounting

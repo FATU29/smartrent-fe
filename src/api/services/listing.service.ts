@@ -292,6 +292,27 @@ export class ListingService {
   }
 
   /**
+   * Homepage carousel data source: top `limit` listings of one VIP tier.
+   * GET /v1/listings/homepage-tier — no paging / no total count (fast even for
+   * the large NORMAL tier). Returns the card list directly (no pagination wrapper).
+   */
+  static async getHomepageTier(
+    vipType: VipType,
+    limit = 10,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingDetail[]>> {
+    return apiRequest<ListingDetail[]>(
+      {
+        method: 'GET',
+        url: PATHS.LISTING.HOMEPAGE_TIER,
+        params: { vipType, limit },
+        skipAuth: true, // Public API - không cần authentication
+      },
+      instance,
+    )
+  }
+
+  /**
    * Get seller listings by a specific VIP tier (public)
    * GET /v1/listings/sellers/:userId/{diamond|gold|silver|normal}
    */
