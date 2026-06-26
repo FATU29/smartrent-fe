@@ -639,39 +639,6 @@ export interface ListingSearchBackendResponse {
 }
 
 /**
- * One requested tier section for POST /v1/listings/search/sections.
- * Mirrors backend ListingSectionsRequest.Section.
- */
-export interface ListingSectionRequestItem {
-  vipType: VipType
-  sortBy?: string
-  size?: number
-}
-
-/**
- * Request body for POST /v1/listings/search/sections — fetch several VIP-tier
- * carousels in one round-trip. `verified`, `page`, `size` are shared defaults.
- */
-export interface ListingSectionsApiRequest {
-  verified?: boolean
-  page?: number
-  size?: number
-  sections: ListingSectionRequestItem[]
-}
-
-/** One tier result; `result` reuses the standard search response shape. */
-export interface ListingSectionResult {
-  vipType: VipType
-  sortBy?: string
-  result: ListingSearchBackendResponse
-}
-
-/** Backend response for POST /v1/listings/search/sections. */
-export interface ListingSectionsBackendResponse {
-  sections: ListingSectionResult[]
-}
-
-/**
  * My Listings backend response item (owner-centric)
  */
 export interface MyListingBackendItem {
