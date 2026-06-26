@@ -32,6 +32,8 @@ import {
   MapBoundsRequest,
   MapBoundsResponse,
   SortKey,
+  ListingSectionsApiRequest,
+  ListingSectionsBackendResponse,
 } from '../types'
 
 // ============= LISTING SERVICE CLASS =============
@@ -284,6 +286,26 @@ export class ListingService {
       {
         method: 'POST',
         url: PATHS.LISTING.SEARCH,
+        data: request,
+        skipAuth: true, // Public API - không cần authentication
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Fetch several VIP-tier carousels (DIAMOND / GOLD / SILVER / NORMAL) in a
+   * single round-trip. Replaces N separate `search` calls on the homepage.
+   * POST /v1/listings/search/sections
+   */
+  static async searchSections(
+    request: ListingSectionsApiRequest,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingSectionsBackendResponse>> {
+    return apiRequest<ListingSectionsBackendResponse>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.SEARCH_SECTIONS,
         data: request,
         skipAuth: true, // Public API - không cần authentication
       },

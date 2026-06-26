@@ -12,13 +12,15 @@ import {
 } from '@/components/atoms/carousel'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { Typography } from '@/components/atoms/typography'
-import { VipType } from '@/api/types'
+import { ListingDetail, VipType } from '@/api/types'
 import { cn } from '@/lib/utils'
-import { useRecommendedListingsByVip } from '@/hooks/useListings/useRecommendedListingsByVip'
 
 interface VipPropertySectionProps {
   vipType: VipType
   mode?: 'vip' | 'newest'
+  /** Listings for this tier — fetched once at the page level and passed down. */
+  listings: ListingDetail[]
+  isLoading?: boolean
 }
 
 const VIP_CONFIG: Record<string, { titleClassName: string; titleKey: string }> =
@@ -48,6 +50,8 @@ const VIP_CONFIG: Record<string, { titleClassName: string; titleKey: string }> =
 const VipPropertySection: React.FC<VipPropertySectionProps> = ({
   vipType,
   mode = 'vip',
+  listings,
+  isLoading = false,
 }) => {
   const t = useTranslations()
   const [api, setApi] = React.useState<CarouselApi>()
@@ -55,15 +59,6 @@ const VipPropertySection: React.FC<VipPropertySectionProps> = ({
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
   const isNewest = mode === 'newest'
   const config = VIP_CONFIG[isNewest ? 'NEWEST' : vipType]
-
-  // Fetch listings client-side
-  const { listings, isLoading } = useRecommendedListingsByVip({
-    vipType,
-    page: 1,
-    size: 10,
-    enabled: true,
-    ...(isNewest ? { sortBy: 'NEWEST' } : {}),
-  })
 
   React.useEffect(() => {
     if (!api) return

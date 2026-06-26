@@ -13,8 +13,13 @@ import TopInterestSection from '@/components/organisms/topInterestSection'
 import { List } from '@/contexts/list'
 import ClearFilterButton from '@/components/atoms/clearFilterButton'
 import VipPropertySection from '@/components/organisms/vipPropertySection'
+import { useVipSections } from '@/hooks/useListings'
 
-import type { ProvinceStatsItem, CategoryStatsItem } from '@/api/types'
+import type {
+  ProvinceStatsItem,
+  CategoryStatsItem,
+  ListingSectionRequestItem,
+} from '@/api/types'
 import Image from 'next/image'
 import ResidentialFilterResponsive from '@/components/molecules/residentialFilterResponsive'
 import NewsGridSection from '@/components/organisms/newsGridSection'
@@ -28,6 +33,15 @@ interface HomepageTemplateProps {
   latestNews?: NewsItem[]
 }
 
+// The four homepage tier carousels, fetched in a single request. The NORMAL
+// section is sorted NEWEST; DIAMOND/GOLD/SILVER keep the default VIP-tier order.
+const VIP_SECTIONS: ListingSectionRequestItem[] = [
+  { vipType: 'DIAMOND' },
+  { vipType: 'GOLD' },
+  { vipType: 'SILVER' },
+  { vipType: 'NORMAL', sortBy: 'NEWEST' },
+]
+
 const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   cities,
   citiesLoading = false,
@@ -38,6 +52,10 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   const { pagination } = useListContext()
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
   const clickCountRef = useRef(0)
+
+  // Single request for all four VIP-tier carousels (replaces 4 separate calls).
+  const { sectionsMap, isLoading: vipSectionsLoading } =
+    useVipSections(VIP_SECTIONS)
 
   const hasNext = pagination.currentPage < pagination.totalPages
 
@@ -94,10 +112,27 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
 
         {/* VIP Property Sections */}
         <div className='space-y-8'>
-          <VipPropertySection vipType='DIAMOND' />
-          <VipPropertySection vipType='GOLD' />
-          <VipPropertySection vipType='SILVER' />
-          <VipPropertySection vipType='NORMAL' mode='newest' />
+          <VipPropertySection
+            vipType='DIAMOND'
+            listings={sectionsMap.DIAMOND ?? []}
+            isLoading={vipSectionsLoading}
+          />
+          <VipPropertySection
+            vipType='GOLD'
+            listings={sectionsMap.GOLD ?? []}
+            isLoading={vipSectionsLoading}
+          />
+          <VipPropertySection
+            vipType='SILVER'
+            listings={sectionsMap.SILVER ?? []}
+            isLoading={vipSectionsLoading}
+          />
+          <VipPropertySection
+            vipType='NORMAL'
+            mode='newest'
+            listings={sectionsMap.NORMAL ?? []}
+            isLoading={vipSectionsLoading}
+          />
         </div>
 
         <div className='mt-8 flex flex-col items-center gap-4'>
