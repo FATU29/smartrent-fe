@@ -44,29 +44,35 @@ type Messages = typeof vi
 
 const queryClient = new QueryClient()
 
-// Persist ONLY the two homepage stats queries to localStorage so they survive a
-// page reload / new tab and stay cached for a full day — matching the permanent
-// backend Redis cache (refreshed by the midnight cron). Everything else (auth,
-// listings, …) is intentionally NOT persisted. SSR-safe: localStorage only
-// exists in the browser, so the persister is null on the server and we fall
-// back to a plain QueryClientProvider there.
+// Persist a small set of homepage queries to localStorage so they survive a page
+// reload / new tab: on refresh the cached payload is returned immediately and the
+// API is only hit when the cache is missing (or stale, via background revalidate).
+// Persisted:
+//   - homepage stats: province-stats (địa điểm) + category-stats (danh mục)
+//   - homepage VIP-tier carousels (recommended-listings-by-vip), incl. "Tin mới"
+// so those carousels show cached listings instantly on refresh instead of a
+// skeleton, then revalidate in the background per their staleTime.
+// Everything else (auth, search results, detail pages, …) is intentionally NOT
+// persisted. SSR-safe: localStorage only exists in the browser, so the persister
+// is null on the server and we fall back to a plain QueryClientProvider there.
 const ONE_DAY_MS = 24 * 60 * 60 * 1000
 
 const queryPersister =
   typeof window !== 'undefined'
     ? createSyncStoragePersister({
         storage: window.localStorage,
-        key: 'SMARTRENT_HOMEPAGE_STATS_CACHE',
+        key: 'SMARTRENT_HOMEPAGE_CACHE',
       })
     : null
 
 const shouldPersistQuery = (query: Query): boolean => {
+  if (query.state.status !== 'success') return false
   const [scope, section] = query.queryKey
-  return (
-    query.state.status === 'success' &&
-    scope === 'homepage' &&
-    (section === 'province-stats' || section === 'category-stats')
-  )
+  if (scope === 'homepage') {
+    return section === 'province-stats' || section === 'category-stats'
+  }
+  // Homepage VIP-tier carousels (DIAMOND/GOLD/SILVER/NORMAL incl. "Tin mới").
+  return scope === 'recommended-listings-by-vip'
 }
 
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
