@@ -1,7 +1,7 @@
 import HeroPromoCarousel from '@/components/organisms/heroPromoCarousel'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
-import { useState, useCallback, useRef } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/atoms/button'
 import { PageContainer } from '@/components/atoms/pageContainer'
 import { Typography } from '@/components/atoms/typography'
@@ -37,16 +37,8 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
   const t = useTranslations()
   const { pagination } = useListContext()
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
-  const clickCountRef = useRef(0)
 
   const hasNext = pagination.currentPage < pagination.totalPages
-
-  const getLoadMoreHref = useCallback(() => {
-    clickCountRef.current += 1
-    return clickCountRef.current >= 2
-      ? `${PUBLIC_ROUTES.LISTING_LISTING}?page=2`
-      : PUBLIC_ROUTES.LISTING_LISTING
-  }, [])
 
   return (
     <PageContainer width='content'>
@@ -105,7 +97,7 @@ const HomepageTemplate: React.FC<HomepageTemplateProps> = ({
             <List.LoadMore onAfterLoad={() => setHasLoadedOnce(true)} />
           )}
           {(hasLoadedOnce || !hasNext) && (
-            <Link href={getLoadMoreHref()}>
+            <Link href={PUBLIC_ROUTES.LISTING_LISTING}>
               <Button className='px-6'>{t('common.loadMore')}</Button>
             </Link>
           )}
