@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import PropertyCard from '@/components/molecules/propertyCard'
 import { useAuth } from '@/hooks/useAuth'
 import { usePersonalizedRecommendations } from '@/hooks/useRecommendations'
+import { useRecommendedListingsByVip } from '@/hooks/useListings/useRecommendedListingsByVip'
 import {
   Carousel,
   CarouselContent,
@@ -28,6 +29,21 @@ const PersonalizedPropertySection: React.FC = () => {
     isAuthenticated,
   )
 
+  // Cold-start / empty / error fallback. The personalized feed can legitimately
+  // come back empty (a brand-new user with no history, or the AI ranker filters
+  // every candidate out) — in which case this section used to silently vanish
+  // after a successful 200. Fall back to the newest-listings feed so it still
+  // shows content. Same query key as the "Tin mới" carousel ⇒ served from cache,
+  // no extra request.
+  const { listings: fallbackListings, isLoading: isFallbackLoading } =
+    useRecommendedListingsByVip({
+      vipType: 'NORMAL',
+      sortBy: 'NEWEST',
+      page: 1,
+      size: 10,
+      enabled: isAuthenticated,
+    })
+
   React.useEffect(() => {
     if (!api) return
 
@@ -47,11 +63,19 @@ const PersonalizedPropertySection: React.FC = () => {
     return null
   }
 
-  const listings = (data?.listings || []).filter(
+  const personalizedListings = (data?.listings || []).filter(
     (listing) => !!listing.listingId,
   )
 
-  if (!isLoading && listings.length === 0) {
+  // Use the personalized feed when it has results; otherwise fall back to the
+  // newest listings so a successful-but-empty response never blanks the section.
+  const usingFallback = !isLoading && personalizedListings.length === 0
+  const listings = usingFallback
+    ? fallbackListings.filter((listing) => !!listing.listingId)
+    : personalizedListings
+  const showSkeleton = isLoading || (usingFallback && isFallbackLoading)
+
+  if (!showSkeleton && listings.length === 0) {
     return null
   }
 
@@ -104,7 +128,7 @@ const PersonalizedPropertySection: React.FC = () => {
         setApi={setApi}
       >
         <CarouselContent>
-          {isLoading
+          {showSkeleton
             ? Array.from({ length: 10 }).map((_, index) => (
                 <CarouselItem
                   key={`personalized-skeleton-${index}`}
