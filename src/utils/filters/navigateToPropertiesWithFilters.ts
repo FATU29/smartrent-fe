@@ -2,7 +2,6 @@ import { NextRouter } from 'next/router'
 import { ListingFilterRequest } from '@/api/types/property.type'
 import { pushQueryParams } from '@/utils/queryParams'
 import { PUBLIC_ROUTES } from '@/constants/route'
-import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@/contexts/list/index.type'
 
 /**
  * Navigate to /properties page with current filter state as query params
@@ -58,9 +57,8 @@ export const navigateToPropertiesWithFilters = (
       sortBy: filters?.sortBy ?? null,
       userId: filters?.userId ?? null,
       isBroker: filters?.isBroker === true ? true : null,
-      // Reflect pagination in URL
-      page: filters?.page ?? DEFAULT_PAGE,
-      size: filters?.size ?? DEFAULT_PER_PAGE,
+      // /properties pages via cursor (fixed server-side window) — page/size are
+      // not part of its URL, so don't pin them when arriving from the homepage.
     },
     {
       pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
@@ -108,9 +106,6 @@ export const navigateToPropertiesWithClearedFilters = (router: NextRouter) => {
       longitude: null,
       sortBy: null,
       isBroker: null,
-      // Reset pagination to defaults
-      page: DEFAULT_PAGE,
-      size: DEFAULT_PER_PAGE,
       userId: null,
       userLatitude: null,
       userLongitude: null,
