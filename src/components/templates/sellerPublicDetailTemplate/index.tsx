@@ -36,6 +36,8 @@ import Link from 'next/link'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { MEDIA_BELOW_MD } from '@/constants/breakpoints'
 
+const TOP_LISTINGS_TARGET = 3
+
 interface SellerListingsSection {
   vipType: VipType
   listings: ListingDetail[]
@@ -118,24 +120,36 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
     }
   }, [activeTier, sections])
 
-  const topListingFallback = React.useMemo(() => {
+  // Newest listings per tier (diamond first) reused to backfill the featured
+  // strip — already fetched by the tier sections, so no extra request.
+  const backfillPool = React.useMemo(() => {
     const priority: VipType[] = ['DIAMOND', 'GOLD', 'SILVER', 'NORMAL']
-
-    for (const vipType of priority) {
-      const listing = sections.find((section) => section.vipType === vipType)
-        ?.listings[0]
-      if (listing) return listing
-    }
-
-    return null
+    return priority.flatMap(
+      (vipType) =>
+        sections.find((section) => section.vipType === vipType)?.listings ?? [],
+    )
   }, [sections])
 
+  // Always aim for 3 featured cards: start from the user-favourited listings,
+  // then top up with the newest diamond (then lower-tier) listings, de-duped.
   const topListings = React.useMemo(() => {
-    if (topSavedListings.length > 0) {
-      return topSavedListings
+    const result: ListingDetail[] = []
+    const seen = new Set<number>()
+
+    const take = (source: ListingDetail[]) => {
+      for (const listing of source) {
+        if (result.length >= TOP_LISTINGS_TARGET) break
+        if (seen.has(listing.listingId)) continue
+        seen.add(listing.listingId)
+        result.push(listing)
+      }
     }
-    return topListingFallback ? [topListingFallback] : []
-  }, [topListingFallback, topSavedListings])
+
+    take(topSavedListings)
+    take(backfillPool)
+
+    return result
+  }, [backfillPool, topSavedListings])
 
   const getTierLabel = React.useCallback(
     (vipType: VipType) => {
@@ -237,7 +251,7 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
                     {topListings.map((listing) => (
                       <CarouselItem
                         key={listing.listingId}
-                        className='basis-full sm:basis-1/2 min-w-[260px]'
+                        className='basis-full sm:basis-1/2 lg:basis-1/3 min-w-[240px]'
                       >
                         <Link
                           href={buildApartmentDetailRoute(
