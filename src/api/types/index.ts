@@ -95,6 +95,7 @@ export type {
   ListingSearchResponse,
   ListingSearchApiRequest,
   ListingSearchBackendResponse,
+  ListingCursorBackendResponse,
   MyListingsBackendResponse,
   MapBoundsRequest,
   MapBoundsResponse,

@@ -639,6 +639,17 @@ export interface ListingSearchBackendResponse {
 }
 
 /**
+ * Backend response for POST /v1/listings/search/cursor (keyset pagination).
+ * Same card items as search, but paged by an opaque cursor and without a total.
+ */
+export interface ListingCursorBackendResponse {
+  items: ListingDetail[]
+  nextCursor: string | null
+  hasNext: boolean
+  size: number
+}
+
+/**
  * My Listings backend response item (owner-centric)
  */
 export interface MyListingBackendItem {

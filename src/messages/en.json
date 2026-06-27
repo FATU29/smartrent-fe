@@ -3172,6 +3172,10 @@
     "noProperties": "No properties found",
     "noPropertiesDescription": "Try adjusting your search criteria or check back later for new listings.",
     "loadingMore": "Loading more...",
+    "loadMore": "Load more",
+    "errorTitle": "Unable to load properties",
+    "errorDescription": "Something went wrong while loading listings. Please try again.",
+    "retry": "Retry",
     "filter": {
       "price": {
         "title": "Filter by price range",
