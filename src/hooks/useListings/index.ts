@@ -1,4 +1,5 @@
 export { usePricingHistory, usePriceStatistics } from './usePricingHistory'
 export { useSimilarProperties } from './useSimilarProperties'
 export { useRecommendedListings } from './useRecommendedListings'
+export { useListingsCursor } from './useListingsCursor'
 export { useRecommendedListingsByVip } from './useRecommendedListingsByVip'

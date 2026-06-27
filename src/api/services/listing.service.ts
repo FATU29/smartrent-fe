@@ -21,6 +21,7 @@ import {
   ListingOwnerDetail,
   ListingSearchApiRequest,
   ListingSearchBackendResponse,
+  ListingCursorBackendResponse,
   ListingFilterRequest,
   VipType,
   MyListingsBackendResponse,
@@ -286,6 +287,30 @@ export class ListingService {
         url: PATHS.LISTING.SEARCH,
         data: request,
         skipAuth: true, // Public API - không cần authentication
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Cursor (keyset) paginated search — same filters/sort as `search`, but paged
+   * by an opaque `cursor` (no page numbers, no total count) so deep pages stay
+   * fast. Pass `cursor = null`/`undefined` for the first page.
+   * POST /v1/listings/search/cursor
+   */
+  static async searchCursor(
+    request: ListingSearchApiRequest,
+    cursor?: string | null,
+    size = 20,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingCursorBackendResponse>> {
+    return apiRequest<ListingCursorBackendResponse>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.SEARCH_CURSOR,
+        data: request,
+        params: { ...(cursor ? { cursor } : {}), size },
+        skipAuth: true,
       },
       instance,
     )
