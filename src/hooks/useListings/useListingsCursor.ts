@@ -25,12 +25,12 @@ export const useListingsCursor = (
   filters: Partial<ListingFilterRequest>,
   options?: UseListingsCursorOptions,
 ) => {
-  const {
-    enabled = true,
-    size = 20,
-    staleTime = 5 * 60 * 1000,
-    gcTime = 10 * 60 * 1000,
-  } = options || {}
+  // No FE caching by default: listings can be pushed ("đẩy tin"), which bumps
+  // them to the top of the newest-first ordering. A stale cache would hide a
+  // freshly-pushed listing until it expired, so we always refetch fresh and
+  // retain nothing once the list unmounts. Callers may still opt into caching
+  // by passing staleTime/gcTime explicitly.
+  const { enabled = true, size = 20, staleTime = 0, gcTime = 0 } = options || {}
 
   const query = useInfiniteQuery({
     queryKey: ['listings', 'cursor', filters, size],
@@ -52,6 +52,7 @@ export const useListingsCursor = (
     enabled,
     staleTime,
     gcTime,
+    refetchOnMount: 'always',
   })
 
   // Flattened convenience view of every page loaded so far.
