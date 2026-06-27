@@ -3172,6 +3172,10 @@
     "noProperties": "Không tìm thấy bất động sản",
     "noPropertiesDescription": "Hãy thử điều chỉnh tiêu chí tìm kiếm của bạn hoặc kiểm tra lại sau để có danh sách mới.",
     "loadingMore": "Đang tải thêm...",
+    "loadMore": "Tải thêm",
+    "errorTitle": "Không thể tải bất động sản",
+    "errorDescription": "Đã xảy ra lỗi khi tải danh sách. Vui lòng thử lại.",
+    "retry": "Thử lại",
     "filter": {
       "price": {
         "title": "Lọc theo khoảng giá",
