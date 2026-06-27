@@ -64,6 +64,11 @@ const ResidentialFilterBar: React.FC<ResidentialFilterBarProps> = ({
   const buildApplyUrl = () => {
     const params = new URLSearchParams()
     Object.entries(filters).forEach(([key, value]) => {
+      // /properties pages via cursor (fixed server-side window), so page/size
+      // are not part of its URL — never serialize them into the apply link.
+      if (key === 'page' || key === 'size') {
+        return
+      }
       if (value !== undefined && value !== null && value !== '') {
         if (Array.isArray(value)) {
           params.set(key, value.join(','))
