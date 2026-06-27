@@ -152,8 +152,8 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
           userLatitude: filters.userLatitude ?? null,
           isBroker: filters.isBroker === true ? true : null,
           sortBy: filters.sortBy ?? null,
-          page: filters.page ?? DEFAULT_PAGE,
-          size: filters.size ?? DEFAULT_PER_PAGE,
+          // Cursor paging doesn't use page/size — the window is a fixed
+          // server-side size, so we deliberately keep them out of the URL.
         },
         {
           pathname: PUBLIC_ROUTES.PROPERTIES_PREFIX,
