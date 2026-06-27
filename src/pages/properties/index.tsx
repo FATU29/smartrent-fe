@@ -4,34 +4,14 @@ import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { useTranslations } from 'next-intl'
-import ResidentialPropertiesTemplate from '@/components/templates/residentialProperties'
+import ResidentialPropertiesCursorTemplate from '@/components/templates/residentialPropertiesCursor'
 import { ListProvider } from '@/contexts/list/index.context'
 import { useListContext } from '@/contexts/list/useListContext'
 import LocationProvider from '@/contexts/location'
 import { getFiltersFromQuery, pushQueryParams } from '@/utils/queryParams'
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@/contexts/list/index.type'
-import {
-  ListingDetail,
-  ListingFilterRequest,
-  ListingSearchResponse,
-} from '@/api/types/property.type'
-import type { ApiResponse } from '@/configs/axios/types'
+import { ListingFilterRequest } from '@/api/types/property.type'
 import { PUBLIC_ROUTES } from '@/constants/route'
-import { ListingService } from '@/api/services/listing.service'
-import {
-  mapFrontendToBackendRequest,
-  mapBackendToFrontendResponse,
-} from '@/utils/property/mapListingResponse'
-
-type ResidentialPropertiesClientInit = {
-  initialFilters: Partial<ListingFilterRequest>
-  initialPagination: {
-    totalCount: number
-    currentPage: number
-    pageSize: number
-    totalPages: number
-  }
-}
 
 const parseNumberFromRouterQuery = (
   queryValue: string | string[] | undefined,
@@ -104,26 +84,15 @@ const parseBooleanQueryParam = (
   return undefined
 }
 
-const buildClientInit = (
+const buildInitialFilters = (
   query: Record<string, unknown>,
-): ResidentialPropertiesClientInit => {
+): Partial<ListingFilterRequest> => {
   const parsedFilters = getFiltersFromQuery(query)
   const isBroker = parseBooleanQueryParam(query, 'isBroker')
   if (isBroker === true) {
     parsedFilters.isBroker = true
   }
-  const page = parsedFilters.page ?? DEFAULT_PAGE
-  const size = parsedFilters.size ?? DEFAULT_PER_PAGE
-
-  return {
-    initialFilters: parsedFilters,
-    initialPagination: {
-      totalCount: 0,
-      currentPage: page,
-      pageSize: size,
-      totalPages: 0,
-    },
-  }
+  return parsedFilters
 }
 
 const ResidentialPropertiesPage: NextPageWithLayout = () => {
@@ -131,16 +100,16 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
   const router = useRouter()
   const categoryFromQuery = parseNumberFromRouterQuery(router.query.categoryId)
   const lastPushedFiltersRef = useRef<string>('')
-  const [clientInit, setClientInit] =
-    useState<ResidentialPropertiesClientInit | null>(null)
+  const [initialFilters, setInitialFilters] =
+    useState<Partial<ListingFilterRequest> | null>(null)
 
   useEffect(() => {
-    if (!router.isReady || clientInit) {
+    if (!router.isReady || initialFilters) {
       return
     }
 
-    setClientInit(buildClientInit(router.query))
-  }, [router.isReady, router.query, clientInit])
+    setInitialFilters(buildInitialFilters(router.query))
+  }, [router.isReady, router.query, initialFilters])
 
   const pushFiltersToQuery = useCallback(
     (filters: ListingFilterRequest) => {
@@ -196,44 +165,7 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
     [router],
   )
 
-  const fetcher = useCallback(
-    async (
-      filters: ListingFilterRequest,
-    ): Promise<ApiResponse<ListingSearchResponse<ListingDetail>>> => {
-      const backendRequest = mapFrontendToBackendRequest(filters)
-
-      const backendResponse = await ListingService.search(backendRequest)
-
-      if (!backendResponse.success || !backendResponse.data) {
-        return {
-          code: backendResponse.code,
-          message: backendResponse.message,
-          success: false,
-          data: {
-            listings: [],
-            pagination: {
-              totalCount: 0,
-              currentPage: filters.page ?? DEFAULT_PAGE,
-              pageSize: filters.size ?? DEFAULT_PER_PAGE,
-              totalPages: 0,
-            },
-          },
-        }
-      }
-
-      const frontendData = mapBackendToFrontendResponse(backendResponse.data)
-
-      return {
-        code: backendResponse.code,
-        message: backendResponse.message,
-        success: true,
-        data: frontendData,
-      }
-    },
-    [],
-  )
-
-  if (!clientInit) {
+  if (!initialFilters) {
     return (
       <>
         <SeoHead title={t('properties')} description='Property search' />
@@ -248,16 +180,14 @@ const ResidentialPropertiesPage: NextPageWithLayout = () => {
     <>
       <SeoHead title={t('properties')} description='Property search' />
       <div className='container max-w-6xl mx-auto px-4 py-6 lg:py-8'>
-        <ListProvider
-          fetcher={fetcher}
-          initialData={[]}
-          initialFilters={clientInit.initialFilters}
-          initialPagination={clientInit.initialPagination}
-        >
+        {/* No `fetcher` → the offset /search flow never runs. This provider
+            only holds the filter state for the shared filter bar/sidebar; the
+            listing column pages through the keyset cursor endpoint. */}
+        <ListProvider initialData={[]} initialFilters={initialFilters}>
           <CategoryQuerySync categoryFromQuery={categoryFromQuery} />
           <FiltersUrlSync pushFiltersToQuery={pushFiltersToQuery} />
           <LocationProvider>
-            <ResidentialPropertiesTemplate />
+            <ResidentialPropertiesCursorTemplate />
           </LocationProvider>
         </ListProvider>
       </div>
