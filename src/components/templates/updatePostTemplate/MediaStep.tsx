@@ -114,11 +114,12 @@ export const MediaStep: React.FC<MediaStepProps> = ({
           <Alert className='mb-6 border-primary/50 bg-primary/10 text-foreground'>
             <Info className='h-5 w-5 text-primary' />
             <AlertDescription className='text-base font-semibold text-foreground'>
-              {t('sections.media.tierLimits', {
+              {t.rich('sections.media.tierLimits', {
                 tierName: tier.tierName,
                 min: minImages,
                 max: maxImages,
                 videos: maxVideos,
+                b: (chunks) => <span className='font-semibold'>{chunks}</span>,
               })}
             </AlertDescription>
           </Alert>
