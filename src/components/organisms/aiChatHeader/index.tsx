@@ -17,7 +17,7 @@ const AiChatHeader: FC<TAiChatHeaderProps> = ({ onClose, className }) => {
   return (
     <div
       className={cn(
-        'flex items-center justify-between border-b bg-primary px-3 py-2.5 text-primary-foreground shadow-sm md:px-4 md:py-3',
+        'flex items-center justify-between border-b bg-gradient-to-br from-primary to-[oklch(0.45_0.25_264)] px-3 py-2.5 text-primary-foreground shadow-sm md:px-4 md:py-3',
         className,
       )}
     >

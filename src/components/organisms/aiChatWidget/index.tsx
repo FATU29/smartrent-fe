@@ -100,7 +100,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
         size='icon'
         onClick={handleToggle}
         className={cn(
-          'relative h-14 w-14 rounded-full shadow-2xl transition-all duration-300',
+          'relative h-16 w-16 rounded-full shadow-2xl bg-gradient-to-br from-primary to-[oklch(0.45_0.25_264)] transition-all duration-300',
           'hover:scale-110 hover:shadow-xl active:scale-95',
           !isOpen &&
             'animate-bounce [animation-duration:2s] [animation-iteration-count:3]',
@@ -172,30 +172,28 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
         <div
           className={cn(
             'fixed z-50 animate-in fade-in slide-in-from-bottom-8 duration-300',
-            'resize overflow-auto',
+            'resize overflow-hidden rounded-2xl border-2 border-primary/20 bg-background shadow-2xl',
+            'transition-colors hover:border-primary/40',
             position === 'bottom-right'
               ? 'bottom-24 right-6'
               : 'bottom-24 left-6',
           )}
           style={{
-            width: '450px',
-            height: '600px',
-            minWidth: '350px',
-            minHeight: '450px',
+            width: '500px',
+            height: '700px',
+            minWidth: '400px',
+            minHeight: '540px',
             maxWidth: '90vw',
             maxHeight: '85vh',
           }}
         >
           <ResizablePanelGroup
             direction='vertical'
-            className='h-full w-full rounded-2xl border-2 border-primary/20 shadow-2xl bg-background hover:border-primary/40 transition-colors overflow-hidden'
+            className='h-full w-full overflow-hidden'
           >
             <ResizablePanel defaultSize={100} minSize={50} maxSize={100}>
-              <div className='flex h-full w-full flex-col overflow-hidden bg-background rounded-2xl'>
-                <AiChatHeader
-                  onClose={handleClose}
-                  className='flex-shrink-0 rounded-t-2xl'
-                />
+              <div className='flex h-full w-full flex-col overflow-hidden bg-background'>
+                <AiChatHeader onClose={handleClose} className='flex-shrink-0' />
 
                 <AiChatInterface
                   messages={messages}

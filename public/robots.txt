@@ -10,4 +10,4 @@ Disallow: /payment/
 Disallow: /auth/callback
 Disallow: /api/
 
-Sitemap: https://smartrent.io.vn/sitemap.xml
+Sitemap: https://thuenhatro.net/sitemap.xml

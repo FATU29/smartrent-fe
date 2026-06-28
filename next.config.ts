@@ -76,7 +76,7 @@ const nextConfig: NextConfig = {
           // Cloudflare R2 — phase 2 custom CDN domain (provisioned later)
           {
             protocol: 'https',
-            hostname: 'cdn.smartrent.io.vn',
+            hostname: 'cdn.thuenhatro.net',
           },
         ]
       : [
@@ -94,7 +94,7 @@ const nextConfig: NextConfig = {
           },
           {
             protocol: 'https',
-            hostname: 'cdn.smartrent.io.vn',
+            hostname: 'cdn.thuenhatro.net',
           },
         ],
     qualities: [75, 85, 90, 100],
