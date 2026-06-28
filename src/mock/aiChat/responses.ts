@@ -24,8 +24,8 @@ export const AI_CHAT_RESPONSES = {
     en: "Thank you for your question! I'm currently learning to answer better. You can try asking about: finding rooms, rental prices, posting listings, or contacting landlords.",
   },
   welcome: {
-    vi: 'Xin chào! Tôi là trợ lý AI của Smart Rent. Tôi có thể giúp gì cho bạn?',
-    en: 'Hello! I am Smart Rent AI assistant. How can I help you?',
+    vi: 'Xin chào! Tôi là trợ lý AI của SmartRent. Tôi có thể giúp gì cho bạn?',
+    en: 'Hello! I am SmartRent AI assistant. How can I help you?',
   },
 }
 
