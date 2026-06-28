@@ -3157,6 +3157,12 @@
       "image": "Image",
       "video": "Video",
       "of": "/"
+    },
+    "notFound": {
+      "title": "Listing not found",
+      "description": "This listing has been removed, expired, or is not yet approved.",
+      "goHome": "Go home",
+      "goBack": "Go back"
     }
   },
   "propertiesPage": {
