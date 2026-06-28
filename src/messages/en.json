@@ -582,7 +582,9 @@
         "newPasswordLowercase": "Password must have at least 1 lowercase letter",
         "newPasswordNumber": "Password must have at least 1 number",
         "avatarSizeExceeded": "Avatar file size must not exceed {maxSize}MB",
-        "avatarFormatInvalid": "Avatar must be jpeg, png, or webp format"
+        "avatarFormatInvalid": "Avatar must be jpeg, png, or webp format",
+        "firstNameInvalid": "Please enter a valid first name",
+        "lastNameInvalid": "Please enter a valid last name"
       },
       "oauth": {
         "processing_login": "Processing login...",

@@ -49,12 +49,20 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       .string()
       .trim()
       .required(t('homePage.auth.validation.firstNameRequired'))
-      .min(2, t('homePage.auth.validation.firstNameMinLength')),
+      .test(
+        'notDefault',
+        t('homePage.auth.validation.firstNameInvalid'),
+        (value) => value !== '#32',
+      ),
     lastName: yup
       .string()
       .trim()
       .required(t('homePage.auth.validation.lastNameRequired'))
-      .min(2, t('homePage.auth.validation.lastNameMinLength')),
+      .test(
+        'notDefault',
+        t('homePage.auth.validation.lastNameInvalid'),
+        (value) => value !== '#32',
+      ),
     email: yup
       .string()
       .required(t('homePage.auth.validation.emailRequired'))
