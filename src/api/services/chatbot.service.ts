@@ -13,16 +13,18 @@ import type {
   ChatStreamErrorPayload,
 } from '@/api/types/ai.type'
 
-const CHAT_STREAM_PATH = 'api/v1/chat/stream'
+const CHAT_STREAM_PATH = 'v1/ai/chat/stream'
 
 class StreamFatalError extends Error {
   name = 'StreamFatalError'
 }
 
 function getStreamUrl(): string {
-  const base = ENV.URL_API_AI.endsWith('/')
-    ? ENV.URL_API_AI
-    : `${ENV.URL_API_AI}/`
+  // Chat streaming now goes through the backend proxy (authenticated +
+  // rate-limited), not the AI service directly.
+  const base = ENV.URL_API_BASE.endsWith('/')
+    ? ENV.URL_API_BASE
+    : `${ENV.URL_API_BASE}/`
   return `${base}${CHAT_STREAM_PATH}`
 }
 
@@ -35,18 +37,18 @@ export async function streamChat(
   handlers: ChatStreamHandlers,
   signal?: AbortSignal,
 ): Promise<void> {
-  const body = {
-    ...request,
-    auth_token: getAuthToken(),
-  }
+  // Backend injects user_id + token from the JWT; send the token as a header
+  // instead of an auth_token body field.
+  const token = getAuthToken()
 
   await fetchEventSource(getStreamUrl(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'text/event-stream',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(request),
     signal,
     openWhenHidden: true,
 
