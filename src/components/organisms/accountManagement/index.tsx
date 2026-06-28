@@ -20,7 +20,6 @@ import {
   Search,
   Gift,
   BadgeCheck,
-  Sparkles,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -289,34 +288,23 @@ const AccountManagement: NextPage<AccountManagementProps> = ({
           className='space-y-5 md:space-y-6'
         >
           <div className='space-y-4'>
-            <div className='flex items-start gap-3 sm:gap-4'>
-              <div className='mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full border border-primary/30'>
-                <Sparkles className='size-4.5 text-primary' />
-              </div>
-              <div className='space-y-2'>
-                <span className='inline-flex items-center rounded-full border px-2.5 py-0.5 text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground'>
-                  {safeT(
-                    'homePage.auth.accountManagement.brokerHookBanner.badge',
-                    'SellerNet Pro',
-                  )}
-                </span>
-                <h3 className='text-base font-semibold leading-snug text-foreground md:text-lg'>
-                  {safeT(
-                    'homePage.auth.accountManagement.brokerHookBanner.title',
-                    'Bật hồ sơ môi giới để tăng độ tin cậy và tiếp cận khách hàng nhanh hơn.',
-                  )}
-                </h3>
-
-                {isProfessionalBroker && (
-                  <p className='inline-flex items-center gap-1.5 rounded-full border border-emerald-300/70 bg-emerald-50/60 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-700/50 dark:bg-emerald-950/20 dark:text-emerald-300'>
-                    <CheckCircle2 className='h-3.5 w-3.5' />
-                    {safeT(
-                      'homePage.auth.accountManagement.brokerProfessional.description',
-                      'Tài khoản của bạn đã được xác minh là môi giới chuyên nghiệp.',
-                    )}
-                  </p>
+            <div className='space-y-2'>
+              <h3 className='text-base font-semibold leading-snug text-foreground md:text-lg'>
+                {safeT(
+                  'homePage.auth.accountManagement.brokerHookBanner.title',
+                  'Bật hồ sơ môi giới để tăng độ tin cậy và tiếp cận khách hàng nhanh hơn.',
                 )}
-              </div>
+              </h3>
+
+              {isProfessionalBroker && (
+                <p className='inline-flex items-center gap-1.5 rounded-full border border-emerald-300/70 bg-emerald-50/60 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-700/50 dark:bg-emerald-950/20 dark:text-emerald-300'>
+                  <CheckCircle2 className='h-3.5 w-3.5' />
+                  {safeT(
+                    'homePage.auth.accountManagement.brokerProfessional.description',
+                    'Tài khoản của bạn đã được xác minh là môi giới chuyên nghiệp.',
+                  )}
+                </p>
+              )}
             </div>
 
             <div className='mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3'>

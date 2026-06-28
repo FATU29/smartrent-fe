@@ -11,17 +11,14 @@ import {
 export interface PaymentStatusBadgeProps {
   status: PaymentStatusType | string
   className?: string
-  showIcon?: boolean
 }
 
 export const PaymentStatusBadge: React.FC<PaymentStatusBadgeProps> = ({
   status,
   className,
-  showIcon = true,
 }) => {
   const t = useTranslations()
 
-  // Normalize status to PaymentStatusType
   const normalizedStatus = (status?.toUpperCase() ||
     'UNKNOWN') as PaymentStatusType
   const config =
@@ -29,16 +26,11 @@ export const PaymentStatusBadge: React.FC<PaymentStatusBadgeProps> = ({
 
   return (
     <Badge
-      variant={config.variant}
-      className={cn(PAYMENT_STATUS_STYLES.badge, className)}
+      variant='outline'
+      className={cn(PAYMENT_STATUS_STYLES.badge, config.className, className)}
       role='status'
       aria-label={t(config.labelKey)}
     >
-      {showIcon && (
-        <span className={PAYMENT_STATUS_STYLES.icon} aria-hidden='true'>
-          {config.icon}
-        </span>
-      )}
       {t(config.labelKey)}
     </Badge>
   )

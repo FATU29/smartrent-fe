@@ -582,7 +582,9 @@
         "newPasswordLowercase": "Mật khẩu cần có ít nhất 1 ký tự viết thường",
         "newPasswordNumber": "Mật khẩu cần có ít nhất 1 ký tự số",
         "avatarSizeExceeded": "Kích thước ảnh đại diện không được vượt quá {maxSize}MB",
-        "avatarFormatInvalid": "Ảnh đại diện phải có định dạng jpeg, png, hoặc webp"
+        "avatarFormatInvalid": "Ảnh đại diện phải có định dạng jpeg, png, hoặc webp",
+        "firstNameInvalid": "Vui lòng nhập tên hợp lệ",
+        "lastNameInvalid": "Vui lòng nhập họ hợp lệ"
       },
       "oauth": {
         "processing_login": "Đang xử lý đăng nhập...",
@@ -682,8 +684,8 @@
           "title": "Thông tin cá nhân",
           "contactInfo": "Thông tin liên hệ",
           "businessInfo": "Thông tin xuất hóa đơn",
-          "firstName": "Họ",
-          "lastName": "Tên",
+          "firstName": "Tên",
+          "lastName": "Họ",
           "phoneNumber": "Số điện thoại chính",
           "email": "Email",
           "idDocument": "Mã số thuế",
