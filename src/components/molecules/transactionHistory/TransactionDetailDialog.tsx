@@ -123,7 +123,7 @@ const DetailBody: React.FC<{ detail: CustomerTransactionDetail }> = ({
               >
                 <span className='absolute -left-[1.30rem] top-1 size-2 rounded-full bg-primary' />
                 <div className='flex flex-wrap items-center gap-2'>
-                  <PaymentStatusBadge status={event.status} showIcon={false} />
+                  <PaymentStatusBadge status={event.status} />
                   <span className='text-xs text-muted-foreground'>
                     {formatDateTime(event.at)}
                   </span>
