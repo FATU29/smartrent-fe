@@ -9,7 +9,7 @@ const API_AI = process.env.NEXT_PUBLIC_URL_API_AI
 const STATIC_PRECONNECT_ORIGINS = [
   'https://res.cloudinary.com',
   'https://imagedelivery.net',
-  'https://cdn.smartrent.io.vn',
+  'https://cdn.thuenhatro.net',
   'https://pub-444e165e3cc34721a5620508f66c58b0.r2.dev',
   'https://lh3.googleusercontent.com',
 ]
