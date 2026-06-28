@@ -4,12 +4,14 @@ import MainLayout from '@/components/layouts/homePageLayout'
 import type { NextPageWithLayout } from '@/types/next-page'
 import DetailPostTemplate from '@/components/templates/detailPostTemplate'
 import SeoHead from '@/components/atoms/seo/SeoHead'
+import { ListingNotFound } from '@/components/molecules/listingNotFound'
 import type { ListingDetail } from '@/api/types'
 import { ListingService } from '@/api/services'
 import { PUBLIC_ROUTES } from '@/constants'
 
 interface ListingDetailProps {
   listing?: ListingDetail
+  listingNotFound?: boolean
   similarProperties?: ListingDetail[]
   onExport?: () => void
   onCall?: () => void
@@ -22,6 +24,7 @@ const ListingDetail: NextPageWithLayout<ListingDetailProps> = (props) => {
   const router = useRouter()
   const {
     listing,
+    listingNotFound,
     similarProperties,
     onExport,
     onCall,
@@ -30,8 +33,8 @@ const ListingDetail: NextPageWithLayout<ListingDetailProps> = (props) => {
     onSimilarPropertyClick,
   } = props
 
-  if (!listing) {
-    return null
+  if (listingNotFound || !listing) {
+    return <ListingNotFound />
   }
 
   const listingData = listing
@@ -100,7 +103,7 @@ export async function getServerSideProps(context: {
 
   if (!listingId) {
     return {
-      notFound: true,
+      props: { listingNotFound: true },
     }
   }
 
@@ -109,7 +112,7 @@ export async function getServerSideProps(context: {
   const listing = res?.data || null
 
   if (!listing) {
-    return { notFound: true }
+    return { props: { listingNotFound: true } }
   }
 
   return {

@@ -3157,6 +3157,12 @@
       "image": "Hình ảnh",
       "video": "Video",
       "of": "/"
+    },
+    "notFound": {
+      "title": "Bài đăng không tồn tại",
+      "description": "Tin đăng này đã bị xóa, hết hạn hoặc chưa được phê duyệt.",
+      "goHome": "Về trang chủ",
+      "goBack": "Quay lại"
     }
   },
   "propertiesPage": {
