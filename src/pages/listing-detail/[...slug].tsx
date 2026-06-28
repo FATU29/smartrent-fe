@@ -6,8 +6,15 @@ import DetailPostTemplate from '@/components/templates/detailPostTemplate'
 import SeoHead from '@/components/atoms/seo/SeoHead'
 import { ListingNotFound } from '@/components/molecules/listingNotFound'
 import type { ListingDetail } from '@/api/types'
+import { POST_STATUS } from '@/api/types'
 import { ListingService } from '@/api/services'
 import { PUBLIC_ROUTES } from '@/constants'
+
+const PUBLICLY_VISIBLE_STATUSES = new Set([
+  POST_STATUS.DISPLAYING,
+  POST_STATUS.EXPIRING_SOON,
+  POST_STATUS.VERIFIED,
+])
 
 interface ListingDetailProps {
   listing?: ListingDetail
@@ -112,6 +119,15 @@ export async function getServerSideProps(context: {
   const listing = res?.data || null
 
   if (!listing) {
+    return { props: { listingNotFound: true } }
+  }
+
+  const isVisible =
+    !listing.expired &&
+    (!listing.listingStatus ||
+      PUBLICLY_VISIBLE_STATUSES.has(listing.listingStatus))
+
+  if (!isVisible) {
     return { props: { listingNotFound: true } }
   }
 
