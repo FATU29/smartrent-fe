@@ -25,7 +25,6 @@ import {
   MembershipStatus,
   BenefitStatus,
   PaymentProvider,
-  canRenewMembership,
 } from '@/api/types/membership.type'
 import { format } from 'date-fns'
 import { motion } from 'framer-motion'
@@ -292,8 +291,8 @@ const DashboardMembershipCard: React.FC = () => {
           </motion.div>
         )}
 
-        {/* Renew Package Button */}
-        {canRenewMembership(membership) && (
+        {/* Renew Package Button — show for any active membership (backend supports early cumulative renewal) */}
+        {isActive && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
