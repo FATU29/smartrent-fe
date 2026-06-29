@@ -2448,12 +2448,13 @@
           "title": "Renew Membership",
           "description": "Renew your current package for another month. You will be redirected to the payment gateway.",
           "currentPackage": "Current Package",
+          "price": "Renewal Price",
+          "paymentMethod": "Payment Method",
           "preview": {
             "title": "Renewal Preview",
             "currentExpiry": "Current Expiry",
             "newExpiry": "New Expiry"
           },
-          "paymentNotice": "You will be redirected to the payment gateway to complete your renewal.",
           "confirm": "Renew Now",
           "cancel": "Cancel",
           "loading": "Processing...",

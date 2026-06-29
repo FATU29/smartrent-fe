@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { RefreshCw, Calendar, CreditCard, Crown } from 'lucide-react'
+import { RefreshCw, Calendar, Check, Crown } from 'lucide-react'
+import Image from 'next/image'
 import {
   Dialog,
   DialogContent,
@@ -10,18 +11,50 @@ import {
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import { Badge } from '@/components/atoms/badge'
+import { cn } from '@/lib/utils'
 import { format, addDays } from 'date-fns'
 import type { UserMembership } from '@/api/types/membership.type'
+import { PaymentProvider } from '@/api/types/membership.type'
+import { formatCurrency } from '@/utils/payment/payment.utils'
 
 const RENEWAL_DAYS = 30
 
 const formatDate = (date: Date): string => format(date, 'dd/MM/yyyy')
 
+const PROVIDER_OPTIONS = [
+  {
+    provider: PaymentProvider.SEPAY,
+    logo: (
+      <Image
+        src='/images/sepay-logo.png'
+        alt='SePay'
+        width={40}
+        height={40}
+        className='object-contain w-10 h-10 rounded'
+      />
+    ),
+    label: 'SePay',
+  },
+  {
+    provider: PaymentProvider.ZALOPAY,
+    logo: (
+      <Image
+        src='/images/zalopay-icon.png'
+        alt='ZaloPay'
+        width={40}
+        height={40}
+        className='object-contain bg-card p-1 w-10 h-10 rounded'
+      />
+    ),
+    label: 'ZaloPay',
+  },
+]
+
 export interface RenewMembershipDialogProps {
   membership: UserMembership
   open: boolean
   onOpenChange: (open: boolean) => void
-  onConfirm: () => void
+  onConfirm: (provider: PaymentProvider) => void
   isLoading?: boolean
 }
 
@@ -33,6 +66,8 @@ export const RenewMembershipDialog: React.FC<RenewMembershipDialogProps> = ({
   isLoading = false,
 }) => {
   const t = useTranslations('seller.dashboard.membership.renewDialog')
+  const [selectedProvider, setSelectedProvider] =
+    React.useState<PaymentProvider>(PaymentProvider.SEPAY)
 
   const currentExpiry = new Date(membership.endDate)
   const anchorDate = currentExpiry > new Date() ? currentExpiry : new Date()
@@ -55,7 +90,7 @@ export const RenewMembershipDialog: React.FC<RenewMembershipDialogProps> = ({
         </div>
 
         <div className='px-6 py-5 space-y-4'>
-          {/* Package info */}
+          {/* Package info + price */}
           <div className='rounded-lg border border-border bg-muted/30 p-3 flex items-start gap-3'>
             <div className='shrink-0 w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center'>
               <Crown size={18} className='text-primary' />
@@ -79,6 +114,20 @@ export const RenewMembershipDialog: React.FC<RenewMembershipDialogProps> = ({
               >
                 {membership.packageLevel}
               </Badge>
+            </div>
+            <div className='text-right shrink-0'>
+              <Typography
+                variant='small'
+                className='text-xs text-muted-foreground'
+              >
+                {t('price')}
+              </Typography>
+              <Typography
+                variant='small'
+                className='font-bold text-sm text-foreground mt-0.5 block'
+              >
+                {formatCurrency(membership.totalPaid)}
+              </Typography>
             </div>
           </div>
 
@@ -122,19 +171,35 @@ export const RenewMembershipDialog: React.FC<RenewMembershipDialogProps> = ({
             </div>
           </section>
 
-          {/* Payment notice */}
-          <div className='flex items-start gap-2.5 rounded-lg bg-muted/60 p-3'>
-            <CreditCard
-              size={16}
-              className='shrink-0 mt-0.5 text-muted-foreground'
-            />
-            <Typography
-              variant='small'
-              className='text-xs text-muted-foreground'
-            >
-              {t('paymentNotice')}
+          {/* Payment provider selector */}
+          <section className='space-y-2'>
+            <Typography variant='small' className='font-semibold text-sm'>
+              {t('paymentMethod')}
             </Typography>
-          </div>
+            <div className='grid grid-cols-2 gap-2'>
+              {PROVIDER_OPTIONS.map(({ provider, logo, label }) => (
+                <button
+                  key={provider}
+                  type='button'
+                  onClick={() => setSelectedProvider(provider)}
+                  className={cn(
+                    'relative flex items-center gap-2.5 p-3 rounded-lg border-2 transition-all hover:border-primary/50',
+                    selectedProvider === provider
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border bg-background',
+                  )}
+                >
+                  {logo}
+                  <span className='text-sm font-medium text-foreground flex-1 text-left'>
+                    {label}
+                  </span>
+                  {selectedProvider === provider && (
+                    <Check size={16} className='shrink-0 text-primary' />
+                  )}
+                </button>
+              ))}
+            </div>
+          </section>
         </div>
 
         {/* Footer */}
@@ -148,7 +213,7 @@ export const RenewMembershipDialog: React.FC<RenewMembershipDialogProps> = ({
           </Button>
           <Button
             disabled={isLoading}
-            onClick={onConfirm}
+            onClick={() => onConfirm(selectedProvider)}
             className='min-w-[120px]'
           >
             {isLoading ? t('loading') : t('confirm')}

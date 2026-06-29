@@ -38,11 +38,11 @@ const DashboardMembershipCard: React.FC = () => {
   const renewalMutation = useInitiateRenewal()
   const [renewDialogOpen, setRenewDialogOpen] = React.useState(false)
 
-  const handleRenewConfirm = () => {
+  const handleRenewConfirm = (provider: PaymentProvider) => {
     if (!user?.userId) return
     renewalMutation.mutate(
       {
-        request: { paymentProvider: PaymentProvider.SEPAY },
+        request: { paymentProvider: provider },
         userId: user.userId,
       },
       {
