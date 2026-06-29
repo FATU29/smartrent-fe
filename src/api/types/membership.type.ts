@@ -211,3 +211,40 @@ export interface UpgradeResponse {
 
 export type GetAvailableUpgradesResponse = UpgradePreview[]
 export type GetUpgradePreviewResponse = UpgradePreview
+
+// Renewal types
+export interface RenewalRequest {
+  readonly paymentProvider?: PaymentProvider
+}
+
+// PaymentResponse is reused for renewal (same shape as purchase/upgrade payment)
+export type InitiateRenewalResponse = PurchaseMembershipResponse
+
+export type ExpiryUrgency = 'none' | 'warning' | 'danger' | 'critical'
+
+export function getExpiryUrgency(
+  daysRemaining: number,
+  status: string,
+): ExpiryUrgency {
+  if (status !== MembershipStatus.ACTIVE) return 'none'
+  if (daysRemaining > 7) return 'none'
+  if (daysRemaining > 3) return 'warning'
+  if (daysRemaining > 0) return 'danger'
+  return 'critical'
+}
+
+export function canRenewMembership(
+  membership: UserMembership | null | undefined,
+): boolean {
+  if (!membership) return false
+  if (
+    membership.status === MembershipStatus.ACTIVE &&
+    membership.daysRemaining <= 7
+  )
+    return true
+  if (membership.status === MembershipStatus.EXPIRED) {
+    const expiredAgoMs = Date.now() - new Date(membership.endDate).getTime()
+    return expiredAgoMs <= 7 * 24 * 60 * 60 * 1000
+  }
+  return false
+}

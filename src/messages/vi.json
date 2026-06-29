@@ -2161,12 +2161,14 @@
     "subtitle": "So sánh gói Hội viên và gói voucher Đẩy tin để chọn giải pháp tối ưu cho nhu cầu bán hàng.",
     "tabs": {
       "membership": "Gói Hội viên",
-      "voucher": "Gói voucher Đẩy tin"
+      "voucher": "Gói voucher Đẩy tin",
+      "renewal": "Gia hạn"
     },
     "aria": {
       "register": "Đăng ký gói dịch vụ",
       "membershipTab": "Tab gói hội viên",
-      "voucherTab": "Tab gói voucher đẩy tin"
+      "voucherTab": "Tab gói voucher đẩy tin",
+      "renewalTab": "Tab gia hạn gói"
     },
     "noPlansAvailable": "Hiện chưa có gói hội viên nào.",
     "noVouchersAvailable": "Hiện chưa có gói voucher nào.",
@@ -2174,7 +2176,9 @@
       "loadFailed": "Không thể tải danh sách gói",
       "loginRequired": "Vui lòng đăng nhập để tiếp tục",
       "purchaseFailed": "Đã có lỗi xảy ra khi đăng ký gói",
-      "alreadyHasMembership": "Bạn đã có gói hội viên đang hoạt động. Vui lòng sử dụng tính năng nâng cấp."
+      "alreadyHasMembership": "Bạn đã có gói hội viên đang hoạt động. Vui lòng sử dụng tính năng nâng cấp.",
+      "renewalFailed": "Không thể gia hạn. Vui lòng thử lại.",
+      "renewalNotEligible": "Gói của bạn không đủ điều kiện gia hạn lúc này."
     },
     "success": {
       "purchaseSuccess": "Đã đăng ký gói thành công!"
@@ -2190,7 +2194,26 @@
     "upgradeButton": "Nâng cấp gói",
     "purchaseButton": "Mua gói hội viên",
     "noMembership": "Bạn chưa có gói hội viên nào.",
-    "alreadyHasMembership": "Bạn đã có gói hội viên đang hoạt động. Đang chuyển đến trang nâng cấp..."
+    "alreadyHasMembership": "Bạn đã có gói hội viên đang hoạt động. Đang chuyển đến trang nâng cấp...",
+    "renewal": {
+      "title": "Gia hạn gói thành viên",
+      "subtitle": "Gia hạn gói {packageName} thêm 1 tháng với giá hiện hành.",
+      "currentPlanLabel": "Gói hiện tại",
+      "renewButton": "Gia hạn ngay",
+      "renewButtonLoading": "Đang xử lý...",
+      "expiresOn": "Hết hạn vào {date}",
+      "daysRemainingBadge": "Còn {count} ngày",
+      "expiredBadge": "Đã hết hạn",
+      "priceLabel": "Giá gia hạn",
+      "noRenewalEligible": "Gói của bạn không đủ điều kiện gia hạn. Vui lòng mua gói mới.",
+      "buyNewButton": "Mua gói mới",
+      "urgencyInfo": {
+        "warning": "Gói sắp hết hạn — hãy gia hạn sớm để không bị gián đoạn dịch vụ.",
+        "danger": "Gói còn rất ít thời gian — gia hạn ngay!",
+        "critical": "Gói vừa hết hạn — gia hạn ngay để khôi phục quyền lợi."
+      },
+      "renewalNote": "Gói mới sẽ bắt đầu ngay sau ngày hết hạn của gói hiện tại. Không bị mất ngày."
+    }
   },
   "membershipUpgrade": {
     "title": "Nâng cấp gói hội viên",

@@ -12,6 +12,8 @@ import type {
   GetUpgradePreviewResponse,
   UpgradeRequest,
   UpgradeResponse,
+  RenewalRequest,
+  InitiateRenewalResponse,
 } from '@/api/types/membership.type'
 import { apiRequest } from '@/configs/axios/instance'
 import { AxiosInstance } from 'axios'
@@ -160,6 +162,22 @@ export class MembershipService {
 
     return response
   }
+
+  static async initiateRenewal(
+    request: RenewalRequest,
+    userId: string,
+  ): Promise<ApiResponse<InitiateRenewalResponse>> {
+    const response = await apiRequest<InitiateRenewalResponse>({
+      method: 'POST',
+      url: PATHS.MEMBERSHIP.INITIATE_RENEWAL,
+      data: request,
+      headers: {
+        'user-id': userId,
+      },
+    })
+
+    return response
+  }
 }
 
 export const {
@@ -172,4 +190,5 @@ export const {
   getAvailableUpgrades,
   getUpgradePreview,
   initiateUpgrade,
+  initiateRenewal,
 } = MembershipService

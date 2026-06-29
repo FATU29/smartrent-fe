@@ -1,6 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MembershipService } from '@/api/services'
-import type { PurchaseMembershipRequest } from '@/api/types/membership.type'
+import type {
+  PurchaseMembershipRequest,
+  RenewalRequest,
+} from '@/api/types/membership.type'
 import { startGatewayCheckout } from '@/utils/payment'
 
 // Export upgrade hooks
@@ -105,6 +108,38 @@ export const usePurchaseMembership = () => {
       startGatewayCheckout(data)
 
       // Invalidate relevant queries to refresh data
+      queryClient.invalidateQueries({
+        queryKey: ['memberships', 'my', variables.userId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['memberships', 'history', variables.userId],
+      })
+    },
+  })
+}
+
+/**
+ * Hook to initiate membership renewal (same package, same tier, +1 month)
+ */
+export const useInitiateRenewal = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({
+      request,
+      userId,
+    }: {
+      request: RenewalRequest
+      userId: string
+    }) => {
+      const response = await MembershipService.initiateRenewal(request, userId)
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Failed to initiate renewal')
+      }
+      return response.data
+    },
+    onSuccess: (data, variables) => {
+      startGatewayCheckout(data)
       queryClient.invalidateQueries({
         queryKey: ['memberships', 'my', variables.userId],
       })

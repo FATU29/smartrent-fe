@@ -1866,12 +1866,14 @@
     "subtitle": "Compare Membership packages and Push Voucher bundles to choose the best solution for your sales needs.",
     "tabs": {
       "membership": "Membership Packages",
-      "voucher": "Push Voucher Packages"
+      "voucher": "Push Voucher Packages",
+      "renewal": "Renewal"
     },
     "aria": {
       "register": "Register service packages",
       "membershipTab": "Membership packages tab",
-      "voucherTab": "Push voucher packages tab"
+      "voucherTab": "Push voucher packages tab",
+      "renewalTab": "Membership renewal tab"
     },
     "noPlansAvailable": "No membership plans available at the moment.",
     "noVouchersAvailable": "No voucher packages available at the moment.",
@@ -1879,7 +1881,9 @@
       "loadFailed": "Failed to load packages",
       "loginRequired": "Please login to continue",
       "purchaseFailed": "An error occurred while registering the package",
-      "alreadyHasMembership": "You already have an active membership. Please use the upgrade feature instead."
+      "alreadyHasMembership": "You already have an active membership. Please use the upgrade feature instead.",
+      "renewalFailed": "Unable to renew. Please try again.",
+      "renewalNotEligible": "Your plan is not currently eligible for renewal."
     },
     "success": {
       "purchaseSuccess": "Package registered successfully!"
@@ -1895,7 +1899,26 @@
     "upgradeButton": "Upgrade Membership",
     "purchaseButton": "Purchase Membership",
     "noMembership": "You don't have an active membership yet.",
-    "alreadyHasMembership": "You already have an active membership. Redirecting to upgrade page..."
+    "alreadyHasMembership": "You already have an active membership. Redirecting to upgrade page...",
+    "renewal": {
+      "title": "Renew Your Membership",
+      "subtitle": "Renew your {packageName} plan for another month at the current price.",
+      "currentPlanLabel": "Current Plan",
+      "renewButton": "Renew Now",
+      "renewButtonLoading": "Processing...",
+      "expiresOn": "Expires on {date}",
+      "daysRemainingBadge": "{count} days left",
+      "expiredBadge": "Expired",
+      "priceLabel": "Renewal Price",
+      "noRenewalEligible": "Your plan is not eligible for renewal. Please purchase a new plan.",
+      "buyNewButton": "Buy New Plan",
+      "urgencyInfo": {
+        "warning": "Your plan is expiring soon — renew early to avoid interruptions.",
+        "danger": "Your plan has very little time left — renew now!",
+        "critical": "Your plan just expired — renew now to restore your benefits."
+      },
+      "renewalNote": "Your new plan will start immediately after your current plan ends. No days lost."
+    }
   },
   "membershipUpgrade": {
     "title": "Upgrade Your Membership",
