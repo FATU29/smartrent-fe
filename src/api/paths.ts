@@ -123,6 +123,8 @@ export const PATHS = {
     AVAILABLE_UPGRADES: '/v1/memberships/available-upgrades',
     UPGRADE_PREVIEW: '/v1/memberships/upgrade-preview/:targetMembershipId',
     INITIATE_UPGRADE: '/v1/memberships/initiate-upgrade',
+    // Renewal endpoint
+    INITIATE_RENEWAL: '/v1/memberships/initiate-renewal',
   },
 
   // Push Details endpoints

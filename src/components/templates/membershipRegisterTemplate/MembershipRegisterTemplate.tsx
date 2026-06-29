@@ -11,6 +11,12 @@ import type {
   PaymentProvider,
   Membership,
   UpgradePreview,
+  UserMembership,
+} from '@/api/types/membership.type'
+import {
+  canRenewMembership,
+  getExpiryUrgency,
+  MembershipStatus,
 } from '@/api/types/membership.type'
 import { useDialog } from '@/hooks/useDialog'
 import PaymentMethodDialog from '@/components/molecules/paymentMethodDialog'
@@ -21,6 +27,7 @@ import {
   useMyMembership,
   useAvailableUpgrades,
   useInitiateUpgrade,
+  useInitiateRenewal,
 } from '@/hooks/useMembership'
 import { toast } from 'sonner'
 import { Card, CardContent } from '@/components/atoms/card'
@@ -34,6 +41,9 @@ import {
   Calendar,
   TrendingUp,
   Sparkles,
+  RefreshCw,
+  Clock,
+  ArrowRight,
 } from 'lucide-react'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { MEDIA_BELOW_MD } from '@/constants/breakpoints'
@@ -51,6 +61,209 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/atoms/carousel'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/atoms/tabs'
+import { Button } from '@/components/atoms/button'
+import { format } from 'date-fns'
+
+const URGENCY_CARD_CLASSES = {
+  none: '',
+  warning:
+    'border-yellow-400 bg-yellow-50 dark:bg-yellow-950/20 dark:border-yellow-600',
+  danger:
+    'border-orange-400 bg-orange-50 dark:bg-orange-950/20 dark:border-orange-600',
+  critical: 'border-red-400 bg-red-50 dark:bg-red-950/20 dark:border-red-600',
+}
+
+const URGENCY_BADGE_CLASSES = {
+  none: '',
+  warning:
+    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+  danger:
+    'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+  critical: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+}
+
+// ─── RenewalTabContent ───────────────────────────────────────────────────────
+
+interface RenewalTabContentProps {
+  membership: UserMembership
+  onRenewClick: () => void
+  isRenewing: boolean
+}
+
+const RenewalTabContent: React.FC<RenewalTabContentProps> = ({
+  membership,
+  onRenewClick,
+  isRenewing,
+}) => {
+  const tPage = useTranslations('membershipPage')
+
+  const urgency = getExpiryUrgency(membership.daysRemaining, membership.status)
+  const membershipIcon = getMembershipLevelIcon(
+    membership.packageLevel as MembershipPackageLevel,
+  )
+  const endDateFormatted = format(new Date(membership.endDate), 'dd/MM/yyyy')
+
+  const isExpired = membership.status === MembershipStatus.EXPIRED
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className='max-w-2xl mx-auto space-y-4'
+    >
+      {/* Urgency info banner */}
+      {urgency !== 'none' && (
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className={cn(
+            'flex items-start gap-3 p-4 rounded-lg border',
+            URGENCY_CARD_CLASSES[urgency],
+          )}
+        >
+          <Clock className='size-4 mt-0.5 flex-shrink-0' />
+          <Typography variant='small'>
+            {tPage(`renewal.urgencyInfo.${urgency}`)}
+          </Typography>
+        </motion.div>
+      )}
+
+      {/* Membership card */}
+      <Card
+        className={cn(
+          'relative overflow-hidden border',
+          urgency !== 'none' ? URGENCY_CARD_CLASSES[urgency] : 'border-border',
+        )}
+      >
+        <div className='absolute inset-x-0 top-0 h-px bg-primary/40' />
+        <CardContent className='p-6 md:p-8 space-y-6'>
+          {/* Header */}
+          <div className='flex items-start gap-4'>
+            <div
+              className={cn(
+                'flex items-center justify-center size-12 rounded-lg border flex-shrink-0',
+                getMembershipLevelTileClasses(
+                  membership.packageLevel as MembershipPackageLevel,
+                ),
+              )}
+            >
+              {membershipIcon || <Crown className='size-6' />}
+            </div>
+            <div className='flex-1 min-w-0'>
+              <div className='flex items-center gap-2 flex-wrap mb-1'>
+                <Typography
+                  variant='small'
+                  className='text-xs font-medium uppercase tracking-wider text-muted-foreground'
+                >
+                  {tPage('renewal.currentPlanLabel')}
+                </Typography>
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
+                    isExpired
+                      ? URGENCY_BADGE_CLASSES.critical
+                      : urgency !== 'none'
+                        ? URGENCY_BADGE_CLASSES[urgency]
+                        : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                  )}
+                >
+                  {isExpired
+                    ? tPage('renewal.expiredBadge')
+                    : tPage('renewal.daysRemainingBadge', {
+                        count: membership.daysRemaining,
+                      })}
+                </span>
+              </div>
+              <Typography variant='h3' className='font-semibold'>
+                {membership.packageName}
+              </Typography>
+              <div className='flex items-center gap-1.5 mt-1 text-muted-foreground'>
+                <Sparkles className='size-3.5' />
+                <Typography variant='small'>
+                  {membership.packageLevel}
+                </Typography>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Details grid */}
+          <div className='grid grid-cols-2 gap-3'>
+            <div className='flex items-center gap-3 p-3.5 rounded-lg bg-muted/40 border border-border'>
+              <Calendar className='size-4 text-muted-foreground flex-shrink-0' />
+              <div>
+                <Typography
+                  variant='small'
+                  className='text-xs uppercase tracking-wider text-muted-foreground'
+                >
+                  {tPage('renewal.expiresOn', { date: '' }).replace(
+                    '{date}',
+                    '',
+                  )}
+                </Typography>
+                <Typography
+                  variant='small'
+                  className='font-semibold text-foreground'
+                >
+                  {endDateFormatted}
+                </Typography>
+              </div>
+            </div>
+            <div className='flex items-center gap-3 p-3.5 rounded-lg bg-muted/40 border border-border'>
+              <Award className='size-4 text-muted-foreground flex-shrink-0' />
+              <div>
+                <Typography
+                  variant='small'
+                  className='text-xs uppercase tracking-wider text-muted-foreground'
+                >
+                  {tPage('renewal.priceLabel')}
+                </Typography>
+                <Typography
+                  variant='small'
+                  className='font-semibold text-foreground'
+                >
+                  {membership.totalPaid.toLocaleString('vi-VN')}đ
+                </Typography>
+              </div>
+            </div>
+          </div>
+
+          {/* Renewal note */}
+          <div className='flex items-start gap-2.5 p-3.5 rounded-lg bg-primary/5 border border-primary/15'>
+            <CheckCircle2 className='size-4 text-primary mt-0.5 flex-shrink-0' />
+            <Typography variant='small' className='text-muted-foreground'>
+              {tPage('renewal.renewalNote')}
+            </Typography>
+          </div>
+
+          {/* CTA */}
+          <Button
+            onClick={onRenewClick}
+            disabled={isRenewing}
+            size='lg'
+            className='w-full gap-2'
+          >
+            <RefreshCw className={cn('size-4', isRenewing && 'animate-spin')} />
+            {isRenewing
+              ? tPage('renewal.renewButtonLoading')
+              : tPage('renewal.renewButton')}
+          </Button>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
+}
+
+// ─── Main Template ───────────────────────────────────────────────────────────
 
 export const MembershipRegisterTemplate: React.FC = () => {
   const tPage = useTranslations('membershipPage')
@@ -61,6 +274,9 @@ export const MembershipRegisterTemplate: React.FC = () => {
   const [selectedUpgrade, setSelectedUpgrade] = useState<UpgradePreview | null>(
     null,
   )
+  const [activeTab, setActiveTab] = useState<
+    'renewal' | 'upgrade' | 'purchase'
+  >('purchase')
   const { user } = useAuthContext()
 
   const {
@@ -77,7 +293,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
   const isMobile = useMediaQuery(MEDIA_BELOW_MD)
 
-  //Init use hook
   const {
     data: memberships = [],
     isLoading: membershipLoading,
@@ -95,14 +310,29 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
   const purchaseMutation = usePurchaseMembership()
   const initiateMutation = useInitiateUpgrade()
+  const renewalMutation = useInitiateRenewal()
 
-  // Determine if showing purchase or upgrade mode
-  const isUpgradeMode = !!currentMembership
+  // Derive display mode
+  const hasMembership = !!currentMembership
+  const canRenew = canRenewMembership(
+    currentMembership as UserMembership | null,
+  )
   const isLoading = checkingMembership || membershipLoading || upgradesLoading
   const hasError = membershipError || upgradesError
 
-  //Init event handle
-  // Purchase flow handlers
+  // Set default tab when membership state is known (only on first load)
+  React.useEffect(() => {
+    if (checkingMembership) return
+    if (!hasMembership) {
+      setActiveTab('purchase')
+    } else if (canRenew) {
+      setActiveTab('renewal')
+    } else {
+      setActiveTab('upgrade')
+    }
+  }, [checkingMembership, hasMembership, canRenew])
+
+  // ── Purchase flow ──
   const handlePurchaseSelectMethod = useCallback(
     async (provider: PaymentProvider) => {
       if (!membershipId || !user?.userId) {
@@ -133,20 +363,13 @@ export const MembershipRegisterTemplate: React.FC = () => {
           )
         }
 
-        // The purchase hook sends the user to the gateway in its onSuccess
-        // (SePay POST-form / others GET-redirect); pendingMembership above is
-        // read back by /payment/result once the browser returns.
         await purchaseMutation.mutateAsync({
-          request: {
-            membershipId: membershipId,
-            paymentProvider: provider,
-          },
+          request: { membershipId, paymentProvider: provider },
           userId: user.userId,
         })
 
         handleClosePayment()
       } catch (error) {
-        console.error('Purchase failed:', error)
         toast.error(
           error instanceof Error
             ? error.message
@@ -164,7 +387,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
     ],
   )
 
-  // Upgrade flow handlers
+  // ── Upgrade flow ──
   const handleSelectUpgrade = useCallback(
     (upgrade: UpgradePreview) => {
       setSelectedUpgrade(upgrade)
@@ -186,11 +409,9 @@ export const MembershipRegisterTemplate: React.FC = () => {
       }
 
       try {
-        // Clear any previous payment session storage
         sessionStorage.removeItem('pendingListingCreation')
         sessionStorage.removeItem('pendingMembership')
 
-        // Store upgrade info in session storage before redirect
         if (selectedUpgrade) {
           sessionStorage.setItem(
             'pendingMembershipUpgrade',
@@ -202,7 +423,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
               currentPackageName: selectedUpgrade.currentPackageName,
               discountAmount: selectedUpgrade.discountAmount,
               finalPrice: selectedUpgrade.finalPrice,
-              transactionRef: null, // Will be set after API call
+              transactionRef: null,
             }),
           )
         }
@@ -216,19 +437,13 @@ export const MembershipRegisterTemplate: React.FC = () => {
         })
 
         if (result.status === 'COMPLETED') {
-          // Free upgrade - clear storage and show success
           sessionStorage.removeItem('pendingMembershipUpgrade')
           toast.success(result.message)
           handleClosePayment()
           router.push(SELLERNET_ROUTES.PREFIX + '/membership')
         }
-        // Otherwise (PENDING_PAYMENT) the upgrade hook sends the user to the
-        // gateway in its onSuccess; pendingMembershipUpgrade above is read back
-        // by /payment/result once the browser returns.
       } catch (error) {
-        // Clear storage on error
         sessionStorage.removeItem('pendingMembershipUpgrade')
-        console.error('Upgrade failed:', error)
         toast.error(
           error instanceof Error
             ? error.message
@@ -246,15 +461,44 @@ export const MembershipRegisterTemplate: React.FC = () => {
     ],
   )
 
+  // ── Renewal flow ──
+  const handleRenewalSelectMethod = useCallback(
+    async (provider: PaymentProvider) => {
+      if (!user?.userId) {
+        toast.error(tPage('errors.loginRequired'))
+        return
+      }
+
+      try {
+        sessionStorage.removeItem('pendingListingCreation')
+        sessionStorage.removeItem('pendingMembership')
+
+        await renewalMutation.mutateAsync({
+          request: { paymentProvider: provider },
+          userId: user.userId,
+        })
+
+        handleClosePayment()
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : tPage('errors.renewalFailed'),
+        )
+      }
+    },
+    [user?.userId, handleClosePayment, renewalMutation, tPage],
+  )
+
   const handlePlanSelect = useCallback(
-    async (membershipId: number) => {
-      setMembershipId(membershipId)
+    async (id: number) => {
+      setMembershipId(id)
       handleOpenPayment()
     },
     [handleOpenPayment],
   )
 
-  //Init util function
+  // ── Upgrade grid ──
   const renderUpgradeGrid = () => {
     if (upgrades.length === 0) {
       const membershipIcon = currentMembership
@@ -274,7 +518,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
             <div className='absolute inset-x-0 top-0 h-px bg-primary/40' />
             <CardContent className='relative p-8 md:p-10'>
               <div className='flex flex-col md:flex-row gap-8'>
-                {/* Left Side - Current Membership Info */}
                 <motion.div
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -333,7 +576,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
                   <Separator />
 
-                  {/* Membership Details */}
                   {currentMembership && (
                     <div className='space-y-3'>
                       <div className='flex items-center gap-3 p-4 rounded-lg bg-muted/40 border border-border'>
@@ -382,7 +624,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
                   )}
                 </motion.div>
 
-                {/* Right Side - Top Tier Achievement */}
                 <motion.div
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -405,7 +646,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
                   <Separator />
 
-                  {/* Info Points */}
                   <div className='space-y-2'>
                     <div className='flex items-center gap-3 p-3.5 rounded-lg border border-border bg-card'>
                       <CheckCircle2 className='size-4 text-primary flex-shrink-0' />
@@ -428,7 +668,6 @@ export const MembershipRegisterTemplate: React.FC = () => {
       )
     }
 
-    // Mobile only: Carousel (one card at a time)
     if (isMobile) {
       return (
         <motion.div
@@ -437,13 +676,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <Carousel
-            opts={{
-              align: 'start',
-              loop: false,
-            }}
-            className='w-full'
-          >
+          <Carousel opts={{ align: 'start', loop: false }} className='w-full'>
             <CarouselContent className='-ml-2'>
               {upgrades.map((upgrade, index) => (
                 <CarouselItem
@@ -469,16 +702,9 @@ export const MembershipRegisterTemplate: React.FC = () => {
       )
     }
 
-    // Tablet and desktop: centered grid. Only up to 3 upgrades, so flex +
-    // justify-center keeps 1/2/3 cards centered instead of left-aligned.
     const containerVariants = {
       hidden: { opacity: 0 },
-      visible: {
-        opacity: 1,
-        transition: {
-          staggerChildren: 0.06,
-        },
-      },
+      visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
     }
 
     const itemVariants = {
@@ -486,10 +712,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
       visible: {
         opacity: 1,
         y: 0,
-        transition: {
-          duration: 0.3,
-          ease: 'easeOut' as const,
-        },
+        transition: { duration: 0.3, ease: 'easeOut' as const },
       },
     }
 
@@ -517,8 +740,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
     )
   }
 
-  //Render
-  // Show loading
+  // ── Loading / Error ──
   if (isLoading) {
     return (
       <div className='flex flex-col gap-8'>
@@ -552,7 +774,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
         <Alert variant='destructive' className='max-w-md'>
           <AlertCircle className='size-4' />
           <AlertTitle>
-            {isUpgradeMode
+            {hasMembership
               ? tUpgrade('errors.loadFailedTitle')
               : tPage('errors.loadFailed')}
           </AlertTitle>
@@ -566,30 +788,143 @@ export const MembershipRegisterTemplate: React.FC = () => {
     )
   }
 
+  // ── Purchase-only mode (no current membership) ──
+  if (!hasMembership) {
+    return (
+      <>
+        <div className='flex flex-col gap-8'>
+          <AnimatePresence mode='wait'>
+            <motion.div
+              key='purchase-header'
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <MembershipHeader
+                title={tPage('title')}
+                subtitle={tPage('subtitle')}
+              />
+            </motion.div>
+          </AnimatePresence>
+
+          <motion.div
+            key='purchase-content'
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+          >
+            <MembershipPlansGrid
+              loading={membershipLoading}
+              memberships={memberships}
+              onPlanSelect={handlePlanSelect}
+            />
+          </motion.div>
+        </div>
+
+        <PaymentMethodDialog
+          open={openDialog}
+          onOpenChange={handleClosePayment}
+          onSelectMethod={handlePurchaseSelectMethod}
+        />
+      </>
+    )
+  }
+
+  // ── Membership exists: show tabs ──
+  // Tabs to show: always show upgrade tab; show renewal tab if eligible
+  const showRenewalTab = canRenew
+
+  const handlePaymentMethod = (provider: PaymentProvider) => {
+    if (activeTab === 'renewal') return handleRenewalSelectMethod(provider)
+    if (activeTab === 'upgrade') return handleUpgradeSelectMethod(provider)
+    return handlePurchaseSelectMethod(provider)
+  }
+
   return (
     <>
       <div className='flex flex-col gap-8'>
         <AnimatePresence mode='wait'>
           <motion.div
-            key={isUpgradeMode ? 'upgrade' : 'purchase'}
+            key='has-membership-header'
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.5 }}
           >
             <MembershipHeader
-              title={isUpgradeMode ? tUpgrade('title') : tPage('title')}
+              title={
+                activeTab === 'renewal'
+                  ? tPage('renewal.title')
+                  : tUpgrade('title')
+              }
               subtitle={
-                isUpgradeMode ? tUpgrade('subtitle') : tPage('subtitle')
+                activeTab === 'renewal'
+                  ? tPage('renewal.subtitle', {
+                      packageName: currentMembership?.packageName ?? '',
+                    })
+                  : tUpgrade('subtitle')
               }
             />
           </motion.div>
         </AnimatePresence>
 
-        <AnimatePresence mode='wait'>
-          {isUpgradeMode ? (
+        {showRenewalTab ? (
+          <Tabs
+            value={activeTab}
+            onValueChange={(v) =>
+              setActiveTab(v as 'renewal' | 'upgrade' | 'purchase')
+            }
+          >
+            <TabsList className='w-full max-w-sm'>
+              <TabsTrigger value='renewal' className='flex-1 gap-1.5'>
+                <RefreshCw className='size-3.5' />
+                {tPage('tabs.renewal')}
+              </TabsTrigger>
+              <TabsTrigger value='upgrade' className='flex-1 gap-1.5'>
+                <ArrowRight className='size-3.5' />
+                {tPage('tabs.membership')}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value='renewal' className='mt-6'>
+              <AnimatePresence mode='wait'>
+                <motion.div
+                  key='renewal-content'
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                >
+                  {currentMembership ? (
+                    <RenewalTabContent
+                      membership={currentMembership as UserMembership}
+                      onRenewClick={handleOpenPayment}
+                      isRenewing={renewalMutation.isPending}
+                    />
+                  ) : null}
+                </motion.div>
+              </AnimatePresence>
+            </TabsContent>
+
+            <TabsContent value='upgrade' className='mt-6'>
+              <AnimatePresence mode='wait'>
+                <motion.div
+                  key='upgrade-content'
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                >
+                  {renderUpgradeGrid()}
+                </motion.div>
+              </AnimatePresence>
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <AnimatePresence mode='wait'>
             <motion.div
-              key='upgrade-content'
+              key='upgrade-only'
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
@@ -597,25 +932,11 @@ export const MembershipRegisterTemplate: React.FC = () => {
             >
               {renderUpgradeGrid()}
             </motion.div>
-          ) : (
-            <motion.div
-              key='purchase-content'
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.35, ease: 'easeOut' }}
-            >
-              <MembershipPlansGrid
-                loading={membershipLoading}
-                memberships={memberships}
-                onPlanSelect={handlePlanSelect}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+          </AnimatePresence>
+        )}
       </div>
 
-      {isUpgradeMode && (
+      {activeTab === 'upgrade' && (
         <UpgradePreviewModal
           open={openPreviewDialog}
           preview={selectedUpgrade}
@@ -628,9 +949,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
       <PaymentMethodDialog
         open={openDialog}
         onOpenChange={handleClosePayment}
-        onSelectMethod={
-          isUpgradeMode ? handleUpgradeSelectMethod : handlePurchaseSelectMethod
-        }
+        onSelectMethod={handlePaymentMethod}
       />
     </>
   )
