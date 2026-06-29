@@ -1,6 +1,11 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Load nvm so hooks run with the project's Node version instead of the system default
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use 2>/dev/null
+nvm use --silent 2>/dev/null || true
+
 echo "🔍 Running pre-commit checks..."
 
 # Type checking
