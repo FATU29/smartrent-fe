@@ -107,6 +107,7 @@ export interface UserMembership {
   readonly daysRemaining: number
   readonly status: MembershipStatus
   readonly totalPaid: number
+  readonly packageSalePrice: number
   readonly benefits: UserBenefit[]
   readonly createdAt: string
   readonly updatedAt: string

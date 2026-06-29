@@ -126,7 +126,7 @@ export const RenewMembershipDialog: React.FC<RenewMembershipDialogProps> = ({
                 variant='small'
                 className='font-bold text-sm text-foreground mt-0.5 block'
               >
-                {formatCurrency(membership.totalPaid)}
+                {formatCurrency(membership.packageSalePrice)}
               </Typography>
             </div>
           </div>
