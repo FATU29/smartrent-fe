@@ -8,25 +8,53 @@ import {
   CardTitle,
 } from '@/components/atoms/card'
 import { Badge } from '@/components/atoms/badge'
+import { Button } from '@/components/atoms/button'
 import {
   Crown,
   Calendar,
   Gift,
   Loader2,
+  RefreshCw,
   Sparkles,
   CheckCircle2,
   TrendingUp,
 } from 'lucide-react'
-import { useMyMembership } from '@/hooks/useMembership'
+import { useMyMembership, useInitiateRenewal } from '@/hooks/useMembership'
 import { useAuth } from '@/hooks/useAuth'
-import { MembershipStatus, BenefitStatus } from '@/api/types/membership.type'
+import {
+  MembershipStatus,
+  BenefitStatus,
+  PaymentProvider,
+  canRenewMembership,
+} from '@/api/types/membership.type'
 import { format } from 'date-fns'
 import { motion } from 'framer-motion'
+import { toast } from 'sonner'
+import RenewMembershipDialog from '@/components/molecules/renewMembershipDialog'
 
 const DashboardMembershipCard: React.FC = () => {
   const t = useTranslations('seller.dashboard.membership')
   const { user } = useAuth()
   const { data: membership, isLoading } = useMyMembership(user?.userId)
+  const renewalMutation = useInitiateRenewal()
+  const [renewDialogOpen, setRenewDialogOpen] = React.useState(false)
+
+  const handleRenewConfirm = () => {
+    if (!user?.userId) return
+    renewalMutation.mutate(
+      {
+        request: { paymentProvider: PaymentProvider.SEPAY },
+        userId: user.userId,
+      },
+      {
+        onError: (err) => {
+          toast.error(
+            err instanceof Error ? err.message : t('renewDialog.errorMessage'),
+          )
+        },
+      },
+    )
+  }
 
   if (isLoading) {
     return (
@@ -264,6 +292,23 @@ const DashboardMembershipCard: React.FC = () => {
           </motion.div>
         )}
 
+        {/* Renew Package Button */}
+        {canRenewMembership(membership) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.35 }}
+          >
+            <Button
+              className='w-full gap-2'
+              onClick={() => setRenewDialogOpen(true)}
+            >
+              <RefreshCw className='h-4 w-4' />
+              {t('renewButton')}
+            </Button>
+          </motion.div>
+        )}
+
         {/* Active Benefits */}
         {activeBenefits.length > 0 && (
           <motion.div
@@ -338,6 +383,16 @@ const DashboardMembershipCard: React.FC = () => {
           </motion.div>
         )}
       </CardContent>
+
+      {membership && (
+        <RenewMembershipDialog
+          membership={membership}
+          open={renewDialogOpen}
+          onOpenChange={setRenewDialogOpen}
+          onConfirm={handleRenewConfirm}
+          isLoading={renewalMutation.isPending}
+        />
+      )}
     </Card>
   )
 }
