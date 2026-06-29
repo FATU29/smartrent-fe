@@ -267,6 +267,17 @@ const DashboardMembershipCard: React.FC = () => {
               {format(new Date(membership.endDate), 'dd/MM/yyyy')}
             </p>
           </div>
+          {isActive && (
+            <Button
+              size='sm'
+              variant='outline'
+              className='shrink-0 gap-1.5'
+              onClick={() => setRenewDialogOpen(true)}
+            >
+              <RefreshCw className='h-3.5 w-3.5' />
+              {t('renewButton')}
+            </Button>
+          )}
         </motion.div>
 
         {/* Days Remaining */}
@@ -288,23 +299,6 @@ const DashboardMembershipCard: React.FC = () => {
                 {membership.daysRemaining}
               </span>
             </div>
-          </motion.div>
-        )}
-
-        {/* Renew Package Button — show for any active membership (backend supports early cumulative renewal) */}
-        {isActive && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.35 }}
-          >
-            <Button
-              className='w-full gap-2'
-              onClick={() => setRenewDialogOpen(true)}
-            >
-              <RefreshCw className='h-4 w-4' />
-              {t('renewButton')}
-            </Button>
           </motion.div>
         )}
 
