@@ -2448,12 +2448,13 @@
           "title": "Gia hạn gói hội viên",
           "description": "Gia hạn gói hiện tại của bạn thêm 1 tháng. Bạn sẽ được chuyển đến cổng thanh toán.",
           "currentPackage": "Gói hiện tại",
+          "price": "Giá gia hạn",
+          "paymentMethod": "Phương thức thanh toán",
           "preview": {
             "title": "Xem trước thời hạn",
             "currentExpiry": "Ngày hết hạn hiện tại",
             "newExpiry": "Ngày hết hạn mới"
           },
-          "paymentNotice": "Bạn sẽ được chuyển đến cổng thanh toán để hoàn tất gia hạn.",
           "confirm": "Gia hạn ngay",
           "cancel": "Hủy",
           "loading": "Đang xử lý...",
