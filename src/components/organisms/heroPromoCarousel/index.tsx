@@ -42,7 +42,7 @@ const HeroPromoCarousel = () => {
     },
     {
       id: 'smartSearch',
-      image: '/images/thue-phong-tro.jpg',
+      image: '/images/thue-nha-tro-theo-yeu-cau.jpg',
       heading: t('smartSearch.heading'),
       sub: t('smartSearch.sub'),
       cta: t('smartSearch.cta'),
