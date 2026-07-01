@@ -34,7 +34,7 @@ const HeroPromoCarousel = () => {
   const slides: Slide[] = [
     {
       id: 'rentSecure',
-      image: '/images/thue-phong-tro.jpg',
+      image: '/images/tiem-kiem-tro.jpg',
       heading: t('rentSecure.heading'),
       sub: t('rentSecure.sub'),
       cta: t('rentSecure.cta'),
@@ -42,7 +42,7 @@ const HeroPromoCarousel = () => {
     },
     {
       id: 'smartSearch',
-      image: '/images/tiem-kiem-tro.png',
+      image: '/images/thue-phong-tro.jpg',
       heading: t('smartSearch.heading'),
       sub: t('smartSearch.sub'),
       cta: t('smartSearch.cta'),
