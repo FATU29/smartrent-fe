@@ -221,8 +221,8 @@ export const SelectBenefitDialog: React.FC<SelectBenefitDialogProps> = ({
           <DialogClose asChild>
             <Button variant='outline'>{t('cancel')}</Button>
           </DialogClose>
-          <Button onClick={handleApply} disabled={selected === null}>
-            {t('apply', { count: selected === null ? 0 : 1 })}
+          <Button onClick={handleApply}>
+            {selected === null ? t('clearBenefit') : t('apply', { count: 1 })}
           </Button>
         </DialogFooter>
       </DialogContent>
