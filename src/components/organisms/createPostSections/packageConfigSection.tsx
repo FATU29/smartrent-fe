@@ -25,6 +25,7 @@ import {
   Check,
   Loader2,
   AlertCircle,
+  X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SelectBenefitDialog } from '@/components/molecules/createPostSections/SelectPromotionDialog'
@@ -507,12 +508,24 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               <ChevronRight className='w-4 h-4' />
             </div>
             {propertyInfo.benefitIds && propertyInfo.benefitIds.length > 0 && (
-              <Typography
-                variant='muted'
-                className='text-xs text-primary bg-primary/10 px-2 py-1 rounded-md'
-              >
-                {t('promotionApplied')}: 1 benefit
-              </Typography>
+              <div className='flex items-center gap-1'>
+                <Typography
+                  variant='muted'
+                  className='text-xs text-primary bg-primary/10 px-2 py-1 rounded-md'
+                >
+                  {t('promotionApplied')}: 1 benefit
+                </Typography>
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  className='h-6 w-6 text-muted-foreground hover:text-destructive'
+                  onClick={() => handleApplyBenefits([])}
+                  aria-label={t('removePromotion')}
+                >
+                  <X className='w-3 h-3' />
+                </Button>
+              </div>
             )}
             {!membership && !isMembershipLoading && (
               <Typography
@@ -529,6 +542,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
           open={benefitDialogOpen}
           onOpenChange={setBenefitDialogOpen}
           onApply={handleApplyBenefits}
+          selectedBenefitIds={propertyInfo.benefitIds ?? []}
           membershipData={membership}
         />
 

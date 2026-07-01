@@ -1168,14 +1168,16 @@
           "daysRemaining": "còn {count} ngày",
           "noMembership": "Bạn chưa có gói hội viên nào",
           "cancel": "Hủy",
-          "apply": "Áp dụng ({count})"
+          "apply": "Áp dụng ({count})",
+          "clearBenefit": "Huỷ áp dụng"
         },
         "updatePost": {
           "description": "Thông tin gói đăng tin hiện tại (có thể điều chỉnh ngày đăng)",
           "endDateAutoCalculated": "Ngày kết thúc (Tự động tính)",
           "endDateNote": "Ngày kết thúc được tự động tính dựa trên ngày bắt đầu + thời hạn",
           "updateNote": "Lưu ý: Loại gói và thời hạn không thể thay đổi khi cập nhật"
-        }
+        },
+        "removePromotion": "Xoá quyền lợi"
       },
       "orderSummary": {
         "title": "Tóm tắt Đơn hàng",
