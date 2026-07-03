@@ -5,6 +5,8 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
 } from '@/components/atoms/dialog'
 import { Button } from '@/components/atoms/button'
@@ -15,7 +17,7 @@ import {
   TabsTrigger,
 } from '@/components/atoms/tabs'
 import { Label } from '@/components/atoms/label'
-import { ReportCategory, ReportReason } from '@/api/types'
+import { ReportCategory, ReportReason, REPORT_ERROR_CODES } from '@/api/types'
 import { toast } from 'sonner'
 import { useReportReasons, useCreateReport } from '@/hooks/useReport'
 import { useAuthContext } from '@/contexts/auth'
@@ -47,6 +49,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
 
   const [activeCategory, setActiveCategory] =
     useState<ReportCategory>('LISTING')
+  const [listingUnavailableOpen, setListingUnavailableOpen] = useState(false)
 
   const { data: reasons = [], isLoading: loadingReasons } = useReportReasons()
   const { mutate: submitReport, isPending: submitting } = useCreateReport()
@@ -163,6 +166,12 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
             reset()
             onOpenChange(false)
             onSuccess?.()
+          } else if (
+            response?.code === REPORT_ERROR_CODES.LISTING_NOT_AVAILABLE
+          ) {
+            reset()
+            onOpenChange(false)
+            setListingUnavailableOpen(true)
           } else {
             toast.error(
               (response?.message as string) ||
@@ -184,243 +193,268 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
   )
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='h-full w-full sm:h-auto sm:max-w-2xl sm:w-full max-h-screen sm:max-h-[90vh] overflow-y-auto p-4 sm:p-6 sm:rounded-lg rounded-none'>
-        <DialogTitle className='text-lg sm:text-xl'>
-          {t('common.report') || 'Report Listing'}
-        </DialogTitle>
-        <DialogDescription className='text-sm sm:text-base'>
-          {t('common.reportDescription') ||
-            'Help us improve by reporting issues with this listing'}
-        </DialogDescription>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className='h-full w-full sm:h-auto sm:max-w-2xl sm:w-full max-h-screen sm:max-h-[90vh] overflow-y-auto p-4 sm:p-6 sm:rounded-lg rounded-none'>
+          <DialogTitle className='text-lg sm:text-xl'>
+            {t('common.report') || 'Report Listing'}
+          </DialogTitle>
+          <DialogDescription className='text-sm sm:text-base'>
+            {t('common.reportDescription') ||
+              'Help us improve by reporting issues with this listing'}
+          </DialogDescription>
 
-        <div className='space-y-3 sm:space-y-4 py-3 sm:py-4'>
-          {/* Category Tabs */}
-          <Tabs
-            value={activeCategory}
-            onValueChange={(v: string) =>
-              setActiveCategory(v as ReportCategory)
-            }
-          >
-            <TabsList className='grid w-full grid-cols-2 h-9 sm:h-10'>
-              <TabsTrigger value='LISTING' className='text-xs sm:text-sm'>
-                {t('common.reportCategory.listing') || 'Listing'}
-              </TabsTrigger>
-              <TabsTrigger value='MAP' className='text-xs sm:text-sm'>
-                {t('common.reportCategory.map') || 'Map'}
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent
-              value='LISTING'
-              className='space-y-2 sm:space-y-3 mt-3 sm:mt-4'
+          <div className='space-y-3 sm:space-y-4 py-3 sm:py-4'>
+            {/* Category Tabs */}
+            <Tabs
+              value={activeCategory}
+              onValueChange={(v: string) =>
+                setActiveCategory(v as ReportCategory)
+              }
             >
-              {loadingReasons ? (
-                <div className='text-center py-6 sm:py-4 text-xs sm:text-sm text-muted-foreground'>
-                  {t('common.loading') || 'Loading...'}
-                </div>
-              ) : (
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2'>
-                  {filteredReasons.map((reason: ReportReason) => (
-                    <div
-                      key={reason.reasonId}
-                      className='flex items-start space-x-2 sm:space-x-3 p-2.5 sm:p-2 rounded hover:bg-accent active:bg-accent transition-colors'
-                    >
-                      <input
-                        type='checkbox'
-                        id={`reason-listing-${reason.reasonId}`}
-                        value={reason.reasonId}
-                        checked={selectedReasonIds.includes(reason.reasonId)}
-                        onChange={() => toggleReasonSelection(reason.reasonId)}
-                        className='mt-0.5 sm:mt-1 w-4 h-4 sm:w-auto sm:h-auto flex-shrink-0'
-                      />
-                      <Label
-                        htmlFor={`reason-listing-${reason.reasonId}`}
-                        className='cursor-pointer flex-1 text-xs sm:text-sm leading-relaxed'
+              <TabsList className='grid w-full grid-cols-2 h-9 sm:h-10'>
+                <TabsTrigger value='LISTING' className='text-xs sm:text-sm'>
+                  {t('common.reportCategory.listing') || 'Listing'}
+                </TabsTrigger>
+                <TabsTrigger value='MAP' className='text-xs sm:text-sm'>
+                  {t('common.reportCategory.map') || 'Map'}
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent
+                value='LISTING'
+                className='space-y-2 sm:space-y-3 mt-3 sm:mt-4'
+              >
+                {loadingReasons ? (
+                  <div className='text-center py-6 sm:py-4 text-xs sm:text-sm text-muted-foreground'>
+                    {t('common.loading') || 'Loading...'}
+                  </div>
+                ) : (
+                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2'>
+                    {filteredReasons.map((reason: ReportReason) => (
+                      <div
+                        key={reason.reasonId}
+                        className='flex items-start space-x-2 sm:space-x-3 p-2.5 sm:p-2 rounded hover:bg-accent active:bg-accent transition-colors'
                       >
-                        {reason.reasonText}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
+                        <input
+                          type='checkbox'
+                          id={`reason-listing-${reason.reasonId}`}
+                          value={reason.reasonId}
+                          checked={selectedReasonIds.includes(reason.reasonId)}
+                          onChange={() =>
+                            toggleReasonSelection(reason.reasonId)
+                          }
+                          className='mt-0.5 sm:mt-1 w-4 h-4 sm:w-auto sm:h-auto flex-shrink-0'
+                        />
+                        <Label
+                          htmlFor={`reason-listing-${reason.reasonId}`}
+                          className='cursor-pointer flex-1 text-xs sm:text-sm leading-relaxed'
+                        >
+                          {reason.reasonText}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
 
-            <TabsContent
-              value='MAP'
-              className='space-y-2 sm:space-y-3 mt-3 sm:mt-4'
-            >
-              {loadingReasons ? (
-                <div className='text-center py-6 sm:py-4 text-xs sm:text-sm text-muted-foreground'>
-                  {t('common.loading') || 'Loading...'}
-                </div>
-              ) : (
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2'>
-                  {filteredReasons.map((reason: ReportReason) => (
-                    <div
-                      key={reason.reasonId}
-                      className='flex items-start space-x-2 sm:space-x-3 p-2.5 sm:p-2 rounded hover:bg-accent active:bg-accent transition-colors'
-                    >
-                      <input
-                        type='checkbox'
-                        id={`reason-map-${reason.reasonId}`}
-                        value={reason.reasonId}
-                        checked={selectedReasonIds.includes(reason.reasonId)}
-                        onChange={() => toggleReasonSelection(reason.reasonId)}
-                        className='mt-0.5 sm:mt-1 w-4 h-4 sm:w-auto sm:h-auto flex-shrink-0'
-                      />
-                      <Label
-                        htmlFor={`reason-map-${reason.reasonId}`}
-                        className='cursor-pointer flex-1 text-xs sm:text-sm leading-relaxed'
+              <TabsContent
+                value='MAP'
+                className='space-y-2 sm:space-y-3 mt-3 sm:mt-4'
+              >
+                {loadingReasons ? (
+                  <div className='text-center py-6 sm:py-4 text-xs sm:text-sm text-muted-foreground'>
+                    {t('common.loading') || 'Loading...'}
+                  </div>
+                ) : (
+                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2'>
+                    {filteredReasons.map((reason: ReportReason) => (
+                      <div
+                        key={reason.reasonId}
+                        className='flex items-start space-x-2 sm:space-x-3 p-2.5 sm:p-2 rounded hover:bg-accent active:bg-accent transition-colors'
                       >
-                        {reason.reasonText}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+                        <input
+                          type='checkbox'
+                          id={`reason-map-${reason.reasonId}`}
+                          value={reason.reasonId}
+                          checked={selectedReasonIds.includes(reason.reasonId)}
+                          onChange={() =>
+                            toggleReasonSelection(reason.reasonId)
+                          }
+                          className='mt-0.5 sm:mt-1 w-4 h-4 sm:w-auto sm:h-auto flex-shrink-0'
+                        />
+                        <Label
+                          htmlFor={`reason-map-${reason.reasonId}`}
+                          className='cursor-pointer flex-1 text-xs sm:text-sm leading-relaxed'
+                        >
+                          {reason.reasonText}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
 
-          {/* Other Feedback */}
-          <div className='pt-2'>
-            <Label className='text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 block'>
-              {t('report.otherFeedback') || 'Phản hồi khác (Tùy chọn)'}
-            </Label>
-            <Controller
-              name='otherFeedback'
-              control={control}
-              render={({ field }) => (
-                <textarea
-                  {...field}
-                  placeholder={
-                    t('report.otherFeedbackPlaceholder') ||
-                    'Nhập thêm chi tiết về vấn đề...'
-                  }
-                  className='w-full min-h-[80px] sm:min-h-[100px] p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 resize-none focus:outline-none focus:ring-2 focus:ring-ring'
-                  disabled={submitting}
-                />
-              )}
-            />
-          </div>
+            {/* Other Feedback */}
+            <div className='pt-2'>
+              <Label className='text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 block'>
+                {t('report.otherFeedback') || 'Phản hồi khác (Tùy chọn)'}
+              </Label>
+              <Controller
+                name='otherFeedback'
+                control={control}
+                render={({ field }) => (
+                  <textarea
+                    {...field}
+                    placeholder={
+                      t('report.otherFeedbackPlaceholder') ||
+                      'Nhập thêm chi tiết về vấn đề...'
+                    }
+                    className='w-full min-h-[80px] sm:min-h-[100px] p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 resize-none focus:outline-none focus:ring-2 focus:ring-ring'
+                    disabled={submitting}
+                  />
+                )}
+              />
+            </div>
 
-          {/* Reporter Information */}
-          <div className='space-y-2 sm:space-y-3'>
-            <Label className='text-xs sm:text-sm font-medium block'>
-              {t('report.reporterInfo') || 'Thông tin người báo cáo'}
-              <span className='text-red-500 ml-1'>*</span>
-            </Label>
+            {/* Reporter Information */}
+            <div className='space-y-2 sm:space-y-3'>
+              <Label className='text-xs sm:text-sm font-medium block'>
+                {t('report.reporterInfo') || 'Thông tin người báo cáo'}
+                <span className='text-red-500 ml-1'>*</span>
+              </Label>
 
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-              <div className='sm:col-span-2'>
-                <Controller
-                  name='reporterName'
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type='text'
-                      placeholder={t('report.reporterName') || 'Họ và tên'}
-                      className='w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring'
-                      disabled={submitting}
-                    />
-                  )}
-                />
-              </div>
-
-              <div>
-                <Controller
-                  name='reporterPhone'
-                  control={control}
-                  rules={{ validate: validatePhone }}
-                  render={({ field, fieldState }) => (
-                    <>
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                <div className='sm:col-span-2'>
+                  <Controller
+                    name='reporterName'
+                    control={control}
+                    render={({ field }) => (
                       <input
                         {...field}
-                        type='tel'
-                        placeholder={`${t('report.reporterPhone') || 'Số điện thoại'} *`}
-                        className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring ${
-                          fieldState.error ? 'border-red-500' : ''
-                        }`}
+                        type='text'
+                        placeholder={t('report.reporterName') || 'Họ và tên'}
+                        className='w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring'
                         disabled={submitting}
-                        required
                       />
-                      {fieldState.error && (
-                        <p className='text-xs text-red-500 mt-1'>
-                          {fieldState.error.message}
-                        </p>
-                      )}
-                    </>
-                  )}
-                />
-              </div>
+                    )}
+                  />
+                </div>
 
-              <div>
-                <Controller
-                  name='reporterEmail'
-                  control={control}
-                  rules={{ validate: validateEmail }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <div className='relative'>
+                <div>
+                  <Controller
+                    name='reporterPhone'
+                    control={control}
+                    rules={{ validate: validatePhone }}
+                    render={({ field, fieldState }) => (
+                      <>
                         <input
                           {...field}
-                          type='email'
-                          placeholder={`${t('report.reporterEmail') || 'Email'} *`}
-                          className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 disabled:bg-muted focus:outline-none focus:ring-2 focus:ring-ring ${
+                          type='tel'
+                          placeholder={`${t('report.reporterPhone') || 'Số điện thoại'} *`}
+                          className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring ${
                             fieldState.error ? 'border-red-500' : ''
                           }`}
-                          disabled={
-                            submitting || (isAuthenticated && !!user?.email)
-                          }
+                          disabled={submitting}
                           required
                         />
-                        {isAuthenticated && user?.email && (
-                          <span className='absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground'>
-                            {t('report.autoFilled') || 'Tự động điền'}
-                          </span>
+                        {fieldState.error && (
+                          <p className='text-xs text-red-500 mt-1'>
+                            {fieldState.error.message}
+                          </p>
                         )}
-                      </div>
-                      {fieldState.error && (
-                        <p className='text-xs text-red-500 mt-1'>
-                          {fieldState.error.message}
-                        </p>
-                      )}
-                    </>
-                  )}
-                />
+                      </>
+                    )}
+                  />
+                </div>
+
+                <div>
+                  <Controller
+                    name='reporterEmail'
+                    control={control}
+                    rules={{ validate: validateEmail }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <div className='relative'>
+                          <input
+                            {...field}
+                            type='email'
+                            placeholder={`${t('report.reporterEmail') || 'Email'} *`}
+                            className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 disabled:bg-muted focus:outline-none focus:ring-2 focus:ring-ring ${
+                              fieldState.error ? 'border-red-500' : ''
+                            }`}
+                            disabled={
+                              submitting || (isAuthenticated && !!user?.email)
+                            }
+                            required
+                          />
+                          {isAuthenticated && user?.email && (
+                            <span className='absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground'>
+                              {t('report.autoFilled') || 'Tự động điền'}
+                            </span>
+                          )}
+                        </div>
+                        {fieldState.error && (
+                          <p className='text-xs text-red-500 mt-1'>
+                            {fieldState.error.message}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Actions */}
-        <div className='flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 justify-end pt-3 sm:pt-4 border-t'>
-          <Button
-            variant='outline'
-            disabled={submitting || loadingReasons}
-            onClick={() => onOpenChange(false)}
-            className='w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10'
-          >
-            {t('common.cancel') || 'Hủy'}
-          </Button>
-          <Button
-            disabled={
-              submitting ||
-              loadingReasons ||
-              selectedReasonIds.length === 0 ||
-              !reporterEmail.trim() ||
-              !reporterPhone?.trim()
-            }
-            onClick={handleSubmit(onSubmit)}
-            className='w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10'
-          >
-            {submitting
-              ? t('report.submitting') || 'Đang gửi...'
-              : t('report.submit') || 'Gửi báo cáo'}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+          {/* Actions */}
+          <div className='flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 justify-end pt-3 sm:pt-4 border-t'>
+            <Button
+              variant='outline'
+              disabled={submitting || loadingReasons}
+              onClick={() => onOpenChange(false)}
+              className='w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10'
+            >
+              {t('common.cancel') || 'Hủy'}
+            </Button>
+            <Button
+              disabled={
+                submitting ||
+                loadingReasons ||
+                selectedReasonIds.length === 0 ||
+                !reporterEmail.trim() ||
+                !reporterPhone?.trim()
+              }
+              onClick={handleSubmit(onSubmit)}
+              className='w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10'
+            >
+              {submitting
+                ? t('report.submitting') || 'Đang gửi...'
+                : t('report.submit') || 'Gửi báo cáo'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={listingUnavailableOpen}
+        onOpenChange={setListingUnavailableOpen}
+      >
+        <DialogContent className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle>{t('report.errors.notAvailable.title')}</DialogTitle>
+            <DialogDescription>
+              {t('report.errors.notAvailable.description')}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setListingUnavailableOpen(false)}>
+              {t('report.errors.notAvailable.confirm')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

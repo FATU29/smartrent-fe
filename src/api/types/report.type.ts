@@ -51,3 +51,15 @@ export interface CreateReportResponse {
   category: ReportCategory
   createdAt: string
 }
+
+/**
+ * Error code the backend returns when the listing is no longer available for
+ * reporting (re-checked server-side at submission time, since the listing's
+ * status may have changed since the report dialog was opened).
+ */
+export const REPORT_ERROR_CODES = {
+  LISTING_NOT_AVAILABLE: '22001',
+} as const
+
+export type ReportErrorCode =
+  (typeof REPORT_ERROR_CODES)[keyof typeof REPORT_ERROR_CODES]
