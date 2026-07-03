@@ -45,7 +45,12 @@ const SellerContact: React.FC<SellerContactProps> = ({
 
   React.useEffect(() => {
     setShowPhone(false)
-  }, [host?.userId, host?.phoneCode, host?.phoneNumber])
+  }, [
+    host?.userId,
+    host?.phoneCode,
+    host?.phoneNumber,
+    host?.contactPhoneNumber,
+  ])
 
   if (!host) {
     return null
@@ -58,10 +63,12 @@ const SellerContact: React.FC<SellerContactProps> = ({
     phoneNumber = '',
     avatarUrl,
     email = '',
+    contactPhoneNumber = '',
   } = host
   const name = `${firstName} ${lastName}`.trim() || 'Người bán'
-  const phone = `${phoneCode} ${phoneNumber}`.trim()
-  const zaloLink = phone ? `https://zalo.me/${phoneCode}${phoneNumber}` : ''
+  const phone = contactPhoneNumber || `${phoneCode} ${phoneNumber}`.trim()
+  const hasZalo = Boolean(phoneCode && phoneNumber)
+  const zaloLink = hasZalo ? `https://zalo.me/${phoneCode}${phoneNumber}` : ''
   const sellerListingsUrl = host.userId
     ? buildSellerDetailRoute(host.userId)
     : PUBLIC_ROUTES.PROPERTIES_PREFIX
@@ -88,7 +95,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
     openAuth('login', router.asPath)
   }
 
-  const hasPhone = Boolean(phoneCode && phoneNumber)
+  const hasPhone = Boolean(phone)
   const hasEmail = Boolean(email)
   const isProfessionalBroker =
     Boolean(host.isBroker) || host.brokerVerificationStatus === 'APPROVED'
@@ -164,7 +171,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
           <Button
             className='w-full bg-card hover:bg-primary/10 text-foreground border-2 border-primary h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground dark:border-primary/80'
             onClick={handleZaloClick}
-            disabled={!hasPhone}
+            disabled={!hasZalo}
             aria-label={t('actions.chatZalo')}
           >
             <Image
