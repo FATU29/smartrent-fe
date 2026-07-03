@@ -219,7 +219,14 @@
     "invalidPhone": "Invalid phone number",
     "invalidEmail": "Invalid email address",
     "emailRequired": "Email is required",
-    "autoFilled": "Auto-filled"
+    "autoFilled": "Auto-filled",
+    "errors": {
+      "notAvailable": {
+        "title": "Listing not found",
+        "description": "This listing has been removed, expired, or is not yet approved, so it can no longer be reported.",
+        "confirm": "Got it"
+      }
+    }
   },
   "location": {
     "label": "Your location",
@@ -2478,6 +2485,7 @@
             "currentExpiry": "Current Expiry",
             "newExpiry": "New Expiry"
           },
+          "queuedNotice": "Your current plan stays active and keeps its benefits until {date}. This renewal is queued and will start automatically on that date — nothing changes before then.",
           "confirm": "Renew Now",
           "cancel": "Cancel",
           "loading": "Processing...",

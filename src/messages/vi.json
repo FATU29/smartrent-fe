@@ -219,7 +219,14 @@
     "invalidPhone": "Số điện thoại không hợp lệ",
     "invalidEmail": "Email không hợp lệ",
     "emailRequired": "Email là bắt buộc",
-    "autoFilled": "Tự động điền"
+    "autoFilled": "Tự động điền",
+    "errors": {
+      "notAvailable": {
+        "title": "Bài đăng không tồn tại",
+        "description": "Tin đăng này đã bị xóa, hết hạn hoặc chưa được phê duyệt nên không thể báo cáo lúc này.",
+        "confirm": "Đã hiểu"
+      }
+    }
   },
   "location": {
     "label": "Vị trí của bạn",
@@ -2478,6 +2485,7 @@
             "currentExpiry": "Ngày hết hạn hiện tại",
             "newExpiry": "Ngày hết hạn mới"
           },
+          "queuedNotice": "Gói hiện tại của bạn vẫn hoạt động và giữ nguyên quyền lợi đến hết ngày {date}. Lượt gia hạn này sẽ được xếp hàng chờ và tự động kích hoạt từ ngày đó — mọi thứ không đổi trước thời điểm này.",
           "confirm": "Gia hạn ngay",
           "cancel": "Hủy",
           "loading": "Đang xử lý...",
