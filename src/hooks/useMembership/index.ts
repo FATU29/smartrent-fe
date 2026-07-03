@@ -4,6 +4,10 @@ import type {
   PurchaseMembershipRequest,
   RenewalRequest,
 } from '@/api/types/membership.type'
+import {
+  QUEUED_MEMBERSHIP_EXISTS_CODE,
+  QueuedMembershipExistsError,
+} from '@/api/types/membership.type'
 import { startGatewayCheckout } from '@/utils/payment'
 
 // Export upgrade hooks
@@ -134,6 +138,9 @@ export const useInitiateRenewal = () => {
     }) => {
       const response = await MembershipService.initiateRenewal(request, userId)
       if (!response.success || !response.data) {
+        if (response.code === QUEUED_MEMBERSHIP_EXISTS_CODE) {
+          throw new QueuedMembershipExistsError(response.message || '')
+        }
         throw new Error(response.message || 'Failed to initiate renewal')
       }
       return response.data

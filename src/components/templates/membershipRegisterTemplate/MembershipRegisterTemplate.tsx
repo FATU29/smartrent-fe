@@ -17,6 +17,7 @@ import {
   canRenewMembership,
   getExpiryUrgency,
   MembershipStatus,
+  QueuedMembershipExistsError,
 } from '@/api/types/membership.type'
 import { useDialog } from '@/hooks/useDialog'
 import PaymentMethodDialog from '@/components/molecules/paymentMethodDialog'
@@ -92,12 +93,14 @@ const URGENCY_BADGE_CLASSES = {
 
 interface RenewalTabContentProps {
   membership: UserMembership
+  queued: UserMembership | null
   onRenewClick: () => void
   isRenewing: boolean
 }
 
 const RenewalTabContent: React.FC<RenewalTabContentProps> = ({
   membership,
+  queued,
   onRenewClick,
   isRenewing,
 }) => {
@@ -237,26 +240,47 @@ const RenewalTabContent: React.FC<RenewalTabContentProps> = ({
             </div>
           </div>
 
-          {/* Renewal note */}
-          <div className='flex items-start gap-2.5 p-3.5 rounded-lg bg-primary/5 border border-primary/15'>
-            <CheckCircle2 className='size-4 text-primary mt-0.5 flex-shrink-0' />
-            <Typography variant='small' className='text-muted-foreground'>
-              {tPage('renewal.renewalNote')}
-            </Typography>
-          </div>
+          {queued ? (
+            /* Already has a queued slot — renewal is not allowed until it activates */
+            <div className='flex items-start gap-2.5 p-3.5 rounded-lg bg-muted/40 border border-border'>
+              <RefreshCw className='size-4 text-muted-foreground mt-0.5 flex-shrink-0' />
+              <div className='space-y-0.5'>
+                <Typography variant='small' className='font-semibold'>
+                  {queued.packageName}
+                </Typography>
+                <Typography variant='small' className='text-muted-foreground'>
+                  {tPage('renewal.alreadyQueuedNote', {
+                    date: format(new Date(queued.startDate), 'dd/MM/yyyy'),
+                  })}
+                </Typography>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Renewal note */}
+              <div className='flex items-start gap-2.5 p-3.5 rounded-lg bg-primary/5 border border-primary/15'>
+                <CheckCircle2 className='size-4 text-primary mt-0.5 flex-shrink-0' />
+                <Typography variant='small' className='text-muted-foreground'>
+                  {tPage('renewal.renewalNote')}
+                </Typography>
+              </div>
 
-          {/* CTA */}
-          <Button
-            onClick={onRenewClick}
-            disabled={isRenewing}
-            size='lg'
-            className='w-full gap-2'
-          >
-            <RefreshCw className={cn('size-4', isRenewing && 'animate-spin')} />
-            {isRenewing
-              ? tPage('renewal.renewButtonLoading')
-              : tPage('renewal.renewButton')}
-          </Button>
+              {/* CTA */}
+              <Button
+                onClick={onRenewClick}
+                disabled={isRenewing}
+                size='lg'
+                className='w-full gap-2'
+              >
+                <RefreshCw
+                  className={cn('size-4', isRenewing && 'animate-spin')}
+                />
+                {isRenewing
+                  ? tPage('renewal.renewButtonLoading')
+                  : tPage('renewal.renewButton')}
+              </Button>
+            </>
+          )}
         </CardContent>
       </Card>
     </motion.div>
@@ -299,8 +323,11 @@ export const MembershipRegisterTemplate: React.FC = () => {
     error: membershipError,
   } = useMembershipPackages()
 
-  const { data: currentMembership, isLoading: checkingMembership } =
-    useMyMembership(user?.userId)
+  const { data: myMembership, isLoading: checkingMembership } = useMyMembership(
+    user?.userId,
+  )
+  const currentMembership = myMembership?.current ?? null
+  const queuedMembership = myMembership?.queued ?? null
 
   const {
     data: upgrades = [],
@@ -314,9 +341,10 @@ export const MembershipRegisterTemplate: React.FC = () => {
 
   // Derive display mode
   const hasMembership = !!currentMembership
-  const canRenew = canRenewMembership(
-    currentMembership as UserMembership | null,
-  )
+  const canRenew = canRenewMembership(currentMembership, queuedMembership)
+  // All upgrade options share the same context: "QUEUED" when the user has a
+  // queued slot (upgrade targets it, current stays untouched), "CURRENT" otherwise.
+  const upgradeContext = upgrades[0]?.upgradeContext ?? 'CURRENT'
   const isLoading = checkingMembership || membershipLoading || upgradesLoading
   const hasError = membershipError || upgradesError
 
@@ -481,9 +509,11 @@ export const MembershipRegisterTemplate: React.FC = () => {
         handleClosePayment()
       } catch (error) {
         toast.error(
-          error instanceof Error
-            ? error.message
-            : tPage('errors.renewalFailed'),
+          error instanceof QueuedMembershipExistsError
+            ? tPage('errors.queuedExists')
+            : error instanceof Error
+              ? error.message
+              : tPage('errors.renewalFailed'),
         )
       }
     },
@@ -808,6 +838,22 @@ export const MembershipRegisterTemplate: React.FC = () => {
             </motion.div>
           </AnimatePresence>
 
+          {queuedMembership && (
+            <Alert>
+              <Clock className='size-4' />
+              <AlertTitle>{tPage('queued.title')}</AlertTitle>
+              <AlertDescription>
+                {tPage('queued.activatesOn', {
+                  date: format(
+                    new Date(queuedMembership.startDate),
+                    'dd/MM/yyyy',
+                  ),
+                })}{' '}
+                — {queuedMembership.packageName}
+              </AlertDescription>
+            </Alert>
+          )}
+
           <motion.div
             key='purchase-content'
             initial={{ opacity: 0, y: 12 }}
@@ -832,14 +878,37 @@ export const MembershipRegisterTemplate: React.FC = () => {
   }
 
   // ── Membership exists: show tabs ──
-  // Tabs to show: always show upgrade tab; show renewal tab if eligible
-  const showRenewalTab = canRenew
+  // Tabs to show: always show upgrade tab; show renewal tab if eligible for
+  // renewal, or if there's already a queued slot to display info about.
+  const showRenewalTab = canRenew || !!queuedMembership
 
   const handlePaymentMethod = (provider: PaymentProvider) => {
     if (activeTab === 'renewal') return handleRenewalSelectMethod(provider)
     if (activeTab === 'upgrade') return handleUpgradeSelectMethod(provider)
     return handlePurchaseSelectMethod(provider)
   }
+
+  // Tells the user upfront whether the upgrade they're about to pick targets
+  // the queued slot (current untouched) or replaces the current slot immediately.
+  const upgradeContextBanner = upgrades.length > 0 && (
+    <Alert className='max-w-3xl mx-auto' variant='default'>
+      <ArrowRight className='size-4' />
+      <AlertTitle>
+        {upgradeContext === 'QUEUED'
+          ? tUpgrade('context.queuedBanner.title')
+          : tUpgrade('context.currentBanner.title')}
+      </AlertTitle>
+      <AlertDescription>
+        {upgradeContext === 'QUEUED'
+          ? tUpgrade('context.queuedBanner.description', {
+              date: queuedMembership
+                ? format(new Date(queuedMembership.startDate), 'dd/MM/yyyy')
+                : '',
+            })
+          : tUpgrade('context.currentBanner.description')}
+      </AlertDescription>
+    </Alert>
+  )
 
   return (
     <>
@@ -898,7 +967,8 @@ export const MembershipRegisterTemplate: React.FC = () => {
                 >
                   {currentMembership ? (
                     <RenewalTabContent
-                      membership={currentMembership as UserMembership}
+                      membership={currentMembership}
+                      queued={queuedMembership}
                       onRenewClick={handleOpenPayment}
                       isRenewing={renewalMutation.isPending}
                     />
@@ -907,7 +977,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
               </AnimatePresence>
             </TabsContent>
 
-            <TabsContent value='upgrade' className='mt-6'>
+            <TabsContent value='upgrade' className='mt-6 flex flex-col gap-6'>
               <AnimatePresence mode='wait'>
                 <motion.div
                   key='upgrade-content'
@@ -915,7 +985,9 @@ export const MembershipRegisterTemplate: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
                   transition={{ duration: 0.3, ease: 'easeOut' }}
+                  className='flex flex-col gap-6'
                 >
+                  {upgradeContextBanner}
                   {renderUpgradeGrid()}
                 </motion.div>
               </AnimatePresence>
@@ -929,7 +1001,9 @@ export const MembershipRegisterTemplate: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.35, ease: 'easeOut' }}
+              className='flex flex-col gap-6'
             >
+              {upgradeContextBanner}
               {renderUpgradeGrid()}
             </motion.div>
           </AnimatePresence>

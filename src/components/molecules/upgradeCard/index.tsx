@@ -61,6 +61,7 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
   const targetLevel = upgrade.targetPackageLevel as MembershipPackageLevel
   const targetIcon = getMembershipLevelIcon(targetLevel)
   const targetIconTile = getMembershipLevelTileClasses(targetLevel)
+  const isQueuedContext = upgrade.upgradeContext === 'QUEUED'
 
   const cardVariants = {
     hidden: { opacity: 0, y: 8 },
@@ -121,10 +122,14 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
                       variant='small'
                       className='text-muted-foreground'
                     >
-                      {t('discountExplanation.description', {
-                        days: upgrade.daysRemaining || 0,
-                        percent: upgrade.discountPercentage.toFixed(1),
-                      })}
+                      {isQueuedContext
+                        ? t('discountExplanation.descriptionQueued', {
+                            percent: upgrade.discountPercentage.toFixed(1),
+                          })
+                        : t('discountExplanation.description', {
+                            days: upgrade.daysRemaining || 0,
+                            percent: upgrade.discountPercentage.toFixed(1),
+                          })}
                     </Typography>
                     <div className='flex items-start gap-2 pt-2 border-t border-border'>
                       <Zap className='size-3.5 text-primary flex-shrink-0 mt-0.5' />
@@ -156,21 +161,29 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({
               <Typography variant='h3' className='font-semibold'>
                 {upgrade.targetPackageName}
               </Typography>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className='flex items-center gap-1.5 text-muted-foreground cursor-help mx-auto w-fit'>
-                    <Typography variant='small' className='text-sm'>
-                      {t('daysRemaining', { days: upgrade.daysRemaining || 0 })}
+              {isQueuedContext ? (
+                <Badge variant='outline' className='text-xs font-medium'>
+                  {t('queuedBadge')}
+                </Badge>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className='flex items-center gap-1.5 text-muted-foreground cursor-help mx-auto w-fit'>
+                      <Typography variant='small' className='text-sm'>
+                        {t('daysRemaining', {
+                          days: upgrade.daysRemaining || 0,
+                        })}
+                      </Typography>
+                      <Info className='size-3' />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side='bottom' className='max-w-xs'>
+                    <Typography variant='small'>
+                      {t('remainingTimeExplanation')}
                     </Typography>
-                    <Info className='size-3' />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side='bottom' className='max-w-xs'>
-                  <Typography variant='small'>
-                    {t('remainingTimeExplanation')}
-                  </Typography>
-                </TooltipContent>
-              </Tooltip>
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
 
             <div className='flex items-center gap-2 text-muted-foreground bg-muted/50 border border-border px-2.5 py-1 rounded-md'>

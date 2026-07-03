@@ -117,7 +117,16 @@ export type GetPackagesResponse = Membership[]
 
 export interface GetPackageByIdResponse extends Membership {}
 
-export interface GetMyMembershipResponse extends UserMembership {}
+// A user can hold at most two ACTIVE membership records at once:
+//   - current: startDate <= NOW() < endDate  (in use right now, benefits granted)
+//   - queued:  startDate > NOW()             (waiting to start when current expires, no benefits yet)
+// Both may be null. Renewal creates a queued slot instead of replacing current.
+export interface MyMembershipResponse {
+  readonly current: UserMembership | null
+  readonly queued: UserMembership | null
+}
+
+export interface GetMyMembershipResponse extends MyMembershipResponse {}
 
 export type GetMembershipHistoryResponse = UserMembership[]
 
@@ -168,11 +177,15 @@ export interface NewBenefit {
   readonly createdAt?: string
 }
 
+// "CURRENT" = upgrading the active slot immediately (no queued slot exists)
+// "QUEUED"  = upgrading the queued slot, active slot stays untouched
+export type UpgradeContext = 'CURRENT' | 'QUEUED'
+
 export interface UpgradePreview {
   readonly currentMembershipId?: number
   readonly currentPackageName?: string
   readonly currentPackageLevel?: string
-  readonly daysRemaining?: number
+  readonly daysRemaining?: number | null
   readonly targetMembershipId?: number
   readonly targetPackageName?: string
   readonly targetPackageLevel?: string
@@ -183,6 +196,7 @@ export interface UpgradePreview {
   readonly discountPercentage?: number
   readonly forfeitedBenefits?: ForfeitedBenefit[]
   readonly newBenefits?: NewBenefit[]
+  readonly upgradeContext?: UpgradeContext
   readonly eligible: boolean
   readonly ineligibilityReason: string | null
 }
@@ -193,6 +207,9 @@ export interface UpgradeRequest {
 }
 
 export interface UpgradeResponse {
+  readonly upgradeContext?: UpgradeContext
+  // When the upgraded tier will activate — non-null only when upgradeContext is "QUEUED"
+  readonly activationDate?: string | null
   readonly transactionRef: string
   readonly paymentUrl: string | null
   readonly paymentProvider: string
@@ -221,6 +238,19 @@ export interface RenewalRequest {
 // PaymentResponse is reused for renewal (same shape as purchase/upgrade payment)
 export type InitiateRenewalResponse = PurchaseMembershipResponse
 
+// BE DomainCode QUEUED_MEMBERSHIP_EXISTS ("14009") — thrown by initiate-renewal
+// when the user already has a queued slot waiting to activate.
+export const QUEUED_MEMBERSHIP_EXISTS_CODE = '14009'
+
+export class QueuedMembershipExistsError extends Error {
+  readonly code = QUEUED_MEMBERSHIP_EXISTS_CODE
+
+  constructor(message: string) {
+    super(message)
+    this.name = 'QueuedMembershipExistsError'
+  }
+}
+
 export type ExpiryUrgency = 'none' | 'warning' | 'danger' | 'critical'
 
 export function getExpiryUrgency(
@@ -236,7 +266,9 @@ export function getExpiryUrgency(
 
 export function canRenewMembership(
   membership: UserMembership | null | undefined,
+  queued?: UserMembership | null,
 ): boolean {
+  if (queued) return false // queued slot already taken — only one allowed
   if (!membership) return false
   if (
     membership.status === MembershipStatus.ACTIVE &&

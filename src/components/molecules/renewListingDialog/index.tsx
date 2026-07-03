@@ -81,7 +81,8 @@ export const RenewListingDialog: React.FC<RenewListingDialogProps> = ({
 }) => {
   const t = useTranslations('seller.listingManagement.card.renewDialog')
   const { user } = useAuthContext()
-  const { data: membership } = useMyMembership(user?.userId)
+  const { data: myMembership } = useMyMembership(user?.userId)
+  const membership = myMembership?.current ?? null
 
   const listingVipType = (listing?.vipType ?? 'NORMAL') as VipType
   const tier = isRenewableTier(listingVipType) ? listingVipType : null

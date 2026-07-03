@@ -2180,7 +2180,8 @@
       "purchaseFailed": "Đã có lỗi xảy ra khi đăng ký gói",
       "alreadyHasMembership": "Bạn đã có gói hội viên đang hoạt động. Vui lòng sử dụng tính năng nâng cấp.",
       "renewalFailed": "Không thể gia hạn. Vui lòng thử lại.",
-      "renewalNotEligible": "Gói của bạn không đủ điều kiện gia hạn lúc này."
+      "renewalNotEligible": "Gói của bạn không đủ điều kiện gia hạn lúc này.",
+      "queuedExists": "Bạn đã có gói chờ kích hoạt. Vui lòng đợi gói đó kích hoạt trước khi gia hạn tiếp."
     },
     "success": {
       "purchaseSuccess": "Đã đăng ký gói thành công!"
@@ -2197,6 +2198,10 @@
     "purchaseButton": "Mua gói hội viên",
     "noMembership": "Bạn chưa có gói hội viên nào.",
     "alreadyHasMembership": "Bạn đã có gói hội viên đang hoạt động. Đang chuyển đến trang nâng cấp...",
+    "queued": {
+      "title": "Gói chờ kích hoạt",
+      "activatesOn": "Kích hoạt ngày {date}"
+    },
     "renewal": {
       "title": "Gia hạn gói thành viên",
       "subtitle": "Gia hạn gói {packageName} thêm 1 tháng với giá hiện hành.",
@@ -2214,14 +2219,26 @@
         "danger": "Gói còn rất ít thời gian — gia hạn ngay!",
         "critical": "Gói vừa hết hạn — gia hạn ngay để khôi phục quyền lợi."
       },
-      "renewalNote": "Gói mới sẽ bắt đầu ngay sau ngày hết hạn của gói hiện tại. Không bị mất ngày."
+      "renewalNote": "Gói mới sẽ bắt đầu ngay sau ngày hết hạn của gói hiện tại. Không bị mất ngày.",
+      "alreadyQueuedNote": "Bạn đã có gói chờ kích hoạt vào ngày {date}. Không thể gia hạn thêm cho đến khi gói đó bắt đầu."
     }
   },
   "membershipUpgrade": {
     "title": "Nâng cấp gói hội viên",
     "subtitle": "Chọn gói hội viên cao cấp hơn và nhận chiết khấu dựa trên thời gian còn lại của gói hiện tại.",
+    "context": {
+      "queuedBanner": {
+        "title": "Nâng cấp gói chờ",
+        "description": "Gói hiện tại của bạn không bị ảnh hưởng. Gói mới sẽ kích hoạt vào {date}."
+      },
+      "currentBanner": {
+        "title": "Nâng cấp áp dụng ngay",
+        "description": "Gói hiện tại của bạn sẽ được thay thế ngay lập tức. Bạn nhận chiết khấu dựa trên thời gian còn lại."
+      }
+    },
     "savePercent": "Tiết kiệm {percent}%",
     "daysRemaining": "Còn {days} ngày trong gói hiện tại",
+    "queuedBadge": "Gói chờ",
     "upgradingFrom": "Nâng cấp từ {currentPlan}",
     "originalPrice": "Giá gốc",
     "discount": "Chiết khấu của bạn",
@@ -2238,6 +2255,7 @@
     "discountExplanation": {
       "title": "Chiết khấu thông minh",
       "description": "Bạn còn {days} ngày trong gói hiện tại. Chúng tôi tặng bạn chiết khấu {percent}% để bạn không bị mất giá trị khi nâng cấp!",
+      "descriptionQueued": "Đây là gói chờ chưa kích hoạt. Chiết khấu {percent}% chính là số tiền bạn đã thanh toán cho gói chờ này.",
       "howItWorks": "Chiết khấu của bạn được tính dựa trên thời gian chưa sử dụng trong gói hội viên hiện tại. Thời gian còn lại càng nhiều, chiết khấu càng lớn.",
       "savings": "Tổng tiết kiệm: {amount}"
     },
@@ -2446,6 +2464,9 @@
           }
         },
         "renewButton": "Gia hạn gói",
+        "queuedBadge": "Đang chờ kích hoạt",
+        "queuedActivatesOn": "Kích hoạt ngày {date}",
+        "alreadyQueued": "Bạn đã có gói chờ kích hoạt. Vui lòng đợi gói đó kích hoạt trước khi gia hạn tiếp.",
         "renewDialog": {
           "title": "Gia hạn gói hội viên",
           "description": "Gia hạn gói hiện tại của bạn thêm 1 tháng. Bạn sẽ được chuyển đến cổng thanh toán.",

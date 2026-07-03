@@ -25,6 +25,7 @@ import {
   MembershipStatus,
   BenefitStatus,
   PaymentProvider,
+  QueuedMembershipExistsError,
 } from '@/api/types/membership.type'
 import { format } from 'date-fns'
 import { motion } from 'framer-motion'
@@ -34,7 +35,9 @@ import RenewMembershipDialog from '@/components/molecules/renewMembershipDialog'
 const DashboardMembershipCard: React.FC = () => {
   const t = useTranslations('seller.dashboard.membership')
   const { user } = useAuth()
-  const { data: membership, isLoading } = useMyMembership(user?.userId)
+  const { data, isLoading } = useMyMembership(user?.userId)
+  const membership = data?.current ?? null
+  const queued = data?.queued ?? null
   const renewalMutation = useInitiateRenewal()
   const [renewDialogOpen, setRenewDialogOpen] = React.useState(false)
 
@@ -48,7 +51,11 @@ const DashboardMembershipCard: React.FC = () => {
       {
         onError: (err) => {
           toast.error(
-            err instanceof Error ? err.message : t('renewDialog.errorMessage'),
+            err instanceof QueuedMembershipExistsError
+              ? t('alreadyQueued')
+              : err instanceof Error
+                ? err.message
+                : t('renewDialog.errorMessage'),
           )
         },
       },
@@ -67,6 +74,34 @@ const DashboardMembershipCard: React.FC = () => {
         <CardContent>
           <div className='flex items-center justify-center py-8'>
             <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (!membership && queued) {
+    return (
+      <Card className='relative overflow-hidden'>
+        <CardHeader>
+          <CardTitle className='flex items-center gap-2'>
+            <Crown className='h-5 w-5 text-primary' />
+            {t('title')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='flex items-center gap-3 p-3 rounded-lg bg-muted border border-border'>
+            <Badge variant='secondary'>{t('queuedBadge')}</Badge>
+            <div className='flex-1 min-w-0'>
+              <p className='text-sm font-semibold text-foreground'>
+                {queued.packageName}
+              </p>
+              <p className='text-xs text-muted-foreground'>
+                {t('queuedActivatesOn', {
+                  date: format(new Date(queued.startDate), 'dd/MM/yyyy'),
+                })}
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -267,7 +302,7 @@ const DashboardMembershipCard: React.FC = () => {
               {format(new Date(membership.endDate), 'dd/MM/yyyy')}
             </p>
           </div>
-          {isActive && (
+          {isActive && !queued && (
             <Button
               size='sm'
               variant='outline'
@@ -279,6 +314,30 @@ const DashboardMembershipCard: React.FC = () => {
             </Button>
           )}
         </motion.div>
+
+        {/* Queued membership (renewal already purchased, waiting to activate) */}
+        {queued && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
+            className='flex items-center gap-3 p-3 rounded-lg bg-muted/60 border border-dashed border-border'
+          >
+            <Badge variant='secondary' className='shrink-0'>
+              {t('queuedBadge')}
+            </Badge>
+            <div className='flex-1 min-w-0'>
+              <p className='text-sm font-semibold text-foreground truncate'>
+                {queued.packageName}
+              </p>
+              <p className='text-xs text-muted-foreground'>
+                {t('queuedActivatesOn', {
+                  date: format(new Date(queued.startDate), 'dd/MM/yyyy'),
+                })}
+              </p>
+            </div>
+          </motion.div>
+        )}
 
         {/* Days Remaining */}
         {isActive && membership.daysRemaining > 0 && (

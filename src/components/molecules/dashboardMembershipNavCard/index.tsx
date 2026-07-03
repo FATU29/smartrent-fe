@@ -18,7 +18,8 @@ import { Typography } from '@/components/atoms/typography'
 const DashboardMembershipNavCard: React.FC = () => {
   const t = useTranslations('seller.dashboard.membership')
   const { user } = useAuth()
-  const { data: membership } = useMyMembership(user?.userId)
+  const { data: myMembership } = useMyMembership(user?.userId)
+  const membership = myMembership?.current ?? null
 
   const features = [
     {

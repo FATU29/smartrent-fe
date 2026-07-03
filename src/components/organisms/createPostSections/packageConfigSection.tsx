@@ -66,8 +66,9 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   const { data: vipTiers = [], isLoading, isError, error } = useVipTiers()
 
   const userId = useMemo(() => user?.userId, [user?.userId])
-  const { data: membership, isLoading: isMembershipLoading } =
+  const { data: myMembership, isLoading: isMembershipLoading } =
     useMyMembership(userId)
+  const membership = myMembership?.current ?? null
 
   const [benefitDialogOpen, setBenefitDialogOpen] = useState(false)
 

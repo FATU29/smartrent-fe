@@ -1885,7 +1885,8 @@
       "purchaseFailed": "An error occurred while registering the package",
       "alreadyHasMembership": "You already have an active membership. Please use the upgrade feature instead.",
       "renewalFailed": "Unable to renew. Please try again.",
-      "renewalNotEligible": "Your plan is not currently eligible for renewal."
+      "renewalNotEligible": "Your plan is not currently eligible for renewal.",
+      "queuedExists": "You already have a queued package. Please wait for it to activate before renewing again."
     },
     "success": {
       "purchaseSuccess": "Package registered successfully!"
@@ -1902,6 +1903,10 @@
     "purchaseButton": "Purchase Membership",
     "noMembership": "You don't have an active membership yet.",
     "alreadyHasMembership": "You already have an active membership. Redirecting to upgrade page...",
+    "queued": {
+      "title": "Queued Package",
+      "activatesOn": "Activates on {date}"
+    },
     "renewal": {
       "title": "Renew Your Membership",
       "subtitle": "Renew your {packageName} plan for another month at the current price.",
@@ -1919,14 +1924,26 @@
         "danger": "Your plan has very little time left — renew now!",
         "critical": "Your plan just expired — renew now to restore your benefits."
       },
-      "renewalNote": "Your new plan will start immediately after your current plan ends. No days lost."
+      "renewalNote": "Your new plan will start immediately after your current plan ends. No days lost.",
+      "alreadyQueuedNote": "You already have a queued package activating on {date}. You cannot renew again until it starts."
     }
   },
   "membershipUpgrade": {
     "title": "Upgrade Your Membership",
     "subtitle": "Choose a higher-tier membership and get a discount based on your remaining membership time.",
+    "context": {
+      "queuedBanner": {
+        "title": "Upgrading Your Queued Package",
+        "description": "Your current plan is not affected. The new plan will activate on {date}."
+      },
+      "currentBanner": {
+        "title": "Upgrade Applies Immediately",
+        "description": "Your current plan will be replaced right away. You get a discount based on your remaining time."
+      }
+    },
     "savePercent": "Save {percent}%",
     "daysRemaining": "{days} days remaining in your current plan",
+    "queuedBadge": "Queued",
     "upgradingFrom": "Upgrade from {currentPlan}",
     "originalPrice": "Original Price",
     "discount": "Your Discount",
@@ -1943,6 +1960,7 @@
     "discountExplanation": {
       "title": "Smart Discount Applied",
       "description": "You have {days} days remaining in your current plan. We're giving you a {percent}% discount so you don't lose that value when upgrading!",
+      "descriptionQueued": "This is a queued package that hasn't activated yet. The {percent}% discount is exactly what you already paid for this queued package.",
       "howItWorks": "Your discount is calculated based on the unused time in your current membership. The more time remaining, the bigger your discount.",
       "savings": "Total savings: {amount}"
     },
@@ -2446,6 +2464,9 @@
           }
         },
         "renewButton": "Renew Package",
+        "queuedBadge": "Queued",
+        "queuedActivatesOn": "Activates on {date}",
+        "alreadyQueued": "You already have a queued package. Please wait for it to activate before renewing again.",
         "renewDialog": {
           "title": "Renew Membership",
           "description": "Renew your current package for another month. You will be redirected to the payment gateway.",

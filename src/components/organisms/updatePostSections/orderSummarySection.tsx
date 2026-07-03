@@ -53,7 +53,8 @@ const OrderSummarySection: React.FC<OrderSummarySectionProps> = ({
 
   const { data: vipTiers = [] } = useVipTiers()
   const { user } = useAuthContext()
-  const { data: myMembership } = useMyMembership(user?.userId)
+  const { data: myMembershipData } = useMyMembership(user?.userId)
+  const myMembership = myMembershipData?.current ?? null
 
   const { data: profileResponse, isLoading: isCheckingProfile } = useQuery({
     queryKey: ['update-post-order-summary-profile', user?.userId],
