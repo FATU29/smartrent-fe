@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { RefreshCw, Calendar, Check, Crown } from 'lucide-react'
+import { RefreshCw, Calendar, Check, Crown, Info } from 'lucide-react'
 import Image from 'next/image'
 import {
   Dialog,
@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import { Badge } from '@/components/atoms/badge'
+import { Alert, AlertDescription } from '@/components/atoms/alert'
 import { cn } from '@/lib/utils'
 import { format, addDays } from 'date-fns'
 import type { UserMembership } from '@/api/types/membership.type'
@@ -170,6 +171,14 @@ export const RenewMembershipDialog: React.FC<RenewMembershipDialogProps> = ({
               </div>
             </div>
           </section>
+
+          {/* Queued renewal notice */}
+          <Alert variant='default' className='items-start gap-2.5 py-3'>
+            <Info size={16} className='text-muted-foreground' />
+            <AlertDescription className='text-xs text-muted-foreground'>
+              {t('queuedNotice', { date: formatDate(currentExpiry) })}
+            </AlertDescription>
+          </Alert>
 
           {/* Payment provider selector */}
           <section className='space-y-2'>
