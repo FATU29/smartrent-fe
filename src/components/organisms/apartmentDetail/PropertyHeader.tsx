@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Typography } from '@/components/atoms/typography'
 import { Card, CardContent } from '@/components/atoms/card'
@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/atoms/button'
 import SaveListingButton from '@/components/molecules/saveListingButton'
 import CompareToggleBtn from '@/components/molecules/compareToggleBtn'
-import { Copy, Flag } from 'lucide-react'
+import { ChevronDown, ChevronUp, Copy, Flag } from 'lucide-react'
 import { toast } from 'sonner'
 import { ReportListingDialog } from '@/components/molecules/reportListingDialog'
 import { ListingApi } from '@/api/types/property.type'
@@ -27,6 +27,9 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   const t = useTranslations()
   const locale = useLocale()
   const [reportDialogOpen, setReportDialogOpen] = useState(false)
+  const [isTitleExpanded, setIsTitleExpanded] = useState(false)
+  const [isTitleTruncated, setIsTitleTruncated] = useState(false)
+  const titleRef = useRef<HTMLHeadingElement>(null)
 
   const { listing } = props
 
@@ -61,6 +64,13 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   const handleReport = () => {
     setReportDialogOpen(true)
   }
+
+  useEffect(() => {
+    const titleEl = titleRef.current
+    if (!titleEl) return
+
+    setIsTitleTruncated(titleEl.scrollHeight > titleEl.clientHeight + 1)
+  }, [title])
 
   const utilityPriceTranslationKeys = {
     NEGOTIABLE: 'residentialFilter.utilitiesPrice.electricity.negotiable',
@@ -214,11 +224,31 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
       <div className='w-full'>
         {/* Title */}
         <Typography
+          ref={titleRef}
           variant='pageTitle'
-          className='listing-title text-foreground'
+          className={`listing-title text-foreground ${
+            isTitleExpanded ? '' : 'line-clamp-2'
+          }`}
         >
           {title}
         </Typography>
+
+        {isTitleTruncated && (
+          <button
+            type='button'
+            onClick={() => setIsTitleExpanded((prev) => !prev)}
+            className='mt-1 inline-flex items-center gap-1 text-xs md:text-sm font-medium text-primary hover:underline'
+          >
+            {isTitleExpanded
+              ? t('apartmentDetail.actions.collapseTitle')
+              : t('apartmentDetail.actions.expandTitle')}
+            {isTitleExpanded ? (
+              <ChevronUp size={14} />
+            ) : (
+              <ChevronDown size={14} />
+            )}
+          </button>
+        )}
 
         {/* Badges */}
         <div className='flex flex-wrap items-center gap-1.5 mt-3'>
