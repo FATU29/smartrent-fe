@@ -2408,7 +2408,6 @@
         "room": "Phòng",
         "landlord": "Chủ nhà",
         "orderInfo": "Thông tin đơn",
-        "failureReason": "Lý do thất bại",
         "timeline": "Tiến trình",
         "noTimeline": "Chưa có sự kiện nào."
       },
@@ -2420,6 +2419,7 @@
         "SERVICE_FEE": "Phí dịch vụ",
         "MEMBERSHIP_PURCHASE": "Mua gói hội viên",
         "MEMBERSHIP_UPGRADE": "Nâng cấp hội viên",
+        "MEMBERSHIP_RENEWAL": "Gia hạn hội viên",
         "POST_FEE": "Phí đăng tin",
         "PUSH_FEE": "Phí đẩy tin",
         "REPOST_FEE": "Phí đăng lại",

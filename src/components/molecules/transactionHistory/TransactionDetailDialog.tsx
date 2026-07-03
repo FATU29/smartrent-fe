@@ -95,16 +95,6 @@ const DetailBody: React.FC<{ detail: CustomerTransactionDetail }> = ({
         }
       />
       <Row label={t('orderInfo')} value={detail.orderInfo} />
-      {detail.failureReason && (
-        <div className='grid grid-cols-[7rem_1fr] gap-3 py-1.5'>
-          <dt className='text-sm text-muted-foreground'>
-            {t('failureReason')}
-          </dt>
-          <dd className='text-sm text-destructive break-words'>
-            {detail.failureReason}
-          </dd>
-        </div>
-      )}
 
       <div className='mt-4'>
         <Typography variant='small' className='font-semibold'>
@@ -128,9 +118,6 @@ const DetailBody: React.FC<{ detail: CustomerTransactionDetail }> = ({
                     {formatDateTime(event.at)}
                   </span>
                 </div>
-                {event.note && (
-                  <p className='text-sm text-muted-foreground'>{event.note}</p>
-                )}
               </li>
             ))}
           </ol>
