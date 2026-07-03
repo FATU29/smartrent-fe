@@ -3080,7 +3080,9 @@
       "message": "Message",
       "chatZalo": "Chat via Zalo",
       "showPhone": "Show phone",
-      "sendEmail": "Send email"
+      "sendEmail": "Send email",
+      "expandTitle": "Show full title",
+      "collapseTitle": "Show less"
     },
     "phoneAccess": {
       "loginRequiredTitle": "Log in to view phone number",

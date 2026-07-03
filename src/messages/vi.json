@@ -3080,7 +3080,9 @@
       "message": "Nhắn tin",
       "chatZalo": "Chat qua Zalo",
       "showPhone": "Hiện số",
-      "sendEmail": "Gửi email"
+      "sendEmail": "Gửi email",
+      "expandTitle": "Xem đầy đủ tiêu đề",
+      "collapseTitle": "Thu gọn"
     },
     "phoneAccess": {
       "loginRequiredTitle": "Đăng nhập để xem số điện thoại",
