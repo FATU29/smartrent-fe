@@ -67,8 +67,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
   } = host
   const name = `${firstName} ${lastName}`.trim() || 'Người bán'
   const phone = contactPhoneNumber || `${phoneCode} ${phoneNumber}`.trim()
-  const hasZalo = Boolean(phoneCode && phoneNumber)
-  const zaloLink = hasZalo ? `https://zalo.me/${phoneCode}${phoneNumber}` : ''
+  const zaloLink = phone ? `https://zalo.me/${phone.replace(/\D/g, '')}` : ''
   const sellerListingsUrl = host.userId
     ? buildSellerDetailRoute(host.userId)
     : PUBLIC_ROUTES.PROPERTIES_PREFIX
@@ -171,7 +170,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
           <Button
             className='w-full bg-card hover:bg-primary/10 text-foreground border-2 border-primary h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground dark:border-primary/80'
             onClick={handleZaloClick}
-            disabled={!hasZalo}
+            disabled={!hasPhone}
             aria-label={t('actions.chatZalo')}
           >
             <Image
