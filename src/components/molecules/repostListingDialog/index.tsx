@@ -128,7 +128,8 @@ export const RepostListingDialog: React.FC<RepostListingDialogProps> = ({
 }) => {
   const t = useTranslations('seller.listingManagement.card.repostDialog')
   const { user } = useAuthContext()
-  const { data: membership } = useMyMembership(user?.userId)
+  const { data: myMembership } = useMyMembership(user?.userId)
+  const membership = myMembership?.current ?? null
   const { language } = useLanguage()
 
   const initialDuration: DurationDays = React.useMemo(() => {

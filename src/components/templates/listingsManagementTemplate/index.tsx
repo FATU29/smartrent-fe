@@ -60,8 +60,9 @@ const ListingsWithPagination = () => {
     refetch,
   } = useListContext<ListingOwnerDetail>()
   const { user } = useAuthContext()
-  const { data: membershipData, isLoading: isMembershipLoading } =
+  const { data: myMembership, isLoading: isMembershipLoading } =
     useMyMembership(user?.userId)
+  const membershipData = myMembership?.current ?? null
   const { data: quotaData, refetch: refetchQuota } = usePushQuota()
   const pushMutation = usePushListing()
   const isMobile = useIsMobile()

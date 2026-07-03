@@ -18,7 +18,8 @@ const MembershipPage: NextPageWithLayout = () => {
   const router = useRouter()
   const { user } = useAuthContext()
 
-  const { data: membership, isLoading } = useMyMembership(user?.userId)
+  const { data: myMembership, isLoading } = useMyMembership(user?.userId)
+  const membership = myMembership?.current ?? null
 
   const pageTitle = useMemo(() => `${tPage('title')} – Sellernet`, [tPage])
 

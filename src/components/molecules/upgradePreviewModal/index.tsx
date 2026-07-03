@@ -81,6 +81,7 @@ export const UpgradePreviewModal: React.FC<UpgradePreviewModalProps> = ({
   const formattedFinalPrice = formatByLocale(preview.finalPrice || 0, 'vi')
 
   const isFreeUpgrade = (preview.finalPrice || 0) === 0
+  const isQueuedContext = preview.upgradeContext === 'QUEUED'
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
@@ -125,7 +126,11 @@ export const UpgradePreviewModal: React.FC<UpgradePreviewModalProps> = ({
                     {preview.currentPackageName}
                   </Typography>
                   <Typography variant='small' className='text-muted-foreground'>
-                    {t('daysRemaining', { days: preview.daysRemaining || 0 })}
+                    {isQueuedContext
+                      ? t('queuedBadge')
+                      : t('daysRemaining', {
+                          days: preview.daysRemaining || 0,
+                        })}
                   </Typography>
                 </div>
                 <ArrowRight className='size-5 text-primary flex-shrink-0' />
