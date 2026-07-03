@@ -2408,7 +2408,6 @@
         "room": "Room",
         "landlord": "Landlord",
         "orderInfo": "Order info",
-        "failureReason": "Failure reason",
         "timeline": "Timeline",
         "noTimeline": "No timeline events yet."
       },
@@ -2420,6 +2419,7 @@
         "SERVICE_FEE": "Service fee",
         "MEMBERSHIP_PURCHASE": "Membership purchase",
         "MEMBERSHIP_UPGRADE": "Membership upgrade",
+        "MEMBERSHIP_RENEWAL": "Membership renewal",
         "POST_FEE": "Listing post fee",
         "PUSH_FEE": "Listing push fee",
         "REPOST_FEE": "Repost fee",
