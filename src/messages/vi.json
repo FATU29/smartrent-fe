@@ -2292,6 +2292,7 @@
       "description": "Xem lại chi tiết nâng cấp gói hội viên trước khi xác nhận.",
       "currentPlan": "Gói hiện tại",
       "newPlan": "Gói mới",
+      "queuedBadge": "Gói chờ",
       "daysRemaining": "Còn {days} ngày",
       "duration": "Thời hạn {days} ngày",
       "pricing": "Giá cả",

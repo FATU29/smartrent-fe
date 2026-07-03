@@ -1997,6 +1997,7 @@
       "description": "Review the details of your membership upgrade before confirming.",
       "currentPlan": "Current Plan",
       "newPlan": "New Plan",
+      "queuedBadge": "Queued",
       "daysRemaining": "{days} days remaining",
       "duration": "{days} days duration",
       "pricing": "Pricing",
