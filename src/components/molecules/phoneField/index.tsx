@@ -20,6 +20,7 @@ interface PhoneFieldProps {
   className?: string
   id?: string
   required?: boolean
+  disabled?: boolean
 }
 
 const PhoneField = (props: PhoneFieldProps) => {
@@ -34,6 +35,7 @@ const PhoneField = (props: PhoneFieldProps) => {
     control,
     placeholder,
     required = false,
+    disabled = false,
   } = props
 
   const t = useTranslations()
@@ -79,6 +81,7 @@ const PhoneField = (props: PhoneFieldProps) => {
         <Input
           {...field}
           id={fieldId}
+          disabled={disabled}
           placeholder={
             placeholder || t('homePage.auth.common.phoneNumberPlaceholder')
           }
