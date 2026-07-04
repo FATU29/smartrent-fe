@@ -73,6 +73,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       ),
     email: yup
       .string()
+      .trim()
       .required(t('homePage.auth.validation.emailRequired'))
       .matches(
         VALIDATION_PATTERNS.EMAIL,
