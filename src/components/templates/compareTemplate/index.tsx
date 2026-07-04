@@ -20,7 +20,6 @@ import CompareTable from '@/components/organisms/compareTable'
 import EmptyCompareState from '@/components/organisms/emptyCompareState'
 import { useCompareStore } from '@/store/compare/useCompareStore'
 import { ListingService } from '@/api/services/listing.service'
-import { POST_STATUS } from '@/api/types/property.type'
 
 /**
  * CompareTemplate
@@ -31,46 +30,51 @@ const CompareTemplate: React.FC = () => {
   const t = useTranslations('compare')
   const { compareList, clearCompare, removeFromCompare } = useCompareStore()
   const [isMounted, setIsMounted] = useState(false)
-  const [expiredTitles, setExpiredTitles] = useState<string[]>([])
-  const hasCheckedExpiry = useRef(false)
+  const [unavailableTitles, setUnavailableTitles] = useState<string[]>([])
+  const hasCheckedAvailability = useRef(false)
 
   // Handle hydration: Wait for Zustand store to hydrate from localStorage
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // Re-validate compare list against live listing status once, after hydration.
-  // Expired listings are silently stale in sessionStorage until we check.
+  // Re-validate compare list against the live listing endpoint once, after hydration.
+  // The compare table renders from sessionStorage, which goes stale once a listing
+  // expires, gets rejected/suspended, or is deleted — the API 404s all of those
+  // identically (see ListingController), so "no data back" is the single signal
+  // that a listing is no longer comparable.
   useEffect(() => {
-    if (!isMounted || hasCheckedExpiry.current || compareList.length === 0) {
+    if (
+      !isMounted ||
+      hasCheckedAvailability.current ||
+      compareList.length === 0
+    ) {
       return
     }
-    hasCheckedExpiry.current = true
+    hasCheckedAvailability.current = true
 
-    const checkExpiredListings = async () => {
+    const checkListingsAvailability = async () => {
       const responses = await Promise.all(
         compareList.map((listing) => ListingService.getById(listing.listingId)),
       )
 
-      const expired: string[] = []
+      const unavailable: string[] = []
       responses.forEach((response, index) => {
         const listing = compareList[index]
-        const isExpired =
-          response.data?.expired === true ||
-          response.data?.listingStatus === POST_STATUS.EXPIRED
+        const isUnavailable = !response.success || !response.data
 
-        if (isExpired) {
-          expired.push(listing.title)
+        if (isUnavailable) {
+          unavailable.push(listing.title)
           removeFromCompare(listing.listingId)
         }
       })
 
-      if (expired.length > 0) {
-        setExpiredTitles(expired)
+      if (unavailable.length > 0) {
+        setUnavailableTitles(unavailable)
       }
     }
 
-    checkExpiredListings()
+    checkListingsAvailability()
   }, [isMounted, compareList, removeFromCompare])
 
   // Don't render until mounted to avoid hydration mismatch
@@ -124,28 +128,28 @@ const CompareTemplate: React.FC = () => {
       )}
 
       <Dialog
-        open={expiredTitles.length > 0}
+        open={unavailableTitles.length > 0}
         onOpenChange={(open) => {
-          if (!open) setExpiredTitles([])
+          if (!open) setUnavailableTitles([])
         }}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('expiredDialog.title')}</DialogTitle>
+            <DialogTitle>{t('unavailableDialog.title')}</DialogTitle>
             <DialogDescription>
-              {t('expiredDialog.description')}
+              {t('unavailableDialog.description')}
             </DialogDescription>
           </DialogHeader>
           <ul className='list-disc pl-5 space-y-1'>
-            {expiredTitles.map((title) => (
+            {unavailableTitles.map((title) => (
               <li key={title} className='text-sm text-foreground'>
                 {title}
               </li>
             ))}
           </ul>
           <DialogFooter>
-            <Button onClick={() => setExpiredTitles([])}>
-              {t('expiredDialog.confirm')}
+            <Button onClick={() => setUnavailableTitles([])}>
+              {t('unavailableDialog.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

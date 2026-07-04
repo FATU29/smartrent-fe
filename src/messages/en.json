@@ -3947,9 +3947,9 @@
       "items_plural": "{count} items",
       "compareNow": "Compare Now"
     },
-    "expiredDialog": {
-      "title": "Some listings have expired",
-      "description": "The following listings have expired and were removed from your comparison:",
+    "unavailableDialog": {
+      "title": "Some listings are no longer available",
+      "description": "The following listings may have expired or been removed, so they were automatically taken out of your comparison:",
       "confirm": "Got it"
     }
   },

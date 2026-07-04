@@ -3947,9 +3947,9 @@
       "items_plural": "{count} tin",
       "compareNow": "So sánh ngay"
     },
-    "expiredDialog": {
-      "title": "Một số tin đã hết hạn",
-      "description": "Các tin sau đã hết hạn và đã được xoá khỏi danh sách so sánh:",
+    "unavailableDialog": {
+      "title": "Một số tin không còn khả dụng",
+      "description": "Các tin sau có thể đã hết hạn hoặc bị gỡ bỏ nên đã được tự động xoá khỏi danh sách so sánh:",
       "confirm": "Đã hiểu"
     }
   },
