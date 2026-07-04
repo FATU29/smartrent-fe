@@ -173,11 +173,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
             onOpenChange(false)
             setListingUnavailableOpen(true)
           } else {
-            toast.error(
-              (response?.message as string) ||
-                t('report.submitError') ||
-                'Gửi báo cáo thất bại',
-            )
+            toast.error(t('report.submitError'))
           }
         },
         onError: (error: Error) => {
