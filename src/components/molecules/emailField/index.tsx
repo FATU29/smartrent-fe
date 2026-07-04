@@ -20,6 +20,7 @@ interface EmailFieldProps {
   className?: string
   id?: string
   required?: boolean
+  disabled?: boolean
 }
 
 const EmailField = (props: EmailFieldProps) => {
@@ -34,6 +35,7 @@ const EmailField = (props: EmailFieldProps) => {
     control,
     placeholder,
     required = true,
+    disabled = false,
   } = props
 
   const t = useTranslations()
@@ -80,6 +82,7 @@ const EmailField = (props: EmailFieldProps) => {
         <Input
           {...field}
           id={fieldId}
+          disabled={disabled}
           placeholder={
             placeholder || t('homePage.auth.common.emailPlaceholder')
           }

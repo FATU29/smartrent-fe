@@ -48,7 +48,11 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     firstName: yup
       .string()
       .trim()
-      .required(t('homePage.auth.validation.firstNameRequired'))
+      .test(
+        'requiredIfHadValue',
+        t('homePage.auth.validation.firstNameRequired'),
+        (value) => !initialData?.firstName?.trim() || Boolean(value),
+      )
       .test(
         'notDefault',
         t('homePage.auth.validation.firstNameInvalid'),
@@ -57,7 +61,11 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     lastName: yup
       .string()
       .trim()
-      .required(t('homePage.auth.validation.lastNameRequired'))
+      .test(
+        'requiredIfHadValue',
+        t('homePage.auth.validation.lastNameRequired'),
+        (value) => !initialData?.lastName?.trim() || Boolean(value),
+      )
       .test(
         'notDefault',
         t('homePage.auth.validation.lastNameInvalid'),
@@ -72,10 +80,19 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       ),
     contactPhoneNumber: yup
       .string()
-      .required(t('homePage.auth.validation.phoneNumberRequired'))
-      .matches(VIETNAM_PHONE_REGEX, t('homePage.auth.validation.phoneInvalid')),
+      .trim()
+      .test(
+        'requiredIfHadValue',
+        t('homePage.auth.validation.phoneNumberRequired'),
+        (value) => !initialData?.contactPhoneNumber?.trim() || Boolean(value),
+      )
+      .matches(VIETNAM_PHONE_REGEX, {
+        message: t('homePage.auth.validation.phoneInvalid'),
+        excludeEmptyString: true,
+      }),
     idDocument: yup
       .string()
+      .trim()
       .optional()
       .test(
         'idDocumentMinLength',
@@ -185,7 +202,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                   'homePage.auth.accountManagement.personalInfo.firstName',
                 ) /* Họ */
               }
-              required
               placeholder={t('homePage.auth.register.firstNamePlaceholder')}
               error={errors.firstName?.message}
               {...firstNameController.field}
@@ -196,7 +212,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                   'homePage.auth.accountManagement.personalInfo.lastName',
                 ) /* Tên */
               }
-              required
               placeholder={t('homePage.auth.register.lastNamePlaceholder')}
               error={errors.lastName?.message}
               {...lastNameController.field}
@@ -211,7 +226,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               label={t(
                 'homePage.auth.accountManagement.personalInfo.phoneNumber',
               )}
-              required
               placeholder={t('homePage.auth.common.phoneNumberPlaceholder')}
               error={errors.contactPhoneNumber?.message}
             />
@@ -220,6 +234,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               control={control}
               label={t('homePage.auth.accountManagement.personalInfo.email')}
               required
+              disabled
               placeholder={t('homePage.auth.common.emailPlaceholder')}
               error={errors.email?.message}
             />
