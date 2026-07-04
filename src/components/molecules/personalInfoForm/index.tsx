@@ -47,11 +47,11 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   const validationSchema = yup.object().shape({
     firstName: yup
       .string()
-      .trim()
       .test(
-        'requiredIfHadValue',
+        'firstNameValid',
         t('homePage.auth.validation.firstNameRequired'),
-        (value) => !initialData?.firstName?.trim() || Boolean(value),
+        (value) =>
+          value ? Boolean(value.trim()) : !initialData?.firstName?.trim(),
       )
       .test(
         'notDefault',
@@ -60,11 +60,11 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       ),
     lastName: yup
       .string()
-      .trim()
       .test(
-        'requiredIfHadValue',
+        'lastNameValid',
         t('homePage.auth.validation.lastNameRequired'),
-        (value) => !initialData?.lastName?.trim() || Boolean(value),
+        (value) =>
+          value ? Boolean(value.trim()) : !initialData?.lastName?.trim(),
       )
       .test(
         'notDefault',
@@ -81,19 +81,20 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       ),
     contactPhoneNumber: yup
       .string()
-      .trim()
-      .matches(VIETNAM_PHONE_REGEX, {
-        message: t('homePage.auth.validation.phoneInvalid'),
-        excludeEmptyString: true,
-      }),
+      .test(
+        'phoneValid',
+        t('homePage.auth.validation.phoneInvalid'),
+        (value) =>
+          !value ||
+          (Boolean(value.trim()) && VIETNAM_PHONE_REGEX.test(value.trim())),
+      ),
     idDocument: yup
       .string()
-      .trim()
       .optional()
       .test(
         'idDocumentMinLength',
         t('homePage.auth.validation.idDocumentMinLength'),
-        (value) => !value || value.length >= 9,
+        (value) => !value || value.trim().length >= 9,
       ),
     avatar: yup.mixed().optional(),
   })
