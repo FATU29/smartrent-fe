@@ -100,17 +100,17 @@ export const useUpdateProfile = () => {
       // distinguish null vs missing here.
       setPhase('saving-profile')
       // Empty strings would otherwise hit the BE unique constraint on
-      // id_document / tax_number, or needlessly reset contactPhoneVerified
-      // on every save. Omitting the field tells PATCH to leave it unchanged.
-      // The form blocks submission if firstName/lastName/contactPhoneNumber
-      // were previously set and got cleared, so those only reach here blank
-      // when they never had a value to begin with.
+      // id_document / tax_number. Omitting the field tells PATCH to leave it
+      // unchanged. contactPhoneNumber is sent as-is (including empty) so
+      // clearing it in the form actually clears it server-side. The form
+      // blocks submission if firstName/lastName were previously set and got
+      // cleared, so those only reach here blank when never set to begin with.
       const response = await UserService.updateProfile({
         firstName: data.firstName?.trim(),
         lastName: data.lastName?.trim(),
         idDocument: data.idDocument?.trim() || undefined,
         taxNumber: data.taxNumber?.trim() || undefined,
-        contactPhoneNumber: data.contactPhoneNumber?.trim() || undefined,
+        contactPhoneNumber: data.contactPhoneNumber?.trim(),
         avatarMediaId,
       })
 

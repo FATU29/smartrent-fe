@@ -81,11 +81,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     contactPhoneNumber: yup
       .string()
       .trim()
-      .test(
-        'requiredIfHadValue',
-        t('homePage.auth.validation.phoneNumberRequired'),
-        (value) => !initialData?.contactPhoneNumber?.trim() || Boolean(value),
-      )
       .matches(VIETNAM_PHONE_REGEX, {
         message: t('homePage.auth.validation.phoneInvalid'),
         excludeEmptyString: true,
