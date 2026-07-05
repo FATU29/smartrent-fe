@@ -45,18 +45,14 @@ const FooterNavColumn: React.FC<FooterNavColumnProps> = ({
 )
 
 const DISCOVER_LINKS = [
-  ['aboutUs', '#'],
   ['properties', '/properties'],
   ['membership', SELLER_ROUTES.MEMBERSHIP],
-  ['contact', '#'],
 ] as const
 
 const SUPPORT_LINKS = [
   ['pricing', SELLERNET_ROUTES.PRICING],
   ['paymentGuide', SELLERNET_ROUTES.PAYMENT_GUIDE],
   ['usageGuide', SELLERNET_ROUTES.USAGE_GUIDE],
-  ['privacyPolicy', '#'],
-  ['termsOfService', '#'],
 ] as const
 
 const Footer: React.FC = () => {
@@ -162,19 +158,6 @@ const Footer: React.FC = () => {
         {/* ── Bottom bar ── */}
         <div className='flex flex-col sm:flex-row justify-between items-center gap-3 py-4 border-t border-border'>
           <p className='text-sm text-muted-foreground'>{t('copyright')}</p>
-          <div className='flex items-center gap-5'>
-            {(['privacy', 'terms', 'cookies', 'sitemap'] as const).map(
-              (key) => (
-                <Link
-                  key={key}
-                  href='#'
-                  className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                >
-                  {t(key)}
-                </Link>
-              ),
-            )}
-          </div>
         </div>
       </div>
     </footer>
