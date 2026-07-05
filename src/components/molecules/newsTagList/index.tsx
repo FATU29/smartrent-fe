@@ -33,7 +33,7 @@ const NewsTagList: React.FC<NewsTagListProps> = ({ tags, className }) => {
               variant='secondary'
               className='cursor-pointer px-3 py-1 text-sm rounded-full hover:bg-primary/10 hover:text-primary transition-colors'
             >
-              #{tag}
+              {tag}
             </Badge>
           </Link>
         ))}
