@@ -259,8 +259,14 @@ export const PATHS = {
     LISTING_STATS: '/v1/phone-click-details/listing/:listingId/stats',
     MY_CLICKS: '/v1/phone-click-details/my-clicks',
     MY_LISTINGS: '/v1/phone-click-details/my-listings',
+    MY_LISTINGS_STATS: '/v1/phone-click-details/my-listings/stats',
     MY_LISTINGS_USERS: '/v1/phone-click-details/my-listings/users',
     SEARCH_MY_LISTINGS: '/v1/phone-click-details/my-listings/search',
+  },
+
+  // View tracking endpoints
+  VIEW: {
+    TRACK: '/v1/views',
   },
 
   // Owner listing analytics endpoints

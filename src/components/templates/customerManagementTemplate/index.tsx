@@ -2,7 +2,10 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { useUsersForMyListings } from '@/hooks/usePhoneClickDetails'
+import {
+  useUsersForMyListings,
+  useOwnerPhoneClickStats,
+} from '@/hooks/usePhoneClickDetails'
 import {
   Search,
   Mail,
@@ -77,31 +80,23 @@ const CustomerManagementTemplate = () => {
     submittedSearch,
   )
 
+  // Aggregate stats across ALL of the owner's listings — fetched separately
+  // from the paginated customer list so the numbers don't shrink/change as
+  // the seller pages through results.
+  const { data: ownerStats } = useOwnerPhoneClickStats()
+
   // The API already returns the (optionally filtered) page of customers
   const customers = data?.data ?? []
 
   // Calculate stats
-  const stats = useMemo(() => {
-    if (!data?.data)
-      return { totalCustomers: 0, totalClicks: 0, uniqueUsers: 0 }
-
-    return {
-      totalCustomers: data.totalElements || 0,
-      totalClicks: data.data.reduce(
-        (sum: number, customer: UserPhoneClickDetail) => {
-          return (
-            sum +
-            customer.clickedListings.reduce(
-              (s: number, listing: ListingClickInfo) => s + listing.clickCount,
-              0,
-            )
-          )
-        },
-        0,
-      ),
-      uniqueUsers: data.data.length || 0,
-    }
-  }, [data])
+  const stats = useMemo(
+    () => ({
+      totalCustomers: data?.totalElements || 0,
+      totalClicks: ownerStats?.totalClicks || 0,
+      uniqueUsers: ownerStats?.uniqueUsers || 0,
+    }),
+    [data, ownerStats],
+  )
 
   const handleCopyToClipboard = (text: string, type: 'phone' | 'email') => {
     copyToClipboard(text, type, {

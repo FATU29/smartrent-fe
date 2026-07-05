@@ -32,6 +32,7 @@ export const phoneClickDetailKeys = {
   myClicks: () => [...phoneClickDetailKeys.all, 'myClicks'] as const,
   stats: (listingId: string | number) =>
     [...phoneClickDetailKeys.all, 'stats', listingId] as const,
+  ownerStats: () => [...phoneClickDetailKeys.all, 'ownerStats'] as const,
 }
 
 interface UsePhoneClicksOptions {
@@ -159,6 +160,30 @@ export const usePhoneClickStats = (listingId: string | number) => {
       return response.data
     },
     enabled: !!listingId,
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
+  })
+}
+
+/**
+ * Query hook for fetching aggregate phone click stats across all of the
+ * authenticated user's listings (total clicks, unique interested users),
+ * independent of pagination — used by the customer management stat cards.
+ */
+export const useOwnerPhoneClickStats = () => {
+  return useQuery({
+    queryKey: phoneClickDetailKeys.ownerStats(),
+    queryFn: async () => {
+      const response = await PhoneClickDetailService.getOwnerPhoneClickStats()
+
+      if (!response.data || response.code !== '999999') {
+        throw new Error(
+          response.message || 'Failed to fetch owner phone click stats',
+        )
+      }
+
+      return response.data
+    },
     staleTime: 30 * 1000,
     gcTime: 5 * 60 * 1000,
   })

@@ -63,6 +63,15 @@ export interface PhoneClickStats {
 }
 
 /**
+ * Aggregate phone click statistics across all of the owner's listings
+ * (not scoped to a single page of results)
+ */
+export interface OwnerPhoneClickStats {
+  readonly totalClicks: number
+  readonly uniqueUsers: number
+}
+
+/**
  * Response type for single phone click detail
  */
 export interface PhoneClickDetailResponse {
