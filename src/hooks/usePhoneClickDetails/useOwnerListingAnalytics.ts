@@ -39,8 +39,8 @@ export const useOwnerListingsAnalyticsSummary = () => {
       )
     },
     retry: false,
-    staleTime: 30 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
     refetchOnMount: 'always',
   })
 }
@@ -71,8 +71,8 @@ export const useOwnerListingAnalytics = (
     },
     enabled: !!listingId,
     retry: false,
-    staleTime: 30 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
     refetchOnMount: 'always',
   })
 }
@@ -114,8 +114,8 @@ export const useOwnerListingsAnalyticsPage = (params: {
       return response.data
     },
     retry: false,
-    staleTime: 10 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
     refetchOnMount: 'always',
   })
 }

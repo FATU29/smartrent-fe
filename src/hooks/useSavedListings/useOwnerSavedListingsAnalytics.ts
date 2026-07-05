@@ -35,8 +35,8 @@ export const useOwnerSavedListingsAnalyticsSummary = () => {
       }
     },
     retry: false,
-    staleTime: 30 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
     refetchOnMount: 'always',
   })
 }
@@ -61,8 +61,8 @@ export const useOwnerListingSavesTrend = (
     },
     enabled: !!listingId,
     retry: false,
-    staleTime: 30 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
     refetchOnMount: 'always',
   })
 }
@@ -98,8 +98,8 @@ export const useOwnerSavedListingsAnalyticsPage = (params: {
       return response.data
     },
     retry: false,
-    staleTime: 10 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
     refetchOnMount: 'always',
   })
 }
