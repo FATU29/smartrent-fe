@@ -11,6 +11,7 @@ import type {
   PhoneClickDetail,
   TrackPhoneClickRequest,
   PhoneClickStats,
+  OwnerPhoneClickStats,
   SearchPhoneClicksRequest,
   UserPhoneClickDetail,
 } from '@/api/types/phone-click-detail.type'
@@ -182,6 +183,21 @@ export class PhoneClickDetailService {
       },
       instance,
     )
+  }
+
+  /**
+   * Get aggregate phone click statistics across all of the authenticated
+   * user's listings (total clicks and unique interested users), independent
+   * of pagination.
+   * @returns Promise with owner-wide phone click statistics wrapped in ApiResponse
+   */
+  static async getOwnerPhoneClickStats(): Promise<
+    ApiResponse<OwnerPhoneClickStats>
+  > {
+    return apiRequest<OwnerPhoneClickStats>({
+      method: 'GET',
+      url: PATHS.PHONE_CLICK_DETAIL.MY_LISTINGS_STATS,
+    })
   }
 
   /**
@@ -459,6 +475,7 @@ export const {
   searchMyListingsClicks,
   getUsersWhoClickedListing,
   getUsersForMyListings,
+  getOwnerPhoneClickStats,
   getOwnerListingsAnalyticsSummary,
   getOwnerListingAnalytics,
   getListingInterestLevel,

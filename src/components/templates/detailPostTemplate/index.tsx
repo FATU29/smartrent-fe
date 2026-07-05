@@ -41,7 +41,7 @@ const RecentlyViewedSection = dynamic(
   },
 )
 import { ListingDetail } from '@/api/types'
-import { PhoneClickDetailService } from '@/api/services'
+import { PhoneClickDetailService, ViewService } from '@/api/services'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { mapListingToRecentlyViewed } from '@/utils/recentlyViewed/mapper'
 import { PageContainer } from '@/components/atoms/pageContainer'
@@ -102,6 +102,15 @@ const DetailPostTemplate: React.FC<DetailPostTemplateProps> = ({
       console.error('Failed to track listing view:', error)
     }
   }, [listingId, addListing]) // Only depend on listingId and addListing (addListing is now stable)
+
+  // Track listing detail page view for owner analytics (seller dashboard)
+  useEffect(() => {
+    if (!listingId) return
+
+    ViewService.trackView({ listingId }).catch((error) => {
+      console.error('Failed to track listing detail view:', error)
+    })
+  }, [listingId])
 
   const { longitude, latitude } = address || {}
 
