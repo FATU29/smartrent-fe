@@ -200,7 +200,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
       <div className='p-2 pb-1'>
         <div className='flex gap-2 h-[220px] md:h-[244px]'>
           {/* Main Image */}
-          <div className='relative flex-1 h-full overflow-hidden rounded-lg'>
+          <div className='relative flex-1 min-w-0 h-full overflow-hidden rounded-lg'>
             {assetsVideo && currentImageIndex === 0 ? (
               isYouTube(assetsVideo) ? (
                 <div className='w-full h-full'>

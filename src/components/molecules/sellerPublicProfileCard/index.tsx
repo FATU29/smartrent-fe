@@ -4,6 +4,7 @@ import { Badge } from '@/components/atoms/badge'
 import { Button } from '@/components/atoms/button'
 import {
   Card,
+  CardAction,
   CardContent,
   CardHeader,
   CardTitle,
@@ -28,6 +29,9 @@ interface ContactItem {
   masked: string
   copyText: string
   copySuccess: string
+  actionHref: string
+  actionIcon: React.ReactNode
+  actionLabel: string
 }
 
 // Contact details are hidden on the UI — only their masked shape is shown and
@@ -44,9 +48,6 @@ const maskEmail = (value: string): string => {
   if (!domain) return '•'.repeat(5)
   return `${name.slice(0, 1)}${'•'.repeat(Math.max(name.length - 1, 3))}@${domain}`
 }
-
-const QUICK_ACTION_CLASSNAME =
-  'flex-1 min-w-[96px] justify-center bg-background/90 hover:bg-primary/10 border-primary/30 hover:border-primary/45'
 
 const CONTACT_PILL_CLASSNAME =
   'flex items-center gap-2.5 text-sm rounded-lg border border-primary/25 p-2.5 bg-background/85 transition-colors hover:border-primary/45 flex-1 min-w-[160px]'
@@ -69,14 +70,7 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
 
             <div className='min-w-0 flex-1 space-y-2'>
               <Skeleton className='h-6 w-52 max-w-full' />
-              <Skeleton className='h-9 w-9 rounded-md' />
             </div>
-          </div>
-
-          <div className='flex flex-wrap gap-2'>
-            <Skeleton className='h-10 flex-1 min-w-[96px] rounded-md' />
-            <Skeleton className='h-10 flex-1 min-w-[96px] rounded-md' />
-            <Skeleton className='h-10 flex-1 min-w-[96px] rounded-md' />
           </div>
 
           <div className='flex flex-wrap gap-2'>
@@ -124,6 +118,9 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
       masked: maskPhoneNumber(phone),
       copyText: phone,
       copySuccess: t('profile.copiedPhone'),
+      actionHref: `tel:${dialPhone}`,
+      actionIcon: <Phone className='h-4 w-4' />,
+      actionLabel: t('profile.actions.call'),
     })
   }
   if (hasEmail && seller?.email) {
@@ -134,6 +131,9 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
       masked: maskEmail(seller.email),
       copyText: seller.email,
       copySuccess: t('profile.copiedEmail'),
+      actionHref: `mailto:${seller.email}`,
+      actionIcon: <Mail className='h-4 w-4' />,
+      actionLabel: t('profile.actions.sendEmail'),
     })
   }
 
@@ -141,6 +141,16 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
     <Card className='border-primary/20 overflow-hidden bg-gradient-to-br from-background via-primary/[0.02] to-primary/[0.06] shadow-sm'>
       <CardHeader className='pb-3'>
         <CardTitle className='text-lg'>{t('profile.title')}</CardTitle>
+        {seller?.userId && (
+          <CardAction>
+            <FollowButton
+              targetUserId={seller.userId}
+              iconOnly
+              variant='outline'
+              className='h-9 w-9 border-primary/40 text-primary hover:bg-primary/10'
+            />
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent className='space-y-4 pt-4'>
         <div className='flex items-start gap-4'>
@@ -170,71 +180,8 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
                 </Badge>
               </div>
             )}
-
-            {seller?.userId && (
-              <div className='pt-1 flex items-center gap-2'>
-                <FollowButton
-                  targetUserId={seller.userId}
-                  iconOnly
-                  variant='outline'
-                  className='h-9 w-9 border-primary/40 text-primary hover:bg-primary/10'
-                />
-              </div>
-            )}
           </div>
         </div>
-
-        {(hasPhone || hasEmail) && (
-          <div className='space-y-2'>
-            <Typography variant='small' className='font-medium text-foreground'>
-              {t('profile.quickActionsTitle')}
-            </Typography>
-            <div className='flex flex-wrap gap-2'>
-              {hasPhone && (
-                <Button
-                  asChild
-                  variant='outline'
-                  className={QUICK_ACTION_CLASSNAME}
-                >
-                  <a href={`tel:${dialPhone}`}>
-                    <Phone className='h-4 w-4' />
-                    {t('profile.actions.call')}
-                  </a>
-                </Button>
-              )}
-
-              {zaloPhone && (
-                <Button
-                  asChild
-                  variant='outline'
-                  className={QUICK_ACTION_CLASSNAME}
-                >
-                  <a
-                    href={`https://zalo.me/${zaloPhone}`}
-                    target='_blank'
-                    rel='noreferrer'
-                  >
-                    <MessageCircle className='h-4 w-4' />
-                    {t('profile.actions.chatZalo')}
-                  </a>
-                </Button>
-              )}
-
-              {hasEmail && (
-                <Button
-                  asChild
-                  variant='outline'
-                  className={QUICK_ACTION_CLASSNAME}
-                >
-                  <a href={`mailto:${seller?.email}`}>
-                    <Mail className='h-4 w-4' />
-                    {t('profile.actions.sendEmail')}
-                  </a>
-                </Button>
-              )}
-            </div>
-          </div>
-        )}
 
         <div className='space-y-2'>
           <Typography variant='small' className='font-medium text-foreground'>
@@ -262,11 +209,23 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
                       {item.masked}
                     </span>
                   </div>
-                  <CopyButton
-                    text={item.copyText}
-                    successMessage={item.copySuccess}
-                    className='h-8 w-8'
-                  />
+                  <div className='flex items-center gap-1 shrink-0'>
+                    <Button
+                      asChild
+                      size='icon'
+                      variant='ghost'
+                      className='h-8 w-8 text-primary hover:bg-primary/10'
+                    >
+                      <a href={item.actionHref} aria-label={item.actionLabel}>
+                        {item.actionIcon}
+                      </a>
+                    </Button>
+                    <CopyButton
+                      text={item.copyText}
+                      successMessage={item.copySuccess}
+                      className='h-8 w-8'
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -274,6 +233,23 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
             <Typography variant='small' className='text-muted-foreground'>
               {t('profile.contactNotAvailable')}
             </Typography>
+          )}
+
+          {zaloPhone && (
+            <Button
+              asChild
+              variant='outline'
+              className='w-full justify-center gap-2 border-primary/30 text-primary hover:bg-primary/10'
+            >
+              <a
+                href={`https://zalo.me/${zaloPhone}`}
+                target='_blank'
+                rel='noreferrer'
+              >
+                <MessageCircle className='h-4 w-4' />
+                {t('profile.actions.chatZalo')}
+              </a>
+            </Button>
           )}
         </div>
       </CardContent>
