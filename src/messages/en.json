@@ -433,7 +433,7 @@
         "submitButton": "Log In",
         "submittingButton": "Logging In…",
         "googleButton": "Log in with Google",
-        "magicLinkButton": "Log in with email link",
+        "magicLinkButton": "Log in via email",
         "noAccount": "Don't have an account?",
         "signUp": "Sign up now",
         "registerLink": "Register",
