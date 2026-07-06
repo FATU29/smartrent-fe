@@ -168,7 +168,7 @@ const SellerDetailPage: NextPageWithLayout = () => {
   } = useQuery({
     queryKey: ['public-seller-top-saved', userId],
     queryFn: async () => {
-      const response = await ListingService.getSellerTopSavedListings(userId, 5)
+      const response = await ListingService.getSellerTopSavedListings(userId, 6)
 
       if (!response.success || !response.data) {
         throw new Error(

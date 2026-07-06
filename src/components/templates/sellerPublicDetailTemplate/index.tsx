@@ -36,7 +36,7 @@ import Link from 'next/link'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { MEDIA_BELOW_MD } from '@/constants/breakpoints'
 
-const TOP_LISTINGS_TARGET = 3
+const TOP_LISTINGS_TARGET = 6
 
 interface SellerListingsSection {
   vipType: VipType
@@ -130,8 +130,9 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
     )
   }, [sections])
 
-  // Always aim for 3 featured cards: start from the user-favourited listings,
-  // then top up with the newest diamond (then lower-tier) listings, de-duped.
+  // Always aim for TOP_LISTINGS_TARGET featured cards: start from the
+  // user-favourited listings, then top up with the newest diamond (then
+  // lower-tier) listings, de-duped.
   const topListings = React.useMemo(() => {
     const result: ListingDetail[] = []
     const seen = new Set<number>()
@@ -251,7 +252,7 @@ const SellerPublicDetailTemplate: React.FC<SellerPublicDetailTemplateProps> = ({
                     {topListings.map((listing) => (
                       <CarouselItem
                         key={listing.listingId}
-                        className='basis-full sm:basis-1/2 lg:basis-1/3 min-w-[240px]'
+                        className='basis-full sm:basis-1/2 min-w-[240px]'
                       >
                         <Link
                           href={buildApartmentDetailRoute(
