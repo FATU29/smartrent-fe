@@ -56,7 +56,13 @@
     "scrollToBottom": "Scroll to bottom",
     "expandTable": "View full",
     "expandTableTitle": "Comparison Details",
-    "suggestionsLabel": "Suggested follow-ups"
+    "suggestionsLabel": "Suggested follow-ups",
+    "starterSuggestions": [
+      "Find rooms in District 7 under 5M",
+      "2-bedroom apartments near HCMUT",
+      "Whole houses in Binh Thanh 10-15M",
+      "Compare rent in District 1 vs District 3"
+    ]
   },
   "chat": {
     "title": "AI Property Assistant",

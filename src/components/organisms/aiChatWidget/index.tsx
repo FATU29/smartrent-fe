@@ -40,6 +40,8 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
     inputValue,
     scrollRef,
     bottomRef,
+    contentRef,
+    reservedSpace,
     isAtBottom,
     scrollToBottom,
     sendMessage,
@@ -146,6 +148,8 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                 streamingStatus={streamingStatus}
                 scrollRef={scrollRef}
                 bottomRef={bottomRef}
+                contentRef={contentRef}
+                reservedSpace={reservedSpace}
                 isAtBottom={isAtBottom}
                 onScrollToBottom={scrollToBottom}
                 onInputChange={handleInputChange}
@@ -203,6 +207,8 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                   streamingStatus={streamingStatus}
                   scrollRef={scrollRef}
                   bottomRef={bottomRef}
+                  contentRef={contentRef}
+                  reservedSpace={reservedSpace}
                   isAtBottom={isAtBottom}
                   onScrollToBottom={scrollToBottom}
                   onInputChange={handleInputChange}
