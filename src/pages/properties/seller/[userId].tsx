@@ -275,7 +275,7 @@ const SellerDetailPage: NextPageWithLayout = () => {
   return (
     <>
       <SeoHead
-        title={`${t('seo.title', { name: sellerName })} – SmartRent`}
+        title={`${t('seo.title', { name: sellerName })} – Thuê Nhà Trọ`}
         description={t('seo.description', { name: sellerName })}
       />
 

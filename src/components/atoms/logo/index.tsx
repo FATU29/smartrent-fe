@@ -71,7 +71,7 @@ export const Logo: React.FC<LogoProps> = ({
   className,
   useImage = true,
   imagePath = '/images/logo-smartrent.jpg',
-  ariaLabel = 'SmartRent - Go to homepage',
+  ariaLabel = 'Thuê Nhà Trọ - Go to homepage',
 }) => {
   const config = sizeConfig[size]
 
@@ -83,7 +83,7 @@ export const Logo: React.FC<LogoProps> = ({
         >
           <Image
             src={imagePath}
-            alt='SmartRent Logo'
+            alt='Thuê Nhà Trọ Logo'
             fill
             className='object-cover'
             sizes='(max-width: 640px) 40px, (max-width: 768px) 48px, 64px'
@@ -107,7 +107,7 @@ export const Logo: React.FC<LogoProps> = ({
           variant='h5'
           className={cn('text-foreground font-semibold', config.text)}
         >
-          SmartRent
+          Thuê Nhà Trọ
         </Typography>
       )}
     </>

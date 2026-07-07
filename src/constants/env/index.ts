@@ -10,7 +10,7 @@ export const ENV = {
   MAX_VIDEO_SIZE_MB: Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE_MB || 100),
   // Site metadata
   SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-  SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'SmartRent',
+  SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'Thuê Nhà Trọ',
 
   // Google OAuth Configuration
   GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
