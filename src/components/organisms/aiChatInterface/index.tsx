@@ -20,6 +20,8 @@ type TAiChatInterfaceProps = {
   streamingStatus?: TStreamingStatus
   scrollRef: RefObject<HTMLDivElement | null>
   bottomRef: RefObject<HTMLDivElement | null>
+  contentRef: RefObject<HTMLDivElement | null>
+  reservedSpace: number
   isAtBottom: boolean
   onScrollToBottom: () => void
   onInputChange: (value: string) => void
@@ -40,6 +42,8 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
   streamingStatus,
   scrollRef,
   bottomRef,
+  contentRef,
+  reservedSpace,
   isAtBottom,
   onScrollToBottom,
   onInputChange,
@@ -119,6 +123,7 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
         >
           <div className='flex min-h-full flex-col justify-end'>
             <div
+              ref={contentRef}
               className={cn('flex flex-col py-2', isMobile ? 'gap-1' : 'gap-2')}
             >
               {messages.map((message, index) => {
@@ -163,6 +168,10 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
               )}
             </div>
           </div>
+
+          {/* Reserved space: lets the just-sent message anchor to the top of
+              the viewport; shrinks to fit once the turn completes. */}
+          <div aria-hidden style={{ height: reservedSpace }} />
 
           {/* Bottom sentinel for IntersectionObserver */}
           <div ref={bottomRef} className='h-px' />

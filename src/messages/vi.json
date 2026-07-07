@@ -56,7 +56,13 @@
     "scrollToBottom": "Cuộn xuống cuối",
     "expandTable": "Xem đầy đủ",
     "expandTableTitle": "Chi tiết so sánh",
-    "suggestionsLabel": "Gợi ý tiếp theo"
+    "suggestionsLabel": "Gợi ý tiếp theo",
+    "starterSuggestions": [
+      "Tìm phòng trọ Quận 7 dưới 5 triệu",
+      "Căn hộ 2PN gần Đại học Bách Khoa",
+      "Nhà nguyên căn Bình Thạnh 10-15 triệu",
+      "So sánh giá thuê Quận 1 và Quận 3"
+    ]
   },
   "chat": {
     "title": "Trợ Lý Tìm Nhà AI",

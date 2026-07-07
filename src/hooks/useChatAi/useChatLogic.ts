@@ -75,9 +75,15 @@ export const useChatLogic = () => {
   const t = useTranslations('aiChat')
   const { isAuthenticated, user } = useAuth()
 
-  // Initialize with welcome message
-  const initialMessage: TChatMessage = useMemo(
-    () => ({
+  // Initialize with welcome message + curated starter suggestions so a fresh
+  // chat offers one-tap entry points (the backend only sends suggestions after
+  // a real turn). Stored as plain strings in i18n; label === query here.
+  const initialMessage: TChatMessage = useMemo(() => {
+    const starters = (t.raw('starterSuggestions') as string[]).map((s) => ({
+      label: s,
+      query: s,
+    }))
+    return {
       id: 'welcome-msg-initial',
       content:
         locale === 'vi'
@@ -85,9 +91,9 @@ export const useChatLogic = () => {
           : 'Hello! I am SmartRent AI assistant. I can help you find rooms and apartments that suit your needs. What type of property are you looking for?',
       sender: 'bot',
       timestamp: new Date(),
-    }),
-    [locale],
-  )
+      suggestions: starters,
+    }
+  }, [locale, t])
 
   // Use session storage for message persistence
   const { messages, addMessage, updateMessage, clearSession } =
@@ -101,15 +107,17 @@ export const useChatLogic = () => {
 
   const abortRef = useRef<AbortController | null>(null)
 
-  const { scrollRef, bottomRef, isAtBottom, scrollToMessage, scrollToBottom } =
-    useChatScroll()
-
-  // Mirror isAtBottom into a ref so streaming callbacks read the current value
-  // without re-creating sendMessage on every scroll change.
-  const isAtBottomRef = useRef(isAtBottom)
-  useEffect(() => {
-    isAtBottomRef.current = isAtBottom
-  }, [isAtBottom])
+  const {
+    scrollRef,
+    bottomRef,
+    contentRef,
+    isAtBottom,
+    reservedSpace,
+    scrollToMessage,
+    scrollToBottom,
+    anchorMessageToTop,
+    finalizeReservedSpace,
+  } = useChatScroll()
 
   // Abort any in-flight stream on unmount
   useEffect(() => {
@@ -164,7 +172,10 @@ export const useChatLogic = () => {
       setIsTyping(true)
       setStreamingStatus(null)
 
-      scrollToBottom()
+      // Anchor the just-sent message near the top of the viewport (reserving a
+      // viewport of space below) so the question stays visible while the
+      // answer streams in beneath it.
+      anchorMessageToTop(userMessage.id)
 
       const conversationHistory: ChatMessage[] = messages
         .filter((msg) => msg.sender === 'user' || msg.sender === 'bot')
@@ -193,38 +204,6 @@ export const useChatLogic = () => {
         const botMessageId = generateMessageId()
         let botMessageAdded = false
 
-        // Scroll-follow: capture user's intent ONCE at stream start. Listen
-        // for wheel/touchmove to detect a real user-initiated scroll-up, then
-        // back off. rAF wraps the actual scrollTop write so we read
-        // scrollHeight AFTER React commits the latest delta.
-        const scrollContainer = scrollRef.current
-        let followBottom = isAtBottomRef.current
-        const handleUserScroll = () => {
-          followBottom = false
-        }
-        scrollContainer?.addEventListener('wheel', handleUserScroll, {
-          passive: true,
-        })
-        scrollContainer?.addEventListener('touchmove', handleUserScroll, {
-          passive: true,
-        })
-        const teardownScrollFollow = () => {
-          scrollContainer?.removeEventListener('wheel', handleUserScroll)
-          scrollContainer?.removeEventListener('touchmove', handleUserScroll)
-        }
-        // Coalesce scroll-follow across bursty deltas: only one rAF in flight
-        // at a time, so 100 deltas in a single frame collapse to a single
-        // scrollTop write at next paint (instead of 100 queued writes).
-        let scrollRafPending = false
-        const followScrollToBottom = () => {
-          if (!followBottom || !scrollContainer || scrollRafPending) return
-          scrollRafPending = true
-          requestAnimationFrame(() => {
-            scrollRafPending = false
-            scrollContainer.scrollTop = scrollContainer.scrollHeight
-          })
-        }
-
         const ensureBotMessage = () => {
           if (botMessageAdded) return
           botMessageAdded = true
@@ -235,7 +214,6 @@ export const useChatLogic = () => {
             timestamp: new Date(),
           })
           setIsTyping(false)
-          scrollToMessage(botMessageId)
         }
 
         try {
@@ -258,7 +236,6 @@ export const useChatLogic = () => {
                   ...m,
                   content: m.content + delta,
                 }))
-                followScrollToBottom()
               },
               onListings: (payload) => {
                 ensureBotMessage()
@@ -268,7 +245,6 @@ export const useChatLogic = () => {
                   totalCount: payload.totalCount ?? payload.listings.length,
                   aiRankings: payload.aiRankings ?? [],
                 }))
-                followScrollToBottom()
               },
               onSuggestions: (payload) => {
                 ensureBotMessage()
@@ -276,7 +252,6 @@ export const useChatLogic = () => {
                   ...m,
                   suggestions: payload.items,
                 }))
-                followScrollToBottom()
               },
               onDone: (data) => {
                 ensureBotMessage()
@@ -288,7 +263,7 @@ export const useChatLogic = () => {
                 setIsTyping(false)
                 setIsLoading(false)
                 setStreamingStatus(null)
-                teardownScrollFollow()
+                finalizeReservedSpace()
               },
               onError: (msg) => {
                 if (botMessageAdded) {
@@ -307,18 +282,19 @@ export const useChatLogic = () => {
                 setIsTyping(false)
                 setIsLoading(false)
                 setStreamingStatus(null)
-                teardownScrollFollow()
+                finalizeReservedSpace()
               },
             },
             controller.signal,
           )
         } catch (error: unknown) {
-          // Aborts are expected (user cancelled / new send / unmount).
+          // Aborts are expected (user cancelled / new send / unmount). Leave
+          // the reserved space alone: a new send re-anchors it, and
+          // cancelStream finalizes it on its own.
           if ((error as Error)?.name === 'AbortError') {
             setIsTyping(false)
             setIsLoading(false)
             setStreamingStatus(null)
-            teardownScrollFollow()
             return
           }
           // onError handler already updated UI for stream-level errors;
@@ -328,7 +304,7 @@ export const useChatLogic = () => {
             setIsLoading(false)
             setStreamingStatus(null)
           }
-          teardownScrollFollow()
+          finalizeReservedSpace()
           console.error('[useChatLogic] Chat stream error:', error)
         }
         return
@@ -355,7 +331,7 @@ export const useChatLogic = () => {
           setIsTyping(false)
           setIsLoading(false)
           addMessage(errorMessage)
-          scrollToMessage(errorMessage.id)
+          finalizeReservedSpace()
           return
         }
         // Check if listings exist and have data
@@ -383,7 +359,7 @@ export const useChatLogic = () => {
 
         // Add bot message to session (always add, even if no listings)
         addMessage(botMessage)
-        scrollToMessage(botMessage.id)
+        finalizeReservedSpace()
       } catch (error: unknown) {
         // Handle network errors or actual exceptions
         console.error('[useChatLogic] Chat API error:', error)
@@ -405,15 +381,16 @@ export const useChatLogic = () => {
         setIsTyping(false)
         setIsLoading(false)
         addMessage(errorMessage)
-        scrollToMessage(errorMessage.id)
+        finalizeReservedSpace()
       }
     },
     [
       isLoading,
       isAuthenticated,
       user?.userId,
-      scrollToBottom,
       scrollToMessage,
+      anchorMessageToTop,
+      finalizeReservedSpace,
       messages,
       addMessage,
       updateMessage,
@@ -448,7 +425,10 @@ export const useChatLogic = () => {
     setIsTyping(false)
     setIsLoading(false)
     setStreamingStatus(null)
-  }, [])
+    // Collapse the reserved space around whatever partial answer was received
+    // so the cancelled turn doesn't leave a viewport of blank tail.
+    finalizeReservedSpace()
+  }, [finalizeReservedSpace])
 
   const clearMessages = useCallback(() => {
     abortRef.current?.abort()
@@ -466,7 +446,9 @@ export const useChatLogic = () => {
     inputValue,
     scrollRef,
     bottomRef,
+    contentRef,
     isAtBottom,
+    reservedSpace,
     scrollToBottom,
     sendMessage,
     viewListingDetail,
