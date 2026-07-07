@@ -7,7 +7,9 @@ import type { NotificationItem } from '@/api/types/notification.type'
 
 /**
  * WebSocket hook for realtime notification push via STOMP/SockJS.
- * Subscribes to /topic/notifications/{userId} and fires onNotification callback.
+ * Subscribes to the private /user/queue/notifications destination (the server
+ * routes to this session by its authenticated STOMP Principal) and fires the
+ * onNotification callback.
  */
 export function useNotificationWebSocket(
   userId: string | undefined,
@@ -36,7 +38,11 @@ export function useNotificationWebSocket(
       onConnect: () => {
         console.log('[Notification WS] Connected')
 
-        client.subscribe(`/topic/notifications/${userId}`, (message) => {
+        // Session-private user-destination. The backend routes here via
+        // convertAndSendToUser based on the STOMP Principal it set from the JWT in
+        // connectHeaders above, so a client only ever receives its OWN notifications
+        // (no guessable public topic → no cross-user notification leak).
+        client.subscribe('/user/queue/notifications', (message) => {
           try {
             const notification = JSON.parse(message.body) as NotificationItem
             callbackRef.current(notification)
