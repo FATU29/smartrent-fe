@@ -55,8 +55,8 @@ const HOMEPAGE_VI_KEYWORDS = [
   'bất động sản cho thuê',
   'tìm nhà cho thuê',
   'tìm phòng trọ',
-  'SmartRent',
-  'Smartrent tìm nhà trọ',
+  'Thuê Nhà Trọ',
+  'Thuê Nhà Trọ tìm nhà trọ',
 ]
 
 const Home: NextPageWithLayout = () => {
@@ -107,7 +107,7 @@ const Home: NextPageWithLayout = () => {
   return (
     <>
       <SeoHead
-        title='SmartRent – Thuê nhà dễ dàng'
+        title='Thuê Nhà Trọ – Thuê nhà dễ dàng'
         description='Khám phá căn hộ phù hợp nhất với bạn. Tìm kiếm nhanh, lọc thông minh, liên hệ chủ nhà chỉ với một cú nhấp.'
         keywords={HOMEPAGE_VI_KEYWORDS}
       />

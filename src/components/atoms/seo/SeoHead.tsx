@@ -4,9 +4,9 @@ import { ENV } from '@/constants'
 import type { SeoProps } from '@/types/seo.types'
 
 const DEFAULTS = {
-  title: 'SmartRent',
+  title: 'Thuê Nhà Trọ',
   description: 'SmartRent - Find and manage rentals smarter and faster.',
-  siteName: 'SmartRent',
+  siteName: 'Thuê Nhà Trọ',
 } as const
 
 interface PreloadImage {

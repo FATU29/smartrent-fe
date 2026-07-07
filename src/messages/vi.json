@@ -35,7 +35,7 @@
     }
   },
   "aiChat": {
-    "title": "SmartRent AI",
+    "title": "Thuê Nhà Trọ AI",
     "subtitle": "Trợ lý ảo",
     "placeholder": "Nhập tin nhắn...",
     "send": "Gửi tin nhắn",
@@ -1854,7 +1854,7 @@
     "address": "ĐH Khoa học Tự nhiên, TP. Hồ Chí Minh",
     "phone": "+84 123 456 789",
     "email": "smartrent.tools@gmail.com",
-    "copyright": "© 2026 SmartRent. Tất cả quyền được bảo lưu.",
+    "copyright": "© 2026 Thuê Nhà Trọ. Tất cả quyền được bảo lưu.",
     "privacy": "Bảo mật",
     "terms": "Điều khoản",
     "cookies": "Cookies",
@@ -2355,7 +2355,7 @@
       "subtitle": "Xem lại mọi khoản thanh toán trên tài khoản của bạn",
       "summary": "{count} giao dịch",
       "seoTitle": "Lịch sử giao dịch – Người bán",
-      "seoDescription": "Xem lại, lọc và kiểm tra mọi giao dịch thanh toán SmartRent của bạn",
+      "seoDescription": "Xem lại, lọc và kiểm tra mọi giao dịch thanh toán Thuê Nhà Trọ của bạn",
       "filters": {
         "search": "Tìm kiếm",
         "searchPlaceholder": "Tìm mã giao dịch hoặc mã hóa đơn",
@@ -3299,7 +3299,7 @@
     "subtitle": "Thông tin công khai của người bán và các tin đăng liên quan",
     "seo": {
       "title": "Tin đăng của {name}",
-      "description": "Khám phá các tin đăng công khai từ người bán {name} trên SmartRent."
+      "description": "Khám phá các tin đăng công khai từ người bán {name} trên Thuê Nhà Trọ."
     },
     "profile": {
       "title": "Thông tin người bán",
@@ -3347,7 +3347,7 @@
   "newsPage": {
     "title": "Tin Tức & Blog",
     "subtitle": "Cập nhật tin tức bất động sản mới nhất, mẹo và xu hướng thị trường",
-    "seoTitle": "Tin Tức & Blog - SmartRent",
+    "seoTitle": "Tin Tức & Blog - Thuê Nhà Trọ",
     "seoDescription": "Tin tức bất động sản mới nhất, mẹo thuê nhà, xu hướng thị trường và hướng dẫn",
     "allCategories": "Tất cả",
     "searchPlaceholder": "Tìm kiếm bài viết...",
@@ -3528,7 +3528,7 @@
   "guides": {
     "pricing": {
       "title": "Bảng Giá Dịch Vụ",
-      "description": "Xem chi tiết bảng giá các gói dịch vụ và loại tin đăng của SmartRent",
+      "description": "Xem chi tiết bảng giá các gói dịch vụ và loại tin đăng của Thuê Nhà Trọ",
       "currencySymbol": "đ",
       "loading": "Đang tải dữ liệu...",
       "errorTitle": "Không thể tải dữ liệu bảng giá",
@@ -3677,7 +3677,7 @@
           "badge": "Ưu tiên mobile",
           "title": "Thanh toán qua ZaloPay",
           "description": "Thanh toán nhanh trên điện thoại, xác nhận một chạm trong ứng dụng ZaloPay.",
-          "feature1": "Chuyển hướng tức thì và tự động quay lại SmartRent",
+          "feature1": "Chuyển hướng tức thì và tự động quay lại Thuê Nhà Trọ",
           "feature2": "Xác nhận thuận tiện ngay trong app ZaloPay",
           "feature3": "Phù hợp cho nạp tiền nhanh và gia hạn định kỳ",
           "bestFor": "Người dùng thanh toán chủ yếu trên mobile",
@@ -3727,10 +3727,10 @@
       }
     },
     "usage": {
-      "title": "Hướng Dẫn Sử Dụng SmartRent",
+      "title": "Hướng Dẫn Sử Dụng Thuê Nhà Trọ",
       "description": "Hướng dẫn chi tiết cách sử dụng hệ thống để quản lý và đăng tin hiệu quả",
       "gettingStarted": {
-        "title": "Bắt Đầu Với SmartRent",
+        "title": "Bắt Đầu Với Thuê Nhà Trọ",
         "description": "Các bước cơ bản để bắt đầu sử dụng hệ thống",
         "step1": {
           "title": "1. Đăng ký tài khoản",

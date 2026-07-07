@@ -81,7 +81,7 @@ export const useChatLogic = () => {
       id: 'welcome-msg-initial',
       content:
         locale === 'vi'
-          ? 'Xin chào! Tôi là trợ lý AI của SmartRent. Tôi có thể giúp bạn tìm kiếm phòng trọ, căn hộ phù hợp với nhu cầu của bạn. Bạn cần tìm loại hình bất động sản nào?'
+          ? 'Xin chào! Tôi là trợ lý AI của Thuê Nhà Trọ. Tôi có thể giúp bạn tìm kiếm phòng trọ, căn hộ phù hợp với nhu cầu của bạn. Bạn cần tìm loại hình bất động sản nào?'
           : 'Hello! I am SmartRent AI assistant. I can help you find rooms and apartments that suit your needs. What type of property are you looking for?',
       sender: 'bot',
       timestamp: new Date(),

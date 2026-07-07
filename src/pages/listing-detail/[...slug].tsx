@@ -75,8 +75,8 @@ const ListingDetail: NextPageWithLayout<ListingDetailProps> = (props) => {
   return (
     <>
       <SeoHead
-        title={`${title} – SmartRent`}
-        description={description || 'Chi tiết bất động sản trên SmartRent'}
+        title={`${title} – Thuê Nhà Trọ`}
+        description={description || 'Chi tiết bất động sản trên Thuê Nhà Trọ'}
         openGraph={{
           type: 'article',
           images: (images || []).slice(0, 1).map((url: string) => ({ url })),

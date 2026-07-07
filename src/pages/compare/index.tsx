@@ -17,7 +17,7 @@ const ComparePage: NextPageWithLayout = () => {
   return (
     <>
       <SeoHead
-        title={`${t('title')} – SmartRent`}
+        title={`${t('title')} – Thuê Nhà Trọ`}
         description={t('subtitle')}
         openGraph={{
           type: 'website',
