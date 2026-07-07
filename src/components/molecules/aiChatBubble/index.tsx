@@ -392,7 +392,7 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
                   type='button'
                   variant='outline'
                   size='sm'
-                  className='h-auto rounded-full border-primary/30 bg-gradient-to-br from-primary-50 to-primary-100 px-2.5 py-0.5 text-2xs font-medium text-primary shadow-sm transition-colors hover:border-primary/40 hover:from-primary-100 hover:to-primary-200 hover:text-primary'
+                  className='h-auto rounded-full border-primary/30 bg-gradient-to-br from-primary-50 to-primary-100 px-3.5 py-1.5 text-2xs font-medium leading-normal text-primary shadow-sm transition-colors hover:border-primary/40 hover:from-primary-100 hover:to-primary-200 hover:text-primary'
                   onClick={() => onSuggestionClick?.(suggestion.query)}
                 >
                   {suggestion.label}
