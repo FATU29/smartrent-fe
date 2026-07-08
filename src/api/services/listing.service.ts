@@ -687,6 +687,7 @@ export class ListingService {
   static async getMapBounds(
     request: MapBoundsRequest,
     instance?: AxiosInstance,
+    signal?: AbortSignal,
   ): Promise<ApiResponse<MapBoundsResponse>> {
     return apiRequest<MapBoundsResponse>(
       {
@@ -694,6 +695,9 @@ export class ListingService {
         url: PATHS.LISTING.MAP_BOUNDS,
         data: request,
         skipAuth: true, // Public API - không cần authentication
+        // Lets the caller abort a superseded viewport request instead of
+        // leaving slow map-bounds queries to pile up while the user pans.
+        signal,
       },
       instance,
     )

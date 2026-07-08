@@ -37,7 +37,9 @@ const MapPicker: React.FC<MapPickerProps> = ({
     return { lat: 10.8231, lng: 106.6297 }
   }, [coords])
 
-  const apiKey = process.env.GOOGLE_MAP_KEY
+  // Must be NEXT_PUBLIC_ so Next.js exposes it to the browser bundle; the bare
+  // GOOGLE_MAP_KEY is undefined client-side, which loaded the map without a key.
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY
 
   const handleMapClick = ({
     lat,
