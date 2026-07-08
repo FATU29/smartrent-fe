@@ -42,7 +42,7 @@ const USER_LOCATION_ZOOM = 14
 // closes in on the exact spot (and the pin breaks out of any cluster).
 const LOCATE_LISTING_ZOOM = 16
 const MAP_HEIGHT = 'h-[calc(100vh-80px)]'
-const MAP_INTERACTION_DEBOUNCE_MS = 1000
+const MAP_INTERACTION_DEBOUNCE_MS = 400
 const MAP_LISTINGS_LIMIT = 200
 // Max cards shown in the side panel at once (the map itself shows every cached
 // pin via clustering; the list stays bounded for scroll performance).
@@ -873,27 +873,35 @@ const MapViewTemplate: React.FC = () => {
       return
     }
 
-    let isSubscribed = true
+    // Abort a superseded request when the viewport changes again before it
+    // resolves, so slow map-bounds queries don't pile up as the user pans.
+    const controller = new AbortController()
 
     setIsLoading(true)
     setError(null)
 
     const fetchMapBoundsListings = async () => {
       try {
-        const response = await ListingService.getMapBounds({
-          ...normalizedViewport,
-          limit: MAP_LISTINGS_LIMIT,
-          verifiedOnly: mapFilters.verifiedOnly,
-          categoryId: mapFilters.categoryId,
-          vipType: mapFilters.vipType,
-        })
+        const response = await ListingService.getMapBounds(
+          {
+            ...normalizedViewport,
+            limit: MAP_LISTINGS_LIMIT,
+            verifiedOnly: mapFilters.verifiedOnly,
+            categoryId: mapFilters.categoryId,
+            vipType: mapFilters.vipType,
+          },
+          undefined,
+          controller.signal,
+        )
+
+        // Aborted requests resolve here too — drop them silently rather than
+        // surfacing a "failed to load" error for a viewport we no longer show.
+        if (controller.signal.aborted) {
+          return
+        }
 
         if (!response.success || !response.data) {
           throw new Error(response.message || 'Failed to load properties')
-        }
-
-        if (!isSubscribed) {
-          return
         }
 
         // Merge (not replace), and keep the existing object reference for pins
@@ -927,7 +935,7 @@ const MapViewTemplate: React.FC = () => {
         setTotalCount(response.data.totalCount)
         setHasMore(response.data.hasMore)
       } catch (err) {
-        if (!isSubscribed) {
+        if (controller.signal.aborted) {
           return
         }
 
@@ -937,7 +945,7 @@ const MapViewTemplate: React.FC = () => {
             : 'An error occurred while loading properties',
         )
       } finally {
-        if (isSubscribed) {
+        if (!controller.signal.aborted) {
           setIsLoading(false)
         }
       }
@@ -946,7 +954,7 @@ const MapViewTemplate: React.FC = () => {
     fetchMapBoundsListings()
 
     return () => {
-      isSubscribed = false
+      controller.abort()
     }
   }, [debouncedViewport, mapFilters, filterKey])
 
@@ -1027,7 +1035,11 @@ const MapViewTemplate: React.FC = () => {
           <Map
             defaultCenter={VIETNAM_CENTER}
             defaultZoom={DEFAULT_ZOOM}
-            mapId={ENV.GOOGLE_MAP_KEY}
+            // A real Cloud Map ID (not the API key). Passing the API key here
+            // made Google try to resolve a non-existent map style on every load,
+            // logging an error and paying an extra round trip before falling
+            // back. DEMO_MAP_ID keeps AdvancedMarkers working when unconfigured.
+            mapId={ENV.GOOGLE_MAP_ID || 'DEMO_MAP_ID'}
             disableDefaultUI={false}
             gestureHandling='greedy'
             className='w-full h-full outline-none'

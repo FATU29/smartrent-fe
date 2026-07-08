@@ -14,7 +14,11 @@ const STATIC_PRECONNECT_ORIGINS = [
   'https://lh3.googleusercontent.com',
 ]
 
-const STATIC_DNS_PREFETCH_ORIGINS = [
+// Google Maps origins. Preconnect warms the TLS handshake so the map script
+// and tiles load sooner; dns-prefetch stays as a fallback for browsers that
+// ignore preconnect. No crossOrigin: the Maps JS loads as a plain script, so an
+// anonymous-CORS preconnect would open a separate, unused connection.
+const GOOGLE_MAPS_ORIGINS = [
   'https://maps.googleapis.com',
   'https://maps.gstatic.com',
 ]
@@ -85,7 +89,10 @@ export default function Document() {
             crossOrigin='anonymous'
           />
         ))}
-        {STATIC_DNS_PREFETCH_ORIGINS.map((origin) => (
+        {GOOGLE_MAPS_ORIGINS.map((origin) => (
+          <link key={`mpc-${origin}`} rel='preconnect' href={origin} />
+        ))}
+        {GOOGLE_MAPS_ORIGINS.map((origin) => (
           <link key={`dp-${origin}`} rel='dns-prefetch' href={origin} />
         ))}
       </Head>

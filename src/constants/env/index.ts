@@ -2,6 +2,10 @@ import { PATHS } from '@/api/paths'
 
 export const ENV = {
   GOOGLE_MAP_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || '',
+  // Cloud-based Map Style ID (NOT the API key). Required for the vector map +
+  // AdvancedMarkers on the /maps view. Leave unset to fall back to Google's
+  // DEMO_MAP_ID, which still enables AdvancedMarkers without any cloud setup.
+  GOOGLE_MAP_ID: process.env.NEXT_PUBLIC_GOOGLE_MAP_ID || '',
   IS_PRODUCTION: process.env.NEXT_PUBLIC_DEPLOY_ENV || '',
   URL_API_AI: process.env.NEXT_PUBLIC_URL_API_AI || 'http://localhost:8000/',
   URL_API_BASE:
