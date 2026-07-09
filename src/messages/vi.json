@@ -609,6 +609,7 @@
         "authentication_failed": "Xác thực thất bại"
       },
       "logout": "Đăng xuất",
+      "logoutSuccessMessage": "Đăng xuất thành công!",
       "profile": "Hồ sơ",
       "settings": "Cài đặt",
       "user": {

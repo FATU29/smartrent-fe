@@ -12,6 +12,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import SwitchLanguageProvider from '@/contexts/switchLanguage'
 import vi from '@/messages/vi.json'
 import { Toaster } from '@/components/atoms/sonner'
+import AuthSuccessOverlay from '@/components/molecules/authSuccessOverlay'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
 import { AuthDialogProvider } from '@/contexts/authDialog'
 import { fontVariables } from '@/theme/fonts'
@@ -131,6 +132,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
                 <AuthRouteGate />
                 {getLayout(<Component {...pageProps} />)}
                 <Toaster />
+                <AuthSuccessOverlay />
                 {showChatWidget && <AiChatWidget position='bottom-right' />}
               </AuthDialogProvider>
             </AuthProvider>

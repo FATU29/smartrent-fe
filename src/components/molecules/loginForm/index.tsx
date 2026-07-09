@@ -14,6 +14,7 @@ import dynamic from 'next/dynamic'
 import SeparatorOr from '@/components/atoms/separatorOr'
 import { useLogin, useResendOtp, useRequestMagicLink } from '@/hooks/useAuth'
 import { toast } from 'sonner'
+import { useAuthFeedback } from '@/store/authFeedback/index.store'
 import { VALIDATION_PATTERNS, API_ERROR_CODES } from '@/api/types/auth.type'
 import { googleOAuthURL } from '@/utils/googleOAuth2'
 import { useState, useCallback } from 'react'
@@ -97,7 +98,9 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
 
       if (result.success) {
         onSuccess?.()
-        toast.success(t('homePage.auth.login.successMessage'))
+        // Centered success overlay (see AuthSuccessOverlay) instead of the
+        // corner toast, matching the logout confirmation.
+        useAuthFeedback.getState().show('login')
       } else if (result.code === API_ERROR_CODES.USER_NOT_VERIFIED) {
         // Account not verified — resend OTP and switch to verify UI
         setVerifyEmail(data.email)
