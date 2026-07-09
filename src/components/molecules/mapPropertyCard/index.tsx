@@ -124,18 +124,33 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
           </div>
 
           {/* Badges */}
-          <div className='absolute top-2 left-2 flex flex-col gap-1.5 z-10'>
+          <div
+            className={classNames(
+              'absolute z-10 flex flex-col',
+              compact ? 'top-1.5 left-1.5 gap-1' : 'top-2 left-2 gap-1.5',
+            )}
+          >
             {verified && (
-              <Badge className='bg-emerald-500/90 text-white text-2xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm'>
-                <Check className='w-3 h-3' />
+              <Badge
+                className={classNames(
+                  'bg-emerald-500/90 text-white text-2xs rounded-full shadow-md flex items-center backdrop-blur-sm',
+                  compact ? 'px-1.5 py-0.5 gap-0.5' : 'px-2.5 py-1 gap-1',
+                )}
+              >
+                <Check className={compact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
                 <span className='font-medium'>
                   {t('homePage.property.verified')}
                 </span>
               </Badge>
             )}
             {isPriority && (
-              <Badge className='bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-2xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm'>
-                <Sparkles className='w-3 h-3' />
+              <Badge
+                className={classNames(
+                  'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-2xs rounded-full shadow-md flex items-center backdrop-blur-sm',
+                  compact ? 'px-1.5 py-0.5 gap-0.5' : 'px-2.5 py-1 gap-1',
+                )}
+              >
+                <Sparkles className={compact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
                 <span className='font-medium'>
                   {t('homePage.priorityBadge')}
                 </span>
