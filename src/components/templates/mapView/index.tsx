@@ -196,11 +196,11 @@ const SidebarListingCard: React.FC<SidebarListingCardProps> = React.memo(
       >
         {/* Ensure standard click won't bubble up improperly from the card */}
         <div className='pointer-events-none flex-1'>
-          <MapPropertyCard listing={listing} />
+          <MapPropertyCard listing={listing} compact />
         </div>
 
-        <div className='px-4 pb-4 pt-0'>
-          <div className='flex items-center gap-2 pointer-events-auto'>
+        <div className='px-2.5 pb-2.5 pt-0'>
+          <div className='flex items-center gap-1.5 pointer-events-auto'>
             <Button
               size='sm'
               className='flex-1'
@@ -217,7 +217,7 @@ const SidebarListingCard: React.FC<SidebarListingCardProps> = React.memo(
               type='button'
               size='icon'
               variant='secondary'
-              className='shrink-0'
+              className='h-9 w-9 shrink-0'
               onClick={(e) => {
                 e.stopPropagation()
                 onSelect(listing)
@@ -305,7 +305,7 @@ const MapListingsPanelContent: React.FC<MapSidebarProps> = ({
       </div>
 
       <div className='flex-1 overflow-y-auto p-4 bg-muted/20'>
-        <div className='grid grid-cols-1 gap-5 lg:grid-cols-2'>
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
           {listings.map((listing) => (
             <SidebarListingCard
               key={listing.listingId}

@@ -26,13 +26,22 @@ interface MapPropertyCardProps {
   onClick?: (listing: ListingDetail) => void
   bottomContent?: React.ReactNode
   className?: string
+  // Denser layout for the map sidebar list (3-per-row). The selected-pin
+  // overlay keeps the roomier default (compact=false).
+  compact?: boolean
 }
 
-const StatPill: React.FC<{ icon: React.ReactNode; value: React.ReactNode }> = ({
-  icon,
-  value,
-}) => (
-  <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/60'>
+const StatPill: React.FC<{
+  icon: React.ReactNode
+  value: React.ReactNode
+  compact?: boolean
+}> = ({ icon, value, compact }) => (
+  <div
+    className={classNames(
+      'flex items-center rounded-lg bg-muted/60',
+      compact ? 'gap-1 px-2 py-1' : 'gap-1.5 px-2.5 py-1.5',
+    )}
+  >
     <span className='text-primary'>{icon}</span>
     <Typography variant='small' className='font-semibold text-foreground'>
       {value}
@@ -50,6 +59,7 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
   onClick,
   bottomContent,
   className,
+  compact = false,
 }) => {
   const t = useTranslations()
   const {
@@ -83,8 +93,13 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
       onClick={onClick ? () => onClick(listing) : undefined}
     >
       {/* Image */}
-      <div className='p-2 pb-0'>
-        <div className='relative aspect-[4/3] overflow-hidden rounded-lg'>
+      <div className={compact ? 'p-1.5 pb-0' : 'p-2 pb-0'}>
+        <div
+          className={classNames(
+            'relative overflow-hidden rounded-lg',
+            compact ? 'aspect-[16/10]' : 'aspect-[4/3]',
+          )}
+        >
           <ImageAtom
             src={mainImage || `${basePath}/images/default-image.jpg`}
             defaultImage={DEFAULT_IMAGE}
@@ -139,7 +154,12 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
       </div>
 
       {/* Content */}
-      <div className='flex flex-1 flex-col gap-2 p-3'>
+      <div
+        className={classNames(
+          'flex flex-1 flex-col',
+          compact ? 'gap-1.5 p-2.5' : 'gap-2 p-3',
+        )}
+      >
         <Typography
           variant='h6'
           className='text-foreground leading-tight font-semibold line-clamp-2'
@@ -160,7 +180,7 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
         )}
 
         <Typography
-          variant='h5'
+          variant={compact ? 'h6' : 'h5'}
           className='text-primary font-bold tracking-tight'
         >
           {formatByLocale(price, priceUnit)}
@@ -168,21 +188,31 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
 
         <div className='flex items-center flex-wrap gap-2'>
           {bedrooms !== undefined && (
-            <StatPill icon={<Bed className='w-3 h-3' />} value={bedrooms} />
+            <StatPill
+              icon={<Bed className='w-3 h-3' />}
+              value={bedrooms}
+              compact={compact}
+            />
           )}
           {bathrooms !== undefined && (
-            <StatPill icon={<Bath className='w-3 h-3' />} value={bathrooms} />
+            <StatPill
+              icon={<Bath className='w-3 h-3' />}
+              value={bathrooms}
+              compact={compact}
+            />
           )}
           {area && (
             <StatPill
               icon={<Square className='w-3 h-3' />}
               value={`${area} m²`}
+              compact={compact}
             />
           )}
           {roomCapacity && (
             <StatPill
               icon={<Users className='w-3 h-3' />}
               value={roomCapacity}
+              compact={compact}
             />
           )}
         </div>
@@ -194,7 +224,7 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
               avatarUrl={user.avatarUrl}
               firstName={firstName}
               lastName={lastName}
-              sizeClassName='size-9'
+              sizeClassName={compact ? 'size-7' : 'size-9'}
               showBrokerBadge={isProfessionalBroker}
               fallbackClassName='text-xs'
             />
