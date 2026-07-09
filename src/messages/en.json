@@ -725,7 +725,7 @@
           "statusLoadErrorHint": "You can still upload and submit documents. We will retry status sync later.",
           "refreshStatus": "Refresh status",
           "approvedBadge": "✓ Verified Broker",
-          "pendingBadge": "🕐 Verification in Progress",
+          "pendingBadge": "Verification in Progress",
           "rejectedBadge": "Registration Rejected",
           "approvedMessage": "Your broker profile has been verified successfully.",
           "pendingMessage": "Your broker verification application is under manual review.",

@@ -16,6 +16,7 @@ import { useAuth } from '@/hooks/useAuth'
 import {
   AlertCircle,
   CheckCircle2,
+  Clock,
   FileCheck2,
   IdCard,
   Loader2,
@@ -869,7 +870,11 @@ const BrokerVerificationForm: React.FC<BrokerVerificationFormProps> = ({
               'border-amber-300/80 text-amber-900 dark:text-amber-200',
           )}
         >
-          <AlertCircle className='size-4' />
+          {currentStatus === 'PENDING' ? (
+            <Clock className='size-4' />
+          ) : (
+            <AlertCircle className='size-4' />
+          )}
           <AlertTitle>
             {currentStatus === 'APPROVED' &&
               safeT(
