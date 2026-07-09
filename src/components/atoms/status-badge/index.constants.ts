@@ -1,3 +1,15 @@
+import {
+  AlarmClock,
+  AlertTriangle,
+  Archive,
+  CircleDot,
+  Eye,
+  Hourglass,
+  Wallet,
+  XCircle,
+  type LucideIcon,
+} from 'lucide-react'
+
 export type StatusType =
   | 'active'
   | 'expired'
@@ -62,13 +74,13 @@ export const STATUS_BADGE_STYLES = {
   glow: 'shadow-lg shadow-current/20',
 } as const
 
-export const STATUS_ICONS = {
-  active: '●',
-  expired: '⚠',
-  expiring: '⏰',
-  pending: '⏳',
-  review: '👁',
-  payment: '💰',
-  rejected: '❌',
-  archived: '📦',
-} as const
+export const STATUS_ICONS: Record<StatusType, LucideIcon> = {
+  active: CircleDot,
+  expired: AlertTriangle,
+  expiring: AlarmClock,
+  pending: Hourglass,
+  review: Eye,
+  payment: Wallet,
+  rejected: XCircle,
+  archived: Archive,
+}

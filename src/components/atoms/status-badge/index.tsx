@@ -23,7 +23,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 }) => {
   const t = useTranslations()
   const config = STATUS_CONFIG[status]
-  const icon = STATUS_ICONS[status]
+  const Icon = STATUS_ICONS[status]
 
   return (
     <span
@@ -38,11 +38,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       role='status'
       aria-label={t(config.labelKey)}
     >
-      {showIcon && (
-        <span className='mr-1' aria-hidden='true'>
-          {icon}
-        </span>
-      )}
+      {showIcon && <Icon className='mr-1 size-3.5' aria-hidden='true' />}
       {t(config.labelKey)}
     </span>
   )

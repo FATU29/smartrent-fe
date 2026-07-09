@@ -13,18 +13,32 @@ import {
 import { Label } from '@/components/atoms/label'
 import { Typography } from '@/components/atoms/typography'
 import { Input } from '@/components/atoms/input'
-import { Calendar, Check, Loader2, AlertCircle, Lock } from 'lucide-react'
+import {
+  Calendar,
+  Check,
+  Loader2,
+  AlertCircle,
+  Lock,
+  FileText,
+  Medal,
+  Crown,
+  Gem,
+  type LucideIcon,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface PackageConfigSectionProps {
   className?: string
 }
 
-const TIER_ICONS: Record<string, string> = {
-  NORMAL: '📄',
-  SILVER: '🥈',
-  GOLD: '🥇',
-  DIAMOND: '💎',
+// Tiered line icons (lucide) instead of emoji — cleaner and on-brand with the
+// rest of the app's icon set. Mirrors the create-post twin. Rendered white on
+// the tier gradient.
+const TIER_ICONS: Record<string, LucideIcon> = {
+  NORMAL: FileText,
+  SILVER: Medal,
+  GOLD: Crown,
+  DIAMOND: Gem,
 }
 
 const TIER_BACKGROUNDS: Record<string, string> = {
@@ -130,13 +144,15 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               >
                 <Card
                   className={cn(
-                    'w-12 h-12 rounded-lg flex items-center justify-center text-2xl mb-3 border-0',
+                    'w-12 h-12 rounded-lg flex items-center justify-center mb-3 border-0',
                     TIER_BACKGROUNDS[tier.tierCode] || TIER_BACKGROUNDS.NORMAL,
                   )}
                 >
-                  <Typography as='span'>
-                    {TIER_ICONS[tier.tierCode] || TIER_ICONS.NORMAL}
-                  </Typography>
+                  {(() => {
+                    const TierIcon =
+                      TIER_ICONS[tier.tierCode] || TIER_ICONS.NORMAL
+                    return <TierIcon className='w-6 h-6 text-white' />
+                  })()}
                 </Card>
                 <Typography
                   variant='h4'

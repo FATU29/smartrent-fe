@@ -725,7 +725,7 @@
           "statusLoadErrorHint": "Bạn vẫn có thể tải ảnh và gửi hồ sơ. Hệ thống sẽ đồng bộ trạng thái lại sau.",
           "refreshStatus": "Làm mới trạng thái",
           "approvedBadge": "✓ Môi giới được xác nhận",
-          "pendingBadge": "🕐 Đang xác minh",
+          "pendingBadge": "Đang xác minh",
           "rejectedBadge": "Đơn bị từ chối",
           "approvedMessage": "Hồ sơ môi giới của bạn đã được xác minh thành công.",
           "pendingMessage": "Hồ sơ xác minh môi giới của bạn đang được xét duyệt thủ công.",

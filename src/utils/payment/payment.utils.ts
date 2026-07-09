@@ -325,17 +325,6 @@ export const PAYMENT_STATUS_COLORS = {
 } as const
 
 /**
- * Payment status to icon mapping
- */
-export const PAYMENT_STATUS_ICONS = {
-  COMPLETED: '✅',
-  PENDING: '⏳',
-  FAILED: '❌',
-  CANCELLED: '🚫',
-  REFUNDED: '↩️',
-} as const
-
-/**
  * Get color for payment status
  *
  * @param status - Payment status
@@ -348,20 +337,6 @@ export function getPaymentStatusColor(
     PAYMENT_STATUS_COLORS[
       status.toUpperCase() as keyof typeof PAYMENT_STATUS_COLORS
     ] || 'gray'
-  )
-}
-
-/**
- * Get icon for payment status
- *
- * @param status - Payment status
- * @returns Icon emoji
- */
-export function getPaymentStatusIcon(status: string): string {
-  return (
-    PAYMENT_STATUS_ICONS[
-      status.toUpperCase() as keyof typeof PAYMENT_STATUS_ICONS
-    ] || '❓'
   )
 }
 
