@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useShallow } from 'zustand/react/shallow'
 import { useAuthStore } from '@/store/auth/index.store'
+import { useAuthFeedback } from '@/store/authFeedback/index.store'
 import { AuthService } from '@/api/services/auth.service'
 import {
   LoginRequest,
@@ -196,6 +197,11 @@ export const useLogout = () => {
 
     // Clear local state FIRST (optimistic) — triggers immediate UI update
     logout()
+
+    // Centered success confirmation (see AuthSuccessOverlay). Raised right
+    // after the local clear so it shows for every path (guest / no-token /
+    // normal), regardless of the background server call's outcome.
+    useAuthFeedback.getState().show('logout')
 
     // If no access token, nothing to notify the server about
     if (!accessToken) {

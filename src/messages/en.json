@@ -609,6 +609,7 @@
         "authentication_failed": "Authentication failed"
       },
       "logout": "Log Out",
+      "logoutSuccessMessage": "Logged out successfully!",
       "profile": "Profile",
       "settings": "Settings",
       "user": {
