@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import ReactMarkdown, { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Link from 'next/link'
-import { Maximize2 } from 'lucide-react'
+import { Maximize2, Phone } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { TChatMessage } from '@/hooks/useChatAi'
@@ -76,7 +76,11 @@ const renderLink = (
         onClick={(e) => e.stopPropagation()}
         {...props}
       >
-        📞 {children}
+        <Phone
+          className='mr-1 inline size-4 align-text-bottom'
+          aria-hidden='true'
+        />
+        {children}
       </a>
     )
   }

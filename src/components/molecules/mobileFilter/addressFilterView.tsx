@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { Lightbulb } from 'lucide-react'
 import {
   useLegacyProvinces,
   useLegacyProvincesSearch,
@@ -385,11 +386,13 @@ const NewAddressSection: React.FC<AddressSectionProps> = ({
         isLoadingMore={newWardsQuery.isFetchingNextPage}
       />
 
-      <div className='rounded-lg bg-blue-50 p-3 text-sm text-muted-foreground dark:bg-blue-950'>
-        💡{' '}
-        {t('structureToggle.newDescription', {
-          count: provinces.length,
-        })}
+      <div className='flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-sm text-muted-foreground dark:bg-blue-950'>
+        <Lightbulb className='mt-0.5 size-4 shrink-0' aria-hidden='true' />
+        <span>
+          {t('structureToggle.newDescription', {
+            count: provinces.length,
+          })}
+        </span>
       </div>
     </div>
   )
