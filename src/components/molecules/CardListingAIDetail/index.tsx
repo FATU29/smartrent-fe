@@ -15,10 +15,13 @@ import {
   DollarSign,
   Star,
   Check,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 
 import { Badge } from '@/components/atoms/badge'
 import { Button } from '@/components/atoms/button'
+import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -34,14 +37,19 @@ export interface CardListingAIDetailProps {
   onViewDetail?: (listingId: number) => void
 }
 
-const UTILITY_LABELS: Record<
-  string,
-  { icon: React.ElementType; label: string }
-> = {
-  waterPrice: { icon: Droplets, label: 'Nước' },
-  electricityPrice: { icon: Zap, label: 'Điện' },
-  internetPrice: { icon: Wifi, label: 'Internet' },
-  serviceFee: { icon: DollarSign, label: 'DV' },
+const UTILITY_ICONS: Record<string, React.ElementType> = {
+  waterPrice: Droplets,
+  electricityPrice: Zap,
+  internetPrice: Wifi,
+  serviceFee: DollarSign,
+}
+
+// Maps the API price field to its short label key under chat.listing.utilities.
+const UTILITY_LABEL_KEYS: Record<string, string> = {
+  waterPrice: 'water',
+  electricityPrice: 'electricity',
+  internetPrice: 'internet',
+  serviceFee: 'service',
 }
 
 export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
@@ -84,8 +92,29 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
     listingStatus,
   } = listing
 
-  const primaryImage =
-    media?.find((m) => m.isPrimary)?.url || media?.[0]?.url || DEFAULT_IMAGE
+  // Gallery images, primary first, with a safe fallback so there is always
+  // at least one slide.
+  const images = React.useMemo(() => {
+    const withUrl = (media || []).filter((m) => Boolean(m.url))
+    const ordered = [...withUrl].sort(
+      (a, b) => Number(b.isPrimary) - Number(a.isPrimary),
+    )
+    const urls = ordered.map((m) => m.url)
+    return urls.length > 0 ? urls : [DEFAULT_IMAGE]
+  }, [media])
+  const totalImages = images.length
+  const [currentImageIndex, setCurrentImageIndex] = React.useState(0)
+
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setCurrentImageIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1))
+  }
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setCurrentImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1))
+  }
 
   const formattedPrice = formatByLocale(price, language)
   const priceLabel =
@@ -123,15 +152,23 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
   return (
     <div
       className={cn(
-        'bg-card border border-border rounded-xl overflow-hidden flex flex-col',
+        'bg-card border border-border rounded-xl overflow-hidden flex flex-col w-full max-w-sm',
         'transition-shadow hover:shadow-md',
         className,
       )}
     >
       {/* ── Image hero ── */}
-      <div className='relative w-full aspect-[4/3] bg-muted'>
+      {/* Fixed height (not aspect-ratio): keeps the card from ballooning when
+          the chat window is widened, so a bigger window shows MORE cards
+          instead of a taller hero. */}
+      <div
+        className={cn(
+          'group relative w-full bg-muted',
+          compact ? 'h-36' : 'h-44',
+        )}
+      >
         <Image
-          src={primaryImage}
+          src={images[currentImageIndex]}
           alt={title}
           fill
           className='object-cover'
@@ -139,7 +176,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
         />
 
         {isVip && (
-          <span className='absolute top-2 left-2 inline-flex items-center gap-1 bg-white/95 text-foreground rounded-full px-2 py-0.5 text-xs font-semibold shadow-sm'>
+          <span className='absolute top-2 left-2 inline-flex items-center gap-1 bg-white/95 text-foreground rounded-full px-2 py-0.5 text-xs font-semibold shadow-sm z-10'>
             <Star
               className='w-3 h-3 fill-yellow-400 stroke-yellow-400'
               aria-hidden='true'
@@ -149,25 +186,48 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
         )}
 
         {isAvailable && (
-          <span className='absolute top-2 right-2 inline-flex items-center gap-1 bg-emerald-500/95 text-white rounded-full px-2 py-0.5 text-xs font-medium shadow-sm'>
+          <span className='absolute top-2 right-2 inline-flex items-center gap-1 bg-emerald-500/95 text-white rounded-full px-2 py-0.5 text-xs font-medium shadow-sm z-10'>
             <Check className='w-3 h-3' aria-hidden='true' />
-            Trống
+            {t('available')}
           </span>
         )}
 
-        {media && media.length > 1 && (
-          <span className='absolute bottom-2 right-2 bg-black/60 text-white rounded-md px-2 py-0.5 text-xs font-medium tabular-nums'>
-            1 / {media.length}
-          </span>
+        {/* Gallery controls — arrows reveal on hover (always visible on touch
+            where there is no hover), plus a live position counter. */}
+        {totalImages > 1 && (
+          <>
+            <button
+              type='button'
+              onClick={handlePrevImage}
+              aria-label={t('prevImage')}
+              className='absolute left-1.5 top-1/2 -translate-y-1/2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-background/80 text-foreground shadow-sm backdrop-blur-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 max-md:opacity-100 hover:bg-background'
+            >
+              <ChevronLeft className='w-4 h-4' aria-hidden='true' />
+            </button>
+            <button
+              type='button'
+              onClick={handleNextImage}
+              aria-label={t('nextImage')}
+              className='absolute right-1.5 top-1/2 -translate-y-1/2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-background/80 text-foreground shadow-sm backdrop-blur-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 max-md:opacity-100 hover:bg-background'
+            >
+              <ChevronRight className='w-4 h-4' aria-hidden='true' />
+            </button>
+            <span className='absolute bottom-2 right-2 bg-black/60 text-white rounded-md px-2 py-0.5 text-xs font-medium tabular-nums'>
+              {currentImageIndex + 1} / {totalImages}
+            </span>
+          </>
         )}
       </div>
 
       {/* ── Body ── */}
-      <div className='flex flex-col gap-2 p-3'>
+      <div className='flex flex-col gap-1.5 p-2.5'>
         {/* Title */}
-        <p className='text-sm font-semibold text-foreground line-clamp-2 leading-snug'>
+        <Typography
+          variant='p'
+          className='text-sm font-semibold text-foreground line-clamp-2 leading-snug'
+        >
           {title}
-        </p>
+        </Typography>
 
         {/* Price + key meta */}
         <div className='flex items-end justify-between gap-2 flex-wrap'>
@@ -247,9 +307,9 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
         {utilities.length > 0 && (
           <div className='flex flex-wrap gap-1.5'>
             {utilities.map(({ key, value }) => {
-              const config = UTILITY_LABELS[key]
-              if (!config) return null
-              const Icon = config.icon
+              const Icon = UTILITY_ICONS[key]
+              const labelKey = UTILITY_LABEL_KEYS[key]
+              if (!Icon || !labelKey) return null
               return (
                 <Badge
                   key={key}
@@ -258,7 +318,8 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
                 >
                   <Icon className='w-3 h-3' aria-hidden='true' />
                   <span>
-                    {config.label}: {formatByLocale(value!, language)}
+                    {t(`utilities.${labelKey}`)}:{' '}
+                    {formatByLocale(value!, language)}
                   </span>
                 </Badge>
               )
@@ -291,7 +352,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
       </div>
 
       {/* ── CTA row ── */}
-      <div className='flex items-center gap-2 px-3 pb-3 pt-1'>
+      <div className='flex items-center gap-2 px-2.5 pb-2.5 pt-0.5'>
         {onViewDetail ? (
           <Button
             type='button'
@@ -335,7 +396,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
             variant='outline'
             size='icon'
             className='h-9 w-9 flex-shrink-0 rounded-lg'
-            aria-label='Gọi điện'
+            aria-label={t('call')}
           >
             <a href={`tel:${cleanPhone}`} onClick={(e) => e.stopPropagation()}>
               <Phone
@@ -350,7 +411,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
             size='icon'
             className='h-9 w-9 flex-shrink-0 rounded-lg opacity-40 cursor-default'
             disabled
-            aria-label='Không có số điện thoại'
+            aria-label={t('noPhone')}
           >
             <Phone
               className='w-4 h-4 text-muted-foreground'

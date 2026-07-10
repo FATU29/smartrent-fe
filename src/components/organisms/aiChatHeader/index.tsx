@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Minus, Bot } from 'lucide-react'
+import { Minus, Bot, Maximize2, Minimize2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
@@ -8,10 +8,19 @@ import AiChatButton from '@/components/atoms/aiChatButton'
 
 type TAiChatHeaderProps = {
   onClose?: () => void
+  // When provided, renders an expand/collapse toggle (desktop only — the
+  // mobile chat is already full-screen so there is nothing to expand).
+  onToggleExpand?: () => void
+  isExpanded?: boolean
   className?: string
 }
 
-const AiChatHeader: FC<TAiChatHeaderProps> = ({ onClose, className }) => {
+const AiChatHeader: FC<TAiChatHeaderProps> = ({
+  onClose,
+  onToggleExpand,
+  isExpanded = false,
+  className,
+}) => {
   const t = useTranslations('aiChat')
 
   return (
@@ -33,6 +42,22 @@ const AiChatHeader: FC<TAiChatHeaderProps> = ({ onClose, className }) => {
       </div>
 
       <div className='flex items-center gap-0.5 md:gap-1'>
+        {onToggleExpand && (
+          <AiChatButton
+            variant='ghost'
+            size='icon'
+            onClick={onToggleExpand}
+            className='h-8 w-8 text-primary-foreground transition-all duration-200 hover:scale-105 hover:bg-primary-foreground/10'
+            aria-label={isExpanded ? t('collapseChat') : t('expandChat')}
+          >
+            {isExpanded ? (
+              <Minimize2 className='h-4 w-4 md:h-5 md:w-5' />
+            ) : (
+              <Maximize2 className='h-4 w-4 md:h-5 md:w-5' />
+            )}
+          </AiChatButton>
+        )}
+
         {onClose && (
           <AiChatButton
             variant='ghost'

@@ -44,6 +44,8 @@
     "clearHistory": "Clear chat history",
     "close": "Close chat",
     "openChat": "Open chat",
+    "expandChat": "Expand chat",
+    "collapseChat": "Collapse chat",
     "confirmClear": "Are you sure you want to clear all chat history?",
     "confirmClearTitle": "Clear Chat History",
     "confirmClearDescription": "This action cannot be undone. All your conversation history will be permanently deleted.",
@@ -76,7 +78,18 @@
     "listing": {
       "viewDetails": "View Details",
       "month": "month",
-      "year": "year"
+      "year": "year",
+      "available": "Available",
+      "call": "Call",
+      "noPhone": "No phone number",
+      "prevImage": "Previous image",
+      "nextImage": "Next image",
+      "utilities": {
+        "water": "Water",
+        "electricity": "Electricity",
+        "internet": "Internet",
+        "service": "Service"
+      }
     },
     "compare": {
       "title": "Property Comparison",

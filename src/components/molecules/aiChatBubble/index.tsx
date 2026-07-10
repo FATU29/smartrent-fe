@@ -348,13 +348,19 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
                 >
                   {message.totalCount || listings.length} {t('foundListings')}
                 </Badge>
-                <div className='flex flex-col gap-3 w-full'>
+                {/* Responsive grid: 1 column in a narrow window, auto-adds
+                    columns as the chat window is widened — so a bigger window
+                    shows MORE listings side by side instead of larger cards.
+                    min(100%,260px) guards against overflow on tiny screens
+                    (the scroll area is overflow-x-hidden). */}
+                <div className='grid w-full gap-2.5 [grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))]'>
                   {visibleListings.map((listing) => (
                     <CardListingAIDetail
                       key={listing.listingId}
                       listing={listing}
                       compact
                       onViewDetail={onViewListingDetail}
+                      className='max-w-none'
                     />
                   ))}
                 </div>
@@ -377,7 +383,7 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
           })()}
 
         {hasListings && !containsTable && listingDisplayMode === 'detail' && (
-          <div className='w-full flex flex-col gap-3 mt-1'>
+          <div className='w-full flex flex-col gap-2.5 mt-1'>
             {message.listings?.map((listing) => (
               <React.Fragment key={listing.listingId}>
                 {listing.user && <AiChatContactCard listing={listing} />}
