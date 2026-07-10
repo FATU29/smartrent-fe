@@ -30,6 +30,8 @@ type TAiChatInterfaceProps = {
   /** Cancel the in-flight SSE stream — wired through to the typing
    * indicator's × button. */
   onStopStreaming?: () => void
+  /** Guest hit the free message limit — disables the input behind the login CTA. */
+  guestLimitReached?: boolean
   isMobile?: boolean
   className?: string
 }
@@ -50,6 +52,7 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
   onSendMessage,
   onViewListingDetail,
   onStopStreaming,
+  guestLimitReached = false,
   isMobile = false,
   className,
 }) => {
@@ -197,6 +200,7 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
           onChange={onInputChange}
           onSubmit={onSendMessage}
           isLoading={isLoading}
+          disabled={guestLimitReached}
           isMobile={isMobile}
         />
       </div>

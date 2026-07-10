@@ -11,6 +11,8 @@ type TAiChatInputProps = {
   onChange: (value: string) => void
   onSubmit: (value: string) => void
   isLoading?: boolean
+  /** Hard-disables the input (e.g. a guest who hit the free message limit). */
+  disabled?: boolean
   isMobile?: boolean
   className?: string
 }
@@ -20,6 +22,7 @@ const AiChatInput: FC<TAiChatInputProps> = ({
   onChange,
   onSubmit,
   isLoading = false,
+  disabled = false,
   isMobile = false,
   className,
 }) => {
@@ -28,18 +31,21 @@ const AiChatInput: FC<TAiChatInputProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const t = useTranslations('aiChat')
 
+  // Blocked = mid-stream (isLoading) or gated (disabled). Both prevent sending.
+  const isBlocked = isLoading || disabled
+
   //Init event handle
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      if (value.trim() && !isLoading) {
+      if (value.trim() && !isBlocked) {
         onSubmit(value)
       }
     }
   }
 
   const handleSubmit = () => {
-    if (value.trim() && !isLoading) {
+    if (value.trim() && !isBlocked) {
       onSubmit(value)
     }
   }
@@ -75,8 +81,8 @@ const AiChatInput: FC<TAiChatInputProps> = ({
           onKeyDown={handleKeyDown}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder={t('placeholder')}
-          disabled={isLoading}
+          placeholder={disabled ? t('loginToContinue') : t('placeholder')}
+          disabled={isBlocked}
           rows={1}
           className={cn(
             'max-h-[120px] min-h-[44px] w-full resize-none bg-transparent px-3 py-3 text-sm',
@@ -93,12 +99,12 @@ const AiChatInput: FC<TAiChatInputProps> = ({
         variant='ghost'
         size='icon'
         onClick={handleSubmit}
-        disabled={!value.trim() || isLoading}
+        disabled={!value.trim() || isBlocked}
         isLoading={isLoading}
         className={cn(
           'flex-shrink-0 transition-all duration-200 text-primary',
           !value.trim() && !isLoading && 'opacity-50',
-          value.trim() && !isLoading && 'hover:scale-105',
+          value.trim() && !isBlocked && 'hover:scale-105',
         )}
         aria-label={t('send')}
       >

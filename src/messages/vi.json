@@ -53,6 +53,8 @@
     "messageInput": "Nhập tin nhắn",
     "attachFile": "Đính kèm tệp",
     "loginRequired": "Vui lòng đăng nhập để sử dụng trợ lý AI. Đăng nhập giúp chúng tôi cung cấp trải nghiệm tốt hơn và lưu lịch sử trò chuyện của bạn.",
+    "guestLimitReached": "Bạn đã dùng hết {count} tin nhắn miễn phí. Đăng nhập để tiếp tục trò chuyện.",
+    "loginToContinue": "Đăng nhập để tiếp tục",
     "scrollToBottom": "Cuộn xuống cuối",
     "expandTable": "Xem đầy đủ",
     "expandTableTitle": "Chi tiết so sánh",

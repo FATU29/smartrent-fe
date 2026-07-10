@@ -3,10 +3,11 @@ import { useTranslations } from 'next-intl'
 import ReactMarkdown, { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Link from 'next/link'
-import { Maximize2, Phone } from 'lucide-react'
+import { LogIn, Maximize2, Phone } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { TChatMessage } from '@/hooks/useChatAi'
+import { useAuthDialog } from '@/contexts/authDialog'
 import { Badge } from '@/components/atoms/badge'
 import { Button } from '@/components/atoms/button'
 import {
@@ -204,6 +205,7 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
   const hasListings = isBot && message.listings && message.listings.length > 0
   const t = useTranslations('chat')
   const tAi = useTranslations('aiChat')
+  const { openAuth } = useAuthDialog()
   const tools = message.toolsUsed || []
   const [showAllResults, setShowAllResults] = useState(false)
   const [showExpandDialog, setShowExpandDialog] = useState(false)
@@ -297,6 +299,19 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
               </p>
             )}
           </div>
+        )}
+
+        {/* Login CTA - shown on the guest message-limit prompt */}
+        {isBot && message.action === 'login' && (
+          <Button
+            type='button'
+            size='sm'
+            className='mt-1 gap-1.5'
+            onClick={() => openAuth('login')}
+          >
+            <LogIn className='w-4 h-4' aria-hidden='true' />
+            {tAi('loginToContinue')}
+          </Button>
         )}
 
         {/* Expand button - shown when message contains a markdown table */}
