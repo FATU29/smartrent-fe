@@ -68,10 +68,7 @@ const LoginForm: NextPage<LoginFormProps> = (props) => {
     password: yup
       .string()
       .required(t('homePage.auth.validation.passwordRequired'))
-      .matches(
-        VALIDATION_PATTERNS.PASSWORD,
-        t('homePage.auth.validation.passwordPattern'),
-      ),
+      .min(8, t('homePage.auth.validation.loginPasswordMinLength')),
   })
 
   const {

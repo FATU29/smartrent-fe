@@ -337,7 +337,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                         variant='small'
                         className='text-xs text-primary font-medium'
                       >
-                        +{amenities.length - 5} {t('more')}
+                        {t('more', { count: amenities.length - 5 })}
                       </Typography>
                     </button>
                   )}

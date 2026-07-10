@@ -32,8 +32,8 @@ import MapPropertyCard from '@/components/molecules/mapPropertyCard'
 import { ListingService } from '@/api/services/listing.service'
 import { Typography } from '@/components/atoms/typography'
 
-// Fallback center used when the device location is unavailable (Đà Nẵng).
-const VIETNAM_CENTER = { lat: 16.0544, lng: 108.2022 }
+// Fallback center used when the device location is unavailable (Hồ Chí Minh).
+const VIETNAM_CENTER = { lat: 10.7769, lng: 106.7009 }
 const DEFAULT_ZOOM = 12
 // Zoom applied when centering on the user's device location so nearby
 // listings load immediately (must be >= MIN_LISTING_FETCH_ZOOM).
