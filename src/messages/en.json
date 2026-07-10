@@ -53,6 +53,8 @@
     "messageInput": "Message input",
     "attachFile": "Attach file",
     "loginRequired": "Please log in to use the AI assistant. Logging in helps us provide a better experience and save your conversation history.",
+    "guestLimitReached": "You've used all {count} free messages. Log in to keep chatting.",
+    "loginToContinue": "Log in to continue",
     "scrollToBottom": "Scroll to bottom",
     "expandTable": "View full",
     "expandTableTitle": "Comparison Details",

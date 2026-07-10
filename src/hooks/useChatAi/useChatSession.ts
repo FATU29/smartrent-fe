@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 
 import type { TChatMessage } from './useChatLogic'
+import { clearGuestQuotaStorage } from './useGuestChatQuota'
 
 const CHAT_SESSION_KEY = 'smart-rent-ai-chat-session'
 // Records which identity the persisted messages belong to, so a login/logout/
@@ -34,6 +35,9 @@ export const clearChatSessionStorage = () => {
   } catch {
     // Silent fail - session storage might be unavailable
   }
+  // The guest message allowance is part of the same chat lifecycle: wipe it on
+  // login/logout so the next identity starts with a fresh (or no) allowance.
+  clearGuestQuotaStorage()
 }
 
 function readStoredOwner(): string | null {

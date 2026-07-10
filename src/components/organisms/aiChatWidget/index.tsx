@@ -38,6 +38,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
     isTyping,
     streamingStatus,
     inputValue,
+    guestLimitReached,
     scrollRef,
     bottomRef,
     contentRef,
@@ -156,6 +157,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                 onSendMessage={sendMessage}
                 onViewListingDetail={viewListingDetail}
                 onStopStreaming={cancelStream}
+                guestLimitReached={guestLimitReached}
                 isMobile
                 className='flex-1 min-h-0'
               />
@@ -215,6 +217,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                   onSendMessage={sendMessage}
                   onViewListingDetail={viewListingDetail}
                   onStopStreaming={cancelStream}
+                  guestLimitReached={guestLimitReached}
                   isMobile={false}
                   className='flex-1 min-h-0'
                 />

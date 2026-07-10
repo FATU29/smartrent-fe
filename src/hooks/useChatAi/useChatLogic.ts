@@ -13,7 +13,12 @@ import type {
 import { ENV } from '@/constants'
 import { useChatSession } from './useChatSession'
 import { useChatScroll } from './useChatScroll'
+import { useGuestChatQuota, GUEST_MESSAGE_LIMIT } from './useGuestChatQuota'
 import { useAuth } from '@/hooks/useAuth'
+
+// Stable id for the one-shot login CTA shown once a guest hits the message
+// limit. A fixed id makes addMessage dedupe it (idempotent across renders).
+const GUEST_LIMIT_CTA_ID = 'guest-limit-cta'
 
 export type TChatMessage = {
   id: string
@@ -29,6 +34,9 @@ export type TChatMessage = {
   }>
   toolsUsed?: string[]
   suggestions?: ChatSuggestion[]
+  /** Marks a bot message that should render an inline action button (e.g. the
+   *  guest login CTA shown after the free message limit is reached). */
+  action?: 'login'
 }
 
 export type TChatState = {
@@ -74,6 +82,11 @@ export const useChatLogic = () => {
   const locale = useLocale() as 'vi' | 'en'
   const t = useTranslations('aiChat')
   const { isAuthenticated, user } = useAuth()
+
+  // Guest message allowance: a logged-out visitor may send a few messages
+  // before the chat is gated behind login.
+  const { limitReached: guestLimitReached, increment: incrementGuestQuota } =
+    useGuestChatQuota(isAuthenticated)
 
   // Initialize with welcome message + curated starter suggestions so a fresh
   // chat offers one-tap entry points (the backend only sends suggestions after
@@ -130,6 +143,22 @@ export const useChatLogic = () => {
     }
   }, [])
 
+  // Once a guest exhausts their free messages, surface a one-shot login CTA in
+  // the transcript (and scroll to it). Deferred until the stream settles so it
+  // lands after the final answer rather than mid-stream. addMessage dedupes on
+  // the fixed id, so this stays idempotent across renders.
+  useEffect(() => {
+    if (!guestLimitReached || isLoading) return
+    addMessage({
+      id: GUEST_LIMIT_CTA_ID,
+      content: t('guestLimitReached', { count: GUEST_MESSAGE_LIMIT }),
+      sender: 'bot',
+      timestamp: new Date(),
+      action: 'login',
+    })
+    scrollToMessage(GUEST_LIMIT_CTA_ID)
+  }, [guestLimitReached, isLoading, addMessage, t, scrollToMessage])
+
   const generateMessageId = useCallback(() => {
     const timestamp = Date.now()
     const randomBytes = new Uint8Array(8)
@@ -148,15 +177,12 @@ export const useChatLogic = () => {
       const trimmedContent = content.trim()
 
       if (!isAuthenticated) {
-        const loginRequiredMessage: TChatMessage = {
-          id: generateMessageId(),
-          content: t('loginRequired'),
-          sender: 'bot',
-          timestamp: new Date(),
-        }
-        addMessage(loginRequiredMessage)
-        scrollToMessage(loginRequiredMessage.id)
-        return
+        // At the limit the input is already disabled; this guards the
+        // programmatic path (suggestion clicks, viewListingDetail). The login
+        // CTA is surfaced by the effect below, not here.
+        if (guestLimitReached) return
+        // Under the limit — consume one guest turn and fall through to send.
+        incrementGuestQuota()
       }
 
       // Cancel any prior in-flight stream before starting a new one
@@ -391,8 +417,9 @@ export const useChatLogic = () => {
     [
       isLoading,
       isAuthenticated,
+      guestLimitReached,
+      incrementGuestQuota,
       user?.userId,
-      scrollToMessage,
       anchorMessageToTop,
       finalizeReservedSpace,
       messages,
@@ -448,6 +475,7 @@ export const useChatLogic = () => {
     isTyping,
     streamingStatus,
     inputValue,
+    guestLimitReached,
     scrollRef,
     bottomRef,
     contentRef,
