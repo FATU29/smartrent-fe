@@ -43,7 +43,13 @@ const StatPill: React.FC<{
     )}
   >
     <span className='text-primary'>{icon}</span>
-    <Typography variant='small' className='font-semibold text-foreground'>
+    <Typography
+      variant='small'
+      className={classNames(
+        'font-semibold text-foreground',
+        compact && 'text-xs',
+      )}
+    >
       {value}
     </Typography>
   </div>
@@ -133,7 +139,7 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
             {verified && (
               <Badge
                 className={classNames(
-                  'bg-emerald-500/90 text-white text-2xs rounded-full shadow-md flex items-center backdrop-blur-sm',
+                  'bg-emerald-500/90 text-white text-[11px] rounded-full shadow-md flex items-center backdrop-blur-sm',
                   compact ? 'px-1.5 py-0.5 gap-0.5' : 'px-2.5 py-1 gap-1',
                 )}
               >
@@ -146,7 +152,7 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
             {isPriority && (
               <Badge
                 className={classNames(
-                  'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-2xs rounded-full shadow-md flex items-center backdrop-blur-sm',
+                  'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-[11px] rounded-full shadow-md flex items-center backdrop-blur-sm',
                   compact ? 'px-1.5 py-0.5 gap-0.5' : 'px-2.5 py-1 gap-1',
                 )}
               >
@@ -177,7 +183,10 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
       >
         <Typography
           variant='h6'
-          className='text-foreground leading-tight font-semibold line-clamp-2'
+          className={classNames(
+            'text-foreground leading-tight font-semibold line-clamp-2',
+            compact && 'text-sm',
+          )}
         >
           {title}
         </Typography>
@@ -187,7 +196,10 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
             <MapPin className='w-3 h-3 flex-shrink-0 text-muted-foreground mt-0.5' />
             <Typography
               variant='small'
-              className='text-muted-foreground line-clamp-1 leading-snug'
+              className={classNames(
+                'text-muted-foreground line-clamp-1 leading-snug',
+                compact && 'text-xs',
+              )}
             >
               {displayAddress}
             </Typography>
@@ -246,7 +258,10 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
             {userName && (
               <Typography
                 variant='small'
-                className='font-medium truncate block leading-tight'
+                className={classNames(
+                  'font-medium truncate block leading-tight',
+                  compact && 'text-xs',
+                )}
               >
                 {userName}
               </Typography>
