@@ -322,9 +322,6 @@ const CustomerManagementTemplate = () => {
                     <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
                       {t('table.clickedListings')}
                     </th>
-                    <th className='px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider'>
-                      {t('table.actions')}
-                    </th>
                   </tr>
                 </thead>
                 <tbody className='bg-card divide-y divide-border'>
@@ -367,6 +364,20 @@ const CustomerManagementTemplate = () => {
                             <span className='text-sm text-foreground'>
                               {customer.email}
                             </span>
+                            {customer.email && (
+                              <button
+                                type='button'
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleCopyToClipboard(customer.email, 'email')
+                                }}
+                                className='p-1 rounded-md text-muted-foreground opacity-0 transition-all hover:bg-primary/10 hover:text-primary group-hover:opacity-100'
+                                title={t('table.copyEmail')}
+                                aria-label={t('table.copyEmail')}
+                              >
+                                <Copy className='h-3.5 w-3.5' />
+                              </button>
+                            )}
                           </div>
                         </td>
                         <td className='px-6 py-4'>
@@ -379,6 +390,23 @@ const CustomerManagementTemplate = () => {
                               <CheckCircle2 className='h-4 w-4 text-green-600' />
                             ) : (
                               <XCircle className='h-4 w-4 text-muted-foreground/50' />
+                            )}
+                            {customer.contactPhone && (
+                              <button
+                                type='button'
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleCopyToClipboard(
+                                    customer.contactPhone,
+                                    'phone',
+                                  )
+                                }}
+                                className='p-1 rounded-md text-muted-foreground opacity-0 transition-all hover:bg-primary/10 hover:text-primary group-hover:opacity-100'
+                                title={t('table.copyPhone')}
+                                aria-label={t('table.copyPhone')}
+                              >
+                                <Copy className='h-3.5 w-3.5' />
+                              </button>
                             )}
                           </div>
                         </td>
@@ -439,35 +467,6 @@ const CustomerManagementTemplate = () => {
                                 +{customer.clickedListings.length - 2} more
                               </div>
                             )}
-                          </div>
-                        </td>
-                        <td className='px-6 py-4 text-right'>
-                          <div className='flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
-                            {customer.contactPhone && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleCopyToClipboard(
-                                    customer.contactPhone,
-                                    'phone',
-                                  )
-                                }}
-                                className='p-2 hover:bg-primary/10 rounded-md transition-colors'
-                                title={t('table.copyPhone')}
-                              >
-                                <Copy className='h-4 w-4 text-primary' />
-                              </button>
-                            )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleCopyToClipboard(customer.email, 'email')
-                              }}
-                              className='p-2 hover:bg-primary/10 rounded-md transition-colors'
-                              title={t('table.copyEmail')}
-                            >
-                              <Mail className='h-4 w-4 text-primary' />
-                            </button>
                           </div>
                         </td>
                       </tr>
