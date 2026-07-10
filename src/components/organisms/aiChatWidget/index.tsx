@@ -17,6 +17,10 @@ import AiChatHeader from '@/components/organisms/aiChatHeader'
 import AiChatInterface from '@/components/organisms/aiChatInterface'
 import AiChatButton from '@/components/atoms/aiChatButton'
 
+// Persist the desktop expand/collapse choice so reopening the widget keeps
+// the size the user last picked.
+const AI_CHAT_EXPANDED_STORAGE_KEY = 'smart-rent-ai-chat-expanded'
+
 type TAiChatWidgetProps = {
   className?: string
   position?: 'bottom-right' | 'bottom-left'
@@ -29,6 +33,10 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
   //Init state hook
   const [isOpen, setIsOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return localStorage.getItem(AI_CHAT_EXPANDED_STORAGE_KEY) === '1'
+  })
   //Init use hook
   const isMobile = useMediaQuery(MEDIA_BELOW_MD)
   const t = useTranslations('aiChat')
@@ -58,6 +66,19 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
 
   const handleClose = () => {
     setIsOpen(false)
+  }
+
+  const handleToggleExpand = () => {
+    setIsExpanded((prev) => {
+      const next = !prev
+      try {
+        localStorage.setItem(AI_CHAT_EXPANDED_STORAGE_KEY, next ? '1' : '0')
+      } catch {
+        // localStorage may be unavailable (private mode / disabled); the
+        // toggle still works for the current session.
+      }
+      return next
+    })
   }
 
   //Init effect hook
@@ -185,8 +206,8 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
               : 'bottom-24 left-6',
           )}
           style={{
-            width: '500px',
-            height: '700px',
+            width: isExpanded ? 'min(1080px, 90vw)' : '500px',
+            height: isExpanded ? 'min(840px, 85vh)' : '700px',
             minWidth: '400px',
             minHeight: '540px',
             maxWidth: '90vw',
@@ -199,7 +220,12 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
           >
             <ResizablePanel defaultSize={100} minSize={50} maxSize={100}>
               <div className='flex h-full w-full flex-col overflow-hidden bg-background'>
-                <AiChatHeader onClose={handleClose} className='flex-shrink-0' />
+                <AiChatHeader
+                  onClose={handleClose}
+                  onToggleExpand={handleToggleExpand}
+                  isExpanded={isExpanded}
+                  className='flex-shrink-0'
+                />
 
                 <AiChatInterface
                   messages={messages}
