@@ -12,6 +12,7 @@ import {
   CreateListingRequest,
   MediaItem,
   LISTING_TYPE,
+  DURATIONDAYS,
 } from '@/api/types/property.type'
 import { useGetDraft } from '@/hooks/useListings/useGetDraft'
 import type { DraftListingResponse } from '@/api/types/draft.type'
@@ -91,8 +92,20 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
 
   const [propertyInfo, setPropertyInfoState] = useState<
     Partial<CreateListingRequest>
-  >({
-    listingType: LISTING_TYPE.RENT,
+  >(() => {
+    // Seed the package defaults (Tin Thường / NORMAL, 10 ngày, bắt đầu hôm nay) so
+    // the "Gói & Cấu hình" step is complete-by-default and its green state no
+    // longer races the async VIP-tiers fetch. These mirror the UI's pre-selected
+    // defaults and are reconciled once the real tiers load (see the hydration
+    // effect in packageConfigSection).
+    const postDate = new Date()
+    return {
+      listingType: LISTING_TYPE.RENT,
+      vipType: 'NORMAL',
+      durationDays: DURATIONDAYS.DAYS_10,
+      postDate,
+      expiryDate: new Date(postDate.getTime() + 10 * 24 * 60 * 60 * 1000),
+    }
   })
   const [fulltextAddress, setFulltextAddress] = useState<FulltextAddress>({})
 

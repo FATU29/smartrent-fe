@@ -17,7 +17,6 @@ import {
 } from '@/components/atoms/card'
 import { Label } from '@/components/atoms/label'
 import { Typography } from '@/components/atoms/typography'
-import { FileText, Medal, Crown, Gem, type LucideIcon } from 'lucide-react'
 import {
   Calendar,
   Tag,
@@ -39,21 +38,72 @@ interface DurationOption {
   price: number
 }
 
-// Tiered line icons (lucide) instead of emoji — cleaner and on-brand with the
-// rest of the app's icon set. Rendered white on the tier gradient.
-const TIER_ICONS: Record<string, LucideIcon> = {
-  NORMAL: FileText,
-  SILVER: Medal,
-  GOLD: Crown,
-  DIAMOND: Gem,
+// Custom SVG tier emblems rendered white on the tier gradient tile. Kept as
+// inline SVG (no extra icon dependency) so they stay crisp at any size and
+// inherit the tile's text color. Metaphor escalates document → medal → crown →
+// diamond, matching the NORMAL / SILVER / GOLD / DIAMOND tiers.
+const TIER_BACKGROUNDS: Record<string, string> = {
+  NORMAL: 'bg-gradient-to-br from-zinc-400 to-zinc-600',
+  SILVER: 'bg-gradient-to-br from-slate-300 to-slate-500',
+  GOLD: 'bg-gradient-to-br from-amber-400 to-amber-600',
+  DIAMOND: 'bg-gradient-to-br from-sky-400 to-indigo-500',
 }
 
-const TIER_BACKGROUNDS: Record<string, string> = {
-  NORMAL: 'bg-gradient-to-br from-gray-400 to-gray-600',
-  SILVER: 'bg-gradient-to-br from-cyan-400 to-blue-500',
-  GOLD: 'bg-gradient-to-br from-yellow-400 to-orange-500',
-  DIAMOND: 'bg-gradient-to-br from-purple-500 to-pink-500',
+const FILL_CURRENT = { fill: 'currentColor', stroke: 'none' } as const
+
+const TIER_GLYPH_PATHS: Record<string, React.ReactNode> = {
+  NORMAL: (
+    <>
+      <path d='M22 12h13l9 9v31h-22z' />
+      <path d='M35 12v9h9' />
+      <path d='M26 32h12M26 39h12M26 46h8' />
+    </>
+  ),
+  SILVER: (
+    <>
+      <path d='M25 13l5 15M39 13l-5 15' />
+      <circle cx='32' cy='41' r='14' />
+      <circle cx='32' cy='41' r='5.5' {...FILL_CURRENT} />
+    </>
+  ),
+  GOLD: (
+    <g {...FILL_CURRENT}>
+      <path d='M12 45L18 25L26 36L32 20L38 36L46 25L52 45Z' />
+      <rect x='12' y='45' width='40' height='7' rx='2' />
+      <circle cx='18' cy='24' r='2.4' />
+      <circle cx='32' cy='19' r='2.6' />
+      <circle cx='46' cy='24' r='2.4' />
+    </g>
+  ),
+  DIAMOND: (
+    <>
+      <path d='M22 15H42L54 29L32 53L10 29Z' />
+      <path
+        d='M10 29H54M22 15L27 29L32 53M42 15L37 29L32 53'
+        strokeWidth='2.3'
+        opacity='0.9'
+      />
+    </>
+  ),
 }
+
+const TierGlyph: React.FC<{ code: string; className?: string }> = ({
+  code,
+  className,
+}) => (
+  <svg
+    viewBox='0 0 64 64'
+    className={className}
+    fill='none'
+    stroke='currentColor'
+    strokeWidth='3'
+    strokeLinecap='round'
+    strokeLinejoin='round'
+    aria-hidden='true'
+  >
+    {TIER_GLYPH_PATHS[code] ?? TIER_GLYPH_PATHS.NORMAL}
+  </svg>
+)
 
 const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   className,
@@ -379,15 +429,18 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               >
                 <Card
                   className={cn(
-                    'w-12 h-12 aspect-square shrink-0 rounded-lg flex items-center justify-center border-0 p-0',
+                    'relative w-12 h-12 aspect-square shrink-0 overflow-hidden rounded-lg flex items-center justify-center border-0 p-0 text-white',
                     TIER_BACKGROUNDS[tier.tierCode] || TIER_BACKGROUNDS.NORMAL,
                   )}
                 >
-                  {(() => {
-                    const TierIcon =
-                      TIER_ICONS[tier.tierCode] || TIER_ICONS.NORMAL
-                    return <TierIcon className='w-6 h-6 text-white' />
-                  })()}
+                  <span
+                    aria-hidden='true'
+                    className='pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-white/15'
+                  />
+                  <TierGlyph
+                    code={tier.tierCode}
+                    className='relative h-7 w-7'
+                  />
                 </Card>
                 <Typography
                   variant='h4'
