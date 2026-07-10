@@ -20,6 +20,7 @@ import {
   clearAuthProfileQueries,
   resolveAuthenticatedUser,
 } from '@/utils/auth/session'
+import { clearChatSessionStorage } from '@/hooks/useChatAi/useChatSession'
 
 export { useAuthGuard, useForceLogout } from './useAuthGuard'
 export { useChangePassword } from './useChangePassword'
@@ -63,12 +64,9 @@ export const useLogin = () => {
         const user = await resolveAuthenticatedUser(tokens, queryClient)
         login(user, tokens)
 
-        // Clear AI chat session when login successfully
-        try {
-          sessionStorage.removeItem('smart-rent-ai-chat-session')
-        } catch (error) {
-          console.warn('[useLogin] Failed to clear AI chat session:', error)
-        }
+        // Clear AI chat session so the new account never inherits the previous
+        // (or guest) conversation.
+        clearChatSessionStorage()
 
         return result
       } catch (error) {
@@ -113,15 +111,9 @@ export const useAdminLogin = () => {
         const user = await resolveAuthenticatedUser(tokens, queryClient)
         login(user, tokens)
 
-        // Clear AI chat session when login successfully
-        try {
-          sessionStorage.removeItem('smart-rent-ai-chat-session')
-        } catch (error) {
-          console.warn(
-            '[useAdminLogin] Failed to clear AI chat session:',
-            error,
-          )
-        }
+        // Clear AI chat session so the new account never inherits the previous
+        // (or guest) conversation.
+        clearChatSessionStorage()
 
         return result
       } catch (error) {
@@ -186,12 +178,8 @@ export const useLogout = () => {
     // Snapshot the guest flag before logout() resets it.
     const wasGuest = useAuthStore.getState().isGuest
 
-    // Clear AI chat session on logout
-    try {
-      sessionStorage.removeItem('smart-rent-ai-chat-session')
-    } catch (error) {
-      console.warn('[Logout] Failed to clear AI chat session:', error)
-    }
+    // Clear AI chat session on logout so the next account starts clean.
+    clearChatSessionStorage()
 
     clearAuthProfileQueries(queryClient)
 
@@ -405,14 +393,9 @@ export const useVerifyMagicLink = () => {
         const user = await resolveAuthenticatedUser(tokens, queryClient)
         login(user, tokens)
 
-        try {
-          sessionStorage.removeItem('smart-rent-ai-chat-session')
-        } catch (error) {
-          console.warn(
-            '[useVerifyMagicLink] Failed to clear AI chat session:',
-            error,
-          )
-        }
+        // Clear AI chat session so the new account never inherits the previous
+        // (or guest) conversation.
+        clearChatSessionStorage()
 
         return result
       } catch (error) {

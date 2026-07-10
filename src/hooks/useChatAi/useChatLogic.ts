@@ -95,9 +95,13 @@ export const useChatLogic = () => {
     }
   }, [locale, t])
 
-  // Use session storage for message persistence
-  const { messages, addMessage, updateMessage, clearSession } =
-    useChatSession(initialMessage)
+  // Use session storage for message persistence. Passing the auth identity in
+  // lets the session wipe itself on login / logout / account switch instead of
+  // leaking one account's chat into the next.
+  const { messages, addMessage, updateMessage, clearSession } = useChatSession(
+    initialMessage,
+    { isAuthenticated, userId: user?.userId ?? null },
+  )
 
   //Init state hook
   const [isLoading, setIsLoading] = useState(false)
