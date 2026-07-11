@@ -33,6 +33,11 @@ export const usePersonalizedRecommendations = (topN = 5, enabled = true) => {
       if (maybeAxiosError.response?.status === 401) return false
       return failureCount < 2
     },
-    staleTime: 2 * 60 * 1000,
+    // Matches the backend's listing.recommendation.personalized cache TTL
+    // (30m) — this feed is the most expensive homepage query (interaction
+    // history + AI call), so it intentionally caches longer than the
+    // VIP-tier carousels rather than shorter.
+    staleTime: 30 * 60 * 1000,
+    gcTime: 35 * 60 * 1000,
   })
 }
