@@ -1,8 +1,11 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Calendar, Eye, User } from 'lucide-react'
-import { format, formatDistanceToNow } from 'date-fns'
-import { formatAuthorDisplayName } from '@/utils/news'
+import {
+  formatAuthorDisplayName,
+  formatPublishedDate,
+  formatPublishedDateTime,
+} from '@/utils/news'
 
 interface NewsMetaInfoProps {
   authorName?: string
@@ -10,32 +13,6 @@ interface NewsMetaInfoProps {
   viewCount: number
   className?: string
   variant?: 'default' | 'compact'
-}
-
-const formatDate = (dateString: string | null, fallback: string) => {
-  if (!dateString) return fallback
-  try {
-    return format(new Date(dateString), 'dd/MM/yyyy HH:mm')
-  } catch {
-    return fallback
-  }
-}
-
-const formatRelativeDate = (dateString: string | null, fallback: string) => {
-  if (!dateString) return fallback
-  try {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffDays = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
-    )
-    if (diffDays < 7) {
-      return formatDistanceToNow(date, { addSuffix: true })
-    }
-    return format(date, 'dd/MM/yyyy')
-  } catch {
-    return fallback
-  }
 }
 
 const NewsMetaInfo: React.FC<NewsMetaInfoProps> = ({
@@ -48,9 +25,9 @@ const NewsMetaInfo: React.FC<NewsMetaInfoProps> = ({
   const t = useTranslations('newsPage')
   const displayAuthor = formatAuthorDisplayName(authorName, t('authorFallback'))
   const displayDate =
-    variant === 'compact'
-      ? formatRelativeDate(publishedAt, t('dateUnavailable'))
-      : formatDate(publishedAt, t('dateUnavailable'))
+    (variant === 'compact'
+      ? formatPublishedDate(publishedAt)
+      : formatPublishedDateTime(publishedAt)) || t('dateUnavailable')
 
   return (
     <div
