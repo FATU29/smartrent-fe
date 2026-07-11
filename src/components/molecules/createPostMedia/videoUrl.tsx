@@ -106,7 +106,7 @@ const VideoUrl: React.FC<VideoUrlProps> = ({ video }) => {
               />
             </div>
             <Button variant='outline' onClick={handleRemove} className='w-full'>
-              Xóa video
+              {t('video.external.remove')}
             </Button>
           </div>
         ) : (

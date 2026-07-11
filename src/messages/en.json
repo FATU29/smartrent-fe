@@ -1249,7 +1249,7 @@
           "hint": "Drag up to 24 images or...",
           "uploadFromDevice": "Upload From Device",
           "chooseFromLibrary": "Choose From Library",
-          "note": "Max 15MB per image"
+          "note": "Max 10MB per image"
         },
         "readyToUpload": "Ready to Upload",
         "pendingImages": "Pending Images ({count})",
@@ -1276,7 +1276,10 @@
         "uploadButton": "Upload Media",
         "validation": {
           "pendingImages": "Please upload pending images before continuing",
-          "minImages": "Please upload at least 4 images (video is optional)"
+          "minImages": "Please upload at least 4 images (video is optional)",
+          "uploadInProgress": "Please wait for current image upload to finish",
+          "imageSizeExceeded": "Image size must not exceed 10MB",
+          "imageFormatInvalid": "Image must be jpeg, png, or webp format"
         },
         "video": {
           "title": "Video (Optional)",
@@ -1287,6 +1290,8 @@
             "saving": "Saving...",
             "success": "Video link saved",
             "error": "Failed to save video link",
+            "onlyYoutube": "Only YouTube links are accepted",
+            "remove": "Remove video",
             "uploadedNote": "You have added a YouTube link. Remove the link to upload a video."
           },
           "upload": {
@@ -1356,11 +1361,13 @@
           "badge": "Cover",
           "uploading": "Uploading...",
           "uploaded": {
-            "success": "Cover image added successfully"
+            "success": "Cover image added successfully",
+            "failed": "Failed to upload cover image"
           },
           "validation": {
             "imageSizeExceeded": "Cover image size must not exceed 10MB",
-            "imageFormatInvalid": "Cover image must be jpeg, png, or webp format"
+            "imageFormatInvalid": "Cover image must be jpeg, png, or webp format",
+            "uploadInProgress": "Please wait for current image upload to finish"
           }
         }
       },
@@ -1734,7 +1741,7 @@
                 "hint": "Drag up to 24 images or...",
                 "uploadFromDevice": "Upload From Device",
                 "chooseFromLibrary": "Choose From Library",
-                "note": "Min 3 images · Up to 24 · Minimum size 100x100px · Max 15MB per image"
+                "note": "Min 3 images · Up to 24 · Minimum size 100x100px · Max 10MB per image"
               },
               "uploaded": {
                 "title": "Uploaded Images",
