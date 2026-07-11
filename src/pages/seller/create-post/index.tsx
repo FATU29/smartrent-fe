@@ -119,41 +119,43 @@ const CreatePostPage: NextPageWithLayout = () => {
             <DialogDescription>{tBlocked('description')}</DialogDescription>
           </DialogHeader>
 
-          {blockedReason && (
-            <div className='flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4'>
-              <AlertTriangle className='mt-0.5 h-5 w-5 shrink-0 text-destructive' />
-              <div className='min-w-0'>
-                <p className='text-xs font-semibold uppercase tracking-wide text-destructive'>
-                  {tBlocked('reasonLabel')}
-                </p>
-                <p className='mt-1 text-sm text-foreground/90'>
-                  {blockedReason}
-                </p>
+          <div className='space-y-4'>
+            {blockedReason && (
+              <div className='flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4'>
+                <AlertTriangle className='mt-0.5 h-5 w-5 shrink-0 text-destructive' />
+                <div className='min-w-0'>
+                  <p className='text-xs font-semibold uppercase tracking-wide text-destructive'>
+                    {tBlocked('reasonLabel')}
+                  </p>
+                  <p className='mt-1 text-sm text-foreground/90'>
+                    {blockedReason}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div className='flex items-start gap-3 rounded-xl border border-border bg-muted/40 p-4'>
-            <FileEdit className='mt-0.5 h-5 w-5 shrink-0 text-muted-foreground' />
+            <div className='flex items-start gap-3 rounded-xl border border-border bg-muted/40 p-4'>
+              <FileEdit className='mt-0.5 h-5 w-5 shrink-0 text-muted-foreground' />
+              <p className='text-sm text-muted-foreground'>
+                {tBlocked('draftNote')}
+              </p>
+            </div>
+
             <p className='text-sm text-muted-foreground'>
-              {tBlocked('draftNote')}
+              {tBlocked.rich('contactSupport', {
+                email: (chunks) => (
+                  <a
+                    href='mailto:smartrent.tools@gmail.com'
+                    className='font-medium text-primary underline underline-offset-2'
+                  >
+                    {chunks}
+                  </a>
+                ),
+              })}
             </p>
           </div>
 
-          <p className='text-sm text-muted-foreground'>
-            {tBlocked.rich('contactSupport', {
-              email: (chunks) => (
-                <a
-                  href='mailto:smartrent.tools@gmail.com'
-                  className='font-medium text-primary underline underline-offset-2'
-                >
-                  {chunks}
-                </a>
-              ),
-            })}
-          </p>
-
-          <DialogFooter>
+          <DialogFooter className='mt-6'>
             <Button onClick={() => setOpenBlockedDialog(false)}>
               {tBlocked('ok')}
             </Button>
