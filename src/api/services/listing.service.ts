@@ -63,6 +63,7 @@ export class ListingService {
         page,
         size,
         sortBy,
+        excludeExpired: true,
       },
       instance,
     )
@@ -340,6 +341,9 @@ export class ListingService {
   /**
    * Get seller listings by a specific VIP tier (public)
    * GET /v1/listings/sellers/:userId/{diamond|gold|silver|normal}
+   * Always excludeExpired: this is the public seller-profile page, not the
+   * owner's "my listings" page, so expired posts must not be shown even
+   * though a userId is present.
    */
   static async getSellerListingsByVipType(
     userId: string,
@@ -356,7 +360,7 @@ export class ListingService {
         {
           method: 'GET',
           url,
-          params: { page, size, sortBy },
+          params: { page, size, sortBy, excludeExpired: true },
           skipAuth: true,
         },
         instance,
@@ -478,7 +482,7 @@ export class ListingService {
         {
           method: 'GET',
           url,
-          params: { limit: safeLimit },
+          params: { limit: safeLimit, excludeExpired: true },
           skipAuth: true,
         },
         instance,
@@ -497,6 +501,7 @@ export class ListingService {
           page: 1,
           size: safeLimit,
           sortBy: SortKey.NEWEST,
+          excludeExpired: true,
         },
         instance,
       )
@@ -508,6 +513,7 @@ export class ListingService {
             page: 1,
             size: safeLimit,
             sortBy: SortKey.NEWEST,
+            excludeExpired: true,
           },
           instance,
         )
