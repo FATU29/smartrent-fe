@@ -1863,6 +1863,13 @@
           }
         }
       }
+    },
+    "saveDraft": "Lưu nháp",
+    "draftSaved": "Đã lưu vào bản nháp",
+    "blockedFromPostingDialog": {
+      "title": "Tài khoản bị chặn đăng tin",
+      "description": "Tài khoản của bạn đã bị chặn đăng tin do có nhiều tin vi phạm bị báo cáo và đã được duyệt. Bạn vẫn có thể lưu nháp, nhưng không thể đăng tin. Vui lòng liên hệ quản trị viên để được hỗ trợ.",
+      "ok": "Đã hiểu"
     }
   },
   "footer": {

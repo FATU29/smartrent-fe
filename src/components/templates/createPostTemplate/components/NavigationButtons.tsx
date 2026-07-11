@@ -27,6 +27,10 @@ interface NavigationButtonsProps {
   onSubmit: () => void
   onUpdateDraft?: () => void
   isUpdatingDraft?: boolean
+  // When the user is blocked from posting, the publish/payment CTA is replaced
+  // by a "save draft" action so they can still keep their work.
+  postingBlocked?: boolean
+  onSaveDraft?: () => void
 }
 
 export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
@@ -37,13 +41,16 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   onSubmit,
   onUpdateDraft,
   isUpdatingDraft = false,
+  postingBlocked = false,
+  onSaveDraft,
 }) => {
   const t = useTranslations('createPost')
   const { propertyInfo, draftId } = useCreatePost()
 
   const isLastStep = currentStep === totalSteps - 1
   const showBackButton = currentStep > 0
-  const showUpdateDraftButton = !!draftId && !!onUpdateDraft
+  // When blocked, the primary CTA already saves the draft — avoid a duplicate.
+  const showUpdateDraftButton = !!draftId && !!onUpdateDraft && !postingBlocked
 
   const getSubmitButtonText = () => {
     const hasBenefit = Array.isArray(propertyInfo?.benefitIds)
@@ -64,6 +71,33 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
     }
   }
 
+  const renderLastStepCta = () => {
+    // Blocked users cannot publish/pay — offer "save draft" instead so they
+    // keep their work. The payment + đăng tin buttons are hidden entirely.
+    if (postingBlocked) {
+      return (
+        <Button
+          onClick={() => onSaveDraft?.()}
+          disabled={isUpdatingDraft}
+          className={PRIMARY_CTA_CLASSES}
+        >
+          <Save className='size-4' aria-hidden='true' />
+          {t('saveDraft')}
+        </Button>
+      )
+    }
+    return (
+      <Button
+        onClick={handleSubmit}
+        disabled={isUpdatingDraft}
+        className={PRIMARY_CTA_CLASSES}
+      >
+        <CreditCard className='size-4' aria-hidden='true' />
+        {getSubmitButtonText()}
+      </Button>
+    )
+  }
+
   const primaryCta = !isLastStep ? (
     <Button
       onClick={onNext}
@@ -77,14 +111,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
       />
     </Button>
   ) : (
-    <Button
-      onClick={handleSubmit}
-      disabled={isUpdatingDraft}
-      className={PRIMARY_CTA_CLASSES}
-    >
-      <CreditCard className='size-4' aria-hidden='true' />
-      {getSubmitButtonText()}
-    </Button>
+    renderLastStepCta()
   )
 
   return (
