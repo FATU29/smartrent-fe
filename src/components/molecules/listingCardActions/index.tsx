@@ -30,6 +30,9 @@ export interface ListingCardActionsProps {
   showRepostButton?: boolean
   showRenewButton?: boolean
   showResubmitButton?: boolean
+  // Hidden when the owner is blocked from posting — editing feeds back into
+  // the same re-listing/resubmit flow the block is meant to stop.
+  showEditButton?: boolean
   // Permanently removed listings can only be deleted — every other action
   // (edit, promote, resubmit, copy link, take down, ...) is meaningless.
   onlyShowDelete?: boolean
@@ -49,6 +52,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
   showRepostButton = false,
   showRenewButton = false,
   showResubmitButton = false,
+  showEditButton = true,
   onlyShowDelete = false,
   className,
 }) => {
@@ -80,16 +84,18 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
 
   return (
     <div className={`flex flex-wrap items-center gap-2 ${className}`}>
-      <Button
-        variant='ghost'
-        size='sm'
-        onClick={onEdit}
-        className='gap-1 text-muted-foreground hover:text-foreground text-xs sm:text-sm'
-      >
-        <Edit size={14} />
-        <span className='hidden xs:inline'>{t('editFull')}</span>
-        <span className='xs:hidden'>{t('edit')}</span>
-      </Button>
+      {showEditButton && (
+        <Button
+          variant='ghost'
+          size='sm'
+          onClick={onEdit}
+          className='gap-1 text-muted-foreground hover:text-foreground text-xs sm:text-sm'
+        >
+          <Edit size={14} />
+          <span className='hidden xs:inline'>{t('editFull')}</span>
+          <span className='xs:hidden'>{t('edit')}</span>
+        </Button>
+      )}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

@@ -20,6 +20,7 @@ import {
 } from '@/components/atoms/dialog'
 import { Button } from '@/components/atoms/button'
 import { SELLERNET_ROUTES } from '@/constants/route'
+import { AlertTriangle, FileEdit } from 'lucide-react'
 import React from 'react'
 
 const CreatePostPage: NextPageWithLayout = () => {
@@ -64,6 +65,11 @@ const CreatePostPage: NextPageWithLayout = () => {
     [profileResponse?.data?.postingBlocked, user?.postingBlocked],
   )
 
+  const blockedReason =
+    profileResponse?.data?.postingBlockedReason ||
+    user?.postingBlockedReason ||
+    ''
+
   const handleRedirectToProfile = React.useCallback(() => {
     router.replace(SELLERNET_ROUTES.PERSONAL_EDIT)
   }, [router])
@@ -107,15 +113,46 @@ const CreatePostPage: NextPageWithLayout = () => {
         </DialogContent>
       </Dialog>
       <Dialog open={openBlockedDialog} onOpenChange={setOpenBlockedDialog}>
-        <DialogContent className='max-w-md'>
+        <DialogContent className='max-w-lg'>
           <DialogHeader>
             <DialogTitle>{tBlocked('title')}</DialogTitle>
-            <DialogDescription>
-              {user?.postingBlockedReason ||
-                profileResponse?.data?.postingBlockedReason ||
-                tBlocked('description')}
-            </DialogDescription>
+            <DialogDescription>{tBlocked('description')}</DialogDescription>
           </DialogHeader>
+
+          {blockedReason && (
+            <div className='flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4'>
+              <AlertTriangle className='mt-0.5 h-5 w-5 shrink-0 text-destructive' />
+              <div className='min-w-0'>
+                <p className='text-xs font-semibold uppercase tracking-wide text-destructive'>
+                  {tBlocked('reasonLabel')}
+                </p>
+                <p className='mt-1 text-sm text-foreground/90'>
+                  {blockedReason}
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className='flex items-start gap-3 rounded-xl border border-border bg-muted/40 p-4'>
+            <FileEdit className='mt-0.5 h-5 w-5 shrink-0 text-muted-foreground' />
+            <p className='text-sm text-muted-foreground'>
+              {tBlocked('draftNote')}
+            </p>
+          </div>
+
+          <p className='text-sm text-muted-foreground'>
+            {tBlocked.rich('contactSupport', {
+              email: (chunks) => (
+                <a
+                  href='mailto:smartrent.tools@gmail.com'
+                  className='font-medium text-primary underline underline-offset-2'
+                >
+                  {chunks}
+                </a>
+              ),
+            })}
+          </p>
+
           <DialogFooter>
             <Button onClick={() => setOpenBlockedDialog(false)}>
               {tBlocked('ok')}

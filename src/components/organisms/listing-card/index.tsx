@@ -101,9 +101,10 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const isPermanentlyRemoved =
     moderationStatus === ModerationStatus.SUSPENDED && !!permanentlyRemoved
   const isResubmittable =
-    moderationStatus === ModerationStatus.REJECTED ||
-    moderationStatus === ModerationStatus.REVISION_REQUIRED ||
-    (moderationStatus === ModerationStatus.SUSPENDED && !permanentlyRemoved)
+    !postingBlocked &&
+    (moderationStatus === ModerationStatus.REJECTED ||
+      moderationStatus === ModerationStatus.REVISION_REQUIRED ||
+      (moderationStatus === ModerationStatus.SUSPENDED && !permanentlyRemoved))
 
   const calculatedExpiryDate = React.useMemo(() => {
     if (expiryDate) return toISO(expiryDate)
@@ -571,6 +572,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 showRepostButton={showRepostButton}
                 showRenewButton={showRenewButton}
                 showResubmitButton={isResubmittable}
+                showEditButton={!postingBlocked}
                 onlyShowDelete={isPermanentlyRemoved}
               />
             </div>
