@@ -9,13 +9,14 @@ import { useRouter } from 'next/router'
 import { ListingService } from '@/api/services/listing.service'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/atoms/card'
+import { Button } from '@/components/atoms/button'
+import { Typography } from '@/components/atoms/typography'
 import { Loader2 } from 'lucide-react'
 import { mapListingToFormData } from '@/utils/property/mapListingToFormData'
 import { ModerationBanner } from '@/components/molecules/moderation'
 import { ModerationTimeline } from '@/components/molecules/moderation'
 import {
   ModerationStatus,
-  ListingOwnerDetail,
   ModerationTimelineEvent,
   PendingOwnerAction,
   ResubmitNotAllowedError,
@@ -33,6 +34,7 @@ const UpdatePostPageContent = () => {
   const hasLoadedRef = React.useRef(false)
   const [isLoading, setIsLoading] = React.useState(true)
   const [listingId, setListingId] = React.useState<string | null>(null)
+  const [fetchError, setFetchError] = React.useState(false)
 
   // Moderation state
   const [moderationStatus, setModerationStatus] = React.useState<
@@ -57,17 +59,14 @@ const UpdatePostPageContent = () => {
 
       hasLoadedRef.current = true
       setIsLoading(true)
+      setFetchError(false)
 
       try {
-        const { success, data } = await ListingService.getById(id)
-        console.log('📡 Fetched listing from API:', {
-          success,
-          hasData: !!data,
-          title: data?.title,
-          description: data?.description?.substring(0, 50),
-          postDate: data?.postDate,
-          vipType: data?.vipType,
-        })
+        // Owner-managed endpoint: unlike the public listing API, this returns
+        // the listing regardless of moderation status (pending/rejected/etc.),
+        // which is required while resubmitting, and enforces ownership itself.
+        const { success, data } = await ListingService.getMyListingDetail(id)
+
         if (success && data) {
           const {
             propertyInfo: mappedPropertyInfo,
@@ -78,29 +77,19 @@ const UpdatePostPageContent = () => {
           updateFulltextAddress(fulltextAddress)
           setMedia(media)
           setListingId(id)
+          setModerationStatus(data.moderationStatus)
+          setVerificationNotes(data.verificationNotes || null)
+          setPendingOwnerAction(data.pendingOwnerAction || null)
+          setModerationTimeline(data.moderationTimeline || [])
+          setPermanentlyRemoved(data.permanentlyRemoved || false)
         } else {
           hasLoadedRef.current = false
-        }
-
-        // Fetch moderation detail if in resubmit mode
-        if (isResubmitMode) {
-          try {
-            const detailRes = await ListingService.getMyListingDetail(id)
-            if (detailRes.success && detailRes.data) {
-              const detail = detailRes.data as ListingOwnerDetail
-              setModerationStatus(detail.moderationStatus)
-              setVerificationNotes(detail.verificationNotes || null)
-              setPendingOwnerAction(detail.pendingOwnerAction || null)
-              setModerationTimeline(detail.moderationTimeline || [])
-              setPermanentlyRemoved(detail.permanentlyRemoved || false)
-            }
-          } catch {
-            // Moderation detail is optional - don't block the page
-          }
+          setFetchError(true)
         }
       } catch (error) {
         console.error('❌ Error fetching listing:', error)
         hasLoadedRef.current = false
+        setFetchError(true)
       } finally {
         setIsLoading(false)
       }
@@ -108,6 +97,22 @@ const UpdatePostPageContent = () => {
 
     fetchListing()
   }, [id, router.isReady])
+
+  if (fetchError) {
+    return (
+      <Card className='w-full mx-auto md:container md:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8 border-0 shadow-none'>
+        <CardContent className='flex flex-col items-center justify-center min-h-[400px] gap-4 text-center'>
+          <Typography variant='sectionTitle'>
+            {t('fetchError.title')}
+          </Typography>
+          <p className='text-muted-foreground'>{t('fetchError.description')}</p>
+          <Button onClick={() => router.push('/seller/listings')}>
+            {t('fetchError.backButton')}
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
 
   if (isLoading || !listingId || !router.isReady) {
     return (

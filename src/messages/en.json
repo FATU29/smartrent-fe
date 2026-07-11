@@ -1868,6 +1868,11 @@
     "description": "Update your listing information",
     "loading": "Loading listing data...",
     "updateListing": "Update Listing",
+    "fetchError": {
+      "title": "Unable to load this listing",
+      "description": "This listing could not be found, or you don't have permission to edit it.",
+      "backButton": "Back to my listings"
+    },
     "submit": {
       "errorTitle": "Update Error",
       "successTitle": "Update Successful",

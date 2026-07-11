@@ -1,6 +1,7 @@
 import type {
   CreateListingRequest,
   ListingDetail,
+  ListingOwnerDetail,
   MediaItem,
   PriceType,
 } from '@/api/types/property.type'
@@ -41,10 +42,10 @@ interface ExtendedAddress {
   projectName?: string | null
 }
 
+type ListingLikeDetail = ListingDetail | ListingOwnerDetail
+
 // Extended listing type that includes direct categoryId field from API response
-interface ExtendedListingDetail extends ListingDetail {
-  categoryId?: number
-}
+type ExtendedListingDetail = ListingLikeDetail & { categoryId?: number }
 
 // Extended media type that matches the full API response
 interface ExtendedMediaItem {
@@ -145,10 +146,12 @@ const normalizeMediaSourceType = (
 }
 
 /**
- * Maps a ListingDetail (from update post) to form data structure
+ * Maps a ListingDetail or ListingOwnerDetail (from update post) to form data structure
  * Used by UpdatePostContext to populate the form with existing listing data
  */
-export function mapListingToFormData(listing: ListingDetail): MappedFormData {
+export function mapListingToFormData(
+  listing: ListingLikeDetail,
+): MappedFormData {
   const amenityIds = listing.amenities?.map((a) => a.amenityId) || []
   const mediaIds = listing.media?.map((m) => m.mediaId) || []
 
