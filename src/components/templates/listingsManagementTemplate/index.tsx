@@ -39,6 +39,7 @@ import {
   POST_STATUS,
   ModerationStatus,
   ListingFilterRequest,
+  ResubmitNotAllowedError,
 } from '@/api/types'
 import {
   isModerationFilterStatus,
@@ -201,11 +202,14 @@ const ListingsWithPagination = () => {
           <ListingsList
             listings={listings}
             onEditListing={(listing) => {
-              // Redirect to update-post with resubmit context for rejected/revision-required listings
-              const isRejected =
+              // Redirect to update-post with resubmit context for rejected/revision-required/suspended (non-permanent) listings
+              const needsResubmitContext =
                 listing.moderationStatus === ModerationStatus.REJECTED ||
-                listing.moderationStatus === ModerationStatus.REVISION_REQUIRED
-              if (isRejected) {
+                listing.moderationStatus ===
+                  ModerationStatus.REVISION_REQUIRED ||
+                (listing.moderationStatus === ModerationStatus.SUSPENDED &&
+                  !listing.permanentlyRemoved)
+              if (needsResubmitContext) {
                 router.push(
                   `/seller/update-post/${listing.listingId}?resubmit=true`,
                 )
@@ -404,7 +408,11 @@ const ListingsWithPagination = () => {
                     refetch()
                   },
                   onError: (err) => {
-                    toast.error(err.message || tModeration('error'))
+                    toast.error(
+                      err instanceof ResubmitNotAllowedError
+                        ? tModeration('notAllowed')
+                        : err.message || tModeration('error'),
+                    )
                   },
                 },
               )

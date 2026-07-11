@@ -2882,7 +2882,8 @@
         "REJECTED": "Rejected",
         "REVISION_REQUIRED": "Revision Required",
         "RESUBMITTED": "Resubmitted",
-        "SUSPENDED": "Suspended"
+        "SUSPENDED": "Suspended",
+        "SUSPENDED_PERMANENT": "Permanently Removed"
       },
       "banner": {
         "rejectedTitle": "Listing Rejected",
@@ -2890,6 +2891,7 @@
         "resubmittedTitle": "Awaiting Re-review",
         "resubmittedMessage": "Your listing has been resubmitted and is awaiting admin review.",
         "suspendedTitle": "Listing Suspended",
+        "permanentlyRemovedTitle": "Listing Permanently Removed",
         "editAndResubmit": "Edit & Resubmit",
         "resubmitDirectly": "Resubmit Now",
         "contactSupport": "Contact Support",
@@ -2917,7 +2919,8 @@
         "success": "Listing resubmitted successfully",
         "successTitle": "Resubmitted Successfully",
         "successDescription": "Your listing has been updated and resubmitted for review. It is now awaiting admin approval.",
-        "error": "Failed to resubmit listing"
+        "error": "Failed to resubmit listing",
+        "notAllowed": "This listing has been permanently removed and cannot be resubmitted."
       }
     },
     "drafts": {

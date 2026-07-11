@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
-import { AlertTriangle, Info, XCircle, Clock } from 'lucide-react'
+import { AlertTriangle, Info, Ban, Clock } from 'lucide-react'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
@@ -11,6 +11,7 @@ interface ModerationBannerProps {
   moderationStatus?: ModerationStatus
   verificationNotes?: string | null
   pendingOwnerAction?: PendingOwnerAction | null
+  permanentlyRemoved?: boolean
   listingId: number
   onResubmit?: () => void
   className?: string
@@ -40,6 +41,7 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
   moderationStatus,
   verificationNotes,
   pendingOwnerAction,
+  permanentlyRemoved,
   listingId,
   className,
 }) => {
@@ -60,16 +62,26 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
     router.push(`/seller/update-post/${listingId}?resubmit=true`)
   }
 
+  const isOrdinarySuspend =
+    moderationStatus === ModerationStatus.SUSPENDED && !permanentlyRemoved
+
   if (
     moderationStatus === ModerationStatus.REJECTED ||
-    moderationStatus === ModerationStatus.REVISION_REQUIRED
+    moderationStatus === ModerationStatus.REVISION_REQUIRED ||
+    isOrdinarySuspend
   ) {
-    const isRejected = moderationStatus === ModerationStatus.REJECTED
+    const isSevere =
+      moderationStatus === ModerationStatus.REJECTED || isOrdinarySuspend
+    const title = isOrdinarySuspend
+      ? t('suspendedTitle')
+      : isSevere
+        ? t('rejectedTitle')
+        : t('revisionRequiredTitle')
     return (
       <div
         className={cn(
           'rounded-lg border p-4',
-          isRejected
+          isSevere
             ? 'bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-900'
             : 'bg-orange-50 border-orange-200 dark:bg-orange-950/30 dark:border-orange-900',
           className,
@@ -79,7 +91,7 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
           <AlertTriangle
             className={cn(
               'w-5 h-5 mt-0.5 shrink-0',
-              isRejected
+              isSevere
                 ? 'text-red-600 dark:text-red-400'
                 : 'text-orange-600 dark:text-orange-400',
             )}
@@ -89,12 +101,12 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
               variant='p'
               className={cn(
                 'font-semibold mb-1',
-                isRejected
+                isSevere
                   ? 'text-red-800 dark:text-red-300'
                   : 'text-orange-800 dark:text-orange-300',
               )}
             >
-              {isRejected ? t('rejectedTitle') : t('revisionRequiredTitle')}
+              {title}
             </Typography>
 
             {verificationNotes && (
@@ -102,7 +114,7 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
                 variant='small'
                 className={cn(
                   'block mb-2',
-                  isRejected
+                  isSevere
                     ? 'text-red-700 dark:text-red-400'
                     : 'text-orange-700 dark:text-orange-400',
                 )}
@@ -152,7 +164,7 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
               {!deadlineInfo?.expired && (
                 <Button
                   size='sm'
-                  variant={isRejected ? 'destructive' : 'default'}
+                  variant={isSevere ? 'destructive' : 'default'}
                   onClick={handleEditAndResubmit}
                   className='text-xs w-full sm:w-auto'
                 >
@@ -195,27 +207,27 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
     )
   }
 
-  if (moderationStatus === ModerationStatus.SUSPENDED) {
+  if (moderationStatus === ModerationStatus.SUSPENDED && permanentlyRemoved) {
     return (
       <div
         className={cn(
-          'rounded-lg border p-4 bg-muted border-border',
+          'rounded-lg border p-4 bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-900',
           className,
         )}
       >
         <div className='flex items-start gap-3'>
-          <XCircle className='w-5 h-5 mt-0.5 shrink-0 text-muted-foreground' />
+          <Ban className='w-5 h-5 mt-0.5 shrink-0 text-red-600 dark:text-red-400' />
           <div className='flex-1 min-w-0'>
             <Typography
               variant='p'
-              className='font-semibold mb-1 text-foreground'
+              className='font-semibold mb-1 text-red-800 dark:text-red-300'
             >
-              {t('suspendedTitle')}
+              {t('permanentlyRemovedTitle')}
             </Typography>
             {verificationNotes && (
               <Typography
                 variant='small'
-                className='block mb-2 text-muted-foreground'
+                className='block mb-2 text-red-700 dark:text-red-400'
               >
                 {verificationNotes}
               </Typography>
