@@ -1248,7 +1248,7 @@
           "hint": "Kéo tối đa 24 ảnh hoặc...",
           "uploadFromDevice": "Tải từ Thiết bị",
           "chooseFromLibrary": "Chọn từ Thư viện",
-          "note": "Tối đa 15MB mỗi ảnh"
+          "note": "Tối đa 10MB mỗi ảnh"
         },
         "uploaded": {
           "title": "Ảnh đã tải lên",
@@ -1276,7 +1276,10 @@
         },
         "validation": {
           "pendingImages": "Vui lòng tải lên các ảnh đang chờ trước khi tiếp tục",
-          "minImages": "Vui lòng tải lên ít nhất 4 ảnh (video là tùy chọn)"
+          "minImages": "Vui lòng tải lên ít nhất 4 ảnh (video là tùy chọn)",
+          "uploadInProgress": "Vui lòng đợi ảnh hiện tại tải lên xong",
+          "imageSizeExceeded": "Kích thước ảnh không được vượt quá 10MB",
+          "imageFormatInvalid": "Ảnh phải có định dạng jpeg, png hoặc webp"
         },
         "video": {
           "title": "Video (Tùy chọn)",
@@ -1287,6 +1290,8 @@
             "saving": "Đang lưu...",
             "success": "Đã lưu liên kết video",
             "error": "Không thể lưu liên kết video",
+            "onlyYoutube": "Chỉ chấp nhận liên kết YouTube",
+            "remove": "Xóa video",
             "uploadedNote": "Bạn đã thêm link YouTube."
           },
           "upload": {
@@ -1356,11 +1361,13 @@
           "badge": "Ảnh bìa",
           "uploading": "Đang tải lên...",
           "uploaded": {
-            "success": "Đã thêm ảnh bìa thành công"
+            "success": "Đã thêm ảnh bìa thành công",
+            "failed": "Tải ảnh bìa lên thất bại"
           },
           "validation": {
             "imageSizeExceeded": "Kích thước ảnh bìa không được vượt quá 10MB",
-            "imageFormatInvalid": "Ảnh bìa phải ở định dạng jpeg, png hoặc webp"
+            "imageFormatInvalid": "Ảnh bìa phải ở định dạng jpeg, png hoặc webp",
+            "uploadInProgress": "Vui lòng đợi ảnh hiện tại tải lên xong"
           }
         }
       },
@@ -1734,7 +1741,7 @@
                 "hint": "Kéo tối đa 24 ảnh hoặc...",
                 "uploadFromDevice": "Tải từ Thiết bị",
                 "chooseFromLibrary": "Chọn từ Thư viện",
-                "note": "Tối thiểu 3 ảnh · Tối đa 24 · Kích thước tối thiểu 100x100px · Tối đa 15MB mỗi ảnh"
+                "note": "Tối thiểu 3 ảnh · Tối đa 24 · Kích thước tối thiểu 100x100px · Tối đa 10MB mỗi ảnh"
               },
               "uploaded": {
                 "title": "Ảnh đã tải lên",
