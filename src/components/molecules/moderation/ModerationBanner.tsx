@@ -17,6 +17,53 @@ interface ModerationBannerProps {
   className?: string
 }
 
+type NoteTone = 'severe' | 'warning' | 'muted'
+
+const NOTE_BOX_TONE_CLASSES: Record<NoteTone, string> = {
+  severe: 'border-red-200 bg-white/70 dark:border-red-900/50 dark:bg-black/20',
+  warning:
+    'border-orange-200 bg-white/70 dark:border-orange-900/50 dark:bg-black/20',
+  muted: 'border-border bg-background/70',
+}
+
+const NOTE_BOX_LABEL_CLASSES: Record<NoteTone, string> = {
+  severe: 'text-red-700 dark:text-red-400',
+  warning: 'text-orange-700 dark:text-orange-400',
+  muted: 'text-muted-foreground',
+}
+
+function NoteBox({
+  label,
+  text,
+  tone,
+}: {
+  label: string
+  text: string
+  tone: NoteTone
+}) {
+  return (
+    <div
+      className={cn(
+        'mb-2 rounded-lg border p-2.5',
+        NOTE_BOX_TONE_CLASSES[tone],
+      )}
+    >
+      <Typography
+        variant='small'
+        className={cn(
+          'block text-xs font-semibold mb-0.5',
+          NOTE_BOX_LABEL_CLASSES[tone],
+        )}
+      >
+        {label}
+      </Typography>
+      <Typography variant='small' className='block text-foreground/80'>
+        {text}
+      </Typography>
+    </div>
+  )
+}
+
 function getDeadlineInfo(deadlineAt?: string | null) {
   if (!deadlineAt) return null
 
@@ -110,26 +157,19 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
             </Typography>
 
             {verificationNotes && (
-              <Typography
-                variant='small'
-                className={cn(
-                  'block mb-2',
-                  isSevere
-                    ? 'text-red-700 dark:text-red-400'
-                    : 'text-orange-700 dark:text-orange-400',
-                )}
-              >
-                {verificationNotes}
-              </Typography>
+              <NoteBox
+                label={t('adminNoteLabel')}
+                text={verificationNotes}
+                tone={isSevere ? 'severe' : 'warning'}
+              />
             )}
 
             {pendingOwnerAction?.notes && (
-              <Typography
-                variant='small'
-                className='block mb-2 text-muted-foreground'
-              >
-                {pendingOwnerAction.notes}
-              </Typography>
+              <NoteBox
+                label={t('adminNoteLabel')}
+                text={pendingOwnerAction.notes}
+                tone='muted'
+              />
             )}
 
             {deadlineInfo && (
@@ -225,16 +265,12 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
               {t('permanentlyRemovedTitle')}
             </Typography>
             {verificationNotes && (
-              <Typography
-                variant='small'
-                className='block mb-2 text-red-700 dark:text-red-400'
-              >
-                {verificationNotes}
-              </Typography>
+              <NoteBox
+                label={t('adminNoteLabel')}
+                text={verificationNotes}
+                tone='severe'
+              />
             )}
-            <Button size='sm' variant='outline' className='text-xs'>
-              {t('contactSupport')}
-            </Button>
           </div>
         </div>
       </div>

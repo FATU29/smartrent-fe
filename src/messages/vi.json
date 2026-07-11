@@ -2892,6 +2892,7 @@
         "resubmittedMessage": "Bài đăng đã được gửi lại và đang chờ quản trị viên xem xét.",
         "suspendedTitle": "Bài đăng bị tạm ngưng",
         "permanentlyRemovedTitle": "Bài đăng đã bị gỡ vĩnh viễn",
+        "adminNoteLabel": "Ghi chú từ quản trị viên",
         "editAndResubmit": "Chỉnh sửa và gửi lại",
         "resubmitDirectly": "Gửi lại ngay",
         "contactSupport": "Liên hệ hỗ trợ",
