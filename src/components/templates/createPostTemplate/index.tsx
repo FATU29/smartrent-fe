@@ -13,7 +13,10 @@ import NotificationDialog from '@/components/molecules/notifications/Notificatio
 import { PostTemplateBase } from '@/components/templates/shared/PostTemplateBase'
 import PaymentMethodDialog from '@/components/molecules/paymentMethodDialog'
 import { PaymentProvider as MembershipPaymentProvider } from '@/api/types/membership.type'
-import { PAYMENT_PROVIDER } from '@/api/types/property.type'
+import {
+  PAYMENT_PROVIDER,
+  LISTING_ERROR_CODES,
+} from '@/api/types/property.type'
 import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
 import { isSePayResult, startGatewayCheckout } from '@/utils/payment'
@@ -76,6 +79,9 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const [errorOpen, setErrorOpen] = React.useState(false)
   const [errorTitle, setErrorTitle] = React.useState<string>('')
   const [errorDesc, setErrorDesc] = React.useState<string>('')
+  // Shown when the user has been blocked from posting by an admin
+  const [blockedOpen, setBlockedOpen] = React.useState(false)
+  const [blockedDesc, setBlockedDesc] = React.useState<string>('')
 
   // Payment method dialog
   const {
@@ -135,10 +141,16 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         ...(paymentProvider && { paymentProvider }),
       }
 
-      const { success, data, message } =
+      const { success, data, message, code } =
         await ListingService.create(requestData)
 
       if (!success || !data) {
+        // User blocked from posting by an admin → show dedicated notice
+        if (code === LISTING_ERROR_CODES.USER_POSTING_BLOCKED) {
+          setBlockedDesc(message || t('blockedDescription'))
+          setBlockedOpen(true)
+          return
+        }
         setErrorTitle(t('errorTitle'))
         setErrorDesc(message || t('createFailed'))
         setErrorOpen(true)
@@ -323,6 +335,15 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         description={errorDesc}
         okText={t('ok')}
         onOpenChange={setErrorOpen}
+      />
+
+      {/* Posting Blocked Dialog */}
+      <NotificationDialog
+        open={blockedOpen}
+        title={t('blockedTitle')}
+        description={blockedDesc}
+        okText={t('ok')}
+        onOpenChange={setBlockedOpen}
       />
 
       {/* Payment Method Dialog */}

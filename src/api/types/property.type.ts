@@ -98,6 +98,8 @@ export enum ModerationStatus {
 // Listing-domain API error codes
 export const LISTING_ERROR_CODES = {
   RESUBMIT_NOT_ALLOWED: '16003',
+  // User has been blocked from posting by an admin (too many approved reports)
+  USER_POSTING_BLOCKED: '23001',
 } as const
 
 export type ListingErrorCode =

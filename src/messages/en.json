@@ -1016,7 +1016,9 @@
       "successDescription": "Your listing has been successfully submitted. It is now pending approval. You will be notified once your listing is approved and visible on the website.",
       "processing": "Processing payment...",
       "createFailed": "Failed to create listing",
-      "unexpectedError": "An unexpected error occurred"
+      "unexpectedError": "An unexpected error occurred",
+      "blockedTitle": "Account blocked from posting",
+      "blockedDescription": "Your account has been blocked from posting because several of your listings were reported and confirmed as violations. Please contact an administrator for support."
     },
     "validation": {
       "categoryTypeRequired": "Category type is required",
