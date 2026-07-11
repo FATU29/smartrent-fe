@@ -6,6 +6,7 @@ import {
   ChevronsUp,
   SendHorizontal,
   CalendarPlus,
+  Trash2,
 } from 'lucide-react'
 import { createMenuItems } from './index.constants'
 import { Button } from '@/components/atoms/button'
@@ -29,6 +30,9 @@ export interface ListingCardActionsProps {
   showRepostButton?: boolean
   showRenewButton?: boolean
   showResubmitButton?: boolean
+  // Permanently removed listings can only be deleted — every other action
+  // (edit, promote, resubmit, copy link, take down, ...) is meaningless.
+  onlyShowDelete?: boolean
   className?: string
 }
 
@@ -45,6 +49,7 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
   showRepostButton = false,
   showRenewButton = false,
   showResubmitButton = false,
+  onlyShowDelete = false,
   className,
 }) => {
   const t = useTranslations('seller.listingManagement.card.actions')
@@ -56,6 +61,22 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
     onDelete,
     showPromoteButton,
   })
+
+  if (onlyShowDelete) {
+    return (
+      <div className={`flex items-center gap-2 ${className}`}>
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={onDelete}
+          className='gap-1 border-red-500 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 text-xs sm:text-sm'
+        >
+          <Trash2 size={14} />
+          {t('delete')}
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <div className={`flex flex-wrap items-center gap-2 ${className}`}>

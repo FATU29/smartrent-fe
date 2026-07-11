@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 
 interface ModerationStatusBadgeProps {
   status: ModerationStatus
+  permanentlyRemoved?: boolean
   className?: string
 }
 
@@ -55,12 +56,23 @@ const BADGE_CONFIG: Record<
   },
 }
 
+const PERMANENTLY_REMOVED_CONFIG = {
+  icon: Ban,
+  className:
+    'bg-red-50 text-red-700 border-red-300 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800',
+}
+
 export const ModerationStatusBadge: React.FC<ModerationStatusBadgeProps> = ({
   status,
+  permanentlyRemoved,
   className,
 }) => {
   const t = useTranslations('seller.moderation.status')
-  const config = BADGE_CONFIG[status]
+  const isPermanentlyRemoved =
+    status === ModerationStatus.SUSPENDED && permanentlyRemoved
+  const config = isPermanentlyRemoved
+    ? PERMANENTLY_REMOVED_CONFIG
+    : BADGE_CONFIG[status]
 
   if (!config) return null
 
@@ -69,7 +81,7 @@ export const ModerationStatusBadge: React.FC<ModerationStatusBadgeProps> = ({
   return (
     <Badge variant='outline' className={cn(config.className, className)}>
       <Icon className='w-3.5 h-3.5 mr-1' />
-      {t(status)}
+      {t(isPermanentlyRemoved ? 'SUSPENDED_PERMANENT' : status)}
     </Badge>
   )
 }

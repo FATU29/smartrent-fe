@@ -93,9 +93,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
   // Moderation fields
   const moderationStatus = property.moderationStatus
+  const permanentlyRemoved = property.permanentlyRemoved
+  const isPermanentlyRemoved =
+    moderationStatus === ModerationStatus.SUSPENDED && !!permanentlyRemoved
   const isResubmittable =
     moderationStatus === ModerationStatus.REJECTED ||
-    moderationStatus === ModerationStatus.REVISION_REQUIRED
+    moderationStatus === ModerationStatus.REVISION_REQUIRED ||
+    (moderationStatus === ModerationStatus.SUSPENDED && !permanentlyRemoved)
 
   const calculatedExpiryDate = React.useMemo(() => {
     if (expiryDate) return toISO(expiryDate)
@@ -178,7 +182,10 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             <div className='absolute top-3 right-3'>
               {moderationStatus &&
               moderationStatus !== ModerationStatus.APPROVED ? (
-                <ModerationStatusBadge status={moderationStatus} />
+                <ModerationStatusBadge
+                  status={moderationStatus}
+                  permanentlyRemoved={permanentlyRemoved}
+                />
               ) : isExpired ? (
                 <Badge className='backdrop-blur-md bg-red-500 text-white border-red-600 shadow-md font-medium hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 dark:border-red-700'>
                   {t('status.expired')}
@@ -525,6 +532,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 moderationStatus={moderationStatus}
                 verificationNotes={property.verificationNotes}
                 pendingOwnerAction={property.pendingOwnerAction}
+                permanentlyRemoved={permanentlyRemoved}
                 listingId={property.listingId}
                 onResubmit={isResubmittable ? onResubmit : undefined}
                 className='mb-4'
@@ -558,6 +566,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 showRepostButton={showRepostButton}
                 showRenewButton={showRenewButton}
                 showResubmitButton={isResubmittable}
+                onlyShowDelete={isPermanentlyRemoved}
               />
             </div>
           </div>

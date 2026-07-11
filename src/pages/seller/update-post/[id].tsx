@@ -18,6 +18,7 @@ import {
   ListingOwnerDetail,
   ModerationTimelineEvent,
   PendingOwnerAction,
+  ResubmitNotAllowedError,
 } from '@/api/types/property.type'
 import { useResubmitListing } from '@/hooks/useListings/useResubmitListing'
 import { toast } from 'sonner'
@@ -45,6 +46,7 @@ const UpdatePostPageContent = () => {
   const [moderationTimeline, setModerationTimeline] = React.useState<
     ModerationTimelineEvent[]
   >([])
+  const [permanentlyRemoved, setPermanentlyRemoved] = React.useState(false)
   const isResubmitMode = resubmit === 'true'
   const resubmitMutation = useResubmitListing()
 
@@ -90,6 +92,7 @@ const UpdatePostPageContent = () => {
               setVerificationNotes(detail.verificationNotes || null)
               setPendingOwnerAction(detail.pendingOwnerAction || null)
               setModerationTimeline(detail.moderationTimeline || [])
+              setPermanentlyRemoved(detail.permanentlyRemoved || false)
             }
           } catch {
             // Moderation detail is optional - don't block the page
@@ -127,7 +130,11 @@ const UpdatePostPageContent = () => {
           router.push('/seller/listings')
         },
         onError: (err) => {
-          toast.error(err.message || tModeration('error'))
+          toast.error(
+            err instanceof ResubmitNotAllowedError
+              ? tModeration('notAllowed')
+              : err.message || tModeration('error'),
+          )
         },
       },
     )
@@ -141,6 +148,7 @@ const UpdatePostPageContent = () => {
           moderationStatus={moderationStatus}
           verificationNotes={verificationNotes}
           pendingOwnerAction={pendingOwnerAction}
+          permanentlyRemoved={permanentlyRemoved}
           listingId={Number(listingId)}
           onResubmit={handleResubmit}
         />

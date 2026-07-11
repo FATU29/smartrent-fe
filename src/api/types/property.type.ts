@@ -95,6 +95,27 @@ export enum ModerationStatus {
   SUSPENDED = 'SUSPENDED',
 }
 
+// Listing-domain API error codes
+export const LISTING_ERROR_CODES = {
+  RESUBMIT_NOT_ALLOWED: '16003',
+} as const
+
+export type ListingErrorCode =
+  (typeof LISTING_ERROR_CODES)[keyof typeof LISTING_ERROR_CODES]
+
+/**
+ * Thrown when resubmitting a listing that cannot be resubmitted in its
+ * current state (e.g. permanently removed after a confirmed report).
+ */
+export class ResubmitNotAllowedError extends Error {
+  readonly code = LISTING_ERROR_CODES.RESUBMIT_NOT_ALLOWED
+
+  constructor(message: string) {
+    super(message)
+    this.name = 'ResubmitNotAllowedError'
+  }
+}
+
 export interface PendingOwnerAction {
   actionId: number
   ownerActionType: string
@@ -288,6 +309,10 @@ export interface ListingOwnerDetail extends ListingApi {
   rejectionReason?: string | null
   pendingOwnerAction?: PendingOwnerAction | null
   moderationTimeline?: ModerationTimelineEvent[]
+  // True when moderationStatus is SUSPENDED as a result of a confirmed
+  // report (as opposed to an ordinary admin suspend) — the listing is
+  // permanently removed and can never be resubmitted.
+  permanentlyRemoved?: boolean
 }
 
 export interface ListingResponse {
@@ -745,6 +770,7 @@ export interface MyListingBackendItem {
   moderationStatus?: ModerationStatus
   pendingOwnerAction?: PendingOwnerAction | null
   moderationTimeline?: ModerationTimelineEvent[]
+  permanentlyRemoved?: boolean
 }
 
 /**

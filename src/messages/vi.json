@@ -2882,7 +2882,8 @@
         "REJECTED": "Bị từ chối",
         "REVISION_REQUIRED": "Cần chỉnh sửa",
         "RESUBMITTED": "Đã gửi lại",
-        "SUSPENDED": "Bị tạm ngưng"
+        "SUSPENDED": "Bị tạm ngưng",
+        "SUSPENDED_PERMANENT": "Đã gỡ vĩnh viễn"
       },
       "banner": {
         "rejectedTitle": "Bài đăng bị từ chối",
@@ -2890,6 +2891,7 @@
         "resubmittedTitle": "Đang chờ duyệt lại",
         "resubmittedMessage": "Bài đăng đã được gửi lại và đang chờ quản trị viên xem xét.",
         "suspendedTitle": "Bài đăng bị tạm ngưng",
+        "permanentlyRemovedTitle": "Bài đăng đã bị gỡ vĩnh viễn",
         "editAndResubmit": "Chỉnh sửa và gửi lại",
         "resubmitDirectly": "Gửi lại ngay",
         "contactSupport": "Liên hệ hỗ trợ",
@@ -2917,7 +2919,8 @@
         "success": "Bài đăng đã được gửi lại thành công",
         "successTitle": "Đã gửi lại thành công",
         "successDescription": "Tin đăng của bạn đã được cập nhật và gửi lại để duyệt. Hiện đang chờ quản trị viên phê duyệt.",
-        "error": "Không thể gửi lại bài đăng"
+        "error": "Không thể gửi lại bài đăng",
+        "notAllowed": "Tin đăng này đã bị gỡ vĩnh viễn và không thể gửi lại."
       }
     },
     "drafts": {

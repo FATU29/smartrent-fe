@@ -100,6 +100,7 @@ export function mapMyListingItem(
     rejectionReason: item.rejectionReason || null,
     pendingOwnerAction: item.pendingOwnerAction || null,
     moderationTimeline: item.moderationTimeline || [],
+    permanentlyRemoved: item.permanentlyRemoved || false,
   }
 }
 
