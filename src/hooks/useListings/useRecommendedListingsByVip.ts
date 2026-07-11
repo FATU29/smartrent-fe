@@ -41,10 +41,12 @@ export const useRecommendedListingsByVip = (
       return response.data || []
     },
     enabled: enabled,
-    // Even the NEWEST (sorted) carousel gets a non-zero staleTime so re-mounting
-    // doesn't refetch every render; 2 min is fresh enough for "newest".
-    staleTime: sortBy ? 2 * 60 * 1000 : 5 * 60 * 1000,
-    gcTime: sortBy ? 5 * 60 * 1000 : 10 * 60 * 1000,
+    // Matches the backend's shared listing.search cache TTL (5m) for every
+    // homepage-tier carousel — Nổi bật/Đề xuất/Mới all read from the same
+    // Redis bucket, so a shorter client staleTime would just refetch the
+    // same cached response.
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   })
 
   return {
