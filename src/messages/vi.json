@@ -1868,7 +1868,10 @@
     "draftSaved": "Đã lưu vào bản nháp",
     "blockedFromPostingDialog": {
       "title": "Tài khoản bị chặn đăng tin",
-      "description": "Tài khoản của bạn đã bị chặn đăng tin do có nhiều tin vi phạm bị báo cáo và đã được duyệt. Bạn vẫn có thể lưu nháp, nhưng không thể đăng tin. Vui lòng liên hệ quản trị viên để được hỗ trợ.",
+      "description": "Tài khoản của bạn hiện không thể đăng tin mới do vi phạm chính sách đăng tin của SmartRent.",
+      "reasonLabel": "Lý do bị chặn",
+      "draftNote": "Bạn vẫn có thể soạn thảo và lưu tin dưới dạng bản nháp. Chức năng đăng tin sẽ được khôi phục sau khi tài khoản được gỡ chặn.",
+      "contactSupport": "Để được mở lại quyền đăng tin, vui lòng liên hệ SmartRent qua email <email>smartrent.tools@gmail.com</email>.",
       "ok": "Đã hiểu"
     }
   },

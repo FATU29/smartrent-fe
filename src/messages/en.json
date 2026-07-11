@@ -1867,8 +1867,11 @@
     "saveDraft": "Save draft",
     "draftSaved": "Saved to drafts",
     "blockedFromPostingDialog": {
-      "title": "Account blocked from posting",
-      "description": "Your account has been blocked from posting because several of your listings were reported and confirmed as violations. You can still save drafts, but cannot publish. Please contact an administrator for support.",
+      "title": "Posting access restricted",
+      "description": "Your account is currently unable to publish new listings due to a violation of SmartRent's posting policy.",
+      "reasonLabel": "Reason for restriction",
+      "draftNote": "You can still compose and save listings as drafts. Publishing will be available again once the restriction is lifted.",
+      "contactSupport": "To have your posting access restored, please contact SmartRent at <email>smartrent.tools@gmail.com</email>.",
       "ok": "Got it"
     }
   },
