@@ -2892,6 +2892,7 @@
         "resubmittedMessage": "Your listing has been resubmitted and is awaiting admin review.",
         "suspendedTitle": "Listing Suspended",
         "permanentlyRemovedTitle": "Listing Permanently Removed",
+        "adminNoteLabel": "Note from admin",
         "editAndResubmit": "Edit & Resubmit",
         "resubmitDirectly": "Resubmit Now",
         "contactSupport": "Contact Support",
