@@ -146,6 +146,7 @@ const SellerDetailPage: NextPageWithLayout = () => {
         page: 1,
         size: 1,
         sortBy: SortKey.NEWEST,
+        excludeExpired: true,
       })
 
       if (!response.success || !response.data) {
