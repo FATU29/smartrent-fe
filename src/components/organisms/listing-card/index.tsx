@@ -19,6 +19,7 @@ import { toISO, formatISO } from '@/utils/date/safe'
 import { formatByLocale } from '@/utils/currency/convert'
 import { getPriceUnitTranslationKey } from '@/utils/property'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useAuth } from '@/hooks/useAuth'
 import { ListingOwnerDetail } from '@/api/types'
 import { ModerationStatus, POST_STATUS } from '@/api/types/property.type'
 import {
@@ -71,6 +72,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const t = useTranslations('seller.listingManagement.card')
   const tNot = useTranslations()
   const { language } = useLanguage()
+  const { user } = useAuth()
+  // Blocked users cannot re-list — hide repost/renew CTAs (backend also blocks).
+  const postingBlocked = Boolean(user?.postingBlocked)
   const [showAllAmenities, setShowAllAmenities] = React.useState(false)
 
   const {
@@ -133,13 +137,14 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   // so the seller doesn't see two near-identical "đẩy tin" buttons. For expired
   // listings the only call-to-action is "đăng lại" (repost).
   const showPromoteButton = !isExpired
-  const showRepostButton = isExpired
+  const showRepostButton = isExpired && !postingBlocked
   // Renewal is the +30-day quota top-up — restricted to listings the backend
   // has flagged EXPIRING_SOON + APPROVED. A fully-displaying listing with a
   // healthy expiry doesn't need (and shouldn't see) a renew CTA; once it
   // tips into EXPIRED the only path back is "đăng lại" (repost).
   const showRenewButton =
     !isExpired &&
+    !postingBlocked &&
     vipType !== 'NORMAL' &&
     vipType !== undefined &&
     property.listingStatus === POST_STATUS.EXPIRING_SOON &&

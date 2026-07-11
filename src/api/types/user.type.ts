@@ -14,4 +14,7 @@ export interface UserApi {
   avatarMediaId?: number
   isBroker?: boolean | null
   brokerVerificationStatus?: 'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED' | null
+  // True when an admin has blocked this user from posting new listings
+  postingBlocked?: boolean
+  postingBlockedReason?: string | null
 }

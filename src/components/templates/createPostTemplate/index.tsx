@@ -23,6 +23,7 @@ import { isSePayResult, startGatewayCheckout } from '@/utils/payment'
 import { useUpdateDraft } from '@/hooks/useListings/useUpdateDraft'
 import { useDeleteDraft } from '@/hooks/useListings/useDeleteDraft'
 import { useCreateDraft } from '@/hooks/useListings/useCreateDraft'
+import { useAuth } from '@/hooks/useAuth'
 
 interface CreatePostTemplateProps {
   className?: string
@@ -62,6 +63,9 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   const router = useRouter()
   const t = useTranslations('createPost.submit')
   const tDraft = useTranslations('createPost')
+  const { user } = useAuth()
+  // Admin-blocked users can fill the form and save drafts, but cannot publish/pay.
+  const postingBlocked = Boolean(user?.postingBlocked)
 
   const { mutate: updateDraft, isPending: isUpdatingDraft } = useUpdateDraft()
   const { mutateAsync: deleteDraft } = useDeleteDraft()
@@ -281,6 +285,42 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
     )
   }, [draftId, propertyInfo, updateDraft, tDraft])
 
+  // Save-as-draft entry point for blocked users (and general use). Updates the
+  // existing draft when editing one, otherwise creates a new draft, then routes
+  // to the drafts list so the user keeps their work without publishing.
+  const handleSaveDraft = React.useCallback(async () => {
+    if (draftId) {
+      handleUpdateDraft()
+      return
+    }
+    try {
+      const response = await createDraftAsync({
+        ...propertyInfo,
+        isDraft: true,
+      })
+      if (response.success && response.data) {
+        toast.success(tDraft('draftSaved'))
+        setIsSubmitSuccess(true)
+        resetPropertyInfo()
+        await router.push(SELLER_ROUTES.DRAFTS)
+      } else {
+        toast.error(response.message || tDraft('draftUpdateFailed'))
+      }
+    } catch (error) {
+      console.error('Failed to save draft:', error)
+      toast.error(tDraft('draftUpdateFailed'))
+    }
+  }, [
+    draftId,
+    handleUpdateDraft,
+    createDraftAsync,
+    propertyInfo,
+    tDraft,
+    setIsSubmitSuccess,
+    resetPropertyInfo,
+    router,
+  ])
+
   return (
     <PostTemplateBase
       className={className}
@@ -312,6 +352,8 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
           onSubmit={handleSubmit}
           onUpdateDraft={handleUpdateDraft}
           isUpdatingDraft={isUpdatingDraft}
+          postingBlocked={postingBlocked}
+          onSaveDraft={handleSaveDraft}
         />
       }
     >

@@ -32,9 +32,11 @@ const CreatePostPage: NextPageWithLayout = () => {
         ? rawDraftId[0] || ''
         : ''
   const t = useTranslations('createPost.profilePhoneRequiredDialog')
+  const tBlocked = useTranslations('createPost.blockedFromPostingDialog')
   const { user, isAuthenticated } = useAuth()
   const [openPhoneRequiredDialog, setOpenPhoneRequiredDialog] =
     React.useState(false)
+  const [openBlockedDialog, setOpenBlockedDialog] = React.useState(false)
 
   const { data: profileResponse, isLoading: isCheckingProfile } = useQuery({
     queryKey: ['create-post-profile-phone-check', user?.userId],
@@ -56,6 +58,12 @@ const CreatePostPage: NextPageWithLayout = () => {
     return Boolean(phone.trim())
   }, [profileResponse?.data, user?.contactPhoneNumber, user?.phoneNumber])
 
+  const isPostingBlocked = React.useMemo(
+    () =>
+      Boolean(profileResponse?.data?.postingBlocked ?? user?.postingBlocked),
+    [profileResponse?.data?.postingBlocked, user?.postingBlocked],
+  )
+
   const handleRedirectToProfile = React.useCallback(() => {
     router.replace(SELLERNET_ROUTES.PERSONAL_EDIT)
   }, [router])
@@ -65,6 +73,14 @@ const CreatePostPage: NextPageWithLayout = () => {
       setOpenPhoneRequiredDialog(true)
     }
   }, [hasPhoneNumber, isAuthenticated, isCheckingProfile])
+
+  // Blocked users are told they cannot publish, but stay on the page so they
+  // can still fill in the form and save it as a draft.
+  React.useEffect(() => {
+    if (isAuthenticated && !isCheckingProfile && isPostingBlocked) {
+      setOpenBlockedDialog(true)
+    }
+  }, [isAuthenticated, isCheckingProfile, isPostingBlocked])
 
   const handleDialogOpenChange = (nextOpen: boolean) => {
     setOpenPhoneRequiredDialog(nextOpen)
@@ -87,6 +103,23 @@ const CreatePostPage: NextPageWithLayout = () => {
           </DialogHeader>
           <DialogFooter>
             <Button onClick={handleRedirectToProfile}>{t('ok')}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={openBlockedDialog} onOpenChange={setOpenBlockedDialog}>
+        <DialogContent className='max-w-md'>
+          <DialogHeader>
+            <DialogTitle>{tBlocked('title')}</DialogTitle>
+            <DialogDescription>
+              {user?.postingBlockedReason ||
+                profileResponse?.data?.postingBlockedReason ||
+                tBlocked('description')}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setOpenBlockedDialog(false)}>
+              {tBlocked('ok')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
