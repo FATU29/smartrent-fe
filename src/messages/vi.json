@@ -1016,7 +1016,9 @@
       "successDescription": " Tin đăng của bạn đã được tạo thành công và đang chờ phê duyệt. Bạn sẽ nhận được thông báo khi tin đăng được phê duyệt và hiển thị trên trang web.",
       "processing": "Đang xử lý thanh toán...",
       "createFailed": "Tạo tin đăng thất bại",
-      "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn",
+      "blockedTitle": "Tài khoản bị chặn đăng tin",
+      "blockedDescription": "Tài khoản của bạn đã bị chặn đăng tin do có nhiều tin đăng vi phạm bị báo cáo và đã được duyệt. Vui lòng liên hệ quản trị viên để được hỗ trợ."
     },
     "validation": {
       "imagesUploadInProgress": "Vui lòng đợi quá trình tải ảnh hoàn tất trước khi tiếp tục",
