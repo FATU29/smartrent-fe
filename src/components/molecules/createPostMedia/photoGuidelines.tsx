@@ -14,7 +14,7 @@ const PhotoGuidelines: React.FC = () => {
   const t = useTranslations('createPost.sections.media')
   const { propertyInfo } = useCreatePost()
   const { minImages, maxImages } = useMediaLimits(propertyInfo?.vipType)
-  const [openNormal, setOpenNormal] = useState(false)
+  const [openNormal, setOpenNormal] = useState(true)
 
   return (
     <Card className='mb-6 border-0 shadow-none bg-transparent rounded-none py-0 sm:shadow-sm sm:bg-gradient-to-br sm:from-background sm:to-muted sm:rounded-xl sm:py-6'>
