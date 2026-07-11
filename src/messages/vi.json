@@ -2163,6 +2163,11 @@
     "description": "Cập nhật thông tin tin đăng của bạn",
     "loading": "Đang tải dữ liệu tin đăng...",
     "updateListing": "Cập nhật Tin đăng",
+    "fetchError": {
+      "title": "Không thể tải tin đăng này",
+      "description": "Tin đăng không tồn tại, hoặc bạn không có quyền chỉnh sửa tin đăng này.",
+      "backButton": "Về danh sách tin đăng"
+    },
     "submit": {
       "errorTitle": "Lỗi cập nhật",
       "successTitle": "Cập nhật thành công",
