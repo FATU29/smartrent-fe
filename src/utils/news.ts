@@ -1,5 +1,35 @@
-import { formatDistanceToNow, format } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
+import { vi } from 'date-fns/locale'
 import type { NewsCategory } from '@/api/types/news.type'
+
+const VN_TIME_ZONE = 'Asia/Ho_Chi_Minh'
+
+const HAS_TIMEZONE_PATTERN = /([zZ])|([+-]\d{2}:?\d{2})$/
+
+/**
+ * Parse a datetime string coming from the API.
+ * The backend serializes `LocalDateTime` values in UTC but without a timezone
+ * suffix (e.g. "2026-07-11T03:00:00"). JS would otherwise interpret such a
+ * string as local time, shifting the displayed time by the runtime's offset.
+ * We append 'Z' when no timezone is present so it is parsed as UTC.
+ */
+export const parseApiDate = (dateString: string): Date =>
+  new Date(
+    HAS_TIMEZONE_PATTERN.test(dateString) ? dateString : `${dateString}Z`,
+  )
+
+/**
+ * Format an instant as a wall-clock date in Vietnam time, regardless of the
+ * runtime's timezone (important for consistent SSR/client rendering).
+ */
+export const formatDateVN = (date: Date, withTime = false): string =>
+  new Intl.DateTimeFormat('vi-VN', {
+    timeZone: VN_TIME_ZONE,
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    ...(withTime ? { hour: '2-digit', minute: '2-digit', hour12: false } : {}),
+  }).format(date)
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -35,15 +65,29 @@ export const formatAuthorDisplayName = (
 export const formatPublishedDate = (dateString: string | null): string => {
   if (!dateString) return ''
   try {
-    const date = new Date(dateString)
+    const date = parseApiDate(dateString)
     const now = new Date()
     const diffDays = Math.floor(
       (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
     )
     if (diffDays < 7) {
-      return formatDistanceToNow(date, { addSuffix: true })
+      return formatDistanceToNow(date, { addSuffix: true, locale: vi })
     }
-    return format(date, 'dd/MM/yyyy')
+    return formatDateVN(date)
+  } catch {
+    return dateString
+  }
+}
+
+/**
+ * Format a published date as an absolute date-time in Vietnam time
+ * (dd/MM/yyyy HH:mm). Used where an exact timestamp is preferred over
+ * relative time (e.g. the article detail header).
+ */
+export const formatPublishedDateTime = (dateString: string | null): string => {
+  if (!dateString) return ''
+  try {
+    return formatDateVN(parseApiDate(dateString), true)
   } catch {
     return dateString
   }
