@@ -28,12 +28,23 @@ export function useNotificationWebSocket(
 
     const wsBaseUrl = ENV.URL_API_BASE.replace(/\/$/, '')
 
-    const token = getAccessToken()
-
     const client = new Client({
       webSocketFactory: () => new SockJS(`${wsBaseUrl}/ws`),
-      connectHeaders: token ? { Authorization: `Bearer ${token}` } : {},
       reconnectDelay: 5000,
+
+      // Re-read the token on EVERY (re)connect instead of snapshotting it once.
+      // The access token is short-lived and rotated by the axios refresh flow;
+      // capturing it a single time meant that after it expired the STOMP
+      // reconnect kept resending a stale/empty Authorization header, so the
+      // server rejected every attempt ("missing bearer token") in a 5s loop and
+      // realtime notifications silently died. Reading it here lets the next
+      // reconnect pick up the refreshed token and recover on its own.
+      beforeConnect: () => {
+        const token = getAccessToken()
+        client.connectHeaders = token
+          ? { Authorization: `Bearer ${token}` }
+          : {}
+      },
 
       onConnect: () => {
         console.log('[Notification WS] Connected')
