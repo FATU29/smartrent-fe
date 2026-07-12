@@ -197,9 +197,6 @@ const DashboardSavedListingsChart: React.FC<
     }
 
     const raw = trend.savesOverTime
-    if (raw.length === 0) {
-      return []
-    }
 
     const periodToDays = (p: typeof period): number | null => {
       switch (p) {
