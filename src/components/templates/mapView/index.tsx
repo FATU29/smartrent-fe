@@ -85,6 +85,13 @@ interface MapFilters {
 const roundCoordinate = (value: number): number =>
   Number(value.toFixed(MAP_BOUNDS_COORDINATE_PRECISION))
 
+const MAP_TILE_SIZE = 256
+
+// Web Mercator's x-axis is linear in longitude, so pixel-to-degree conversion
+// only depends on zoom, not latitude.
+const pxToLngDegrees = (px: number, zoom: number): number =>
+  (px / (MAP_TILE_SIZE * 2 ** zoom)) * 360
+
 const normalizeViewport = (viewport: MapViewport): MapViewport => ({
   neLat: roundCoordinate(viewport.neLat),
   neLng: roundCoordinate(viewport.neLng),
@@ -402,6 +409,8 @@ interface MapContentProps {
   error: string | null
   onViewportChange: (viewport: MapViewport) => void
   onMarkerClick: (listing: ListingDetail) => void
+  isListingsDrawerOpen: boolean
+  drawerRef: React.RefObject<HTMLElement | null>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -415,6 +424,8 @@ const MapContent: React.FC<MapContentProps> = ({
   error,
   onViewportChange,
   onMarkerClick,
+  isListingsDrawerOpen,
+  drawerRef,
   t,
   tCommon,
 }) => {
@@ -624,15 +635,28 @@ const MapContent: React.FC<MapContentProps> = ({
 
       // Centre on the listing and zoom in so it stands out (and breaks out of
       // any cluster). Never zoom back out if the user is already closer.
+      const targetZoom = Math.max(map.getZoom() ?? 0, LOCATE_LISTING_ZOOM)
+
+      // The listings drawer overlays the left side of the map, so a plain
+      // panTo centres the pin behind it. Shift the target east by half the
+      // drawer's width (converted from px to degrees at the target zoom) so
+      // the pin lands in the still-visible part of the map.
+      const drawerWidthPx = isListingsDrawerOpen
+        ? (drawerRef.current?.getBoundingClientRect().width ?? 0)
+        : 0
+      const lngOffset = drawerWidthPx
+        ? pxToLngDegrees(drawerWidthPx / 2, targetZoom)
+        : 0
+
       map.panTo({
         lat: selectedListing.address.latitude,
-        lng: selectedListing.address.longitude,
+        lng: selectedListing.address.longitude - lngOffset,
       })
       if ((map.getZoom() ?? 0) < LOCATE_LISTING_ZOOM) {
         map.setZoom(LOCATE_LISTING_ZOOM)
       }
     }
-  }, [selectedListing, map])
+  }, [selectedListing, map, isListingsDrawerOpen, drawerRef])
 
   useEffect(() => {
     return () => {
@@ -767,6 +791,7 @@ const MapViewTemplate: React.FC = () => {
   const [totalCount, setTotalCount] = useState(0)
   const [hasMore, setHasMore] = useState(false)
   const [isListingsDrawerOpen, setIsListingsDrawerOpen] = useState(true)
+  const drawerRef = useRef<HTMLElement | null>(null)
   const [pendingViewport, setPendingViewport] = useState<MapViewport | null>(
     null,
   )
@@ -793,7 +818,7 @@ const MapViewTemplate: React.FC = () => {
         ? parsedCategoryId
         : undefined,
       vipType: vipTypeQuery as VipType | undefined,
-      verifiedOnly: verifiedOnlyQuery === 'true',
+      verifiedOnly: verifiedOnlyQuery !== 'false',
     }
   }, [router.query.categoryId, router.query.vipType, router.query.verifiedOnly])
 
@@ -994,6 +1019,7 @@ const MapViewTemplate: React.FC = () => {
       <div className='flex-1 relative h-full'>
         <div className='absolute inset-y-0 left-0 z-40 pointer-events-none'>
           <aside
+            ref={drawerRef}
             className={`pointer-events-auto h-full w-[92vw] md:w-[600px] xl:w-[760px] max-w-[760px] border-r border-border bg-background shadow-2xl transition-transform duration-300 ease-out ${
               isListingsDrawerOpen
                 ? 'translate-x-0'
@@ -1052,6 +1078,8 @@ const MapViewTemplate: React.FC = () => {
               error={error}
               onViewportChange={handleViewportChange}
               onMarkerClick={handleMarkerClick}
+              isListingsDrawerOpen={isListingsDrawerOpen}
+              drawerRef={drawerRef}
               t={t}
               tCommon={tCommon}
             />
