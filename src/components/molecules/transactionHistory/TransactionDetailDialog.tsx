@@ -193,7 +193,7 @@ export const TransactionDetailDialog: React.FC<
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-h-[85vh] overflow-y-auto sm:max-w-2xl'>
+      <DialogContent className='h-full w-full max-h-screen overflow-y-auto rounded-none p-4 sm:h-auto sm:max-h-[85vh] sm:w-full sm:max-w-2xl sm:rounded-lg sm:p-6'>
         <DialogHeader>
           <DialogTitle>{t('detail.title')}</DialogTitle>
         </DialogHeader>
