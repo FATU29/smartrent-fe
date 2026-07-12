@@ -17,7 +17,10 @@ import {
 import { cn } from '@/lib/utils'
 import { toISO, formatISO } from '@/utils/date/safe'
 import { formatByLocale } from '@/utils/currency/convert'
-import { getPriceUnitTranslationKey } from '@/utils/property'
+import {
+  getPriceUnitTranslationKey,
+  getProductTypeTranslationKey,
+} from '@/utils/property'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useAuth } from '@/hooks/useAuth'
 import { ListingOwnerDetail } from '@/api/types'
@@ -241,7 +244,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 )}
                 {productType && (
                   <Badge variant='secondary' className='font-medium'>
-                    {productType}
+                    {tNot(getProductTypeTranslationKey(productType))}
                   </Badge>
                 )}
                 {verified && (
