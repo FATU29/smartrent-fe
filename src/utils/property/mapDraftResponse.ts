@@ -63,9 +63,33 @@ export interface DraftDetail {
 }
 
 /**
- * Map backend draft address to frontend format
+ * Map backend draft address to frontend format.
+ * Drafts still being composed may not have an address yet (backend sends `null`).
  */
-function mapDraftAddress(address: DraftAddressResponse) {
+function mapDraftAddress(address: DraftAddressResponse | null) {
+  if (!address) {
+    return {
+      type: 'NEW' as const,
+      fullAddress: null,
+      fullNewAddress: null,
+      provinceId: null,
+      provinceName: null,
+      districtId: null,
+      districtName: null,
+      wardId: null,
+      wardName: null,
+      provinceCode: null,
+      wardCode: null,
+      street: null,
+      streetId: null,
+      streetName: null,
+      projectId: null,
+      projectName: null,
+      latitude: 0,
+      longitude: 0,
+    }
+  }
+
   return {
     type: address.addressType,
     fullAddress: address.fullAddress,

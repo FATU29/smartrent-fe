@@ -125,8 +125,8 @@ export interface DraftListingResponse {
   price: number
   priceUnit: PriceUnit
 
-  // Address - Now a nested object
-  address: DraftAddressResponse
+  // Address - Now a nested object (null while the draft has no address yet)
+  address: DraftAddressResponse | null
 
   // Property Specifications
   area: number
