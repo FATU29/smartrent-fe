@@ -442,6 +442,10 @@ const MapContent: React.FC<MapContentProps> = ({
   const panSuppressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   )
+  // The selected-listing card, only positioned on the right (occupying
+  // horizontal space) at the `lg` breakpoint — below that it's a bottom
+  // sheet, see the ref's usage in the pan effect.
+  const selectedCardRef = useRef<HTMLDivElement | null>(null)
 
   // Marker clustering: collect the rendered AdvancedMarker elements by
   // listingId and feed them to a MarkerClusterer. Dense areas group into
@@ -637,16 +641,24 @@ const MapContent: React.FC<MapContentProps> = ({
       // any cluster). Never zoom back out if the user is already closer.
       const targetZoom = Math.max(map.getZoom() ?? 0, LOCATE_LISTING_ZOOM)
 
-      // The listings drawer overlays the left side of the map, so a plain
-      // panTo centres the pin behind it. Shift the target east by half the
-      // drawer's width (converted from px to degrees at the target zoom) so
-      // the pin lands in the still-visible part of the map.
+      // The listings drawer (left) and the selected-listing card (right, only
+      // at the `lg` breakpoint — below that it's a bottom sheet and doesn't
+      // eat horizontal space) both overlay the map, so a plain panTo centres
+      // the pin behind one of them. Shift the target so the pin lands in the
+      // middle of the strip still visible between the two.
       const drawerWidthPx = isListingsDrawerOpen
         ? (drawerRef.current?.getBoundingClientRect().width ?? 0)
         : 0
-      const lngOffset = drawerWidthPx
-        ? pxToLngDegrees(drawerWidthPx / 2, targetZoom)
+      const isCardBesideMap =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(min-width: 1024px)').matches
+      const cardWidthPx = isCardBesideMap
+        ? (selectedCardRef.current?.getBoundingClientRect().width ?? 0)
         : 0
+      const lngOffset = pxToLngDegrees(
+        (drawerWidthPx - cardWidthPx) / 2,
+        targetZoom,
+      )
 
       map.panTo({
         lat: selectedListing.address.latitude,
@@ -716,7 +728,10 @@ const MapContent: React.FC<MapContentProps> = ({
 
       {/* Selected property card: bottom sheet on mobile, right-side card on desktop */}
       {selectedListing && (
-        <div className='absolute bottom-4 left-4 right-4 z-30 md:left-6 md:right-6 lg:top-20 lg:bottom-auto lg:left-auto lg:right-6 lg:w-[420px] xl:w-[460px]'>
+        <div
+          ref={selectedCardRef}
+          className='absolute bottom-4 left-4 right-4 z-30 md:left-6 md:right-6 lg:top-20 lg:bottom-auto lg:left-auto lg:right-6 lg:w-[420px] xl:w-[460px]'
+        >
           <div className='relative overflow-hidden bg-background rounded-xl shadow-2xl border border-border/50'>
             <MapPropertyCard
               listing={selectedListing}
