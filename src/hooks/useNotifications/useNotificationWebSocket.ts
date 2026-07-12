@@ -30,9 +30,14 @@ export function useNotificationWebSocket(
 
     const token = getAccessToken()
 
+    // Without a token the CONNECT frame is guaranteed to be rejected, and
+    // reconnectDelay would then retry every 5s forever with the same empty
+    // header. Skip connecting until a token is actually available.
+    if (!token) return
+
     const client = new Client({
       webSocketFactory: () => new SockJS(`${wsBaseUrl}/ws`),
-      connectHeaders: token ? { Authorization: `Bearer ${token}` } : {},
+      connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 5000,
 
       onConnect: () => {
@@ -53,10 +58,14 @@ export function useNotificationWebSocket(
       },
 
       onStompError: (frame) => {
-        console.error(
-          '[Notification WS] STOMP error:',
-          frame.headers['message'],
-        )
+        const message = frame.headers['message']
+        console.error('[Notification WS] STOMP error:', message)
+
+        // Auth errors won't resolve by retrying with the same stale token,
+        // so stop the built-in reconnect loop instead of retrying forever.
+        if (message && /bearer|token|auth/i.test(message)) {
+          client.deactivate()
+        }
       },
 
       onDisconnect: () => {
