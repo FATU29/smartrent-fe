@@ -2853,8 +2853,7 @@
           "description": "Bạn đã dùng hết lượt đẩy tin miễn phí. Đẩy tin ngay bằng cách thanh toán một lần.",
           "listingLabel": "Tin đăng",
           "price": {
-            "title": "Phí đẩy tin",
-            "loading": "Đang tải giá..."
+            "title": "Phí đẩy tin"
           },
           "hint": "Tin sẽ được đẩy lên đầu ngay sau khi thanh toán thành công.",
           "confirm": "Thanh toán",

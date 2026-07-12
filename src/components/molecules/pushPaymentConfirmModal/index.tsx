@@ -15,10 +15,12 @@ import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 import { useLanguage } from '@/hooks/useLanguage'
-import { usePushDetail } from '@/hooks/usePush'
 import { formatByLocale } from '@/utils/currency/convert'
-import { PushDetailCode } from '@/api/types/push.type'
 import { ListingOwnerDetail } from '@/api/types'
+
+// Mirrors PricingConstants.PUSH_PER_TIME in the backend (smart-rent) — the
+// one-time push fee charged when a seller has no push quota left.
+const SINGLE_PUSH_PRICE_VND = 40000
 
 export interface PushPaymentConfirmModalProps {
   open: boolean
@@ -33,13 +35,7 @@ export const PushPaymentConfirmModal: React.FC<
 > = ({ open, onOpenChange, listing, isLoading = false, onConfirm }) => {
   const t = useTranslations('seller.listingManagement.card.pushPaymentDialog')
   const { language } = useLanguage()
-  const { data: pushDetail, isLoading: isPriceLoading } = usePushDetail(
-    PushDetailCode.SINGLE_PUSH,
-  )
-
-  const pricePerPush = pushDetail?.data?.data?.pricePerPush
-  const priceLabel =
-    pricePerPush !== undefined ? formatByLocale(pricePerPush, language) : null
+  const priceLabel = formatByLocale(SINGLE_PUSH_PRICE_VND, language)
 
   if (!listing) return null
 
@@ -93,7 +89,7 @@ export const PushPaymentConfirmModal: React.FC<
                 variant='small'
                 className='text-lg font-bold text-primary mt-0.5 block'
               >
-                {isPriceLoading ? t('price.loading') : (priceLabel ?? '—')}
+                {priceLabel}
               </Typography>
             </div>
           </div>
