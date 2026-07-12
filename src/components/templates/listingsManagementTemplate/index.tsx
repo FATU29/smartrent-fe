@@ -22,6 +22,7 @@ import { PUBLIC_ROUTES } from '@/constants/route'
 import { MembershipPushDisplay } from '@/components/molecules/listings/MembershipPushDisplay'
 import { usePushListing, usePushQuota } from '@/hooks/usePush'
 import PushLimitModal from '@/components/molecules/pushLimitModal'
+import PushPaymentConfirmModal from '@/components/molecules/pushPaymentConfirmModal'
 import { PushLimitError } from '@/api/types/push.type'
 import { PageContainer } from '@/components/atoms/pageContainer'
 import { Typography } from '@/components/atoms/typography'
@@ -97,6 +98,10 @@ const ListingsWithPagination = () => {
     waitMinutes: number
     apiMessage?: string | null
   }>({ open: false, waitMinutes: 1, apiMessage: null })
+  const [pushPaymentState, setPushPaymentState] = useState<{
+    open: boolean
+    listing: ListingOwnerDetail | null
+  }>({ open: false, listing: null })
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: () => {
@@ -119,19 +124,10 @@ const ListingsWithPagination = () => {
     }
   }
 
-  const handlePushListing = async (listing: ListingOwnerDetail) => {
-    const canPush =
-      listing.verified === true &&
-      listing.listingStatus === POST_STATUS.DISPLAYING
-
-    if (!canPush) {
-      toast.error(tSeller('card.toast.pushNotDisplaying'))
-      return
-    }
-
-    const hasQuota = quotaData?.data && quotaData.data.totalAvailable > 0
-    const useMembershipQuota = hasQuota ?? false
-
+  const runPushMutation = async (
+    listing: ListingOwnerDetail,
+    useMembershipQuota: boolean,
+  ) => {
     // On the payment path the user leaves for the gateway and returns to
     // /payment/result — leave a marker so it routes back to the listings.
     if (!useMembershipQuota) {
@@ -176,6 +172,34 @@ const ListingsWithPagination = () => {
         error instanceof Error ? error.message : tSeller('card.toast.pushError')
       toast.error(message || tSeller('card.toast.pushError'))
     }
+  }
+
+  const handlePushListing = async (listing: ListingOwnerDetail) => {
+    // A listing is publicly live under both DISPLAYING and EXPIRING_SOON — see
+    // the matching check in listing-card's `isPubliclyVisible`. Pushing an
+    // EXPIRING_SOON listing is if anything more useful, since the seller is
+    // trying to keep visibility right before it expires.
+    const canPush =
+      listing.verified === true &&
+      (listing.listingStatus === POST_STATUS.DISPLAYING ||
+        listing.listingStatus === POST_STATUS.EXPIRING_SOON)
+
+    if (!canPush) {
+      toast.error(tSeller('card.toast.pushNotDisplaying'))
+      return
+    }
+
+    const hasQuota = quotaData?.data && quotaData.data.totalAvailable > 0
+    const useMembershipQuota = hasQuota ?? false
+
+    if (!useMembershipQuota) {
+      // No quota left — show the 40k one-time push price and let the seller
+      // opt in before firing the payment mutation (and its gateway redirect).
+      setPushPaymentState({ open: true, listing })
+      return
+    }
+
+    await runPushMutation(listing, true)
   }
 
   if (isLoading && listings.length === 0) {
@@ -427,6 +451,21 @@ const ListingsWithPagination = () => {
             }
             waitMinutes={pushLimitState.waitMinutes}
             apiMessage={pushLimitState.apiMessage}
+          />
+
+          <PushPaymentConfirmModal
+            open={pushPaymentState.open}
+            onOpenChange={(open) =>
+              setPushPaymentState((prev) => ({ ...prev, open }))
+            }
+            listing={pushPaymentState.listing}
+            isLoading={pushMutation.isPending}
+            onConfirm={() => {
+              const listing = pushPaymentState.listing
+              if (!listing) return
+              setPushPaymentState({ open: false, listing: null })
+              runPushMutation(listing, false)
+            }}
           />
 
           {/* Desktop: Show Pagination */}

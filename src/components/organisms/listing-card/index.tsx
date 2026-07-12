@@ -134,9 +134,16 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
   const isExpired = expired || false
   const showRank = rankOfVipType > 0
-  // Pushing only applies to DISPLAYING listings — hide it for expired/taken-down
-  // so the seller doesn't see two near-identical "đẩy tin" buttons. For expired
-  // listings the only call-to-action is "đăng lại" (repost).
+  // A listing is publicly live under both DISPLAYING and EXPIRING_SOON — public
+  // visibility only gates on moderationStatus=APPROVED + not expired, independent
+  // of the "expiring within 7 days" distinction the owner view surfaces as a
+  // separate badge. Keep the detail link (and push eligibility) in sync with that.
+  const isPubliclyVisible =
+    property.listingStatus === POST_STATUS.DISPLAYING ||
+    property.listingStatus === POST_STATUS.EXPIRING_SOON
+  // Pushing only applies to DISPLAYING/EXPIRING_SOON listings — hide it for
+  // expired/taken-down so the seller doesn't see two near-identical "đẩy tin"
+  // buttons. For expired listings the only call-to-action is "đăng lại" (repost).
   const showPromoteButton = !isExpired
   const showRepostButton = isExpired && !postingBlocked
   // Renewal is the +30-day quota top-up — restricted to listings the backend
@@ -240,7 +247,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 {verified && (
                   <VerificationBadge verified={verified} type='verified' />
                 )}
-                {property.listingStatus === POST_STATUS.DISPLAYING && (
+                {isPubliclyVisible && (
                   <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
