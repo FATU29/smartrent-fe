@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { PushService } from '@/api/services/push.service'
 import { QuotaService } from '@/api/services/quota.service'
 import type {
+  PushDetailCode,
   PushListingRequest,
   PushListingResponse,
 } from '@/api/types/push.type'
@@ -94,6 +95,26 @@ export function usePushListing() {
         startGatewayCheckout(data.data)
       }
     },
+  })
+}
+
+/**
+ * Hook to fetch a single push pricing detail (e.g. the one-time SINGLE_PUSH
+ * price) — used to show the actual price before charging a seller with no
+ * quota left, instead of hardcoding it on the FE.
+ * @param detailCode - Push detail code (SINGLE_PUSH, PUSH_PACKAGE_3, etc.)
+ * @example
+ * ```tsx
+ * const { data } = usePushDetail(PushDetailCode.SINGLE_PUSH)
+ * console.log(data?.data?.data?.pricePerPush)
+ * ```
+ */
+export function usePushDetail(detailCode: PushDetailCode) {
+  return useQuery({
+    queryKey: ['pushDetail', detailCode],
+    queryFn: () => PushService.getPushDetailByCode(detailCode),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   })
 }
 

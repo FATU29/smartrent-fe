@@ -2848,6 +2848,19 @@
           "cancel": "Huỷ",
           "loading": "Đang gia hạn..."
         },
+        "pushPaymentDialog": {
+          "title": "Xác nhận đẩy tin",
+          "description": "Bạn đã dùng hết lượt đẩy tin miễn phí. Đẩy tin ngay bằng cách thanh toán một lần.",
+          "listingLabel": "Tin đăng",
+          "price": {
+            "title": "Phí đẩy tin",
+            "loading": "Đang tải giá..."
+          },
+          "hint": "Tin sẽ được đẩy lên đầu ngay sau khi thanh toán thành công.",
+          "confirm": "Thanh toán",
+          "cancel": "Huỷ",
+          "loading": "Đang xử lý..."
+        },
         "takeDownConfirm": {
           "title": "Ẩn tin đăng?",
           "description": "Bạn có chắc chắn muốn ẩn tin đăng này? Vui lòng đọc kỹ các lưu ý bên dưới trước khi xác nhận.",

@@ -2848,6 +2848,19 @@
           "cancel": "Cancel",
           "loading": "Renewing..."
         },
+        "pushPaymentDialog": {
+          "title": "Confirm push",
+          "description": "You're out of free pushes. Push this listing now with a one-time payment.",
+          "listingLabel": "Listing",
+          "price": {
+            "title": "Push fee",
+            "loading": "Loading price..."
+          },
+          "hint": "The listing will be pushed to the top right after payment succeeds.",
+          "confirm": "Pay now",
+          "cancel": "Cancel",
+          "loading": "Processing..."
+        },
         "takeDownConfirm": {
           "title": "Take down this listing?",
           "description": "Are you sure you want to take down this listing? Please review the consequences below before confirming.",
