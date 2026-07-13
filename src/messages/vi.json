@@ -2772,9 +2772,7 @@
           "renewFull": "Gia hạn (+30 ngày)",
           "copyListing": "Sao chép link bài đăng",
           "takeDown": "Ẩn tin",
-          "delete": "Xóa tin",
-          "resubmit": "Gửi lại",
-          "resubmitFull": "Gửi lại duyệt"
+          "delete": "Xóa tin"
         },
         "deleteConfirm": {
           "title": "Xóa Tin Đăng",

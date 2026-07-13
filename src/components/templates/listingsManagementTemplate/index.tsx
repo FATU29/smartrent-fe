@@ -38,7 +38,6 @@ import {
   ListingOwnerDetail,
   PostStatus,
   POST_STATUS,
-  ModerationStatus,
   ListingFilterRequest,
   ResubmitNotAllowedError,
 } from '@/api/types'
@@ -226,20 +225,7 @@ const ListingsWithPagination = () => {
           <ListingsList
             listings={listings}
             onEditListing={(listing) => {
-              // Redirect to update-post with resubmit context for rejected/revision-required/suspended (non-permanent) listings
-              const needsResubmitContext =
-                listing.moderationStatus === ModerationStatus.REJECTED ||
-                listing.moderationStatus ===
-                  ModerationStatus.REVISION_REQUIRED ||
-                (listing.moderationStatus === ModerationStatus.SUSPENDED &&
-                  !listing.permanentlyRemoved)
-              if (needsResubmitContext) {
-                router.push(
-                  `/seller/update-post/${listing.listingId}?resubmit=true`,
-                )
-              } else {
-                router.push(`/seller/update-post/${listing.listingId}`)
-              }
+              router.push(`/seller/update-post/${listing.listingId}`)
             }}
             onPromoteListing={(listing) => {
               handlePushListing(listing)
@@ -251,12 +237,6 @@ const ListingsWithPagination = () => {
             onRenewListing={(listing) => {
               setSelectedListingForRenew(listing)
               setRenewDialogOpen(true)
-            }}
-            onResubmitListing={(listing) => {
-              // Redirect to update-post with resubmit context
-              router.push(
-                `/seller/update-post/${listing.listingId}?resubmit=true`,
-              )
             }}
             onCopyListing={(listing) => {
               handleCopyListingLink(listing)

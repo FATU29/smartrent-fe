@@ -4,7 +4,6 @@ import {
   Edit,
   MoreHorizontal,
   ChevronsUp,
-  SendHorizontal,
   CalendarPlus,
   Trash2,
 } from 'lucide-react'
@@ -22,14 +21,12 @@ export interface ListingCardActionsProps {
   onPromote?: () => void
   onRepost?: () => void
   onRenew?: () => void
-  onResubmit?: () => void
   onCopyListing?: () => void
   onTakeDown?: () => void
   onDelete?: () => void
   showPromoteButton?: boolean
   showRepostButton?: boolean
   showRenewButton?: boolean
-  showResubmitButton?: boolean
   // Hidden when the owner is blocked from posting — editing feeds back into
   // the same re-listing/resubmit flow the block is meant to stop.
   showEditButton?: boolean
@@ -44,14 +41,12 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
   onPromote,
   onRepost,
   onRenew,
-  onResubmit,
   onCopyListing,
   onTakeDown,
   onDelete,
   showPromoteButton = true,
   showRepostButton = false,
   showRenewButton = false,
-  showResubmitButton = false,
   showEditButton = true,
   onlyShowDelete = false,
   className,
@@ -156,18 +151,6 @@ export const ListingCardActions: React.FC<ListingCardActionsProps> = ({
           <ChevronsUp size={14} />
           <span className='hidden xs:inline'>{t('repostFull')}</span>
           <span className='xs:hidden'>{t('repost')}</span>
-        </Button>
-      )}
-
-      {showResubmitButton && (
-        <Button
-          onClick={onResubmit}
-          size='sm'
-          className='gap-1 bg-orange-500 hover:bg-orange-600 text-white dark:bg-orange-600 dark:hover:bg-orange-700 text-xs sm:text-sm'
-        >
-          <SendHorizontal size={14} />
-          <span className='hidden xs:inline'>{t('resubmitFull')}</span>
-          <span className='xs:hidden'>{t('resubmit')}</span>
         </Button>
       )}
     </div>

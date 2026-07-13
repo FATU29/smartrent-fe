@@ -2772,9 +2772,7 @@
           "renewFull": "Renew (+30 days)",
           "copyListing": "Copy listing link",
           "takeDown": "Take down",
-          "delete": "Delete",
-          "resubmit": "Resubmit",
-          "resubmitFull": "Resubmit for Review"
+          "delete": "Delete"
         },
         "deleteConfirm": {
           "title": "Delete Listing",

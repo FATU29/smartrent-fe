@@ -53,7 +53,6 @@ export interface ListingCardProps {
   onPromote?: () => void
   onRepost?: () => void
   onRenew?: () => void
-  onResubmit?: () => void
   onCopyListing?: () => void
   onTakeDown?: () => void
   onDelete?: () => void
@@ -66,7 +65,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   onPromote,
   onRepost,
   onRenew,
-  onResubmit,
   onCopyListing,
   onTakeDown,
   onDelete,
@@ -103,11 +101,16 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const permanentlyRemoved = property.permanentlyRemoved
   const isPermanentlyRemoved =
     moderationStatus === ModerationStatus.SUSPENDED && !!permanentlyRemoved
-  const isResubmittable =
-    !postingBlocked &&
-    (moderationStatus === ModerationStatus.REJECTED ||
-      moderationStatus === ModerationStatus.REVISION_REQUIRED ||
-      (moderationStatus === ModerationStatus.SUSPENDED && !permanentlyRemoved))
+  // A rejected listing (either the legacy REJECTED status, or SUSPENDED with a
+  // pendingOwnerAction from the review-queue reject flow) can't be edited or
+  // resubmitted — mirrors ModerationBanner's isRejected. SUSPENDED without a
+  // pendingOwnerAction is a report-driven temporary hide, not a rejection, and
+  // editing is still allowed there.
+  const isRejected =
+    moderationStatus === ModerationStatus.REJECTED ||
+    (moderationStatus === ModerationStatus.SUSPENDED &&
+      !permanentlyRemoved &&
+      Boolean(property.pendingOwnerAction))
 
   const calculatedExpiryDate = React.useMemo(() => {
     if (expiryDate) return toISO(expiryDate)
@@ -550,7 +553,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 pendingOwnerAction={property.pendingOwnerAction}
                 permanentlyRemoved={permanentlyRemoved}
                 listingId={property.listingId}
-                onResubmit={isResubmittable ? onResubmit : undefined}
                 className='mb-4'
               />
             )}
@@ -574,15 +576,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 onPromote={onPromote}
                 onRepost={onRepost}
                 onRenew={onRenew}
-                onResubmit={onResubmit}
                 onCopyListing={onCopyListing}
                 onTakeDown={onTakeDown}
                 onDelete={onDelete}
                 showPromoteButton={showPromoteButton}
                 showRepostButton={showRepostButton}
                 showRenewButton={showRenewButton}
-                showResubmitButton={isResubmittable}
-                showEditButton={!postingBlocked}
+                showEditButton={!postingBlocked && !isRejected}
                 onlyShowDelete={isPermanentlyRemoved}
               />
             </div>
