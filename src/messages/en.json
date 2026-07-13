@@ -2918,6 +2918,7 @@
         "REVISION_REQUIRED": "Revision Required",
         "RESUBMITTED": "Resubmitted",
         "SUSPENDED": "Suspended",
+        "SUSPENDED_HIDDEN": "Temporarily Hidden",
         "SUSPENDED_PERMANENT": "Permanently Removed"
       },
       "banner": {
