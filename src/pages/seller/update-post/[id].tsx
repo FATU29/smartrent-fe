@@ -26,7 +26,7 @@ import { toast } from 'sonner'
 
 const UpdatePostPageContent = () => {
   const router = useRouter()
-  const { id, resubmit } = router.query
+  const { id } = router.query
   const t = useTranslations('updatePost')
   const tModeration = useTranslations('seller.moderation.resubmit')
   const { updatePropertyInfo, updateFulltextAddress, setMedia } =
@@ -49,7 +49,6 @@ const UpdatePostPageContent = () => {
     ModerationTimelineEvent[]
   >([])
   const [permanentlyRemoved, setPermanentlyRemoved] = React.useState(false)
-  const isResubmitMode = resubmit === 'true'
   const resubmitMutation = useResubmitListing()
 
   useEffect(() => {
@@ -148,7 +147,7 @@ const UpdatePostPageContent = () => {
   return (
     <div className='space-y-4'>
       {/* Moderation context banner */}
-      {isResubmitMode && moderationStatus && (
+      {moderationStatus && (
         <ModerationBanner
           moderationStatus={moderationStatus}
           verificationNotes={verificationNotes}
@@ -160,7 +159,7 @@ const UpdatePostPageContent = () => {
       )}
 
       {/* Moderation timeline */}
-      {isResubmitMode && moderationTimeline.length > 0 && (
+      {moderationTimeline.length > 0 && (
         <ModerationTimeline events={moderationTimeline} />
       )}
 
