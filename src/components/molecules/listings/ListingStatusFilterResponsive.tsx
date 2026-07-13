@@ -18,7 +18,6 @@ import {
   isModerationFilterStatus,
   hasSubFilters,
   getModerationStatuses,
-  toModerationFilterStatus,
   type ListingFilterStatus,
 } from '@/constants/postStatus'
 import type { PostStatus } from '@/api/types'
@@ -41,18 +40,14 @@ export const ListingStatusFilterResponsive: React.FC<
 
   // Determine which main tab is active — map MOD_ values back to their parent status
   const activeMainStatus: PostStatus = isModerationFilterStatus(value)
-    ? ((Object.entries(LISTING_STATUS_MODERATION_MAP).find(([, mods]) =>
-        (mods as string[]).some(
-          (m: string) => toModerationFilterStatus(m as any) === value,
-        ),
+    ? ((Object.entries(LISTING_STATUS_MODERATION_MAP).find(([, subFilters]) =>
+        (subFilters as ListingFilterStatus[]).includes(value),
       )?.[0] as PostStatus) ?? (value as PostStatus))
     : (value as PostStatus)
 
   // Check if the active main tab has sub-filters
   const activeHasSubFilters = hasSubFilters(activeMainStatus)
-  const activeSubFilters = getModerationStatuses(activeMainStatus).map(
-    toModerationFilterStatus,
-  )
+  const activeSubFilters = getModerationStatuses(activeMainStatus)
 
   // For mobile dropdown label
   const activeLabel =

@@ -588,6 +588,13 @@ export interface ListingFilterRequest {
 
   listingStatus?: PostStatus
   moderationStatus?: ModerationStatus
+  /**
+   * Only meaningful alongside moderationStatus=SUSPENDED, which is shared by
+   * rejecting a listing in the review queue (creates a pending owner action)
+   * and temporarily hiding it under report review (doesn't). true narrows to
+   * the reject case, false narrows to the hide case.
+   */
+  hasPendingOwnerAction?: boolean
 }
 
 /**

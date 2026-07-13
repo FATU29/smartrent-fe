@@ -43,9 +43,8 @@ import {
 } from '@/api/types'
 import {
   isModerationFilterStatus,
-  extractModerationStatus,
-  toModerationFilterStatus,
   getModerationStatuses,
+  resolveModerationFilterParams,
   LISTING_STATUS_MODERATION_MAP,
   type ListingFilterStatus,
 } from '@/constants/postStatus'
@@ -570,40 +569,41 @@ export const ListingsManagementTemplate: React.FC<
         updateFilters({
           listingStatus: undefined,
           moderationStatus: undefined,
+          hasPendingOwnerAction: undefined,
           page: 1,
         })
       } else if (isModerationFilterStatus(newStatus)) {
         // Moderation sub-filter clicked
         setStatus(newStatus)
-        const modStatus = extractModerationStatus(newStatus)
         const parentStatus = Object.entries(LISTING_STATUS_MODERATION_MAP).find(
-          ([, mods]) => (mods as string[]).includes(modStatus ?? ''),
+          ([, subFilters]) =>
+            (subFilters as ListingFilterStatus[]).includes(newStatus),
         )?.[0] as PostStatus | undefined
 
         updateFilters({
           listingStatus: parentStatus ?? (newStatus as PostStatus),
-          moderationStatus: modStatus ?? undefined,
+          ...resolveModerationFilterParams(newStatus),
           page: 1,
         })
       } else {
         const listingStatus = newStatus as PostStatus
-        const moderationStatuses = getModerationStatuses(listingStatus)
+        const subFilters = getModerationStatuses(listingStatus)
 
-        if (moderationStatuses.length > 1) {
+        if (subFilters.length > 1) {
           // Has sub-filters → default to first
-          const defaultMod = moderationStatuses[0]
-          setStatus(toModerationFilterStatus(defaultMod))
+          const defaultSub = subFilters[0]
+          setStatus(defaultSub)
           updateFilters({
             listingStatus,
-            moderationStatus: defaultMod,
+            ...resolveModerationFilterParams(defaultSub),
             page: 1,
           })
-        } else if (moderationStatuses.length === 1) {
-          // Single moderation status → pass directly
+        } else if (subFilters.length === 1) {
+          // Single sub-filter → pass directly, tab stays at the parent level
           setStatus(newStatus)
           updateFilters({
             listingStatus,
-            moderationStatus: moderationStatuses[0],
+            ...resolveModerationFilterParams(subFilters[0]),
             page: 1,
           })
         } else {
@@ -612,6 +612,7 @@ export const ListingsManagementTemplate: React.FC<
           updateFilters({
             listingStatus,
             moderationStatus: undefined,
+            hasPendingOwnerAction: undefined,
             page: 1,
           })
         }

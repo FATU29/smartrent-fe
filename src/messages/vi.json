@@ -2671,7 +2671,9 @@
         "MOD_RESUBMITTED": "Đã gửi lại",
         "MOD_REJECTED": "Admin từ chối",
         "MOD_REVISION_REQUIRED": "Cần chỉnh sửa",
-        "MOD_SUSPENDED": "Bị đình chỉ"
+        "MOD_SUSPENDED": "Bị đình chỉ",
+        "MOD_SUSPENDED_REJECTED": "Bị từ chối",
+        "MOD_SUSPENDED_HIDDEN": "Đang ẩn tạm thời"
       },
       "propertyTypes": {
         "0": "Tất cả Loại",
