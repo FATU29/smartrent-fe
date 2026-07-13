@@ -101,27 +101,19 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
 
   const validatePhone = (value?: string) => {
     if (!value || !value.trim()) {
-      return t('report.phoneRequired') || 'Số điện thoại là bắt buộc'
+      return t('report.phoneRequired')
     }
     const phoneRegex = /^0\d{9,10}$/
-    return (
-      phoneRegex.test(value.trim()) ||
-      t('report.invalidPhone') ||
-      'Số điện thoại không hợp lệ'
-    )
+    return phoneRegex.test(value.trim()) || t('report.invalidPhone')
   }
 
   const validateEmail = (value?: string) => {
     if (!value || !value.trim()) {
-      return t('report.emailRequired') || 'Email là bắt buộc'
+      return t('report.emailRequired')
     }
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    return (
-      emailRegex.test(value.trim()) ||
-      t('report.invalidEmail') ||
-      'Email không hợp lệ'
-    )
+    return emailRegex.test(value.trim()) || t('report.invalidEmail')
   }
 
   const toggleReasonSelection = (reasonId: number) => {
@@ -138,9 +130,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
 
   const onSubmit = (data: ReportFormData) => {
     if (data.reasonIds.length === 0) {
-      toast.error(
-        t('common.selectReason') || 'Please select at least one reason',
-      )
+      toast.error(t('common.selectReason'))
       return
     }
 
@@ -160,9 +150,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onSuccess: (response: any) => {
           if (response?.success || response?.data) {
-            toast.success(
-              t('report.submitSuccess') || 'Báo cáo đã được gửi thành công',
-            )
+            toast.success(t('report.submitSuccess'))
             reset()
             onOpenChange(false)
             onSuccess?.()
@@ -178,7 +166,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
         },
         onError: (error: Error) => {
           console.error('Failed to submit report:', error)
-          toast.error(t('report.submitError') || 'Gửi báo cáo thất bại')
+          toast.error(t('report.submitError'))
         },
       },
     )
@@ -193,11 +181,10 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className='h-full w-full sm:h-auto sm:max-w-2xl sm:w-full max-h-screen sm:max-h-[90vh] overflow-y-auto p-4 sm:p-6 sm:rounded-lg rounded-none'>
           <DialogTitle className='text-lg sm:text-xl'>
-            {t('common.report') || 'Report Listing'}
+            {t('common.report')}
           </DialogTitle>
           <DialogDescription className='text-sm sm:text-base'>
-            {t('common.reportDescription') ||
-              'Help us improve by reporting issues with this listing'}
+            {t('common.reportDescription')}
           </DialogDescription>
 
           <div className='space-y-3 sm:space-y-4 py-3 sm:py-4'>
@@ -210,10 +197,10 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
             >
               <TabsList className='grid w-full grid-cols-2 h-9 sm:h-10'>
                 <TabsTrigger value='LISTING' className='text-xs sm:text-sm'>
-                  {t('common.reportCategory.listing') || 'Listing'}
+                  {t('common.reportCategory.listing')}
                 </TabsTrigger>
                 <TabsTrigger value='MAP' className='text-xs sm:text-sm'>
-                  {t('common.reportCategory.map') || 'Map'}
+                  {t('common.reportCategory.map')}
                 </TabsTrigger>
               </TabsList>
 
@@ -223,7 +210,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
               >
                 {loadingReasons ? (
                   <div className='text-center py-6 sm:py-4 text-xs sm:text-sm text-muted-foreground'>
-                    {t('common.loading') || 'Loading...'}
+                    {t('common.loading')}
                   </div>
                 ) : (
                   <div className='grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2'>
@@ -260,7 +247,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
               >
                 {loadingReasons ? (
                   <div className='text-center py-6 sm:py-4 text-xs sm:text-sm text-muted-foreground'>
-                    {t('common.loading') || 'Loading...'}
+                    {t('common.loading')}
                   </div>
                 ) : (
                   <div className='grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2'>
@@ -295,7 +282,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
             {/* Other Feedback */}
             <div className='pt-2'>
               <Label className='text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 block'>
-                {t('report.otherFeedback') || 'Phản hồi khác (Tùy chọn)'}
+                {t('report.otherFeedback')}
               </Label>
               <Controller
                 name='otherFeedback'
@@ -303,10 +290,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
                 render={({ field }) => (
                   <textarea
                     {...field}
-                    placeholder={
-                      t('report.otherFeedbackPlaceholder') ||
-                      'Nhập thêm chi tiết về vấn đề...'
-                    }
+                    placeholder={t('report.otherFeedbackPlaceholder')}
                     className='w-full min-h-[80px] sm:min-h-[100px] p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 resize-none focus:outline-none focus:ring-2 focus:ring-ring'
                     disabled={submitting}
                   />
@@ -317,7 +301,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
             {/* Reporter Information */}
             <div className='space-y-2 sm:space-y-3'>
               <Label className='text-xs sm:text-sm font-medium block'>
-                {t('report.reporterInfo') || 'Thông tin người báo cáo'}
+                {t('report.reporterInfo')}
                 <span className='text-red-500 ml-1'>*</span>
               </Label>
 
@@ -330,7 +314,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
                       <input
                         {...field}
                         type='text'
-                        placeholder={t('report.reporterName') || 'Họ và tên'}
+                        placeholder={t('report.reporterName')}
                         className='w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring'
                         disabled={submitting}
                       />
@@ -348,7 +332,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
                         <input
                           {...field}
                           type='tel'
-                          placeholder={`${t('report.reporterPhone') || 'Số điện thoại'} *`}
+                          placeholder={`${t('report.reporterPhone')} *`}
                           className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-ring ${
                             fieldState.error ? 'border-red-500' : ''
                           }`}
@@ -376,7 +360,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
                           <input
                             {...field}
                             type='email'
-                            placeholder={`${t('report.reporterEmail') || 'Email'} *`}
+                            placeholder={`${t('report.reporterEmail')} *`}
                             className={`w-full p-2 sm:p-2.5 border rounded-md text-xs sm:text-sm disabled:opacity-50 disabled:bg-muted focus:outline-none focus:ring-2 focus:ring-ring ${
                               fieldState.error ? 'border-red-500' : ''
                             }`}
@@ -387,7 +371,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
                           />
                           {isAuthenticated && user?.email && (
                             <span className='absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground'>
-                              {t('report.autoFilled') || 'Tự động điền'}
+                              {t('report.autoFilled')}
                             </span>
                           )}
                         </div>
@@ -412,7 +396,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
               onClick={() => onOpenChange(false)}
               className='w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10'
             >
-              {t('common.cancel') || 'Hủy'}
+              {t('common.cancel')}
             </Button>
             <Button
               disabled={
@@ -425,9 +409,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
               onClick={handleSubmit(onSubmit)}
               className='w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10'
             >
-              {submitting
-                ? t('report.submitting') || 'Đang gửi...'
-                : t('report.submit') || 'Gửi báo cáo'}
+              {submitting ? t('report.submitting') : t('report.submit')}
             </Button>
           </div>
         </DialogContent>

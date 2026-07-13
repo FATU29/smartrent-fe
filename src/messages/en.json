@@ -237,6 +237,7 @@
     "reporterName": "Full Name",
     "reporterPhone": "Phone Number",
     "reporterEmail": "Email Address",
+    "phoneRequired": "Phone number is required",
     "invalidPhone": "Invalid phone number",
     "invalidEmail": "Invalid email address",
     "emailRequired": "Email is required",
