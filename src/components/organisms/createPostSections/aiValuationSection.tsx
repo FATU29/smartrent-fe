@@ -25,6 +25,7 @@ import { useHousingPredictor } from '@/hooks/useAI'
 import {
   buildHousingPredictorRequest,
   getAveragePrice,
+  isTypeSupportedForAiValuation,
 } from '@/utils/ai/housingPredictor'
 import { formatByLocale } from '@/utils/currency/convert'
 import type { HousingPredictorResponse } from '@/api/types/ai.type'
@@ -156,6 +157,15 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   }, [propertyInfo.productType, t, tPropertyDetails])
 
   const canPredict = !!predictionRequest
+  // The housing price model only covers residential types (căn hộ / nhà / phòng
+  // trọ / studio). Office & store listings can't be valued, so when prediction is
+  // unavailable we show "not supported for this type" instead of wrongly telling
+  // the user their address/area/GPS is missing.
+  const typeSupportedForAi = isTypeSupportedForAiValuation(
+    typeof propertyInfo.productType === 'string'
+      ? propertyInfo.productType
+      : (propertyInfo.productType as unknown as string),
+  )
 
   return (
     <div className={className}>
@@ -454,8 +464,11 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
             {!canPredict && (
               <p className='text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1'>
                 <AlertCircle className='w-3 h-3' />
-                {t('propertyInfo.incompleteData') ||
-                  'Vui lòng điền đầy đủ thông tin địa chỉ, diện tích và tọa độ GPS'}
+                {typeSupportedForAi
+                  ? t('propertyInfo.incompleteData') ||
+                    'Vui lòng điền đầy đủ thông tin địa chỉ, diện tích và tọa độ GPS'
+                  : t('propertyInfo.unsupportedType') ||
+                    'Định giá AI chỉ khả dụng cho căn hộ, nhà ở, phòng trọ và studio.'}
               </p>
             )}
           </CardContent>

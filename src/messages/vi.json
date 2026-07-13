@@ -1726,6 +1726,7 @@
           "reevaluate": "Đánh giá lại",
           "predicting": "Đang dự đoán...",
           "incompleteData": "Vui lòng điền đầy đủ thông tin địa chỉ, diện tích và tọa độ GPS",
+          "unsupportedType": "Định giá AI chỉ khả dụng cho căn hộ, nhà ở, phòng trọ và studio.",
           "types": {
             "room": "Phòng trọ",
             "apartment": "Căn hộ",
