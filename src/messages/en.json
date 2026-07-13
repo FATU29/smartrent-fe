@@ -2669,11 +2669,10 @@
         "ARCHIVED": "Archived",
         "MOD_PENDING_REVIEW": "New Submission",
         "MOD_RESUBMITTED": "Resubmitted",
-        "MOD_REJECTED": "Rejected by Admin",
+        "MOD_REJECTED": "Rejected",
         "MOD_REVISION_REQUIRED": "Revision Required",
-        "MOD_SUSPENDED": "Suspended",
-        "MOD_SUSPENDED_REJECTED": "Rejected",
-        "MOD_SUSPENDED_HIDDEN": "Temporarily Hidden"
+        "MOD_SUSPENDED": "Temporarily Hidden",
+        "MOD_REMOVED": "Permanently Removed"
       },
       "propertyTypes": {
         "0": "All Types",
@@ -2919,9 +2918,8 @@
         "REJECTED": "Rejected",
         "REVISION_REQUIRED": "Revision Required",
         "RESUBMITTED": "Resubmitted",
-        "SUSPENDED": "Suspended",
-        "SUSPENDED_HIDDEN": "Temporarily Hidden",
-        "SUSPENDED_PERMANENT": "Permanently Removed"
+        "SUSPENDED": "Temporarily Hidden",
+        "REMOVED": "Permanently Removed"
       },
       "banner": {
         "rejectedTitle": "Listing Rejected",

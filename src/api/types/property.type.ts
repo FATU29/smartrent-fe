@@ -89,10 +89,14 @@ export type PostStatus =
 export enum ModerationStatus {
   PENDING_REVIEW = 'PENDING_REVIEW',
   APPROVED = 'APPROVED',
+  // Admin rejected in the review queue — terminal (no edit/resubmit).
   REJECTED = 'REJECTED',
   REVISION_REQUIRED = 'REVISION_REQUIRED',
   RESUBMITTED = 'RESUBMITTED',
+  // Temporarily hidden while a report is under review — owner does nothing.
   SUSPENDED = 'SUSPENDED',
+  // Permanently removed for a confirmed report violation — terminal.
+  REMOVED = 'REMOVED',
 }
 
 // Listing-domain API error codes
@@ -588,13 +592,6 @@ export interface ListingFilterRequest {
 
   listingStatus?: PostStatus
   moderationStatus?: ModerationStatus
-  /**
-   * Only meaningful alongside moderationStatus=SUSPENDED, which is shared by
-   * rejecting a listing in the review queue (creates a pending owner action)
-   * and temporarily hiding it under report review (doesn't). true narrows to
-   * the reject case, false narrows to the hide case.
-   */
-  hasPendingOwnerAction?: boolean
 }
 
 /**

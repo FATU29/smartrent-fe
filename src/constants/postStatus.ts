@@ -47,17 +47,10 @@ export const POST_STATUS_OPTIONS: PostStatusOption[] =
 // ── Unified Listing Filter Status ──
 // Combines PostStatus and ModerationStatus for the seller's listing filter tabs.
 // Prefixed moderation values avoid collision with PostStatus values (e.g. both have REJECTED).
-//
-// 'SUSPENDED_REJECTED' / 'SUSPENDED_HIDDEN' are UI-only synthetic values, not real
-// ModerationStatus members — moderationStatus=SUSPENDED is shared by rejecting a
-// listing in the review queue (creates a pendingOwnerAction) and temporarily hiding
-// it under report review (doesn't), so it needs two distinct tabs. See
-// resolveModerationFilterParams for how a tab resolves to actual API filter params.
-export type ModerationFilterExtra = 'SUSPENDED_REJECTED' | 'SUSPENDED_HIDDEN'
-export type ListingFilterStatus =
-  | PostStatus
-  | `MOD_${ModerationStatus}`
-  | `MOD_${ModerationFilterExtra}`
+// Every moderation sub-filter now maps to exactly one real ModerationStatus — the
+// backend gives rejected / hidden / removed distinct statuses, so no synthetic
+// filter identities are needed anymore.
+export type ListingFilterStatus = PostStatus | `MOD_${ModerationStatus}`
 
 // Helper to create prefixed moderation filter value
 export const toModerationFilterStatus = (
@@ -72,8 +65,7 @@ export const MODERATION_FILTER_I18N_KEY: Record<string, string> = {
   [`MOD_${ModerationStatus.SUSPENDED}`]: 'MOD_SUSPENDED',
   [`MOD_${ModerationStatus.APPROVED}`]: 'MOD_APPROVED',
   [`MOD_${ModerationStatus.REJECTED}`]: 'MOD_REJECTED',
-  MOD_SUSPENDED_REJECTED: 'MOD_SUSPENDED_REJECTED',
-  MOD_SUSPENDED_HIDDEN: 'MOD_SUSPENDED_HIDDEN',
+  [`MOD_${ModerationStatus.REMOVED}`]: 'MOD_REMOVED',
 }
 
 // Resolve i18n key for any ListingFilterStatus value
@@ -91,18 +83,11 @@ export const isModerationFilterStatus = (
   return typeof status === 'string' && status.startsWith('MOD_')
 }
 
-// Extract the raw ModerationStatus a filter value represents. Both
-// MOD_SUSPENDED_REJECTED and MOD_SUSPENDED_HIDDEN resolve to SUSPENDED here —
-// use resolveModerationFilterParams if hasPendingOwnerAction is also needed.
+// Extract the raw ModerationStatus a filter value represents (null for
+// PostStatus values that carry no moderation status).
 export const extractModerationStatus = (
   status: ListingFilterStatus,
 ): ModerationStatus | null => {
-  if (
-    status === 'MOD_SUSPENDED_REJECTED' ||
-    status === 'MOD_SUSPENDED_HIDDEN'
-  ) {
-    return ModerationStatus.SUSPENDED
-  }
   if (typeof status === 'string' && status.startsWith('MOD_')) {
     return status.replace('MOD_', '') as ModerationStatus
   }
@@ -116,14 +101,12 @@ export const extractModerationStatus = (
 //   DISPLAYING      → APPROVED
 //   IN_REVIEW       → PENDING_REVIEW | RESUBMITTED
 //   PENDING_PAYMENT → N/A
-//   REJECTED        → REVISION_REQUIRED | SUSPENDED_REJECTED | SUSPENDED_HIDDEN
+//   REJECTED        → REVISION_REQUIRED | REJECTED | SUSPENDED (hidden) | REMOVED
 //   VERIFIED        → APPROVED
 //
-// Values are the tab identities shown in the UI (see ListingStatusFilterResponsive),
-// not necessarily raw ModerationStatus values — resolve them to actual API filter
-// params with resolveModerationFilterParams. When a listing status maps to exactly
-// 1 sub-filter → pass it directly. When it maps to >1 → show sub-filter tabs,
-// default to the first entry.
+// Each sub-filter is a real ModerationStatus. When a listing status maps to
+// exactly 1 sub-filter → pass it directly. When it maps to >1 → show sub-filter
+// tabs, default to the first entry.
 export const LISTING_STATUS_MODERATION_MAP: Partial<
   Record<PostStatus, ListingFilterStatus[]>
 > = {
@@ -139,8 +122,9 @@ export const LISTING_STATUS_MODERATION_MAP: Partial<
   ],
   [POST_STATUS.REJECTED]: [
     toModerationFilterStatus(ModerationStatus.REVISION_REQUIRED),
-    'MOD_SUSPENDED_REJECTED',
-    'MOD_SUSPENDED_HIDDEN',
+    toModerationFilterStatus(ModerationStatus.REJECTED),
+    toModerationFilterStatus(ModerationStatus.SUSPENDED),
+    toModerationFilterStatus(ModerationStatus.REMOVED),
   ],
   [POST_STATUS.VERIFIED]: [toModerationFilterStatus(ModerationStatus.APPROVED)],
 }
@@ -155,29 +139,4 @@ export const getModerationStatuses = (
 // Check if a listing status has sub-filter tabs (>1 entry)
 export const hasSubFilters = (status: PostStatus): boolean => {
   return (LISTING_STATUS_MODERATION_MAP[status]?.length ?? 0) > 1
-}
-
-// Resolve a sub-filter tab identity to the actual API filter params it stands
-// for. Always returns both keys (even as undefined) so callers can spread the
-// result straight into updateFilters without leaking a stale value from a
-// previously selected tab.
-export const resolveModerationFilterParams = (
-  status: ListingFilterStatus,
-): { moderationStatus?: ModerationStatus; hasPendingOwnerAction?: boolean } => {
-  if (status === 'MOD_SUSPENDED_REJECTED') {
-    return {
-      moderationStatus: ModerationStatus.SUSPENDED,
-      hasPendingOwnerAction: true,
-    }
-  }
-  if (status === 'MOD_SUSPENDED_HIDDEN') {
-    return {
-      moderationStatus: ModerationStatus.SUSPENDED,
-      hasPendingOwnerAction: false,
-    }
-  }
-  return {
-    moderationStatus: extractModerationStatus(status) ?? undefined,
-    hasPendingOwnerAction: undefined,
-  }
 }

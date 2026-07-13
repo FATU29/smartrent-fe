@@ -44,7 +44,7 @@ import {
 import {
   isModerationFilterStatus,
   getModerationStatuses,
-  resolveModerationFilterParams,
+  extractModerationStatus,
   LISTING_STATUS_MODERATION_MAP,
   type ListingFilterStatus,
 } from '@/constants/postStatus'
@@ -569,7 +569,6 @@ export const ListingsManagementTemplate: React.FC<
         updateFilters({
           listingStatus: undefined,
           moderationStatus: undefined,
-          hasPendingOwnerAction: undefined,
           page: 1,
         })
       } else if (isModerationFilterStatus(newStatus)) {
@@ -582,7 +581,7 @@ export const ListingsManagementTemplate: React.FC<
 
         updateFilters({
           listingStatus: parentStatus ?? (newStatus as PostStatus),
-          ...resolveModerationFilterParams(newStatus),
+          moderationStatus: extractModerationStatus(newStatus) ?? undefined,
           page: 1,
         })
       } else {
@@ -595,7 +594,7 @@ export const ListingsManagementTemplate: React.FC<
           setStatus(defaultSub)
           updateFilters({
             listingStatus,
-            ...resolveModerationFilterParams(defaultSub),
+            moderationStatus: extractModerationStatus(defaultSub) ?? undefined,
             page: 1,
           })
         } else if (subFilters.length === 1) {
@@ -603,7 +602,8 @@ export const ListingsManagementTemplate: React.FC<
           setStatus(newStatus)
           updateFilters({
             listingStatus,
-            ...resolveModerationFilterParams(subFilters[0]),
+            moderationStatus:
+              extractModerationStatus(subFilters[0]) ?? undefined,
             page: 1,
           })
         } else {
@@ -612,7 +612,6 @@ export const ListingsManagementTemplate: React.FC<
           updateFilters({
             listingStatus,
             moderationStatus: undefined,
-            hasPendingOwnerAction: undefined,
             page: 1,
           })
         }
