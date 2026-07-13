@@ -237,6 +237,7 @@
     "reporterName": "Họ và tên",
     "reporterPhone": "Số điện thoại",
     "reporterEmail": "Địa chỉ email",
+    "phoneRequired": "Số điện thoại là bắt buộc",
     "invalidPhone": "Số điện thoại không hợp lệ",
     "invalidEmail": "Email không hợp lệ",
     "emailRequired": "Email là bắt buộc",
