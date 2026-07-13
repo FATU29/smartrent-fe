@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/router'
-import { AlertTriangle, Info, Ban, Clock } from 'lucide-react'
+import { AlertTriangle, Info, Ban } from 'lucide-react'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
@@ -64,26 +64,6 @@ function NoteBox({
   )
 }
 
-function getDeadlineInfo(deadlineAt?: string | null) {
-  if (!deadlineAt) return null
-
-  const deadline = new Date(deadlineAt)
-  const now = new Date()
-  const diffMs = deadline.getTime() - now.getTime()
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffMs <= 0) {
-    return { expired: true, text: '', daysLeft: 0 }
-  }
-
-  return {
-    expired: false,
-    text: `${diffDays}`,
-    daysLeft: diffDays,
-    urgent: diffDays <= 1,
-  }
-}
-
 export const ModerationBanner: React.FC<ModerationBannerProps> = ({
   moderationStatus,
   verificationNotes,
@@ -102,8 +82,6 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
   ) {
     return null
   }
-
-  const deadlineInfo = getDeadlineInfo(pendingOwnerAction?.deadlineAt)
 
   const handleEditAndResubmit = () => {
     router.push(`/seller/update-post/${listingId}?resubmit=true`)
@@ -172,45 +150,15 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
               />
             )}
 
-            {deadlineInfo && (
-              <div className='flex items-center gap-1.5 mb-3'>
-                <Clock
-                  className={cn(
-                    'w-3.5 h-3.5',
-                    deadlineInfo.expired || deadlineInfo.urgent
-                      ? 'text-red-500'
-                      : 'text-muted-foreground',
-                  )}
-                />
-                <Typography
-                  variant='small'
-                  className={cn(
-                    'text-xs',
-                    deadlineInfo.expired
-                      ? 'text-red-600 font-semibold'
-                      : deadlineInfo.urgent
-                        ? 'text-red-500 font-medium'
-                        : 'text-muted-foreground',
-                  )}
-                >
-                  {deadlineInfo.expired
-                    ? t('deadlineExpired')
-                    : t('daysRemaining', { days: deadlineInfo.text })}
-                </Typography>
-              </div>
-            )}
-
             <div className='flex flex-col sm:flex-row gap-2'>
-              {!deadlineInfo?.expired && (
-                <Button
-                  size='sm'
-                  variant={isSevere ? 'destructive' : 'default'}
-                  onClick={handleEditAndResubmit}
-                  className='text-xs w-full sm:w-auto'
-                >
-                  {t('editAndResubmit')}
-                </Button>
-              )}
+              <Button
+                size='sm'
+                variant={isSevere ? 'destructive' : 'default'}
+                onClick={handleEditAndResubmit}
+                className='text-xs w-full sm:w-auto'
+              >
+                {t('editAndResubmit')}
+              </Button>
             </div>
           </div>
         </div>

@@ -2931,9 +2931,7 @@
         "adminNoteLabel": "Note from admin",
         "editAndResubmit": "Edit & Resubmit",
         "resubmitDirectly": "Resubmit Now",
-        "contactSupport": "Contact Support",
-        "deadlineExpired": "Deadline expired",
-        "daysRemaining": "{days} days remaining"
+        "contactSupport": "Contact Support"
       },
       "timeline": {
         "title": "Moderation History",
