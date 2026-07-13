@@ -202,6 +202,11 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
   onSuggestionClick,
 }) => {
   const isBot = message.sender === 'bot'
+  // While a bot message is still streaming we render it as plain text and
+  // defer markdown parsing until it settles. ReactMarkdown re-parses the
+  // whole message on every token, so parsing per delta is O(n^2) over the
+  // answer length — the main source of jank on long streamed replies.
+  const isStreaming = isBot && message.isStreaming === true
   const hasListings = isBot && message.listings && message.listings.length > 0
   const t = useTranslations('chat')
   const tAi = useTranslations('aiChat')
@@ -210,16 +215,18 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
   const [showAllResults, setShowAllResults] = useState(false)
   const [showExpandDialog, setShowExpandDialog] = useState(false)
 
-  // Process bot message content
+  // Process bot message content (skip the regex passes while streaming — the
+  // plain-text view doesn't use them and they'd run on every token).
   const processedContent = useMemo(() => {
-    if (!isBot) return message.content
+    if (!isBot || isStreaming) return message.content
     return processContent(message.content)
-  }, [isBot, message.content])
+  }, [isBot, isStreaming, message.content])
 
-  // Detect if message contains a markdown table (for expand button)
+  // Detect if message contains a markdown table (for expand button). Only
+  // meaningful once streaming settles.
   const containsTable = useMemo(
-    () => isBot && hasMarkdownTable(message.content),
-    [isBot, message.content],
+    () => isBot && !isStreaming && hasMarkdownTable(message.content),
+    [isBot, isStreaming, message.content],
   )
 
   // Dynamic bubble markdown components: hide table when expand dialog available
@@ -275,7 +282,7 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
                 : 'bg-primary text-primary-foreground rounded-br-md',
             )}
           >
-            {isBot ? (
+            {isBot && !isStreaming ? (
               <div
                 className={cn(
                   'prose prose-sm dark:prose-invert max-w-none break-words text-sm leading-relaxed',

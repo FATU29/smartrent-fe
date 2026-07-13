@@ -37,6 +37,10 @@ export type TChatMessage = {
   /** Marks a bot message that should render an inline action button (e.g. the
    *  guest login CTA shown after the free message limit is reached). */
   action?: 'login'
+  /** True while this bot message is still receiving streamed text deltas. The
+   *  bubble renders plain text during streaming and defers markdown parsing
+   *  until the stream settles, avoiding a full re-parse on every token. */
+  isStreaming?: boolean
 }
 
 export type TChatState = {
@@ -242,6 +246,7 @@ export const useChatLogic = () => {
             content: '',
             sender: 'bot',
             timestamp: new Date(),
+            isStreaming: true,
           })
           setIsTyping(false)
         }
@@ -287,9 +292,13 @@ export const useChatLogic = () => {
                 ensureBotMessage()
                 const toolsUsed =
                   data.tools_used ?? data.metadata?.tools_used ?? []
-                if (toolsUsed.length > 0) {
-                  updateMessage(botMessageId, (m) => ({ ...m, toolsUsed }))
-                }
+                // Settle the message: switch the bubble from plain text to
+                // full markdown, and attach tool metadata if any.
+                updateMessage(botMessageId, (m) => ({
+                  ...m,
+                  isStreaming: false,
+                  ...(toolsUsed.length > 0 ? { toolsUsed } : {}),
+                }))
                 setIsTyping(false)
                 setIsLoading(false)
                 setStreamingStatus(null)
@@ -300,6 +309,7 @@ export const useChatLogic = () => {
                   updateMessage(botMessageId, (m) => ({
                     ...m,
                     content: m.content || msg || getChatErrorContent(locale, t),
+                    isStreaming: false,
                   }))
                 } else {
                   addMessage({
@@ -322,6 +332,12 @@ export const useChatLogic = () => {
           // the reserved space alone: a new send re-anchors it, and
           // cancelStream finalizes it on its own.
           if ((error as Error)?.name === 'AbortError') {
+            // A cancelled / superseded stream leaves its partial bubble mid-
+            // stream; settle it so it renders as markdown rather than staying
+            // stuck in the plain-text streaming view.
+            if (botMessageAdded) {
+              updateMessage(botMessageId, (m) => ({ ...m, isStreaming: false }))
+            }
             setIsTyping(false)
             setIsLoading(false)
             setStreamingStatus(null)
@@ -329,6 +345,9 @@ export const useChatLogic = () => {
           }
           // onError handler already updated UI for stream-level errors;
           // anything reaching here is a fatal pre-stream/network failure.
+          if (botMessageAdded) {
+            updateMessage(botMessageId, (m) => ({ ...m, isStreaming: false }))
+          }
           if (isLoading) {
             setIsTyping(false)
             setIsLoading(false)
