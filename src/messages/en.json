@@ -1726,6 +1726,7 @@
           "reevaluate": "Re-evaluate",
           "predicting": "Predicting...",
           "incompleteData": "Please fill in complete address, area and GPS coordinates information",
+          "unsupportedType": "AI valuation is only available for apartments, houses, rooms and studios.",
           "types": {
             "room": "Room",
             "apartment": "Apartment",

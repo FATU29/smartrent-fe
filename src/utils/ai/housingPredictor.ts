@@ -5,6 +5,12 @@ import type {
 
 import { CreateListingRequest } from '@/api/types'
 
+// The housing price model only covers residential types. Exposed so the UI can
+// tell "this property type isn't supported by AI valuation" apart from "required
+// data is missing" instead of showing one misleading message for both.
+export const isTypeSupportedForAiValuation = (productType?: string): boolean =>
+  normalizePropertyType(productType) !== null
+
 // Normalize product type to API enum
 const normalizePropertyType = (
   productType?: string,
