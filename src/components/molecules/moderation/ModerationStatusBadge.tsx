@@ -2,12 +2,24 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Badge } from '@/components/atoms/badge'
 import { ModerationStatus } from '@/api/types/property.type'
-import { Clock, CheckCircle, XCircle, Edit, RefreshCw, Ban } from 'lucide-react'
+import {
+  Clock,
+  CheckCircle,
+  XCircle,
+  Edit,
+  RefreshCw,
+  Ban,
+  EyeOff,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface ModerationStatusBadgeProps {
   status: ModerationStatus
   permanentlyRemoved?: boolean
+  // moderationStatus=SUSPENDED is shared by rejecting a listing in the review
+  // queue (always creates a pendingOwnerAction) and temporarily hiding it
+  // during report review (never does) — mirrors ModerationBanner's split.
+  hasPendingOwnerAction?: boolean | null
   className?: string
 }
 
@@ -62,26 +74,49 @@ const PERMANENTLY_REMOVED_CONFIG = {
     'bg-red-50 text-red-700 border-red-300 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800',
 }
 
+const HIDDEN_CONFIG = {
+  icon: EyeOff,
+  className:
+    'bg-blue-50 text-blue-700 border-blue-300 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-800',
+}
+
 export const ModerationStatusBadge: React.FC<ModerationStatusBadgeProps> = ({
   status,
   permanentlyRemoved,
+  hasPendingOwnerAction,
   className,
 }) => {
   const t = useTranslations('seller.moderation.status')
-  const isPermanentlyRemoved =
-    status === ModerationStatus.SUSPENDED && permanentlyRemoved
+  const isSuspended = status === ModerationStatus.SUSPENDED
+  const isPermanentlyRemoved = isSuspended && permanentlyRemoved
+  const isRejectedSuspend =
+    isSuspended && !permanentlyRemoved && Boolean(hasPendingOwnerAction)
+  const isHiddenSuspend =
+    isSuspended && !permanentlyRemoved && !hasPendingOwnerAction
+
   const config = isPermanentlyRemoved
     ? PERMANENTLY_REMOVED_CONFIG
-    : BADGE_CONFIG[status]
+    : isRejectedSuspend
+      ? BADGE_CONFIG[ModerationStatus.REJECTED]
+      : isHiddenSuspend
+        ? HIDDEN_CONFIG
+        : BADGE_CONFIG[status]
 
   if (!config) return null
 
   const Icon = config.icon
+  const labelKey = isPermanentlyRemoved
+    ? 'SUSPENDED_PERMANENT'
+    : isRejectedSuspend
+      ? 'REJECTED'
+      : isHiddenSuspend
+        ? 'SUSPENDED_HIDDEN'
+        : status
 
   return (
     <Badge variant='outline' className={cn(config.className, className)}>
       <Icon className='w-3.5 h-3.5 mr-1' />
-      {t(isPermanentlyRemoved ? 'SUSPENDED_PERMANENT' : status)}
+      {t(labelKey)}
     </Badge>
   )
 }

@@ -2918,6 +2918,7 @@
         "REVISION_REQUIRED": "Cần chỉnh sửa",
         "RESUBMITTED": "Đã gửi lại",
         "SUSPENDED": "Bị tạm ngưng",
+        "SUSPENDED_HIDDEN": "Ẩn tạm thời",
         "SUSPENDED_PERMANENT": "Đã gỡ vĩnh viễn"
       },
       "banner": {

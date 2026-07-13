@@ -204,6 +204,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 <ModerationStatusBadge
                   status={moderationStatus}
                   permanentlyRemoved={permanentlyRemoved}
+                  hasPendingOwnerAction={Boolean(property.pendingOwnerAction)}
                 />
               ) : isExpired ? (
                 <Badge className='backdrop-blur-md bg-red-500 text-white border-red-600 shadow-md font-medium hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 dark:border-red-700'>
