@@ -87,20 +87,15 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
     router.push(`/seller/update-post/${listingId}?resubmit=true`)
   }
 
-  // moderationStatus SUSPENDED is shared by two unrelated admin actions:
-  // rejecting a listing in the review queue (always creates a pendingOwnerAction)
-  // and temporarily hiding a listing under report review (never does). Split on
-  // that signal so the two don't render as the same "tạm ngưng" banner.
-  const isRejectedSuspend =
-    moderationStatus === ModerationStatus.SUSPENDED &&
-    !permanentlyRemoved &&
-    Boolean(pendingOwnerAction)
-  const isHiddenSuspend =
-    moderationStatus === ModerationStatus.SUSPENDED &&
-    !permanentlyRemoved &&
-    !pendingOwnerAction
+  // Each moderation state maps to exactly one banner now — the backend gives
+  // rejected / hidden / removed distinct statuses instead of overloading
+  // SUSPENDED. permanentlyRemoved is a legacy fallback for older rows that
+  // predate the REMOVED status.
+  const isRemoved =
+    moderationStatus === ModerationStatus.REMOVED || Boolean(permanentlyRemoved)
   const isRejected =
-    moderationStatus === ModerationStatus.REJECTED || isRejectedSuspend
+    !isRemoved && moderationStatus === ModerationStatus.REJECTED
+  const isHidden = !isRemoved && moderationStatus === ModerationStatus.SUSPENDED
 
   if (isRejected || moderationStatus === ModerationStatus.REVISION_REQUIRED) {
     const title = isRejected ? t('rejectedTitle') : t('revisionRequiredTitle')
@@ -177,7 +172,7 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
     )
   }
 
-  if (isHiddenSuspend) {
+  if (isHidden) {
     return (
       <div
         className={cn(
@@ -244,7 +239,7 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
     )
   }
 
-  if (moderationStatus === ModerationStatus.SUSPENDED && permanentlyRemoved) {
+  if (isRemoved) {
     return (
       <div
         className={cn(

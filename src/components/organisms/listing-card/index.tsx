@@ -99,18 +99,18 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   // Moderation fields
   const moderationStatus = property.moderationStatus
   const permanentlyRemoved = property.permanentlyRemoved
+  // permanentlyRemoved is a legacy fallback for rows predating the REMOVED status.
   const isPermanentlyRemoved =
-    moderationStatus === ModerationStatus.SUSPENDED && !!permanentlyRemoved
-  // A rejected listing (either the legacy REJECTED status, or SUSPENDED with a
-  // pendingOwnerAction from the review-queue reject flow) can't be edited or
-  // resubmitted — mirrors ModerationBanner's isRejected. SUSPENDED without a
-  // pendingOwnerAction is a report-driven temporary hide, not a rejection, and
-  // editing is still allowed there.
-  const isRejected =
-    moderationStatus === ModerationStatus.REJECTED ||
-    (moderationStatus === ModerationStatus.SUSPENDED &&
-      !permanentlyRemoved &&
-      Boolean(property.pendingOwnerAction))
+    moderationStatus === ModerationStatus.REMOVED || !!permanentlyRemoved
+  // Rejected and removed are terminal — no edit/resubmit. SUSPENDED (temporarily
+  // hidden under report) and REVISION_REQUIRED are not "rejected".
+  const isRejected = moderationStatus === ModerationStatus.REJECTED
+  // The backend blocks generic edits on hidden/rejected/removed listings
+  // (only REVISION_REQUIRED stays editable), so hide the edit CTA for those.
+  const isEditBlocked =
+    isRejected ||
+    isPermanentlyRemoved ||
+    moderationStatus === ModerationStatus.SUSPENDED
 
   const calculatedExpiryDate = React.useMemo(() => {
     if (expiryDate) return toISO(expiryDate)
@@ -204,7 +204,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 <ModerationStatusBadge
                   status={moderationStatus}
                   permanentlyRemoved={permanentlyRemoved}
-                  hasPendingOwnerAction={Boolean(property.pendingOwnerAction)}
                 />
               ) : isExpired ? (
                 <Badge className='backdrop-blur-md bg-red-500 text-white border-red-600 shadow-md font-medium hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 dark:border-red-700'>
@@ -583,7 +582,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 showPromoteButton={showPromoteButton}
                 showRepostButton={showRepostButton}
                 showRenewButton={showRenewButton}
-                showEditButton={!postingBlocked && !isRejected}
+                showEditButton={!postingBlocked && !isEditBlocked}
                 onlyShowDelete={isPermanentlyRemoved}
               />
             </div>
