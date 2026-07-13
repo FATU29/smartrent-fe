@@ -2931,9 +2931,7 @@
         "adminNoteLabel": "Ghi chú từ quản trị viên",
         "editAndResubmit": "Chỉnh sửa và gửi lại",
         "resubmitDirectly": "Gửi lại ngay",
-        "contactSupport": "Liên hệ hỗ trợ",
-        "deadlineExpired": "Đã hết hạn",
-        "daysRemaining": "{days} ngày còn lại"
+        "contactSupport": "Liên hệ hỗ trợ"
       },
       "timeline": {
         "title": "Lịch sử kiểm duyệt",
