@@ -2671,7 +2671,9 @@
         "MOD_RESUBMITTED": "Resubmitted",
         "MOD_REJECTED": "Rejected by Admin",
         "MOD_REVISION_REQUIRED": "Revision Required",
-        "MOD_SUSPENDED": "Suspended"
+        "MOD_SUSPENDED": "Suspended",
+        "MOD_SUSPENDED_REJECTED": "Rejected",
+        "MOD_SUSPENDED_HIDDEN": "Temporarily Hidden"
       },
       "propertyTypes": {
         "0": "All Types",
