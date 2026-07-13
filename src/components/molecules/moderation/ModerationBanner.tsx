@@ -87,26 +87,28 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
     router.push(`/seller/update-post/${listingId}?resubmit=true`)
   }
 
-  const isOrdinarySuspend =
-    moderationStatus === ModerationStatus.SUSPENDED && !permanentlyRemoved
+  // moderationStatus SUSPENDED is shared by two unrelated admin actions:
+  // rejecting a listing in the review queue (always creates a pendingOwnerAction)
+  // and temporarily hiding a listing under report review (never does). Split on
+  // that signal so the two don't render as the same "tạm ngưng" banner.
+  const isRejectedSuspend =
+    moderationStatus === ModerationStatus.SUSPENDED &&
+    !permanentlyRemoved &&
+    Boolean(pendingOwnerAction)
+  const isHiddenSuspend =
+    moderationStatus === ModerationStatus.SUSPENDED &&
+    !permanentlyRemoved &&
+    !pendingOwnerAction
+  const isRejected =
+    moderationStatus === ModerationStatus.REJECTED || isRejectedSuspend
 
-  if (
-    moderationStatus === ModerationStatus.REJECTED ||
-    moderationStatus === ModerationStatus.REVISION_REQUIRED ||
-    isOrdinarySuspend
-  ) {
-    const isSevere =
-      moderationStatus === ModerationStatus.REJECTED || isOrdinarySuspend
-    const title = isOrdinarySuspend
-      ? t('suspendedTitle')
-      : isSevere
-        ? t('rejectedTitle')
-        : t('revisionRequiredTitle')
+  if (isRejected || moderationStatus === ModerationStatus.REVISION_REQUIRED) {
+    const title = isRejected ? t('rejectedTitle') : t('revisionRequiredTitle')
     return (
       <div
         className={cn(
           'rounded-lg border p-4',
-          isSevere
+          isRejected
             ? 'bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-900'
             : 'bg-orange-50 border-orange-200 dark:bg-orange-950/30 dark:border-orange-900',
           className,
@@ -116,7 +118,7 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
           <AlertTriangle
             className={cn(
               'w-5 h-5 mt-0.5 shrink-0',
-              isSevere
+              isRejected
                 ? 'text-red-600 dark:text-red-400'
                 : 'text-orange-600 dark:text-orange-400',
             )}
@@ -126,7 +128,7 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
               variant='p'
               className={cn(
                 'font-semibold mb-1',
-                isSevere
+                isRejected
                   ? 'text-red-800 dark:text-red-300'
                   : 'text-orange-800 dark:text-orange-300',
               )}
@@ -138,7 +140,7 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
               <NoteBox
                 label={t('adminNoteLabel')}
                 text={verificationNotes}
-                tone={isSevere ? 'severe' : 'warning'}
+                tone={isRejected ? 'severe' : 'warning'}
               />
             )}
 
@@ -150,16 +152,63 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
               />
             )}
 
-            <div className='flex flex-col sm:flex-row gap-2'>
-              <Button
-                size='sm'
-                variant={isSevere ? 'destructive' : 'default'}
-                onClick={handleEditAndResubmit}
-                className='text-xs w-full sm:w-auto'
+            {isRejected ? (
+              <Typography
+                variant='small'
+                className='block text-muted-foreground text-xs'
               >
-                {t('editAndResubmit')}
-              </Button>
-            </div>
+                {t('cannotEditNote')}
+              </Typography>
+            ) : (
+              <div className='flex flex-col sm:flex-row gap-2'>
+                <Button
+                  size='sm'
+                  variant='default'
+                  onClick={handleEditAndResubmit}
+                  className='text-xs w-full sm:w-auto'
+                >
+                  {t('editAndResubmit')}
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (isHiddenSuspend) {
+    return (
+      <div
+        className={cn(
+          'rounded-lg border p-4 bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-900',
+          className,
+        )}
+      >
+        <div className='flex items-start gap-3'>
+          <Info className='w-5 h-5 mt-0.5 shrink-0 text-blue-600 dark:text-blue-400' />
+          <div className='flex-1 min-w-0'>
+            <Typography
+              variant='p'
+              className='font-semibold mb-1 text-blue-800 dark:text-blue-300'
+            >
+              {t('hiddenTitle')}
+            </Typography>
+
+            {verificationNotes && (
+              <NoteBox
+                label={t('adminNoteLabel')}
+                text={verificationNotes}
+                tone='muted'
+              />
+            )}
+
+            <Typography
+              variant='small'
+              className='text-blue-700 dark:text-blue-400'
+            >
+              {t('hiddenMessage')}
+            </Typography>
           </div>
         </div>
       </div>
