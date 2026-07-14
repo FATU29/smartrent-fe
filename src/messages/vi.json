@@ -2930,6 +2930,7 @@
         "hiddenTitle": "Bài đăng đang bị ẩn tạm thời",
         "hiddenMessage": "Quản trị viên đã tạm ẩn bài đăng này để xem xét báo cáo. Bài đăng sẽ tự động hiển thị lại sau khi xử lý xong, bạn không cần thao tác gì.",
         "cannotEditNote": "Bạn không thể chỉnh sửa hoặc gửi lại bài đăng này.",
+        "noReasonProvided": "Bài đăng đã bị từ chối. Quản trị viên chưa cung cấp lý do cụ thể.",
         "permanentlyRemovedTitle": "Bài đăng đã bị gỡ vĩnh viễn",
         "adminNoteLabel": "Ghi chú từ quản trị viên",
         "editAndResubmit": "Chỉnh sửa và gửi lại",

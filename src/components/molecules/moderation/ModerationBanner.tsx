@@ -147,6 +147,18 @@ export const ModerationBanner: React.FC<ModerationBannerProps> = ({
               />
             )}
 
+            {/* Always give a rejected listing an admin-note box, even when the
+                reason text is empty (e.g. older AI auto-rejects that predate
+                reason capture) — otherwise the seller sees "Bị từ chối" with no
+                explanation at all. */}
+            {isRejected && !verificationNotes && !pendingOwnerAction?.notes && (
+              <NoteBox
+                label={t('adminNoteLabel')}
+                text={t('noReasonProvided')}
+                tone='severe'
+              />
+            )}
+
             {isRejected ? (
               <Typography
                 variant='small'
