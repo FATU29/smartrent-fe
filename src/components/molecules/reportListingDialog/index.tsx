@@ -78,9 +78,9 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
         const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim()
         setValue('reporterName', fullName)
       }
-      if (user.phoneNumber) {
-        const fullPhone = `${user.phoneCode || ''}${user.phoneNumber}`.trim()
-        setValue('reporterPhone', fullPhone)
+      const contactPhone = user.contactPhoneNumber || user.phoneNumber
+      if (contactPhone) {
+        setValue('reporterPhone', contactPhone.trim())
       }
     }
   }, [isAuthenticated, user, open, setValue])
