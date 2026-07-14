@@ -2,7 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { Mail, Phone, MapPin, GraduationCap } from 'lucide-react'
+import { Mail, Phone, GraduationCap } from 'lucide-react'
 
 import Logo from '@/components/atoms/logo'
 import { Button } from '@/components/atoms/button'
@@ -127,12 +127,6 @@ const Footer: React.FC = () => {
               {t('contactInfo')}
             </p>
             <div className='space-y-3'>
-              <div className='flex items-start gap-2.5'>
-                <MapPin className='w-4 h-4 mt-0.5 flex-shrink-0 text-muted-foreground' />
-                <span className='text-sm text-muted-foreground leading-snug'>
-                  {t('address')}
-                </span>
-              </div>
               <div className='flex items-center gap-2.5'>
                 <Phone className='w-4 h-4 flex-shrink-0 text-muted-foreground' />
                 <a
