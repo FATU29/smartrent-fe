@@ -2645,6 +2645,11 @@
       }
     },
     "listingManagement": {
+      "postingBlockedBanner": {
+        "title": "Tài khoản bị chặn đăng tin",
+        "message": "Tài khoản của bạn hiện đang bị chặn các tính năng liên quan đến đăng bài — đăng tin mới, sửa tin, đăng lại sau từ chối, đăng tin lại và gia hạn đều đang bị vô hiệu hóa.",
+        "reasonLabel": "Lý do bị chặn"
+      },
       "toolbar": {
         "searchPlaceholder": "Tìm kiếm tin...",
         "filter": "Lọc",

@@ -17,7 +17,10 @@ import { DeleteListingDialog } from '@/components/molecules/deleteListingDialog'
 import { TakeDownListingDialog } from '@/components/molecules/takeDownListingDialog'
 import { RepostListingDialog } from '@/components/molecules/repostListingDialog'
 import { RenewListingDialog } from '@/components/molecules/renewListingDialog'
-import { ResubmitListingDialog } from '@/components/molecules/moderation'
+import {
+  ResubmitListingDialog,
+  PostingBlockedBanner,
+} from '@/components/molecules/moderation'
 import { PUBLIC_ROUTES } from '@/constants/route'
 import { MembershipPushDisplay } from '@/components/molecules/listings/MembershipPushDisplay'
 import { usePushListing, usePushQuota } from '@/hooks/usePush'
@@ -537,6 +540,7 @@ export const ListingsManagementTemplate: React.FC<
   ListingsManagementTemplateProps
 > = ({ children }) => {
   const tNav = useTranslations('navigation.seller')
+  const { user } = useAuthContext()
   const [status, setStatus] = useState<ListingFilterStatus>(
     POST_STATUS.ALL as ListingFilterStatus,
   )
@@ -624,6 +628,9 @@ export const ListingsManagementTemplate: React.FC<
     <PageContainer width='grid' padded={false} className='p-3 sm:p-4'>
       <div className='flex flex-col gap-4 sm:gap-6'>
         <Typography variant='pageTitle'>{tNav('listings')}</Typography>
+        {user?.postingBlocked && (
+          <PostingBlockedBanner reason={user.postingBlockedReason} />
+        )}
         <ListingStatusFilterResponsive
           value={status}
           onChange={handleStatusChange}

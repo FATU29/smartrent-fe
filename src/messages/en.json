@@ -2645,6 +2645,11 @@
       }
     },
     "listingManagement": {
+      "postingBlockedBanner": {
+        "title": "Posting access restricted",
+        "message": "Your account is currently blocked from posting-related actions — creating, editing, resubmitting, reposting, and renewing listings are all disabled.",
+        "reasonLabel": "Reason for restriction"
+      },
       "toolbar": {
         "searchPlaceholder": "Search listings...",
         "filter": "Filter",
