@@ -2,7 +2,11 @@ import type {
   DraftListingResponse,
   DraftAddressResponse,
 } from '@/api/types/draft.type'
-import type { Amenity, MediaItem } from '@/api/types/property.type'
+import type {
+  Amenity,
+  MediaItem,
+  PropertyType,
+} from '@/api/types/property.type'
 
 /**
  * Frontend draft detail type (UI-friendly)
@@ -17,7 +21,7 @@ export interface DraftDetail {
   category: {
     id: number
   }
-  productType: string
+  productType: PropertyType
   price: number
   priceUnit: string
   address: {

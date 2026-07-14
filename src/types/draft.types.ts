@@ -1,3 +1,5 @@
+import type { PropertyType } from '@/api/types/property.type'
+
 /**
  * Draft types for listing drafts
  */
@@ -7,7 +9,7 @@ export interface Draft {
   title?: string
   description?: string
   address?: string
-  propertyType?: string
+  propertyType?: PropertyType
   price?: number
   area?: number
   bedrooms?: number

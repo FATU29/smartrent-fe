@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils'
 import type { Draft } from '@/types/draft.types'
 import { DEFAULT_IMAGE } from '@/constants/common'
 import { Progress } from '@/components/atoms/progress'
+import { getProductTypeTranslationKey } from '@/utils/property'
 
 interface DraftCardProps {
   draft: Draft
@@ -44,12 +45,15 @@ export const DraftCard: React.FC<DraftCardProps> = ({
   className,
 }) => {
   const t = useTranslations('seller.drafts.card')
+  const tRoot = useTranslations()
 
   const draftTitle =
     draft.title?.trim() || t('defaultTitle', { id: String(draft.id) })
   const draftDescription = draft.description?.trim() || t('defaultDescription')
   const address = draft.address?.trim() || t('defaultAddress')
-  const propertyType = draft.propertyType?.trim() || t('defaultPropertyType')
+  const propertyType = draft.propertyType
+    ? tRoot(getProductTypeTranslationKey(draft.propertyType))
+    : t('defaultPropertyType')
 
   const hasImage = draft.images && draft.images.length > 0
   const imageUrl = hasImage ? draft.images![0] : DEFAULT_IMAGE
