@@ -120,12 +120,12 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
               listing={listing}
               variant='ghost'
               size='icon'
-              className='bg-card/80 backdrop-blur-md hover:bg-card shadow-sm rounded-full transition-all duration-200'
+              className='bg-card/80 backdrop-blur-md shadow-sm rounded-full transition-all duration-200'
             />
             <SaveListingButton
               listingId={listing.listingId}
               variant='icon'
-              className='bg-card/80 backdrop-blur-md hover:bg-card shadow-sm rounded-full transition-all duration-200'
+              className='bg-card/80 backdrop-blur-md shadow-sm rounded-full transition-all duration-200'
             />
           </div>
 

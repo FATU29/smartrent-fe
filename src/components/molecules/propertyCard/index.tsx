@@ -57,7 +57,7 @@ const StatPill: React.FC<{
 }> = ({ icon, value, label }) => (
   <Tooltip>
     <TooltipTrigger asChild>
-      <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/60 hover:bg-muted transition-colors duration-200'>
+      <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/60'>
         <span className='text-primary'>{icon}</span>
         <Typography variant='small' className='font-semibold text-foreground'>
           {value}
@@ -237,7 +237,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 <button
                   type='button'
                   onClick={handlePrevImage}
-                  className='absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-card shadow-sm z-10'
+                  className='absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 shadow-sm z-10'
                   aria-label='Previous image'
                 >
                   <ChevronLeft className='w-4 h-4 text-foreground' />
@@ -245,7 +245,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 <button
                   type='button'
                   onClick={handleNextImage}
-                  className='absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 hover:bg-card shadow-sm z-10'
+                  className='absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 shadow-sm z-10'
                   aria-label='Next image'
                 >
                   <ChevronRight className='w-4 h-4 text-foreground' />
@@ -283,12 +283,12 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                 listing={listing}
                 variant='ghost'
                 size='icon'
-                className='bg-card/80 backdrop-blur-md hover:bg-card shadow-sm rounded-full transition-all duration-200'
+                className='bg-card/80 backdrop-blur-md shadow-sm rounded-full transition-all duration-200'
               />
               <SaveListingButton
                 listingId={listing.listingId}
                 variant='icon'
-                className='bg-card/80 backdrop-blur-md hover:bg-card shadow-sm rounded-full transition-all duration-200'
+                className='bg-card/80 backdrop-blur-md shadow-sm rounded-full transition-all duration-200'
               />
             </div>
 
@@ -336,7 +336,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     {
                       'bg-primary ring-1 ring-primary/25 shadow-sm':
                         currentImageIndex === idx,
-                      'bg-transparent ring-1 ring-border/50 hover:ring-primary/40 opacity-80 hover:opacity-100':
+                      'bg-transparent ring-1 ring-border/50 opacity-80':
                         currentImageIndex !== idx,
                     },
                   )}
@@ -359,7 +359,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     e.stopPropagation()
                     setCurrentImageIndex(visibleThumbnails.length)
                   }}
-                  className='relative size-[68px] md:size-[76px] aspect-square shrink-0 overflow-hidden rounded-xl ring-1 ring-border/60 bg-muted/80 flex items-center justify-center cursor-pointer hover:bg-muted transition-colors'
+                  className='relative size-[68px] md:size-[76px] aspect-square shrink-0 overflow-hidden rounded-xl ring-1 ring-border/60 bg-muted/80 flex items-center justify-center cursor-pointer'
                 >
                   <div className='text-center'>
                     <Typography
@@ -412,7 +412,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             variant='ghost'
             size='icon'
             className={classNames(
-              'bg-card/80 backdrop-blur-md rounded-full shadow-sm hover:bg-card transition-all',
+              'bg-card/80 backdrop-blur-md rounded-full shadow-sm transition-all',
               isCompact ? 'w-6 h-6' : 'w-8 h-8 sm:w-9 sm:h-9',
             )}
           />
@@ -420,7 +420,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             listingId={listing.listingId}
             variant='icon'
             className={classNames(
-              'bg-card/80 backdrop-blur-md rounded-full shadow-sm hover:bg-card transition-all',
+              'bg-card/80 backdrop-blur-md rounded-full shadow-sm transition-all',
               isCompact
                 ? 'w-6 h-6'
                 : 'w-8 h-8 sm:top-3 sm:right-3 sm:w-9 sm:h-9',
@@ -669,7 +669,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               {furnishing && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors'>
+                    <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50'>
                       <Sofa className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
                       <Typography variant='small' className='font-medium'>
                         {tCreatePost(getFurnishingTranslationKey(furnishing))}
@@ -687,7 +687,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               {direction && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors'>
+                    <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50'>
                       <Compass className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
                       <Typography variant='small' className='font-medium'>
                         {tCreatePost(getDirectionTranslationKey(direction))}

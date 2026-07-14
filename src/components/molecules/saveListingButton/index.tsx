@@ -66,9 +66,7 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
       <Heart
         className={cn(
           'transition-all duration-200',
-          isSaved
-            ? 'fill-red-500 stroke-red-500'
-            : 'fill-none stroke-current hover:stroke-red-500',
+          isSaved ? 'fill-red-500 stroke-red-500' : 'fill-none stroke-current',
           isLoading && 'animate-pulse',
           iconClassName,
         )}
@@ -93,7 +91,7 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
               disabled={disabled || isLoading || !listingId}
               className={cn(
                 'inline-flex items-center justify-center',
-                'hover:scale-110 active:scale-95',
+                'active:scale-95',
                 'transition-transform duration-200',
                 'disabled:opacity-50 disabled:cursor-not-allowed',
                 className,
@@ -124,7 +122,7 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
               onClick={handleClick}
               disabled={disabled || isLoading || !listingId}
               className={cn(
-                'hover:bg-background/80 hover:scale-110 active:scale-95',
+                'active:scale-95',
                 'transition-all duration-200',
                 'rounded-full',
                 className,

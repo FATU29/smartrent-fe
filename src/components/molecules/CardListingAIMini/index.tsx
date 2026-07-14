@@ -135,7 +135,7 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
               <button
                 onClick={handleSaveClick}
                 disabled={isSaveLoading}
-                className='flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-50 h-7 w-7'
+                className='flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 active:scale-95 disabled:opacity-50 h-7 w-7'
                 aria-label={
                   isSaved ? tSaved('actions.saved') : tSaved('actions.save')
                 }
@@ -145,14 +145,14 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
                     'w-4 h-4 transition-all duration-200',
                     isSaved
                       ? 'fill-red-500 stroke-red-500'
-                      : 'fill-none stroke-muted-foreground hover:stroke-red-500',
+                      : 'fill-none stroke-muted-foreground',
                     isSaveLoading && 'animate-pulse',
                   )}
                 />
               </button>
               <button
                 onClick={handleCompareClick}
-                className='flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all duration-200 hover:scale-110 active:scale-95 h-7 w-7'
+                className='flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 active:scale-95 h-7 w-7'
                 aria-label={
                   isInCompareList
                     ? tCompare('actions.removeFromCompare')
@@ -164,7 +164,7 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
                     'w-4 h-4 transition-all duration-200',
                     isInCompareList
                       ? 'rotate-45 stroke-primary'
-                      : 'stroke-muted-foreground hover:stroke-primary',
+                      : 'stroke-muted-foreground',
                   )}
                 />
               </button>
