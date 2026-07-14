@@ -200,7 +200,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
               type='button'
               onClick={handlePrevImage}
               aria-label={t('prevImage')}
-              className='absolute left-1.5 top-1/2 -translate-y-1/2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-background/80 text-foreground shadow-sm backdrop-blur-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 max-md:opacity-100 hover:bg-background'
+              className='absolute left-1.5 top-1/2 -translate-y-1/2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-background/80 text-foreground shadow-sm backdrop-blur-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 max-md:opacity-100'
             >
               <ChevronLeft className='w-4 h-4' aria-hidden='true' />
             </button>
@@ -208,7 +208,7 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
               type='button'
               onClick={handleNextImage}
               aria-label={t('nextImage')}
-              className='absolute right-1.5 top-1/2 -translate-y-1/2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-background/80 text-foreground shadow-sm backdrop-blur-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 max-md:opacity-100 hover:bg-background'
+              className='absolute right-1.5 top-1/2 -translate-y-1/2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-background/80 text-foreground shadow-sm backdrop-blur-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 max-md:opacity-100'
             >
               <ChevronRight className='w-4 h-4' aria-hidden='true' />
             </button>
