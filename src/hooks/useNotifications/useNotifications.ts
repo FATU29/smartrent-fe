@@ -51,22 +51,19 @@ export function useNotifications() {
       if (!response.success) {
         throw new Error(response.message ?? 'Failed to fetch notifications')
       }
-      // Backend returns raw Spring Page (not wrapped in ApiResponse.data),
-      // so page fields are spread at root level by apiRequest
-      const page = (response.data ??
-        response) as unknown as NotificationListResponse
+      const page = response.data as NotificationListResponse
       return {
-        content: page.content ?? [],
+        data: page.data ?? [],
         totalElements: page.totalElements ?? 0,
         totalPages: page.totalPages ?? 0,
-        number: page.number ?? pageParam,
+        page: page.page ?? pageParam,
         size: page.size ?? PAGE_SIZE,
       } satisfies NotificationListResponse
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
       if (!lastPage || lastPage.totalPages <= 0) return undefined
-      const nextPage = (lastPage.number ?? 0) + 1
+      const nextPage = (lastPage.page ?? 0) + 1
       return nextPage < lastPage.totalPages ? nextPage : undefined
     },
     enabled: isAuthenticated,
@@ -75,7 +72,7 @@ export function useNotifications() {
 
   // Flatten pages into a single array and deduplicate by id
   const notifications: NotificationItem[] = (() => {
-    const all = notificationsData?.pages.flatMap((page) => page.content) ?? []
+    const all = notificationsData?.pages.flatMap((page) => page.data) ?? []
     const seen = new Set<number>()
     return all.filter((n) => {
       if (seen.has(n.id)) return false
@@ -90,11 +87,7 @@ export function useNotifications() {
     queryFn: async () => {
       const response = await NotificationService.getUnreadCount()
       if (!response.success) throw new Error(response.message ?? 'Failed')
-      // Backend returns raw { unreadCount: N } (not wrapped in ApiResponse.data)
-      const data = (response.data ?? response) as unknown as {
-        unreadCount: number
-      }
-      return data.unreadCount ?? 0
+      return response.data.unreadCount ?? 0
     },
     enabled: isAuthenticated,
     staleTime: 30 * 1000,
@@ -124,7 +117,7 @@ export function useNotifications() {
 
       const shouldDecrementUnread =
         previousNotifications?.pages.some((page) =>
-          page.content.some((n) => n.id === id && !n.isRead),
+          page.data.some((n) => n.id === id && !n.isRead),
         ) ?? false
 
       if (shouldDecrementUnread) {
@@ -141,7 +134,7 @@ export function useNotifications() {
             ...old,
             pages: old.pages.map((page) => ({
               ...page,
-              content: page.content.map((n) =>
+              data: page.data.map((n) =>
                 n.id === id ? { ...n, isRead: true } : n,
               ),
             })),
@@ -203,7 +196,7 @@ export function useNotifications() {
             ...old,
             pages: old.pages.map((page) => ({
               ...page,
-              content: page.content.map((n) => ({ ...n, isRead: true })),
+              data: page.data.map((n) => ({ ...n, isRead: true })),
             })),
           }
         },
@@ -261,7 +254,7 @@ export function useNotifications() {
         if (!old?.pages) return old
 
         const alreadyExists = old.pages.some((page) =>
-          page.content.some((n) => n.id === notification.id),
+          page.data.some((n) => n.id === notification.id),
         )
         if (alreadyExists) {
           shouldIncrementUnread = false
@@ -276,7 +269,7 @@ export function useNotifications() {
           pages: [
             {
               ...firstPage,
-              content: [notification, ...firstPage.content],
+              data: [notification, ...firstPage.data],
               totalElements: firstPage.totalElements + 1,
             },
             ...old.pages.slice(1),
