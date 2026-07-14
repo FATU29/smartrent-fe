@@ -90,7 +90,7 @@ export const UpgradePreviewModal: React.FC<UpgradePreviewModalProps> = ({
           'flex flex-col p-0',
           isMobile
             ? 'w-full h-screen max-w-full rounded-none m-0'
-            : 'sm:max-w-[640px] max-h-[90vh]',
+            : 'sm:max-w-2xl max-h-[90vh]',
         )}
         showCloseButton={!isLoading}
         onInteractOutside={(e) => {
