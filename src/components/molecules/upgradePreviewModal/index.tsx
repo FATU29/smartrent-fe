@@ -50,7 +50,7 @@ export const UpgradePreviewModal: React.FC<UpgradePreviewModalProps> = ({
     return (
       <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
         <DialogContent
-          className='sm:max-w-[500px]'
+          className='w-full sm:max-w-[500px]'
           showCloseButton={!isLoading}
         >
           <DialogHeader>
@@ -87,9 +87,9 @@ export const UpgradePreviewModal: React.FC<UpgradePreviewModalProps> = ({
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
       <DialogContent
         className={cn(
-          'flex flex-col p-0',
+          'flex flex-col p-0 w-full',
           isMobile
-            ? 'w-full h-screen max-w-full rounded-none m-0'
+            ? 'h-screen max-w-full rounded-none m-0'
             : 'sm:max-w-3xl max-h-[90vh]',
         )}
         showCloseButton={!isLoading}
