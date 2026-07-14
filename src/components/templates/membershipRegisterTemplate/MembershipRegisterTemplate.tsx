@@ -80,6 +80,15 @@ const URGENCY_CARD_CLASSES = {
   critical: 'border-red-400 bg-red-50 dark:bg-red-950/20 dark:border-red-600',
 }
 
+// Membership card keeps the neutral theme surface (bg-card) — only the
+// border signals urgency, so the renewal tab doesn't read as a colored banner.
+const URGENCY_BORDER_CLASSES = {
+  none: '',
+  warning: 'border-yellow-400 dark:border-yellow-600',
+  danger: 'border-orange-400 dark:border-orange-600',
+  critical: 'border-red-400 dark:border-red-600',
+}
+
 const URGENCY_BADGE_CLASSES = {
   none: '',
   warning:
@@ -143,7 +152,9 @@ const RenewalTabContent: React.FC<RenewalTabContentProps> = ({
       <Card
         className={cn(
           'relative overflow-hidden border',
-          urgency !== 'none' ? URGENCY_CARD_CLASSES[urgency] : 'border-border',
+          urgency !== 'none'
+            ? URGENCY_BORDER_CLASSES[urgency]
+            : 'border-border',
         )}
       >
         <div className='absolute inset-x-0 top-0 h-px bg-primary/40' />
