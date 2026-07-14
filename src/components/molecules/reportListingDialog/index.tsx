@@ -21,6 +21,7 @@ import { ReportCategory, ReportReason, REPORT_ERROR_CODES } from '@/api/types'
 import { toast } from 'sonner'
 import { useReportReasons, useCreateReport } from '@/hooks/useReport'
 import { useAuthContext } from '@/contexts/auth'
+import { VIETNAM_PHONE_REGEX } from '@/constants/regex'
 
 interface ReportFormData {
   reasonIds: number[]
@@ -77,9 +78,9 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
         const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim()
         setValue('reporterName', fullName)
       }
-      if (user.phoneNumber) {
-        const fullPhone = `${user.phoneCode || ''}${user.phoneNumber}`.trim()
-        setValue('reporterPhone', fullPhone)
+      const contactPhone = user.contactPhoneNumber || user.phoneNumber
+      if (contactPhone) {
+        setValue('reporterPhone', contactPhone.trim())
       }
     }
   }, [isAuthenticated, user, open, setValue])
@@ -103,8 +104,7 @@ export const ReportListingDialog: React.FC<ReportListingDialogProps> = ({
     if (!value || !value.trim()) {
       return t('report.phoneRequired')
     }
-    const phoneRegex = /^0\d{9,10}$/
-    return phoneRegex.test(value.trim()) || t('report.invalidPhone')
+    return VIETNAM_PHONE_REGEX.test(value.trim()) || t('report.invalidPhone')
   }
 
   const validateEmail = (value?: string) => {
