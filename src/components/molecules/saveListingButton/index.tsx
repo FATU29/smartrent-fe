@@ -4,12 +4,6 @@ import React from 'react'
 import { Heart } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/atoms/tooltip'
 import { useToggleSaveListing } from '@/hooks/useSavedListings'
 import { cn } from '@/lib/utils'
 
@@ -83,60 +77,42 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
   // Compact variant - just the icon, inline with text
   if (variant === 'compact') {
     return (
-      <TooltipProvider delayDuration={300}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={handleClick}
-              disabled={disabled || isLoading || !listingId}
-              className={cn(
-                'inline-flex items-center justify-center',
-                'active:scale-95',
-                'transition-transform duration-200',
-                'disabled:opacity-50 disabled:cursor-not-allowed',
-                className,
-              )}
-              aria-label={isSaved ? t('tooltip.saved') : t('tooltip.save')}
-              data-action-button='true'
-            >
-              {buttonContent}
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{isSaved ? t('tooltip.saved') : t('tooltip.save')}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <button
+        onClick={handleClick}
+        disabled={disabled || isLoading || !listingId}
+        className={cn(
+          'inline-flex items-center justify-center',
+          'active:scale-95',
+          'transition-transform duration-200',
+          'disabled:opacity-50 disabled:cursor-not-allowed',
+          className,
+        )}
+        aria-label={isSaved ? t('tooltip.saved') : t('tooltip.save')}
+        data-action-button='true'
+      >
+        {buttonContent}
+      </button>
     )
   }
 
   // Icon variant - for cards and listing detail
   if (variant === 'icon') {
     return (
-      <TooltipProvider delayDuration={300}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={handleClick}
-              disabled={disabled || isLoading || !listingId}
-              className={cn(
-                'active:scale-95',
-                'transition-all duration-200',
-                'rounded-full',
-                className,
-              )}
-              aria-label={isSaved ? t('tooltip.saved') : t('tooltip.save')}
-            >
-              {buttonContent}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{isSaved ? t('tooltip.saved') : t('tooltip.save')}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Button
+        variant='ghost'
+        size='icon'
+        onClick={handleClick}
+        disabled={disabled || isLoading || !listingId}
+        className={cn(
+          'active:scale-95',
+          'transition-all duration-200',
+          'rounded-full',
+          className,
+        )}
+        aria-label={isSaved ? t('tooltip.saved') : t('tooltip.save')}
+      >
+        {buttonContent}
+      </Button>
     )
   }
 

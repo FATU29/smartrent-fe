@@ -4,12 +4,6 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/atoms/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/atoms/tooltip'
 import { ListingApi } from '@/api/types/property.type'
 import { useCompareStore } from '@/store/compare/useCompareStore'
 import { cn } from '@/lib/utils'
@@ -108,24 +102,7 @@ const CompareToggleBtn: React.FC<CompareToggleBtnProps> = ({
     </Button>
   )
 
-  if (showLabel) {
-    return buttonContent
-  }
-
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
-        <TooltipContent>
-          <p>
-            {isInList
-              ? t('actions.removeFromCompare')
-              : t('actions.addToCompare')}
-          </p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  )
+  return buttonContent
 }
 
 export default CompareToggleBtn

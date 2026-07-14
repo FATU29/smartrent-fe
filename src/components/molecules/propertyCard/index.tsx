@@ -3,12 +3,6 @@ import classNames from 'classnames'
 import { Card, CardContent } from '@/components/atoms/card'
 import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/atoms/tooltip'
 import ImageAtom from '@/components/atoms/imageAtom'
 import SaveListingButton from '@/components/molecules/saveListingButton'
 import CompareToggleBtn from '@/components/molecules/compareToggleBtn'
@@ -53,23 +47,13 @@ interface PropertyCardProps {
 const StatPill: React.FC<{
   icon: React.ReactNode
   value: React.ReactNode
-  label?: string
-}> = ({ icon, value, label }) => (
-  <Tooltip>
-    <TooltipTrigger asChild>
-      <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/60'>
-        <span className='text-primary'>{icon}</span>
-        <Typography variant='small' className='font-semibold text-foreground'>
-          {value}
-        </Typography>
-      </div>
-    </TooltipTrigger>
-    {label && (
-      <TooltipContent side='top' className='z-50'>
-        <p>{label}</p>
-      </TooltipContent>
-    )}
-  </Tooltip>
+}> = ({ icon, value }) => (
+  <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/60'>
+    <span className='text-primary'>{icon}</span>
+    <Typography variant='small' className='font-semibold text-foreground'>
+      {value}
+    </Typography>
+  </div>
 )
 
 const PropertyCard: React.FC<PropertyCardProps> = (props) => {
@@ -485,262 +469,219 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   }
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <Card
-        className={classNames(
-          'group/card cursor-pointer overflow-hidden transition-all duration-300 py-0',
-          'hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5',
-          'border-border/60 hover:border-primary/30',
-          getVipCardBorder(),
-          isCompact
-            ? isTopLayout
-              ? 'flex flex-col h-full'
-              : 'flex flex-row h-auto min-h-[140px] md:min-h-[160px]'
-            : 'flex flex-col h-full',
-          className,
-        )}
-        onClick={onClick ? handleClick : undefined}
+    <Card
+      className={classNames(
+        'group/card cursor-pointer overflow-hidden transition-all duration-300 py-0',
+        'hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5',
+        'border-border/60 hover:border-primary/30',
+        getVipCardBorder(),
+        isCompact
+          ? isTopLayout
+            ? 'flex flex-col h-full'
+            : 'flex flex-row h-auto min-h-[140px] md:min-h-[160px]'
+          : 'flex flex-col h-full',
+        className,
+      )}
+      onClick={onClick ? handleClick : undefined}
+    >
+      {/* Image Gallery - Top Layout */}
+      {isTopLayout && renderImageGallery()}
+
+      {/* Single Image - Left Layout */}
+      {renderSingleImage()}
+
+      <CardContent
+        className={classNames('flex-1 flex flex-col', {
+          'px-3 pb-3 pt-2 space-y-2.5': isCompact && isTopLayout,
+          'p-2.5 space-y-1.5': isCompact && !isTopLayout,
+          'p-3 sm:p-4 space-y-2 sm:space-y-3': !isCompact,
+        })}
       >
-        {/* Image Gallery - Top Layout */}
-        {isTopLayout && renderImageGallery()}
-
-        {/* Single Image - Left Layout */}
-        {renderSingleImage()}
-
-        <CardContent
-          className={classNames('flex-1 flex flex-col', {
-            'px-3 pb-3 pt-2 space-y-2.5': isCompact && isTopLayout,
-            'p-2.5 space-y-1.5': isCompact && !isTopLayout,
-            'p-3 sm:p-4 space-y-2 sm:space-y-3': !isCompact,
-          })}
-        >
-          {/* Title & Property Type Row */}
-          <div className='flex items-start justify-between gap-2'>
-            <Typography
-              variant='h6'
-              className={classNames(
-                'text-foreground group-hover/card:text-primary transition-colors duration-200 leading-tight font-semibold flex-1',
-                isCompact ? 'line-clamp-2 min-h-[2.75rem]' : 'line-clamp-2',
-              )}
-            >
-              {title}
-            </Typography>
-            {/* Property Type Badge */}
-            <div className='flex items-center gap-1 flex-shrink-0'>
-              {productType && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Badge
-                      variant='secondary'
-                      className={classNames(
-                        'flex items-center gap-1 rounded-full font-medium',
-                        isCompact
-                          ? 'text-xs px-2.5 py-0.5'
-                          : 'text-2xs px-2 py-0.5',
-                      )}
-                    >
-                      {ProductTypeIcon && (
-                        <ProductTypeIcon
-                          className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'}
-                        />
-                      )}
-                      {isCompact &&
-                        tCreatePost(getProductTypeTranslationKey(productType))}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent side='top' className='z-50'>
-                    <p>
-                      {tCreatePost(getProductTypeTranslationKey(productType)) ||
-                        productType}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </div>
-          </div>
-
-          {/* Address - Compact one-liner with icon */}
-          {displayAddress && (
-            <div className='flex items-start gap-1.5 min-w-0'>
-              <MapPin
+        {/* Title & Property Type Row */}
+        <div className='flex items-start justify-between gap-2'>
+          <Typography
+            variant='h6'
+            className={classNames(
+              'text-foreground group-hover/card:text-primary transition-colors duration-200 leading-tight font-semibold flex-1',
+              isCompact ? 'line-clamp-2 min-h-[2.75rem]' : 'line-clamp-2',
+            )}
+          >
+            {title}
+          </Typography>
+          {/* Property Type Badge */}
+          <div className='flex items-center gap-1 flex-shrink-0'>
+            {productType && (
+              <Badge
+                variant='secondary'
                 className={classNames(
-                  'flex-shrink-0 text-muted-foreground mt-0.5',
-                  isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3',
+                  'flex items-center gap-1 rounded-full font-medium',
+                  isCompact ? 'text-xs px-2.5 py-0.5' : 'text-2xs px-2 py-0.5',
                 )}
-              />
-              <Typography
-                variant='small'
-                className='text-muted-foreground line-clamp-1 leading-snug'
               >
-                {displayAddress}
-              </Typography>
-            </div>
-          )}
+                {ProductTypeIcon && (
+                  <ProductTypeIcon
+                    className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'}
+                  />
+                )}
+                {isCompact &&
+                  tCreatePost(getProductTypeTranslationKey(productType))}
+              </Badge>
+            )}
+          </div>
+        </div>
 
-          {/* Price Row */}
-          <div className='flex items-center justify-between gap-2'>
+        {/* Address - Compact one-liner with icon */}
+        {displayAddress && (
+          <div className='flex items-start gap-1.5 min-w-0'>
+            <MapPin
+              className={classNames(
+                'flex-shrink-0 text-muted-foreground mt-0.5',
+                isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3',
+              )}
+            />
             <Typography
-              variant='h5'
-              className='text-primary font-bold tracking-tight'
+              variant='small'
+              className='text-muted-foreground line-clamp-1 leading-snug'
             >
-              {formatByLocale(price, priceUnit)}
+              {displayAddress}
             </Typography>
-            {/* Area as secondary price info */}
-            {area && isCompact && (
+          </div>
+        )}
+
+        {/* Price Row */}
+        <div className='flex items-center justify-between gap-2'>
+          <Typography
+            variant='h5'
+            className='text-primary font-bold tracking-tight'
+          >
+            {formatByLocale(price, priceUnit)}
+          </Typography>
+          {/* Area as secondary price info */}
+          {area && isCompact && (
+            <Typography
+              variant='small'
+              className='text-muted-foreground font-medium bg-muted/60 px-2 py-0.5 rounded-full'
+            >
+              {formatByLocale(Math.round(price / area), 'VND')}
+              /m²
+            </Typography>
+          )}
+        </div>
+
+        {/* Property Stats - Pill Style */}
+        <div className='flex items-center flex-wrap gap-2'>
+          {bedrooms !== undefined && (
+            <StatPill
+              icon={<Bed className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />}
+              value={bedrooms}
+            />
+          )}
+          {bathrooms !== undefined && (
+            <StatPill
+              icon={<Bath className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />}
+              value={bathrooms}
+            />
+          )}
+          {area && (
+            <StatPill
+              icon={
+                <Square className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
+              }
+              value={`${area} m²`}
+            />
+          )}
+          {roomCapacity && (
+            <StatPill
+              icon={<Users className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />}
+              value={roomCapacity}
+            />
+          )}
+          {/* Compact inline furnishing & direction */}
+          {furnishing && isCompact && (
+            <StatPill
+              icon={<Sofa className='w-3.5 h-3.5' />}
+              value={tCreatePost(getFurnishingTranslationKey(furnishing))}
+            />
+          )}
+          {direction && isCompact && (
+            <StatPill
+              icon={<Compass className='w-3.5 h-3.5' />}
+              value={tCreatePost(getDirectionTranslationKey(direction))}
+            />
+          )}
+        </div>
+
+        {/* Description - Only in compact mode */}
+        {isCompact && (
+          <div className='min-h-[2.75rem]'>
+            {description && (
               <Typography
                 variant='small'
-                className='text-muted-foreground font-medium bg-muted/60 px-2 py-0.5 rounded-full'
+                className='text-muted-foreground/80 line-clamp-2 leading-relaxed'
               >
-                {formatByLocale(Math.round(price / area), 'VND')}
-                /m²
+                {description}
               </Typography>
             )}
           </div>
+        )}
 
-          {/* Property Stats - Pill Style */}
-          <div className='flex items-center flex-wrap gap-2'>
-            {bedrooms !== undefined && (
-              <StatPill
-                icon={<Bed className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />}
-                value={bedrooms}
-                label={`${bedrooms} ${t('homePage.property.bedrooms')}`}
-              />
+        {/* Non-compact layout: furnishing & direction */}
+        {!isCompact && (furnishing || direction) && (
+          <div className='flex items-center gap-1.5 flex-wrap'>
+            {furnishing && (
+              <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50'>
+                <Sofa className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
+                <Typography variant='small' className='font-medium'>
+                  {tCreatePost(getFurnishingTranslationKey(furnishing))}
+                </Typography>
+              </div>
             )}
-            {bathrooms !== undefined && (
-              <StatPill
-                icon={
-                  <Bath className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
-                }
-                value={bathrooms}
-                label={`${bathrooms} ${t('homePage.property.bathrooms')}`}
-              />
-            )}
-            {area && (
-              <StatPill
-                icon={
-                  <Square className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
-                }
-                value={`${area} m²`}
-              />
-            )}
-            {roomCapacity && (
-              <StatPill
-                icon={
-                  <Users className={isCompact ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
-                }
-                value={roomCapacity}
-                label={`${t('homePage.property.capacity')}: ${roomCapacity}`}
-              />
-            )}
-            {/* Compact inline furnishing & direction */}
-            {furnishing && isCompact && (
-              <StatPill
-                icon={<Sofa className='w-3.5 h-3.5' />}
-                value={tCreatePost(getFurnishingTranslationKey(furnishing))}
-                label={`${t('apartmentDetail.property.furnishing')}: ${tCreatePost(getFurnishingTranslationKey(furnishing))}`}
-              />
-            )}
-            {direction && isCompact && (
-              <StatPill
-                icon={<Compass className='w-3.5 h-3.5' />}
-                value={tCreatePost(getDirectionTranslationKey(direction))}
-                label={`${t('apartmentDetail.property.direction')}: ${tCreatePost(getDirectionTranslationKey(direction))}`}
-              />
+            {direction && (
+              <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50'>
+                <Compass className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
+                <Typography variant='small' className='font-medium'>
+                  {tCreatePost(getDirectionTranslationKey(direction))}
+                </Typography>
+              </div>
             )}
           </div>
+        )}
 
-          {/* Description - Only in compact mode */}
-          {isCompact && (
-            <div className='min-h-[2.75rem]'>
-              {description && (
-                <Typography
-                  variant='small'
-                  className='text-muted-foreground/80 line-clamp-2 leading-relaxed'
-                >
-                  {description}
-                </Typography>
-              )}
-            </div>
-          )}
-
-          {/* Non-compact layout: furnishing & direction */}
-          {!isCompact && (furnishing || direction) && (
-            <div className='flex items-center gap-1.5 flex-wrap'>
-              {furnishing && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50'>
-                      <Sofa className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
-                      <Typography variant='small' className='font-medium'>
-                        {tCreatePost(getFurnishingTranslationKey(furnishing))}
-                      </Typography>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side='top' className='z-50'>
-                    <p>
-                      {t('apartmentDetail.property.furnishing')}:{' '}
-                      {tCreatePost(getFurnishingTranslationKey(furnishing))}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-              {direction && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50'>
-                      <Compass className='w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0' />
-                      <Typography variant='small' className='font-medium'>
-                        {tCreatePost(getDirectionTranslationKey(direction))}
-                      </Typography>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side='top' className='z-50'>
-                    <p>
-                      {t('apartmentDetail.property.direction')}:{' '}
-                      {tCreatePost(getDirectionTranslationKey(direction))}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </div>
-          )}
-
-          {/* User Info & Post Date Footer */}
-          {user && (
-            <div className='flex items-center justify-between gap-2 mt-auto pt-2.5 border-t border-border/60'>
-              <div className='flex items-center gap-2 flex-1 min-w-0'>
-                <BrokerAvatar
-                  avatarUrl={user.avatarUrl}
-                  firstName={firstName}
-                  lastName={lastName}
-                  sizeClassName={isCompact ? 'size-10' : 'size-9'}
-                  showBrokerBadge={isProfessionalBroker}
-                  fallbackClassName={isCompact ? 'text-sm' : 'text-xs'}
-                />
-                <div className='flex-1 min-w-0 space-y-0.5'>
-                  {userName && (
-                    <Typography
-                      variant='small'
-                      className='font-medium truncate block leading-tight'
-                    >
-                      {userName}
-                    </Typography>
-                  )}
-                  {isProfessionalBroker && (
-                    <span className='inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-50 px-1.5 py-px text-nano font-semibold text-emerald-700 dark:border-emerald-700/40 dark:bg-emerald-950/20 dark:text-emerald-300'>
-                      {t('userMenu.proBroker')}
-                    </span>
-                  )}
-                </div>
+        {/* User Info & Post Date Footer */}
+        {user && (
+          <div className='flex items-center justify-between gap-2 mt-auto pt-2.5 border-t border-border/60'>
+            <div className='flex items-center gap-2 flex-1 min-w-0'>
+              <BrokerAvatar
+                avatarUrl={user.avatarUrl}
+                firstName={firstName}
+                lastName={lastName}
+                sizeClassName={isCompact ? 'size-10' : 'size-9'}
+                showBrokerBadge={isProfessionalBroker}
+                fallbackClassName={isCompact ? 'text-sm' : 'text-xs'}
+              />
+              <div className='flex-1 min-w-0 space-y-0.5'>
+                {userName && (
+                  <Typography
+                    variant='small'
+                    className='font-medium truncate block leading-tight'
+                  >
+                    {userName}
+                  </Typography>
+                )}
+                {isProfessionalBroker && (
+                  <span className='inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-50 px-1.5 py-px text-nano font-semibold text-emerald-700 dark:border-emerald-700/40 dark:bg-emerald-950/20 dark:text-emerald-300'>
+                    {t('userMenu.proBroker')}
+                  </span>
+                )}
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Bottom Content - Custom ReactNode */}
-          {bottomContent && <div className='mt-2'>{bottomContent}</div>}
-        </CardContent>
-      </Card>
-    </TooltipProvider>
+        {/* Bottom Content - Custom ReactNode */}
+        {bottomContent && <div className='mt-2'>{bottomContent}</div>}
+      </CardContent>
+    </Card>
   )
 }
 
