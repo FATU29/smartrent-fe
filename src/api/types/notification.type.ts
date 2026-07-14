@@ -46,13 +46,14 @@ export interface NotificationItem {
 }
 
 /**
- * Paginated notifications response
+ * Paginated notifications response — matches backend `PageResponse<T>`
+ * (`page`, `size`, `totalElements`, `totalPages`, `data`).
  */
 export interface NotificationListResponse {
-  content: NotificationItem[]
+  data: NotificationItem[]
   totalElements: number
   totalPages: number
-  number: number
+  page: number
   size: number
 }
 
