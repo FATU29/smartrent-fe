@@ -115,6 +115,8 @@ const PROPERTY_TYPE_OPTIONS: Array<{
   { value: 'APARTMENT', translationKey: 'apartment' },
   { value: 'HOUSE', translationKey: 'house' },
   { value: 'STUDIO', translationKey: 'studio' },
+  { value: 'OFFICE', translationKey: 'office' },
+  { value: 'STORE', translationKey: 'store' },
 ]
 
 // AI Valuation section helpers

@@ -34,7 +34,13 @@ export interface ListingDescriptionResponse {
 }
 
 // Housing Price Predictor Types
-export type HousingPropertyType = 'APARTMENT' | 'HOUSE' | 'ROOM' | 'STUDIO'
+export type HousingPropertyType =
+  | 'APARTMENT'
+  | 'HOUSE'
+  | 'ROOM'
+  | 'STUDIO'
+  | 'OFFICE'
+  | 'STORE'
 
 export interface HousingPredictorRequest {
   city: string

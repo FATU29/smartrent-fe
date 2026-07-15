@@ -157,10 +157,9 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   }, [propertyInfo.productType, t, tPropertyDetails])
 
   const canPredict = !!predictionRequest
-  // The housing price model only covers residential types (căn hộ / nhà / phòng
-  // trọ / studio). Office & store listings can't be valued, so when prediction is
-  // unavailable we show "not supported for this type" instead of wrongly telling
-  // the user their address/area/GPS is missing.
+  // AI valuation supports every listing property type. When prediction is
+  // unavailable this still distinguishes "not supported for this type" (e.g. an
+  // unrecognized/legacy value) from "required address/area/GPS data is missing".
   const typeSupportedForAi = isTypeSupportedForAiValuation(
     typeof propertyInfo.productType === 'string'
       ? propertyInfo.productType
