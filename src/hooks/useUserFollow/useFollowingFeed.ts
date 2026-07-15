@@ -11,8 +11,19 @@ import { mapBackendToFrontendResponse } from '@/utils/property/mapListingRespons
  * "show only this person's posts" filter on the /following page. The server
  * silently returns an empty page if the viewer is not actually following the
  * given userId, so this can't be used to read arbitrary users' feeds.
+ *
+ * Pass {@code enabled: false} to hold the query until the caller knows which
+ * user to scope to. The /following page defaults the feed to its first followed
+ * person, but that id is only known after the people list resolves — firing the
+ * request before then would query the whole follow set and immediately discard
+ * the result, an extra (and more expensive, IN-list) round-trip on every visit.
  */
-export const useFollowingFeed = (page = 1, size = 12, userId?: string) => {
+export const useFollowingFeed = (
+  page = 1,
+  size = 12,
+  userId?: string,
+  options?: { enabled?: boolean },
+) => {
   const { isAuthenticated } = useAuth()
 
   return useQuery({
@@ -36,7 +47,7 @@ export const useFollowingFeed = (page = 1, size = 12, userId?: string) => {
       }
       return mapBackendToFrontendResponse(response.data)
     },
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && (options?.enabled ?? true),
     staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
   })

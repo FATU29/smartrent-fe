@@ -90,10 +90,19 @@ const FollowingPageTemplate: React.FC = () => {
   const [feedUserId, setFeedUserId] = React.useState<string>('')
 
   const peopleQuery = useFollowingPeople(peoplePage, PEOPLE_PAGE_SIZE)
+  // The feed always scopes to a single followed person, defaulting to the first
+  // one — but that id is only known after the people list resolves. Hold the
+  // feed request until either a person is selected, or the follow list has
+  // resolved to empty (so the empty state can still render). This avoids firing
+  // a wasted whole-follow-set request that would be discarded a render later.
+  const feedEnabled =
+    Boolean(feedUserId) ||
+    (peopleQuery.isSuccess && (peopleQuery.data?.content?.length ?? 0) === 0)
   const feedQuery = useFollowingFeed(
     feedPage,
     FEED_PAGE_SIZE,
     feedUserId || undefined,
+    { enabled: feedEnabled },
   )
 
   const people = peopleQuery.data?.content ?? []
