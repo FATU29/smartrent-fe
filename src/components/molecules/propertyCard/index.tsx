@@ -556,16 +556,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           >
             {formatByLocale(price, priceUnit)}
           </Typography>
-          {/* Area as secondary price info */}
-          {area && isCompact && (
-            <Typography
-              variant='small'
-              className='text-muted-foreground font-medium bg-muted/60 px-2 py-0.5 rounded-full'
-            >
-              {formatByLocale(Math.round(price / area), 'VND')}
-              /m²
-            </Typography>
-          )}
         </div>
 
         {/* Property Stats - Pill Style */}
