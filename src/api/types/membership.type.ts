@@ -91,6 +91,12 @@ export interface UserBenefit {
   readonly quantityUsed: number
   readonly quantityRemaining: number
   readonly status: BenefitStatus
+  // The VIP tier a listing created with this benefit runs under, plus that
+  // tier's media caps. BE sends these on UserMembershipBenefitResponse; they
+  // are null for non-post benefits (e.g. PUSH).
+  readonly vipTierCode?: string | null
+  readonly maxImages?: number | null
+  readonly maxVideos?: number | null
   readonly createdAt: string
   readonly updatedAt: string
 }
