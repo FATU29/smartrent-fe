@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslations } from 'next-intl'
 import { useCreatePost } from '@/contexts/createPost'
@@ -27,6 +27,7 @@ import {
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { resolveBenefitVipType } from '@/utils/createPost/benefitTier'
 import { SelectBenefitDialog } from '@/components/molecules/createPostSections/SelectPromotionDialog'
 
 interface PackageConfigSectionProps {
@@ -121,6 +122,10 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   const membership = myMembership?.current ?? null
 
   const [benefitDialogOpen, setBenefitDialogOpen] = useState(false)
+
+  // The tier the user had picked before a benefit overrode it, so clearing the
+  // benefit doesn't leave them buying whatever tier the benefit posted under.
+  const purchasedVipTypeRef = useRef<VipType | undefined>(undefined)
 
   const hasBenefits =
     !!propertyInfo?.benefitIds && propertyInfo.benefitIds.length > 0
@@ -330,6 +335,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   const handleApplyBenefits = useCallback(
     (benefits: UserBenefit[]) => {
       const benefitIds = benefits.map((b) => b.userBenefitId)
+      const hasSelection = benefitIds.length > 0
 
       // Calculate expiry date with 30 days duration when applying benefits
       const startDateObj = new Date(startDate)
@@ -338,20 +344,38 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       )
       const expiryDate = expiryDateObj.toISOString()
 
+      // A benefit posts under its own VIP tier, so it — not the tier the user
+      // last clicked — decides the media limits. Keep `vipType` in sync or the
+      // uploader keeps enforcing the pay-now tier's min/max.
+      const benefitVipType = resolveBenefitVipType(benefits[0])
+      if (hasSelection && !hasBenefits) {
+        purchasedVipTypeRef.current = propertyInfo.vipType
+      }
+      const restoredVipType = purchasedVipTypeRef.current
+      const nextVipType = hasSelection ? benefitVipType : restoredVipType
+      const shouldSyncVipType =
+        !!nextVipType && nextVipType !== propertyInfo.vipType
+      if (!hasSelection) purchasedVipTypeRef.current = undefined
+
       // Selecting benefits implicitly enables quota-like behavior
       updatePropertyInfo({
         benefitIds,
-        useMembershipQuota: benefitIds.length > 0,
-        durationDays:
-          benefitIds.length > 0 ? 30 : (propertyInfo.durationDays ?? 10),
-        expiryDate:
-          benefitIds.length > 0 ? expiryDateObj : propertyInfo.expiryDate,
+        useMembershipQuota: hasSelection,
+        durationDays: hasSelection ? 30 : (propertyInfo.durationDays ?? 10),
+        expiryDate: hasSelection ? expiryDateObj : propertyInfo.expiryDate,
+        ...(shouldSyncVipType ? { vipType: nextVipType } : {}),
       })
       setValue('benefitIds', benefitIds, { shouldDirty: true })
-      setValue('useMembershipQuota', benefitIds.length > 0, {
+      setValue('useMembershipQuota', hasSelection, {
         shouldDirty: true,
       })
-      if (benefitIds.length > 0) {
+      if (shouldSyncVipType) {
+        setValue('vipType', nextVipType, {
+          shouldValidate: true,
+          shouldDirty: true,
+        })
+      }
+      if (hasSelection) {
         setValue('durationDays', 30, {
           shouldValidate: true,
           shouldDirty: true,
@@ -365,6 +389,8 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
     [
       updatePropertyInfo,
       setValue,
+      hasBenefits,
+      propertyInfo.vipType,
       propertyInfo.durationDays,
       propertyInfo.expiryDate,
       startDate,
