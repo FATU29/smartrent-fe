@@ -50,7 +50,7 @@ const maskEmail = (value: string): string => {
 }
 
 const CONTACT_PILL_CLASSNAME =
-  'flex items-center gap-2.5 text-sm rounded-lg border border-primary/25 p-2.5 bg-background/85 transition-colors hover:border-primary/45 flex-1 min-w-[160px]'
+  'flex items-center gap-2.5 text-sm rounded-lg border border-primary/25 p-2.5 bg-background/85 transition-colors hover:border-primary/45 w-full'
 
 const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
   seller,
@@ -73,14 +73,14 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
             </div>
           </div>
 
-          <div className='flex flex-wrap gap-2'>
-            <div className='flex items-center gap-2 rounded-lg border border-primary/25 p-2.5 bg-background/85 flex-1 min-w-[160px]'>
+          <div className='flex flex-col gap-2'>
+            <div className='flex items-center gap-2 rounded-lg border border-primary/25 p-2.5 bg-background/85 w-full'>
               <Skeleton className='h-8 w-8 rounded-full shrink-0' />
               <Skeleton className='h-8 max-w-full flex-1' />
               <Skeleton className='h-8 w-8 rounded-md shrink-0' />
             </div>
 
-            <div className='flex items-center gap-2 rounded-lg border border-primary/25 p-2.5 bg-background/85 flex-1 min-w-[160px]'>
+            <div className='flex items-center gap-2 rounded-lg border border-primary/25 p-2.5 bg-background/85 w-full'>
               <Skeleton className='h-8 w-8 rounded-full shrink-0' />
               <Skeleton className='h-8 max-w-full flex-1' />
               <Skeleton className='h-8 w-8 rounded-md shrink-0' />
@@ -189,7 +189,7 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
           </Typography>
 
           {contactItems.length > 0 ? (
-            <div className='flex flex-wrap gap-2'>
+            <div className='flex flex-col gap-2'>
               {contactItems.map((item) => (
                 <div key={item.key} className={CONTACT_PILL_CLASSNAME}>
                   <div className='h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0'>

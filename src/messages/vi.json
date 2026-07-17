@@ -1894,6 +1894,10 @@
     "pricing": "Báo giá",
     "paymentGuide": "Hướng dẫn thanh toán",
     "usageGuide": "Hướng dẫn sử dụng",
+    "legal": "Quy định",
+    "listingRules": "Quy định đăng tin",
+    "termsAgreement": "Điều khoản thỏa thuận",
+    "complaints": "Giải quyết khiếu nại",
     "contactInfo": "Liên hệ",
     "phone": "+84 123 456 789",
     "email": "smartrent.tools@gmail.com",
@@ -1912,6 +1916,249 @@
       "badge": "Dự án học thuật",
       "description": "Đồ án tốt nghiệp tại VNU-HCM University of Science. Dữ liệu phục vụ mục đích nghiên cứu.",
       "requestRemoval": "Yêu cầu gỡ"
+    }
+  },
+  "policies": {
+    "meta": {
+      "academicBadge": "Nền tảng học thuật",
+      "updatedLabel": "Cập nhật lần cuối",
+      "updatedDate": "Tháng 7, 2026",
+      "academicNote": "Thuê Nhà Trọ là sản phẩm demo trong khuôn khổ đồ án tốt nghiệp tại VNU-HCM University of Science, phi thương mại. Một phần dữ liệu tin đăng được tạo hoặc mô phỏng nhằm phục vụ trình diễn và nghiên cứu.",
+      "contactPrompt": "Mọi thắc mắc về các quy định này, vui lòng liên hệ:"
+    },
+    "listingRules": {
+      "title": "Quy định đăng tin",
+      "seoDescription": "Quy định về việc đăng tin cho thuê bất động sản trên nền tảng Thuê Nhà Trọ.",
+      "intro": "Để giữ chất lượng tin đăng và trải nghiệm tìm trọ minh bạch, mọi tin đăng trên Thuê Nhà Trọ cần tuân thủ các quy định dưới đây.",
+      "sections": {
+        "eligibility": {
+          "heading": "Điều kiện đăng tin",
+          "body": [
+            "Người đăng tin phải có tài khoản hợp lệ trên nền tảng và chịu trách nhiệm về nội dung mình đăng.",
+            "Bất động sản được đăng phải có thật, đang trong tình trạng cho thuê và người đăng có quyền cho thuê hoặc được uỷ quyền hợp lệ."
+          ],
+          "bullets": [
+            "Cung cấp thông tin liên hệ chính xác (số điện thoại, email).",
+            "Xác thực tài khoản khi hệ thống yêu cầu để tăng độ tin cậy.",
+            "Mỗi bất động sản chỉ nên đăng một tin để tránh trùng lặp."
+          ]
+        },
+        "content": {
+          "heading": "Nội dung tin đăng",
+          "body": [
+            "Thông tin trong tin đăng phải chính xác và cập nhật: giá thuê, diện tích, địa chỉ, tiện ích và các chi phí đi kèm như điện, nước, dịch vụ."
+          ],
+          "bullets": [
+            "Tiêu đề và mô tả phản ánh đúng bất động sản, không gây hiểu nhầm.",
+            "Giá niêm yết là giá thực tế đang cho thuê.",
+            "Cập nhật hoặc gỡ tin khi bất động sản đã được thuê."
+          ]
+        },
+        "prohibited": {
+          "heading": "Nội dung bị cấm",
+          "body": [
+            "Các tin đăng vi phạm sẽ bị ẩn hoặc gỡ bỏ; tài khoản tái phạm có thể bị hạn chế quyền đăng tin."
+          ],
+          "bullets": [
+            "Tin giả, tin ảo hoặc thông tin sai lệch nhằm câu kéo liên hệ.",
+            "Nội dung trùng lặp, spam hoặc đăng lại nhiều lần cùng một bất động sản.",
+            "Ngôn từ phản cảm, phân biệt đối xử hoặc vi phạm pháp luật Việt Nam.",
+            "Rao bán dịch vụ, sản phẩm không liên quan đến cho thuê bất động sản."
+          ]
+        },
+        "media": {
+          "heading": "Hình ảnh và phương tiện",
+          "body": [
+            "Hình ảnh giúp người thuê hình dung bất động sản, vì vậy cần trung thực và rõ ràng."
+          ],
+          "bullets": [
+            "Sử dụng ảnh thật của bất động sản đang cho thuê.",
+            "Không chèn số điện thoại, watermark quảng cáo hay logo bên thứ ba lên ảnh.",
+            "Không dùng ảnh gây hiểu nhầm về chất lượng hoặc quy mô thực tế."
+          ]
+        },
+        "moderation": {
+          "heading": "Kiểm duyệt và xử lý vi phạm",
+          "body": [
+            "Tin đăng có thể được kiểm duyệt tự động bằng AI và/hoặc thủ công trước hoặc sau khi hiển thị.",
+            "Người dùng có thể báo cáo tin vi phạm; nền tảng sẽ xem xét và xử lý theo mức độ."
+          ],
+          "bullets": [
+            "Nhắc nhở hoặc yêu cầu chỉnh sửa với vi phạm nhẹ.",
+            "Ẩn hoặc gỡ tin đăng vi phạm.",
+            "Hạn chế hoặc khoá quyền đăng tin với tài khoản tái phạm."
+          ]
+        }
+      }
+    },
+    "terms": {
+      "title": "Điều khoản thỏa thuận",
+      "seoDescription": "Điều khoản sử dụng dịch vụ của nền tảng Thuê Nhà Trọ.",
+      "intro": "Khi truy cập và sử dụng Thuê Nhà Trọ, bạn đồng ý với các điều khoản dưới đây. Vui lòng đọc kỹ trước khi sử dụng.",
+      "sections": {
+        "acceptance": {
+          "heading": "Chấp nhận điều khoản",
+          "body": [
+            "Việc bạn tạo tài khoản, đăng tin hoặc sử dụng bất kỳ tính năng nào của nền tảng đồng nghĩa với việc bạn chấp nhận các điều khoản này.",
+            "Nếu không đồng ý, vui lòng ngừng sử dụng dịch vụ."
+          ]
+        },
+        "accounts": {
+          "heading": "Tài khoản người dùng",
+          "body": [
+            "Bạn chịu trách nhiệm bảo mật thông tin đăng nhập và mọi hoạt động diễn ra dưới tài khoản của mình."
+          ],
+          "bullets": [
+            "Cung cấp thông tin đăng ký chính xác và cập nhật khi có thay đổi.",
+            "Không chia sẻ tài khoản hoặc mạo danh người khác.",
+            "Thông báo cho chúng tôi nếu phát hiện truy cập trái phép."
+          ]
+        },
+        "usage": {
+          "heading": "Quyền và nghĩa vụ khi sử dụng",
+          "body": [
+            "Nền tảng cho phép bạn tìm kiếm, đăng và quản lý tin cho thuê bất động sản theo đúng quy định."
+          ],
+          "bullets": [
+            "Không sử dụng dịch vụ cho mục đích trái pháp luật.",
+            "Không thu thập dữ liệu người dùng khác bằng công cụ tự động khi chưa được phép.",
+            "Tôn trọng quy định đăng tin và các người dùng khác."
+          ]
+        },
+        "content": {
+          "heading": "Nội dung do người dùng đăng",
+          "body": [
+            "Bạn giữ quyền đối với nội dung mình đăng, đồng thời cho phép nền tảng hiển thị, lưu trữ và xử lý nội dung đó nhằm cung cấp dịch vụ.",
+            "Bạn chịu trách nhiệm về tính hợp pháp và chính xác của nội dung mình cung cấp."
+          ]
+        },
+        "disclaimer": {
+          "heading": "Miễn trừ trách nhiệm",
+          "body": [
+            "Thuê Nhà Trọ đóng vai trò nền tảng trung gian kết nối người cho thuê và người thuê; chúng tôi không phải một bên trong giao dịch thuê nhà.",
+            "Nền tảng không bảo đảm mọi tin đăng đều chính xác tuyệt đối và không chịu trách nhiệm cho các thỏa thuận, giao dịch giữa các bên.",
+            "Đây là sản phẩm đồ án tốt nghiệp, phi thương mại; một số dữ liệu mang tính minh hoạ."
+          ]
+        },
+        "changes": {
+          "heading": "Thay đổi điều khoản",
+          "body": [
+            "Chúng tôi có thể cập nhật các điều khoản này theo thời gian. Phiên bản mới có hiệu lực kể từ khi được đăng tải trên trang này."
+          ]
+        }
+      }
+    },
+    "privacy": {
+      "title": "Chính sách bảo mật",
+      "seoDescription": "Chính sách bảo mật và cách Thuê Nhà Trọ thu thập, sử dụng dữ liệu của bạn.",
+      "intro": "Chính sách này mô tả cách chúng tôi thu thập, sử dụng và bảo vệ thông tin của bạn khi sử dụng Thuê Nhà Trọ.",
+      "sections": {
+        "collection": {
+          "heading": "Thông tin chúng tôi thu thập",
+          "body": [
+            "Chúng tôi thu thập thông tin để cung cấp và cải thiện dịch vụ."
+          ],
+          "bullets": [
+            "Thông tin tài khoản: họ tên, email, số điện thoại, ảnh đại diện.",
+            "Nội dung bạn đăng: tin cho thuê, hình ảnh, mô tả.",
+            "Dữ liệu sử dụng: lượt xem, tìm kiếm, thao tác trên nền tảng.",
+            "Dữ liệu kỹ thuật: loại thiết bị, trình duyệt và cookie."
+          ]
+        },
+        "use": {
+          "heading": "Mục đích sử dụng",
+          "body": [
+            "Thông tin của bạn được dùng để vận hành nền tảng và mang lại trải nghiệm phù hợp hơn."
+          ],
+          "bullets": [
+            "Hiển thị và quản lý tin đăng, kết nối người thuê với người cho thuê.",
+            "Cá nhân hoá gợi ý và hỗ trợ tìm kiếm bằng AI.",
+            "Gửi thông báo liên quan đến tài khoản và tin đăng.",
+            "Phân tích và nghiên cứu phục vụ đồ án tốt nghiệp."
+          ]
+        },
+        "sharing": {
+          "heading": "Chia sẻ thông tin",
+          "body": [
+            "Chúng tôi không bán thông tin cá nhân của bạn.",
+            "Thông tin chỉ được chia sẻ trong phạm vi cần thiết."
+          ],
+          "bullets": [
+            "Thông tin liên hệ hiển thị công khai trên tin đăng do chính bạn cung cấp.",
+            "Nhà cung cấp hạ tầng và dịch vụ hỗ trợ vận hành nền tảng.",
+            "Khi có yêu cầu hợp pháp từ cơ quan chức năng."
+          ]
+        },
+        "cookies": {
+          "heading": "Cookie và công nghệ theo dõi",
+          "body": [
+            "Chúng tôi sử dụng cookie và bộ nhớ trình duyệt để duy trì đăng nhập, ghi nhớ tuỳ chọn và cải thiện hiệu năng. Bạn có thể quản lý cookie qua cài đặt trình duyệt."
+          ]
+        },
+        "security": {
+          "heading": "Bảo mật dữ liệu",
+          "body": [
+            "Chúng tôi áp dụng các biện pháp hợp lý để bảo vệ dữ liệu. Tuy nhiên, không hệ thống nào an toàn tuyệt đối, và đây là môi trường học thuật nên bạn nên hạn chế cung cấp dữ liệu nhạy cảm thật."
+          ]
+        },
+        "rights": {
+          "heading": "Quyền của bạn",
+          "body": [
+            "Bạn có quyền kiểm soát dữ liệu cá nhân của mình."
+          ],
+          "bullets": [
+            "Truy cập và chỉnh sửa thông tin tài khoản.",
+            "Yêu cầu xoá tài khoản và dữ liệu liên quan.",
+            "Liên hệ để được hỗ trợ về dữ liệu cá nhân."
+          ]
+        }
+      }
+    },
+    "complaints": {
+      "title": "Giải quyết khiếu nại",
+      "seoDescription": "Quy trình tiếp nhận và giải quyết khiếu nại trên nền tảng Thuê Nhà Trọ.",
+      "intro": "Chúng tôi mong muốn xử lý mọi phản ánh một cách minh bạch và kịp thời. Dưới đây là cách gửi và quy trình giải quyết khiếu nại.",
+      "sections": {
+        "scope": {
+          "heading": "Phạm vi khiếu nại",
+          "body": [
+            "Bạn có thể gửi khiếu nại liên quan đến các vấn đề sau."
+          ],
+          "bullets": [
+            "Tin đăng sai sự thật, lừa đảo hoặc vi phạm quy định.",
+            "Hành vi không phù hợp của người dùng khác.",
+            "Sự cố kỹ thuật hoặc lỗi trong quá trình sử dụng."
+          ]
+        },
+        "channels": {
+          "heading": "Kênh tiếp nhận",
+          "body": [
+            "Có hai cách chính để gửi phản ánh tới chúng tôi."
+          ],
+          "bullets": [
+            "Sử dụng nút Báo cáo ngay trên tin đăng vi phạm.",
+            "Gửi email tới smartrent.tools@gmail.com kèm thông tin chi tiết."
+          ]
+        },
+        "process": {
+          "heading": "Quy trình xử lý",
+          "body": [
+            "Sau khi tiếp nhận, khiếu nại sẽ được xử lý theo các bước sau."
+          ],
+          "bullets": [
+            "Bước 1: Tiếp nhận và ghi nhận nội dung khiếu nại.",
+            "Bước 2: Xác minh thông tin và tin đăng liên quan.",
+            "Bước 3: Đưa ra hướng xử lý như nhắc nhở, ẩn/gỡ tin, hạn chế tài khoản.",
+            "Bước 4: Phản hồi kết quả tới người khiếu nại."
+          ]
+        },
+        "time": {
+          "heading": "Thời gian phản hồi",
+          "body": [
+            "Chúng tôi cố gắng phản hồi trong vòng 3 đến 5 ngày làm việc kể từ khi nhận được khiếu nại đầy đủ thông tin. Với các trường hợp phức tạp, thời gian có thể kéo dài hơn và sẽ được thông báo lại."
+          ]
+        }
+      }
     }
   },
   "navigation": {
@@ -4013,7 +4260,7 @@
     "floatingBar": {
       "items": "{count} tin",
       "items_plural": "{count} tin",
-      "compareNow": "So sánh ngay"
+      "compareNow": "Xem So sánh"
     },
     "unavailableDialog": {
       "title": "Một số tin không còn khả dụng",

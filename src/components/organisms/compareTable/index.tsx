@@ -57,27 +57,25 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
   unitKey,
   lowestLabel,
 }) => (
-  <div className='flex flex-col gap-1'>
-    <div className='flex items-center gap-2 flex-wrap'>
-      <span
-        className={cn(
-          'font-semibold text-primary tabular-nums',
-          isLowest ? 'text-base md:text-lg' : 'text-sm md:text-base',
-        )}
-      >
-        {formattedPrice}
-      </span>
-      {isLowest && (
-        <Badge
-          variant='secondary'
-          className='bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-2xs font-semibold px-1.5 py-0 h-5'
-        >
-          {lowestLabel}
-        </Badge>
+  <div className='flex items-center gap-x-1.5 gap-y-1 flex-wrap'>
+    <span
+      className={cn(
+        'font-semibold text-primary tabular-nums',
+        isLowest ? 'text-base md:text-lg' : 'text-sm md:text-base',
       )}
-    </div>
+    >
+      {formattedPrice}
+    </span>
     {unitKey && (
       <span className='text-xs text-muted-foreground'>/{unitKey}</span>
+    )}
+    {isLowest && (
+      <Badge
+        variant='secondary'
+        className='bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-2xs font-semibold px-1.5 py-0 h-5'
+      >
+        {lowestLabel}
+      </Badge>
     )}
   </div>
 )

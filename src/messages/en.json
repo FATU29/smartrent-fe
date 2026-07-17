@@ -2120,6 +2120,10 @@
     "pricing": "Pricing",
     "paymentGuide": "Payment guide",
     "usageGuide": "Usage guide",
+    "legal": "Policies",
+    "listingRules": "Listing Rules",
+    "termsAgreement": "Terms of Agreement",
+    "complaints": "Complaint Resolution",
     "contactInfo": "Contact",
     "phone": "+84 123 456 789",
     "email": "smartrent.tools@gmail.com",
@@ -2138,6 +2142,249 @@
       "badge": "Academic Project",
       "description": "Capstone thesis at VNU-HCM University of Science. Data is used for research purposes.",
       "requestRemoval": "Request Removal"
+    }
+  },
+  "policies": {
+    "meta": {
+      "academicBadge": "Academic platform",
+      "updatedLabel": "Last updated",
+      "updatedDate": "July 2026",
+      "academicNote": "SmartRent is a demo product built as a capstone thesis at VNU-HCM University of Science and is non-commercial. Some listing data is generated or simulated for demonstration and research purposes.",
+      "contactPrompt": "For any questions about these policies, please contact:"
+    },
+    "listingRules": {
+      "title": "Listing Rules",
+      "seoDescription": "Rules for posting rental property listings on the SmartRent platform.",
+      "intro": "To keep listing quality high and the rental search experience transparent, every listing on SmartRent must follow the rules below.",
+      "sections": {
+        "eligibility": {
+          "heading": "Eligibility to post",
+          "body": [
+            "The person posting must have a valid account on the platform and is responsible for the content they publish.",
+            "The property must be real, actually available for rent, and the poster must have the right or valid authorization to rent it out."
+          ],
+          "bullets": [
+            "Provide accurate contact information (phone number, email).",
+            "Verify your account when requested to increase trust.",
+            "Post only one listing per property to avoid duplicates."
+          ]
+        },
+        "content": {
+          "heading": "Listing content",
+          "body": [
+            "Listing information must be accurate and up to date: rent, area, address, amenities, and related costs such as electricity, water, and services."
+          ],
+          "bullets": [
+            "The title and description must reflect the property truthfully and not be misleading.",
+            "The listed price must be the actual rental price.",
+            "Update or remove the listing once the property has been rented."
+          ]
+        },
+        "prohibited": {
+          "heading": "Prohibited content",
+          "body": [
+            "Violating listings will be hidden or removed; repeat offenders may have their posting rights restricted."
+          ],
+          "bullets": [
+            "Fake or ghost listings, or false information used to lure contact.",
+            "Duplicate content, spam, or reposting the same property multiple times.",
+            "Offensive, discriminatory language or content that violates Vietnamese law.",
+            "Advertising services or products unrelated to property rental."
+          ]
+        },
+        "media": {
+          "heading": "Images and media",
+          "body": [
+            "Images help renters picture the property, so they must be truthful and clear."
+          ],
+          "bullets": [
+            "Use real photos of the property being rented.",
+            "Do not overlay phone numbers, promotional watermarks, or third-party logos on images.",
+            "Do not use images that misrepresent the actual quality or size."
+          ]
+        },
+        "moderation": {
+          "heading": "Moderation and enforcement",
+          "body": [
+            "Listings may be moderated automatically by AI and/or manually, before or after they are displayed.",
+            "Users can report violating listings; the platform will review and act based on severity."
+          ],
+          "bullets": [
+            "A reminder or edit request for minor violations.",
+            "Hiding or removing violating listings.",
+            "Restricting or suspending posting rights for repeat offenders."
+          ]
+        }
+      }
+    },
+    "terms": {
+      "title": "Terms of Agreement",
+      "seoDescription": "Terms of service for using the SmartRent platform.",
+      "intro": "By accessing and using SmartRent, you agree to the terms below. Please read them carefully before using the service.",
+      "sections": {
+        "acceptance": {
+          "heading": "Acceptance of terms",
+          "body": [
+            "Creating an account, posting a listing, or using any feature of the platform means you accept these terms.",
+            "If you do not agree, please stop using the service."
+          ]
+        },
+        "accounts": {
+          "heading": "User accounts",
+          "body": [
+            "You are responsible for keeping your login credentials secure and for all activity that occurs under your account."
+          ],
+          "bullets": [
+            "Provide accurate registration information and keep it current.",
+            "Do not share your account or impersonate others.",
+            "Notify us if you detect unauthorized access."
+          ]
+        },
+        "usage": {
+          "heading": "Rights and obligations of use",
+          "body": [
+            "The platform lets you search, post, and manage rental property listings in accordance with the rules."
+          ],
+          "bullets": [
+            "Do not use the service for unlawful purposes.",
+            "Do not collect other users' data with automated tools without permission.",
+            "Respect the listing rules and other users."
+          ]
+        },
+        "content": {
+          "heading": "User-posted content",
+          "body": [
+            "You retain the rights to the content you post, while granting the platform permission to display, store, and process it to provide the service.",
+            "You are responsible for the legality and accuracy of the content you provide."
+          ]
+        },
+        "disclaimer": {
+          "heading": "Disclaimer",
+          "body": [
+            "SmartRent acts as an intermediary platform connecting landlords and renters; we are not a party to any rental transaction.",
+            "The platform does not guarantee that every listing is fully accurate and is not responsible for agreements or transactions between parties.",
+            "This is a non-commercial capstone thesis product; some data is illustrative."
+          ]
+        },
+        "changes": {
+          "heading": "Changes to the terms",
+          "body": [
+            "We may update these terms over time. The new version takes effect once it is published on this page."
+          ]
+        }
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "seoDescription": "Privacy policy and how SmartRent collects and uses your data.",
+      "intro": "This policy describes how we collect, use, and protect your information when you use SmartRent.",
+      "sections": {
+        "collection": {
+          "heading": "Information we collect",
+          "body": [
+            "We collect information to provide and improve the service."
+          ],
+          "bullets": [
+            "Account information: name, email, phone number, avatar.",
+            "Content you post: rental listings, images, descriptions.",
+            "Usage data: views, searches, and actions on the platform.",
+            "Technical data: device type, browser, and cookies."
+          ]
+        },
+        "use": {
+          "heading": "How we use it",
+          "body": [
+            "Your information is used to operate the platform and deliver a more relevant experience."
+          ],
+          "bullets": [
+            "Display and manage listings, connecting renters with landlords.",
+            "Personalize suggestions and support AI-powered search.",
+            "Send notifications related to your account and listings.",
+            "Analysis and research for the capstone thesis."
+          ]
+        },
+        "sharing": {
+          "heading": "Sharing information",
+          "body": [
+            "We do not sell your personal information.",
+            "Information is shared only to the extent necessary."
+          ],
+          "bullets": [
+            "Contact details you provide are shown publicly on your listings.",
+            "Infrastructure and service providers that support platform operations.",
+            "When there is a lawful request from authorities."
+          ]
+        },
+        "cookies": {
+          "heading": "Cookies and tracking technologies",
+          "body": [
+            "We use cookies and browser storage to keep you signed in, remember preferences, and improve performance. You can manage cookies through your browser settings."
+          ]
+        },
+        "security": {
+          "heading": "Data security",
+          "body": [
+            "We apply reasonable measures to protect your data. However, no system is perfectly secure, and because this is an academic environment you should avoid providing genuinely sensitive data."
+          ]
+        },
+        "rights": {
+          "heading": "Your rights",
+          "body": [
+            "You have the right to control your personal data."
+          ],
+          "bullets": [
+            "Access and edit your account information.",
+            "Request deletion of your account and related data.",
+            "Contact us for support regarding your personal data."
+          ]
+        }
+      }
+    },
+    "complaints": {
+      "title": "Complaint Resolution",
+      "seoDescription": "The process for receiving and resolving complaints on the SmartRent platform.",
+      "intro": "We aim to handle every report transparently and promptly. Below is how to submit a complaint and how it is resolved.",
+      "sections": {
+        "scope": {
+          "heading": "Scope of complaints",
+          "body": [
+            "You can submit complaints related to the following issues."
+          ],
+          "bullets": [
+            "Listings that are false, fraudulent, or violate the rules.",
+            "Inappropriate behavior by other users.",
+            "Technical issues or errors during use."
+          ]
+        },
+        "channels": {
+          "heading": "How to reach us",
+          "body": [
+            "There are two main ways to send a report to us."
+          ],
+          "bullets": [
+            "Use the Report button directly on the violating listing.",
+            "Email smartrent.tools@gmail.com with detailed information."
+          ]
+        },
+        "process": {
+          "heading": "Resolution process",
+          "body": [
+            "Once received, a complaint is handled through the following steps."
+          ],
+          "bullets": [
+            "Step 1: Receive and record the complaint.",
+            "Step 2: Verify the information and the related listing.",
+            "Step 3: Decide on an action such as a reminder, hiding/removing the listing, or restricting the account.",
+            "Step 4: Respond with the outcome to the complainant."
+          ]
+        },
+        "time": {
+          "heading": "Response time",
+          "body": [
+            "We aim to respond within 3 to 5 business days of receiving a complaint with complete information. Complex cases may take longer and will be communicated accordingly."
+          ]
+        }
+      }
     }
   },
   "navigation": {
@@ -4013,7 +4260,7 @@
     "floatingBar": {
       "items": "{count} item",
       "items_plural": "{count} items",
-      "compareNow": "Compare Now"
+      "compareNow": "View Comparison"
     },
     "unavailableDialog": {
       "title": "Some listings are no longer available",
