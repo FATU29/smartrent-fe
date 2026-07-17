@@ -142,17 +142,39 @@ export const useChatSession = (
     [initialMessage],
   )
 
-  // Wipe the conversation whenever the effective identity changes
-  // (login / logout / account switch). The chat only serves authenticated
-  // users, so a guest's "please login" history is cleared on login too.
+  // Re-stamp ownership WITHOUT discarding the conversation. Used when an
+  // unauthenticated visitor logs in: the guest chat belongs to the same
+  // physical person, so it carries over into their authenticated session
+  // instead of being wiped. The current messages are re-persisted under the
+  // new owner so a subsequent reload restores them for that user.
+  const adoptForOwner = useCallback((owner: string) => {
+    try {
+      sessionStorage.setItem(CHAT_OWNER_KEY, owner)
+      sessionStorage.setItem(
+        CHAT_SESSION_KEY,
+        JSON.stringify(messagesRef.current),
+      )
+    } catch {
+      // Silent fail
+    }
+    ownerRef.current = owner
+  }, [])
+
+  // React to identity changes (login / logout / account switch).
+  //
+  // A guest logging in is the SAME physical person continuing their session —
+  // often they were just nudged to log in by the guest message gate — so their
+  // in-progress conversation is adopted into the authenticated session, not
+  // wiped. Every other identity change (switching between two real accounts, or
+  // logging out) still wipes, to avoid one user seeing another's chat.
   //
   // The tricky part is a same-tab reload: the auth store boots as
   // unauthenticated and only re-resolves the logged-in user asynchronously
   // (false -> true edge). We must NOT treat that as a fresh login, or every
   // refresh would wipe the restored history. Two guards handle it:
   //   - When authenticated, compare the (reliable) userId against the stored
-  //     owner: a reload resolves to the same owner (no reset); a real login /
-  //     switch resolves to a different owner (reset).
+  //     owner: a reload resolves to the same owner (no-op); a login from guest
+  //     adopts; a switch between real accounts resets.
   //   - When unauthenticated, only reset on an actual authenticated -> guest
   //     edge (explicit logout). The initial `false` may just be the hydration
   //     window of a logged-in user, so it must not wipe anything.
@@ -168,7 +190,16 @@ export const useChatSession = (
       const identity =
         userId !== null && userId !== undefined ? String(userId) : GUEST_OWNER
       if (ownerRef.current !== identity) {
-        resetForOwner(identity)
+        // Owner was the guest sentinel (or never stamped) -> the messages are
+        // the same person's guest conversation, safe to carry over. Owner was
+        // another real account -> genuine switch, wipe.
+        const cameFromGuest =
+          ownerRef.current === null || ownerRef.current === GUEST_OWNER
+        if (cameFromGuest) {
+          adoptForOwner(identity)
+        } else {
+          resetForOwner(identity)
+        }
       }
       return
     }
@@ -177,7 +208,7 @@ export const useChatSession = (
     if (wasAuthenticated && ownerRef.current !== GUEST_OWNER) {
       resetForOwner(GUEST_OWNER)
     }
-  }, [isAuthenticated, userId, resetForOwner])
+  }, [isAuthenticated, userId, resetForOwner, adoptForOwner])
 
   const clearSession = useCallback(() => {
     try {

@@ -33,7 +33,7 @@ beforeEach(() => {
 })
 
 describe('useChatSession identity reset', () => {
-  it('clears guest history when a guest logs in', () => {
+  it('carries guest history over when a guest logs in (same person)', () => {
     const { result, rerender } = render({ isAuthenticated: false })
 
     act(() => {
@@ -41,8 +41,33 @@ describe('useChatSession identity reset', () => {
     })
     expect(result.current.messages).toHaveLength(2)
 
-    // Guest logs in -> guest "please login" history must be wiped
+    // Guest logs in -> the in-progress conversation belongs to the same
+    // physical person and must carry over into their authenticated session.
     rerender({ auth: { isAuthenticated: true, userId: 'u1' } })
+
+    expect(result.current.messages).toHaveLength(2)
+    expect(result.current.messages[1].id).toBe('guest-1')
+    // Ownership is re-stamped to the now-authenticated user, and the adopted
+    // conversation is persisted under that owner so a reload keeps it.
+    expect(sessionStorage.getItem(CHAT_OWNER_KEY)).toBe('u1')
+    const stored = JSON.parse(
+      sessionStorage.getItem(CHAT_SESSION_KEY) as string,
+    ) as TChatMessage[]
+    expect(stored).toHaveLength(2)
+  })
+
+  it('wipes an adopted guest chat when that user later switches accounts', () => {
+    // Guest chats, then logs in as u1 (adopt), then a different real account
+    // u2 takes over the tab -> genuine identity switch, must wipe.
+    const { result, rerender } = render({ isAuthenticated: false })
+
+    act(() => {
+      result.current.addMessage(userMsg('guest-1'))
+    })
+    rerender({ auth: { isAuthenticated: true, userId: 'u1' } })
+    expect(result.current.messages).toHaveLength(2)
+
+    rerender({ auth: { isAuthenticated: true, userId: 'u2' } })
 
     expect(result.current.messages).toHaveLength(1)
     expect(result.current.messages[0].id).toBe('welcome-msg-initial')
