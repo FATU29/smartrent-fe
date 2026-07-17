@@ -55,6 +55,10 @@ export const PUBLIC_ROUTES = {
   COMPARE: '/compare',
   NEWS: '/news',
   NEWS_DETAIL: '/news/:slug',
+  POLICY_LISTING_RULES: '/policies/listing-rules',
+  POLICY_TERMS: '/policies/terms',
+  POLICY_PRIVACY: '/policies/privacy',
+  POLICY_COMPLAINTS: '/policies/complaints',
 } as const
 
 export type PublicRouteKey = keyof typeof PUBLIC_ROUTES

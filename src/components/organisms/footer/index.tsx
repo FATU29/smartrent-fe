@@ -6,7 +6,7 @@ import { Mail, Phone, GraduationCap } from 'lucide-react'
 
 import Logo from '@/components/atoms/logo'
 import { Button } from '@/components/atoms/button'
-import { SELLERNET_ROUTES, SELLER_ROUTES } from '@/constants'
+import { SELLERNET_ROUTES, SELLER_ROUTES, PUBLIC_ROUTES } from '@/constants'
 
 const SOCIAL_ICONS = [
   { src: '/svg/facebook.svg', alt: 'Facebook', label: 'Facebook' },
@@ -55,6 +55,13 @@ const SUPPORT_LINKS = [
   ['usageGuide', SELLERNET_ROUTES.USAGE_GUIDE],
 ] as const
 
+const LEGAL_LINKS = [
+  ['listingRules', PUBLIC_ROUTES.POLICY_LISTING_RULES],
+  ['termsAgreement', PUBLIC_ROUTES.POLICY_TERMS],
+  ['privacyPolicy', PUBLIC_ROUTES.POLICY_PRIVACY],
+  ['complaints', PUBLIC_ROUTES.POLICY_COMPLAINTS],
+] as const
+
 const Footer: React.FC = () => {
   const t = useTranslations('footer')
 
@@ -91,7 +98,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* ── Main grid ── */}
-        <div className='grid grid-cols-2 lg:grid-cols-4 gap-8 py-8 border-t border-border'>
+        <div className='grid grid-cols-2 lg:grid-cols-5 gap-8 py-8 border-t border-border'>
           {/* Col 1 — Brand */}
           <div className='col-span-2 lg:col-span-1 space-y-4'>
             <Logo size='large' clickable={false} />
@@ -121,7 +128,10 @@ const Footer: React.FC = () => {
           {/* Col 3 — Hỗ trợ */}
           <FooterNavColumn heading={t('support')} links={SUPPORT_LINKS} t={t} />
 
-          {/* Col 4 — Liên hệ */}
+          {/* Col 4 — Quy định */}
+          <FooterNavColumn heading={t('legal')} links={LEGAL_LINKS} t={t} />
+
+          {/* Col 5 — Liên hệ */}
           <div className='space-y-4'>
             <p className='text-2xs font-semibold tracking-widest text-muted-foreground uppercase'>
               {t('contactInfo')}
