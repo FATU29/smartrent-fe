@@ -238,6 +238,10 @@ export const useChatSession = (
     [],
   )
 
+  const removeMessage = useCallback((id: string) => {
+    setSessionMessages((prev) => prev.filter((m) => m.id !== id))
+  }, [])
+
   const setMessages = useCallback((messages: TChatMessage[]) => {
     setSessionMessages(messages)
   }, [])
@@ -246,6 +250,7 @@ export const useChatSession = (
     messages: sessionMessages,
     addMessage,
     updateMessage,
+    removeMessage,
     setMessages,
     clearSession,
   }
