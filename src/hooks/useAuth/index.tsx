@@ -62,11 +62,17 @@ export const useLogin = () => {
         }
 
         const user = await resolveAuthenticatedUser(tokens, queryClient)
+        // Snapshot BEFORE login() flips the store. A guest -> login is the same
+        // physical person, so the chat widget adopts their in-progress
+        // conversation; only a switch from one real account to another wipes it.
+        const wasAuthenticated = useAuthStore.getState().isAuthenticated
         login(user, tokens)
 
-        // Clear AI chat session so the new account never inherits the previous
-        // (or guest) conversation.
-        clearChatSessionStorage()
+        if (wasAuthenticated) {
+          // Switching between real accounts: never let the new account inherit
+          // the previous conversation.
+          clearChatSessionStorage()
+        }
 
         return result
       } catch (error) {
@@ -109,11 +115,17 @@ export const useAdminLogin = () => {
         }
 
         const user = await resolveAuthenticatedUser(tokens, queryClient)
+        // Snapshot BEFORE login() flips the store. A guest -> login is the same
+        // physical person, so the chat widget adopts their in-progress
+        // conversation; only a switch from one real account to another wipes it.
+        const wasAuthenticated = useAuthStore.getState().isAuthenticated
         login(user, tokens)
 
-        // Clear AI chat session so the new account never inherits the previous
-        // (or guest) conversation.
-        clearChatSessionStorage()
+        if (wasAuthenticated) {
+          // Switching between real accounts: never let the new account inherit
+          // the previous conversation.
+          clearChatSessionStorage()
+        }
 
         return result
       } catch (error) {
@@ -391,11 +403,17 @@ export const useVerifyMagicLink = () => {
             }
           : { accessToken: payload.accessToken }
         const user = await resolveAuthenticatedUser(tokens, queryClient)
+        // Snapshot BEFORE login() flips the store. A guest -> login is the same
+        // physical person, so the chat widget adopts their in-progress
+        // conversation; only a switch from one real account to another wipes it.
+        const wasAuthenticated = useAuthStore.getState().isAuthenticated
         login(user, tokens)
 
-        // Clear AI chat session so the new account never inherits the previous
-        // (or guest) conversation.
-        clearChatSessionStorage()
+        if (wasAuthenticated) {
+          // Switching between real accounts: never let the new account inherit
+          // the previous conversation.
+          clearChatSessionStorage()
+        }
 
         return result
       } catch (error) {
