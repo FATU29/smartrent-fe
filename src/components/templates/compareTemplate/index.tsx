@@ -20,6 +20,7 @@ import CompareTable from '@/components/organisms/compareTable'
 import EmptyCompareState from '@/components/organisms/emptyCompareState'
 import { useCompareStore } from '@/store/compare/useCompareStore'
 import { ListingService } from '@/api/services/listing.service'
+import { ListingApi } from '@/api/types/property.type'
 
 /**
  * CompareTemplate
@@ -31,50 +32,72 @@ const CompareTemplate: React.FC = () => {
   const { compareList, clearCompare, removeFromCompare } = useCompareStore()
   const [isMounted, setIsMounted] = useState(false)
   const [unavailableTitles, setUnavailableTitles] = useState<string[]>([])
-  const hasCheckedAvailability = useRef(false)
+  // Full listing detail fetched per id, keyed by listingId. sessionStorage only
+  // holds whatever partial shape the entry point (card, AI mini, detail header)
+  // happened to store, so the table must render from this, not from compareList.
+  const [detailsById, setDetailsById] = useState<Record<number, ListingApi>>({})
+  const fetchedIdsRef = useRef<Set<number>>(new Set())
 
   // Handle hydration: Wait for Zustand store to hydrate from localStorage
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // Re-validate compare list against the live listing endpoint once, after hydration.
-  // The compare table renders from sessionStorage, which goes stale once a listing
-  // expires, gets rejected/suspended, or is deleted — the API 404s all of those
-  // identically (see ListingController), so "no data back" is the single signal
-  // that a listing is no longer comparable.
+  // Hydrate each compared listing from the live detail endpoint (the same
+  // GET /listings/{id} the detail page uses), then render from that — the
+  // sessionStorage entry is only a partial snapshot and also goes stale once a
+  // listing's price/status changes. The endpoint 404s expired/rejected/deleted
+  // listings identically, so "no data back" doubles as the availability signal:
+  // those get pulled from the compare list and surfaced in the dialog.
   useEffect(() => {
-    if (
-      !isMounted ||
-      hasCheckedAvailability.current ||
-      compareList.length === 0
-    ) {
+    if (!isMounted || compareList.length === 0) {
       return
     }
-    hasCheckedAvailability.current = true
 
-    const checkListingsAvailability = async () => {
+    const pending = compareList.filter(
+      (listing) => !fetchedIdsRef.current.has(listing.listingId),
+    )
+    if (pending.length === 0) {
+      return
+    }
+    pending.forEach((listing) => fetchedIdsRef.current.add(listing.listingId))
+
+    let cancelled = false
+
+    const hydrateAndValidate = async () => {
       const responses = await Promise.all(
-        compareList.map((listing) => ListingService.getById(listing.listingId)),
+        pending.map((listing) => ListingService.getById(listing.listingId)),
       )
+      if (cancelled) {
+        return
+      }
 
+      const nextDetails: Record<number, ListingApi> = {}
       const unavailable: string[] = []
-      responses.forEach((response, index) => {
-        const listing = compareList[index]
-        const isUnavailable = !response.success || !response.data
 
-        if (isUnavailable) {
+      responses.forEach((response, index) => {
+        const listing = pending[index]
+        if (response.success && response.data) {
+          nextDetails[listing.listingId] = response.data
+        } else {
           unavailable.push(listing.title)
           removeFromCompare(listing.listingId)
         }
       })
 
+      if (Object.keys(nextDetails).length > 0) {
+        setDetailsById((prev) => ({ ...prev, ...nextDetails }))
+      }
       if (unavailable.length > 0) {
-        setUnavailableTitles(unavailable)
+        setUnavailableTitles((prev) => [...prev, ...unavailable])
       }
     }
 
-    checkListingsAvailability()
+    hydrateAndValidate()
+
+    return () => {
+      cancelled = true
+    }
   }, [isMounted, compareList, removeFromCompare])
 
   // Don't render until mounted to avoid hydration mismatch
@@ -90,6 +113,11 @@ const CompareTemplate: React.FC = () => {
   }
 
   const hasItems = compareList.length > 0
+  // Prefer the full detail; fall back to the stored partial while it loads so
+  // the table still paints immediately instead of flashing empty columns.
+  const displayListings = compareList.map(
+    (listing) => detailsById[listing.listingId] ?? listing,
+  )
 
   return (
     <PageContainer width='grid' className='py-6 sm:py-8'>
@@ -122,7 +150,7 @@ const CompareTemplate: React.FC = () => {
       </div>
 
       {hasItems ? (
-        <CompareTable listings={compareList} />
+        <CompareTable listings={displayListings} />
       ) : (
         <EmptyCompareState />
       )}

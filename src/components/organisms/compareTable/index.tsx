@@ -246,17 +246,20 @@ const CompareTable: React.FC<CompareTableProps> = ({ listings, className }) => {
     DIAMOND: 'apartmentDetail.property.vipTypes.DIAMOND',
   } as const
 
-  // Get primary image for each listing
+  // Get cover image for each listing: prefer the primary photo, but fall back to
+  // the first real image — not every listing has isPrimary set, and requiring it
+  // left cards with no image at all (matches the detail gallery, which shows any).
   const listingImages = useMemo(() => {
     return listings.map((listing) => {
-      const coverImage = listing.media?.find(
-        (m) =>
-          m.mediaType === 'IMAGE' &&
-          m.isPrimary &&
-          m.sourceType !== 'YOUTUBE' &&
-          !m.url?.includes('youtube.com') &&
-          !m.url?.includes('youtu.be'),
-      )
+      const imageMedia =
+        listing.media?.filter(
+          (m) =>
+            m.mediaType === 'IMAGE' &&
+            m.sourceType !== 'YOUTUBE' &&
+            !m.url?.includes('youtube.com') &&
+            !m.url?.includes('youtu.be'),
+        ) ?? []
+      const coverImage = imageMedia.find((m) => m.isPrimary) ?? imageMedia[0]
       return coverImage?.url || '/images/default-image.jpg'
     })
   }, [listings])
