@@ -14,7 +14,6 @@ import {
   Square,
   Users,
   Camera,
-  Check,
   Sparkles,
   MapPin,
 } from 'lucide-react'
@@ -75,7 +74,6 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
     area,
     bedrooms,
     bathrooms,
-    verified,
     user,
     address,
     vipType,
@@ -136,19 +134,6 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
               compact ? 'top-1.5 left-1.5 gap-1' : 'top-2 left-2 gap-1.5',
             )}
           >
-            {verified && (
-              <Badge
-                className={classNames(
-                  'bg-emerald-500/90 text-white text-[11px] rounded-full shadow-md flex items-center backdrop-blur-sm',
-                  compact ? 'px-1.5 py-0.5 gap-0.5' : 'px-2.5 py-1 gap-1',
-                )}
-              >
-                <Check className={compact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
-                <span className='font-medium'>
-                  {t('homePage.property.verified')}
-                </span>
-              </Badge>
-            )}
             {isPriority && (
               <Badge
                 className={classNames(

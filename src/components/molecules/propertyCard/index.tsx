@@ -13,7 +13,6 @@ import {
   Bath,
   Square,
   Camera,
-  Check,
   Home,
   Building2,
   Users,
@@ -73,7 +72,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     area,
     bedrooms,
     bathrooms,
-    verified,
     user,
     address,
     productType,
@@ -278,14 +276,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
             {/* Badges - Top Left */}
             <div className='absolute top-2 left-2 flex flex-col gap-1.5 z-10'>
-              {verified && (
-                <Badge className='bg-emerald-500/90 text-white text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm'>
-                  <Check className='w-3 h-3' />
-                  <span className='font-medium text-2xs'>
-                    {t('homePage.property.verified')}
-                  </span>
-                </Badge>
-              )}
               {vipBadgeConfig &&
                 (() => {
                   const VipIcon = vipBadgeConfig.icon
@@ -422,17 +412,6 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               : 'top-2 left-2 sm:top-3 sm:left-3 gap-1 sm:gap-2',
           )}
         >
-          {verified && (
-            <Badge
-              className={classNames(
-                'bg-emerald-500/90 text-white rounded-full shadow-md flex items-center gap-0.5 backdrop-blur-sm',
-                isCompact ? 'text-2xs px-1.5 py-0.5' : 'text-xs px-2.5 py-1',
-              )}
-            >
-              <Check className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
-              {!isCompact && t('homePage.property.verified')}
-            </Badge>
-          )}
           {vipBadgeConfig &&
             (() => {
               const VipIcon = vipBadgeConfig.icon

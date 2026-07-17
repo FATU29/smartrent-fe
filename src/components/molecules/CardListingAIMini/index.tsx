@@ -35,17 +35,8 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
   const tSaved = useTranslations('savedListings')
   const { language } = useLanguage()
 
-  const {
-    listingId,
-    title,
-    price,
-    area,
-    bedrooms,
-    address,
-    media,
-    vipType,
-    verified,
-  } = listing
+  const { listingId, title, price, area, bedrooms, address, media, vipType } =
+    listing
 
   const primaryImage =
     media?.find((m) => m.isPrimary)?.url || media?.[0]?.url || DEFAULT_IMAGE
@@ -111,13 +102,6 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
               <div className='absolute top-2 left-2'>
                 <Badge className='rounded-full shadow-md font-medium backdrop-blur-sm bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs px-2.5 py-1'>
                   {tHome('priorityBadge')}
-                </Badge>
-              </div>
-            )}
-            {verified && (
-              <div className='absolute top-2 right-2'>
-                <Badge variant='secondary' className='text-xs'>
-                  ✓
                 </Badge>
               </div>
             )}

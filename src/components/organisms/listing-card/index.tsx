@@ -3,7 +3,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { RankDisplay } from '@/components/atoms/rank-display'
-import { VerificationBadge } from '@/components/atoms/verification-badge'
 import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
 import { ListingCardActions } from '@/components/molecules/listingCardActions'
@@ -249,9 +248,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                   <Badge variant='secondary' className='font-medium'>
                     {tNot(getProductTypeTranslationKey(productType))}
                   </Badge>
-                )}
-                {verified && (
-                  <VerificationBadge verified={verified} type='verified' />
                 )}
                 {isPubliclyVisible && (
                   <TooltipProvider delayDuration={300}>
