@@ -126,4 +126,29 @@ describe('useChatLogic guest quota gating', () => {
 
     expect(AiService.chat).toHaveBeenCalledTimes(1)
   })
+
+  it('drops the stale login CTA from the transcript once the guest logs in', async () => {
+    // Guest at the limit: the one-shot login CTA is in the transcript.
+    setAuth(false)
+    sessionStorage.setItem(COUNT_KEY, '5')
+
+    const { result, rerender } = renderHook(() => useChatLogic())
+
+    expect(
+      result.current.messages.some((m) => m.id === 'guest-limit-cta'),
+    ).toBe(true)
+
+    // The guest logs in (typically by clicking that very CTA). The rest of the
+    // conversation is adopted into the authenticated session, but the now-dead
+    // login prompt must not linger.
+    act(() => {
+      setAuth(true, 'u1')
+      rerender()
+    })
+
+    expect(result.current.guestLimitReached).toBe(false)
+    expect(
+      result.current.messages.some((m) => m.id === 'guest-limit-cta'),
+    ).toBe(false)
+  })
 })

@@ -115,10 +115,11 @@ export const useChatLogic = () => {
   // Use session storage for message persistence. Passing the auth identity in
   // lets the session wipe itself on login / logout / account switch instead of
   // leaking one account's chat into the next.
-  const { messages, addMessage, updateMessage, clearSession } = useChatSession(
-    initialMessage,
-    { isAuthenticated, userId: user?.userId ?? null },
-  )
+  const { messages, addMessage, updateMessage, removeMessage, clearSession } =
+    useChatSession(initialMessage, {
+      isAuthenticated,
+      userId: user?.userId ?? null,
+    })
 
   //Init state hook
   const [isLoading, setIsLoading] = useState(false)
@@ -162,6 +163,15 @@ export const useChatLogic = () => {
     })
     scrollToMessage(GUEST_LIMIT_CTA_ID)
   }, [guestLimitReached, isLoading, addMessage, t, scrollToMessage])
+
+  // Once the guest logs in (usually by tapping the CTA itself), the one-shot
+  // login prompt is stale — its button just reopens an auth dialog for an
+  // already-authenticated user. useChatSession adopts the rest of the guest
+  // conversation into the authenticated session, so drop only this dead prompt.
+  useEffect(() => {
+    if (!isAuthenticated) return
+    removeMessage(GUEST_LIMIT_CTA_ID)
+  }, [isAuthenticated, removeMessage])
 
   const generateMessageId = useCallback(() => {
     const timestamp = Date.now()
