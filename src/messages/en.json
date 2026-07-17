@@ -81,16 +81,10 @@
       "year": "year",
       "available": "Available",
       "call": "Call",
-      "chatZalo": "Chat via Zalo",
       "noPhone": "No phone number",
       "prevImage": "Previous image",
       "nextImage": "Next image",
-      "utilities": {
-        "water": "Water",
-        "electricity": "Electricity",
-        "internet": "Internet",
-        "service": "Service"
-      }
+      "zalo": "Contact via Zalo"
     },
     "compare": {
       "title": "Property Comparison",
