@@ -74,6 +74,11 @@ export type SavesAnalyticsSearchRequest = {
   size?: number
 }
 
+// ============= LIMITS =============
+
+/** Max number of listings a user may keep in their saved list at once. */
+export const MAX_SAVED_LISTINGS = 50
+
 // ============= QUERY KEYS =============
 
 export const SAVED_LISTING_QUERY_KEYS = {

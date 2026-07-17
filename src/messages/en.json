@@ -2329,9 +2329,7 @@
         },
         "rights": {
           "heading": "Your rights",
-          "body": [
-            "You have the right to control your personal data."
-          ],
+          "body": ["You have the right to control your personal data."],
           "bullets": [
             "Access and edit your account information.",
             "Request deletion of your account and related data.",
@@ -2358,9 +2356,7 @@
         },
         "channels": {
           "heading": "How to reach us",
-          "body": [
-            "There are two main ways to send a report to us."
-          ],
+          "body": ["There are two main ways to send a report to us."],
           "bullets": [
             "Use the Report button directly on the violating listing.",
             "Email smartrent.tools@gmail.com with detailed information."
@@ -4189,7 +4185,8 @@
       "unsaveFailed": "Failed to remove listing",
       "loginRequired": "Please login to save listings",
       "alreadySaved": "Listing already saved",
-      "notFound": "Listing not found"
+      "notFound": "Listing not found",
+      "limitReached": "You can only save up to {max} listings. Remove one to save another."
     },
     "tooltip": {
       "save": "Save this listing",

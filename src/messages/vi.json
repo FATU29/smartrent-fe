@@ -2103,9 +2103,7 @@
         },
         "rights": {
           "heading": "Quyền của bạn",
-          "body": [
-            "Bạn có quyền kiểm soát dữ liệu cá nhân của mình."
-          ],
+          "body": ["Bạn có quyền kiểm soát dữ liệu cá nhân của mình."],
           "bullets": [
             "Truy cập và chỉnh sửa thông tin tài khoản.",
             "Yêu cầu xoá tài khoản và dữ liệu liên quan.",
@@ -2121,9 +2119,7 @@
       "sections": {
         "scope": {
           "heading": "Phạm vi khiếu nại",
-          "body": [
-            "Bạn có thể gửi khiếu nại liên quan đến các vấn đề sau."
-          ],
+          "body": ["Bạn có thể gửi khiếu nại liên quan đến các vấn đề sau."],
           "bullets": [
             "Tin đăng sai sự thật, lừa đảo hoặc vi phạm quy định.",
             "Hành vi không phù hợp của người dùng khác.",
@@ -2132,9 +2128,7 @@
         },
         "channels": {
           "heading": "Kênh tiếp nhận",
-          "body": [
-            "Có hai cách chính để gửi phản ánh tới chúng tôi."
-          ],
+          "body": ["Có hai cách chính để gửi phản ánh tới chúng tôi."],
           "bullets": [
             "Sử dụng nút Báo cáo ngay trên tin đăng vi phạm.",
             "Gửi email tới smartrent.tools@gmail.com kèm thông tin chi tiết."
@@ -4189,7 +4183,8 @@
       "unsaveFailed": "Không thể bỏ lưu tin",
       "loginRequired": "Vui lòng đăng nhập để lưu tin",
       "alreadySaved": "Tin đã được lưu trước đó",
-      "notFound": "Không tìm thấy tin đăng"
+      "notFound": "Không tìm thấy tin đăng",
+      "limitReached": "Bạn chỉ có thể lưu tối đa {max} tin. Hãy bỏ lưu một tin để lưu tin khác."
     },
     "tooltip": {
       "save": "Lưu tin này",

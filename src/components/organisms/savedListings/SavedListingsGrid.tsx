@@ -1,6 +1,7 @@
 import React from 'react'
 import PropertyCard from '@/components/molecules/propertyCard'
 import { SavedListing } from '@/api/types'
+import { isListingPubliclyVisible } from '@/utils/property'
 
 export interface SavedListingsGridProps {
   savedListings: SavedListing[]
@@ -20,7 +21,7 @@ export const SavedListingsGrid: React.FC<SavedListingsGridProps> = ({
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8'>
       {savedListings.map((savedListing) => {
         const listing = savedListing.listing
-        if (!listing) return null
+        if (!listing || !isListingPubliclyVisible(listing)) return null
 
         return (
           <PropertyCard
