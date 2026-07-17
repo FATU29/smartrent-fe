@@ -19,9 +19,12 @@ import {
   DialogTitle,
 } from '@/components/atoms/dialog'
 import { Button } from '@/components/atoms/button'
-import { SELLERNET_ROUTES } from '@/constants/route'
+import { SELLER_ROUTES, SELLERNET_ROUTES } from '@/constants/route'
 import { AlertTriangle, FileEdit } from 'lucide-react'
 import React from 'react'
+import { useAuthDialog } from '@/contexts/authDialog'
+import LoginRequiredNotice from '@/components/molecules/loginRequiredNotice'
+import { cookieManager } from '@/utils/cookies'
 
 const CreatePostPage: NextPageWithLayout = () => {
   const router = useRouter()
@@ -35,9 +38,31 @@ const CreatePostPage: NextPageWithLayout = () => {
   const t = useTranslations('createPost.profilePhoneRequiredDialog')
   const tBlocked = useTranslations('createPost.blockedFromPostingDialog')
   const { user, isAuthenticated } = useAuth()
+  const { openAuth } = useAuthDialog()
   const [openPhoneRequiredDialog, setOpenPhoneRequiredDialog] =
     React.useState(false)
   const [openBlockedDialog, setOpenBlockedDialog] = React.useState(false)
+  const [isMounted, setIsMounted] = React.useState(false)
+  const hasPromptedLogin = React.useRef(false)
+
+  React.useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // Client-side auth guard. middleware.ts guards /seller/* on a full document
+  // load, but Pages-Router client navigation to a page without getServerSideProps
+  // (this one) never reaches middleware — so a logged-out user could open the post
+  // form via the in-app "Đăng tin" link. Gate on the same access_token cookie the
+  // middleware reads and send guests to the login dialog instead of the form.
+  const isGuestVisitor =
+    isMounted && !isAuthenticated && !cookieManager.getAccessToken()
+
+  React.useEffect(() => {
+    if (isGuestVisitor && !hasPromptedLogin.current) {
+      hasPromptedLogin.current = true
+      openAuth('login', SELLER_ROUTES.CREATE)
+    }
+  }, [isGuestVisitor, openAuth])
 
   const { data: profileResponse, isLoading: isCheckingProfile } = useQuery({
     queryKey: ['create-post-profile-phone-check', user?.userId],
@@ -93,6 +118,26 @@ const CreatePostPage: NextPageWithLayout = () => {
     if (!nextOpen) {
       handleRedirectToProfile()
     }
+  }
+
+  // Before the client auth check resolves, render only the head — avoids an
+  // SSR/CSR mismatch and never flashes the form to a logged-out visitor.
+  if (!isMounted) {
+    return <SeoHead title='Đăng tin – Seller' noindex />
+  }
+
+  // Logged-out visitor: show the login-required screen instead of the post form.
+  // The login dialog is also opened automatically above; once they log in the
+  // guard falls through and the form renders in place.
+  if (isGuestVisitor) {
+    return (
+      <>
+        <SeoHead title='Đăng tin – Seller' noindex />
+        <LoginRequiredNotice
+          onLoginClick={() => openAuth('login', SELLER_ROUTES.CREATE)}
+        />
+      </>
+    )
   }
 
   return (
