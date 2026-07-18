@@ -2469,6 +2469,10 @@
       "video": "Has video",
       "has360": "Has 3D/360°"
     },
+    "fields": {
+      "listingId": "Listing ID",
+      "listingIdPlaceholder": "Enter listing ID"
+    },
     "dropdowns": {
       "propertyType": "Property Type",
       "priceRange": "Price Range",
@@ -2888,7 +2892,7 @@
         "reasonLabel": "Reason for restriction"
       },
       "toolbar": {
-        "searchPlaceholder": "Search listings...",
+        "searchPlaceholder": "Search by title or listing ID...",
         "filter": "Filter",
         "type": "Type",
         "listingType": "Listing Type",

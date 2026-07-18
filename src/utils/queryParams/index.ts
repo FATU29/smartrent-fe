@@ -126,6 +126,9 @@ export function getFiltersFromQuery(
     filters.keyword = keywordParam
   }
 
+  // Exact listing ID
+  filters.id = parseNumberParam(query, 'id')
+
   // Price range
   filters.minPrice = parseNumberParam(query, 'minPrice')
   filters.maxPrice = parseNumberParam(query, 'maxPrice')
