@@ -41,6 +41,15 @@ export const useRecentlyViewed = () => {
     gcTime: 5 * 60 * 1000, // 5 minutes
   })
 
+  // queryFn already wrote the server-filtered list into localStorage;
+  // bump updateTrigger so the localStorage-backed memo below re-reads it
+  // instead of continuing to show whatever was cached before this resolved.
+  useEffect(() => {
+    if (apiData !== undefined) {
+      setUpdateTrigger((prev) => prev + 1)
+    }
+  }, [apiData])
+
   // Sync mutation - sync localStorage with server
   const syncMutation = useMutation({
     mutationFn: async (localData: RecentlyViewedListing[]) => {
