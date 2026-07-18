@@ -74,3 +74,9 @@ export const buildApartmentDetailRoute = (slugParts: string | string[]) => {
 export const buildSellerDetailRoute = (userId: string) => {
   return `${PUBLIC_ROUTES.SELLER_DETAIL_PREFIX}/${encodeURIComponent(userId)}`
 }
+
+// Mirrors DEFAULT_PAGE / DEFAULT_PER_PAGE in contexts/list/index.type.ts —
+// kept as literals here to avoid a route-constants -> list-context dependency.
+export const buildSellerListingsRoute = () => {
+  return `${SELLER_ROUTES.LISTINGS}?page=1&size=10`
+}
