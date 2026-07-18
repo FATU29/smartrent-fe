@@ -22,9 +22,7 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 import { useNotifications } from '@/hooks/useNotifications'
 import type { NotificationItem } from '@/api/types/notification.type'
 import { NotificationItemCard } from './NotificationItemCard'
-import { buildApartmentDetailRoute } from '@/constants/route'
-
-const MY_LISTINGS_PATH = '/seller/listings'
+import { buildSellerListingsRoute } from '@/constants/route'
 
 const NotificationPanel: React.FC = () => {
   const t = useTranslations('notification')
@@ -63,26 +61,17 @@ const NotificationPanel: React.FC = () => {
       if (!notification.isRead) {
         markAsRead(notification.id)
       }
-      // Aggregate summary from the daily expiring-listing scheduler routes the
-      // user to their listings page so they can review/renew. It carries no
-      // specific listing id (referenceId is null on the backend).
+      // Both the daily expiring-listing summary and moderation notifications
+      // (approved/rejected/revision required/suspended/resubmitted) concern
+      // the seller's own listing, which may not be publicly viewable (e.g.
+      // rejected/suspended) — route to the seller's listings management page
+      // rather than the public listing-detail page.
       if (
-        notification.type === 'LISTING_EXPIRING' &&
-        notification.referenceType === 'LISTING_DAILY_SUMMARY'
+        notification.referenceType === 'LISTING_DAILY_SUMMARY' ||
+        notification.referenceType === 'LISTING'
       ) {
         setOpen(false)
-        router.push(MY_LISTINGS_PATH)
-        return
-      }
-      // Listing-scoped notifications (new post approved, rejected, revision
-      // required, etc.) carry the listing id in referenceId — navigate to the
-      // public detail page via next/router so the SPA transition is preserved.
-      if (
-        notification.referenceType === 'LISTING' &&
-        notification.referenceId
-      ) {
-        setOpen(false)
-        router.push(buildApartmentDetailRoute(String(notification.referenceId)))
+        router.push(buildSellerListingsRoute())
       }
     },
     [markAsRead, router],
