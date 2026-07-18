@@ -2241,6 +2241,10 @@
       "video": "Có video",
       "has360": "Có 3D/360°"
     },
+    "fields": {
+      "listingId": "ID tin đăng",
+      "listingIdPlaceholder": "Nhập ID tin đăng"
+    },
     "dropdowns": {
       "propertyType": "Loại nhà đất",
       "priceRange": "Khoảng giá",
@@ -2886,7 +2890,7 @@
         "reasonLabel": "Lý do bị chặn"
       },
       "toolbar": {
-        "searchPlaceholder": "Tìm kiếm tin...",
+        "searchPlaceholder": "Tìm theo tiêu đề hoặc ID tin đăng...",
         "filter": "Lọc",
         "type": "Loại",
         "listingType": "Nhu cầu",

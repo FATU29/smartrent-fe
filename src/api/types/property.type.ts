@@ -573,6 +573,8 @@ export interface ListingFilterRequest {
   amenityIds?: number[]
 
   keyword?: string
+  /** Exact match on listing ID. */
+  id?: number
 
   page?: number
   size?: number
@@ -637,6 +639,8 @@ export interface ListingSearchApiRequest {
   amenityIds?: number[]
 
   keyword?: string
+  /** Exact match on listing ID (PK lookup). */
+  id?: number
 
   // Backend uses these for pagination
   page?: number

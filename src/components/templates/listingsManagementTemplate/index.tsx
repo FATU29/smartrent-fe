@@ -532,6 +532,7 @@ const FilterDialogWrapper: React.FC<{
       hideVerifiedFilter
       hideBrokerFilter
       hideViewMapButton
+      showListingIdFilter
     />
   )
 }

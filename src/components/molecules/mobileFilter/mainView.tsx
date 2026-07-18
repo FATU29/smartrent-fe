@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import RadioRow from '@/components/atoms/mobileFilter/radioRow'
 import ToggleChip from '@/components/atoms/mobileFilter/toggleChip'
+import { Input } from '@/components/atoms/input'
 // Location filter retired — the "Vị trí của bạn" toggle is hidden from the
 // dialog. Import/handler kept commented so it can be re-enabled in one change.
 // import LocationToggleChip from '@/components/atoms/mobileFilter/locationToggleChip'
@@ -24,6 +25,7 @@ import {
   Receipt,
   MapIcon,
   Tag,
+  Hash,
 } from 'lucide-react'
 import { ListingFilterRequest } from '@/api/types'
 import { LISTING_TYPE } from '@/api/types/property.type'
@@ -36,6 +38,10 @@ interface MobileFilterMainViewProps {
   hideVerifiedFilter?: boolean
   hideBrokerFilter?: boolean
   hideViewMapButton?: boolean
+  // Only meaningful for the owner's "My Listings" management view — the
+  // public marketplace filter (homepage/residentialProperties) shares this
+  // component and must not surface an internal listing-ID field to visitors.
+  showListingIdFilter?: boolean
 }
 
 const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
@@ -45,6 +51,7 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
   hideVerifiedFilter = false,
   hideBrokerFilter = false,
   hideViewMapButton = false,
+  showListingIdFilter = false,
 }) => {
   const t = useTranslations('residentialFilter')
 
@@ -79,6 +86,28 @@ const MobileFilterMainView: React.FC<MobileFilterMainViewProps> = ({
               <MapIcon className='h-4 w-4 mr-2' /> {t('actions.viewMap')}
             </Button>
           </Link>
+        </div>
+      )}
+
+      {/* Exact listing ID — owner "My Listings" only, see showListingIdFilter */}
+      {showListingIdFilter && (
+        <div className='p-4 pb-2'>
+          <ToggleSection
+            icon={<Hash className='h-4 w-4 text-muted-foreground' />}
+            title={t('fields.listingId')}
+          >
+            <Input
+              type='text'
+              inputMode='numeric'
+              placeholder={t('fields.listingIdPlaceholder')}
+              value={filters.id ?? ''}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/[^0-9]/g, '')
+                onUpdate({ id: digits ? Number(digits) : undefined })
+              }}
+              className='h-9'
+            />
+          </ToggleSection>
         </div>
       )}
 

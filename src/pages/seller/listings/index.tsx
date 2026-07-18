@@ -107,6 +107,7 @@ const ListingsPage: NextPageWithLayout = () => {
           categoryId: filters.categoryId ?? null,
           productType: filters.productType ?? null,
           keyword: filters.keyword || null,
+          id: filters.id ?? null,
           minPrice: filters.minPrice ?? null,
           maxPrice: filters.maxPrice ?? null,
           minArea: filters.minArea ?? null,

@@ -33,6 +33,7 @@ interface ResidentialFilterDialogProps {
   hideVerifiedFilter?: boolean
   hideBrokerFilter?: boolean
   hideViewMapButton?: boolean
+  showListingIdFilter?: boolean
 }
 
 type ViewKey =
@@ -57,6 +58,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
   hideVerifiedFilter = false,
   hideBrokerFilter = false,
   hideViewMapButton = false,
+  showListingIdFilter = false,
 }) => {
   const t = useTranslations('residentialFilter')
   const router = useRouter()
@@ -243,6 +245,7 @@ const ResidentialFilterDialog: React.FC<ResidentialFilterDialogProps> = ({
             hideVerifiedFilter={hideVerifiedFilter}
             hideBrokerFilter={hideBrokerFilter}
             hideViewMapButton={hideViewMapButton}
+            showListingIdFilter={showListingIdFilter}
           />
         )
     }
