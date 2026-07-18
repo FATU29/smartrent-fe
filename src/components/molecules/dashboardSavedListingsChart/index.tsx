@@ -33,7 +33,6 @@ import {
   BarChart,
   Brush,
   CartesianGrid,
-  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -80,15 +79,6 @@ interface DashboardSavedListingsChartProps {
 // Number of most-recent data points the zoom brush shows by default before the
 // user drags to widen/narrow the window.
 const DEFAULT_BRUSH_WINDOW = 45
-
-const BAR_COLORS = [
-  'var(--chart-1)',
-  'var(--chart-2)',
-  'var(--chart-3)',
-  'var(--chart-4)',
-  'var(--chart-5)',
-  'var(--primary)',
-]
 
 const DashboardSavedListingsChart: React.FC<
   DashboardSavedListingsChartProps
@@ -556,15 +546,9 @@ const DashboardSavedListingsChart: React.FC<
                           <Bar
                             dataKey='totalSaves'
                             name={t('saves')}
+                            fill='var(--color-totalSaves)'
                             radius={[0, 6, 6, 0]}
-                          >
-                            {barChartData.map((item, index) => (
-                              <Cell
-                                key={`saved-listing-${item.listingId}`}
-                                fill={BAR_COLORS[index % BAR_COLORS.length]}
-                              />
-                            ))}
-                          </Bar>
+                          />
                         </BarChart>
                       </ResponsiveContainer>
                     </ChartContainer>
