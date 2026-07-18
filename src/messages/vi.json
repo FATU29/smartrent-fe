@@ -81,16 +81,10 @@
       "year": "năm",
       "available": "Trống",
       "call": "Gọi điện",
-      "chatZalo": "Nhắn Zalo",
       "noPhone": "Không có số điện thoại",
       "prevImage": "Ảnh trước",
       "nextImage": "Ảnh sau",
-      "utilities": {
-        "water": "Nước",
-        "electricity": "Điện",
-        "internet": "Internet",
-        "service": "DV"
-      }
+      "zalo": "Liên hệ qua Zalo"
     },
     "compare": {
       "title": "So sánh bất động sản",

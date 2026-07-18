@@ -9,17 +9,12 @@ import {
   Phone,
   Sofa,
   Compass,
-  Droplets,
-  Zap,
-  Wifi,
-  DollarSign,
   Star,
   Check,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
 
-import { Badge } from '@/components/atoms/badge'
 import { Button } from '@/components/atoms/button'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
@@ -35,21 +30,6 @@ export interface CardListingAIDetailProps {
   // When provided, "View Details" triggers an in-chat detail lookup instead of
   // navigating to /listing-detail/:id in a new tab.
   onViewDetail?: (listingId: number) => void
-}
-
-const UTILITY_ICONS: Record<string, React.ElementType> = {
-  waterPrice: Droplets,
-  electricityPrice: Zap,
-  internetPrice: Wifi,
-  serviceFee: DollarSign,
-}
-
-// Maps the API price field to its short label key under chat.listing.utilities.
-const UTILITY_LABEL_KEYS: Record<string, string> = {
-  waterPrice: 'water',
-  electricityPrice: 'electricity',
-  internetPrice: 'internet',
-  serviceFee: 'service',
 }
 
 export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
@@ -80,11 +60,6 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
     media,
     furnishing,
     direction,
-    amenities,
-    waterPrice,
-    electricityPrice,
-    internetPrice,
-    serviceFee,
     user,
     ownerContactPhoneNumber,
     vipType,
@@ -124,22 +99,6 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
     ownerContactPhoneNumber ||
     (user ? `${user.phoneCode || ''}${user.phoneNumber || ''}` : '')
 
-  // Only surface utilities that have a meaningful value — "0 đ" rows are noise.
-  const utilities = [
-    { key: 'waterPrice', value: waterPrice },
-    { key: 'electricityPrice', value: electricityPrice },
-    { key: 'internetPrice', value: internetPrice },
-    { key: 'serviceFee', value: serviceFee },
-  ].filter(
-    (u) => u.value !== null && u.value !== undefined && Number(u.value) > 0,
-  )
-
-  const visibleAmenities = (amenities || [])
-    .map((a) =>
-      typeof a === 'string' ? a : (a as { name?: string })?.name || '',
-    )
-    .filter(Boolean) as string[]
-
   const isVip = vipType === 'DIAMOND' || vipType === 'GOLD'
   const isAvailable = !expired && listingStatus !== 'EXPIRED'
 
@@ -147,7 +106,9 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
     ? contactPhone.replaceAll(' ', '').replaceAll('.', '').replaceAll('-', '')
     : ''
 
-  const amenityLimit = compact ? 3 : 4
+  // Zalo personal links use the local VN format (0xxxxxxxxx). Normalize a
+  // leading +84 / 84 country code back to 0 so the link resolves.
+  const zaloPhone = cleanPhone.replace(/^\+?84/, '0')
 
   return (
     <div
@@ -302,53 +263,6 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
             <span className='line-clamp-1'>{address.fullAddress}</span>
           </div>
         )}
-
-        {/* Utilities (only non-zero) */}
-        {utilities.length > 0 && (
-          <div className='flex flex-wrap gap-1.5'>
-            {utilities.map(({ key, value }) => {
-              const Icon = UTILITY_ICONS[key]
-              const labelKey = UTILITY_LABEL_KEYS[key]
-              if (!Icon || !labelKey) return null
-              return (
-                <Badge
-                  key={key}
-                  variant='outline'
-                  className='gap-1 text-xs font-normal px-2 py-0.5 h-auto'
-                >
-                  <Icon className='w-3 h-3' aria-hidden='true' />
-                  <span>
-                    {t(`utilities.${labelKey}`)}:{' '}
-                    {formatByLocale(value!, language)}
-                  </span>
-                </Badge>
-              )
-            })}
-          </div>
-        )}
-
-        {/* Amenities */}
-        {visibleAmenities.length > 0 && (
-          <div className='flex flex-wrap gap-1.5'>
-            {visibleAmenities.slice(0, amenityLimit).map((label) => (
-              <Badge
-                key={label}
-                variant='secondary'
-                className='text-xs font-normal px-2 py-0.5 h-auto'
-              >
-                {label}
-              </Badge>
-            ))}
-            {visibleAmenities.length > amenityLimit && (
-              <Badge
-                variant='secondary'
-                className='text-xs font-normal px-2 py-0.5 h-auto'
-              >
-                +{visibleAmenities.length - amenityLimit}
-              </Badge>
-            )}
-          </div>
-        )}
       </div>
 
       {/* ── CTA row ── */}
@@ -396,20 +310,16 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
             variant='outline'
             size='icon'
             className='h-9 w-9 flex-shrink-0 rounded-lg'
-            aria-label={t('chatZalo')}
+            aria-label={t('zalo')}
           >
             <a
-              href={`https://zalo.me/${cleanPhone.replace(/\D/g, '')}`}
+              href={`https://zalo.me/${zaloPhone}`}
               target='_blank'
               rel='noopener noreferrer'
               onClick={(e) => e.stopPropagation()}
             >
-              <Image
-                src='/svg/zalo.svg'
-                alt='Zalo'
-                width={16}
-                height={16}
-                className='w-4 h-4'
+              <Phone
+                className='w-4 h-4 text-muted-foreground'
                 aria-hidden='true'
               />
             </a>
