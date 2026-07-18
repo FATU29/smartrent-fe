@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SavedListingService } from '@/api/services'
-import { SAVED_LISTING_QUERY_KEYS } from '@/api/types'
+import { MAX_SAVED_LISTINGS, SAVED_LISTING_QUERY_KEYS } from '@/api/types'
 import { toast } from 'sonner'
 import { isAxiosError } from 'axios'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/hooks/useAuth'
+
+const SAVED_LISTINGS_LIMIT_REACHED = 'Saved listings limit reached'
 
 /**
  * Hook to save a listing to favorites
@@ -22,6 +24,20 @@ export const useSaveListing = () => {
         toast.error(t('loginRequired'))
         throw new Error('Authentication required')
       }
+
+      // Fetch (or reuse a fresh cached) count so the cap is enforced even
+      // when nothing else on the page has mounted the count query yet.
+      const countResponse = await queryClient.fetchQuery({
+        queryKey: SAVED_LISTING_QUERY_KEYS.count(),
+        queryFn: () => SavedListingService.getCount(),
+        staleTime: 60000,
+      })
+      const currentCount = countResponse?.data ?? 0
+      if (currentCount >= MAX_SAVED_LISTINGS) {
+        toast.warning(t('limitReached', { max: MAX_SAVED_LISTINGS }))
+        throw new Error(SAVED_LISTINGS_LIMIT_REACHED)
+      }
+
       return SavedListingService.save({ listingId })
     },
     onSuccess: (response) => {
@@ -60,10 +76,11 @@ export const useSaveListing = () => {
       })
     },
     onError: (error: unknown) => {
-      // Skip error toast if authentication error (already shown)
+      // Skip error toast if authentication or limit error (already shown)
       if (
         error instanceof Error &&
-        error.message === 'Authentication required'
+        (error.message === 'Authentication required' ||
+          error.message === SAVED_LISTINGS_LIMIT_REACHED)
       ) {
         return
       }
