@@ -100,7 +100,6 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
     seller?.contactPhoneNumber ||
     `${seller?.phoneCode || ''} ${seller?.phoneNumber || ''}`.trim()
 
-  const dialPhone = phone.replace(/\s+/g, '')
   const zaloPhone =
     `${seller?.phoneCode || ''}${seller?.phoneNumber || ''}`.replace(/\D/g, '')
 
@@ -118,9 +117,9 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
       masked: maskPhoneNumber(phone),
       copyText: phone,
       copySuccess: t('profile.copiedPhone'),
-      actionHref: `tel:${dialPhone}`,
+      actionHref: `https://zalo.me/${phone.replace(/\D/g, '')}`,
       actionIcon: <Phone className='h-4 w-4' />,
-      actionLabel: t('profile.actions.call'),
+      actionLabel: t('profile.actions.chatZalo'),
     })
   }
   if (hasEmail && seller?.email) {
@@ -216,7 +215,12 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
                       variant='ghost'
                       className='h-8 w-8 text-primary hover:bg-primary/10'
                     >
-                      <a href={item.actionHref} aria-label={item.actionLabel}>
+                      <a
+                        href={item.actionHref}
+                        target='_blank'
+                        rel='noreferrer'
+                        aria-label={item.actionLabel}
+                      >
                         {item.actionIcon}
                       </a>
                     </Button>

@@ -40,13 +40,16 @@ const processListingIds = (text: string): string => {
   )
 }
 
-// Convert phone numbers to tel: links
+// Convert phone numbers to Zalo chat links
 const processPhoneNumbers = (text: string): string => {
   return text.replace(
     /(?:SĐT|Điện thoại|Phone|Tel)[:\s]*(\+?[\d\s.-]{9,15})/gi,
     (match, phone) => {
-      const cleanPhone = phone.replace(/[\s.-]/g, '').trim()
-      return match.replace(phone, `[${phone.trim()}](tel:${cleanPhone})`)
+      const zaloPhone = phone.replace(/\D/g, '')
+      return match.replace(
+        phone,
+        `[${phone.trim()}](https://zalo.me/${zaloPhone})`,
+      )
     },
   )
 }
@@ -69,10 +72,12 @@ const renderLink = (
   children: React.ReactNode,
   props: Record<string, unknown>,
 ) => {
-  if (href?.startsWith('tel:')) {
+  if (href?.startsWith('https://zalo.me/')) {
     return (
       <a
         href={href}
+        target='_blank'
+        rel='noopener noreferrer'
         className='text-primary font-medium hover:underline'
         onClick={(e) => e.stopPropagation()}
         {...props}

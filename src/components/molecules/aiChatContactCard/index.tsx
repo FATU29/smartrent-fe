@@ -80,7 +80,9 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
       <div className='p-2 space-y-0.5'>
         {phone && (
           <a
-            href={`tel:${phone.replace(/[\s.-]/g, '')}`}
+            href={`https://zalo.me/${phone.replace(/\D/g, '')}`}
+            target='_blank'
+            rel='noopener noreferrer'
             className='flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-accent transition-colors'
             onClick={(e) => e.stopPropagation()}
           >

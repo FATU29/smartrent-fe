@@ -140,7 +140,9 @@ const Footer: React.FC = () => {
               <div className='flex items-center gap-2.5'>
                 <Phone className='w-4 h-4 flex-shrink-0 text-muted-foreground' />
                 <a
-                  href={`tel:${t('phone').replaceAll(' ', '')}`}
+                  href={`https://zalo.me/${t('phone').replace(/\D/g, '')}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
                   className='text-sm text-muted-foreground hover:text-foreground transition-colors tabular-nums'
                 >
                   {t('phone')}
