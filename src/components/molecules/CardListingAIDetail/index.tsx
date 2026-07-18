@@ -396,11 +396,20 @@ export const CardListingAIDetail: React.FC<CardListingAIDetailProps> = ({
             variant='outline'
             size='icon'
             className='h-9 w-9 flex-shrink-0 rounded-lg'
-            aria-label={t('call')}
+            aria-label={t('chatZalo')}
           >
-            <a href={`tel:${cleanPhone}`} onClick={(e) => e.stopPropagation()}>
-              <Phone
-                className='w-4 h-4 text-muted-foreground'
+            <a
+              href={`https://zalo.me/${cleanPhone.replace(/\D/g, '')}`}
+              target='_blank'
+              rel='noopener noreferrer'
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src='/svg/zalo.svg'
+                alt='Zalo'
+                width={16}
+                height={16}
+                className='w-4 h-4'
                 aria-hidden='true'
               />
             </a>
