@@ -12,6 +12,7 @@ export type NotificationType =
   | 'REPORT_RESOLVED'
   | 'REPORT_REJECTED'
   | 'REPORT_ACTION_REQUIRED'
+  | 'REPORT_LISTING_REMOVED'
   // Moderation flow
   | 'LISTING_APPROVED'
   | 'LISTING_REJECTED'
@@ -20,16 +21,21 @@ export type NotificationType =
   | 'LISTING_RESUBMITTED'
   // Listing lifecycle — daily aggregate sent by the expiring-listing scheduler
   | 'LISTING_EXPIRING'
+  // A followed seller published a new listing
+  | 'NEW_LISTING_FROM_FOLLOWED_USER'
+  // Membership lifecycle — daily aggregate sent by the membership-expiry scheduler
+  | 'MEMBERSHIP_EXPIRING'
 
 /**
- * Reference type for navigation. `LISTING_DAILY_SUMMARY` is the aggregate-summary
- * marker used by the expiring-listing scheduler — it has no specific listing id
- * and should route the user to their listings management page.
+ * Reference type for navigation. `LISTING_DAILY_SUMMARY` and
+ * `MEMBERSHIP_DAILY_SUMMARY` are aggregate-summary markers used by their
+ * respective schedulers — they have no specific listing/membership id.
  */
 export type NotificationReferenceType =
   | 'LISTING'
   | 'REPORT'
   | 'LISTING_DAILY_SUMMARY'
+  | 'MEMBERSHIP_DAILY_SUMMARY'
 
 /**
  * Notification entity from API / WebSocket

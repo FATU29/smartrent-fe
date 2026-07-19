@@ -20,6 +20,7 @@ export const SELLERNET_ROUTES = {
   POST_DRAFTS: '/seller/drafts',
   POST_SPONSORED: '/sellernet/post/sponsored',
   CUSTOMERS: '/seller/customers', // Redirect to seller layout
+  MEMBERSHIP_STATUS: '/sellernet/membership',
   MEMBERSHIP_REGISTER: '/sellernet/membership/register',
   PUSH_DETAILS: '/sellernet/push',
   PRO_REGISTER: '/sellernet/pro/register',

@@ -10,6 +10,9 @@ import {
   Ban,
   RotateCcw,
   Clock,
+  Trash2,
+  UserPlus,
+  CreditCard,
 } from 'lucide-react'
 
 /**
@@ -66,6 +69,21 @@ export function getNotificationIcon(type: NotificationType) {
       return {
         icon: AlertTriangle,
         className: 'text-orange-600',
+      }
+    case 'REPORT_LISTING_REMOVED':
+      return {
+        icon: Trash2,
+        className: 'text-red-600',
+      }
+    case 'NEW_LISTING_FROM_FOLLOWED_USER':
+      return {
+        icon: UserPlus,
+        className: 'text-blue-500',
+      }
+    case 'MEMBERSHIP_EXPIRING':
+      return {
+        icon: CreditCard,
+        className: 'text-amber-500',
       }
     default:
       return {

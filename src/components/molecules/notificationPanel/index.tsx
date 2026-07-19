@@ -22,7 +22,11 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 import { useNotifications } from '@/hooks/useNotifications'
 import type { NotificationItem } from '@/api/types/notification.type'
 import { NotificationItemCard } from './NotificationItemCard'
-import { buildSellerListingsRoute } from '@/constants/route'
+import {
+  buildApartmentDetailRoute,
+  buildSellerListingsRoute,
+  SELLERNET_ROUTES,
+} from '@/constants/route'
 
 const NotificationPanel: React.FC = () => {
   const t = useTranslations('notification')
@@ -61,11 +65,31 @@ const NotificationPanel: React.FC = () => {
       if (!notification.isRead) {
         markAsRead(notification.id)
       }
-      // Both the daily expiring-listing summary and moderation notifications
-      // (approved/rejected/revision required/suspended/resubmitted) concern
-      // the seller's own listing, which may not be publicly viewable (e.g.
-      // rejected/suspended) — route to the seller's listings management page
-      // rather than the public listing-detail page.
+
+      // A new listing from a followed seller belongs to someone else — send
+      // the user to the public listing-detail page, not their own seller
+      // listings management page.
+      if (
+        notification.type === 'NEW_LISTING_FROM_FOLLOWED_USER' &&
+        notification.referenceId
+      ) {
+        setOpen(false)
+        router.push(buildApartmentDetailRoute(String(notification.referenceId)))
+        return
+      }
+
+      if (notification.referenceType === 'MEMBERSHIP_DAILY_SUMMARY') {
+        setOpen(false)
+        router.push(SELLERNET_ROUTES.MEMBERSHIP_STATUS)
+        return
+      }
+
+      // The daily expiring-listing summary and moderation/report
+      // notifications about the seller's own listing (approved/rejected/
+      // revision required/suspended/resubmitted/reported/removed) concern a
+      // listing that may not be publicly viewable (e.g. rejected/suspended)
+      // — route to the seller's listings management page rather than the
+      // public listing-detail page.
       if (
         notification.referenceType === 'LISTING_DAILY_SUMMARY' ||
         notification.referenceType === 'LISTING'
