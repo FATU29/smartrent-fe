@@ -9,6 +9,7 @@ import { ListingsManagementTemplate } from '@/components/templates/listingsManag
 import { ListProvider } from '@/contexts/list/index.context'
 import LocationProvider from '@/contexts/location'
 import { ListingFilterRequest, ListingOwnerDetail } from '@/api/types'
+import { SortKey } from '@/api/types/property.type'
 import type { ApiResponse } from '@/configs/axios/types'
 import { ListingService } from '@/api/services/listing.service'
 import { mapMyListingsBackendToFrontend } from '@/utils/property/mapMyListingsResponse'
@@ -37,6 +38,8 @@ const fetchMyListings = async (
   // listingStatus, moderationStatus, expired/draft) are passed through.
   const request = {
     ...mapFrontendToBackendRequest(filters),
+    // No explicit sort chosen yet: default this page to newest-first.
+    sortBy: filters.sortBy ?? SortKey.NEWEST,
     listingStatus: filters.listingStatus,
     moderationStatus: filters.moderationStatus,
     expired: filters.expired,
