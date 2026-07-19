@@ -671,11 +671,6 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 ? t('freePosting')
                 : `${totalPrice.toLocaleString('vi-VN')} đ`}
             </Typography>
-            {!useMembership && (
-              <Typography variant='muted' className='text-xs mt-1'>
-                {t('vatIncluded')}
-              </Typography>
-            )}
           </Card>
         </Card>
       </CardContent>
