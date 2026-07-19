@@ -3174,7 +3174,7 @@
         "hiddenMessage": "Quản trị viên đã tạm ẩn bài đăng này để xem xét báo cáo. Bài đăng sẽ tự động hiển thị lại sau khi xử lý xong, bạn không cần thao tác gì.",
         "cannotEditNote": "Bạn không thể chỉnh sửa hoặc gửi lại bài đăng này.",
         "noReasonProvided": "Bài đăng đã bị từ chối. Quản trị viên chưa cung cấp lý do cụ thể.",
-        "permanentlyRemovedTitle": "Bài đăng đã bị gỡ vĩnh viễn",
+        "permanentlyRemovedTitle": "Bài đăng đã bị đình chỉ",
         "adminNoteLabel": "Ghi chú từ quản trị viên",
         "editAndResubmit": "Chỉnh sửa và gửi lại",
         "resubmitDirectly": "Gửi lại ngay",
@@ -3202,7 +3202,7 @@
         "successTitle": "Đã gửi lại thành công",
         "successDescription": "Tin đăng của bạn đã được cập nhật và gửi lại để duyệt. Hiện đang chờ quản trị viên phê duyệt.",
         "error": "Không thể gửi lại bài đăng",
-        "notAllowed": "Tin đăng này đã bị gỡ vĩnh viễn và không thể gửi lại."
+        "notAllowed": "Tin đăng này đã bị đình chỉ và không thể gửi lại."
       }
     },
     "drafts": {
