@@ -2916,7 +2916,7 @@
         "MOD_REJECTED": "Đã từ chối",
         "MOD_REVISION_REQUIRED": "Cần chỉnh sửa",
         "MOD_SUSPENDED": "Đang ẩn tạm thời",
-        "MOD_REMOVED": "Đã gỡ vĩnh viễn"
+        "MOD_REMOVED": "Bị đình chỉ"
       },
       "propertyTypes": {
         "0": "Tất cả Loại",
@@ -3163,7 +3163,7 @@
         "REVISION_REQUIRED": "Cần chỉnh sửa",
         "RESUBMITTED": "Đã gửi lại",
         "SUSPENDED": "Đang ẩn tạm thời",
-        "REMOVED": "Đã gỡ vĩnh viễn"
+        "REMOVED": "Bị đình chỉ"
       },
       "banner": {
         "rejectedTitle": "Bài đăng bị từ chối",

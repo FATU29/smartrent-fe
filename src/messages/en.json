@@ -2918,7 +2918,7 @@
         "MOD_REJECTED": "Rejected",
         "MOD_REVISION_REQUIRED": "Revision Required",
         "MOD_SUSPENDED": "Temporarily Hidden",
-        "MOD_REMOVED": "Permanently Removed"
+        "MOD_REMOVED": "Suspended"
       },
       "propertyTypes": {
         "0": "All Types",
@@ -3165,7 +3165,7 @@
         "REVISION_REQUIRED": "Revision Required",
         "RESUBMITTED": "Resubmitted",
         "SUSPENDED": "Temporarily Hidden",
-        "REMOVED": "Permanently Removed"
+        "REMOVED": "Suspended"
       },
       "banner": {
         "rejectedTitle": "Listing Rejected",
