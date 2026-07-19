@@ -3176,7 +3176,7 @@
         "hiddenMessage": "An admin has temporarily hidden this listing while a report is under review. It will reappear automatically once resolved — no action needed from you.",
         "cannotEditNote": "You can't edit or resubmit this listing.",
         "noReasonProvided": "This listing was rejected. The admin didn't provide a specific reason.",
-        "permanentlyRemovedTitle": "Listing Permanently Removed",
+        "permanentlyRemovedTitle": "Listing Suspended",
         "adminNoteLabel": "Note from admin",
         "editAndResubmit": "Edit & Resubmit",
         "resubmitDirectly": "Resubmit Now",
@@ -3204,7 +3204,7 @@
         "successTitle": "Resubmitted Successfully",
         "successDescription": "Your listing has been updated and resubmitted for review. It is now awaiting admin approval.",
         "error": "Failed to resubmit listing",
-        "notAllowed": "This listing has been permanently removed and cannot be resubmitted."
+        "notAllowed": "This listing has been suspended and cannot be resubmitted."
       }
     },
     "drafts": {
