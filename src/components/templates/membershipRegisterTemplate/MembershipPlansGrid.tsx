@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/atoms/card'
 import type { Membership } from '@/api/types/membership.type'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { MEDIA_BELOW_MD } from '@/constants/breakpoints'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import { PackageOpen } from 'lucide-react'
 import {
   Carousel,

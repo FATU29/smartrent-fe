@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/atoms/skeleton'
 import { cn } from '@/lib/utils'
 import { BenefitType, BenefitStatus, UserMembership } from '@/api/types'
 import { format } from 'date-fns'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import { Zap, Calendar, Crown } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 

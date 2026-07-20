@@ -2,7 +2,7 @@ import React from 'react'
 import { Check } from 'lucide-react'
 import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import { getContentStyles, getFeatureItemStyles } from './styles'
 import type { MembershipBenefit } from '@/api/types/membership.type'
 

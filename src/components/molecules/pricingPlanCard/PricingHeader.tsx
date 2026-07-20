@@ -3,7 +3,7 @@ import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
 import { formatSavingByLocale } from '@/utils/currency/convert'
 import { cn } from '@/lib/utils'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import {
   getHeaderStyles,
   getTitleStyles,

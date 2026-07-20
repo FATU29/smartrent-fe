@@ -28,7 +28,7 @@ import {
   QueuedMembershipExistsError,
 } from '@/api/types/membership.type'
 import { format } from 'date-fns'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import RenewMembershipDialog from '@/components/molecules/renewMembershipDialog'
 
