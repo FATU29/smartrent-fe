@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, CardContent } from '@/components/atoms/card'
 import { Typography } from '@/components/atoms/typography'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
 
 interface MembershipHeaderProps {
