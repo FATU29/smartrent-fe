@@ -30,7 +30,7 @@ const canonicalize = (value: unknown): unknown => {
   if (value && typeof value === 'object') {
     const source = value as Record<string, unknown>
     return Object.keys(source)
-      .sort()
+      .sort((a, b) => a.localeCompare(b))
       .reduce<Record<string, unknown>>((acc, key) => {
         acc[key] = canonicalize(source[key])
         return acc

@@ -44,6 +44,9 @@ interface ExtendedAddress {
 
 type ListingLikeDetail = ListingDetail | ListingOwnerDetail
 
+/** Province/district/ward codes arrive as either a string or a number. */
+type AddressCode = string | number | null
+
 // Extended listing type that includes direct categoryId field from API response
 type ExtendedListingDetail = ListingLikeDetail & { categoryId?: number }
 
@@ -421,9 +424,9 @@ export function mapDraftToFormData(
   if (draft.address) {
     const address = draft.address as DraftListingResponse['address'] & {
       // Unified address fields returned by current backend
-      provinceCode?: string | number | null
-      districtCode?: string | number | null
-      wardCode?: string | number | null
+      provinceCode?: AddressCode
+      districtCode?: AddressCode
+      wardCode?: AddressCode
       provinceName?: string | null
       wardName?: string | null
       street?: string | null
