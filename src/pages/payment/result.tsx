@@ -43,7 +43,7 @@ import {
   Hash,
   Sparkles,
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { Typography } from '@/components/atoms/typography'
 
@@ -609,7 +609,7 @@ const PaymentResultPage: NextPageWithLayout = () => {
                   </motion.div>
 
                   {/* Animated success/failure hero on a colored gradient
-                      banner — framer-motion props attach to the heading
+                      banner — motion props attach to the heading
                       element directly, so this stays as motion.h1 with
                       explicit sizing rather than routed through Typography. */}
                   <motion.h1
