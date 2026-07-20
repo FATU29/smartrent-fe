@@ -1,6 +1,11 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Exclude non-source prose from Tailwind's content scan: it treats any
+   backslash-escape-looking text (e.g. Windows paths in docs) as a CSS
+   unicode escape and can crash on out-of-range codepoints. */
+@source not "../../docs";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
