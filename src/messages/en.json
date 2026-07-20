@@ -1867,6 +1867,20 @@
             "high": "High",
             "medium": "Medium",
             "low": "Low"
+          },
+          "priceEvaluation": {
+            "yourPrice": "Your asking price",
+            "perMonth": "/month",
+            "perYear": "/year",
+            "monthlyEquivalent": "≈ {price}/month",
+            "fair": "Reasonable",
+            "above": "Above market",
+            "aboveStrong": "Well above market",
+            "below": "Below market",
+            "belowStrong": "Well below market",
+            "inRange": "Within the AI-suggested range",
+            "deviationAbove": "{percent}% above the suggested range",
+            "deviationBelow": "{percent}% below the suggested range"
           }
         }
       }

@@ -28,6 +28,7 @@ import {
   isTypeSupportedForAiValuation,
   resolveValuationAddress,
 } from '@/utils/ai/housingPredictor'
+import { evaluateAskingPrice } from '@/utils/ai/priceEvaluation'
 import { formatByLocale } from '@/utils/currency/convert'
 import type { HousingPredictorResponse } from '@/api/types/ai.type'
 import { toast } from 'sonner'
@@ -149,6 +150,8 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
 
   // Treat a range with no comparable listings behind it the same as an explicit
   // fallback: in both cases it is not backed by market data.
+  // Kept in sync by hand with the equivalent gate in evaluateAskingPrice
+  // (src/utils/ai/priceEvaluation.ts) - update both if either condition changes.
   const isFallbackEstimate =
     prediction?.source === 'rule_based_fallback' ||
     prediction?.listings_found === 0
@@ -178,6 +181,58 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
       : prediction?.confidence === 'medium'
         ? 'bg-amber-500'
         : 'bg-muted-foreground'
+
+  const priceEvaluation = useMemo(
+    () =>
+      evaluateAskingPrice(
+        propertyInfo.price,
+        propertyInfo.priceUnit,
+        prediction,
+      ),
+    [propertyInfo.price, propertyInfo.priceUnit, prediction],
+  )
+
+  const priceUnitSuffix =
+    propertyInfo.priceUnit === 'YEAR'
+      ? t('results.priceEvaluation.perYear')
+      : t('results.priceEvaluation.perMonth')
+
+  // Colour and wording for the verdict. Green reads as "no action needed",
+  // amber as "worth a second look", red as "probably a mistake".
+  const evaluationTone = useMemo(() => {
+    if (!priceEvaluation) return null
+
+    if (priceEvaluation.verdict === 'fair') {
+      return {
+        box: 'border-green-300 bg-green-50 dark:border-green-800 dark:bg-green-950/40',
+        text: 'text-green-700 dark:text-green-400',
+        label: t('results.priceEvaluation.fair'),
+      }
+    }
+
+    const isStrong = priceEvaluation.severity === 'strong'
+    const isAbove = priceEvaluation.verdict === 'above'
+
+    return {
+      box: isStrong
+        ? 'border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/40'
+        : 'border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40',
+      text: isStrong
+        ? 'text-red-700 dark:text-red-400'
+        : 'text-amber-700 dark:text-amber-400',
+      label: isAbove
+        ? t(
+            isStrong
+              ? 'results.priceEvaluation.aboveStrong'
+              : 'results.priceEvaluation.above',
+          )
+        : t(
+            isStrong
+              ? 'results.priceEvaluation.belowStrong'
+              : 'results.priceEvaluation.below',
+          ),
+    }
+  }, [priceEvaluation, t])
 
   const canPredict = !!predictionRequest
   // AI valuation supports every listing property type. When prediction is
@@ -282,6 +337,52 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                     )
                   )}
                 </div>
+
+                {/* How the user's own price sits against the range. Rendered
+                    only when the range is backed by comparable listings -
+                    evaluateAskingPrice returns null otherwise. */}
+                {priceEvaluation && evaluationTone && (
+                  <div className={`rounded-xl border p-4 ${evaluationTone.box}`}>
+                    <div className='flex items-center justify-between gap-3 mb-1'>
+                      <span className='text-sm text-muted-foreground'>
+                        {t('results.priceEvaluation.yourPrice')}
+                      </span>
+                      <span className='text-sm font-semibold text-foreground'>
+                        {formatPrice(propertyInfo.price ?? 0)}
+                        {priceUnitSuffix}
+                      </span>
+                    </div>
+                    {propertyInfo.priceUnit === 'YEAR' && (
+                      <div className='flex justify-end mb-1'>
+                        <span className='text-xs text-muted-foreground'>
+                          {t('results.priceEvaluation.monthlyEquivalent', {
+                            price: formatPrice(
+                              priceEvaluation.normalizedMonthlyPrice,
+                            ),
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
+                      <span
+                        className={`text-sm font-semibold ${evaluationTone.text}`}
+                      >
+                        {evaluationTone.label}
+                      </span>
+                      <span className='text-xs text-muted-foreground'>
+                        {priceEvaluation.verdict === 'fair'
+                          ? t('results.priceEvaluation.inRange')
+                          : priceEvaluation.verdict === 'above'
+                            ? t('results.priceEvaluation.deviationAbove', {
+                                percent: priceEvaluation.differencePercent,
+                              })
+                            : t('results.priceEvaluation.deviationBelow', {
+                                percent: priceEvaluation.differencePercent,
+                              })}
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Price Details */}
                 <div className='space-y-3'>

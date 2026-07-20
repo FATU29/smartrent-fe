@@ -1867,6 +1867,20 @@
             "high": "Cao",
             "medium": "Trung bình",
             "low": "Thấp"
+          },
+          "priceEvaluation": {
+            "yourPrice": "Giá bạn đang đặt",
+            "perMonth": "/tháng",
+            "perYear": "/năm",
+            "monthlyEquivalent": "≈ {price}/tháng",
+            "fair": "Hợp lý",
+            "above": "Cao hơn thị trường",
+            "aboveStrong": "Cao hơn thị trường đáng kể",
+            "below": "Thấp hơn thị trường",
+            "belowStrong": "Thấp hơn thị trường đáng kể",
+            "inRange": "Nằm trong khoảng AI đề xuất",
+            "deviationAbove": "Cao hơn khoảng đề xuất {percent}%",
+            "deviationBelow": "Thấp hơn khoảng đề xuất {percent}%"
           }
         }
       }
