@@ -71,6 +71,17 @@ describe('evaluateAskingPrice', () => {
       expect(result?.differencePercent).toBe(25)
       expect(result?.severity).toBe('strong')
     })
+
+    it('treats a deviation that rounds to 0.0% as fair, not a hidden "above"', () => {
+      // 0.01% over the max - technically outside the range, but far too small
+      // to round to anything but 0.0%. Reporting "above" alongside a 0%
+      // deviation would look self-contradictory, so this counts as fair.
+      const justOver = 8_000_000 * 1.0001
+      const result = evaluateAskingPrice(justOver, 'MONTH', prediction())
+      expect(result?.verdict).toBe('fair')
+      expect(result?.severity).toBeNull()
+      expect(result?.differencePercent).toBe(0)
+    })
   })
 
   describe('below the range', () => {
@@ -119,7 +130,7 @@ describe('evaluateAskingPrice', () => {
       expect(evaluateAskingPrice(6_500_000, 'MONTH', null)).toBeNull()
     })
 
-    it('returns null for an invalid range', () => {
+    it('returns null when the range minimum is not positive', () => {
       expect(
         evaluateAskingPrice(
           6_500_000,
@@ -127,6 +138,9 @@ describe('evaluateAskingPrice', () => {
           prediction({ price_range: { min: 0, max: 8_000_000 } }),
         ),
       ).toBeNull()
+    })
+
+    it('returns null when the range minimum exceeds the maximum', () => {
       expect(
         evaluateAskingPrice(
           6_500_000,

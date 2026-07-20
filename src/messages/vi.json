@@ -1869,6 +1869,7 @@
             "yourPrice": "Giá bạn đang đặt",
             "perMonth": "/tháng",
             "perYear": "/năm",
+            "monthlyEquivalent": "≈ {price}/tháng",
             "fair": "Hợp lý",
             "above": "Cao hơn thị trường",
             "aboveStrong": "Cao hơn thị trường đáng kể",

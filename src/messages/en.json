@@ -1869,6 +1869,7 @@
             "yourPrice": "Your asking price",
             "perMonth": "/month",
             "perYear": "/year",
+            "monthlyEquivalent": "≈ {price}/month",
             "fair": "Reasonable",
             "above": "Above market",
             "aboveStrong": "Well above market",

@@ -150,6 +150,8 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
 
   // Treat a range with no comparable listings behind it the same as an explicit
   // fallback: in both cases it is not backed by market data.
+  // Kept in sync by hand with the equivalent gate in evaluateAskingPrice
+  // (src/utils/ai/priceEvaluation.ts) - update both if either condition changes.
   const isFallbackEstimate =
     prediction?.source === 'rule_based_fallback' ||
     prediction?.listings_found === 0
@@ -346,10 +348,21 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                         {t('results.priceEvaluation.yourPrice')}
                       </span>
                       <span className='text-sm font-semibold text-foreground'>
-                        {formatPrice(propertyInfo.price as number)}
+                        {formatPrice(propertyInfo.price ?? 0)}
                         {priceUnitSuffix}
                       </span>
                     </div>
+                    {propertyInfo.priceUnit === 'YEAR' && (
+                      <div className='flex justify-end mb-1'>
+                        <span className='text-xs text-muted-foreground'>
+                          {t('results.priceEvaluation.monthlyEquivalent', {
+                            price: formatPrice(
+                              priceEvaluation.normalizedMonthlyPrice,
+                            ),
+                          })}
+                        </span>
+                      </div>
+                    )}
                     <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
                       <span
                         className={`text-sm font-semibold ${evaluationTone.text}`}

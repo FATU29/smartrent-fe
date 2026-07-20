@@ -46,6 +46,8 @@ export const evaluateAskingPrice = (
   // "your price is 40% above market" off a hardcoded table would be worse than
   // staying quiet. Only positive evidence of unreliability suppresses the
   // verdict — absent fields do not.
+  // Kept in sync by hand with the equivalent isFallbackEstimate check in
+  // aiValuationSection.tsx - update both if either condition changes.
   if (prediction.source === 'rule_based_fallback') return null
   if (prediction.listings_found === 0) return null
 
@@ -70,11 +72,25 @@ export const evaluateAskingPrice = (
   const rawDeviation = isBelow
     ? ((min - monthly) / min) * 100
     : ((monthly - max) / max) * 100
+  const roundedDeviation = Math.round(rawDeviation * 10) / 10
+
+  // A deviation that rounds to 0.0% reads, on screen, as no deviation at all -
+  // report it as fair rather than an "above"/"below" verdict paired with a 0%
+  // gap. The rounded value decides this, not the raw one, since it is the
+  // rounded value the user actually sees.
+  if (roundedDeviation === 0) {
+    return {
+      verdict: 'fair',
+      severity: null,
+      differencePercent: 0,
+      normalizedMonthlyPrice: monthly,
+    }
+  }
 
   return {
     verdict: isBelow ? 'below' : 'above',
     severity: rawDeviation > STRONG_DEVIATION_PERCENT ? 'strong' : 'mild',
-    differencePercent: Math.round(rawDeviation * 10) / 10,
+    differencePercent: roundedDeviation,
     normalizedMonthlyPrice: monthly,
   }
 }
