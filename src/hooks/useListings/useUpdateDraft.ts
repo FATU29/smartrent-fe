@@ -25,7 +25,9 @@ export const useUpdateDraft = () => {
         response,
       })
       queryClient.invalidateQueries({ queryKey: ['draft', variables.draftId] })
-      queryClient.invalidateQueries({ queryKey: ['drafts'] })
+      // useGetMyDrafts is keyed ['my-drafts']; ['drafts'] matched no query, so
+      // the list kept serving a stale card for the 30s staleTime after an edit.
+      queryClient.invalidateQueries({ queryKey: ['my-drafts'] })
     },
     onError: (error, variables) => {
       console.error('❌ [UPDATE DRAFT] Error:', {

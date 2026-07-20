@@ -18,8 +18,10 @@ export const usePublishDraft = () => {
       data: CreateListingRequest
     }) => ListingService.publishDraft(draftId, data),
     onSuccess: () => {
-      // Invalidate drafts list since the draft will be deleted after publishing
-      queryClient.invalidateQueries({ queryKey: ['drafts'] })
+      // Invalidate drafts list since the draft will be deleted after publishing.
+      // The list query is keyed ['my-drafts'] (useGetMyDrafts) — ['drafts'] is
+      // not a prefix of it and matched nothing.
+      queryClient.invalidateQueries({ queryKey: ['my-drafts'] })
       // Invalidate listings list since a new listing was created
       queryClient.invalidateQueries({ queryKey: ['listings'] })
     },

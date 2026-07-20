@@ -165,6 +165,11 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   ) => {
     if (isSubmitting) return
     setIsSubmitting(true)
+    // Leaving for the payment gateway is a full-page navigation that takes a
+    // moment to tear the page down. Re-enabling the CTA in that window lets a
+    // second click start a second transaction, so the guard stays latched and
+    // the unmount takes it with us.
+    let leavingForGateway = false
     try {
       // Use unified /v1/listings endpoint for all listing types (NORMAL, SILVER, GOLD, DIAMOND)
       // Backend will determine if payment is required based on:
@@ -254,6 +259,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         window.dispatchEvent(
           new CustomEvent(CREATE_POST_BYPASS_DRAFT_GUARD_EVENT),
         )
+        leavingForGateway = true
         startGatewayCheckout(data)
         return
       }
@@ -281,7 +287,7 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
       setErrorDesc(err instanceof Error ? err.message : t('unexpectedError'))
       setErrorOpen(true)
     } finally {
-      setIsSubmitting(false)
+      if (!leavingForGateway) setIsSubmitting(false)
     }
   }
 
@@ -370,9 +376,14 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   // The listing this draft describes already exists, so the draft is dead weight.
   // Drop it and send the user to their listings, where the published one is.
   const handleDiscardPublishedDraft = React.useCallback(async () => {
-    if (draftId) {
+    // Not always the draft from the URL: a submission that started without one
+    // gets a draft from ensureDraft(), and that is the one left stranded when the
+    // publish comes back with "media already linked".
+    const staleDraftId = draftId ?? createdDraftIdRef.current
+    if (staleDraftId) {
       try {
-        await deleteDraft(draftId)
+        await deleteDraft(staleDraftId)
+        createdDraftIdRef.current = null
       } catch (error) {
         console.error('Failed to discard already-published draft:', error)
       }
