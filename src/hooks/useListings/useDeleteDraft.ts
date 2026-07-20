@@ -5,7 +5,10 @@ export const useDeleteDraft = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (draftId: string) => ListingService.deleteDraft(draftId),
+    // string | number, matching ListingService.deleteDraft — draft ids come from
+    // the router as strings but straight off the API as numbers.
+    mutationFn: (draftId: string | number) =>
+      ListingService.deleteDraft(draftId),
     onSuccess: () => {
       // Invalidate drafts query to refresh the list
       queryClient.invalidateQueries({ queryKey: ['my-drafts'] })
