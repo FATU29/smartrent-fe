@@ -1,4 +1,8 @@
-import { SELLER_ROUTES } from '@/constants'
+import {
+  SELLER_ROUTES,
+  CREATE_POST_BYPASS_DRAFT_GUARD_EVENT,
+  CREATE_POST_DRAFT_SAVED_EVENT,
+} from '@/constants'
 import React from 'react'
 import { useCreatePostSteps } from './hooks/useCreatePostSteps'
 import { useCreatePostValidation } from './hooks/useCreatePostValidation'
@@ -28,8 +32,6 @@ import { useAuth } from '@/hooks/useAuth'
 interface CreatePostTemplateProps {
   className?: string
 }
-
-const CREATE_POST_BYPASS_DRAFT_GUARD_EVENT = 'create-post:bypass-draft-guard'
 
 const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
   className,
@@ -320,6 +322,9 @@ const CreatePostTemplateContent: React.FC<{ className?: string }> = ({
         onSuccess: (response) => {
           if (response.success) {
             toast.success(tDraft('draftUpdated'))
+            // Re-baseline the guard: what is on screen is now what is stored, so
+            // leaving the page must not ask to save it again.
+            window.dispatchEvent(new CustomEvent(CREATE_POST_DRAFT_SAVED_EVENT))
           } else {
             toast.error(response.message || tDraft('draftUpdateFailed'))
           }

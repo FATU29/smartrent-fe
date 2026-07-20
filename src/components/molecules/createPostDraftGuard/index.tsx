@@ -6,6 +6,10 @@ import { useCreatePost } from '@/contexts/createPost'
 import { useAuth } from '@/hooks/useAuth'
 import { useCreateDraft } from '@/hooks/useListings/useCreateDraft'
 import { useUpdateDraft } from '@/hooks/useListings/useUpdateDraft'
+import {
+  CREATE_POST_BYPASS_DRAFT_GUARD_EVENT,
+  CREATE_POST_DRAFT_SAVED_EVENT,
+} from '@/constants'
 import { toast } from 'sonner'
 
 interface CreatePostDraftGuardProps {
@@ -13,7 +17,29 @@ interface CreatePostDraftGuardProps {
 }
 
 const NAVIGATION_CANCELLED_ERROR = 'Navigation cancelled by draft guard'
-const CREATE_POST_BYPASS_DRAFT_GUARD_EVENT = 'create-post:bypass-draft-guard'
+
+/**
+ * Serialize form state for change detection, independent of key order.
+ * propertyInfo is rebuilt by spreading on every update, so a plain
+ * JSON.stringify reports a difference whenever a key is merely added or
+ * reordered — which would pop the "save draft?" dialog on untouched drafts.
+ * Array order is preserved: for media it carries the sort order.
+ */
+const canonicalize = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(canonicalize)
+  if (value && typeof value === 'object') {
+    const source = value as Record<string, unknown>
+    return Object.keys(source)
+      .sort()
+      .reduce<Record<string, unknown>>((acc, key) => {
+        acc[key] = canonicalize(source[key])
+        return acc
+      }, {})
+  }
+  return value
+}
+
+const snapshotOf = (value: unknown): string => JSON.stringify(canonicalize(value))
 
 export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   children,
@@ -33,6 +59,24 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   const shouldBlockRef = useRef(false)
   const isNavigatingRef = useRef(false)
   const blockedUrlRef = useRef<string | null>(null)
+  // Snapshot of the draft as it was loaded, so editing an existing draft is
+  // guarded on what changed rather than on "there is data in the form".
+  const loadedDraftSnapshotRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!draftId) {
+      loadedDraftSnapshotRef.current = null
+      return
+    }
+    // First populated render after the draft lands is the baseline.
+    if (
+      loadedDraftSnapshotRef.current === null &&
+      propertyInfo &&
+      Object.keys(propertyInfo).length > 1
+    ) {
+      loadedDraftSnapshotRef.current = snapshotOf(propertyInfo)
+    }
+  }, [draftId, propertyInfo])
 
   const hasUnsavedChanges = useCallback((): boolean => {
     // Draft save flow only applies to authenticated users.
@@ -41,10 +85,18 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
     // Don't block if submit was successful
     if (isSubmitSuccess) return false
 
-    // Don't block if editing existing draft (already saved)
-    if (draftId) return false
-
     if (!propertyInfo) return false
+
+    // Editing an existing draft: the draft is only "saved" as of the moment it
+    // loaded. Block once the user has actually changed something — this used to
+    // return false outright, which turned the guard off entirely and silently
+    // discarded every edit made to an existing draft.
+    if (draftId) {
+      return (
+        loadedDraftSnapshotRef.current !== null &&
+        snapshotOf(propertyInfo) !== loadedDraftSnapshotRef.current
+      )
+    }
 
     // Check if propertyInfo has any meaningful data
     const hasAnyData = Object.entries(propertyInfo).some(([key, value]) => {
@@ -69,6 +121,19 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   useEffect(() => {
     shouldBlockRef.current = hasUnsavedChanges()
   }, [hasUnsavedChanges])
+
+  // An explicit "update draft" persists what is on screen — adopt it as the new
+  // baseline so leaving the page doesn't ask to save the same thing again.
+  useEffect(() => {
+    const handleDraftSaved = (): void => {
+      loadedDraftSnapshotRef.current = snapshotOf(propertyInfo)
+      shouldBlockRef.current = false
+    }
+
+    window.addEventListener(CREATE_POST_DRAFT_SAVED_EVENT, handleDraftSaved)
+    return () =>
+      window.removeEventListener(CREATE_POST_DRAFT_SAVED_EVENT, handleDraftSaved)
+  }, [propertyInfo])
 
   // Allow specific flows (e.g., external payment redirect) to bypass this guard.
   useEffect(() => {
