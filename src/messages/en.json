@@ -1856,6 +1856,14 @@
             "quan12": "District 12",
             "thuduc": "Thu Duc",
             "quan1": "District 1"
+          },
+          "fallbackNotice": "Reference estimate based on average area rates, not matched against actual listings. Please do your own research before settling on a price.",
+          "basedOnListings": "Based on {count} similar listings",
+          "confidenceLabel": "Confidence",
+          "confidence": {
+            "high": "High",
+            "medium": "Medium",
+            "low": "Low"
           }
         }
       }
@@ -2323,7 +2331,9 @@
         },
         "rights": {
           "heading": "Your rights",
-          "body": ["You have the right to control your personal data."],
+          "body": [
+            "You have the right to control your personal data."
+          ],
           "bullets": [
             "Access and edit your account information.",
             "Request deletion of your account and related data.",
@@ -2350,7 +2360,9 @@
         },
         "channels": {
           "heading": "How to reach us",
-          "body": ["There are two main ways to send a report to us."],
+          "body": [
+            "There are two main ways to send a report to us."
+          ],
           "bullets": [
             "Use the Report button directly on the violating listing.",
             "Email smartrent.tools@gmail.com with detailed information."

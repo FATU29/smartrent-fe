@@ -1856,6 +1856,14 @@
             "quan12": "Quận 12",
             "thuduc": "Thủ Đức",
             "quan1": "Quận 1"
+          },
+          "fallbackNotice": "Ước tính tham khảo dựa trên mức giá trung bình theo khu vực, chưa đối chiếu với tin đăng thực tế. Hãy tự khảo sát thêm trước khi quyết định giá.",
+          "basedOnListings": "Dựa trên {count} tin đăng tương tự",
+          "confidenceLabel": "Độ tin cậy",
+          "confidence": {
+            "high": "Cao",
+            "medium": "Trung bình",
+            "low": "Thấp"
           }
         }
       }
@@ -2097,7 +2105,9 @@
         },
         "rights": {
           "heading": "Quyền của bạn",
-          "body": ["Bạn có quyền kiểm soát dữ liệu cá nhân của mình."],
+          "body": [
+            "Bạn có quyền kiểm soát dữ liệu cá nhân của mình."
+          ],
           "bullets": [
             "Truy cập và chỉnh sửa thông tin tài khoản.",
             "Yêu cầu xoá tài khoản và dữ liệu liên quan.",
@@ -2113,7 +2123,9 @@
       "sections": {
         "scope": {
           "heading": "Phạm vi khiếu nại",
-          "body": ["Bạn có thể gửi khiếu nại liên quan đến các vấn đề sau."],
+          "body": [
+            "Bạn có thể gửi khiếu nại liên quan đến các vấn đề sau."
+          ],
           "bullets": [
             "Tin đăng sai sự thật, lừa đảo hoặc vi phạm quy định.",
             "Hành vi không phù hợp của người dùng khác.",
@@ -2122,7 +2134,9 @@
         },
         "channels": {
           "heading": "Kênh tiếp nhận",
-          "body": ["Có hai cách chính để gửi phản ánh tới chúng tôi."],
+          "body": [
+            "Có hai cách chính để gửi phản ánh tới chúng tôi."
+          ],
           "bullets": [
             "Sử dụng nút Báo cáo ngay trên tin đăng vi phạm.",
             "Gửi email tới smartrent.tools@gmail.com kèm thông tin chi tiết."

@@ -26,6 +26,7 @@ import {
   buildHousingPredictorRequest,
   getAveragePrice,
   isTypeSupportedForAiValuation,
+  resolveValuationAddress,
 } from '@/utils/ai/housingPredictor'
 import { formatByLocale } from '@/utils/currency/convert'
 import type { HousingPredictorResponse } from '@/api/types/ai.type'
@@ -45,8 +46,12 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   )
   const tAddress = useTranslations('createPost.sections.propertyInfo.address')
 
-  const { propertyInfo, composedLegacyAddress, composedNewAddress } =
-    useCreatePost()
+  const {
+    propertyInfo,
+    fulltextAddress,
+    composedLegacyAddress,
+    composedNewAddress,
+  } = useCreatePost()
   const [prediction, setPrediction] = useState<HousingPredictorResponse | null>(
     null,
   )
@@ -58,38 +63,24 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
   } = useHousingPredictor()
 
   const predictionRequest = useMemo(() => {
-    const legacyParts = composedLegacyAddress
-      .split(' - ')
-      .map((item) => item.trim())
-      .filter(Boolean)
+    const addressNames = resolveValuationAddress(
+      {
+        legacyAddressText: fulltextAddress?.legacyAddressText,
+        newProvinceName: fulltextAddress?.newProvinceName,
+        newWardName: fulltextAddress?.newWardName,
+      },
+      composedNewAddress,
+    )
+    if (!addressNames) return null
 
-    let city = ''
-    let district = ''
-    let ward = ''
-
-    if (legacyParts.length >= 3) {
-      ;[city, district, ward] = legacyParts
-    } else {
-      const newParts = composedNewAddress
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean)
-
-      if (newParts.length === 0) return null
-
-      city = newParts[newParts.length - 1] || ''
-      ward = newParts[newParts.length - 2] || ''
-      district = newParts[newParts.length - 3] || ward || city
-    }
-
-    if (!city || !district || !ward) return null
-
-    return buildHousingPredictorRequest(propertyInfo, {
-      city,
-      district,
-      ward,
-    })
-  }, [propertyInfo, composedLegacyAddress, composedNewAddress])
+    return buildHousingPredictorRequest(propertyInfo, addressNames)
+  }, [
+    propertyInfo,
+    fulltextAddress?.legacyAddressText,
+    fulltextAddress?.newProvinceName,
+    fulltextAddress?.newWardName,
+    composedNewAddress,
+  ])
 
   const requestKey = useMemo(() => {
     return predictionRequest ? JSON.stringify(predictionRequest) : null
@@ -155,6 +146,38 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
     )
     return option?.label || propertyInfo.productType
   }, [propertyInfo.productType, t, tPropertyDetails])
+
+  // Treat a range with no comparable listings behind it the same as an explicit
+  // fallback: in both cases it is not backed by market data.
+  const isFallbackEstimate =
+    prediction?.source === 'rule_based_fallback' ||
+    prediction?.listings_found === 0
+
+  // Older backends omit these fields entirely; stay silent rather than claiming
+  // evidence we did not receive.
+  const hasEvidence =
+    typeof prediction?.listings_found === 'number' &&
+    prediction.listings_found > 0
+
+  const confidenceLabel = useMemo(() => {
+    switch (prediction?.confidence) {
+      case 'high':
+        return t('results.confidence.high') || 'Cao'
+      case 'medium':
+        return t('results.confidence.medium') || 'Trung bình'
+      case 'low':
+        return t('results.confidence.low') || 'Thấp'
+      default:
+        return ''
+    }
+  }, [prediction?.confidence, t])
+
+  const confidenceDotClass =
+    prediction?.confidence === 'high'
+      ? 'bg-green-500'
+      : prediction?.confidence === 'medium'
+        ? 'bg-amber-500'
+        : 'bg-muted-foreground'
 
   const canPredict = !!predictionRequest
   // AI valuation supports every listing property type. When prediction is
@@ -224,6 +247,40 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                       {prediction.location}
                     </div>
                   </div>
+
+                  {/* Evidence behind the range. Without this a range derived
+                      from real comparable listings looks identical to one the
+                      hardcoded fallback table produced after the AI failed. */}
+                  {isFallbackEstimate ? (
+                    <Alert className='border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200'>
+                      <AlertCircle />
+                      <AlertDescription className='text-amber-800 dark:text-amber-200'>
+                        {t('results.fallbackNotice') ||
+                          'Ước tính tham khảo dựa trên mức giá trung bình theo khu vực, chưa đối chiếu với tin đăng thực tế. Hãy tự khảo sát thêm trước khi quyết định giá.'}
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    hasEvidence && (
+                      <div className='flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground'>
+                        <span className='flex items-center gap-1.5'>
+                          <BarChart3 className='w-3.5 h-3.5' />
+                          {t('results.basedOnListings', {
+                            count: prediction.listings_found ?? 0,
+                          }) ||
+                            `Dựa trên ${prediction.listings_found} tin đăng tương tự`}
+                        </span>
+                        {confidenceLabel && (
+                          <span className='flex items-center gap-1.5'>
+                            <span
+                              className={`w-2 h-2 rounded-full ${confidenceDotClass}`}
+                            />
+                            {t('results.confidenceLabel') || 'Độ tin cậy'}:{' '}
+                            {confidenceLabel}
+                          </span>
+                        )}
+                      </div>
+                    )
+                  )}
                 </div>
 
                 {/* Price Details */}
