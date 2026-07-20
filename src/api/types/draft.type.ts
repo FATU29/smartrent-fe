@@ -145,6 +145,13 @@ export interface DraftListingResponse {
   amenities: Amenity[]
   media: MediaItem[] | null
 
+  // Package / payment selection (backend V117). Note there is deliberately no
+  // postDate/expiryDate here — listing_drafts has no columns for those, so a
+  // scheduled post date cannot survive a draft round trip.
+  durationDays: number | null
+  useMembershipQuota: boolean | null
+  benefitIds: number[] | null
+
   // Timestamps
   createdAt: string
   updatedAt: string

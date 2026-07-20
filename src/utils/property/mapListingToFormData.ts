@@ -44,6 +44,9 @@ interface ExtendedAddress {
 
 type ListingLikeDetail = ListingDetail | ListingOwnerDetail
 
+/** Province/district/ward codes arrive as either a string or a number. */
+type AddressCode = string | number | null
+
 // Extended listing type that includes direct categoryId field from API response
 type ExtendedListingDetail = ListingLikeDetail & { categoryId?: number }
 
@@ -306,14 +309,6 @@ export function mapListingToFormData(
 export function mapDraftToFormData(
   draft: DraftListingResponse,
 ): MappedFormData {
-  const draftAny = draft as DraftListingResponse & {
-    durationDays?: number | string | null
-    postDate?: string | Date | null
-    expiryDate?: string | Date | null
-    benefitIds?: Array<number | string> | null
-    useMembershipQuota?: boolean | null
-  }
-
   const amenityIds =
     draft.amenities?.map((a) => {
       if (typeof a === 'object' && a !== null) {
@@ -344,14 +339,10 @@ export function mapDraftToFormData(
       ? (draft.vipType.toUpperCase() as CreateListingRequest['vipType'])
       : undefined
 
-  const draftDurationDays = toNumber(draftAny.durationDays)
-  const draftPostDate = draftAny.postDate ? new Date(draftAny.postDate) : null
-  const draftExpiryDate = draftAny.expiryDate
-    ? new Date(draftAny.expiryDate)
-    : null
+  const draftDurationDays = toNumber(draft.durationDays)
 
-  const draftBenefitIds = Array.isArray(draftAny.benefitIds)
-    ? draftAny.benefitIds
+  const draftBenefitIds = Array.isArray(draft.benefitIds)
+    ? draft.benefitIds
         .map((id) => toNumber(id))
         .filter((id): id is number => typeof id === 'number' && !isNaN(id))
     : undefined
@@ -408,18 +399,13 @@ export function mapDraftToFormData(
     amenityIds: validAmenityIds,
     vipType,
     durationDays: draftDurationDays as CreateListingRequest['durationDays'],
-    postDate:
-      draftPostDate && !isNaN(draftPostDate.getTime())
-        ? draftPostDate
-        : undefined,
-    expiryDate:
-      draftExpiryDate && !isNaN(draftExpiryDate.getTime())
-        ? draftExpiryDate
-        : undefined,
+    // postDate/expiryDate are intentionally absent: listing_drafts has no columns
+    // for them, so they were read off a cast and were always undefined. The
+    // package step re-derives them from durationDays.
     benefitIds: draftBenefitIds,
     useMembershipQuota:
-      typeof draftAny.useMembershipQuota === 'boolean'
-        ? draftAny.useMembershipQuota
+      typeof draft.useMembershipQuota === 'boolean'
+        ? draft.useMembershipQuota
         : undefined,
   }
 
@@ -438,9 +424,9 @@ export function mapDraftToFormData(
   if (draft.address) {
     const address = draft.address as DraftListingResponse['address'] & {
       // Unified address fields returned by current backend
-      provinceCode?: string | number | null
-      districtCode?: string | number | null
-      wardCode?: string | number | null
+      provinceCode?: AddressCode
+      districtCode?: AddressCode
+      wardCode?: AddressCode
       provinceName?: string | null
       wardName?: string | null
       street?: string | null
