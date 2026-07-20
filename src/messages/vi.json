@@ -1014,7 +1014,10 @@
       "createFailed": "Tạo tin đăng thất bại",
       "unexpectedError": "Đã xảy ra lỗi không mong muốn",
       "blockedTitle": "Tài khoản bị chặn đăng tin",
-      "blockedDescription": "Tài khoản của bạn đã bị chặn đăng tin do có nhiều tin đăng vi phạm bị báo cáo và đã được duyệt. Vui lòng liên hệ quản trị viên để được hỗ trợ."
+      "blockedDescription": "Tài khoản của bạn đã bị chặn đăng tin do có nhiều tin đăng vi phạm bị báo cáo và đã được duyệt. Vui lòng liên hệ quản trị viên để được hỗ trợ.",
+      "alreadyPublishedTitle": "Tin nháp này đã được đăng",
+      "alreadyPublishedDescription": "Ảnh trong tin nháp này đã thuộc về một tin đã đăng trước đó, nên không thể đăng lại. Tin của bạn vẫn nằm trong danh sách tin đăng — bạn có thể xoá bản nháp thừa này.",
+      "alreadyPublishedDiscard": "Xoá bản nháp"
     },
     "validation": {
       "imagesUploadInProgress": "Vui lòng đợi quá trình tải ảnh hoàn tất trước khi tiếp tục",

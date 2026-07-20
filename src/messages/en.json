@@ -1014,7 +1014,10 @@
       "createFailed": "Failed to create listing",
       "unexpectedError": "An unexpected error occurred",
       "blockedTitle": "Account blocked from posting",
-      "blockedDescription": "Your account has been blocked from posting because several of your listings were reported and confirmed as violations. Please contact an administrator for support."
+      "blockedDescription": "Your account has been blocked from posting because several of your listings were reported and confirmed as violations. Please contact an administrator for support.",
+      "alreadyPublishedTitle": "This draft has already been posted",
+      "alreadyPublishedDescription": "The photos in this draft already belong to a listing you posted earlier, so it cannot be posted again. Your listing is still in your listings — you can discard this leftover draft.",
+      "alreadyPublishedDiscard": "Discard draft"
     },
     "validation": {
       "categoryTypeRequired": "Category type is required",

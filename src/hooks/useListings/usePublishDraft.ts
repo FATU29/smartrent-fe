@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ListingService } from '@/api/services'
-import type { PublishDraftRequest } from '@/api/types'
+import type { CreateListingRequest } from '@/api/types'
 
 /**
  * Hook to publish a draft listing
@@ -15,7 +15,7 @@ export const usePublishDraft = () => {
       data,
     }: {
       draftId: string | number
-      data: PublishDraftRequest
+      data: CreateListingRequest
     }) => ListingService.publishDraft(draftId, data),
     onSuccess: () => {
       // Invalidate drafts list since the draft will be deleted after publishing

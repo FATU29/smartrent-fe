@@ -27,6 +27,9 @@ interface NavigationButtonsProps {
   onSubmit: () => void
   onUpdateDraft?: () => void
   isUpdatingDraft?: boolean
+  // The publish request is in flight. Distinct from isUpdatingDraft, which only
+  // tracks the draft mutation and left the submit CTA clickable twice.
+  isSubmitting?: boolean
   // When the user is blocked from posting, the publish/payment CTA is replaced
   // by a "save draft" action so they can still keep their work.
   postingBlocked?: boolean
@@ -41,6 +44,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   onSubmit,
   onUpdateDraft,
   isUpdatingDraft = false,
+  isSubmitting = false,
   postingBlocked = false,
   onSaveDraft,
 }) => {
@@ -89,7 +93,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
     return (
       <Button
         onClick={handleSubmit}
-        disabled={isUpdatingDraft}
+        disabled={isUpdatingDraft || isSubmitting}
         className={PRIMARY_CTA_CLASSES}
       >
         <CreditCard className='size-4' aria-hidden='true' />
