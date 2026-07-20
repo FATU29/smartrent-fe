@@ -14,7 +14,6 @@ import {
   listingType,
   PriceType,
 } from './property.type'
-import type { SePayGatewayData } from './payment.type'
 
 /**
  * Request DTO for creating/updating draft listings
@@ -152,39 +151,8 @@ export interface DraftListingResponse {
 }
 
 /**
- * Request DTO for publishing a draft
+ * Publishing a draft takes and returns exactly what creating a listing does —
+ * see CreateListingRequest / CreateListingResponse in property.type.ts. The
+ * server merges the draft with the payload and runs the same creation flow, so
+ * a separate pair of DTOs here only ever drifts out of sync with the backend.
  */
-export interface PublishDraftRequest extends Partial<DraftListingRequest> {
-  // Option 1: Use membership quota
-  useMembershipQuota?: boolean
-  benefitIds?: number[]
-
-  // Option 2: Direct payment
-  vipType?: 'SILVER' | 'GOLD' | 'DIAMOND'
-  durationDays?: number
-  paymentProvider?: 'SEPAY' | 'MOMO' | 'PAYPAL' | 'ZALOPAY'
-}
-
-/**
- * Response DTO for publishing a draft
- */
-export interface PublishDraftResponse {
-  // Success case (used quota or free listing)
-  listingId?: number
-  title?: string
-  vipType?: string
-  status?: 'ACTIVE' | 'PENDING'
-  createdAt?: string
-  expiryDate?: string
-
-  // Payment required case
-  transactionId?: string
-  paymentRequired?: boolean
-  paymentUrl?: string
-  amount?: number
-  message?: string
-  // SePay Payment Gateway: hosted-checkout form data ({ method, checkoutUrl, fields })
-  providerData?: SePayGatewayData
-  expiresAt?: string
-  provider?: string
-}

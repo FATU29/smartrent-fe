@@ -104,6 +104,9 @@ export const LISTING_ERROR_CODES = {
   RESUBMIT_NOT_ALLOWED: '16003',
   // User has been blocked from posting by an admin (too many approved reports)
   USER_POSTING_BLOCKED: '23001',
+  // The media being attached already belongs to a listing — the draft being
+  // published was published once already, so it can never succeed again.
+  MEDIA_ALREADY_LINKED: '12004',
 } as const
 
 export type ListingErrorCode =

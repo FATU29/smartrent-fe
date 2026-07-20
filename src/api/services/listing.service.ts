@@ -15,8 +15,6 @@ import {
   CreateVipListingRequest,
   DraftListingRequest,
   DraftListingResponse,
-  PublishDraftRequest,
-  PublishDraftResponse,
   ListingDetail,
   ListingOwnerDetail,
   ListingSearchApiRequest,
@@ -157,10 +155,17 @@ export class ListingService {
     })
   }
 
+  /**
+   * Create a draft listing
+   * POST /v1/listings/draft
+   *
+   * Returns a DraftListingResponse — the id lives on `draftId`, NOT `listingId`.
+   * A draft is a row in `listing_drafts`, not a listing.
+   */
   static async createDraft(
     data: CreateListingRequest,
-  ): Promise<ApiResponse<{ listingId: number; status: string }>> {
-    return apiRequest<{ listingId: number; status: string }>({
+  ): Promise<ApiResponse<DraftListingResponse>> {
+    return apiRequest<DraftListingResponse>({
       method: 'POST',
       url: PATHS.LISTING.CREATE_DRAFT,
       data,
@@ -631,17 +636,23 @@ export class ListingService {
   /**
    * Publish a draft listing
    * POST /v1/listings/draft/:draftId/publish
+   *
+   * Same request/response shape as create() — the server merges the draft with
+   * this payload (payload wins) and then runs the normal creation flow. Prefer
+   * this over create() whenever a draft exists: the server owns the draft's
+   * lifecycle from here on and deletes it once the listing actually exists,
+   * including after a payment callback the browser never comes back for.
    */
   static async publishDraft(
     draftId: string | number,
-    data: PublishDraftRequest,
+    data: CreateListingRequest,
     instance?: AxiosInstance,
-  ): Promise<ApiResponse<PublishDraftResponse>> {
+  ): Promise<ApiResponse<CreateListingResponse>> {
     const url = PATHS.LISTING.PUBLISH_DRAFT.replace(
       ':draftId',
       draftId.toString(),
     )
-    return apiRequest<PublishDraftResponse>(
+    return apiRequest<CreateListingResponse>(
       {
         method: 'POST',
         url,
