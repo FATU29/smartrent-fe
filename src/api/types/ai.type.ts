@@ -57,11 +57,23 @@ export interface PriceRange {
   max: number
 }
 
+/** How the AI produced the range. `rule_based_fallback` means the comparable-
+ *  listing path failed and a hardcoded per-m² table was used instead. */
+export type PriceSuggestionSource = 'ai_comparables' | 'rule_based_fallback'
+
+export type PriceSuggestionConfidence = 'high' | 'medium' | 'low'
+
 export interface HousingPredictorResponse {
   price_range: PriceRange
   location: string
   property_type: string
   currency: string
+  // Optional: absent until the AI + backend evidence fields are deployed.
+  source?: PriceSuggestionSource
+  /** Comparable listings actually used as evidence. 0 means the range is not
+   *  backed by market data. */
+  listings_found?: number
+  confidence?: PriceSuggestionConfidence
 }
 
 // AI Chat Types

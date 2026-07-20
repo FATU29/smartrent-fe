@@ -79,3 +79,74 @@ export const buildHousingPredictorRequest = (
 export const getAveragePrice = (min: number, max: number): number => {
   return Math.round((min + max) / 2)
 }
+
+export interface ValuationAddressSource {
+  /** Raw "Province - District - Ward" text captured when a legacy address was
+   *  selected. Unlike the composed display string it has no street prefix. */
+  legacyAddressText?: string
+  newProvinceName?: string
+  newWardName?: string
+}
+
+export interface ValuationAddressNames {
+  city: string
+  district: string
+  ward: string
+}
+
+const LEGACY_SEPARATOR = ' - '
+
+/**
+ * Resolve the city/district/ward names to send to the price predictor.
+ *
+ * This must NOT be derived by splitting the composed display addresses:
+ *
+ * - `composedLegacyAddress` is `"<street>, <province> - <district> - <ward>"`,
+ *   so splitting on " - " puts the street *and* the province in the first
+ *   slot, and the city ends up as `"123 Nguyễn Trãi, Hà Nội"`.
+ * - `composedNewAddress` is `"<street>, <ward>, <province>"` — a two-level
+ *   address with no district at all — so reading the third-from-last comma
+ *   segment as the district yields the street name.
+ *
+ * Prefer the structured names captured at selection time, and fall back to
+ * parsing only the raw (street-free) legacy text or the tail of the composed
+ * new address.
+ */
+export const resolveValuationAddress = (
+  source: ValuationAddressSource,
+  composedNewAddress: string,
+): ValuationAddressNames | null => {
+  // Legacy three-level address: province - district - ward, in that order.
+  const legacyParts = (source.legacyAddressText || '')
+    .split(LEGACY_SEPARATOR)
+    .map((part) => part.trim())
+    .filter(Boolean)
+
+  if (legacyParts.length >= 3) {
+    const [city, district, ward] = legacyParts
+    return { city, district, ward }
+  }
+
+  // New two-level address: province + ward only.
+  let city = source.newProvinceName?.trim() || ''
+  let ward = source.newWardName?.trim() || ''
+
+  if (!city || !ward) {
+    const newParts = composedNewAddress
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean)
+
+    // Read from the end: the last segment is the province, the one before it
+    // the ward. Anything earlier is street detail and must not be used.
+    city = city || newParts[newParts.length - 1] || ''
+    ward = ward || (newParts.length >= 2 ? newParts[newParts.length - 2] : '')
+  }
+
+  if (!city || !ward) return null
+
+  // A two-level address genuinely has no district. The predictor API requires
+  // one, so send the ward — the most specific administrative unit available —
+  // rather than letting a street name through.
+  return { city, district: ward, ward }
+}
