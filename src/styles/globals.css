@@ -321,6 +321,15 @@
     min-height: 100dvh;
     width: 100%;
   }
+  /* Actually enforce the "no horizontal scroll" intent above. `clip` (not
+     `hidden`) contains any element that bleeds past the viewport edge without
+     creating a scroll container, so the sticky header keeps working. Applied
+     to body/#__next rather than html because `clip` does not propagate to the
+     viewport from the root element. */
+  body,
+  #__next {
+    overflow-x: clip;
+  }
   @supports (min-height: 100svh) {
     html,
     body,
