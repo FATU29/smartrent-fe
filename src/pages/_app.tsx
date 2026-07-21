@@ -50,12 +50,10 @@ const queryClient = new QueryClient()
 // API is only hit when the cache is missing (or stale, via background revalidate).
 // Persisted:
 //   - homepage stats: province-stats (địa điểm) + category-stats (danh mục)
-//   - homepage VIP-tier carousels (recommended-listings-by-vip), incl. "Tin mới"
-// so those carousels show cached listings instantly on refresh instead of a
-// skeleton, then revalidate in the background per their staleTime.
-// Everything else (auth, search results, detail pages, …) is intentionally NOT
-// persisted. SSR-safe: localStorage only exists in the browser, so the persister
-// is null on the server and we fall back to a plain QueryClientProvider there.
+// Everything else (auth, search results, homepage VIP-tier carousels, detail
+// pages, …) is intentionally NOT persisted. SSR-safe: localStorage only exists
+// in the browser, so the persister is null on the server and we fall back to a
+// plain QueryClientProvider there.
 const ONE_DAY_MS = 24 * 60 * 60 * 1000
 
 const queryPersister =
@@ -72,8 +70,7 @@ const shouldPersistQuery = (query: Query): boolean => {
   if (scope === 'homepage') {
     return section === 'province-stats' || section === 'category-stats'
   }
-  // Homepage VIP-tier carousels (DIAMOND/GOLD/SILVER/NORMAL incl. "Tin mới").
-  return scope === 'recommended-listings-by-vip'
+  return false
 }
 
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
