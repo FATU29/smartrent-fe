@@ -46,6 +46,13 @@ export interface RecentlyViewedListing {
     phoneCode?: string
     phoneNumber?: string
     email?: string
+    isBroker?: boolean | null
+    brokerVerificationStatus?:
+      | 'NONE'
+      | 'PENDING'
+      | 'APPROVED'
+      | 'REJECTED'
+      | null
   }
   // Property details
   bedrooms?: number

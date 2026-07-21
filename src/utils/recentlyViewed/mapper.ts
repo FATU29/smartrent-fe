@@ -58,6 +58,8 @@ export const mapListingToRecentlyViewed = (
           phoneCode: listing.user.phoneCode,
           phoneNumber: listing.user.phoneNumber,
           email: listing.user.email,
+          isBroker: listing.user.isBroker,
+          brokerVerificationStatus: listing.user.brokerVerificationStatus,
         }
       : undefined,
     // Property details
@@ -256,6 +258,9 @@ export const mapRecentlyViewedToListing = (
           email: recentlyViewed.user.email || '',
           phoneNumber: recentlyViewed.user.phoneNumber || '',
           phoneCode: recentlyViewed.user.phoneCode || '',
+          isBroker: recentlyViewed.user.isBroker,
+          brokerVerificationStatus:
+            recentlyViewed.user.brokerVerificationStatus,
           idDocument: '',
           taxNumber: '',
           contactPhoneNumber: '',
