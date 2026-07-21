@@ -2122,9 +2122,7 @@
         },
         "rights": {
           "heading": "Quyền của bạn",
-          "body": [
-            "Bạn có quyền kiểm soát dữ liệu cá nhân của mình."
-          ],
+          "body": ["Bạn có quyền kiểm soát dữ liệu cá nhân của mình."],
           "bullets": [
             "Truy cập và chỉnh sửa thông tin tài khoản.",
             "Yêu cầu xoá tài khoản và dữ liệu liên quan.",
@@ -2140,9 +2138,7 @@
       "sections": {
         "scope": {
           "heading": "Phạm vi khiếu nại",
-          "body": [
-            "Bạn có thể gửi khiếu nại liên quan đến các vấn đề sau."
-          ],
+          "body": ["Bạn có thể gửi khiếu nại liên quan đến các vấn đề sau."],
           "bullets": [
             "Tin đăng sai sự thật, lừa đảo hoặc vi phạm quy định.",
             "Hành vi không phù hợp của người dùng khác.",
@@ -2151,9 +2147,7 @@
         },
         "channels": {
           "heading": "Kênh tiếp nhận",
-          "body": [
-            "Có hai cách chính để gửi phản ánh tới chúng tôi."
-          ],
+          "body": ["Có hai cách chính để gửi phản ánh tới chúng tôi."],
           "bullets": [
             "Sử dụng nút Báo cáo ngay trên tin đăng vi phạm.",
             "Gửi email tới smartrent.tools@gmail.com kèm thông tin chi tiết."
@@ -3745,10 +3739,6 @@
       "title": "Vui lòng đăng nhập",
       "description": "Bạn cần đăng nhập để truy cập trang này.",
       "loginButton": "Đăng nhập"
-    },
-    "sessionExpired": {
-      "title": "Phiên đăng nhập đã hết hạn",
-      "description": "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại."
     }
   },
   "paymentStatusPage": {

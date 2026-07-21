@@ -15,8 +15,6 @@ import { clearLegacyAuthStorage } from '@/utils/authLocalStorage'
 import { isTokenExpired } from '@/configs/axios/helpers'
 import { AuthService } from '@/api/services/auth.service'
 import { cookieManager } from '@/utils/cookies'
-import { toast } from 'sonner'
-import { useTranslations } from 'next-intl'
 import {
   clearAuthProfileQueries,
   resolveAuthenticatedUser,
@@ -52,7 +50,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const queryClient = useQueryClient()
 
   const { validToken } = useValidToken()
-  const t = useTranslations('auth')
   const hasHandledUnauthorized = useRef(false)
   const previousAuthState = useRef(isAuthenticated)
 
@@ -79,10 +76,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
       console.warn('[Auth] Unauthorized event received, logging out...')
       logout()
-
-      toast.error(t('sessionExpired.title'), {
-        description: t('sessionExpired.description'),
-      })
     }
 
     if (typeof window !== 'undefined') {
@@ -91,7 +84,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         window.removeEventListener('auth:unauthorized', handleUnauthorized)
       }
     }
-  }, [logout, t])
+  }, [logout])
 
   // Initialize auth on mount/reload — wait for zustand hydration first
   useEffect(() => {

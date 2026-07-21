@@ -2348,9 +2348,7 @@
         },
         "rights": {
           "heading": "Your rights",
-          "body": [
-            "You have the right to control your personal data."
-          ],
+          "body": ["You have the right to control your personal data."],
           "bullets": [
             "Access and edit your account information.",
             "Request deletion of your account and related data.",
@@ -2377,9 +2375,7 @@
         },
         "channels": {
           "heading": "How to reach us",
-          "body": [
-            "There are two main ways to send a report to us."
-          ],
+          "body": ["There are two main ways to send a report to us."],
           "bullets": [
             "Use the Report button directly on the violating listing.",
             "Email smartrent.tools@gmail.com with detailed information."
@@ -3745,10 +3741,6 @@
       "title": "Please log in",
       "description": "You need to log in to access this page.",
       "loginButton": "Log in"
-    },
-    "sessionExpired": {
-      "title": "Session expired",
-      "description": "Your session has expired. Please log in again."
     }
   },
   "guides": {
