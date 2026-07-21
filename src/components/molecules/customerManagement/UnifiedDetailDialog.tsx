@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl'
 import {
   Mail,
   Phone,
-  CheckCircle2,
   Copy,
   Calendar,
   TrendingUp,
@@ -20,7 +19,6 @@ import {
   X,
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
-import { Badge } from '@/components/atoms/badge'
 import { Button } from '@/components/atoms/button'
 import { Card } from '@/components/atoms/card'
 import { Dialog, DialogContent } from '@/components/atoms/dialog'
@@ -289,20 +287,9 @@ export default function UnifiedDetailDialog({
                     <div className='flex items-center gap-3 p-3'>
                       <Phone className='h-4 w-4 text-green-600 flex-shrink-0' />
                       <div className='flex-1 min-w-0'>
-                        <div className='flex items-center gap-2 mb-0.5 flex-wrap'>
-                          <p className='text-xs text-muted-foreground'>
-                            {t('table.phone')}
-                          </p>
-                          {customer.contactPhoneVerified && (
-                            <Badge
-                              variant='secondary'
-                              className='text-2xs h-5 px-1.5 text-green-600'
-                            >
-                              <CheckCircle2 className='h-2.5 w-2.5 mr-0.5' />
-                              {t('table.verified')}
-                            </Badge>
-                          )}
-                        </div>
+                        <p className='text-xs text-muted-foreground mb-0.5'>
+                          {t('table.phone')}
+                        </p>
                         <p className='font-medium text-sm text-foreground'>
                           {customer.contactPhone}
                         </p>
