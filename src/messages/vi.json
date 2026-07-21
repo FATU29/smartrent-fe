@@ -1086,7 +1086,11 @@
     "draftDialog": {
       "title": "Lưu bản nháp?",
       "description": "Bạn có thay đổi chưa được lưu. Bạn có muốn lưu tin đăng này thành bản nháp trước khi rời đi không?",
+      "titleUpdate": "Lưu bản cập nhật nháp?",
+      "descriptionUpdate": "Bạn có thay đổi chưa được lưu. Bạn có muốn cập nhật các thay đổi này vào bản nháp trước khi rời đi không?",
       "save": "Lưu bản nháp",
+      "saveUpdate": "Cập nhật bản nháp",
+      "savingUpdate": "Đang cập nhật...",
       "dontSave": "Không Lưu",
       "discard": "Hủy bỏ",
       "cancel": "Hủy",
