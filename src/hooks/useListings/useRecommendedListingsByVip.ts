@@ -41,12 +41,8 @@ export const useRecommendedListingsByVip = (
       return response.data || []
     },
     enabled: enabled,
-    // Matches the backend's shared listing.search cache TTL (5m) for every
-    // homepage-tier carousel — Nổi bật/Đề xuất/Mới all read from the same
-    // Redis bucket, so a shorter client staleTime would just refetch the
-    // same cached response.
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
   })
 
   return {
