@@ -160,7 +160,7 @@ export const usePhoneClickStats = (listingId: string | number) => {
       return response.data
     },
     enabled: !!listingId,
-    staleTime: 30 * 1000,
+    staleTime: 0,
     gcTime: 5 * 60 * 1000,
   })
 }
@@ -184,7 +184,7 @@ export const useOwnerPhoneClickStats = () => {
 
       return response.data
     },
-    staleTime: 30 * 1000,
+    staleTime: 0,
     gcTime: 5 * 60 * 1000,
   })
 }
@@ -216,7 +216,7 @@ export const useUsersForMyListings = (
       return response.data
     },
     placeholderData: keepPreviousData,
-    staleTime: 30 * 1000,
+    staleTime: 0,
     gcTime: 5 * 60 * 1000,
   })
 }
@@ -247,7 +247,7 @@ export const useUsersWhoClickedListing = (
       return response.data
     },
     enabled: !!listingId,
-    staleTime: 30 * 1000,
+    staleTime: 0,
     gcTime: 5 * 60 * 1000,
   })
 }
