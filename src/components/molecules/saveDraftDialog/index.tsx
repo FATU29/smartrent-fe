@@ -17,6 +17,7 @@ interface SaveDraftDialogProps {
   onCancel: () => void
   onClose?: () => void
   isSaving?: boolean
+  isExistingDraft?: boolean
 }
 
 const DIALOG_CONTAINER_CLASS =
@@ -28,6 +29,7 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
   onCancel,
   onClose,
   isSaving = false,
+  isExistingDraft = false,
 }) => {
   const t = useTranslations('createPost.draftDialog')
 
@@ -69,10 +71,10 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
 
             <DialogHeader className='gap-2 pb-0 text-left'>
               <DialogTitle className='text-xl leading-tight font-semibold'>
-                {t('title')}
+                {t(isExistingDraft ? 'titleUpdate' : 'title')}
               </DialogTitle>
               <DialogDescription className='text-sm leading-6 text-muted-foreground'>
-                {t('description')}
+                {t(isExistingDraft ? 'descriptionUpdate' : 'description')}
               </DialogDescription>
             </DialogHeader>
           </div>
@@ -91,7 +93,13 @@ export const SaveDraftDialog: React.FC<SaveDraftDialogProps> = ({
               disabled={isSaving}
               className='w-full sm:w-auto sm:min-w-[160px]'
             >
-              {isSaving ? t('saving') : t('save')}
+              {isExistingDraft
+                ? isSaving
+                  ? t('savingUpdate')
+                  : t('saveUpdate')
+                : isSaving
+                  ? t('saving')
+                  : t('save')}
             </Button>
           </DialogFooter>
         </div>

@@ -1086,7 +1086,11 @@
     "draftDialog": {
       "title": "Save as Draft?",
       "description": "You have unsaved changes. Do you want to save this post as a draft before leaving?",
+      "titleUpdate": "Save draft update?",
+      "descriptionUpdate": "You have unsaved changes. Do you want to update this draft before leaving?",
       "save": "Save Draft",
+      "saveUpdate": "Update Draft",
+      "savingUpdate": "Updating...",
       "dontSave": "Don't Save",
       "discard": "Discard",
       "cancel": "Cancel",

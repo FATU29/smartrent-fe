@@ -39,7 +39,8 @@ const canonicalize = (value: unknown): unknown => {
   return value
 }
 
-const snapshotOf = (value: unknown): string => JSON.stringify(canonicalize(value))
+const snapshotOf = (value: unknown): string =>
+  JSON.stringify(canonicalize(value))
 
 export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
   children,
@@ -132,7 +133,10 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
 
     window.addEventListener(CREATE_POST_DRAFT_SAVED_EVENT, handleDraftSaved)
     return () =>
-      window.removeEventListener(CREATE_POST_DRAFT_SAVED_EVENT, handleDraftSaved)
+      window.removeEventListener(
+        CREATE_POST_DRAFT_SAVED_EVENT,
+        handleDraftSaved,
+      )
   }, [propertyInfo])
 
   // Allow specific flows (e.g., external payment redirect) to bypass this guard.
@@ -383,6 +387,7 @@ export const CreatePostDraftGuard: React.FC<CreatePostDraftGuardProps> = ({
         onCancel={handleCancel}
         onClose={handleClose}
         isSaving={isDraftSaving}
+        isExistingDraft={Boolean(draftId)}
       />
     </>
   )
