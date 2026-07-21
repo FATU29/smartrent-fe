@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import {
   Mail,
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
 import { Badge } from '@/components/atoms/badge'
+import { Button } from '@/components/atoms/button'
 import { Card } from '@/components/atoms/card'
 import { Dialog, DialogContent } from '@/components/atoms/dialog'
 import { Typography } from '@/components/atoms/typography'
@@ -366,7 +368,25 @@ export default function UnifiedDetailDialog({
                               </span>
                             </div>
                           </div>
-                          <ExternalLink className='h-4 w-4 text-muted-foreground/60 group-hover:text-muted-foreground transition-colors flex-shrink-0 mt-0.5' />
+                          <Button
+                            asChild
+                            variant='ghost'
+                            size='icon'
+                            className='size-8 flex-shrink-0'
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Link
+                              href={`/listing-detail/${listingItem.listingId}`}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              title={t('dialog.customerDetail.viewListing')}
+                              aria-label={t(
+                                'dialog.customerDetail.viewListing',
+                              )}
+                            >
+                              <ExternalLink className='h-4 w-4 text-muted-foreground/60 group-hover:text-muted-foreground transition-colors' />
+                            </Link>
+                          </Button>
                         </div>
                       </Card>
                     )
