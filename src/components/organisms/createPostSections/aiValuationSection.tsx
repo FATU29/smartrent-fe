@@ -96,6 +96,20 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
     mountedRef.current = true
   }, [])
 
+  // Drop any prior AI valuation the moment the inputs it was based on change —
+  // address, area, property type or GPS. Otherwise a range computed for the old
+  // data keeps showing against the new data (the auto-call below fires only
+  // once), which is misleading. requestKey is null when required inputs are
+  // missing, so this also clears the result when the form becomes incomplete.
+  // Re-arming didAutoCallRef lets the auto-call re-run for the new inputs.
+  const lastRequestKeyRef = useRef(requestKey)
+  useEffect(() => {
+    if (lastRequestKeyRef.current === requestKey) return
+    lastRequestKeyRef.current = requestKey
+    setPrediction(null)
+    didAutoCallRef.current = false
+  }, [requestKey])
+
   // Only auto-call once after mount when request is ready
   useEffect(() => {
     if (!mountedRef.current) return
@@ -342,7 +356,9 @@ const AIValuationSection: React.FC<AIValuationSectionProps> = ({
                     only when the range is backed by comparable listings -
                     evaluateAskingPrice returns null otherwise. */}
                 {priceEvaluation && evaluationTone && (
-                  <div className={`rounded-xl border p-4 ${evaluationTone.box}`}>
+                  <div
+                    className={`rounded-xl border p-4 ${evaluationTone.box}`}
+                  >
                     <div className='flex items-center justify-between gap-3 mb-1'>
                       <span className='text-sm text-muted-foreground'>
                         {t('results.priceEvaluation.yourPrice')}
