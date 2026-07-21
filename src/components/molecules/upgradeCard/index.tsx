@@ -27,7 +27,7 @@ import {
 } from '@/components/atoms/tooltip'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import type { UpgradePreview } from '@/api/types/membership.type'
 import {
   getMembershipLevelIcon,
