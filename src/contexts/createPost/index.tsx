@@ -103,6 +103,7 @@ export const CreatePostProvider: React.FC<CreatePostProviderProps> = ({
       listingType: LISTING_TYPE.RENT,
       vipType: 'NORMAL',
       durationDays: DURATIONDAYS.DAYS_10,
+      useMembershipQuota: false,
       postDate,
       expiryDate: new Date(postDate.getTime() + 10 * 24 * 60 * 60 * 1000),
     }
