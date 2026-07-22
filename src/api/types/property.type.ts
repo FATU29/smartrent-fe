@@ -254,6 +254,12 @@ export interface ListingApi {
   title: string
   description: string
   media: MediaItem[]
+  /**
+   * Real number of images on the listing, which can exceed `media.length`:
+   * map-bounds sends only the thumbnail per pin. Absent on the endpoints that
+   * still return every image.
+   */
+  imageCount?: number
   user: UserApi
   postDate: Date
   expiryDate: string
