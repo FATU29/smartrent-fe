@@ -193,6 +193,13 @@ const ListingsWithPagination = () => {
   }
 
   const handlePushListing = async (listing: ListingOwnerDetail) => {
+    // Guard against a second click landing during the refetchQuota() → push
+    // round trip below — without this, a fast double-click could fire two
+    // POST /pushes/push calls and burn two quota units for one push.
+    if (pushMutation.isPending) {
+      return
+    }
+
     // A listing is publicly live under both DISPLAYING and EXPIRING_SOON — see
     // the matching check in listing-card's `isPubliclyVisible`. Pushing an
     // EXPIRING_SOON listing is if anything more useful, since the seller is
