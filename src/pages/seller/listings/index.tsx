@@ -172,6 +172,15 @@ const ListingsPage: NextPageWithLayout = () => {
     [pushFiltersToQuery],
   )
 
+  // ListProvider snapshots initialFilters once, and on a cold load (typed URL,
+  // refresh, new tab) router.query is still empty on the first render — so a
+  // deep link like ?listingStatus=EXPIRING_SOON used to be dropped and the page
+  // fetched everything. Hold the tree back the one tick until the query is
+  // parsed; client-side navigations have it ready immediately.
+  if (!router.isReady) {
+    return <SeoHead title={t('userMenu.listings')} noindex />
+  }
+
   return (
     <>
       <SeoHead title={t('userMenu.listings')} noindex />
@@ -179,9 +188,7 @@ const ListingsPage: NextPageWithLayout = () => {
         <ListProvider
           fetcher={fetcher}
           initialData={[]}
-          initialFilters={
-            router?.query ? getFiltersFromQuery(router.query) : {}
-          }
+          initialFilters={getFiltersFromQuery(router.query)}
           initialPagination={{
             currentPage: 0,
             pageSize: DEFAULT_PER_PAGE,

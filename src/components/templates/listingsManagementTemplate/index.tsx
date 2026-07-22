@@ -48,9 +48,26 @@ import {
   isModerationFilterStatus,
   getModerationStatuses,
   extractModerationStatus,
+  toModerationFilterStatus,
   LISTING_STATUS_MODERATION_MAP,
   type ListingFilterStatus,
 } from '@/constants/postStatus'
+
+// Inverse of handleStatusChange: which tab do these filters represent? Used to
+// seed the tab from URL query params on first render. A listing status with
+// sub-filters and no moderationStatus keeps the parent tab selected — the list
+// really is showing every sub-state, so no sub-tab should look active.
+const statusFromFilters = (
+  filters: Partial<ListingFilterRequest>,
+): ListingFilterStatus => {
+  if (filters.moderationStatus) {
+    return toModerationFilterStatus(filters.moderationStatus)
+  }
+  if (filters.listingStatus) {
+    return filters.listingStatus as ListingFilterStatus
+  }
+  return POST_STATUS.ALL as ListingFilterStatus
+}
 
 const ListingsWithPagination = () => {
   const router = useRouter()
@@ -542,15 +559,19 @@ export const ListingsManagementTemplate: React.FC<
 > = ({ children }) => {
   const tNav = useTranslations('navigation.seller')
   const { user } = useAuthContext()
-  const [status, setStatus] = useState<ListingFilterStatus>(
-    POST_STATUS.ALL as ListingFilterStatus,
-  )
   const [filterOpen, setFilterOpen] = useState(false)
   const {
     items: listings,
     filters,
     updateFilters,
   } = useListContext<ListingFilterRequest>()
+  // Seeded from the filters the page parsed out of the URL, so a deep link
+  // (?listingStatus=EXPIRING_SOON — e.g. the chatbot's "Xem tất cả" chip)
+  // lands on the matching tab instead of highlighting "Tất cả" while showing
+  // a filtered list.
+  const [status, setStatus] = useState<ListingFilterStatus>(() =>
+    statusFromFilters(filters),
+  )
 
   // ── Sync tab UI when filters are externally reset ──
   // e.g. ResidentialFilterDialog "Reset" calls resetFilters() on the context,
