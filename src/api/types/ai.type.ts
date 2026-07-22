@@ -276,7 +276,14 @@ export interface ChatSuggestion {
   /** Text shown on the chip. */
   label: string
   /** Message sent when the chip is tapped (often equals label). */
-  query: string
+  query?: string
+  /**
+   * In-app path to open instead of sending a message — set by the backend for
+   * deep-link chips ("Xem tất cả tin đăng" → /seller/listings?...). Built
+   * server-side from the tool's own arguments, never by the model. Exactly one
+   * of `query` / `url` is present.
+   */
+  url?: string
 }
 
 export interface ChatStreamSuggestionsPayload {

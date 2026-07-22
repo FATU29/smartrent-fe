@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import ReactMarkdown, { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Link from 'next/link'
-import { LogIn, Maximize2, Phone } from 'lucide-react'
+import { ArrowUpRight, LogIn, Maximize2, Phone } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { TChatMessage } from '@/hooks/useChatAi'
@@ -31,6 +31,13 @@ type TAiChatBubbleProps = {
   onOpenFullDetail?: (listingId: number) => void
   onSuggestionClick?: (query: string) => void
 }
+
+// Follow-up chips share a pill shape; only the fill differs — a deep-link chip
+// is a filled primary action, a query chip is the softer outlined variant.
+const CHIP_BASE_CLASS =
+  'h-auto rounded-full px-3.5 py-1.5 text-2xs font-medium leading-normal shadow-sm transition-colors'
+const CHIP_QUERY_CLASS =
+  'border-primary/30 bg-gradient-to-br from-primary-50 to-primary-100 text-primary hover:border-primary/40 hover:from-primary-100 hover:to-primary-200 hover:text-primary'
 
 // Convert [Mã tin: xxx] to clickable links
 const processListingIds = (text: string): string => {
@@ -423,18 +430,37 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
               className='mt-2 flex flex-wrap gap-2'
               aria-label={tAi('suggestionsLabel')}
             >
-              {message.suggestions.map((suggestion) => (
-                <Button
-                  key={suggestion.query}
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  className='h-auto rounded-full border-primary/30 bg-gradient-to-br from-primary-50 to-primary-100 px-3.5 py-1.5 text-2xs font-medium leading-normal text-primary shadow-sm transition-colors hover:border-primary/40 hover:from-primary-100 hover:to-primary-200 hover:text-primary'
-                  onClick={() => onSuggestionClick?.(suggestion.query)}
-                >
-                  {suggestion.label}
-                </Button>
-              ))}
+              {message.suggestions.map((suggestion) =>
+                suggestion.url ? (
+                  // Deep link into the app (e.g. "Xem tất cả tin đăng"). The
+                  // chat panel only ever shows a few rows, so this hands the
+                  // user off to the page that owns the full list instead of
+                  // asking them to find it. Filled, so it reads as an action
+                  // rather than another thing to ask.
+                  <Button
+                    key={suggestion.url}
+                    asChild
+                    size='sm'
+                    className={CHIP_BASE_CLASS}
+                  >
+                    <Link href={suggestion.url}>
+                      {suggestion.label}
+                      <ArrowUpRight className='size-3.5' />
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    key={suggestion.query}
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    className={cn(CHIP_BASE_CLASS, CHIP_QUERY_CLASS)}
+                    onClick={() => onSuggestionClick?.(suggestion.query ?? '')}
+                  >
+                    {suggestion.label}
+                  </Button>
+                ),
+              )}
             </div>
           )}
       </div>
