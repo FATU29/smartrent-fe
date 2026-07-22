@@ -190,7 +190,15 @@ const ListingsWithPagination = () => {
       return
     }
 
-    const hasQuota = quotaData?.data && quotaData.data.totalAvailable > 0
+    // Re-fetch right before deciding instead of trusting the cached
+    // `quotaData` closure value — on a fresh page load (or after the 60s
+    // staleTime lapses) that value can still be `undefined` while the
+    // query is in flight, which silently fell through to the paid flow
+    // even though the seller had membership quota available.
+    const { data: freshQuotaData } = await refetchQuota()
+    const latestQuotaData = freshQuotaData ?? quotaData
+    const hasQuota =
+      latestQuotaData?.data && latestQuotaData.data.totalAvailable > 0
     const useMembershipQuota = hasQuota ?? false
 
     if (!useMembershipQuota) {
