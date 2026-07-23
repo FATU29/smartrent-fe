@@ -199,8 +199,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
         <div
           className={cn(
             'fixed z-50 animate-in fade-in slide-in-from-bottom-8 duration-300',
-            'resize overflow-hidden rounded-2xl border-2 border-primary/20 bg-background shadow-2xl',
-            'transition-colors hover:border-primary/40',
+            'resize overflow-hidden rounded-2xl border-2 border-primary/40 bg-background shadow-2xl',
             position === 'bottom-right'
               ? 'bottom-24 right-6'
               : 'bottom-24 left-6',
