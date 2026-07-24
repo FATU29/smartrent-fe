@@ -79,10 +79,14 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
     vipType,
     roomCapacity,
     media,
+    imageCount,
   } = listing
 
   const images = media?.filter((m) => m.mediaType === 'IMAGE') || []
-  const totalImages = images.length
+  // map-bounds ships only the thumbnail (one image per pin, up to 500 pins a
+  // request) and reports the real total separately. Fall back to the list
+  // length for the callers that still send every image.
+  const totalImages = imageCount ?? images.length
   const mainImage = images[0]?.url
   const displayAddress = address?.fullNewAddress || address?.fullAddress
   const { firstName, lastName } = user || {}
