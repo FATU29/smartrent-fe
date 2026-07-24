@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader } from '@/components/atoms/card'
 import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
 import { Skeleton } from '@/components/atoms/skeleton'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 const MembershipPage: NextPageWithLayout = () => {
   const tPage = useTranslations('membershipPage')

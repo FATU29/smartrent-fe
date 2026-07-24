@@ -13,7 +13,7 @@ import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 // MembershipPackageLevel is imported below with BenefitType
 import { PricingHeader } from './PricingHeader'
 import { PricingFeatures } from './PricingFeatures'
