@@ -5,7 +5,7 @@ import SectionHeading from '@/components/atoms/sectionHeading'
 import { Tabs, TabsList, TabsTrigger } from '@/components/atoms/tabs'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { ChartConfig, ChartContainer } from '@/components/atoms/chart'
-import { TrendingUp, TrendingDown } from 'lucide-react'
+import { TrendingUp, TrendingDown, Info } from 'lucide-react'
 import {
   Area,
   AreaChart,
@@ -407,6 +407,14 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Data disclaimer */}
+      <div className='flex items-start gap-2.5 rounded-lg border border-border bg-muted/40 px-4 py-3'>
+        <Info className='mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground' />
+        <p className='text-xs leading-relaxed text-muted-foreground'>
+          {t('apartmentDetail.priceHistory.dataNote')}
+        </p>
+      </div>
     </div>
   )
 }
