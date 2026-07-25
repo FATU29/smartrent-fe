@@ -48,6 +48,9 @@ function isPublicPath(pathname: string) {
   if (pathname.startsWith('/compare')) return true
   if (pathname.startsWith('/news')) return true
   if (pathname.startsWith('/maps')) return true
+  // Policy/legal pages (listing rules, terms, privacy, complaints) are linked
+  // from the footer and must be readable by prospects without logging in.
+  if (pathname.startsWith('/policies')) return true
 
   // Payment gateway redirect must stay public so callback page can mount
   if (pathname.startsWith('/payment/result')) return true
