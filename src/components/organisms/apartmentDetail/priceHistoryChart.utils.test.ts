@@ -40,7 +40,10 @@ describe('buildPriceChartModel', () => {
     expect(model.chartData.map((d) => d.price)).toEqual([
       6_200_000, 5_900_000, 5_700_000,
     ])
-    expect(model.chartData[0].label).toBe('T7/26')
+    // Same-month changes must get DISTINCT day-level labels, not "T7/26" twice.
+    expect(model.chartData.map((d) => d.label)).toEqual(['1/7', '10/7', '20/7'])
+    expect(new Set(model.chartData.map((d) => d.label)).size).toBe(3)
+    expect(model.chartData[0].fullLabel).toBe('01/07/2026')
     // Distinct X categories so recharts does not merge same-month points.
     expect(new Set(model.chartData.map((d) => d.i)).size).toBe(3)
   })
@@ -71,7 +74,8 @@ describe('buildPriceChartModel', () => {
     )
 
     expect(model.chartData).toHaveLength(2)
-    expect(model.chartData.every((d) => d.label !== 'TNaN/aN')).toBe(true)
+    // Spans 2025→2026, so labels carry the 2-digit year and never NaN.
+    expect(model.chartData.map((d) => d.label)).toEqual(['10/8/25', '10/7/26'])
   })
 
   it('spans multiple months and prefers backend statistics when provided', () => {
