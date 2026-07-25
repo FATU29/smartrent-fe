@@ -17,7 +17,6 @@ import {
   ChevronRight,
   Users,
   MousePointerClick,
-  TrendingUp,
   Loader2,
   X,
 } from 'lucide-react'
@@ -93,7 +92,6 @@ const CustomerManagementTemplate = () => {
     () => ({
       totalCustomers: data?.totalElements || 0,
       totalClicks: ownerStats?.totalClicks || 0,
-      uniqueUsers: ownerStats?.uniqueUsers || 0,
     }),
     [data, ownerStats],
   )
@@ -183,12 +181,6 @@ const CustomerManagementTemplate = () => {
       label: t('stats.totalClicks'),
       iconClass: 'bg-orange-500/10 text-orange-600',
     },
-    {
-      icon: TrendingUp,
-      value: stats.uniqueUsers,
-      label: t('stats.uniqueUsers'),
-      iconClass: 'bg-green-500/10 text-green-600',
-    },
   ]
 
   const openListingDetail = (listing: ListingClickInfo) => {
@@ -206,7 +198,7 @@ const CustomerManagementTemplate = () => {
       </div>
 
       {/* Stats Cards - Desktop Grid */}
-      <div className='hidden md:grid gap-4 md:grid-cols-3'>
+      <div className='hidden md:grid gap-4 md:grid-cols-2'>
         {statCards.map(({ icon: Icon, value, label, iconClass }) => (
           <Card
             key={label}

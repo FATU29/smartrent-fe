@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/atoms/skeleton'
 import { Card } from '@/components/atoms/card'
 import { PageContainer } from '@/components/atoms/pageContainer'
 
-const STAT_KEYS = ['totalCustomers', 'totalClicks', 'uniqueUsers']
+const STAT_KEYS = ['totalCustomers', 'totalClicks']
 const ROW_KEYS = ['row-1', 'row-2', 'row-3', 'row-4', 'row-5', 'row-6']
 
 /** Skeleton for just the customer rows — reused while a search/page refetches. */
@@ -37,7 +37,7 @@ const CustomerManagementSkeleton: React.FC = () => {
       </div>
 
       {/* Stats cards */}
-      <div className='grid gap-4 grid-cols-1 md:grid-cols-3'>
+      <div className='grid gap-4 grid-cols-1 md:grid-cols-2'>
         {STAT_KEYS.map((key) => (
           <Card key={key} className='p-5'>
             <div className='flex items-center gap-3 mb-3'>
