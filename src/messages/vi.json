@@ -3499,6 +3499,7 @@
     "priceHistory": {
       "title": "Lịch sử giá bán nhà riêng tại {district}",
       "simpleTitle": "Lịch sử giá",
+      "dataNote": "Lịch sử giá được ghi nhận từ các lần cập nhật giá của chính tin đăng trên SmartRent và chỉ mang tính tham khảo. Vui lòng xác minh trực tiếp với người đăng trước khi giao dịch.",
       "noHistory": "Chưa có lịch sử giá",
       "tabs": {
         "buy": "Mua bán",

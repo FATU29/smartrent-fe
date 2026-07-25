@@ -5,7 +5,7 @@ import SectionHeading from '@/components/atoms/sectionHeading'
 import { Tabs, TabsList, TabsTrigger } from '@/components/atoms/tabs'
 import { Skeleton } from '@/components/atoms/skeleton'
 import { ChartConfig, ChartContainer } from '@/components/atoms/chart'
-import { TrendingUp, TrendingDown } from 'lucide-react'
+import { TrendingUp, TrendingDown, Info } from 'lucide-react'
 import {
   Area,
   AreaChart,
@@ -24,20 +24,17 @@ import {
   mockPricingHistory,
   mockPriceStatistics,
 } from '@/mock/listingDetail/pricingHistory'
+import { buildPriceChartModel, type Period } from './priceHistoryChart.utils'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
+
+/** Show dots on the line when the series is small enough not to look busy. */
+const DOT_THRESHOLD = 15
 
 interface PriceHistoryChartProps {
   listingId: number
   newAddress?: string
   oldAddress?: string
-}
-
-type Period = '1year' | '2years'
-
-const PERIOD_MONTHS: Record<Period, number> = {
-  '1year': 12,
-  '2years': 24,
 }
 
 // ─── Tooltip ─────────────────────────────────────────────────────────────────
@@ -119,76 +116,10 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
   const priceStatistics =
     priceStatisticsRaw ?? (IS_DEV ? mockPriceStatistics : undefined)
 
-  const { chartData, statistics } = useMemo(() => {
-    if (
-      !priceHistory ||
-      !Array.isArray(priceHistory) ||
-      priceHistory.length === 0
-    ) {
-      return { chartData: [], statistics: null }
-    }
-
-    const sorted = [...priceHistory].sort(
-      (a, b) =>
-        new Date(a.changedAt + '+07:00').getTime() -
-        new Date(b.changedAt + '+07:00').getTime(),
-    )
-
-    const cutoff = new Date()
-    cutoff.setMonth(cutoff.getMonth() - PERIOD_MONTHS[selectedPeriod])
-    const display = sorted.filter(
-      (item) => new Date(item.changedAt + '+07:00') >= cutoff,
-    )
-    const slice = display.length > 0 ? display : sorted
-
-    const allPrices = sorted.map((p) => p.newPrice)
-    const slicePrices = slice.map((p) => p.newPrice)
-
-    const currentPrice = sorted.at(-1)?.newPrice ?? 0
-    const firstPrice = slice.at(0)?.newPrice ?? currentPrice
-    const changePercentage =
-      firstPrice > 0
-        ? Math.round(((currentPrice - firstPrice) / firstPrice) * 100)
-        : 0
-
-    const avgPrice =
-      priceStatistics?.avgPrice ??
-      Math.round(slicePrices.reduce((s, p) => s + p, 0) / slicePrices.length)
-
-    let increases = 0
-    let decreases = 0
-    for (let i = 1; i < sorted.length; i++) {
-      if (sorted[i].newPrice > sorted[i - 1].newPrice) increases++
-      else if (sorted[i].newPrice < sorted[i - 1].newPrice) decreases++
-    }
-
-    // Deduplicate: keep last entry per month (MM/YYYY key)
-    const monthMap = new Map<string, number>()
-    for (const item of slice) {
-      const d = new Date(item.changedAt + '+07:00')
-      const key = `${d.getMonth()}-${d.getFullYear()}`
-      monthMap.set(key, item.newPrice)
-    }
-
-    return {
-      chartData: Array.from(monthMap.entries()).map(([key, price]) => {
-        const [month, year] = key.split('-').map(Number)
-        const shortYear = String(year).slice(-2)
-        return { date: `T${month + 1}/${shortYear}`, price }
-      }),
-      statistics: {
-        current: currentPrice,
-        minPrice: priceStatistics?.minPrice ?? Math.min(...allPrices),
-        maxPrice: priceStatistics?.maxPrice ?? Math.max(...allPrices),
-        avgPrice,
-        changePercentage,
-        totalChanges:
-          priceStatistics?.totalChanges ?? Math.max(sorted.length - 1, 0),
-        priceIncreases: priceStatistics?.priceIncreases ?? increases,
-        priceDecreases: priceStatistics?.priceDecreases ?? decreases,
-      },
-    }
-  }, [priceHistory, priceStatistics, selectedPeriod])
+  const { chartData, statistics, yDomain } = useMemo(
+    () => buildPriceChartModel(priceHistory, priceStatistics, selectedPeriod),
+    [priceHistory, priceStatistics, selectedPeriod],
+  )
 
   // ── Loading ──
   if (isHistoryLoading) {
@@ -358,11 +289,13 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                 />
 
                 <XAxis
-                  dataKey='date'
+                  dataKey='i'
+                  type='category'
                   tickLine={false}
                   axisLine={false}
                   tickMargin={10}
-                  minTickGap={80}
+                  minTickGap={40}
+                  tickFormatter={(v: number) => chartData[v]?.label ?? ''}
                   tick={{ fontSize: 11, fill: 'var(--foreground)' }}
                 />
                 <YAxis
@@ -372,7 +305,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                   tick={{ fontSize: 11, fill: 'var(--foreground)' }}
                   tickFormatter={(v) => formatCompactCurrency(v, 'vi')}
                   width={44}
-                  domain={['auto', 'auto']}
+                  domain={yDomain}
                 />
 
                 <ReferenceLine
@@ -396,7 +329,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                       payload={
                         payload as Array<{ value: number; color: string }>
                       }
-                      label={label}
+                      label={chartData[label as number]?.label ?? ''}
                       avgPrice={statistics.avgPrice}
                     />
                   )}
@@ -408,7 +341,15 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                   fill='url(#priceGradient)'
                   stroke='var(--color-price)'
                   strokeWidth={2}
-                  dot={false}
+                  dot={
+                    chartData.length <= DOT_THRESHOLD
+                      ? {
+                          r: 3,
+                          fill: 'var(--color-price)',
+                          strokeWidth: 0,
+                        }
+                      : false
+                  }
                   activeDot={{
                     r: 5,
                     fill: 'var(--color-price)',
@@ -466,6 +407,14 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Data disclaimer */}
+      <div className='flex items-start gap-2.5 rounded-lg border border-border bg-muted/40 px-4 py-3'>
+        <Info className='mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground' />
+        <p className='text-xs leading-relaxed text-muted-foreground'>
+          {t('apartmentDetail.priceHistory.dataNote')}
+        </p>
+      </div>
     </div>
   )
 }

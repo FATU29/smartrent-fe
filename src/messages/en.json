@@ -3501,6 +3501,7 @@
     "priceHistory": {
       "title": "Price History for Houses in {district}",
       "simpleTitle": "Price History",
+      "dataNote": "Price history is recorded from this listing's own price updates on SmartRent and is provided for reference only. Please verify directly with the poster before making any transaction.",
       "noHistory": "No price history available",
       "tabs": {
         "buy": "Buy & Sell",
