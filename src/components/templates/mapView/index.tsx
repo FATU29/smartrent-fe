@@ -64,6 +64,12 @@ const MAX_COMPLETED_REGIONS = 60
 // rounding applied by normalizeViewport.
 const BOUNDS_EPSILON = 1e-6
 const PROGRAMMATIC_PAN_SUPPRESS_MS = 600
+// On first load the map's initial viewport report is suppressed until either the
+// device-location fix arrives (so the first fetch lands on the user's area) or
+// this fallback elapses (geolocation denied/slow/unsupported → load the default
+// view anyway). This removes the throwaway wide zoom-12 query that used to fire
+// at the default centre only to be superseded when geolocation recentred the map.
+const INITIAL_FETCH_FALLBACK_MS = 1200
 // Selected marker is lifted above the others so it is never hidden when pins
 // overlap.
 const SELECTED_MARKER_Z_INDEX = 9999
@@ -437,6 +443,10 @@ const MapContent: React.FC<MapContentProps> = ({
     requestLocation,
   } = useLocationContext()
   const hasCenteredOnUserRef = useRef(false)
+  // Gates the FIRST viewport report: stays false until we either recentre on the
+  // user or the fallback timer fires, so the map never fetches the default centre
+  // only to immediately refetch the user's location. Once true it stays true.
+  const initialReportReadyRef = useRef(false)
   const isProgrammaticPanRef = useRef(false)
   const panIdleListenerRef = useRef<{ remove: () => void } | null>(null)
   const panSuppressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -538,6 +548,10 @@ const MapContent: React.FC<MapContentProps> = ({
   const handleMapChange = useCallback(() => {
     if (!map) return
     if (isProgrammaticPanRef.current) return
+    // Suppress the initial default-centre report until the first fetch is
+    // intentional (see initialReportReadyRef). Every later pan/zoom reports as
+    // usual because the flag is one-way.
+    if (!initialReportReadyRef.current) return
 
     const bounds = map.getBounds()
     const zoom = map.getZoom()
@@ -577,6 +591,11 @@ const MapContent: React.FC<MapContentProps> = ({
   useEffect(() => {
     if (userCoordinates && map && !hasCenteredOnUserRef.current) {
       hasCenteredOnUserRef.current = true
+      // Open the gate before panning: centring changes the zoom (12 -> 14), which
+      // always fires an `idle`, and THAT report becomes the first fetch — at the
+      // user's location, not the default centre. A pending fallback timer sees the
+      // flag already set and no-ops.
+      initialReportReadyRef.current = true
       centerOnUser(userCoordinates)
     }
   }, [userCoordinates, map, centerOnUser])
@@ -589,9 +608,20 @@ const MapContent: React.FC<MapContentProps> = ({
     requestLocation()
   }, [userCoordinates, centerOnUser, requestLocation])
 
-  // Initial fetch triggering
+  // First fetch is deferred — NOT fired at the default centre on mount. Once the
+  // map is ready, arm a fallback: if no location fix has opened the gate within
+  // INITIAL_FETCH_FALLBACK_MS (permission denied, slow or unsupported GPS), report
+  // the current default view so listings still load. A fix arriving first sets the
+  // flag and this timer no-ops.
   useEffect(() => {
-    handleMapChange()
+    if (initialReportReadyRef.current) return
+    const timer = setTimeout(() => {
+      if (!initialReportReadyRef.current) {
+        initialReportReadyRef.current = true
+        handleMapChange()
+      }
+    }, INITIAL_FETCH_FALLBACK_MS)
+    return () => clearTimeout(timer)
   }, [handleMapChange])
 
   // Report the viewport on `idle` (fires once when the map stops moving)
