@@ -3302,7 +3302,6 @@
       "stats": {
         "totalCustomers": "Tổng khách hàng",
         "totalClicks": "Tổng nhấn xem SĐT",
-        "uniqueUsers": "Người dùng duy nhất",
         "thisMonth": "Tháng này"
       },
       "listingCard": {
