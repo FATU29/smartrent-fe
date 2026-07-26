@@ -329,7 +329,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ listingId }) => {
                       payload={
                         payload as Array<{ value: number; color: string }>
                       }
-                      label={chartData[label as number]?.label ?? ''}
+                      label={chartData[label as number]?.fullLabel ?? ''}
                       avgPrice={statistics.avgPrice}
                     />
                   )}

@@ -14,8 +14,11 @@ export interface PriceChartPoint {
   /** Sequential index — used as the (unique) X-axis category so that several
    *  changes in the same month stay distinct points instead of overlapping. */
   i: number
-  /** Human label shown on the X axis, e.g. `T7/26`. */
+  /** Compact X-axis label by change date, e.g. `25/7` (or `25/7/26` when the
+   *  series spans more than one year). Day-level so same-month changes differ. */
   label: string
+  /** Full date for the tooltip, e.g. `25/07/2026`. */
+  fullLabel: string
   price: number
 }
 
@@ -51,8 +54,21 @@ const toDate = (changedAt: string): Date =>
       : `${changedAt.replace(' ', 'T')}+07:00`,
   )
 
-const monthYearLabel = (d: Date): string =>
-  `T${d.getMonth() + 1}/${String(d.getFullYear()).slice(-2)}`
+const pad2 = (n: number): string => String(n).padStart(2, '0')
+
+/**
+ * Read the calendar Y/M/D straight from the timestamp string rather than from a
+ * `Date` object. Backend times are already Vietnam wall-clock, so this keeps
+ * axis labels stable regardless of the JS runtime's timezone (a UTC test runner
+ * or a browser in another zone would otherwise shift the day across midnight).
+ */
+const parseYmd = (
+  changedAt: string,
+): { y: number; m: number; d: number } | null => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(changedAt)
+  if (!match) return null
+  return { y: Number(match[1]), m: Number(match[2]), d: Number(match[3]) }
+}
 
 const EMPTY_MODEL: PriceChartModel = {
   chartData: [],
@@ -114,11 +130,26 @@ export function buildPriceChartModel(
     else if (sorted[i].newPrice < sorted[i - 1].newPrice) decreases++
   }
 
-  const chartData: PriceChartPoint[] = slice.map((item, i) => ({
-    i,
-    label: monthYearLabel(toDate(item.changedAt)),
-    price: item.newPrice,
-  }))
+  // Show the year on the axis only when the series actually crosses years —
+  // otherwise the day/month alone keeps same-month points readable and distinct.
+  const spansYears =
+    new Set(
+      slice
+        .map((item) => parseYmd(item.changedAt)?.y)
+        .filter((y) => y !== undefined),
+    ).size > 1
+
+  const chartData: PriceChartPoint[] = slice.map((item, i) => {
+    const ymd = parseYmd(item.changedAt)
+    if (!ymd) return { i, label: '', fullLabel: '', price: item.newPrice }
+    const dayMonth = `${ymd.d}/${ymd.m}`
+    return {
+      i,
+      label: spansYears ? `${dayMonth}/${String(ymd.y).slice(-2)}` : dayMonth,
+      fullLabel: `${pad2(ymd.d)}/${pad2(ymd.m)}/${ymd.y}`,
+      price: item.newPrice,
+    }
+  })
 
   const prices = chartData.map((d) => d.price)
   const lo = Math.min(...prices)
