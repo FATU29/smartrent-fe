@@ -16,6 +16,8 @@ interface CopyButtonProps {
   className?: string
   iconSize?: number
   variant?: 'ghost' | 'outline' | 'default'
+  /** Called after a successful copy — used to audit contact reveals. */
+  onCopy?: () => void
 }
 
 const CopyButton: React.FC<CopyButtonProps> = ({
@@ -24,6 +26,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   className,
   iconSize = 14,
   variant = 'ghost',
+  onCopy,
 }) => {
   const [copied, setCopied] = useState(false)
 
@@ -32,6 +35,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)
+      onCopy?.()
       if (successMessage) {
         toast.success(successMessage)
       }

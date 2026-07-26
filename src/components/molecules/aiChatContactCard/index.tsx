@@ -7,6 +7,9 @@ import { Phone, Mail, ArrowRight } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/avatar'
 import { cn } from '@/lib/utils'
 import type { ChatListing } from '@/api/types/ai.type'
+import { useContactRevealGuard } from '@/hooks/useAuth'
+import { ContactRevealService } from '@/api/services/contactReveal.service'
+import LoginRequiredDialog from '@/components/molecules/loginRequiredDialog'
 
 interface AiChatContactCardProps {
   listing: ChatListing
@@ -29,11 +32,99 @@ const formatVNPhone = (phone: string): string => {
   return phone
 }
 
+const CONTACT_ROW_CLASSNAME =
+  'flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-accent transition-colors w-full text-left'
+
+interface ContactRowProps {
+  icon: React.ReactNode
+  label: string
+  value: string
+  href: string
+  isAuthenticated: boolean
+  onRequireAuth: () => void
+  guestLabel: string
+  external?: boolean
+  /** When true, the real value is replaced with `guestLabel` for guests. */
+  hideValueForGuest?: boolean
+  trailing?: React.ReactNode
+  /** Audit callback fired when an authenticated user opens this contact. */
+  onReveal?: () => void
+}
+
+// A guest never gets the real value or a live href in the DOM — the row is a
+// plain button that opens the login gate. Only after auth is the real
+// phone/email/link wired into an anchor.
+const ContactRow: React.FC<ContactRowProps> = ({
+  icon,
+  label,
+  value,
+  href,
+  isAuthenticated,
+  onRequireAuth,
+  guestLabel,
+  external = false,
+  hideValueForGuest = false,
+  trailing,
+  onReveal,
+}) => {
+  const displayValue =
+    !isAuthenticated && hideValueForGuest ? guestLabel : value
+
+  const body = (
+    <>
+      <div className='w-8 h-8 rounded-md bg-muted/50 border border-border flex items-center justify-center flex-shrink-0'>
+        {icon}
+      </div>
+      <div className='min-w-0 flex-1 overflow-hidden'>
+        <p className='text-xs uppercase tracking-wide text-muted-foreground leading-none mb-1'>
+          {label}
+        </p>
+        <p className='text-sm text-foreground truncate leading-tight'>
+          {displayValue}
+        </p>
+      </div>
+      {trailing}
+    </>
+  )
+
+  if (!isAuthenticated) {
+    return (
+      <button
+        type='button'
+        className={CONTACT_ROW_CLASSNAME}
+        onClick={(e) => {
+          e.stopPropagation()
+          onRequireAuth()
+        }}
+      >
+        {body}
+      </button>
+    )
+  }
+
+  return (
+    <a
+      href={href}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+      className={CONTACT_ROW_CLASSNAME}
+      onClick={(e) => {
+        e.stopPropagation()
+        onReveal?.()
+      }}
+    >
+      {body}
+    </a>
+  )
+}
+
 const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
   listing,
   className,
 }) => {
   const t = useTranslations('chat.contact')
+  const tContact = useTranslations('contactAccess')
+  const { isAuthenticated, requireAuth, dialogProps } = useContactRevealGuard()
   const { user, ownerContactPhoneNumber, ownerZaloLink } = listing
 
   if (!user) return null
@@ -44,6 +135,8 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
   const email = user.email
   const zaloLink = ownerZaloLink
   const sellerPageUrl = `/properties/seller/${user.userId}`
+  const guestLabel = tContact('viewContactCta')
+  const onRequireAuth = () => requireAuth()
 
   return (
     <div
@@ -76,65 +169,50 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
 
       <div className='mx-3 border-t border-border' />
 
-      {/* ── Contact rows ── */}
+      {/* ── Contact rows (gated behind login) ── */}
       <div className='p-2 space-y-0.5'>
         {phone && (
-          <a
-            href={`https://zalo.me/${phone.replace(/\D/g, '')}`}
-            target='_blank'
-            rel='noopener noreferrer'
-            className='flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-accent transition-colors'
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className='w-8 h-8 rounded-md bg-muted/50 border border-border flex items-center justify-center flex-shrink-0'>
+          <ContactRow
+            icon={
               <Phone
                 className='w-3.5 h-3.5 text-muted-foreground'
                 aria-hidden='true'
               />
-            </div>
-            <div className='min-w-0 flex-1'>
-              <p className='text-xs uppercase tracking-wide text-muted-foreground leading-none mb-1'>
-                Điện thoại
-              </p>
-              <p className='text-sm text-foreground tabular-nums leading-tight'>
-                {formatVNPhone(phone)}
-              </p>
-            </div>
-          </a>
+            }
+            label='Điện thoại'
+            value={formatVNPhone(phone)}
+            href={`https://zalo.me/${phone.replace(/\D/g, '')}`}
+            external
+            hideValueForGuest
+            isAuthenticated={isAuthenticated}
+            onRequireAuth={onRequireAuth}
+            guestLabel={guestLabel}
+            onReveal={() => ContactRevealService.logReveal(user.userId, 'PHONE')}
+          />
         )}
 
         {email && (
-          <a
-            href={`mailto:${email}`}
-            className='flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-accent transition-colors'
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className='w-8 h-8 rounded-md bg-muted/50 border border-border flex items-center justify-center flex-shrink-0'>
+          <ContactRow
+            icon={
               <Mail
                 className='w-3.5 h-3.5 text-muted-foreground'
                 aria-hidden='true'
               />
-            </div>
-            <div className='min-w-0 flex-1 overflow-hidden'>
-              <p className='text-xs uppercase tracking-wide text-muted-foreground leading-none mb-1'>
-                Email
-              </p>
-              <p className='text-sm text-foreground truncate leading-tight'>
-                {email}
-              </p>
-            </div>
-          </a>
+            }
+            label='Email'
+            value={email}
+            href={`mailto:${email}`}
+            hideValueForGuest
+            isAuthenticated={isAuthenticated}
+            onRequireAuth={onRequireAuth}
+            guestLabel={guestLabel}
+            onReveal={() => ContactRevealService.logReveal(user.userId, 'EMAIL')}
+          />
         )}
 
         {zaloLink && (
-          <a
-            href={zaloLink}
-            target='_blank'
-            rel='noopener noreferrer'
-            className='flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-accent transition-colors'
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className='w-8 h-8 rounded-md bg-muted/50 border border-border flex items-center justify-center flex-shrink-0'>
+          <ContactRow
+            icon={
               <Image
                 src='/svg/zalo.svg'
                 alt='Zalo'
@@ -142,21 +220,25 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
                 height={16}
                 aria-hidden='true'
               />
-            </div>
-            <div className='min-w-0 flex-1'>
-              <p className='text-xs uppercase tracking-wide text-muted-foreground leading-none mb-1'>
-                Nhắn tin
-              </p>
-              <p className='text-sm text-foreground leading-tight'>Zalo</p>
-            </div>
-            <span className='text-xs font-medium bg-blue-50 text-blue-700 rounded-full px-2 py-0.5 flex-shrink-0'>
-              Mở
-            </span>
-          </a>
+            }
+            label='Nhắn tin'
+            value='Zalo'
+            href={zaloLink}
+            external
+            isAuthenticated={isAuthenticated}
+            onRequireAuth={onRequireAuth}
+            guestLabel={guestLabel}
+            onReveal={() => ContactRevealService.logReveal(user.userId, 'ZALO')}
+            trailing={
+              <span className='text-xs font-medium bg-blue-50 text-blue-700 rounded-full px-2 py-0.5 flex-shrink-0'>
+                Mở
+              </span>
+            }
+          />
         )}
       </div>
 
-      {/* ── CTA footer link ── */}
+      {/* ── CTA footer link (navigation only, not gated) ── */}
       <Link
         href={sellerPageUrl}
         target='_blank'
@@ -173,6 +255,8 @@ const AiChatContactCard: React.FC<AiChatContactCardProps> = ({
           aria-hidden='true'
         />
       </Link>
+
+      <LoginRequiredDialog {...dialogProps} />
     </div>
   )
 }
