@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import type { PhoneClickDetail } from '@/api/types/phone-click-detail.type'
 import type { Customer, ListingWithCustomers } from '@/api/types/customer.type'
 import { useMyPhoneClicks } from '@/hooks/usePhoneClickDetails'
+import { parseApiDate } from '@/components/molecules/customerManagement/utils'
 
 interface UseCustomerManagementOptions {
   isMobile: boolean
@@ -21,7 +22,7 @@ const getInitialsFromName = (name: string): string => {
  * Format relative time from ISO date string
  */
 const formatRelativeTime = (dateString: string): string => {
-  const date = new Date(dateString)
+  const date = parseApiDate(dateString)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
@@ -50,19 +51,18 @@ const formatRelativeTime = (dateString: string): string => {
 }
 
 /**
- * Format date to readable format
+ * Format date to readable format, in Vietnam local time regardless of the
+ * viewer's runtime timezone
  */
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  const month = date.toLocaleString('en-US', { month: 'short' })
-  const day = date.getDate()
-  const hours = date.getHours()
-  const minutes = date.getMinutes()
-  const ampm = hours >= 12 ? 'PM' : 'AM'
-  const displayHours = hours % 12 || 12
-  const displayMinutes = minutes.toString().padStart(2, '0')
-  return `${month} ${day}, ${displayHours}:${displayMinutes} ${ampm}`
-}
+const formatDate = (dateString: string): string =>
+  new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).format(parseApiDate(dateString))
 
 export const useCustomerManagement = ({
   isMobile,
