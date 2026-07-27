@@ -3490,6 +3490,7 @@
     "sections": {
       "features": "Property Features",
       "characteristics": "Property Characteristics",
+      "utilityFees": "Utility Fees",
       "description": "Description",
       "priceHistory": "Price History for {district}",
       "location": "View on Map",
