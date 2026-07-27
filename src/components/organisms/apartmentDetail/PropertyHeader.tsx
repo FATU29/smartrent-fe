@@ -415,7 +415,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
 
         {/* Property Characteristics */}
         {characteristics.length > 0 && (
-          <Card>
+          <Card className='py-0'>
             <CardContent className='p-3.5 md:p-4'>
               <Typography variant='h4' className='text-base font-bold mb-3'>
                 {t('apartmentDetail.sections.characteristics')}
@@ -447,7 +447,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
 
         {/* Utility Fees */}
         {utilityFees.length > 0 && (
-          <Card>
+          <Card className='py-0'>
             <CardContent className='p-3.5 md:p-4'>
               <Typography variant='h4' className='text-base font-bold mb-3'>
                 {t('apartmentDetail.sections.utilityFees')}
@@ -469,7 +469,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
                     </div>
                     <Typography
                       variant='p'
-                      className='text-xs sm:text-sm font-semibold text-primary shrink-0'
+                      className='text-xs sm:text-sm font-semibold text-foreground shrink-0'
                     >
                       {item.value}
                     </Typography>
