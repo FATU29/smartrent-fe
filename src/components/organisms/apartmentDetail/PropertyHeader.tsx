@@ -409,24 +409,21 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
         {characteristics.length > 0 && (
           <Card>
             <CardContent className='p-4 md:p-5'>
-              <Typography variant='h4' className='text-base font-bold mb-1'>
+              <Typography variant='h4' className='text-base font-bold mb-3'>
                 {t('apartmentDetail.sections.characteristics')}
               </Typography>
-              <div className='divide-y divide-border'>
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4'>
                 {characteristics.map((item) => (
-                  <div key={item.key} className='flex items-center gap-4 py-3'>
-                    <div className='flex w-36 sm:w-44 shrink-0 items-center gap-2.5 text-muted-foreground'>
-                      <item.icon
-                        size={18}
-                        className='shrink-0 text-muted-foreground'
-                      />
-                      <Typography variant='p' className='text-sm truncate'>
+                  <div key={item.key} className='flex flex-col gap-1'>
+                    <div className='flex items-center gap-2 text-muted-foreground'>
+                      <item.icon size={16} className='shrink-0' />
+                      <Typography variant='p' className='text-xs sm:text-sm'>
                         {item.label}
                       </Typography>
                     </div>
                     <Typography
                       variant='p'
-                      className='text-sm font-semibold text-foreground'
+                      className='text-sm font-semibold text-foreground pl-6'
                     >
                       {item.value}
                     </Typography>
