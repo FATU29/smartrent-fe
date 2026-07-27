@@ -30,6 +30,7 @@ export const NumberField: React.FC<NumberFieldProps> = ({
   className,
   min = 0,
   max,
+  step,
   decimals = 0,
   disabled,
   required,
@@ -46,6 +47,14 @@ export const NumberField: React.FC<NumberFieldProps> = ({
     if (min !== undefined && next < min) next = min
     if (max !== undefined && next > max) next = max
     onChange(next)
+  }
+
+  const handleBlur = () => {
+    setTouched(true)
+    if (step && step > 1) {
+      const rounded = Math.floor(value / step) * step
+      if (rounded !== value) onChange(rounded)
+    }
   }
 
   return (
@@ -81,7 +90,7 @@ export const NumberField: React.FC<NumberFieldProps> = ({
             compact && 'h-10 text-sm',
           )}
           disabled={disabled}
-          onBlur={() => setTouched(true)}
+          onBlur={handleBlur}
         />
         {suffix && (
           <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground'>
