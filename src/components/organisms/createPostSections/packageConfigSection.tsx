@@ -442,75 +442,71 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       </CardHeader>
 
       <CardContent className='px-0 space-y-6'>
-        {/* Membership banners — when a benefit is applied, make that state
-            impossible to miss instead of relying on a small inline link.
-            Otherwise, if a membership is available, guide the user toward
-            using it instead of buying directly. */}
+        {/* Membership banner — a slim inline notice, not a heavy card, so it
+            nudges the user toward an existing benefit without dominating the
+            page. When a benefit is applied, this is the one place that state
+            is confirmed (replacing a small, easy-to-miss link). */}
         {useMembership ? (
-          <Card className='border-emerald-500/40 bg-emerald-500/5 shadow-none'>
-            <CardContent className='flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-6'>
-              <Card className='w-10 h-10 shrink-0 rounded-full bg-emerald-500/15 border-0 p-0 flex items-center justify-center'>
-                <Check className='w-5 h-5 text-emerald-600' />
-              </Card>
-              <Card className='flex-1 border-0 shadow-none p-0 space-y-1'>
-                <Typography className='font-semibold text-sm'>
-                  {t('membershipAppliedTitle')}
-                </Typography>
-                <Typography variant='muted' className='text-sm'>
-                  {appliedBenefitName
-                    ? t('membershipAppliedDescription', {
-                        name: appliedBenefitName,
-                      })
-                    : t('freePosting')}
-                </Typography>
-              </Card>
-              <Card className='flex gap-2 shrink-0 border-0 shadow-none p-0 w-full sm:w-auto'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  onClick={() => setBenefitDialogOpen(true)}
-                  className='flex-1 sm:flex-none'
-                >
-                  {t('changePromotion')}
-                </Button>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='icon'
-                  className='shrink-0 text-muted-foreground hover:text-destructive'
-                  onClick={() => handleApplyBenefits([])}
-                  aria-label={t('removePromotion')}
-                >
-                  <X className='w-4 h-4' />
-                </Button>
-              </Card>
-            </CardContent>
-          </Card>
+          <div className='flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-4 py-3'>
+            <Check className='w-4 h-4 shrink-0 text-emerald-600' />
+            <Typography className='text-sm font-medium'>
+              {t('membershipAppliedTitle')}
+            </Typography>
+            <Typography
+              variant='muted'
+              className='min-w-[10rem] flex-1 text-sm'
+            >
+              {appliedBenefitName
+                ? t('membershipAppliedDescription', {
+                    name: appliedBenefitName,
+                  })
+                : t('freePosting')}
+            </Typography>
+            <div className='flex shrink-0 items-center gap-1'>
+              <Button
+                type='button'
+                variant='link'
+                size='sm'
+                onClick={() => setBenefitDialogOpen(true)}
+                className='h-auto p-0'
+              >
+                {t('changePromotion')}
+              </Button>
+              <Button
+                type='button'
+                variant='ghost'
+                size='icon'
+                className='h-7 w-7 text-muted-foreground hover:text-destructive'
+                onClick={() => handleApplyBenefits([])}
+                aria-label={t('removePromotion')}
+              >
+                <X className='w-3.5 h-3.5' />
+              </Button>
+            </div>
+          </div>
         ) : (
           canOpenBenefits && (
-            <Card className='border-primary/40 bg-primary/5 shadow-none'>
-              <CardContent className='flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-6'>
-                <Card className='w-10 h-10 shrink-0 rounded-full bg-primary/15 border-0 p-0 flex items-center justify-center'>
-                  <Gift className='w-5 h-5 text-primary' />
-                </Card>
-                <Card className='flex-1 border-0 shadow-none p-0 space-y-1'>
-                  <Typography className='font-semibold text-sm'>
-                    {t('membershipPriorityTitle')}
-                  </Typography>
-                  <Typography variant='muted' className='text-sm'>
-                    {t('membershipPriorityDescription')}
-                  </Typography>
-                </Card>
-                <Button
-                  type='button'
-                  onClick={() => setBenefitDialogOpen(true)}
-                  className='shrink-0 w-full sm:w-auto'
-                >
-                  {t('usePromotion')}
-                </Button>
-              </CardContent>
-            </Card>
+            <div className='flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3'>
+              <Gift className='w-4 h-4 shrink-0 text-primary' />
+              <Typography className='text-sm font-medium'>
+                {t('membershipPriorityTitle')}
+              </Typography>
+              <Typography
+                variant='muted'
+                className='min-w-[10rem] flex-1 text-sm'
+              >
+                {t('membershipPriorityDescription')}
+              </Typography>
+              <Button
+                type='button'
+                variant='link'
+                size='sm'
+                onClick={() => setBenefitDialogOpen(true)}
+                className='h-auto shrink-0 p-0'
+              >
+                {t('usePromotion')}
+              </Button>
+            </div>
           )
         )}
 
