@@ -207,6 +207,14 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
       label: t('apartmentDetail.property.furnishing'),
       value: furnishing ? t(getFurnishingTranslationKey(furnishing)) : null,
     },
+  ].filter((item) => item.value)
+
+  const utilityFees: {
+    key: string
+    icon: LucideIcon
+    label: string
+    value: string | null
+  }[] = [
     {
       key: 'electricityPrice',
       icon: Zap,
@@ -427,6 +435,41 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
                     <Typography
                       variant='p'
                       className='text-sm font-semibold text-foreground'
+                    >
+                      {item.value}
+                    </Typography>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Utility Fees */}
+        {utilityFees.length > 0 && (
+          <Card>
+            <CardContent className='p-3.5 md:p-4'>
+              <Typography variant='h4' className='text-base font-bold mb-3'>
+                {t('apartmentDetail.sections.utilityFees')}
+              </Typography>
+              <div className='flex flex-col gap-2'>
+                {utilityFees.map((item) => (
+                  <div
+                    key={item.key}
+                    className='flex items-center justify-between gap-3 rounded-lg bg-muted/40 px-3 py-2'
+                  >
+                    <div className='flex items-center gap-2 text-muted-foreground min-w-0'>
+                      <item.icon size={16} className='shrink-0' />
+                      <Typography
+                        variant='p'
+                        className='text-xs sm:text-sm truncate'
+                      >
+                        {item.label}
+                      </Typography>
+                    </div>
+                    <Typography
+                      variant='p'
+                      className='text-xs sm:text-sm font-semibold text-primary shrink-0'
                     >
                       {item.value}
                     </Typography>
