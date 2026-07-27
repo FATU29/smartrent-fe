@@ -3135,6 +3135,19 @@
           "cancel": "Huỷ",
           "loading": "Đang xử lý..."
         },
+        "pushQuotaDialog": {
+          "title": "Xác nhận đẩy tin",
+          "description": "Thao tác này sẽ sử dụng 1 lượt đẩy tin trong quyền lợi hội viên của bạn.",
+          "listingLabel": "Tin đăng",
+          "quota": {
+            "title": "Lượt đẩy tin hội viên",
+            "remaining": "Còn {count, plural, =0 {0 lượt} other {# lượt}}"
+          },
+          "hint": "Sau khi xác nhận, bạn sẽ bị trừ 1 lượt trong quyền lợi hội viên và tin sẽ được đẩy lên đầu.",
+          "confirm": "Xác nhận",
+          "cancel": "Huỷ",
+          "loading": "Đang xử lý..."
+        },
         "takeDownConfirm": {
           "title": "Ẩn tin đăng?",
           "description": "Bạn có chắc chắn muốn ẩn tin đăng này? Vui lòng đọc kỹ các lưu ý bên dưới trước khi xác nhận.",

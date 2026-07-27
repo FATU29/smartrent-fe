@@ -3137,6 +3137,19 @@
           "cancel": "Cancel",
           "loading": "Processing..."
         },
+        "pushQuotaDialog": {
+          "title": "Confirm push",
+          "description": "This will use one push from your membership benefits.",
+          "listingLabel": "Listing",
+          "quota": {
+            "title": "Membership push quota",
+            "remaining": "{count, plural, =0 {0 pushes left} one {# push left} other {# pushes left}}"
+          },
+          "hint": "Confirming will deduct one push from your membership benefits and push the listing to the top.",
+          "confirm": "Confirm",
+          "cancel": "Cancel",
+          "loading": "Processing..."
+        },
         "takeDownConfirm": {
           "title": "Take down this listing?",
           "description": "Are you sure you want to take down this listing? Please review the consequences below before confirming.",
