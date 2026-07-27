@@ -14,7 +14,23 @@ import {
 import { Button } from '@/components/atoms/button'
 import SaveListingButton from '@/components/molecules/saveListingButton'
 import CompareToggleBtn from '@/components/molecules/compareToggleBtn'
-import { ChevronDown, ChevronUp, Copy, Flag } from 'lucide-react'
+import {
+  Bath,
+  BedDouble,
+  Building2,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Droplet,
+  Flag,
+  Receipt,
+  Ruler,
+  Sofa,
+  Users,
+  Wifi,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { ReportListingDialog } from '@/components/molecules/reportListingDialog'
 import { ListingApi } from '@/api/types/property.type'
@@ -139,15 +155,28 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     },
   ].filter((item) => item.value)
 
-  const metrics = [
+  const characteristics: {
+    key: string
+    icon: LucideIcon
+    label: string
+    value: string | null
+  }[] = [
+    {
+      key: 'productType',
+      icon: Building2,
+      label: t('apartmentDetail.property.productType'),
+      value: productType ? t(getProductTypeTranslationKey(productType)) : null,
+    },
     {
       key: 'area',
+      icon: Ruler,
       label: t('apartmentDetail.property.area'),
       value:
         area !== undefined && area !== null ? `${area.toString()} m²` : null,
     },
     {
       key: 'bedrooms',
+      icon: BedDouble,
       label: t('apartmentDetail.property.bedrooms'),
       value:
         bedrooms !== undefined && bedrooms !== null
@@ -156,6 +185,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     },
     {
       key: 'bathrooms',
+      icon: Bath,
       label: t('apartmentDetail.property.bathrooms'),
       value:
         bathrooms !== undefined && bathrooms !== null
@@ -164,6 +194,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     },
     {
       key: 'roomCapacity',
+      icon: Users,
       label: t('apartmentDetail.property.roomCapacity'),
       value:
         roomCapacity !== undefined && roomCapacity !== null
@@ -171,26 +202,36 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
           : null,
     },
     {
-      key: 'waterPrice',
-      label: t('apartmentDetail.property.waterPrice'),
-      value: normalizeUtilityValue(waterPrice),
+      key: 'furnishing',
+      icon: Sofa,
+      label: t('apartmentDetail.property.furnishing'),
+      value: furnishing ? t(getFurnishingTranslationKey(furnishing)) : null,
     },
     {
       key: 'electricityPrice',
+      icon: Zap,
       label: t('apartmentDetail.property.electricityPrice'),
       value: normalizeUtilityValue(electricityPrice),
     },
     {
+      key: 'waterPrice',
+      icon: Droplet,
+      label: t('apartmentDetail.property.waterPrice'),
+      value: normalizeUtilityValue(waterPrice),
+    },
+    {
       key: 'internetPrice',
+      icon: Wifi,
       label: t('apartmentDetail.property.internetPrice'),
       value: normalizeUtilityValue(internetPrice),
     },
     {
       key: 'serviceFee',
+      icon: Receipt,
       label: t('apartmentDetail.property.serviceFee'),
       value: normalizeUtilityValue(serviceFee),
     },
-  ].filter((metric) => metric.value)
+  ].filter((item) => item.value)
 
   const listingForCompare: ListingApi = {
     listingId: listing.listingId,
@@ -364,31 +405,39 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
           )}
         </div>
 
-        {/* Other Metrics in Grid */}
-        {metrics.length > 0 && (
-          <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5'>
-            {metrics.map((metric) => (
-              <Card
-                key={metric.key}
-                className='hover:shadow-md hover:border-primary/30 transition-all'
-              >
-                <CardContent className='p-3 md:p-3.5'>
-                  <Typography
-                    variant='small'
-                    className='text-muted-foreground mb-1 font-semibold text-2xs uppercase tracking-wider'
+        {/* Property Characteristics */}
+        {characteristics.length > 0 && (
+          <Card>
+            <CardContent className='p-4 md:p-5'>
+              <Typography variant='h4' className='text-base font-bold mb-1'>
+                {t('apartmentDetail.sections.characteristics')}
+              </Typography>
+              <div className='divide-y divide-border'>
+                {characteristics.map((item) => (
+                  <div
+                    key={item.key}
+                    className='flex items-center justify-between gap-4 py-3'
                   >
-                    {metric.label}
-                  </Typography>
-                  <Typography
-                    variant='h4'
-                    className='text-sm md:text-base font-bold break-words'
-                  >
-                    {metric.value}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    <div className='flex items-center gap-2.5 text-muted-foreground min-w-0'>
+                      <item.icon
+                        size={18}
+                        className='shrink-0 text-muted-foreground'
+                      />
+                      <Typography variant='p' className='text-sm truncate'>
+                        {item.label}
+                      </Typography>
+                    </div>
+                    <Typography
+                      variant='p'
+                      className='text-sm font-semibold text-foreground text-right shrink-0'
+                    >
+                      {item.value}
+                    </Typography>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
 
