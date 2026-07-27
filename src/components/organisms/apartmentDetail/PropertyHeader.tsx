@@ -414,11 +414,8 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
               </Typography>
               <div className='divide-y divide-border'>
                 {characteristics.map((item) => (
-                  <div
-                    key={item.key}
-                    className='flex items-center justify-between gap-4 py-3'
-                  >
-                    <div className='flex items-center gap-2.5 text-muted-foreground min-w-0'>
+                  <div key={item.key} className='flex items-center gap-4 py-3'>
+                    <div className='flex w-36 sm:w-44 shrink-0 items-center gap-2.5 text-muted-foreground'>
                       <item.icon
                         size={18}
                         className='shrink-0 text-muted-foreground'
@@ -429,7 +426,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
                     </div>
                     <Typography
                       variant='p'
-                      className='text-sm font-semibold text-foreground text-right shrink-0'
+                      className='text-sm font-semibold text-foreground'
                     >
                       {item.value}
                     </Typography>
