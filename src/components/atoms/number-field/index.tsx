@@ -14,6 +14,11 @@ export interface NumberFieldProps {
   min?: number
   max?: number
   step?: number
+  /**
+   * Once the raw digit count exceeds this, every digit past it is forced to
+   * 0 as the user types (e.g. 5 → typing "5000001" renders as 5,000,000).
+   */
+  freeDigits?: number
   decimals?: number
   disabled?: boolean
   required?: boolean
@@ -30,7 +35,7 @@ export const NumberField: React.FC<NumberFieldProps> = ({
   className,
   min = 0,
   max,
-  step,
+  freeDigits,
   decimals = 0,
   disabled,
   required,
@@ -42,19 +47,20 @@ export const NumberField: React.FC<NumberFieldProps> = ({
   const isBelowMin = touched && value < (min ?? 0)
   const invalid = isBelowMin || !!error
 
+  const applyFreeDigitsMask = (raw: number) => {
+    if (!freeDigits) return raw
+    const digits = String(Math.trunc(raw))
+    if (digits.length <= freeDigits) return raw
+    return Number(
+      digits.slice(0, freeDigits) + '0'.repeat(digits.length - freeDigits),
+    )
+  }
+
   const handleValueChange = (floatValue?: number) => {
-    let next = floatValue ?? 0
+    let next = applyFreeDigitsMask(floatValue ?? 0)
     if (min !== undefined && next < min) next = min
     if (max !== undefined && next > max) next = max
     onChange(next)
-  }
-
-  const handleBlur = () => {
-    setTouched(true)
-    if (step && step > 1) {
-      const rounded = Math.floor(value / step) * step
-      if (rounded !== value) onChange(rounded)
-    }
   }
 
   return (
@@ -90,7 +96,7 @@ export const NumberField: React.FC<NumberFieldProps> = ({
             compact && 'h-10 text-sm',
           )}
           disabled={disabled}
-          onBlur={handleBlur}
+          onBlur={() => setTouched(true)}
         />
         {suffix && (
           <span className='absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground'>
