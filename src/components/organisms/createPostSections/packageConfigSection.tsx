@@ -25,6 +25,7 @@ import {
   Loader2,
   AlertCircle,
   X,
+  Gift,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { resolveBenefitVipType } from '@/utils/createPost/benefitTier'
@@ -434,10 +435,47 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       </CardHeader>
 
       <CardContent className='px-0 space-y-6'>
+        {/* Membership priority banner — guides the user to use an existing
+            package instead of buying directly, without forcing the choice. */}
+        {canOpenBenefits && !useMembership && (
+          <Card className='border-primary/40 bg-primary/5 shadow-none'>
+            <CardContent className='flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-6'>
+              <Card className='w-10 h-10 shrink-0 rounded-full bg-primary/15 border-0 p-0 flex items-center justify-center'>
+                <Gift className='w-5 h-5 text-primary' />
+              </Card>
+              <Card className='flex-1 border-0 shadow-none p-0 space-y-1'>
+                <Typography className='font-semibold text-sm'>
+                  {t('membershipPriorityTitle')}
+                </Typography>
+                <Typography variant='muted' className='text-sm'>
+                  {t('membershipPriorityDescription')}
+                </Typography>
+              </Card>
+              <Button
+                type='button'
+                onClick={() => setBenefitDialogOpen(true)}
+                className='shrink-0 w-full sm:w-auto'
+              >
+                {t('usePromotion')}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Package Type Selection */}
-        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:bg-card sm:border sm:rounded-xl sm:py-6'>
+        <Card
+          className={cn(
+            'border-0 shadow-none bg-transparent rounded-none py-0 sm:bg-card sm:border sm:rounded-xl sm:py-6',
+            canOpenBenefits && !useMembership && 'opacity-70',
+          )}
+        >
           <CardHeader className='px-0 sm:px-6'>
             <CardTitle className='text-lg'>{t('selectPackageType')}</CardTitle>
+            {canOpenBenefits && !useMembership && (
+              <Typography variant='muted' className='text-xs'>
+                {t('orBuyDirectly')}
+              </Typography>
+            )}
           </CardHeader>
           <CardContent className='grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 px-0 sm:px-6'>
             {vipTiers.map((tier) => (
@@ -488,7 +526,12 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         </Card>
 
         {/* Duration Selection */}
-        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:bg-muted/50 sm:border sm:rounded-xl sm:py-6'>
+        <Card
+          className={cn(
+            'border-0 shadow-none bg-transparent rounded-none py-0 sm:bg-muted/50 sm:border sm:rounded-xl sm:py-6',
+            canOpenBenefits && !useMembership && 'opacity-70',
+          )}
+        >
           <CardHeader className='px-0 sm:px-6'>
             <CardTitle className='text-base'>{t('selectDuration')}</CardTitle>
           </CardHeader>
