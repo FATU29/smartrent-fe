@@ -13,6 +13,8 @@ const PROPERTY_TYPES = [
 const LISTING_TYPES = ['RENT', 'SHARE'] as const
 const PRICE_UNITS = ['MONTH', 'YEAR'] as const
 const MIN_PRICE = 100_000
+const isRoundThousand = (value?: number) =>
+  value === undefined || value % 1000 === 0
 const UTILITY_PRICE_TYPES = [
   'NEGOTIABLE',
   'SET_BY_OWNER',
@@ -150,11 +152,13 @@ const getPropertyInfoFields = (mode: ValidationMode = 'strict') => {
           .required('priceRequired')
           .positive('priceRequired')
           .min(MIN_PRICE, 'priceMinValue')
+          .test('price-round-thousand', 'priceNotRound', isRoundThousand)
       : yup
           .number()
           .optional()
           .positive('priceRequired')
-          .min(MIN_PRICE, 'priceMinValue'),
+          .min(MIN_PRICE, 'priceMinValue')
+          .test('price-round-thousand', 'priceNotRound', isRoundThousand),
     priceUnit: strictMode
       ? yup
           .string()

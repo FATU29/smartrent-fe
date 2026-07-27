@@ -1031,6 +1031,7 @@
       "areaRequired": "Area is required",
       "priceRequired": "Price is required",
       "priceMinValue": "Price must be at least 100,000 VND",
+      "priceNotRound": "Price must be a round number of thousands, with no odd hundreds",
       "priceUnitRequired": "Price unit is required",
       "priceUnitInvalid": "Invalid price unit",
       "mediaImagesOrYoutube": "Please add at least 4 images or 1 video",
