@@ -409,24 +409,40 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
         {characteristics.length > 0 && (
           <Card>
             <CardContent className='p-4 md:p-5'>
-              <Typography variant='h4' className='text-base font-bold mb-3'>
+              <Typography variant='h4' className='text-base font-bold mb-1'>
                 {t('apartmentDetail.sections.characteristics')}
               </Typography>
-              <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4'>
-                {characteristics.map((item) => (
-                  <div key={item.key} className='flex flex-col gap-1'>
-                    <div className='flex items-center gap-2 text-muted-foreground'>
-                      <item.icon size={16} className='shrink-0' />
-                      <Typography variant='p' className='text-xs sm:text-sm'>
-                        {item.label}
-                      </Typography>
-                    </div>
-                    <Typography
-                      variant='p'
-                      className='text-sm font-semibold text-foreground pl-6'
-                    >
-                      {item.value}
-                    </Typography>
+              <div className='grid grid-cols-1 sm:grid-cols-2 sm:divide-x sm:divide-border'>
+                {[
+                  characteristics.filter((_, index) => index % 2 === 0),
+                  characteristics.filter((_, index) => index % 2 === 1),
+                ].map((column, columnIndex) => (
+                  <div
+                    key={columnIndex}
+                    className={`divide-y divide-border ${columnIndex === 0 ? 'sm:pr-5' : 'sm:pl-5'}`}
+                  >
+                    {column.map((item) => (
+                      <div
+                        key={item.key}
+                        className='flex items-center justify-between gap-3 py-3'
+                      >
+                        <div className='flex items-center gap-2 text-muted-foreground min-w-0'>
+                          <item.icon size={16} className='shrink-0' />
+                          <Typography
+                            variant='p'
+                            className='text-xs sm:text-sm truncate'
+                          >
+                            {item.label}
+                          </Typography>
+                        </div>
+                        <Typography
+                          variant='p'
+                          className='text-xs sm:text-sm font-semibold text-foreground text-right shrink-0'
+                        >
+                          {item.value}
+                        </Typography>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
