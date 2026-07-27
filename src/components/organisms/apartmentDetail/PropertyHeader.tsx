@@ -233,21 +233,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
     },
   ].filter((item) => item.value)
 
-  const characteristicsPairCount =
-    characteristics.length - (characteristics.length % 2)
-  const characteristicsLastItem =
-    characteristics.length % 2 === 1
-      ? characteristics[characteristics.length - 1]
-      : null
-  const characteristicsColumns = [
-    characteristics
-      .slice(0, characteristicsPairCount)
-      .filter((_, index) => index % 2 === 0),
-    characteristics
-      .slice(0, characteristicsPairCount)
-      .filter((_, index) => index % 2 === 1),
-  ]
-
   const listingForCompare: ListingApi = {
     listingId: listing.listingId,
     title: listing.title || '',
@@ -424,61 +409,30 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
         {characteristics.length > 0 && (
           <Card>
             <CardContent className='p-3.5 md:p-4'>
-              <Typography variant='h4' className='text-base font-bold mb-1'>
+              <Typography variant='h4' className='text-base font-bold mb-3'>
                 {t('apartmentDetail.sections.characteristics')}
               </Typography>
-              <div className='grid grid-cols-1 sm:grid-cols-2 sm:divide-x sm:divide-border'>
-                {characteristicsColumns.map((column, columnIndex) => (
+              <div className='grid grid-cols-2 sm:grid-cols-3 gap-2.5'>
+                {characteristics.map((item) => (
                   <div
-                    key={columnIndex}
-                    className={`divide-y divide-border ${columnIndex === 0 ? 'sm:pr-3' : 'sm:pl-3'}`}
+                    key={item.key}
+                    className='flex flex-col items-center gap-1 rounded-lg bg-muted/50 p-3 text-center'
                   >
-                    {column.map((item) => (
-                      <div
-                        key={item.key}
-                        className='flex items-center justify-center gap-2 py-2.5'
-                      >
-                        <item.icon
-                          size={16}
-                          className='shrink-0 text-muted-foreground'
-                        />
-                        <Typography
-                          variant='p'
-                          className='text-xs sm:text-sm text-muted-foreground truncate'
-                        >
-                          {item.label}
-                        </Typography>
-                        <Typography
-                          variant='p'
-                          className='text-xs sm:text-sm font-semibold text-foreground shrink-0'
-                        >
-                          {item.value}
-                        </Typography>
-                      </div>
-                    ))}
+                    <div className='flex items-center gap-1.5 text-muted-foreground'>
+                      <item.icon size={14} className='shrink-0' />
+                      <Typography variant='p' className='text-xs truncate'>
+                        {item.label}
+                      </Typography>
+                    </div>
+                    <Typography
+                      variant='p'
+                      className='text-sm font-semibold text-foreground'
+                    >
+                      {item.value}
+                    </Typography>
                   </div>
                 ))}
               </div>
-              {characteristicsLastItem && (
-                <div className='flex items-center justify-center gap-2 py-2.5 border-t border-border'>
-                  <characteristicsLastItem.icon
-                    size={16}
-                    className='shrink-0 text-muted-foreground'
-                  />
-                  <Typography
-                    variant='p'
-                    className='text-xs sm:text-sm text-muted-foreground truncate'
-                  >
-                    {characteristicsLastItem.label}
-                  </Typography>
-                  <Typography
-                    variant='p'
-                    className='text-xs sm:text-sm font-semibold text-foreground shrink-0'
-                  >
-                    {characteristicsLastItem.value}
-                  </Typography>
-                </div>
-              )}
             </CardContent>
           </Card>
         )}
