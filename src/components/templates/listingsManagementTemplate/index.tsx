@@ -26,6 +26,7 @@ import { MembershipPushDisplay } from '@/components/molecules/listings/Membershi
 import { usePushListing, usePushQuota } from '@/hooks/usePush'
 import PushLimitModal from '@/components/molecules/pushLimitModal'
 import PushPaymentConfirmModal from '@/components/molecules/pushPaymentConfirmModal'
+import PushQuotaConfirmModal from '@/components/molecules/pushQuotaConfirmModal'
 import { PushLimitError } from '@/api/types/push.type'
 import { PageContainer } from '@/components/atoms/pageContainer'
 import { Typography } from '@/components/atoms/typography'
@@ -120,6 +121,11 @@ const ListingsWithPagination = () => {
     open: boolean
     listing: ListingOwnerDetail | null
   }>({ open: false, listing: null })
+  const [pushQuotaConfirmState, setPushQuotaConfirmState] = useState<{
+    open: boolean
+    listing: ListingOwnerDetail | null
+    remainingQuota: number
+  }>({ open: false, listing: null, remainingQuota: 0 })
 
   const { ref: loadMoreRef } = useIntersectionObserver({
     onIntersect: () => {
@@ -232,7 +238,13 @@ const ListingsWithPagination = () => {
       return
     }
 
-    await runPushMutation(listing, true)
+    // Quota available — pushing spends a membership benefit, so confirm
+    // with the seller before deducting it rather than doing it silently.
+    setPushQuotaConfirmState({
+      open: true,
+      listing,
+      remainingQuota: latestQuotaData?.data?.totalAvailable ?? 0,
+    })
   }
 
   if (isLoading && listings.length === 0) {
@@ -479,6 +491,26 @@ const ListingsWithPagination = () => {
               if (!listing) return
               setPushPaymentState({ open: false, listing: null })
               runPushMutation(listing, false)
+            }}
+          />
+
+          <PushQuotaConfirmModal
+            open={pushQuotaConfirmState.open}
+            onOpenChange={(open) =>
+              setPushQuotaConfirmState((prev) => ({ ...prev, open }))
+            }
+            listing={pushQuotaConfirmState.listing}
+            remainingQuota={pushQuotaConfirmState.remainingQuota}
+            isLoading={pushMutation.isPending}
+            onConfirm={() => {
+              const listing = pushQuotaConfirmState.listing
+              if (!listing) return
+              setPushQuotaConfirmState({
+                open: false,
+                listing: null,
+                remainingQuota: 0,
+              })
+              runPushMutation(listing, true)
             }}
           />
 
