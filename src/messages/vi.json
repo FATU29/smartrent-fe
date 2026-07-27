@@ -4230,6 +4230,10 @@
       "compareNow": "So sánh ngay",
       "viewDetails": "Xem chi tiết"
     },
+    "tooltip": {
+      "add": "Thêm vào so sánh",
+      "remove": "Bỏ khỏi so sánh"
+    },
     "messages": {
       "added": "Đã thêm vào so sánh",
       "removed": "Đã bỏ khỏi so sánh",

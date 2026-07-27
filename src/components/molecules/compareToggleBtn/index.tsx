@@ -4,6 +4,12 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/atoms/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/atoms/tooltip'
 import { ListingApi } from '@/api/types/property.type'
 import { useCompareStore } from '@/store/compare/useCompareStore'
 import { cn } from '@/lib/utils'
@@ -75,6 +81,8 @@ const CompareToggleBtn: React.FC<CompareToggleBtnProps> = ({
     )
   }
 
+  const tooltipLabel = isInList ? t('tooltip.remove') : t('tooltip.add')
+
   const buttonContent = (
     <Button
       variant={variant}
@@ -86,6 +94,7 @@ const CompareToggleBtn: React.FC<CompareToggleBtnProps> = ({
       )}
       onClick={handleToggle}
       data-action-button='true'
+      aria-label={tooltipLabel}
     >
       {isInList ? (
         <CheckCircle className='w-4 h-4' />
@@ -102,7 +111,16 @@ const CompareToggleBtn: React.FC<CompareToggleBtnProps> = ({
     </Button>
   )
 
-  return buttonContent
+  return (
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
+        <TooltipContent side='top' avoidCollisions={false}>
+          {tooltipLabel}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 }
 
 export default CompareToggleBtn
