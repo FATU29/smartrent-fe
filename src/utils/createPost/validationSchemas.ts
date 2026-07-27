@@ -12,6 +12,7 @@ const PROPERTY_TYPES = [
 ] as const
 const LISTING_TYPES = ['RENT', 'SHARE'] as const
 const PRICE_UNITS = ['MONTH', 'YEAR'] as const
+const MIN_PRICE = 100_000
 const UTILITY_PRICE_TYPES = [
   'NEGOTIABLE',
   'SET_BY_OWNER',
@@ -148,12 +149,12 @@ const getPropertyInfoFields = (mode: ValidationMode = 'strict') => {
           .number()
           .required('priceRequired')
           .positive('priceRequired')
-          .min(1, 'priceRequired')
+          .min(MIN_PRICE, 'priceMinValue')
       : yup
           .number()
           .optional()
           .positive('priceRequired')
-          .min(1, 'priceRequired'),
+          .min(MIN_PRICE, 'priceMinValue'),
     priceUnit: strictMode
       ? yup
           .string()

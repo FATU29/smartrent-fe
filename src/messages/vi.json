@@ -1031,6 +1031,7 @@
       "locationRequired": "Vui lòng chọn vị trí trên bản đồ",
       "areaRequired": "Diện tích là bắt buộc",
       "priceRequired": "Giá là bắt buộc",
+      "priceMinValue": "Giá phải từ 100.000 VNĐ trở lên",
       "priceUnitRequired": "Vui lòng chọn đơn vị giá",
       "priceUnitInvalid": "Đơn vị giá không hợp lệ",
       "mediaImagesOrYoutube": "Vui lòng thêm ít nhất 4 ảnh hoặc 1 video",
