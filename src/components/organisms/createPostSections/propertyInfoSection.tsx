@@ -786,6 +786,7 @@ const PropertyInfoSection: React.FC<PropertyInfoSectionProps> = ({
                       placeholder={tPlaceholders('enterPrice')}
                       suffix='VND'
                       min={0}
+                      step={1000}
                       required
                       error={
                         error?.message
