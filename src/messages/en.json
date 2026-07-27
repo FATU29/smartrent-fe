@@ -4232,6 +4232,10 @@
       "compareNow": "Compare Now",
       "viewDetails": "View Details"
     },
+    "tooltip": {
+      "add": "Add to compare",
+      "remove": "Remove from compare"
+    },
     "messages": {
       "added": "Added to compare",
       "removed": "Removed from compare",

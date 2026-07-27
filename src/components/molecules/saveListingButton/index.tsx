@@ -4,6 +4,12 @@ import React from 'react'
 import { Heart } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/atoms/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/atoms/tooltip'
 import { useToggleSaveListing } from '@/hooks/useSavedListings'
 import { cn } from '@/lib/utils'
 
@@ -74,9 +80,22 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
     </>
   )
 
+  const tooltipLabel = isSaved ? t('tooltip.saved') : t('tooltip.save')
+
+  const withTooltip = (trigger: React.ReactNode) => (
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+        <TooltipContent side='top' avoidCollisions={false}>
+          {tooltipLabel}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+
   // Compact variant - just the icon, inline with text
   if (variant === 'compact') {
-    return (
+    return withTooltip(
       <button
         onClick={handleClick}
         disabled={disabled || isLoading || !listingId}
@@ -87,17 +106,17 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
           'disabled:opacity-50 disabled:cursor-not-allowed',
           className,
         )}
-        aria-label={isSaved ? t('tooltip.saved') : t('tooltip.save')}
+        aria-label={tooltipLabel}
         data-action-button='true'
       >
         {buttonContent}
-      </button>
+      </button>,
     )
   }
 
   // Icon variant - for cards and listing detail
   if (variant === 'icon') {
-    return (
+    return withTooltip(
       <Button
         variant='ghost'
         size='icon'
@@ -109,26 +128,26 @@ export const SaveListingButton: React.FC<SaveListingButtonProps> = ({
           'rounded-full',
           className,
         )}
-        aria-label={isSaved ? t('tooltip.saved') : t('tooltip.save')}
+        aria-label={tooltipLabel}
       >
         {buttonContent}
-      </Button>
+      </Button>,
     )
   }
 
   // Default variant - full button with optional label
-  return (
+  return withTooltip(
     <Button
       variant='outline'
       size={size}
       onClick={handleClick}
       disabled={disabled || isLoading || !listingId}
       className={cn(className)}
-      aria-label={isSaved ? t('tooltip.saved') : t('tooltip.save')}
+      aria-label={tooltipLabel}
       data-action-button='true'
     >
       {buttonContent}
-    </Button>
+    </Button>,
   )
 }
 

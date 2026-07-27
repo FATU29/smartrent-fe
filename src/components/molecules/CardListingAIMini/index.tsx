@@ -8,6 +8,12 @@ import { Card, CardContent } from '@/components/atoms/card'
 import { Button } from '@/components/atoms/button'
 import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/atoms/tooltip'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -116,42 +122,64 @@ export const CardListingAIMini: React.FC<CardListingAIMiniProps> = ({
               </div>
             )}
             <div className='absolute flex gap-1 bottom-2 left-2'>
-              <button
-                onClick={handleSaveClick}
-                disabled={isSaveLoading}
-                className='flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 active:scale-95 disabled:opacity-50 h-7 w-7'
-                aria-label={
-                  isSaved ? tSaved('actions.saved') : tSaved('actions.save')
-                }
-              >
-                <Heart
-                  className={cn(
-                    'w-4 h-4 transition-all duration-200',
-                    isSaved
-                      ? 'fill-red-500 stroke-red-500'
-                      : 'fill-none stroke-muted-foreground',
-                    isSaveLoading && 'animate-pulse',
-                  )}
-                />
-              </button>
-              <button
-                onClick={handleCompareClick}
-                className='flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 active:scale-95 h-7 w-7'
-                aria-label={
-                  isInCompareList
-                    ? tCompare('actions.removeFromCompare')
-                    : tCompare('actions.addToCompare')
-                }
-              >
-                <Plus
-                  className={cn(
-                    'w-4 h-4 transition-all duration-200',
-                    isInCompareList
-                      ? 'rotate-45 stroke-primary'
-                      : 'stroke-muted-foreground',
-                  )}
-                />
-              </button>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={handleSaveClick}
+                      disabled={isSaveLoading}
+                      className='flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 active:scale-95 disabled:opacity-50 h-7 w-7'
+                      aria-label={
+                        isSaved
+                          ? tSaved('tooltip.saved')
+                          : tSaved('tooltip.save')
+                      }
+                    >
+                      <Heart
+                        className={cn(
+                          'w-4 h-4 transition-all duration-200',
+                          isSaved
+                            ? 'fill-red-500 stroke-red-500'
+                            : 'fill-none stroke-muted-foreground',
+                          isSaveLoading && 'animate-pulse',
+                        )}
+                      />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side='top' avoidCollisions={false}>
+                    {isSaved ? tSaved('tooltip.saved') : tSaved('tooltip.save')}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={handleCompareClick}
+                      className='flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 active:scale-95 h-7 w-7'
+                      aria-label={
+                        isInCompareList
+                          ? tCompare('tooltip.remove')
+                          : tCompare('tooltip.add')
+                      }
+                    >
+                      <Plus
+                        className={cn(
+                          'w-4 h-4 transition-all duration-200',
+                          isInCompareList
+                            ? 'rotate-45 stroke-primary'
+                            : 'stroke-muted-foreground',
+                        )}
+                      />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side='top' avoidCollisions={false}>
+                    {isInCompareList
+                      ? tCompare('tooltip.remove')
+                      : tCompare('tooltip.add')}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
 
