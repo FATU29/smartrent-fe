@@ -462,6 +462,10 @@ const MapContent: React.FC<MapContentProps> = ({
   // horizontal space) at the `lg` breakpoint — below that it's a bottom
   // sheet, see the ref's usage in the pan effect.
   const selectedCardRef = useRef<HTMLDivElement | null>(null)
+  // Cluster legend starts open so first-time visitors see the explanation
+  // without having to discover the info icon themselves; closes on the
+  // first outside click/escape like any other popover from then on.
+  const [isLegendOpen, setIsLegendOpen] = useState(true)
 
   // Marker clustering: collect the rendered AdvancedMarker elements by
   // listingId and feed them to a MarkerClusterer. Dense areas group into
@@ -723,7 +727,7 @@ const MapContent: React.FC<MapContentProps> = ({
           not listings sharing price/type/anything else — the one criterion
           a user can't guess just by looking at the map. */}
       <div className='absolute top-16 right-16 z-20'>
-        <Popover>
+        <Popover open={isLegendOpen} onOpenChange={setIsLegendOpen}>
           <PopoverTrigger asChild>
             <Button
               type='button'
