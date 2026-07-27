@@ -14,6 +14,11 @@ import {
   type Renderer,
 } from '@googlemaps/markerclusterer'
 import { Button } from '@/components/atoms/button'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/atoms/popover'
 import { useDebounce } from '@/hooks/useDebounce'
 import {
   Loader2,
@@ -22,6 +27,7 @@ import {
   X,
   LocateFixed,
   MapPin,
+  Info,
 } from 'lucide-react'
 import { ENV } from '@/constants/env'
 import { useLocationContext } from '@/contexts/location'
@@ -713,6 +719,34 @@ const MapContent: React.FC<MapContentProps> = ({
 
   return (
     <>
+      {/* Map legend: explains that the red bubbles group nearby listings,
+          not listings sharing price/type/anything else — the one criterion
+          a user can't guess just by looking at the map. */}
+      <div className='absolute top-16 right-16 z-20'>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              type='button'
+              variant='secondary'
+              size='icon'
+              className='h-10 w-10 rounded-full shadow-lg'
+              aria-label={t('mapLegendLabel')}
+              title={t('mapLegendLabel')}
+            >
+              <Info className='h-5 w-5' />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent side='left' className='max-w-[260px] text-sm'>
+            <div className='flex items-start gap-2'>
+              <span className='mt-0.5 h-3 w-3 shrink-0 rounded-full bg-rose-600' />
+              <Typography variant='p' className='text-sm'>
+                {t('mapLegendDescription')}
+              </Typography>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+
       {/* My location control */}
       <div className='absolute top-4 right-16 z-20'>
         <Button
