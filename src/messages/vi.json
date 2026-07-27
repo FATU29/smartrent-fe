@@ -1146,6 +1146,9 @@
         "title": "Gói & Cấu hình",
         "description": "Chọn gói hội viên hoặc gói đẩy tin phù hợp để tối ưu hiển thị",
         "selectPackageType": "Chọn loại tin",
+        "membershipPriorityTitle": "Bạn đang có gói hội viên khả dụng",
+        "membershipPriorityDescription": "Ưu tiên sử dụng quyền lợi thành viên để đăng tin miễn phí, không cần mua thêm gói.",
+        "orBuyDirectly": "Hoặc mua gói lẻ",
         "selectDuration": "Đăng dài ngày hơn, hiệu kiệm hơn!",
         "packages": {
           "vipDiamond": {
@@ -1175,6 +1178,9 @@
         "enterPromotionCode": "Đăng ngay bây giờ",
         "apply": "Áp dụng",
         "usePromotion": "Sử dụng quyền lợi thành viên",
+        "changePromotion": "Đổi quyền lợi",
+        "membershipAppliedTitle": "Đang dùng quyền lợi thành viên",
+        "membershipAppliedDescription": "Đã áp dụng: {name}. Tin đăng của bạn sẽ được đăng miễn phí.",
         "selectPromotion": "Chọn quyền lợi",
         "selectPromotionDesc": "Chọn gói đăng tin miễn phí từ gói thành viên của bạn",
         "loadingPromotions": "Đang tải quyền lợi...",

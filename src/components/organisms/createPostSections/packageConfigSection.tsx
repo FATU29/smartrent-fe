@@ -25,6 +25,7 @@ import {
   Loader2,
   AlertCircle,
   X,
+  Gift,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { resolveBenefitVipType } from '@/utils/createPost/benefitTier'
@@ -133,6 +134,13 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
 
   const useMembershipQuota = hasBenefits
   const useMembership = useMembershipQuota
+
+  const appliedBenefitName = useMemo(() => {
+    const benefitId = propertyInfo.benefitIds?.[0]
+    if (!benefitId || !membership?.benefits) return undefined
+    return membership.benefits.find((b) => b.userBenefitId === benefitId)
+      ?.benefitNameDisplay
+  }, [propertyInfo.benefitIds, membership])
 
   const selectedTier = useMemo(
     () => vipTiers.find((t) => t.tierCode === propertyInfo.vipType),
@@ -434,10 +442,92 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
       </CardHeader>
 
       <CardContent className='px-0 space-y-6'>
+        {/* Membership banners — when a benefit is applied, make that state
+            impossible to miss instead of relying on a small inline link.
+            Otherwise, if a membership is available, guide the user toward
+            using it instead of buying directly. */}
+        {useMembership ? (
+          <Card className='border-emerald-500/40 bg-emerald-500/5 shadow-none'>
+            <CardContent className='flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-6'>
+              <Card className='w-10 h-10 shrink-0 rounded-full bg-emerald-500/15 border-0 p-0 flex items-center justify-center'>
+                <Check className='w-5 h-5 text-emerald-600' />
+              </Card>
+              <Card className='flex-1 border-0 shadow-none p-0 space-y-1'>
+                <Typography className='font-semibold text-sm'>
+                  {t('membershipAppliedTitle')}
+                </Typography>
+                <Typography variant='muted' className='text-sm'>
+                  {appliedBenefitName
+                    ? t('membershipAppliedDescription', {
+                        name: appliedBenefitName,
+                      })
+                    : t('freePosting')}
+                </Typography>
+              </Card>
+              <Card className='flex gap-2 shrink-0 border-0 shadow-none p-0 w-full sm:w-auto'>
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  onClick={() => setBenefitDialogOpen(true)}
+                  className='flex-1 sm:flex-none'
+                >
+                  {t('changePromotion')}
+                </Button>
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  className='shrink-0 text-muted-foreground hover:text-destructive'
+                  onClick={() => handleApplyBenefits([])}
+                  aria-label={t('removePromotion')}
+                >
+                  <X className='w-4 h-4' />
+                </Button>
+              </Card>
+            </CardContent>
+          </Card>
+        ) : (
+          canOpenBenefits && (
+            <Card className='border-primary/40 bg-primary/5 shadow-none'>
+              <CardContent className='flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-6'>
+                <Card className='w-10 h-10 shrink-0 rounded-full bg-primary/15 border-0 p-0 flex items-center justify-center'>
+                  <Gift className='w-5 h-5 text-primary' />
+                </Card>
+                <Card className='flex-1 border-0 shadow-none p-0 space-y-1'>
+                  <Typography className='font-semibold text-sm'>
+                    {t('membershipPriorityTitle')}
+                  </Typography>
+                  <Typography variant='muted' className='text-sm'>
+                    {t('membershipPriorityDescription')}
+                  </Typography>
+                </Card>
+                <Button
+                  type='button'
+                  onClick={() => setBenefitDialogOpen(true)}
+                  className='shrink-0 w-full sm:w-auto'
+                >
+                  {t('usePromotion')}
+                </Button>
+              </CardContent>
+            </Card>
+          )
+        )}
+
         {/* Package Type Selection */}
-        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:bg-card sm:border sm:rounded-xl sm:py-6'>
+        <Card
+          className={cn(
+            'border-0 shadow-none bg-transparent rounded-none py-0 sm:bg-card sm:border sm:rounded-xl sm:py-6',
+            canOpenBenefits && !useMembership && 'opacity-70',
+          )}
+        >
           <CardHeader className='px-0 sm:px-6'>
             <CardTitle className='text-lg'>{t('selectPackageType')}</CardTitle>
+            {canOpenBenefits && !useMembership && (
+              <Typography variant='muted' className='text-xs'>
+                {t('orBuyDirectly')}
+              </Typography>
+            )}
           </CardHeader>
           <CardContent className='grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 px-0 sm:px-6'>
             {vipTiers.map((tier) => (
@@ -488,7 +578,12 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
         </Card>
 
         {/* Duration Selection */}
-        <Card className='border-0 shadow-none bg-transparent rounded-none py-0 sm:bg-muted/50 sm:border sm:rounded-xl sm:py-6'>
+        <Card
+          className={cn(
+            'border-0 shadow-none bg-transparent rounded-none py-0 sm:bg-muted/50 sm:border sm:rounded-xl sm:py-6',
+            canOpenBenefits && !useMembership && 'opacity-70',
+          )}
+        >
           <CardHeader className='px-0 sm:px-6'>
             <CardTitle className='text-base'>{t('selectDuration')}</CardTitle>
           </CardHeader>
@@ -563,57 +658,25 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               <Tag className='w-4 h-4' />
               {t('promotionCode')}
             </Label>
-            <div
-              role='button'
-              tabIndex={canOpenBenefits ? 0 : -1}
-              aria-disabled={!canOpenBenefits}
-              onClick={() => {
-                if (canOpenBenefits) setBenefitDialogOpen(true)
-              }}
-              onKeyDown={(e) => {
-                if (!canOpenBenefits) return
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  setBenefitDialogOpen(true)
-                }
-              }}
-              className={cn(
-                'text-sm p-0 h-auto inline-flex items-center gap-1 select-none',
-                canOpenBenefits
-                  ? 'text-primary hover:underline cursor-pointer'
-                  : 'text-muted-foreground/70 cursor-not-allowed',
-              )}
-            >
-              {t('usePromotion')}
-              <ChevronRight className='w-4 h-4' />
-            </div>
-            {propertyInfo.benefitIds && propertyInfo.benefitIds.length > 0 && (
-              <div className='flex items-center gap-1'>
+            {canOpenBenefits ? (
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                onClick={() => setBenefitDialogOpen(true)}
+              >
+                {useMembership ? t('changePromotion') : t('usePromotion')}
+                <ChevronRight className='w-4 h-4' />
+              </Button>
+            ) : (
+              !isMembershipLoading && (
                 <Typography
                   variant='muted'
                   className='text-xs text-primary bg-primary/10 px-2 py-1 rounded-md'
                 >
-                  {t('promotionApplied')}: 1 benefit
+                  {t('benefit.noMembership')}
                 </Typography>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='icon'
-                  className='h-6 w-6 text-muted-foreground hover:text-destructive'
-                  onClick={() => handleApplyBenefits([])}
-                  aria-label={t('removePromotion')}
-                >
-                  <X className='w-3 h-3' />
-                </Button>
-              </div>
-            )}
-            {!membership && !isMembershipLoading && (
-              <Typography
-                variant='muted'
-                className='text-xs text-primary bg-primary/10 px-2 py-1 rounded-md'
-              >
-                {t('benefit.noMembership')}
-              </Typography>
+              )
             )}
           </CardContent>
         </Card>
