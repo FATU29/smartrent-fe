@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Agent workflow scratch (specs/plans) — never commit: Tailwind v4 scans the
+# whole repo for class candidates, and a Windows path in one of these files
+# was parsed as a CSS unicode escape and silently broke the CSS build.
+docs/superpowers/
