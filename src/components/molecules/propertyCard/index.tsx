@@ -18,7 +18,6 @@ import {
   Users,
   Compass,
   Sofa,
-  Sparkles,
   MapPin,
   ChevronLeft,
   ChevronRight,
@@ -136,14 +135,19 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   }
   const ProductTypeIcon = ProductTypeIconMap[productType || ''] || Home
 
+  // Badge background mirrors the card's VIP border ring color per tier.
+  const vipBadgeStyles: Record<string, string> = {
+    SILVER:
+      'bg-gray-300/90 text-gray-800 dark:bg-gray-600/90 dark:text-gray-50',
+    GOLD: 'bg-yellow-400/90 text-yellow-950 dark:bg-yellow-500/90 dark:text-yellow-950',
+    DIAMOND: 'bg-blue-400/90 text-white dark:bg-blue-500/90 dark:text-white',
+  }
+
   const getVipBadgeConfig = () => {
-    if (!vipType || vipType === 'NORMAL' || vipType === 'SILVER') return null
+    if (!vipType || vipType === 'NORMAL') return null
     return {
-      label: t('homePage.priorityBadge'),
-      className:
-        'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-sm',
-      borderClassName: 'ring-1 ring-primary/30',
-      icon: Sparkles,
+      label: t(`apartmentDetail.property.vipTypes.${vipType}`),
+      className: vipBadgeStyles[vipType] || '',
     }
   }
 
@@ -276,20 +280,15 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
             {/* Badges - Top Left */}
             <div className='absolute top-2 left-2 flex flex-col gap-1.5 z-10'>
-              {vipBadgeConfig &&
-                (() => {
-                  const VipIcon = vipBadgeConfig.icon
-                  return (
-                    <Badge
-                      className={`${vipBadgeConfig.className} text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-sm`}
-                    >
-                      <VipIcon className='w-3 h-3' />
-                      <span className='font-medium text-2xs'>
-                        {vipBadgeConfig.label}
-                      </span>
-                    </Badge>
-                  )
-                })()}
+              {vipBadgeConfig && (
+                <Badge
+                  className={`${vipBadgeConfig.className} text-xs px-2.5 py-1 rounded-full shadow-md backdrop-blur-sm`}
+                >
+                  <span className='font-medium text-2xs'>
+                    {vipBadgeConfig.label}
+                  </span>
+                </Badge>
+              )}
             </div>
           </div>
 
@@ -412,23 +411,16 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
               : 'top-2 left-2 sm:top-3 sm:left-3 gap-1 sm:gap-2',
           )}
         >
-          {vipBadgeConfig &&
-            (() => {
-              const VipIcon = vipBadgeConfig.icon
-              return (
-                <Badge
-                  className={classNames(
-                    `${vipBadgeConfig.className} rounded-full shadow-md flex items-center gap-0.5 backdrop-blur-sm`,
-                    isCompact
-                      ? 'text-2xs px-1.5 py-0.5'
-                      : 'text-xs px-2.5 py-1',
-                  )}
-                >
-                  <VipIcon className={isCompact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
-                  {!isCompact && vipBadgeConfig.label}
-                </Badge>
-              )
-            })()}
+          {vipBadgeConfig && (
+            <Badge
+              className={classNames(
+                `${vipBadgeConfig.className} rounded-full shadow-md backdrop-blur-sm`,
+                isCompact ? 'text-2xs px-1.5 py-0.5' : 'text-xs px-2.5 py-1',
+              )}
+            >
+              {vipBadgeConfig.label}
+            </Badge>
+          )}
         </div>
 
         {/* Image count - bottom left */}
