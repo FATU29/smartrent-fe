@@ -92,7 +92,7 @@ const SimplePropertyCard: React.FC<SimplePropertyCardProps> = ({
             <Badge
               className={classNames(
                 getVipBadgeClassName(vipType),
-                'shadow-sm rounded-full text-micro px-1.5 py-0 leading-4 backdrop-blur-sm',
+                'shadow-sm rounded-full text-micro px-2 py-0.5 leading-none backdrop-blur-sm',
               )}
             >
               {vipBadgeLabel}
