@@ -32,7 +32,7 @@ const PackageTierNote: React.FC<PackageTierNoteProps> = ({
           t('default')
         ) : (
           <>
-            <strong className='font-semibold'>{tier?.tierName}</strong>:{' '}
+            <strong className='font-semibold'>{tier?.tierName}</strong>{' '}
             {t(resolvedKey, { maxImages: tier?.maxImages ?? 0 })}
           </>
         )}
