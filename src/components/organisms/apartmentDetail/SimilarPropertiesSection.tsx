@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
-import PropertyCard from '@/components/molecules/propertyCard'
+import SimplePropertyCard from '@/components/molecules/simplePropertyCard'
 import {
   Carousel,
   CarouselContent,
@@ -51,8 +51,6 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
     })
   }, [api])
 
-  const handleFavorite = () => {}
-
   const handleLinkClick = (e: React.MouseEvent) => {
     // Prevent navigation if clicking on action buttons
     const target = e.target as HTMLElement
@@ -69,7 +67,7 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
   }
 
   if (isLoading) {
-    const skeletonItems = Array.from({ length: 4 })
+    const skeletonItems = Array.from({ length: 5 })
     return (
       <section className='mb-8 sm:mb-10'>
         <SectionHeading
@@ -85,7 +83,7 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
             {skeletonItems.map((_, index) => (
               <CarouselItem
                 key={index}
-                className='basis-full sm:basis-1/2 lg:basis-1/3 min-w-[260px] sm:min-w-[280px] lg:min-w-0'
+                className='basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 min-w-[160px]'
               >
                 <div className='w-full space-y-2 md:space-y-3'>
                   <Skeleton className='aspect-[4/3] rounded-lg w-full' />
@@ -153,19 +151,14 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
           {validListings.map((listing) => (
             <CarouselItem
               key={listing.listingId}
-              className='basis-full sm:basis-1/2 lg:basis-1/3 min-w-[260px] sm:min-w-[280px] lg:min-w-0'
+              className='basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 min-w-[160px]'
             >
               <Link
                 href={`/listing-detail/${listing.listingId}`}
                 className='block h-full'
                 onClick={handleLinkClick}
               >
-                <PropertyCard
-                  listing={listing}
-                  onFavorite={handleFavorite}
-                  className='h-full'
-                  imageLayout='top'
-                />
+                <SimplePropertyCard listing={listing} className='h-full' />
               </Link>
             </CarouselItem>
           ))}
