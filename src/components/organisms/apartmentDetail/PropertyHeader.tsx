@@ -10,6 +10,8 @@ import {
   getFurnishingTranslationKey,
   getPriceUnitTranslationKey,
   getProductTypeTranslationKey,
+  getVipBadgeClassName,
+  isVipTierShown,
 } from '@/utils/property'
 import { Button } from '@/components/atoms/button'
 import SaveListingButton from '@/components/molecules/saveListingButton'
@@ -95,12 +97,10 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
   } as const
 
   const getVipBadge = () => {
-    if (!vipType || vipType === 'NORMAL' || vipType === 'SILVER') return null
+    if (!isVipTierShown(vipType)) return null
     return {
-      className:
-        'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border-transparent',
-      text: t('homePage.priorityBadge'),
-      variant: 'default' as const,
+      className: `${getVipBadgeClassName(vipType)} border-transparent`,
+      text: t(`apartmentDetail.property.vipTypes.${vipType}`),
     }
   }
   const vipBadge = getVipBadge()
@@ -302,10 +302,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = (props) => {
         {/* Badges */}
         <div className='flex flex-wrap items-center gap-1.5 mt-3'>
           {vipBadge && (
-            <Badge
-              variant={vipBadge.variant}
-              className={`${vipBadge.className} text-2xs px-2 py-0.5`}
-            >
+            <Badge className={`${vipBadge.className} text-2xs px-2 py-0.5`}>
               {vipBadge.text}
             </Badge>
           )}
