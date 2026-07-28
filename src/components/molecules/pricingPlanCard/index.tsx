@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { Leaf, Sparkles, Crown } from 'lucide-react'
 import {
@@ -13,6 +13,7 @@ import { Typography } from '@/components/atoms/typography'
 import { cn } from '@/lib/utils'
 import { formatByLocale } from '@/utils/currency/convert'
 import { useSwitchLanguage } from '@/contexts/switchLanguage/index.context'
+import { useVipTiers } from '@/hooks/useVipTiers'
 import { motion } from 'framer-motion'
 // MembershipPackageLevel is imported below with BenefitType
 import { PricingHeader } from './PricingHeader'
@@ -23,6 +24,7 @@ import {
   formatDiscountText,
 } from './translations'
 import { getCardStyles, getButtonStyles } from './styles'
+import { getHighestVipType, getMaxImagesForVipType } from './vipTierHelpers'
 import type { Membership } from '@/api/types/membership.type'
 import { MembershipPackageLevel } from '@/api/types/membership.type'
 
@@ -93,6 +95,11 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
   const t = useTranslations('pricing')
   const { language } = useSwitchLanguage()
   const locale = language
+  const { data: vipTiers = [] } = useVipTiers()
+  const maxImages = useMemo(() => {
+    const highestVipType = getHighestVipType(membership.benefits)
+    return getMaxImagesForVipType(vipTiers, highestVipType)
+  }, [membership.benefits, vipTiers])
 
   const translations = getPricingTranslations(t)
   const hasDiscount = membership.discountPercentage > 0
@@ -151,6 +158,14 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
           />
         </CardHeader>
         <CardContent>
+          <Typography
+            variant='muted'
+            as='p'
+            className='rounded-md border border-border bg-muted/40 p-3 text-xs leading-relaxed'
+          >
+            {t(`whyChoose.${membership.packageLevel}`)}
+            {maxImages ? ` ${t('photoLimitNote', { count: maxImages })}` : null}
+          </Typography>
           <PricingFeatures benefits={membership.benefits} compact={compact} />
         </CardContent>
         {showCta && (

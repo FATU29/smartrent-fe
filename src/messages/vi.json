@@ -2473,6 +2473,12 @@
     "buyNow": "Mua ngay",
     "saveUpTo": "Tiết kiệm đến",
     "perMonthSuffix": "₫/tháng",
+    "whyChoose": {
+      "BASIC": "Gói khởi điểm: chỉ có tin VIP Bạc, chưa có Vàng/Kim Cương — phù hợp nếu đăng tin không thường xuyên.",
+      "STANDARD": "Hơn Cơ Bản: gấp đôi số tin Bạc và lượt đẩy tin, đồng thời mở khóa thêm tin VIP Kim Cương và Vàng — 2 hạng ưu tiên cao nhất mà Cơ Bản không có.",
+      "ADVANCED": "Hơn Tiêu Chuẩn ở mọi hạng tin và lượt đẩy — dành cho seller đăng số lượng lớn, cần độ phủ liên tục."
+    },
+    "photoLimitNote": "Được đăng tối đa {count} ảnh cho tin ở hạng cao nhất của gói này.",
     "pricing": {
       "bestSeller": "Bán chạy nhất",
       "buyNow": "Mua ngay",
@@ -2494,6 +2500,12 @@
   "membershipPage": {
     "title": "Gói dịch vụ",
     "subtitle": "So sánh gói Hội viên và gói voucher Đẩy tin để chọn giải pháp tối ưu cho nhu cầu bán hàng.",
+    "glossary": {
+      "title": "Trước khi chọn gói, hiểu nhanh các khái niệm",
+      "vip": "Tin VIP Bạc / Vàng / Kim Cương: thứ hạng ưu tiên hiển thị của tin đăng (Kim Cương cao nhất, rồi đến Vàng, Bạc). Hạng càng cao, tin càng lên đầu danh sách/tìm kiếm và có badge riêng trên tin, tăng độ tin cậy với người xem.",
+      "push": "Lượt đẩy tin: đưa tin Thường đã đăng quay lại đầu danh sách khi bị các tin mới đẩy trôi xuống — dùng để duy trì vị trí theo thời gian, khác với tin VIP là được ưu tiên ngay từ đầu.",
+      "media": "Số lượng ảnh đăng tin cũng tăng theo hạng VIP của tin — hạng càng cao, giới hạn ảnh trong bước đăng tin càng nhiều."
+    },
     "tabs": {
       "membership": "Gói Hội viên",
       "voucher": "Gói voucher Đẩy tin",
