@@ -1170,10 +1170,10 @@
         },
         "tierNotes": {
           "default": "Mỗi hạng tin khác nhau về mức độ ưu tiên hiển thị, badge và số ảnh tối đa — chọn hạng phù hợp với ngân sách và mục tiêu tiếp cận của bạn.",
-          "NORMAL": "Tin Thường: hiển thị theo thứ tự thời gian, dùng lượt đẩy tin để quay lại đầu danh sách, không có badge. Chi phí thấp nhất, phù hợp nếu bạn đăng không thường xuyên.",
-          "SILVER": "VIP Bạc: ưu tiên hiển thị trên tin Thường, có badge riêng và tối đa {maxImages} ảnh mỗi tin — cân bằng giữa chi phí và độ phủ.",
-          "GOLD": "VIP Vàng: hiển thị trên VIP Bạc, badge nổi bật hơn Bạc và tối đa {maxImages} ảnh mỗi tin — phù hợp khi cần tiếp cận nhiều người xem hơn.",
-          "DIAMOND": "VIP Kim Cương: hiển thị trên cùng, badge nổi bật nhất, thu hút sự chú ý cao nhất, độ phủ tối đa và tối đa {maxImages} ảnh mỗi tin — dành cho tin cần cho thuê/bán nhanh nhất."
+          "NORMAL": "hiển thị theo thứ tự thời gian, dùng lượt đẩy tin để quay lại đầu danh sách, không có badge. Chi phí thấp nhất, phù hợp nếu bạn đăng không thường xuyên.",
+          "SILVER": "ưu tiên hiển thị trên tin Thường, có badge riêng và tối đa {maxImages} ảnh mỗi tin — cân bằng giữa chi phí và độ phủ.",
+          "GOLD": "hiển thị trên VIP Bạc, badge nổi bật hơn Bạc và tối đa {maxImages} ảnh mỗi tin — phù hợp khi cần tiếp cận nhiều người xem hơn.",
+          "DIAMOND": "hiển thị trên cùng, badge nổi bật nhất, thu hút sự chú ý cao nhất, độ phủ tối đa và tối đa {maxImages} ảnh mỗi tin — dành cho tin cần cho thuê/bán nhanh nhất."
         },
         "perDay": "ngày",
         "priceShownPerDay": "Giá hiển thị theo ngày",
