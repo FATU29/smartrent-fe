@@ -8,15 +8,7 @@ import CompareToggleBtn from '@/components/molecules/compareToggleBtn'
 import BrokerAvatar from '@/components/molecules/brokerAvatar'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
 import { useTranslations } from 'next-intl'
-import {
-  Bed,
-  Bath,
-  Square,
-  Users,
-  Camera,
-  Sparkles,
-  MapPin,
-} from 'lucide-react'
+import { Bed, Bath, Square, Users, Camera, MapPin } from 'lucide-react'
 import { ListingDetail } from '@/api/types'
 import { formatByLocale } from '@/utils/currency/convert'
 
@@ -93,7 +85,15 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
   const userName = `${firstName || ''} ${lastName || ''}`.trim()
   const isProfessionalBroker =
     Boolean(user?.isBroker) || user?.brokerVerificationStatus === 'APPROVED'
-  const isPriority = vipType === 'GOLD' || vipType === 'DIAMOND'
+  // Badge background mirrors the VIP border ring color used on other cards.
+  const vipBadgeStyles: Record<string, string> = {
+    SILVER:
+      'bg-gray-300/90 text-gray-800 dark:bg-gray-600/90 dark:text-gray-50',
+    GOLD: 'bg-yellow-400/90 text-yellow-950 dark:bg-yellow-500/90 dark:text-yellow-950',
+    DIAMOND: 'bg-blue-400/90 text-white dark:bg-blue-500/90 dark:text-white',
+  }
+  const showVipBadge = !!vipType && vipType !== 'NORMAL'
+  const vipBadgeClassName = vipType ? vipBadgeStyles[vipType] || '' : ''
 
   return (
     <div
@@ -138,16 +138,16 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
               compact ? 'top-1.5 left-1.5 gap-1' : 'top-2 left-2 gap-1.5',
             )}
           >
-            {isPriority && (
+            {showVipBadge && (
               <Badge
                 className={classNames(
-                  'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-[11px] rounded-full shadow-md flex items-center backdrop-blur-sm',
-                  compact ? 'px-1.5 py-0.5 gap-0.5' : 'px-2.5 py-1 gap-1',
+                  vipBadgeClassName,
+                  'text-[11px] rounded-full shadow-md backdrop-blur-sm',
+                  compact ? 'px-1.5 py-0.5' : 'px-2.5 py-1',
                 )}
               >
-                <Sparkles className={compact ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
                 <span className='font-medium'>
-                  {t('homePage.priorityBadge')}
+                  {t(`apartmentDetail.property.vipTypes.${vipType}`)}
                 </span>
               </Badge>
             )}
