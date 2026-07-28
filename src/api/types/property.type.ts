@@ -669,20 +669,19 @@ export interface ListingSearchApiRequest {
 }
 
 /**
- * One selectable bucket of a dynamic sidebar filter (price/area/bedrooms),
- * with the live count of listings it would match under the current filter
- * context. `key` matches a `propertiesPage.filter.<group>.<key>` i18n label.
+ * One selectable bucket of a sidebar filter (price/area/bedrooms). `key`
+ * matches a `propertiesPage.filter.<group>.<key>` i18n label.
  */
 export interface FilterBucketOption {
   key: string
   min?: number | null
   max?: number | null
-  count: number
 }
 
 /**
- * Response for POST /v1/listings/filter-options — dynamic bucket options for
- * the public listings sidebar (price / area / bedrooms).
+ * Response for GET /v1/listings/filter-options — static bucket options for
+ * the public listings sidebar (price / area / bedrooms). Same for every
+ * caller; fetch once and cache indefinitely.
  */
 export interface ListingFilterOptionsResponse {
   priceOptions: FilterBucketOption[]

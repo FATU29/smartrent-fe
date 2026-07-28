@@ -6,7 +6,6 @@ import { Typography } from '@/components/atoms/typography'
 import { Checkbox } from '@/components/atoms/checkbox'
 import { Card } from '@/components/atoms/card'
 import { Skeleton } from '@/components/atoms/skeleton'
-import { cn } from '@/lib/utils'
 import type { FilterBucketOption, ListingFilterRequest } from '@/api/types'
 
 type FilterGroup = 'price' | 'area' | 'bedroom'
@@ -27,7 +26,9 @@ const PropertyFilterSidebar: React.FC = () => {
   const tPage = useTranslations('propertiesPage')
   const { filters, updateFilters } = useListContext<ListingFilterRequest>()
 
-  const { data, isPending, isError, refetch } = useListingFilterOptions(filters)
+  // Static options — fetched once, never refetched when the user toggles a
+  // checkbox: the buckets themselves don't depend on the current selection.
+  const { data, isPending, isError, refetch } = useListingFilterOptions()
 
   const isOptionSelected = (group: FilterGroup, option: FilterBucketOption) => {
     const { min: minKey, max: maxKey } = RANGE_FIELDS[group]
@@ -83,30 +84,20 @@ const PropertyFilterSidebar: React.FC = () => {
     <div className='space-y-2'>
       {options.map((option) => {
         const selected = isOptionSelected(group, option)
-        const disabled = option.count === 0 && !selected
 
         return (
           <label
             key={option.key}
-            className={cn(
-              'flex items-center gap-2 transition-colors',
-              disabled
-                ? 'cursor-not-allowed text-muted-foreground'
-                : 'cursor-pointer hover:text-primary',
-            )}
+            className='flex items-center gap-2 cursor-pointer hover:text-primary transition-colors'
           >
             <Checkbox
               checked={selected}
-              disabled={disabled}
               onCheckedChange={(checked) =>
                 handleOptionChange(group, option, checked as boolean)
               }
             />
             <Typography variant='small' className='text-sm'>
-              {t('optionWithCount', {
-                label: t(`${group}.${option.key}` as string),
-                count: option.count,
-              })}
+              {t(`${group}.${option.key}` as string)}
             </Typography>
           </label>
         )
