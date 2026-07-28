@@ -576,7 +576,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               </Button>
             ))}
           </CardContent>
-          <CardContent className='px-0 sm:px-6 pt-0'>
+          <CardContent className='px-0 sm:px-6 py-row-lg'>
             <PackageTierNote tier={useMembership ? undefined : selectedTier} />
           </CardContent>
         </Card>

@@ -175,7 +175,7 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
               </div>
             ))}
           </CardContent>
-          <CardContent className='pt-0'>
+          <CardContent className='py-row-lg'>
             <PackageTierNote tier={selectedTier} />
           </CardContent>
         </Card>
