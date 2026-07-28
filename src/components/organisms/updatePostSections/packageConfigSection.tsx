@@ -26,6 +26,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { PackageTierNote } from '@/components/molecules/createPostSections/PackageTierNote'
 
 interface PackageConfigSectionProps {
   className?: string
@@ -173,6 +174,9 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 )}
               </div>
             ))}
+          </CardContent>
+          <CardContent className='pt-0'>
+            <PackageTierNote tier={selectedTier} />
           </CardContent>
         </Card>
 

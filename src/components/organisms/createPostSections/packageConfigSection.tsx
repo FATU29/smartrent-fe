@@ -30,6 +30,7 @@ import {
 import { cn } from '@/lib/utils'
 import { resolveBenefitVipType } from '@/utils/createPost/benefitTier'
 import { SelectBenefitDialog } from '@/components/molecules/createPostSections/SelectPromotionDialog'
+import { PackageTierNote } from '@/components/molecules/createPostSections/PackageTierNote'
 
 interface PackageConfigSectionProps {
   className?: string
@@ -156,13 +157,17 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
   useEffect(() => {
     if (vipTiers.length === 0) return
 
-    const firstTier = vipTiers[0]
+    // Default to the highest tier (Diamond) so first-time posters see the
+    // best-performing option pre-selected, rather than the cheapest one.
+    const defaultTier =
+      vipTiers.find((tier) => tier.tierCode === 'DIAMOND') ??
+      vipTiers[vipTiers.length - 1]
     const hasCurrentTier = !!vipTiers.find(
       (tier) => tier.tierCode === propertyInfo.vipType,
     )
     const resolvedVipType = hasCurrentTier
       ? (propertyInfo.vipType as VipType)
-      : (firstTier.tierCode as VipType)
+      : (defaultTier.tierCode as VipType)
 
     const resolvedDuration =
       propertyInfo.durationDays ?? (useMembershipQuota ? 30 : 10)
@@ -570,6 +575,9 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
                 )}
               </Button>
             ))}
+          </CardContent>
+          <CardContent className='px-0 sm:px-6 pt-0'>
+            <PackageTierNote tier={useMembership ? undefined : selectedTier} />
           </CardContent>
         </Card>
 
