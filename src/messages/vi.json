@@ -3641,7 +3641,6 @@
     "errorDescription": "Đã xảy ra lỗi khi tải danh sách. Vui lòng thử lại.",
     "retry": "Thử lại",
     "filter": {
-      "optionWithCount": "{label} ({count})",
       "error": "Không tải được bộ lọc",
       "price": {
         "title": "Lọc theo khoảng giá",

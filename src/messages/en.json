@@ -3643,7 +3643,6 @@
     "errorDescription": "Something went wrong while loading listings. Please try again.",
     "retry": "Retry",
     "filter": {
-      "optionWithCount": "{label} ({count})",
       "error": "Failed to load filters",
       "price": {
         "title": "Filter by price range",

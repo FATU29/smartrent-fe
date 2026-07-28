@@ -324,20 +324,17 @@ export class ListingService {
   }
 
   /**
-   * Dynamic filter bucket options (price / area / bedrooms) for the public
-   * listings sidebar, each annotated with a live count under the current
-   * filter context. Same request shape as `search`.
-   * POST /v1/listings/filter-options
+   * Static filter bucket options (price / area / bedrooms) for the public
+   * listings sidebar. Same response for every caller — no request body.
+   * GET /v1/listings/filter-options
    */
   static async getFilterOptions(
-    request: ListingSearchApiRequest,
     instance?: AxiosInstance,
   ): Promise<ApiResponse<ListingFilterOptionsResponse>> {
     return apiRequest<ListingFilterOptionsResponse>(
       {
-        method: 'POST',
+        method: 'GET',
         url: PATHS.LISTING.FILTER_OPTIONS,
-        data: request,
         skipAuth: true, // Public API - không cần authentication
       },
       instance,
