@@ -3643,30 +3643,24 @@
     "errorDescription": "Something went wrong while loading listings. Please try again.",
     "retry": "Retry",
     "filter": {
+      "optionWithCount": "{label} ({count})",
+      "error": "Failed to load filters",
       "price": {
         "title": "Filter by price range",
         "negotiable": "Negotiable",
-        "under1M": "Under 1 million",
-        "1to3M": "1 - 3 million",
+        "under3M": "Under 3 million",
         "3to5M": "3 - 5 million",
         "5to10M": "5 - 10 million",
-        "10to40M": "10 - 40 million",
-        "40to70M": "40 - 70 million",
-        "70to100M": "70 - 100 million",
-        "over100M": "Over 100 million"
+        "10to20M": "10 - 20 million",
+        "over20M": "Over 20 million"
       },
       "area": {
         "title": "Filter by area",
-        "under30": "Under 30 m²",
-        "30to50": "30 - 50 m²",
-        "50to80": "50 - 80 m²",
-        "80to100": "80 - 100 m²",
-        "100to150": "100 - 150 m²",
-        "150to200": "150 - 200 m²",
-        "200to250": "200 - 250 m²",
-        "250to300": "250 - 300 m²",
-        "300to500": "300 - 500 m²",
-        "over500": "Over 500 m²"
+        "under20": "Under 20 m²",
+        "20to35": "20 - 35 m²",
+        "35to60": "35 - 60 m²",
+        "60to100": "60 - 100 m²",
+        "over100": "Over 100 m²"
       },
       "bedroom": {
         "title": "Filter by number of bedrooms",

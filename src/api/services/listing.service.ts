@@ -20,6 +20,7 @@ import {
   ListingSearchApiRequest,
   ListingSearchBackendResponse,
   ListingCursorBackendResponse,
+  ListingFilterOptionsResponse,
   ListingFilterRequest,
   VipType,
   MyListingsBackendResponse,
@@ -317,6 +318,27 @@ export class ListingService {
         data: request,
         params: { ...(cursor ? { cursor } : {}), size },
         skipAuth: true,
+      },
+      instance,
+    )
+  }
+
+  /**
+   * Dynamic filter bucket options (price / area / bedrooms) for the public
+   * listings sidebar, each annotated with a live count under the current
+   * filter context. Same request shape as `search`.
+   * POST /v1/listings/filter-options
+   */
+  static async getFilterOptions(
+    request: ListingSearchApiRequest,
+    instance?: AxiosInstance,
+  ): Promise<ApiResponse<ListingFilterOptionsResponse>> {
+    return apiRequest<ListingFilterOptionsResponse>(
+      {
+        method: 'POST',
+        url: PATHS.LISTING.FILTER_OPTIONS,
+        data: request,
+        skipAuth: true, // Public API - không cần authentication
       },
       instance,
     )
