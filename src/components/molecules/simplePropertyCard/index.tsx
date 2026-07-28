@@ -5,6 +5,7 @@ import { Badge } from '@/components/atoms/badge'
 import { Typography } from '@/components/atoms/typography'
 import ImageAtom from '@/components/atoms/imageAtom'
 import SaveListingButton from '@/components/molecules/saveListingButton'
+import CompareToggleBtn from '@/components/molecules/compareToggleBtn'
 import { basePath, DEFAULT_IMAGE } from '@/constants'
 import { useTranslations } from 'next-intl'
 import { Camera, Sparkles, MapPin } from 'lucide-react'
@@ -62,12 +63,18 @@ const SimplePropertyCard: React.FC<SimplePropertyCardProps> = ({
 
         <div className='absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/40 to-transparent pointer-events-none' />
 
-        <div className='absolute top-2 right-2 z-10'>
+        <div className='absolute top-2 right-2 z-10 flex gap-1'>
+          <CompareToggleBtn
+            listing={listing}
+            variant='ghost'
+            size='icon'
+            className='bg-card/80 backdrop-blur-md rounded-full shadow-sm transition-all w-7 h-7'
+          />
           <SaveListingButton
             listingId={listing.listingId}
             variant='icon'
-            className='bg-card/80 backdrop-blur-md rounded-full shadow-sm transition-all w-8 h-8'
-            iconClassName='w-3.5 h-3.5'
+            className='bg-card/80 backdrop-blur-md rounded-full shadow-sm transition-all w-7 h-7'
+            iconClassName='w-3 h-3'
           />
         </div>
 
@@ -101,7 +108,7 @@ const SimplePropertyCard: React.FC<SimplePropertyCardProps> = ({
             <MapPin className='flex-shrink-0 text-muted-foreground mt-0.5 w-3 h-3' />
             <Typography
               variant='small'
-              className='text-muted-foreground line-clamp-1 leading-snug'
+              className='text-muted-foreground leading-snug'
             >
               {displayAddress}
             </Typography>

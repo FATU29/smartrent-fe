@@ -67,7 +67,7 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
   }
 
   if (isLoading) {
-    const skeletonItems = Array.from({ length: 5 })
+    const skeletonItems = Array.from({ length: 4 })
     return (
       <section className='mb-8 sm:mb-10'>
         <SectionHeading
@@ -83,7 +83,7 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
             {skeletonItems.map((_, index) => (
               <CarouselItem
                 key={index}
-                className='basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 min-w-[160px]'
+                className='basis-1/2 sm:basis-1/3 md:basis-1/4 min-w-[160px]'
               >
                 <div className='w-full space-y-2 md:space-y-3'>
                   <Skeleton className='aspect-[4/3] rounded-lg w-full' />
@@ -151,7 +151,7 @@ const SimilarPropertiesSection: React.FC<SimilarPropertiesSectionProps> = ({
           {validListings.map((listing) => (
             <CarouselItem
               key={listing.listingId}
-              className='basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 min-w-[160px]'
+              className='basis-1/2 sm:basis-1/3 md:basis-1/4 min-w-[160px]'
             >
               <Link
                 href={`/listing-detail/${listing.listingId}`}
