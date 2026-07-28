@@ -1,211 +1,138 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { useListContext } from '@/contexts/list'
+import { useListingFilterOptions } from '@/hooks/useListings'
 import { Typography } from '@/components/atoms/typography'
 import { Checkbox } from '@/components/atoms/checkbox'
 import { Card } from '@/components/atoms/card'
+import { Skeleton } from '@/components/atoms/skeleton'
+import { cn } from '@/lib/utils'
+import type { FilterBucketOption, ListingFilterRequest } from '@/api/types'
 
-interface FilterOption {
-  label: string
-  value: string | number
-  min?: number
-  max?: number
+type FilterGroup = 'price' | 'area' | 'bedroom'
+
+const RANGE_FIELDS: Record<
+  FilterGroup,
+  { min: keyof ListingFilterRequest; max: keyof ListingFilterRequest }
+> = {
+  price: { min: 'minPrice', max: 'maxPrice' },
+  area: { min: 'minArea', max: 'maxArea' },
+  bedroom: { min: 'minBedrooms', max: 'maxBedrooms' },
 }
+
+const SKELETON_ROWS = 4
 
 const PropertyFilterSidebar: React.FC = () => {
   const t = useTranslations('propertiesPage.filter')
-  const { filters, updateFilters } = useListContext()
+  const tPage = useTranslations('propertiesPage')
+  const { filters, updateFilters } = useListContext<ListingFilterRequest>()
 
-  const priceOptions: FilterOption[] = [
-    { label: t('price.under1M'), value: 'under1M', min: 0, max: 1000000 },
-    { label: t('price.1to3M'), value: '1to3M', min: 1000000, max: 3000000 },
-    { label: t('price.3to5M'), value: '3to5M', min: 3000000, max: 5000000 },
-    { label: t('price.5to10M'), value: '5to10M', min: 5000000, max: 10000000 },
-    {
-      label: t('price.10to40M'),
-      value: '10to40M',
-      min: 10000000,
-      max: 40000000,
-    },
-    {
-      label: t('price.40to70M'),
-      value: '40to70M',
-      min: 40000000,
-      max: 70000000,
-    },
-    {
-      label: t('price.70to100M'),
-      value: '70to100M',
-      min: 70000000,
-      max: 100000000,
-    },
-    { label: t('price.over100M'), value: 'over100M', min: 100000000 },
-  ]
+  const { data, isPending, isError, refetch } = useListingFilterOptions(filters)
 
-  const areaOptions: FilterOption[] = [
-    { label: t('area.under30'), value: 'under30', min: 0, max: 30 },
-    { label: t('area.30to50'), value: '30to50', min: 30, max: 50 },
-    { label: t('area.50to80'), value: '50to80', min: 50, max: 80 },
-    { label: t('area.80to100'), value: '80to100', min: 80, max: 100 },
-    { label: t('area.100to150'), value: '100to150', min: 100, max: 150 },
-    { label: t('area.150to200'), value: '150to200', min: 150, max: 200 },
-    { label: t('area.200to250'), value: '200to250', min: 200, max: 250 },
-    { label: t('area.250to300'), value: '250to300', min: 250, max: 300 },
-    { label: t('area.300to500'), value: '300to500', min: 300, max: 500 },
-    { label: t('area.over500'), value: 'over500', min: 500 },
-  ]
-
-  const bedroomOptions: FilterOption[] = [
-    { label: t('bedroom.1'), value: '1', min: 1, max: 1 },
-    { label: t('bedroom.2to3'), value: '2to3', min: 2, max: 3 },
-    { label: t('bedroom.4to5'), value: '4to5', min: 4, max: 5 },
-    { label: t('bedroom.6plus'), value: '6plus', min: 6, max: undefined },
-  ]
-
-  const handlePriceChange = (option: FilterOption, checked: boolean) => {
-    const newFilters = checked
-      ? {
-          ...filters,
-          minPrice: option.min,
-          maxPrice: option.max,
-          page: 1,
-        }
-      : {
-          ...filters,
-          minPrice: undefined,
-          maxPrice: undefined,
-          page: 1,
-        }
-
-    updateFilters(newFilters)
-  }
-
-  const handleAreaChange = (option: FilterOption, checked: boolean) => {
-    const newFilters = checked
-      ? {
-          ...filters,
-          minArea: option.min,
-          maxArea: option.max,
-          page: 1,
-        }
-      : {
-          ...filters,
-          minArea: undefined,
-          maxArea: undefined,
-          page: 1,
-        }
-
-    updateFilters(newFilters)
-  }
-
-  const handleBedroomChange = (option: FilterOption, checked: boolean) => {
-    const newFilters = checked
-      ? {
-          ...filters,
-          minBedrooms: option.min,
-          maxBedrooms: option.max,
-          page: 1,
-        }
-      : {
-          ...filters,
-          minBedrooms: undefined,
-          maxBedrooms: undefined,
-          page: 1,
-        }
-
-    updateFilters(newFilters)
-  }
-
-  const isPriceSelected = (option: FilterOption) => {
-    return filters.minPrice === option.min && filters.maxPrice === option.max
-  }
-
-  const isAreaSelected = (option: FilterOption) => {
-    return filters.minArea === option.min && filters.maxArea === option.max
-  }
-
-  const isBedroomSelected = (option: FilterOption) => {
+  const isOptionSelected = (group: FilterGroup, option: FilterBucketOption) => {
+    const { min: minKey, max: maxKey } = RANGE_FIELDS[group]
+    const currentMin = filters[minKey] as number | undefined
+    const currentMax = filters[maxKey] as number | undefined
     return (
-      filters.minBedrooms === option.min && filters.maxBedrooms === option.max
+      (currentMin ?? null) === (option.min ?? null) &&
+      (currentMax ?? null) === (option.max ?? null)
     )
   }
 
+  const handleOptionChange = (
+    group: FilterGroup,
+    option: FilterBucketOption,
+    checked: boolean,
+  ) => {
+    const { min: minKey, max: maxKey } = RANGE_FIELDS[group]
+    updateFilters({
+      ...filters,
+      [minKey]: checked ? (option.min ?? undefined) : undefined,
+      [maxKey]: checked ? (option.max ?? undefined) : undefined,
+      page: 1,
+    })
+  }
+
+  const renderSkeleton = () => (
+    <div className='space-y-3' aria-busy='true'>
+      {Array.from({ length: SKELETON_ROWS }).map((_, index) => (
+        <div key={index} className='flex items-center gap-2'>
+          <Skeleton className='h-4 w-4 rounded-sm' />
+          <Skeleton className='h-4 w-2/3' />
+        </div>
+      ))}
+    </div>
+  )
+
+  const renderError = () => (
+    <div className='space-y-2'>
+      <Typography variant='small' className='text-sm text-muted-foreground'>
+        {t('error')}
+      </Typography>
+      <button
+        type='button'
+        onClick={() => refetch()}
+        className='text-sm text-primary hover:underline'
+      >
+        {tPage('retry')}
+      </button>
+    </div>
+  )
+
+  const renderOptions = (group: FilterGroup, options: FilterBucketOption[]) => (
+    <div className='space-y-2'>
+      {options.map((option) => {
+        const selected = isOptionSelected(group, option)
+        const disabled = option.count === 0 && !selected
+
+        return (
+          <label
+            key={option.key}
+            className={cn(
+              'flex items-center gap-2 transition-colors',
+              disabled
+                ? 'cursor-not-allowed text-muted-foreground'
+                : 'cursor-pointer hover:text-primary',
+            )}
+          >
+            <Checkbox
+              checked={selected}
+              disabled={disabled}
+              onCheckedChange={(checked) =>
+                handleOptionChange(group, option, checked as boolean)
+              }
+            />
+            <Typography variant='small' className='text-sm'>
+              {t('optionWithCount', {
+                label: t(`${group}.${option.key}` as string),
+                count: option.count,
+              })}
+            </Typography>
+          </label>
+        )
+      })}
+    </div>
+  )
+
+  const renderSection = (
+    group: FilterGroup,
+    options?: FilterBucketOption[],
+  ) => (
+    <Card className='p-4'>
+      <Typography variant='h6' className='mb-4 font-semibold'>
+        {t(`${group}.title` as string)}
+      </Typography>
+      {isPending && renderSkeleton()}
+      {!isPending && isError && renderError()}
+      {!isPending && !isError && renderOptions(group, options ?? [])}
+    </Card>
+  )
+
   return (
     <aside className='w-full space-y-4'>
-      {/* Price Range Filter */}
-      <Card className='p-4'>
-        <Typography variant='h6' className='mb-4 font-semibold'>
-          {t('price.title')}
-        </Typography>
-        <div className='space-y-2'>
-          {priceOptions.map((option) => (
-            <label
-              key={option.value}
-              className='flex items-center gap-2 cursor-pointer hover:text-primary transition-colors'
-            >
-              <Checkbox
-                checked={isPriceSelected(option)}
-                onCheckedChange={(checked) =>
-                  handlePriceChange(option, checked as boolean)
-                }
-              />
-              <Typography variant='small' className='text-sm'>
-                {option.label}
-              </Typography>
-            </label>
-          ))}
-        </div>
-      </Card>
-
-      {/* Area Filter */}
-      <Card className='p-4'>
-        <Typography variant='h6' className='mb-4 font-semibold'>
-          {t('area.title')}
-        </Typography>
-        <div className='space-y-2'>
-          {areaOptions.map((option) => (
-            <label
-              key={option.value}
-              className='flex items-center gap-2 cursor-pointer hover:text-primary transition-colors'
-            >
-              <Checkbox
-                checked={isAreaSelected(option)}
-                onCheckedChange={(checked) =>
-                  handleAreaChange(option, checked as boolean)
-                }
-              />
-              <Typography variant='small' className='text-sm'>
-                {option.label}
-              </Typography>
-            </label>
-          ))}
-        </div>
-      </Card>
-
-      {/* Bedrooms Filter */}
-      <Card className='p-4'>
-        <Typography variant='h6' className='mb-4 font-semibold'>
-          {t('bedroom.title')}
-        </Typography>
-        <div className='space-y-2'>
-          {bedroomOptions.map((option) => (
-            <label
-              key={option.value}
-              className='flex items-center gap-2 cursor-pointer hover:text-primary transition-colors'
-            >
-              <Checkbox
-                checked={isBedroomSelected(option)}
-                onCheckedChange={(checked) =>
-                  handleBedroomChange(option, checked as boolean)
-                }
-              />
-              <Typography variant='small' className='text-sm'>
-                {option.label}
-              </Typography>
-            </label>
-          ))}
-        </div>
-      </Card>
+      {renderSection('price', data?.priceOptions)}
+      {renderSection('area', data?.areaOptions)}
+      {renderSection('bedroom', data?.bedroomOptions)}
     </aside>
   )
 }

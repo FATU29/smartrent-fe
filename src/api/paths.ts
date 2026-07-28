@@ -64,6 +64,7 @@ export const PATHS = {
     LIST: '/v1/listings',
     SEARCH: '/v1/listings/search',
     SEARCH_CURSOR: '/v1/listings/search/cursor',
+    FILTER_OPTIONS: '/v1/listings/filter-options',
     HOMEPAGE_TIER: '/v1/listings/homepage-tier',
     SELLER_DIAMOND: '/v1/listings/sellers/:userId/diamond',
     SELLER_GOLD: '/v1/listings/sellers/:userId/gold',
