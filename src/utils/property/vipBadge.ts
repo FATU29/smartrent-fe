@@ -7,9 +7,9 @@ import { VipType } from '@/api/types/property.type'
 // picked at a similar lightness so none of the three reads muddier or
 // louder than the others.
 export const VIP_BADGE_CLASSNAMES: Partial<Record<VipType, string>> = {
-  SILVER: 'bg-slate-500 text-white',
-  GOLD: 'bg-amber-500 text-white',
-  DIAMOND: 'bg-primary text-primary-foreground',
+  SILVER: 'bg-slate-500 !text-white',
+  GOLD: 'bg-amber-500 !text-white',
+  DIAMOND: 'bg-primary !text-white',
 }
 
 export const getVipBadgeClassName = (vipType?: string | null): string =>
