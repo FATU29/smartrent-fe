@@ -422,7 +422,7 @@
       "more": "thêm",
       "noProperties": "Không tìm thấy bất động sản",
       "noPropertiesDescription": "Hãy thử điều chỉnh tiêu chí tìm kiếm của bạn hoặc kiểm tra lại sau để có danh sách mới.",
-      "listings": "Bất động sản dành cho bạn",
+      "listings": "Thuê nhà trọ dành cho bạn",
       "favorites": "Yêu thích",
       "additionalAmenities": "Tiện nghi Bổ sung",
       "views": "lượt xem",
@@ -837,7 +837,7 @@
       }
     },
     "locations": {
-      "title": "Bất động sản theo địa điểm",
+      "title": "Thuê nhà trọ theo địa điểm",
       "listingsSuffix": "tin đăng",
       "popularProjects": "Dự án nổi bật",
       "noData": "Hiện tại chưa có dữ liệu địa điểm",
@@ -872,14 +872,14 @@
       }
     },
     "topInterest": {
-      "title": "Bất động sản theo danh mục",
+      "title": "Thuê nhà trọ theo danh mục",
       "viewAll": "Xem tất cả",
       "listingsSuffix": "tin đăng",
       "noCategories": "Không có danh mục nào",
       "noCategoriesDescription": "Hiện tại chưa có danh mục bất động sản nào. Vui lòng quay lại sau."
     },
     "personalized": {
-      "title": "Bất động sản dành cho bạn",
+      "title": "Thuê nhà trọ dành cho bạn",
       "subtitle": "Gợi ý dựa trên hành vi lưu tin, xem tin và tương tác gần đây của bạn"
     },
     "searchIntro": {
@@ -892,12 +892,12 @@
       "viewAll": "Xem tất cả"
     },
     "filters": {
-      "title": "Lọc Bất động sản",
+      "title": "Lọc Thuê nhà trọ",
       "anyAmenities": "Tất cả Tiện nghi",
       "oneAmenity": "1 Tiện nghi",
       "amenitiesCount": "Tiện nghi",
       "propertyType": {
-        "title": "Loại Bất động sản",
+        "title": "Loại Thuê nhà trọ",
         "all": "Tất cả Loại",
         "room": "Phòng trọ",
         "apartment": "Căn hộ",
@@ -996,7 +996,7 @@
     "savePercent": "Tiết kiệm {percent}"
   },
   "createPost": {
-    "title": "Tạo Tin Đăng Bất động sản",
+    "title": "Tạo Tin Đăng Thuê nhà trọ",
     "description": "Làm theo các bước dưới đây để tạo tin đăng bất động sản",
     "back": "Quay lại",
     "next": "Tiếp theo",
@@ -1116,7 +1116,7 @@
         "mapPreview": "Xem trước Bản đồ",
         "district": "Quận",
         "hcmc": "TP.HCM",
-        "title": "Thông tin Bất động sản",
+        "title": "Thông tin Thuê nhà trọ",
         "description": "Nhập thông tin bất động sản",
         "street": "Đường/Phố"
       },
@@ -1399,7 +1399,7 @@
         "street": "Đường/Phố",
         "streetPlaceholder": "123 Nguyễn Huệ",
         "hcmc": "TP.HCM",
-        "title": "Thông tin Bất động sản",
+        "title": "Thông tin Thuê nhà trọ",
         "description": "Nhập chi tiết về tin đăng bất động sản",
         "loading": "Đang tải...",
         "noTitle": "Chưa có tiêu đề",
@@ -1409,7 +1409,7 @@
           "rent": "Cho thuê",
           "sale": "Bán"
         },
-        "propertyType": "Loại Bất động sản",
+        "propertyType": "Loại Thuê nhà trọ",
         "propertyTypes": {
           "apartment": "Căn hộ",
           "house": "Nhà",
@@ -1424,7 +1424,7 @@
         "bedrooms": "Phòng ngủ",
         "bathrooms": "Phòng tắm",
         "roomCapacity": "Số người ở",
-        "propertyAddress": "Địa chỉ Bất động sản",
+        "propertyAddress": "Địa chỉ Thuê nhà trọ",
         "addressPlaceholder": "123 Nguyễn Huệ, Phường Bến Nghé, Q.1, TP.HCM",
         "addressHint": "Vui lòng nhập địa chỉ chính xác để khách hàng dễ tìm",
         "searchAddress": "Tìm địa chỉ",
@@ -1551,7 +1551,7 @@
         "mapNotSelected": "Chưa chọn vị trí",
         "clickButtonToSelectLocation": "Nhấn nút 'Sử dụng vị trí của tôi' để chọn vị trí trên bản đồ",
         "amenities": {
-          "title": "Tiện nghi Bất động sản",
+          "title": "Tiện nghi Thuê nhà trọ",
           "ac": "Điều hòa",
           "fridge": "Tủ lạnh",
           "washingMachine": "Máy giặt",
@@ -1594,7 +1594,7 @@
           "semiFurnished": "Bán nội thất",
           "unfurnished": "Không nội thất"
         },
-        "propertyType": "Loại Bất động sản",
+        "propertyType": "Loại Thuê nhà trọ",
         "listingTypeLabel": "Nhu cầu",
         "listingType": {
           "RENT": "Cho thuê",
@@ -1607,7 +1607,7 @@
         "rooms": "Phòng",
         "moveInDate": "Ngày chuyển vào",
         "dateFormat": "Định dạng: dd/mm/yyyy",
-        "title": "Chi tiết Bất động sản",
+        "title": "Chi tiết Thuê nhà trọ",
         "description": "Thêm thông tin chi tiết về bất động sản",
         "bedrooms": "Phòng ngủ",
         "bathrooms": "Phòng tắm",
@@ -1641,7 +1641,7 @@
         "structureDirection": "Hướng cấu trúc",
         "houseDirection": "Hướng nhà",
         "balconyDirection": "Hướng ban công",
-        "propertyDimensions": "Kích thước Bất động sản",
+        "propertyDimensions": "Kích thước Thuê nhà trọ",
         "alleyWidth": "Độ rộng hẻm",
         "frontageWidth": "Mặt tiền",
         "directions": {
@@ -1688,17 +1688,17 @@
         "email": "Email",
         "phoneNumber": "Số điện thoại",
         "listingTitle": "Tiêu đề Tin đăng",
-        "propertyDescription": "Mô tả Bất động sản"
+        "propertyDescription": "Mô tả Thuê nhà trọ"
       },
       "aiContent": {
         "title": "Tiêu đề & Mô tả",
         "description": "Tự nhập, hoặc bấm \"Tạo tự động\" để AI gợi ý nội dung",
         "listingTitle": "Tiêu đề Tin đăng",
-        "propertyDescription": "Mô tả Bất động sản",
+        "propertyDescription": "Mô tả Thuê nhà trọ",
         "titleLength": "Độ dài tối ưu: 30-99 ký tự",
         "descriptionHint": "Mô tả AI bao gồm lợi ích vị trí, tiện ích xung quanh và đối tượng mục tiêu",
-        "addressReadOnlyHint": "Địa chỉ này được tự động tạo từ phần Thông tin Bất động sản bên trên",
-        "amenitiesSyncHint": "Tiện nghi được đồng bộ tự động với phần Thông tin Bất động sản",
+        "addressReadOnlyHint": "Địa chỉ này được tự động tạo từ phần Thông tin Thuê nhà trọ bên trên",
+        "amenitiesSyncHint": "Tiện nghi được đồng bộ tự động với phần Thông tin Thuê nhà trọ",
         "selectTone": "Chọn giọng điệu",
         "minimum": "tối thiểu",
         "tone": {
@@ -1715,10 +1715,10 @@
           "mapPreview": "Xem trước Bản đồ",
           "district": "Quận",
           "hcmc": "TP.HCM",
-          "title": "Thông tin Bất động sản",
+          "title": "Thông tin Thuê nhà trọ",
           "subtitle": "Cập nhật thông tin bất động sản để AI đánh giá chính xác nhất",
           "address": "Địa chỉ",
-          "addressReadOnlyHint": "Địa chỉ này được tự động tạo từ phần Thông tin Bất động sản bên trên",
+          "addressReadOnlyHint": "Địa chỉ này được tự động tạo từ phần Thông tin Thuê nhà trọ bên trên",
           "addressMode": "Chế độ nhập địa chỉ",
           "addressView": "Chế độ xem địa chỉ",
           "addressViews": {
@@ -1846,7 +1846,7 @@
           "marketInfo": "Thông tin thị trường",
           "averagePrice": "Giá trung bình",
           "averagePriceValue": "3.1M/tháng",
-          "similarProperties": "Bất động sản tương tự",
+          "similarProperties": "Thuê nhà trọ tương tự",
           "similarPropertiesValue": "24 căn",
           "trend": "Xu hướng",
           "trendValue": "Tăng 3% so với tháng trước",
@@ -1920,7 +1920,7 @@
     "quickLinks": "Liên kết Nhanh",
     "discover": "Khám phá",
     "aboutUs": "Về chúng tôi",
-    "properties": "Bất động sản",
+    "properties": "Thuê nhà trọ",
     "services": "Dịch vụ",
     "contact": "Liên hệ",
     "support": "Hỗ trợ",
@@ -1973,7 +1973,7 @@
           "heading": "Điều kiện đăng tin",
           "body": [
             "Người đăng tin phải có tài khoản hợp lệ trên nền tảng và chịu trách nhiệm về nội dung mình đăng.",
-            "Bất động sản được đăng phải có thật, đang trong tình trạng cho thuê và người đăng có quyền cho thuê hoặc được uỷ quyền hợp lệ."
+            "Thuê nhà trọ được đăng phải có thật, đang trong tình trạng cho thuê và người đăng có quyền cho thuê hoặc được uỷ quyền hợp lệ."
           ],
           "bullets": [
             "Cung cấp thông tin liên hệ chính xác (số điện thoại, email).",
@@ -2195,7 +2195,7 @@
   },
   "navigation": {
     "home": "Trang chủ",
-    "properties": "Bất động sản",
+    "properties": "Thuê nhà trọ",
     "maps": "Xem bản đồ",
     "backToList": "Quay lại danh sách",
     "loadingProperties": "Đang tải bất động sản...",
@@ -2236,7 +2236,7 @@
     "analytics": "Phân tích",
     "financial": "Báo cáo Tài chính",
     "occupancy": "Tỷ lệ Lấp đầy",
-    "performance": "Hiệu suất Bất động sản",
+    "performance": "Hiệu suất Thuê nhà trọ",
     "seller": {
       "transactions": "Lịch sử giao dịch",
       "overview": "Tổng quan",
@@ -2457,7 +2457,7 @@
     }
   },
   "updatePost": {
-    "title": "Cập nhật Tin Đăng Bất động sản",
+    "title": "Cập nhật Tin Đăng Thuê nhà trọ",
     "description": "Cập nhật thông tin tin đăng của bạn",
     "loading": "Đang tải dữ liệu tin đăng...",
     "updateListing": "Cập nhật Tin đăng",
@@ -3290,7 +3290,7 @@
         "defaultTitle": "Bản nháp #{id}",
         "defaultDescription": "Bạn chưa thêm mô tả cho bản nháp này.",
         "defaultAddress": "Địa chỉ đang được cập nhật",
-        "defaultPropertyType": "Bất động sản",
+        "defaultPropertyType": "Thuê nhà trọ",
         "notProvided": "Chưa cập nhật",
         "justSaved": "Vừa lưu",
         "completion": "Mức độ hoàn thiện",
