@@ -31,6 +31,11 @@ import {
   getFurnishingTranslationKey,
 } from '@/utils/property'
 import BrokerAvatar from '@/components/molecules/brokerAvatar'
+import {
+  getVipBadgeClassName,
+  getVipBorderClassName,
+  isVipTierShown,
+} from '@/utils/property'
 
 interface PropertyCardProps {
   listing: ListingDetail
@@ -135,34 +140,15 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   }
   const ProductTypeIcon = ProductTypeIconMap[productType || ''] || Home
 
-  // Badge background mirrors the card's VIP border ring color per tier.
-  const vipBadgeStyles: Record<string, string> = {
-    SILVER:
-      'bg-gray-300/90 text-gray-800 dark:bg-gray-600/90 dark:text-gray-50',
-    GOLD: 'bg-yellow-400/90 text-yellow-950 dark:bg-yellow-500/90 dark:text-yellow-950',
-    DIAMOND: 'bg-blue-400/90 text-white dark:bg-blue-500/90 dark:text-white',
-  }
-
   const getVipBadgeConfig = () => {
-    if (!vipType || vipType === 'NORMAL') return null
+    if (!isVipTierShown(vipType)) return null
     return {
       label: t(`apartmentDetail.property.vipTypes.${vipType}`),
-      className: vipBadgeStyles[vipType] || '',
+      className: getVipBadgeClassName(vipType),
     }
   }
 
   const vipBadgeConfig = getVipBadgeConfig()
-
-  // Get VIP card border style
-  const getVipCardBorder = () => {
-    if (!vipType || vipType === 'NORMAL') return ''
-    const borders: Record<string, string> = {
-      SILVER: 'ring-1 ring-gray-300/50',
-      GOLD: 'ring-1 ring-yellow-400/50',
-      DIAMOND: 'ring-1 ring-blue-400/50',
-    }
-    return borders[vipType] || ''
-  }
 
   const handlePrevImage = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -445,7 +431,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
         'group/card cursor-pointer overflow-hidden transition-all duration-300 py-0',
         'hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5',
         'border-border/60 hover:border-primary/30',
-        getVipCardBorder(),
+        getVipBorderClassName(vipType),
         isCompact
           ? isTopLayout
             ? 'flex flex-col h-full'
