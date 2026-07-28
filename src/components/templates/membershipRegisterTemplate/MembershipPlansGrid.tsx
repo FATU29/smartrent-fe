@@ -15,6 +15,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/atoms/carousel'
+import { MembershipGlossaryNote } from './MembershipGlossaryNote'
 
 interface MembershipPlansGridProps {
   readonly loading?: boolean
@@ -79,34 +80,40 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
   // Mobile only: carousel (limited width, one card at a time)
   if (isMobile) {
     return (
-      <motion.div
-        className='relative'
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Carousel
-          opts={{
-            align: 'start',
-            loop: false,
-          }}
-          className='w-full'
+      <div className='flex flex-col gap-4'>
+        <MembershipGlossaryNote />
+        <motion.div
+          className='relative'
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
         >
-          <CarouselContent className='-ml-2'>
-            {safeMemberships.map((plan) => (
-              <CarouselItem key={plan.membershipId} className='pl-2 basis-full'>
-                <div className='h-full'>
-                  <PricingPlanCard
-                    membership={plan}
-                    showCta={showCta}
-                    onSelect={() => handlePlanSelect(plan.membershipId)}
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-      </motion.div>
+          <Carousel
+            opts={{
+              align: 'start',
+              loop: false,
+            }}
+            className='w-full'
+          >
+            <CarouselContent className='-ml-2'>
+              {safeMemberships.map((plan) => (
+                <CarouselItem
+                  key={plan.membershipId}
+                  className='pl-2 basis-full'
+                >
+                  <div className='h-full'>
+                    <PricingPlanCard
+                      membership={plan}
+                      showCta={showCta}
+                      onSelect={() => handlePlanSelect(plan.membershipId)}
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        </motion.div>
+      </div>
     )
   }
 
@@ -136,25 +143,28 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
   }
 
   return (
-    <motion.div
-      className='flex flex-wrap justify-center gap-6'
-      variants={containerVariants}
-      initial='hidden'
-      animate='visible'
-    >
-      {safeMemberships.map((plan) => (
-        <motion.div
-          key={plan.membershipId}
-          variants={itemVariants}
-          className='flex w-full md:w-[calc(50%_-_0.75rem)] xl:w-[calc(33.333%_-_1rem)] max-w-md'
-        >
-          <PricingPlanCard
-            membership={plan}
-            showCta={showCta}
-            onSelect={() => handlePlanSelect(plan.membershipId)}
-          />
-        </motion.div>
-      ))}
-    </motion.div>
+    <div className='flex flex-col gap-6'>
+      <MembershipGlossaryNote />
+      <motion.div
+        className='flex flex-wrap justify-center gap-6'
+        variants={containerVariants}
+        initial='hidden'
+        animate='visible'
+      >
+        {safeMemberships.map((plan) => (
+          <motion.div
+            key={plan.membershipId}
+            variants={itemVariants}
+            className='flex w-full md:w-[calc(50%_-_0.75rem)] xl:w-[calc(33.333%_-_1rem)] max-w-md'
+          >
+            <PricingPlanCard
+              membership={plan}
+              showCta={showCta}
+              onSelect={() => handlePlanSelect(plan.membershipId)}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
   )
 }

@@ -1,7 +1,7 @@
 import { BenefitType, type UserBenefit } from '@/api/types/membership.type'
 import type { VipType } from '@/api/types/property.type'
 
-const BENEFIT_TYPE_TO_VIP_TYPE: Partial<Record<BenefitType, VipType>> = {
+export const BENEFIT_TYPE_TO_VIP_TYPE: Partial<Record<BenefitType, VipType>> = {
   [BenefitType.POST_NORMAL]: 'NORMAL',
   [BenefitType.POST_STANDARD]: 'NORMAL',
   [BenefitType.POST_SILVER]: 'SILVER',
