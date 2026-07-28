@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import PropertyCard from '@/components/molecules/propertyCard'
+import SimplePropertyCard from '@/components/molecules/simplePropertyCard'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import Link from 'next/link'
 import type { ListingDetail } from '@/api/types'
@@ -75,8 +75,6 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
         l.listingId > 0,
     ) as ListingDetail[]
 
-  const handleFavorite = () => {}
-
   const handleLinkClick = (e: React.MouseEvent) => {
     // Prevent navigation if clicking on action buttons
     const target = e.target as HTMLElement
@@ -107,10 +105,10 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
           setApi={setApi}
         >
           <CarouselContent>
-            {Array.from({ length: 3 }).map((_, index) => (
+            {Array.from({ length: 5 }).map((_, index) => (
               <CarouselItem
                 key={index}
-                className='basis-full sm:basis-1/2 lg:basis-1/3 min-w-[260px] sm:min-w-[280px] lg:min-w-0'
+                className='basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 min-w-[160px]'
               >
                 <div className='space-y-2'>
                   <Skeleton className='aspect-[4/3] rounded-lg w-full' />
@@ -118,10 +116,6 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
                     <Skeleton className='h-4 w-3/4' />
                     <Skeleton className='h-3 w-1/2' />
                     <Skeleton className='h-5 w-1/3' />
-                    <div className='flex gap-2'>
-                      <Skeleton className='h-4 w-16' />
-                      <Skeleton className='h-4 w-16' />
-                    </div>
                   </div>
                 </div>
               </CarouselItem>
@@ -157,19 +151,14 @@ const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
           {listingsData.map((listing) => (
             <CarouselItem
               key={listing.listingId}
-              className='basis-full sm:basis-1/2 lg:basis-1/3 min-w-[260px] sm:min-w-[280px] lg:min-w-0'
+              className='basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 min-w-[160px]'
             >
               <Link
                 href={`/listing-detail/${listing.listingId}`}
                 className='block h-full'
                 onClick={handleLinkClick}
               >
-                <PropertyCard
-                  listing={listing}
-                  onFavorite={handleFavorite}
-                  className='h-full'
-                  imageLayout='top'
-                />
+                <SimplePropertyCard listing={listing} className='h-full' />
               </Link>
             </CarouselItem>
           ))}
