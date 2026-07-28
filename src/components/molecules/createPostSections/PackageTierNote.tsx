@@ -28,9 +28,14 @@ const PackageTierNote: React.FC<PackageTierNoteProps> = ({
     <Alert className={cn('bg-muted/40 border-border', className)}>
       <Info />
       <AlertDescription className='text-foreground'>
-        {resolvedKey === 'default'
-          ? t('default')
-          : t(resolvedKey, { maxImages: tier?.maxImages ?? 0 })}
+        {resolvedKey === 'default' ? (
+          t('default')
+        ) : (
+          <>
+            <strong className='font-semibold'>{tier?.tierName}</strong>:{' '}
+            {t(resolvedKey, { maxImages: tier?.maxImages ?? 0 })}
+          </>
+        )}
       </AlertDescription>
     </Alert>
   )

@@ -1170,10 +1170,10 @@
         },
         "tierNotes": {
           "default": "Each package differs in display priority, badge, and max photo count — pick the one that fits your budget and reach goals.",
-          "NORMAL": "Standard: listed in chronological order, use listing pushes to return to the top, no badge. Lowest cost, best if you post infrequently.",
-          "SILVER": "VIP Silver: ranks above Standard listings, gets its own badge, and allows up to {maxImages} photos per listing — a balance of cost and reach.",
-          "GOLD": "VIP Gold: ranks above Silver with a more eye-catching badge and up to {maxImages} photos per listing — for when you need more reach.",
-          "DIAMOND": "VIP Diamond: top placement with the most eye-catching badge for maximum attention, plus up to {maxImages} photos per listing — for listings that need to rent or sell fastest."
+          "NORMAL": "listed in chronological order, use listing pushes to return to the top, no badge. Lowest cost, best if you post infrequently.",
+          "SILVER": "ranks above Standard listings, gets its own badge, and allows up to {maxImages} photos per listing — a balance of cost and reach.",
+          "GOLD": "ranks above Silver with a more eye-catching badge and up to {maxImages} photos per listing — for when you need more reach.",
+          "DIAMOND": "top placement with the most eye-catching badge for maximum attention, plus up to {maxImages} photos per listing — for listings that need to rent or sell fastest."
         },
         "perDay": "day",
         "priceShownPerDay": "Prices are shown per day",
