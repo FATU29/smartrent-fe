@@ -159,9 +159,8 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({
         </CardHeader>
         <CardContent>
           <Typography
-            variant='muted'
             as='p'
-            className='rounded-md border border-border bg-muted/40 p-3 text-xs leading-relaxed'
+            className='rounded-md border border-border bg-muted/40 p-3 text-xs leading-relaxed text-foreground'
           >
             {t(`whyChoose.${membership.packageLevel}`)}
             {maxImages ? ` ${t('photoLimitNote', { count: maxImages })}` : null}

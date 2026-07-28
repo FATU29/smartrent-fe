@@ -4108,7 +4108,7 @@
         },
         "step2": {
           "title": "2. Chọn gói hội viên",
-          "description": "Dựa trên số lượng bất động sản bạn muốn quảng cáo, chọn gói phù hợp: Cơ bản (15 tin), Tiêu chuẩn (30 tin) hoặc Cao cấp (50 tin)."
+          "description": "Dựa trên nhu cầu đăng tin, chọn gói phù hợp: Cơ Bản (tin VIP Bạc, chi phí thấp), Tiêu Chuẩn (thêm tin VIP Kim Cương và Vàng — ưu tiên cao hơn) hoặc Nâng Cao (nhiều tin ưu tiên và lượt đẩy nhất)."
         },
         "step3": {
           "title": "3. Bắt đầu đăng tin",
@@ -4120,14 +4120,14 @@
         "description": "Cách thức hoạt động của hệ thống gói hội viên",
         "choosingPlan": {
           "title": "Chọn Gói Phù Hợp",
-          "tip1": "Gói Cơ bản: Phù hợp nếu bạn có 10-15 BDS cần quảng cáo",
-          "tip2": "Gói Tiêu chuẩn: Tốt nhất cho môi giới chuyên nghiệp với 20-30 BDS",
-          "tip3": "Gói Cao cấp: Dành cho môi giới có lượng hàng lớn hoặc cần VIP nhiều"
+          "tip1": "Gói Cơ Bản: có tin VIP Bạc, chưa có Vàng/Kim Cương — phù hợp nếu đăng tin không thường xuyên",
+          "tip2": "Gói Tiêu Chuẩn: nhiều tin Bạc và lượt đẩy hơn Cơ Bản, mở khóa thêm tin VIP Kim Cương và Vàng — 2 hạng ưu tiên cao nhất mà Cơ Bản không có",
+          "tip3": "Gói Nâng Cao: nhiều nhất ở mọi hạng tin và lượt đẩy — phù hợp khi đăng số lượng lớn, cần độ phủ liên tục"
         },
         "monthlyAllocation": {
           "title": "Số Tin Đăng Hàng Tháng",
           "description": "Mỗi tháng bạn nhận được số lượng tin đăng cố định theo gói. Tin chưa dùng sẽ không chuyển sang tháng sau.",
-          "example": "Ví dụ: Gói Tiêu chuẩn = 30 tin/tháng. Nếu tháng này bạn chỉ dùng 25 tin, 5 tin còn lại sẽ mất khi sang tháng mới."
+          "example": "Ví dụ: Gói Tiêu Chuẩn có 10 tin VIP Bạc/tháng. Nếu tháng này bạn chỉ dùng 7 tin, 3 tin còn lại sẽ mất khi sang tháng mới, không cộng dồn."
         }
       },
       "posts": {
