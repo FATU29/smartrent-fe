@@ -3997,7 +3997,7 @@
         },
         "step2": {
           "title": "2. Choose a membership plan",
-          "description": "Based on the number of properties you want to advertise, choose a suitable plan: Basic (15 listings), Standard (30 listings), or Premium (50 listings)."
+          "description": "Based on your posting needs, choose a suitable plan: Basic (Silver-tier listings, lowest cost), Standard (adds Diamond and Gold listings — higher priority), or Advanced (the most priority listings and pushes)."
         },
         "step3": {
           "title": "3. Start posting",
@@ -4009,14 +4009,14 @@
         "description": "How the membership plan system works",
         "choosingPlan": {
           "title": "Choose the Right Plan",
-          "tip1": "Basic Plan: Suitable if you have 10-15 properties to advertise",
-          "tip2": "Standard Plan: Best for professional agents with 20-30 properties",
-          "tip3": "Premium Plan: For agents with large inventory or need many VIP listings"
+          "tip1": "Basic Plan: Silver-tier listings only, no Gold or Diamond yet — fits occasional posting",
+          "tip2": "Standard Plan: more Silver listings and pushes than Basic, plus unlocks Diamond and Gold listings — the two priority tiers Basic doesn't have",
+          "tip3": "Advanced Plan: the most of every listing tier and pushes — for high-volume, continuous posting"
         },
         "monthlyAllocation": {
           "title": "Monthly Listing Allocation",
           "description": "Each month you receive a fixed number of listings according to your plan. Unused listings do not carry over to the next month.",
-          "example": "Example: Standard Plan = 30 listings/month. If you only use 25 listings this month, the remaining 5 will be lost when the new month starts."
+          "example": "Example: the Standard Plan includes 10 Silver listings/month. If you only use 7 this month, the remaining 3 are lost when the new month starts — they don't roll over."
         }
       },
       "posts": {

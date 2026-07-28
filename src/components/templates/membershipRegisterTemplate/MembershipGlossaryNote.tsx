@@ -10,9 +10,12 @@ export const MembershipGlossaryNote: React.FC = () => {
   return (
     <Alert>
       <Info />
-      <AlertTitle>{t('title')}</AlertTitle>
+      <AlertTitle className='text-base font-bold'>{t('title')}</AlertTitle>
       <AlertDescription>
-        <Typography as='ul' className='list-disc space-y-1 pl-4'>
+        <Typography
+          as='ul'
+          className='list-disc space-y-1 pl-4 text-foreground'
+        >
           <li>{t('vip')}</li>
           <li>{t('push')}</li>
           <li>{t('media')}</li>
