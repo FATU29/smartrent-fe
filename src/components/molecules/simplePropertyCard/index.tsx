@@ -11,6 +11,11 @@ import { useTranslations } from 'next-intl'
 import { Camera, MapPin } from 'lucide-react'
 import { ListingDetail } from '@/api/types'
 import { formatByLocale } from '@/utils/currency/convert'
+import {
+  getVipBadgeClassName,
+  getVipBorderClassName,
+  isVipTierShown,
+} from '@/utils/property'
 
 interface SimplePropertyCardProps {
   listing: ListingDetail
@@ -34,24 +39,10 @@ const SimplePropertyCard: React.FC<SimplePropertyCardProps> = ({
     address || {}
   const displayAddress = newAddress || legacyAddress
 
-  // Badge background mirrors the card's VIP border ring color per tier.
-  const vipBorderStyles: Record<string, string> = {
-    SILVER: 'ring-1 ring-gray-300/50',
-    GOLD: 'ring-1 ring-yellow-400/50',
-    DIAMOND: 'ring-1 ring-blue-400/50',
-  }
-  const vipBadgeStyles: Record<string, string> = {
-    SILVER:
-      'bg-gray-300/90 text-gray-800 dark:bg-gray-600/90 dark:text-gray-50',
-    GOLD: 'bg-yellow-400/90 text-yellow-950 dark:bg-yellow-500/90 dark:text-yellow-950',
-    DIAMOND: 'bg-blue-400/90 text-white dark:bg-blue-500/90 dark:text-white',
-  }
-  const vipCardBorder = vipType ? vipBorderStyles[vipType] || '' : ''
-  const vipBadgeClassName = vipType ? vipBadgeStyles[vipType] || '' : ''
-  const vipBadgeLabel = vipType
+  const showVipBadge = isVipTierShown(vipType)
+  const vipBadgeLabel = showVipBadge
     ? t(`apartmentDetail.property.vipTypes.${vipType}`)
     : ''
-  const showVipBadge = !!vipType && vipType !== 'NORMAL'
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
@@ -66,7 +57,7 @@ const SimplePropertyCard: React.FC<SimplePropertyCardProps> = ({
         'group/card cursor-pointer overflow-hidden transition-all duration-300 py-0',
         'hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5',
         'border-border/60 hover:border-primary/30 flex flex-col h-full',
-        showVipBadge && vipCardBorder,
+        showVipBadge && getVipBorderClassName(vipType),
         className,
       )}
       onClick={onClick ? handleClick : undefined}
@@ -100,8 +91,8 @@ const SimplePropertyCard: React.FC<SimplePropertyCardProps> = ({
           <div className='absolute top-2 left-2 z-10'>
             <Badge
               className={classNames(
-                vipBadgeClassName,
-                'shadow-sm rounded-full text-2xs px-2 py-0.5 backdrop-blur-sm',
+                getVipBadgeClassName(vipType),
+                'shadow-sm rounded-full text-micro px-1.5 py-0 leading-4 backdrop-blur-sm',
               )}
             >
               {vipBadgeLabel}

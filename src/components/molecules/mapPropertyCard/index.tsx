@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl'
 import { Bed, Bath, Square, Users, Camera, MapPin } from 'lucide-react'
 import { ListingDetail } from '@/api/types'
 import { formatByLocale } from '@/utils/currency/convert'
+import { getVipBadgeClassName, isVipTierShown } from '@/utils/property'
 
 interface MapPropertyCardProps {
   listing: ListingDetail
@@ -85,15 +86,7 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
   const userName = `${firstName || ''} ${lastName || ''}`.trim()
   const isProfessionalBroker =
     Boolean(user?.isBroker) || user?.brokerVerificationStatus === 'APPROVED'
-  // Badge background mirrors the VIP border ring color used on other cards.
-  const vipBadgeStyles: Record<string, string> = {
-    SILVER:
-      'bg-gray-300/90 text-gray-800 dark:bg-gray-600/90 dark:text-gray-50',
-    GOLD: 'bg-yellow-400/90 text-yellow-950 dark:bg-yellow-500/90 dark:text-yellow-950',
-    DIAMOND: 'bg-blue-400/90 text-white dark:bg-blue-500/90 dark:text-white',
-  }
-  const showVipBadge = !!vipType && vipType !== 'NORMAL'
-  const vipBadgeClassName = vipType ? vipBadgeStyles[vipType] || '' : ''
+  const showVipBadge = isVipTierShown(vipType)
 
   return (
     <div
@@ -141,7 +134,7 @@ const MapPropertyCardBase: React.FC<MapPropertyCardProps> = ({
             {showVipBadge && (
               <Badge
                 className={classNames(
-                  vipBadgeClassName,
+                  getVipBadgeClassName(vipType),
                   'text-[11px] rounded-full shadow-md backdrop-blur-sm',
                   compact ? 'px-1.5 py-0.5' : 'px-2.5 py-1',
                 )}

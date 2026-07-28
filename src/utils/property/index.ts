@@ -19,3 +19,10 @@ export {
   PUBLICLY_VISIBLE_STATUSES,
 } from './listingVisibility'
 export type { ListingVisibilityFields } from './listingVisibility'
+export {
+  getVipBadgeClassName,
+  getVipBorderClassName,
+  isVipTierShown,
+  VIP_BADGE_CLASSNAMES,
+  VIP_BORDER_CLASSNAMES,
+} from './vipBadge'
