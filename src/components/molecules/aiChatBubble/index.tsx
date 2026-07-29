@@ -3,7 +3,14 @@ import { useTranslations } from 'next-intl'
 import ReactMarkdown, { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Link from 'next/link'
-import { ArrowUpRight, LogIn, Maximize2, Phone } from 'lucide-react'
+import {
+  AlertTriangle,
+  ArrowUpRight,
+  LogIn,
+  Maximize2,
+  Phone,
+  RotateCcw,
+} from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { TChatMessage } from '@/hooks/useChatAi'
@@ -30,6 +37,8 @@ type TAiChatBubbleProps = {
   onViewListingDetail?: (listingId: number) => void
   onOpenFullDetail?: (listingId: number) => void
   onSuggestionClick?: (query: string) => void
+  /** Re-send the failed question behind an error bubble (passed its id). */
+  onRetry?: (errorMessageId: string) => void
 }
 
 // Follow-up chips share a pill shape; only the fill differs — a deep-link chip
@@ -212,8 +221,10 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
   onViewListingDetail,
   onOpenFullDetail,
   onSuggestionClick,
+  onRetry,
 }) => {
   const isBot = message.sender === 'bot'
+  const isError = isBot && message.error === true
   // While a bot message is still streaming we render it as plain text and
   // defer markdown parsing until it settles. ReactMarkdown re-parses the
   // whole message on every token, so parsing per delta is O(n^2) over the
@@ -281,11 +292,40 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
             : 'items-end max-w-[80%] md:max-w-[75%]',
         )}
       >
+        {/* Error bubble — a failed turn, styled distinctly (warning icon +
+            destructive tint) so it never reads as a normal reply, with an
+            optional Try-again that re-sends the question. */}
+        {isError && (
+          <div className='flex flex-col gap-1.5'>
+            <div className='flex items-start gap-2 rounded-2xl rounded-bl-md border border-destructive/30 bg-destructive/10 px-4 py-2.5 shadow-sm'>
+              <AlertTriangle
+                className='mt-0.5 h-4 w-4 flex-shrink-0 text-destructive'
+                aria-hidden='true'
+              />
+              <p className='whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground'>
+                {message.content}
+              </p>
+            </div>
+            {message.retryContent && onRetry && (
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                className='h-8 gap-1.5 self-start border-destructive/40 px-3 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive'
+                onClick={() => onRetry(message.id)}
+              >
+                <RotateCcw className='h-3.5 w-3.5' aria-hidden='true' />
+                {tAi('retry')}
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* Message Bubble — hide for bot when there's no text (e.g. agent
             returned only listings without a prose answer). User bubbles
             always render. The asymmetric corner ("tail") visually anchors
             the bubble to its speaker. */}
-        {(!isBot || message.content.trim().length > 0) && (
+        {!isError && (!isBot || message.content.trim().length > 0) && (
           <div
             className={cn(
               'rounded-2xl px-4 py-2.5 shadow-sm overflow-hidden break-words',
@@ -506,6 +546,7 @@ export default memo(AiChatBubble, (prev, next) => {
     prev.isLast === next.isLast &&
     prev.onViewListingDetail === next.onViewListingDetail &&
     prev.onOpenFullDetail === next.onOpenFullDetail &&
-    prev.onSuggestionClick === next.onSuggestionClick
+    prev.onSuggestionClick === next.onSuggestionClick &&
+    prev.onRetry === next.onRetry
   )
 })

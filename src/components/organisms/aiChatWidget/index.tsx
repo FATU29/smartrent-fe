@@ -54,6 +54,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
     isAtBottom,
     scrollToBottom,
     sendMessage,
+    retryMessage,
     viewListingDetail,
     cancelStream,
     handleInputChange,
@@ -176,6 +177,7 @@ const AiChatWidget: FC<TAiChatWidgetProps> = ({
                 onScrollToBottom={scrollToBottom}
                 onInputChange={handleInputChange}
                 onSendMessage={sendMessage}
+                onRetryMessage={retryMessage}
                 onViewListingDetail={viewListingDetail}
                 onStopStreaming={cancelStream}
                 guestLimitReached={guestLimitReached}

@@ -41,6 +41,7 @@
     "send": "Gửi tin nhắn",
     "typing": "Bot đang nhập",
     "stop": "Dừng tạo phản hồi",
+    "retry": "Thử lại",
     "clearHistory": "Xóa lịch sử chat",
     "close": "Đóng chat",
     "openChat": "Mở chat",

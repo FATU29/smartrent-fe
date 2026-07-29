@@ -41,6 +41,12 @@ export type TChatMessage = {
    *  bubble renders plain text during streaming and defers markdown parsing
    *  until the stream settles, avoiding a full re-parse on every token. */
   isStreaming?: boolean
+  /** Marks a bot message that reports a failed turn. Rendered with a distinct
+   *  error style (warning icon + destructive tint) instead of a normal reply. */
+  error?: boolean
+  /** The user text that triggered this error, so a Try-again action can
+   *  re-send it. Absent when retrying can't help (e.g. login required). */
+  retryContent?: string
 }
 
 export type TChatState = {
@@ -185,10 +191,14 @@ export const useChatLogic = () => {
 
   //Init event handle
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, options?: { isRetry?: boolean }) => {
       if (!content.trim() || isLoading) return
 
       const trimmedContent = content.trim()
+      // A retry re-runs the last (failed) turn: the user bubble is already in
+      // the transcript, so we reuse it instead of adding a duplicate and we
+      // don't bill the guest quota a second time.
+      const isRetry = options?.isRetry === true
 
       if (!isAuthenticated) {
         // At the limit the input is already disabled; this guards the
@@ -196,22 +206,29 @@ export const useChatLogic = () => {
         // CTA is surfaced by the effect below, not here.
         if (guestLimitReached) return
         // Under the limit — consume one guest turn and fall through to send.
-        incrementGuestQuota()
+        if (!isRetry) incrementGuestQuota()
       }
 
       // Cancel any prior in-flight stream before starting a new one
       abortRef.current?.abort()
 
-      const userMessage: TChatMessage = {
-        id: generateMessageId(),
-        content: trimmedContent,
-        sender: 'user',
-        timestamp: new Date(),
+      // On a retry, anchor to the existing user bubble; on a fresh send, add a
+      // new user message and anchor to it.
+      let anchorId: string | undefined
+      if (isRetry) {
+        anchorId = [...messages].reverse().find((m) => m.sender === 'user')?.id
+      } else {
+        const userMessage: TChatMessage = {
+          id: generateMessageId(),
+          content: trimmedContent,
+          sender: 'user',
+          timestamp: new Date(),
+        }
+        addMessage(userMessage)
+        setInputValue('')
+        anchorId = userMessage.id
       }
 
-      // Add user message using session method
-      addMessage(userMessage)
-      setInputValue('')
       setIsLoading(true)
       setIsTyping(true)
       setStreamingStatus(null)
@@ -219,19 +236,26 @@ export const useChatLogic = () => {
       // Anchor the just-sent message near the top of the viewport (reserving a
       // viewport of space below) so the question stays visible while the
       // answer streams in beneath it.
-      anchorMessageToTop(userMessage.id)
+      if (anchorId) anchorMessageToTop(anchorId)
 
       const conversationHistory: ChatMessage[] = messages
-        .filter((msg) => msg.sender === 'user' || msg.sender === 'bot')
+        .filter(
+          (msg) =>
+            (msg.sender === 'user' || msg.sender === 'bot') && !msg.error,
+        )
         .map((msg) => ({
           role: msg.sender === 'user' ? 'user' : 'assistant',
           content: msg.content,
         }))
 
-      conversationHistory.push({
-        role: 'user',
-        content: trimmedContent,
-      })
+      // On a fresh send the new user turn isn't in `messages` yet, so append
+      // it. On a retry the failed user bubble is already present above.
+      if (!isRetry) {
+        conversationHistory.push({
+          role: 'user',
+          content: trimmedContent,
+        })
+      }
 
       // Build last_listings from the most recent bot message that had listings
       const lastListings = buildLastListings(messages)
@@ -239,6 +263,24 @@ export const useChatLogic = () => {
       const requestPayload = {
         messages: conversationHistory,
         ...(lastListings.length > 0 && { last_listings: lastListings }),
+      }
+
+      // Add a visible, distinctly-styled error bubble and settle the loading
+      // UI so a failed turn never silently hangs. Offers a Try-again unless the
+      // failure is a login requirement (which a retry can't fix).
+      const surfaceError = (isUnauthorized = false) => {
+        setIsTyping(false)
+        setIsLoading(false)
+        setStreamingStatus(null)
+        addMessage({
+          id: generateMessageId(),
+          content: getChatErrorContent(locale, t, isUnauthorized),
+          sender: 'bot',
+          timestamp: new Date(),
+          error: true,
+          retryContent: isUnauthorized ? undefined : trimmedContent,
+        })
+        finalizeReservedSpace()
       }
 
       if (ENV.CHAT_STREAMING_ENABLED) {
@@ -320,6 +362,11 @@ export const useChatLogic = () => {
                     ...m,
                     content: m.content || msg || getChatErrorContent(locale, t),
                     isStreaming: false,
+                    // A partial answer stays a (settled) reply; only flag as an
+                    // error bubble when nothing streamed in.
+                    ...(m.content
+                      ? {}
+                      : { error: true, retryContent: trimmedContent }),
                   }))
                 } else {
                   addMessage({
@@ -327,6 +374,8 @@ export const useChatLogic = () => {
                     content: msg || getChatErrorContent(locale, t),
                     sender: 'bot',
                     timestamp: new Date(),
+                    error: true,
+                    retryContent: trimmedContent,
                   })
                 }
                 setIsTyping(false)
@@ -373,6 +422,15 @@ export const useChatLogic = () => {
       try {
         const response = await AiService.chat(requestPayload)
 
+        // apiRequest never throws — on any network/timeout/HTTP error it
+        // resolves with { success: false } (the catch below only covers a
+        // genuinely unexpected throw). Detect that explicitly so a failed turn
+        // can't be mistaken for a real answer even if it carries partial data.
+        if (!response.success) {
+          surfaceError()
+          return
+        }
+
         const chatResponse = response.data
 
         const aiMessage = chatResponse?.message
@@ -380,17 +438,7 @@ export const useChatLogic = () => {
         const toolsUsed = chatResponse?.metadata?.tools_used || []
 
         if (!aiMessage || !aiMessage.content) {
-          const errorMessage: TChatMessage = {
-            id: generateMessageId(),
-            content: getChatErrorContent(locale, t),
-            sender: 'bot',
-            timestamp: new Date(),
-          }
-
-          setIsTyping(false)
-          setIsLoading(false)
-          addMessage(errorMessage)
-          finalizeReservedSpace()
+          surfaceError()
           return
         }
         // Check if listings exist and have data
@@ -420,7 +468,8 @@ export const useChatLogic = () => {
         addMessage(botMessage)
         finalizeReservedSpace()
       } catch (error: unknown) {
-        // Handle network errors or actual exceptions
+        // Defensive: apiRequest normally swallows errors into { success:false }
+        // above, but a genuinely unexpected throw still lands here.
         console.error('[useChatLogic] Chat API error:', error)
 
         const errorStatus = error as {
@@ -430,17 +479,7 @@ export const useChatLogic = () => {
         const isUnauthorized =
           errorStatus?.response?.status === 401 || errorStatus?.status === 401
 
-        const errorMessage: TChatMessage = {
-          id: generateMessageId(),
-          content: getChatErrorContent(locale, t, isUnauthorized),
-          sender: 'bot',
-          timestamp: new Date(),
-        }
-
-        setIsTyping(false)
-        setIsLoading(false)
-        addMessage(errorMessage)
-        finalizeReservedSpace()
+        surfaceError(isUnauthorized)
       }
     },
     [
@@ -479,6 +518,20 @@ export const useChatLogic = () => {
     [locale, sendMessage],
   )
 
+  // Re-run a failed turn: drop the error bubble and re-send the question that
+  // produced it. Reuses the original user bubble (no duplicate) via the
+  // isRetry path in sendMessage.
+  const retryMessage = useCallback(
+    (errorMessageId: string) => {
+      const errorMsg = messages.find((m) => m.id === errorMessageId)
+      const content = errorMsg?.retryContent
+      if (!content) return
+      removeMessage(errorMessageId)
+      sendMessage(content, { isRetry: true })
+    },
+    [messages, removeMessage, sendMessage],
+  )
+
   const cancelStream = useCallback(() => {
     abortRef.current?.abort()
     abortRef.current = null
@@ -512,6 +565,7 @@ export const useChatLogic = () => {
     reservedSpace,
     scrollToBottom,
     sendMessage,
+    retryMessage,
     viewListingDetail,
     cancelStream,
     handleInputChange,
