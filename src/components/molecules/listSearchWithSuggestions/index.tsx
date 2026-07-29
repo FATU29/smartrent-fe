@@ -22,7 +22,7 @@ import {
   ArrowRight,
   ArrowLeft,
   CornerDownLeft,
-  Sparkles,
+  Lightbulb,
   SpellCheck,
   AudioLines,
 } from 'lucide-react'
@@ -101,7 +101,7 @@ const TYPE_ICON: Record<SuggestionType, React.ElementType> = {
   TITLE: Building2,
   LOCATION: MapPin,
   POPULAR_QUERY: TrendingUp,
-  AI_INTENT: Sparkles,
+  AI_INTENT: Lightbulb,
   TYPO_CORRECTION: SpellCheck,
   PHONETIC: AudioLines,
 }

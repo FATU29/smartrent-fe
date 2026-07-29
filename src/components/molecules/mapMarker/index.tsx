@@ -1,6 +1,6 @@
 import React from 'react'
 import { VipType } from '@/api/types/property.type'
-import { Crown, Sparkles, Star, Home } from 'lucide-react'
+import { Crown, Gem, Star, Home } from 'lucide-react'
 
 interface MapMarkerProps {
   vipType: VipType
@@ -25,7 +25,7 @@ const getVipStyle = (vipType: VipType): VipStyle => {
         bg: 'bg-blue-600',
         hover: 'hover:bg-blue-700',
         arrow: 'border-t-blue-600',
-        icon: <Sparkles size={ICON_SIZE} />,
+        icon: <Gem size={ICON_SIZE} />,
       }
     case 'GOLD':
       return {
