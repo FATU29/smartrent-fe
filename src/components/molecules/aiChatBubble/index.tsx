@@ -323,42 +323,53 @@ const AiChatBubble: FC<TAiChatBubbleProps> = ({
 
         {/* Message Bubble — hide for bot when there's no text (e.g. agent
             returned only listings without a prose answer). User bubbles
-            always render. The asymmetric corner ("tail") visually anchors
-            the bubble to its speaker. */}
-        {!isError && (!isBot || message.content.trim().length > 0) && (
-          <div
-            className={cn(
-              'rounded-2xl px-4 py-2.5 shadow-sm overflow-hidden break-words',
-              isBot
-                ? 'bg-muted text-foreground rounded-bl-md'
-                : 'bg-primary text-primary-foreground rounded-br-md',
-            )}
-          >
-            {isBot && !isStreaming ? (
-              <div
-                className={cn(
-                  'prose prose-sm dark:prose-invert max-w-none break-words text-sm leading-relaxed',
-                  '[&>p]:my-0 [&>p+p]:mt-2',
-                  '[&>ul]:my-1.5 [&>ol]:my-1.5 [&>li]:my-0.5',
-                  '[&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm',
-                  '[&>h1]:font-semibold [&>h2]:font-semibold [&>h3]:font-semibold',
-                  '[&>h1]:my-1.5 [&>h2]:my-1.5 [&>h3]:my-1.5',
-                )}
-              >
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={bubbleMarkdownComponents}
+            always render. While streaming we render even with empty content so
+            the blinking caret shows the answer is still being generated. The
+            asymmetric corner ("tail") visually anchors the bubble to its
+            speaker. */}
+        {!isError &&
+          (!isBot || message.content.trim().length > 0 || isStreaming) && (
+            <div
+              className={cn(
+                'rounded-2xl px-4 py-2.5 shadow-sm overflow-hidden break-words',
+                isBot
+                  ? 'bg-muted text-foreground rounded-bl-md'
+                  : 'bg-primary text-primary-foreground rounded-br-md',
+              )}
+            >
+              {isBot && !isStreaming ? (
+                <div
+                  className={cn(
+                    'prose prose-sm dark:prose-invert max-w-none break-words text-sm leading-relaxed',
+                    '[&>p]:my-0 [&>p+p]:mt-2',
+                    '[&>ul]:my-1.5 [&>ol]:my-1.5 [&>li]:my-0.5',
+                    '[&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm',
+                    '[&>h1]:font-semibold [&>h2]:font-semibold [&>h3]:font-semibold',
+                    '[&>h1]:my-1.5 [&>h2]:my-1.5 [&>h3]:my-1.5',
+                  )}
                 >
-                  {processedContent}
-                </ReactMarkdown>
-              </div>
-            ) : (
-              <p className='whitespace-pre-wrap break-words text-sm leading-relaxed'>
-                {message.content}
-              </p>
-            )}
-          </div>
-        )}
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={bubbleMarkdownComponents}
+                  >
+                    {processedContent}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <p className='whitespace-pre-wrap break-words text-sm leading-relaxed'>
+                  {message.content}
+                  {/* "Still generating" caret — blinks while the SSE stream is
+                    live, and disappears once the message settles (onDone). */}
+                  {isBot && isStreaming && (
+                    <span
+                      aria-hidden='true'
+                      className='ml-0.5 inline-block h-[1.1em] w-[2px] translate-y-[0.15em] animate-caret-blink rounded-full bg-current align-baseline'
+                    />
+                  )}
+                </p>
+              )}
+            </div>
+          )}
 
         {/* Login CTA - shown on the guest message-limit prompt */}
         {isBot && message.action === 'login' && (
