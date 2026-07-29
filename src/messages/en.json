@@ -2502,7 +2502,7 @@
       "vnd": "VND",
       "usd": "USD"
     },
-    "searchPlaceholder": "Search residential properties...",
+    "searchPlaceholder": "Search rentals, boarding rooms...",
     "locationEnabled": "Searching near your location",
     "actions": {
       "search": "Search",
