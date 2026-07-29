@@ -105,6 +105,13 @@
     "showMore": "Show {count} more results",
     "showLess": "Show less"
   },
+  "contactAccess": {
+    "loginRequiredTitle": "Log in to view contact details",
+    "loginRequiredDescription": "You need to log in to view and contact the poster. This helps protect everyone's information.",
+    "cancel": "Later",
+    "loginNow": "Log in now",
+    "viewContactCta": "Log in to view contact"
+  },
   "common": {
     "or": "Or",
     "loading": "Loading...",

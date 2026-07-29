@@ -25,6 +25,7 @@ import { clearChatSessionStorage } from '@/hooks/useChatAi/useChatSession'
 export { useAuthGuard, useForceLogout } from './useAuthGuard'
 export { useChangePassword } from './useChangePassword'
 export { useUpdateProfile } from './useUpdateProfile'
+export { useContactRevealGuard } from './useContactRevealGuard'
 
 export const useAuth = () => {
   return useAuthStore(

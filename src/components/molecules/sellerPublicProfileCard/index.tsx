@@ -13,9 +13,15 @@ import { Skeleton } from '@/components/atoms/skeleton'
 import { Typography } from '@/components/atoms/typography'
 import CopyButton from '@/components/atoms/copy-button'
 import { UserApi } from '@/api/types'
-import { Mail, MessageCircle, Phone, ShieldCheck } from 'lucide-react'
+import { Copy, Mail, MessageCircle, Phone, ShieldCheck } from 'lucide-react'
 import BrokerAvatar from '@/components/molecules/brokerAvatar'
 import FollowButton from '@/components/molecules/followButton'
+import LoginRequiredDialog from '@/components/molecules/loginRequiredDialog'
+import { useContactRevealGuard } from '@/hooks/useAuth'
+import {
+  ContactRevealService,
+  type ContactRevealChannel,
+} from '@/api/services/contactReveal.service'
 
 interface SellerPublicProfileCardProps {
   seller?: UserApi | null
@@ -52,11 +58,90 @@ const maskEmail = (value: string): string => {
 const CONTACT_PILL_CLASSNAME =
   'flex items-center gap-2.5 text-sm rounded-lg border border-primary/25 p-2.5 bg-background/85 transition-colors hover:border-primary/45 w-full'
 
+const ICON_BUTTON_CLASSNAME = 'h-8 w-8 text-primary hover:bg-primary/10'
+
+const ZALO_BUTTON_CLASSNAME =
+  'w-full justify-center gap-2 border-primary/30 text-primary hover:bg-primary/10'
+
+// Real phone/email are never written into the DOM (href / copy payload) for a
+// guest — the buttons just trigger the login gate. Only after auth do we wire
+// the actual value, so anonymous visitors cannot scrape it from the markup.
+interface ContactActionsProps {
+  item: ContactItem
+  isAuthenticated: boolean
+  onRequireAuth: () => void
+  /** Audit callback fired when an authenticated user reveals this contact. */
+  onReveal: () => void
+}
+
+const ContactActions: React.FC<ContactActionsProps> = ({
+  item,
+  isAuthenticated,
+  onRequireAuth,
+  onReveal,
+}) => {
+  if (!isAuthenticated) {
+    return (
+      <div className='flex items-center gap-1 shrink-0'>
+        <Button
+          size='icon'
+          variant='ghost'
+          className={ICON_BUTTON_CLASSNAME}
+          onClick={onRequireAuth}
+          aria-label={item.actionLabel}
+        >
+          {item.actionIcon}
+        </Button>
+        <Button
+          size='icon'
+          variant='ghost'
+          className={ICON_BUTTON_CLASSNAME}
+          onClick={onRequireAuth}
+          aria-label={item.label}
+        >
+          <Copy className='h-4 w-4' />
+        </Button>
+      </div>
+    )
+  }
+
+  return (
+    <div className='flex items-center gap-1 shrink-0'>
+      <Button
+        asChild
+        size='icon'
+        variant='ghost'
+        className={ICON_BUTTON_CLASSNAME}
+      >
+        <a
+          href={item.actionHref}
+          target='_blank'
+          rel='noreferrer'
+          aria-label={item.actionLabel}
+          onClick={onReveal}
+        >
+          {item.actionIcon}
+        </a>
+      </Button>
+      <CopyButton
+        text={item.copyText}
+        successMessage={item.copySuccess}
+        className='h-8 w-8'
+        onCopy={onReveal}
+      />
+    </div>
+  )
+}
+
 const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
   seller,
   isLoading = false,
 }) => {
   const t = useTranslations('sellerDetailPage')
+  const { isAuthenticated, requireAuth, dialogProps } = useContactRevealGuard()
+
+  const logReveal = (channel: ContactRevealChannel) =>
+    ContactRevealService.logReveal(seller?.userId, channel)
 
   if (isLoading) {
     return (
@@ -136,6 +221,13 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
     })
   }
 
+  const zaloButtonContent = (
+    <>
+      <MessageCircle className='h-4 w-4' />
+      {t('profile.actions.chatZalo')}
+    </>
+  )
+
   return (
     <Card className='border-primary/20 overflow-hidden bg-gradient-to-br from-background via-primary/[0.02] to-primary/[0.06] shadow-sm'>
       <CardHeader className='pb-3'>
@@ -208,28 +300,14 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
                       {item.masked}
                     </span>
                   </div>
-                  <div className='flex items-center gap-1 shrink-0'>
-                    <Button
-                      asChild
-                      size='icon'
-                      variant='ghost'
-                      className='h-8 w-8 text-primary hover:bg-primary/10'
-                    >
-                      <a
-                        href={item.actionHref}
-                        target='_blank'
-                        rel='noreferrer'
-                        aria-label={item.actionLabel}
-                      >
-                        {item.actionIcon}
-                      </a>
-                    </Button>
-                    <CopyButton
-                      text={item.copyText}
-                      successMessage={item.copySuccess}
-                      className='h-8 w-8'
-                    />
-                  </div>
+                  <ContactActions
+                    item={item}
+                    isAuthenticated={isAuthenticated}
+                    onRequireAuth={() => requireAuth()}
+                    onReveal={() =>
+                      logReveal(item.key === 'phone' ? 'PHONE' : 'EMAIL')
+                    }
+                  />
                 </div>
               ))}
             </div>
@@ -239,24 +317,31 @@ const SellerPublicProfileCard: React.FC<SellerPublicProfileCardProps> = ({
             </Typography>
           )}
 
-          {zaloPhone && (
-            <Button
-              asChild
-              variant='outline'
-              className='w-full justify-center gap-2 border-primary/30 text-primary hover:bg-primary/10'
-            >
-              <a
-                href={`https://zalo.me/${zaloPhone}`}
-                target='_blank'
-                rel='noreferrer'
+          {zaloPhone &&
+            (isAuthenticated ? (
+              <Button asChild variant='outline' className={ZALO_BUTTON_CLASSNAME}>
+                <a
+                  href={`https://zalo.me/${zaloPhone}`}
+                  target='_blank'
+                  rel='noreferrer'
+                  onClick={() => logReveal('ZALO')}
+                >
+                  {zaloButtonContent}
+                </a>
+              </Button>
+            ) : (
+              <Button
+                variant='outline'
+                className={ZALO_BUTTON_CLASSNAME}
+                onClick={() => requireAuth()}
               >
-                <MessageCircle className='h-4 w-4' />
-                {t('profile.actions.chatZalo')}
-              </a>
-            </Button>
-          )}
+                {zaloButtonContent}
+              </Button>
+            ))}
         </div>
       </CardContent>
+
+      <LoginRequiredDialog {...dialogProps} />
     </Card>
   )
 }

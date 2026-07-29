@@ -105,6 +105,13 @@
     "showMore": "Xem thêm {count} kết quả",
     "showLess": "Thu gọn"
   },
+  "contactAccess": {
+    "loginRequiredTitle": "Đăng nhập để xem thông tin liên hệ",
+    "loginRequiredDescription": "Bạn cần đăng nhập để xem và liên hệ với người đăng tin. Việc này giúp bảo vệ thông tin của các bên.",
+    "cancel": "Để sau",
+    "loginNow": "Đăng nhập ngay",
+    "viewContactCta": "Đăng nhập để xem liên hệ"
+  },
   "common": {
     "or": "Hoặc",
     "loading": "Đang tải...",

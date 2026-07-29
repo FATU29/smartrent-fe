@@ -1,24 +1,16 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/router'
 import { Typography } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/button'
 import { Card, CardContent } from '@/components/atoms/card'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/atoms/dialog'
 import { LayoutList, Mail, Phone } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { PUBLIC_ROUTES, buildSellerDetailRoute } from '@/constants/route'
 import { UserApi } from '@/api/types'
-import { useAuth } from '@/hooks/useAuth'
-import { useAuthDialog } from '@/contexts/authDialog'
+import { useContactRevealGuard } from '@/hooks/useAuth'
+import { ContactRevealService } from '@/api/services/contactReveal.service'
+import LoginRequiredDialog from '@/components/molecules/loginRequiredDialog'
 import BrokerAvatar from '@/components/molecules/brokerAvatar'
 import FollowButton from '@/components/molecules/followButton'
 import { cn } from '@/lib/utils'
@@ -36,12 +28,9 @@ const SellerContact: React.FC<SellerContactProps> = ({
 }) => {
   const t = useTranslations('apartmentDetail')
   const tCommon = useTranslations()
-  const router = useRouter()
-  const { isAuthenticated } = useAuth()
-  const { openAuth } = useAuthDialog()
+  const { requireAuth, dialogProps } = useContactRevealGuard()
 
   const [showPhone, setShowPhone] = React.useState(false)
-  const [openLoginRequired, setOpenLoginRequired] = React.useState(false)
 
   React.useEffect(() => {
     setShowPhone(false)
@@ -73,25 +62,28 @@ const SellerContact: React.FC<SellerContactProps> = ({
     : PUBLIC_ROUTES.PROPERTIES_PREFIX
 
   const handleZaloClick = () => {
-    if (zaloLink) {
-      window.open(zaloLink, '_blank')
-    }
-    onChatZalo?.()
+    requireAuth(() => {
+      void ContactRevealService.logReveal(host.userId, 'ZALO')
+      if (zaloLink) {
+        window.open(zaloLink, '_blank')
+      }
+      onChatZalo?.()
+    })
+  }
+
+  const handleEmailClick = () => {
+    requireAuth(() => {
+      void ContactRevealService.logReveal(host.userId, 'EMAIL')
+      window.location.href = `mailto:${email}`
+    })
   }
 
   const handleCall = () => {
-    if (!isAuthenticated) {
-      setOpenLoginRequired(true)
-      return
-    }
-
-    setShowPhone(true)
-    onPhoneClick?.()
-  }
-
-  const handleLoginToViewPhone = () => {
-    setOpenLoginRequired(false)
-    openAuth('login', router.asPath)
+    requireAuth(() => {
+      void ContactRevealService.logReveal(host.userId, 'PHONE')
+      setShowPhone(true)
+      onPhoneClick?.()
+    })
   }
 
   const hasPhone = Boolean(phone)
@@ -185,16 +177,14 @@ const SellerContact: React.FC<SellerContactProps> = ({
 
           {hasEmail && (
             <Button
-              asChild
               className='w-full bg-card hover:bg-primary/10 text-foreground border-2 border-primary h-9 md:h-10 text-xs md:text-sm font-semibold shadow-sm hover:shadow-md transition-all dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground dark:border-primary/80'
+              onClick={handleEmailClick}
               aria-label={t('actions.sendEmail')}
             >
-              <a href={`mailto:${email}`}>
-                <Mail className='w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5' />
-                <span className='text-xs md:text-sm'>
-                  {t('actions.sendEmail')}
-                </span>
-              </a>
+              <Mail className='w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5' />
+              <span className='text-xs md:text-sm'>
+                {t('actions.sendEmail')}
+              </span>
             </Button>
           )}
 
@@ -212,27 +202,7 @@ const SellerContact: React.FC<SellerContactProps> = ({
         </div>
       </CardContent>
 
-      <Dialog open={openLoginRequired} onOpenChange={setOpenLoginRequired}>
-        <DialogContent className='w-[92vw] max-w-md p-5 sm:p-6'>
-          <DialogHeader className='pb-2'>
-            <DialogTitle>{t('phoneAccess.loginRequiredTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('phoneAccess.loginRequiredDescription')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className='mt-2'>
-            <Button
-              variant='outline'
-              onClick={() => setOpenLoginRequired(false)}
-            >
-              {t('phoneAccess.cancel')}
-            </Button>
-            <Button onClick={handleLoginToViewPhone}>
-              {t('phoneAccess.loginNow')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <LoginRequiredDialog {...dialogProps} />
     </Card>
   )
 }
