@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { Leaf, Sparkles, Crown } from 'lucide-react'
+import { Leaf, Star, Crown } from 'lucide-react'
 import {
   Card,
   CardHeader,
@@ -51,7 +51,7 @@ export const getMembershipLevelIcon = (
       <Leaf className='size-7 text-emerald-600 dark:text-emerald-400' />
     ),
     [MembershipPackageLevel.STANDARD]: (
-      <Sparkles className='size-7 text-sky-600 dark:text-sky-400' />
+      <Star className='size-7 text-sky-600 dark:text-sky-400' />
     ),
     [MembershipPackageLevel.ADVANCED]: (
       <Crown className='size-7 text-primary' />
