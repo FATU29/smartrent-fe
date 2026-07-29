@@ -4,8 +4,8 @@ import {
   CalendarPlus,
   Clock,
   Crown,
+  Gem,
   PackageOpen,
-  Sparkles,
   Tag,
   TriangleAlert,
 } from 'lucide-react'
@@ -45,7 +45,7 @@ const TIER_THEME: Record<
 > = {
   SILVER: { icon: Tag, pill: 'bg-gray-100 text-gray-700' },
   GOLD: { icon: Crown, pill: 'bg-yellow-100 text-yellow-700' },
-  DIAMOND: { icon: Sparkles, pill: 'bg-blue-100 text-blue-700' },
+  DIAMOND: { icon: Gem, pill: 'bg-blue-100 text-blue-700' },
 }
 
 const DAYS_ADDED = 30

@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 import {
   CheckCircle2,
   Crown,
+  Gem,
   Info,
   PackageOpen,
   Sparkles,
@@ -96,7 +97,7 @@ const TIER_THEME: Record<
     currentBadge: 'bg-yellow-100 text-yellow-700',
   },
   DIAMOND: {
-    icon: Sparkles,
+    icon: Gem,
     selected: 'border-blue-400 bg-blue-400 text-white',
     unselected: 'border-blue-300 bg-background hover:border-blue-400',
     iconColor: 'text-blue-500',
