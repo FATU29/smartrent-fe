@@ -26,6 +26,8 @@ type TAiChatInterfaceProps = {
   onScrollToBottom: () => void
   onInputChange: (value: string) => void
   onSendMessage: (value: string) => void
+  /** Re-send a failed turn from its error bubble's Try-again button. */
+  onRetryMessage?: (errorMessageId: string) => void
   onViewListingDetail?: (listingId: number) => void
   /** Cancel the in-flight SSE stream — wired through to the typing
    * indicator's × button. */
@@ -50,6 +52,7 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
   onScrollToBottom,
   onInputChange,
   onSendMessage,
+  onRetryMessage,
   onViewListingDetail,
   onStopStreaming,
   guestLimitReached = false,
@@ -156,6 +159,7 @@ const AiChatInterface: FC<TAiChatInterfaceProps> = ({
                       onViewListingDetail={onViewListingDetail}
                       onOpenFullDetail={setFullDetailListingId}
                       onSuggestionClick={onSendMessage}
+                      onRetry={onRetryMessage}
                     />
                   </div>
                 )
