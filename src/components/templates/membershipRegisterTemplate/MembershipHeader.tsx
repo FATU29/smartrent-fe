@@ -21,14 +21,14 @@ export const MembershipHeader: React.FC<MembershipHeaderProps> = ({
     >
       <Card className='relative overflow-hidden border-border'>
         <div className='absolute inset-x-0 top-0 h-px bg-primary/40' />
-        <CardContent className='relative flex flex-col items-center gap-3 text-center'>
+        <CardContent className='relative flex items-center gap-4'>
           <div className='hidden md:flex shrink-0 size-11 items-center justify-center rounded-lg bg-primary/10 text-primary'>
             <LayoutGrid className='size-5' />
           </div>
-          <div className='space-y-1.5'>
+          <div className='flex-1 space-y-1.5'>
             <Typography variant='h2'>{title}</Typography>
             {subtitle && (
-              <Typography variant='muted' className='mx-auto max-w-2xl'>
+              <Typography variant='muted' className='max-w-2xl'>
                 {subtitle}
               </Typography>
             )}
