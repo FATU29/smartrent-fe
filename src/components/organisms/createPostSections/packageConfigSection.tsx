@@ -493,14 +493,8 @@ const PackageConfigSection: React.FC<PackageConfigSectionProps> = ({
           canOpenBenefits && (
             <div className='flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3'>
               <Gift className='w-4 h-4 shrink-0 text-primary' />
-              <Typography className='text-sm font-medium'>
+              <Typography className='flex-1 text-sm font-medium'>
                 {t('membershipPriorityTitle')}
-              </Typography>
-              <Typography
-                variant='muted'
-                className='min-w-[10rem] flex-1 text-sm'
-              >
-                {t('membershipPriorityDescription')}
               </Typography>
               <Button
                 type='button'
