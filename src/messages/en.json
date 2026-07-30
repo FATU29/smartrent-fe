@@ -1965,13 +1965,6 @@
   },
   "membershipPage": {
     "title": "Service Packages",
-    "subtitle": "Compare Membership packages and Push Voucher bundles to choose the best solution for your sales needs.",
-    "glossary": {
-      "title": "Before you choose a plan, here's what these terms mean",
-      "vip": "Silver / Gold / Diamond listings: the display priority tier of a listing (Diamond ranks highest, then Gold, then Silver). Higher tiers rank higher in listings/search and show their own badge on the post, boosting buyer trust.",
-      "push": "Listing push: brings an already-posted Normal listing back to the top when newer listings have pushed it down — it maintains position over time, unlike VIP tiers which get priority from the start.",
-      "media": "The photo limit per listing also scales with its VIP tier — higher tiers allow more photos in the posting flow."
-    },
     "tabs": {
       "membership": "Membership Packages",
       "voucher": "Push Voucher Packages",
