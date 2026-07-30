@@ -1148,7 +1148,6 @@
         "description": "Select a membership or push voucher package to optimize visibility",
         "selectPackageType": "Select package type",
         "membershipPriorityTitle": "You have an available membership package",
-        "membershipPriorityDescription": "Use your membership benefit first to post for free — no need to buy an extra package.",
         "orBuyDirectly": "Or buy a package directly",
         "selectDuration": "Post longer, save more!",
         "packages": {

@@ -1148,7 +1148,6 @@
         "description": "Chọn gói hội viên hoặc gói đẩy tin phù hợp để tối ưu hiển thị",
         "selectPackageType": "Chọn loại tin",
         "membershipPriorityTitle": "Bạn đang có gói hội viên khả dụng",
-        "membershipPriorityDescription": "Ưu tiên sử dụng quyền lợi thành viên để đăng tin miễn phí, không cần mua thêm gói.",
         "orBuyDirectly": "Hoặc mua gói lẻ",
         "selectDuration": "Đăng dài ngày hơn, hiệu kiệm hơn!",
         "packages": {
