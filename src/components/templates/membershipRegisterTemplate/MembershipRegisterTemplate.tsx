@@ -842,10 +842,7 @@ export const MembershipRegisterTemplate: React.FC = () => {
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.5 }}
             >
-              <MembershipHeader
-                title={tPage('title')}
-                subtitle={tPage('subtitle')}
-              />
+              <MembershipHeader title={tPage('title')} />
             </motion.div>
           </AnimatePresence>
 

@@ -15,8 +15,6 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/atoms/carousel'
-import { MembershipGlossaryNote } from './MembershipGlossaryNote'
-
 interface MembershipPlansGridProps {
   readonly loading?: boolean
   readonly memberships?: readonly Membership[]
@@ -81,7 +79,6 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
   if (isMobile) {
     return (
       <div className='flex flex-col gap-4'>
-        <MembershipGlossaryNote />
         <motion.div
           className='relative'
           initial={{ opacity: 0 }}
@@ -144,7 +141,6 @@ export const MembershipPlansGrid: React.FC<MembershipPlansGridProps> = ({
 
   return (
     <div className='flex flex-col gap-6'>
-      <MembershipGlossaryNote />
       <motion.div
         className='flex flex-wrap justify-center gap-6'
         variants={containerVariants}
